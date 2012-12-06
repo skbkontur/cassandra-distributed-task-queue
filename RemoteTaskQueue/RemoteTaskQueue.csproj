@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RemoteQueue</RootNamespace>
+    <AssemblyName>RemoteTaskQueue</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Cassandra.CassandraClient">
+      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
+    </Reference>
+    <Reference Include="GroBuf">
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryBase.cs" />
+    <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryParameters.cs" />
+    <Compile Include="Cassandra\Primitives\IColumnFamilyCreator.cs" />
+    <Compile Include="Cassandra\Primitives\IColumnFamilyRepository.cs" />
+    <Compile Include="Cassandra\Primitives\IColumnFamilyRepositoryParameters.cs" />
+    <Compile Include="Cassandra\Primitives\KeyspaceNotFoundException.cs" />
+    <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\ITaskDataBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\ITaskExceptionInfoBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\ITaskMetaInformationBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\TaskDataBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\TaskExceptionInfoBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\TaskMetaInformationBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\ColumnInfo.cs" />
+    <Compile Include="Cassandra\Entities\Task.cs" />
+    <Compile Include="Cassandra\Entities\TaskExceptionInfo.cs" />
+    <Compile Include="Cassandra\Entities\TaskMetaInformation.cs" />
+    <Compile Include="Cassandra\Entities\TaskMetaInformationExtension.cs" />
+    <Compile Include="Cassandra\Entities\TaskState.cs" />
+    <Compile Include="Cassandra\Entities\TimedObject.cs" />
+    <Compile Include="Cassandra\Primitives\BlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\GlobalTicksHolder\ITicksHolder.cs" />
+    <Compile Include="Cassandra\Repositories\GlobalTicksHolder\TicksHolder.cs" />
+    <Compile Include="Cassandra\Repositories\HandleTaskCollection.cs" />
+    <Compile Include="Cassandra\Repositories\HandleTaskExceptionInfoStorage.cs" />
+    <Compile Include="Cassandra\Repositories\HandleTasksMetaStorage.cs" />
+    <Compile Include="Cassandra\Primitives\IBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\EventIndexes\ITaskMetaEventColumnInfoIndex.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerator.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IIndexRecordsCleaner.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IMinTicksCache.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IndexRecordsCleaner.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\MinTicksCache.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TaskMinimalStartTicksIndex.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITaskMinimalStartTicksIndex.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\EventIndexes\TaskMetaEventColumnInfoIndex.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\TicksNameHelper.cs" />
+    <Compile Include="Configuration\ColumnFamilyRegistry.cs" />
+    <Compile Include="Configuration\ExchangeSchedulableRunner.cs" />
+    <Compile Include="Configuration\IColumnFamilyRegistry.cs" />
+    <Compile Include="Configuration\IExchangeSchedulableRunner.cs" />
+    <Compile Include="Exceptions\AmbigousMessageHandlerParametersException.cs" />
+    <Compile Include="Exceptions\TaskDataNotFoundException.cs" />
+    <Compile Include="Exceptions\TaskHandlerNotFoundException.cs" />
+    <Compile Include="Exceptions\TaskNameDuplicateException.cs" />
+    <Compile Include="Exceptions\TooManyTaskHandlersException.cs" />
+    <Compile Include="Cassandra\Repositories\GlobalTicksHolder\GlobalTime.cs" />
+    <Compile Include="Cassandra\Repositories\GlobalTicksHolder\IGlobalTime.cs" />
+    <Compile Include="Handling\FinishAction.cs" />
+    <Compile Include="Handling\HandlerManager.cs" />
+    <Compile Include="Handling\HandlerResults\HandleResult.cs" />
+    <Compile Include="Handling\HandlerTask.cs" />
+    <Compile Include="Handling\IHandlerManager.cs" />
+    <Compile Include="Handling\IRemoteTask.cs" />
+    <Compile Include="Handling\IRemoteTaskQueue.cs" />
+    <Compile Include="Handling\IShardingManager.cs" />
+    <Compile Include="Handling\ITaskCounter.cs" />
+    <Compile Include="Handling\ITaskData.cs" />
+    <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
+    <Compile Include="Handling\ITaskHandler.cs" />
+    <Compile Include="Handling\ITaskHandlerCollection.cs" />
+    <Compile Include="Handling\RemoteTask.cs" />
+    <Compile Include="Handling\RemoteTaskInfo.cs" />
+    <Compile Include="Handling\RemoteTaskQueue.cs" />
+    <Compile Include="Handling\ShardingManager.cs" />
+    <Compile Include="Handling\TaskCounter.cs" />
+    <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
+    <Compile Include="Handling\TaskHandler.cs" />
+    <Compile Include="Handling\TaskHandlerCollection.cs" />
+    <Compile Include="Cassandra\Repositories\IHandleTaskExceptionInfoStorage.cs" />
+    <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
+    <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
+    <Compile Include="LocalTasks\TaskQueue\ActionTask.cs" />
+    <Compile Include="LocalTasks\TaskQueue\ITask.cs" />
+    <Compile Include="LocalTasks\TaskQueue\ITaskQueue.cs" />
+    <Compile Include="LocalTasks\TaskQueue\SimpleTask.cs" />
+    <Compile Include="LocalTasks\TaskQueue\TaskBase.cs" />
+    <Compile Include="LocalTasks\TaskQueue\TaskQueue.cs" />
+    <Compile Include="LocalTasks\TaskQueue\TaskQueueException.cs" />
+    <Compile Include="LocalTasks\TaskQueue\TaskResult.cs" />
+    <Compile Include="LocalTasks\TaskQueue\TaskWrapper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Cassandra\RemoteLock\ILockRepository.cs" />
+    <Compile Include="Cassandra\RemoteLock\IRemoteLock.cs" />
+    <Compile Include="Cassandra\RemoteLock\IRemoteLockCreator.cs" />
+    <Compile Include="Cassandra\RemoteLock\LockAttemptResult.cs" />
+    <Compile Include="Cassandra\RemoteLock\LockAttemptStatus.cs" />
+    <Compile Include="Cassandra\RemoteLock\LockRepository.cs" />
+    <Compile Include="Cassandra\RemoteLock\RemoteLock.cs" />
+    <Compile Include="Cassandra\RemoteLock\RemoteLockCreator.cs" />
+    <Compile Include="Cassandra\RemoteLock\WeakRemoteLock.cs" />
+    <Compile Include="LocalTasks\Scheduling\ActionPeriodicTask.cs" />
+    <Compile Include="LocalTasks\Scheduling\IPeriodicTask.cs" />
+    <Compile Include="LocalTasks\Scheduling\IPeriodicTaskRunner.cs" />
+    <Compile Include="LocalTasks\Scheduling\ISmartTimer.cs" />
+    <Compile Include="LocalTasks\Scheduling\PeriodicTaskRunner.cs" />
+    <Compile Include="LocalTasks\Scheduling\SmartTimer.cs" />
+    <Compile Include="Settings\ICassandraSettings.cs" />
+    <Compile Include="Exceptions\NotTypedTaskHandlerException.cs" />
+    <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
+    <Compile Include="StaticGrobuf.cs" />
+    <Compile Include="UserClasses\ITaskDataRegistry.cs" />
+    <Compile Include="UserClasses\ITaskHandlerRegistry.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
