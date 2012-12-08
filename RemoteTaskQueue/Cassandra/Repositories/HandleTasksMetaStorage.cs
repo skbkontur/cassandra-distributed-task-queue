@@ -19,9 +19,12 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public IEnumerable<string> GetAllTasksInStates(long ticks, params TaskState[] states)
         {
-            IEnumerable<string> res = new List<string>();
-            var idGroups = states.Select(state => minimalStartTicksIndex.GetTaskIds(state, ticks));
-            return idGroups.Aggregate(res, (current, idGroup) => current.Concat(idGroup));
+            return GetAllTasksInStateBase(ticks, states);
+        }
+
+        public IEnumerable<string> GetReverseAllTasksInStatesOrder(long ticks, params TaskState[] states)
+        {
+            return GetAllTasksInStateBase(ticks, states, true);
         }
 
         public void AddMeta(TaskMetaInformation meta)
@@ -33,6 +36,13 @@ namespace RemoteQueue.Cassandra.Repositories
         public TaskMetaInformation GetMeta(string taskId)
         {
             return storage.Read(taskId);
+        }
+
+        private IEnumerable<string> GetAllTasksInStateBase(long ticks, IEnumerable<TaskState> states, bool reverseOrder = false)
+        {
+            IEnumerable<string> res = new List<string>();
+            var idGroups = states.Select(state => minimalStartTicksIndex.GetTaskIds(state, ticks, reverseOrder));
+            return idGroups.Aggregate(res, (current, idGroup) => current.Concat(idGroup));
         }
 
         private readonly ITaskMetaInformationBlobStorage storage;

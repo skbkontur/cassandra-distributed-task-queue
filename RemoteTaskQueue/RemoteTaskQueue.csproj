@@ -79,6 +79,7 @@
     <Compile Include="Cassandra\Repositories\Indexes\EventIndexes\ITaskMetaEventColumnInfoIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerator.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetReverseEventsEnumerator.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IIndexRecordsCleaner.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IMinTicksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IndexRecordsCleaner.cs" />

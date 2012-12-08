@@ -9,7 +9,6 @@ using GroboContainer.Impl;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Configuration;
 using RemoteQueue.Settings;
 
@@ -50,7 +49,6 @@ namespace FunctionalTests
 
         protected Container Container { get; private set; }
 
-       
         private void DropAndCreateDatabase(ColumnFamily[] columnFamilies)
         {
             var cassandraCluster = Container.Get<ICassandraCluster>();

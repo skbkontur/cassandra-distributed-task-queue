@@ -63,6 +63,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventsEnumeratorTests\EventsEnumerableTestBase.cs" />
+    <Compile Include="EventsEnumeratorTests\ReverseEventsEnumerableTest.cs" />
     <Compile Include="FunctionalTestBaseWithoutServices.cs" />
     <Compile Include="Logging\Log4netConfiguration.cs" />
     <Compile Include="ObjectComparer.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="FunctionalTestBase.cs" />
     <Compile Include="RepositoriesTests\HandleTaskMetaStorageTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="EventsEnumeratorTests\SimpleEventsEnumerableTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExchangeService\ExchangeService.csproj">
