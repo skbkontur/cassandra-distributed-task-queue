@@ -38,14 +38,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringService.Sheduler
                                                                                       TaskState.WaitingForRerun,
                                                                                       TaskState.WaitingForRerunAfterError).ToArray();
             // note не продолбаем таски?
-            Console.WriteLine("Updated tasks ids count = " + updatedTasksIds.Count());
             if (updatedTasksIds.Count() == 0)
                 return;
             var updatedTasksMetas = updatedTasksIds.Select(x => handleTasksMetaStorage.GetMeta(x));
             lastTicks = updatedTasksMetas.Max(x => x.MinimalStartTicks) + 1;
-            var fid = updatedTasksIds.FirstOrDefault();
-            var meta = handleTasksMetaStorage.GetMeta(fid);
-            Console.WriteLine(meta.State);
             var hs = new Dictionary<string, TaskMetaInformationBusinessObjectWrap>();
             foreach (var id in updatedTasksIds)
                 if (hs.ContainsKey(id))
