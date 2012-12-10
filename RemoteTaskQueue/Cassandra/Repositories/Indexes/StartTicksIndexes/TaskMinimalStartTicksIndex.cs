@@ -52,14 +52,14 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             indexRecordsCleaner.RemoveIndexRecords(obj, columnInfo);
         }
 
-        public IEnumerable<string> GetTaskIds(TaskState taskState, long nowTicks, bool reverseOrder = false, int batchSize = 2000)
+        public IEnumerable<string> GetTaskIds(TaskState taskState, long nowTicks, long fromTicks, bool reverseOrder = false, int batchSize = 2000)
         {
             IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
             //todo читать не с начала, отступать на diff
             long firstTicks;
             if(!TryGetFirstEventTicks(taskState, out firstTicks))
                 return new string[0];
-            return new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, firstTicks, nowTicks, reverseOrder, batchSize);
+            return new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, Math.Max(firstTicks, fromTicks), nowTicks, reverseOrder, batchSize);
         }
 
         public const string columnFamilyName = "TaskMinimalStartTicksIndex";

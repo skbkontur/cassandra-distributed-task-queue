@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,14 +18,19 @@ namespace RemoteQueue.Cassandra.Repositories
             this.minimalStartTicksIndex = minimalStartTicksIndex;
         }
 
-        public IEnumerable<string> GetAllTasksInStates(long ticks, params TaskState[] states)
+        public IEnumerable<string> GetAllTasksInStates(long toTicks, params TaskState[] states)
         {
-            return GetAllTasksInStateBase(ticks, states);
+            return GetAllTasksInStateBase(toTicks, states);
+        }
+
+        public IEnumerable<string> GetAllTasksInStatesFromTicks(long fromTicks, params TaskState[] states)
+        {
+            return GetAllTasksInStateBase(DateTime.UtcNow.Ticks, states, fromTicks);
         }
 
         public IEnumerable<string> GetReverseAllTasksInStatesOrder(long ticks, params TaskState[] states)
         {
-            return GetAllTasksInStateBase(ticks, states, true);
+            return GetAllTasksInStateBase(ticks, states, 0, true);
         }
 
         public void AddMeta(TaskMetaInformation meta)
@@ -38,10 +44,10 @@ namespace RemoteQueue.Cassandra.Repositories
             return storage.Read(taskId);
         }
 
-        private IEnumerable<string> GetAllTasksInStateBase(long ticks, IEnumerable<TaskState> states, bool reverseOrder = false)
+        private IEnumerable<string> GetAllTasksInStateBase(long ticks, IEnumerable<TaskState> states, long fromTicks = 0, bool reverseOrder = false)
         {
             IEnumerable<string> res = new List<string>();
-            var idGroups = states.Select(state => minimalStartTicksIndex.GetTaskIds(state, ticks, reverseOrder));
+            var idGroups = states.Select(state => minimalStartTicksIndex.GetTaskIds(state, ticks, fromTicks, reverseOrder));
             return idGroups.Aggregate(res, (current, idGroup) => current.Concat(idGroup));
         }
 
