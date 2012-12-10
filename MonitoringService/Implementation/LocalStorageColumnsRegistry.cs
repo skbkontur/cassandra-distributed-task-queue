@@ -1,6 +1,4 @@
-﻿using RemoteQueue.Cassandra.Entities;
-
-using SKBKontur.Catalogue.Core.SQL;
+﻿using SKBKontur.Catalogue.Core.SQL;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.Indexes;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringService.Implementation

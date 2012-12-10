@@ -46,6 +46,10 @@
     <Reference Include="Catalogue.Core.SynchronizationStorage">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.SynchronizationStorage.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Expressions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Expressions.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
@@ -67,8 +71,10 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Http\MonitoringServiceHttpHandler.cs" />
     <Compile Include="Implementation\BusinessObjectWrapper.cs" />
+    <Compile Include="Implementation\IMonitoringServiceImpl.cs" />
     <Compile Include="Implementation\LocalStorageColumnsRegistry.cs" />
     <Compile Include="Implementation\LocalStorageTableRegistry.cs" />
+    <Compile Include="Implementation\MonitoringServiceImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\CassandraSettings.cs" />
     <Compile Include="Sheduler\IMonitoringSchedulableRunnerSettings.cs" />

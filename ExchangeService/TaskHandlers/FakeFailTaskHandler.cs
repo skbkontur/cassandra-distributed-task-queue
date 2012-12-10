@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 
 using ExchangeService.Repositories;
 using ExchangeService.TaskDatas;
