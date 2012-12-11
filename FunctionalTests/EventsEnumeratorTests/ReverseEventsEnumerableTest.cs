@@ -23,7 +23,7 @@ namespace FunctionalTests.EventsEnumeratorTests
             var maxTicks = metas[10].MinimalStartTicks;
             var minTicks = metas[0].MinimalStartTicks;
 
-            const bool  reverseOrder = true;
+            const bool reverseOrder = true;
 
             var getEnumerable = GetEnumerable(maxTicks - 1, reverseOrder, TaskState.New, TaskState.InProcess, TaskState.Finished);
             Assert.AreEqual(10, getEnumerable.ToArray().Length);

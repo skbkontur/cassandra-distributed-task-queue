@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 
-using ExchangeService.Repositories;
-
 using FunctionalTests.Logging;
 
 using GroboContainer.Core;
@@ -14,6 +12,7 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Settings;
 

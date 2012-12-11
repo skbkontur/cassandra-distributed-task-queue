@@ -1,0 +1,16 @@
+using RemoteQueue.Cassandra.Entities;
+
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+{
+    public class TaskMetaInfoModel
+    {
+        public string Id { get; set; }
+        public TaskState State { get; set; }
+        public string Name { get; set; }
+        public string EnqueueTicks { get; set; }
+        public string StartExecutedTicks { get; set; }
+        public string MinimalStartTicks { get; set; }
+        public int Attempts { get; set; }
+        public string ParentTaskId { get; set; }
+    }
+}

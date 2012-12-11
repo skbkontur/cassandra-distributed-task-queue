@@ -1,0 +1,8 @@
+﻿@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+@model ByteArrayTaskDataValue
+@{
+@* ReSharper disable Asp.NotResolved *@
+    var fileDownloadUrl = Url.Action("GetBytes", "RemoteTaskQueue", new { id = Model.TaskId, path = Model.Path });
+@* ReSharper restore Asp.NotResolved *@
+}
+<a href="@fileDownloadUrl" class="save_file" title="Save">@Model.Size bytes</a>

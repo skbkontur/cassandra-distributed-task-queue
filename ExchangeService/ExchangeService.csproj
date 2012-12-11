@@ -73,16 +73,8 @@
     <Compile Include="Http\ExchangeServiceHttpHandler.cs" />
     <Compile Include="Http\IExchangeServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\ITestCassandraCounterBlobRepository.cs" />
-    <Compile Include="Repositories\ITestCounterRepository.cs" />
-    <Compile Include="Repositories\TestCassandraCounterBlobRepository.cs" />
-    <Compile Include="Repositories\TestCounterRepository.cs" />
     <Compile Include="Settings\CassandraSettings.cs" />
     <Compile Include="Settings\ExchangeSchedulableRunnerSettings.cs" />
-    <Compile Include="TaskDatas\FakeFailTaskData.cs" />
-    <Compile Include="TaskHandlers\FakeFailTaskHandler.cs" />
-    <Compile Include="TaskHandlers\FakePeriodicTaskHandler.cs" />
-    <Compile Include="TaskDatas\FakePeriodicTaskData.cs" />
     <Compile Include="UserClasses\TaskDataRegistry.cs" />
     <Compile Include="UserClasses\TaskHandlerRegistry.cs" />
   </ItemGroup>
@@ -90,6 +82,10 @@
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaskDatasAndHandlers\TaskDatasAndHandlers.csproj">
+      <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
+      <Name>TaskDatasAndHandlers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

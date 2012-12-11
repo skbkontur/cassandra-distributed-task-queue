@@ -1,0 +1,74 @@
+﻿@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
+@model TaskViewModel
+@{
+    Layout = "TaskMonitoringLayout.cshtml";
+}
+
+@* ReSharper disable Razor.SectionNotResolved *@
+@section Title {
+    Task @Model.TaskMetaInfoModel.Id
+}
+@* ReSharper restore Razor.SectionNotResolved *@
+
+<h1>Task list</h1>
+
+<table>
+    <tr>
+        <td><b>TaskId</b></td>
+        <td>@Model.TaskMetaInfoModel.Id</td>
+    </tr>
+    <tr>
+        <td><b>TaskState</b></td>
+        <td>@Html.TaskState(Model.TaskMetaInfoModel)</td>
+    </tr>
+    <tr>
+        <td><b>TaskName</b></td>
+        <td>@Model.TaskMetaInfoModel.Name</td>
+    </tr>
+    <tr>
+        <td><b>EnqueueTicks</b></td>
+        <td>@Model.TaskMetaInfoModel.EnqueueTicks</td>
+    </tr>
+    <tr>
+        <td><b>StartExecutedTicks</b></td>
+        <td>@Model.TaskMetaInfoModel.StartExecutedTicks</td>
+    </tr>
+    <tr>
+        <td><b>MinimalStartTicks</b></td>
+        <td>@Model.TaskMetaInfoModel.MinimalStartTicks</td>
+    </tr>
+    <tr>
+        <td><b>Attempts</b></td>
+        <td>@Model.TaskMetaInfoModel.Attempts</td>
+    </tr>
+    <tr>
+        <td><b>ParentTaskId</b></td>
+        @{
+            // ReSharper disable Asp.NotResolved
+            var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = Model.TaskMetaInfoModel.ParentTaskId });
+            // ReSharper restore Asp.NotResolved
+        }
+        <td><a href="@detailsParentTaskUrl">@Model.TaskMetaInfoModel.ParentTaskId</a></td>
+    </tr>
+    <tr>
+        <td><b>TaskData</b></td>
+        <td>@Model.TaskDataValue.Render(Html)</td>
+    </tr>
+    @{
+        if(Model.ExceptionInfo != null)
+        {
+            <td><b>Детали ошибки</b></td>
+            <td>
+                @{
+                    var text = @Model.ExceptionInfo.ExceptionMessageInfo ?? "";
+                    var lines = text.Split('\n');
+                    foreach(var line in lines)
+                    {
+                        @line<br/>
+                    }
+                }
+            </td>
+        }
+    }
+</table>

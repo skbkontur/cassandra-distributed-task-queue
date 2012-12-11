@@ -1,0 +1,16 @@
+﻿@using RemoteQueue.Cassandra.Entities
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+@model TaskMetaInfoModel
+           
+<div class="taskState">
+    @Model.State
+    @* ReSharper disable Asp.NotResolved *@
+    @{
+        if(Model.State == TaskState.New || Model.State == TaskState.WaitingForRerun || Model.State == TaskState.WaitingForRerunAfterError)
+        {
+            <a class="cancelTask" href="#" url="@Url.Action("Cancel", "RemoteTaskQueue", new { id = Model.Id })"/>
+        }
+        <a class="rerunTask" href="#" url="@Url.Action("Rerun", "RemoteTaskQueue", new { id = Model.Id })"/>
+    }
+    @* ReSharper restore Asp.NotResolved *@
+</div>

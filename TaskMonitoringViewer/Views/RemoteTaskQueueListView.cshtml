@@ -1,0 +1,47 @@
+﻿@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
+@model TaskListModel
+@{
+    Layout = "TaskMonitoringLayout.cshtml";
+}
+
+@* ReSharper disable Razor.SectionNotResolved *@
+@section Title {
+    Task list
+}
+@* ReSharper restore Razor.SectionNotResolved *@
+
+<h1>Task list</h1>
+
+<table>
+    <tr>
+        <td>TaskId</td>
+        <td>TaskState</td>
+        <td>TaskName</td>
+        <td>EnqueueTicks</td>
+        <td>StartExecutedTicks</td>
+        <td>MinimalStartTicks</td>
+        <td>Attempts</td>        
+        <td>ParentTaskId</td>        
+    </tr>
+    @{
+        foreach(var taskModel in Model.TaskModels)
+        {
+            // ReSharper disable Asp.NotResolved
+            var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.Id });
+            var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.ParentTaskId });
+            // ReSharper restore Asp.NotResolved
+            <tr>
+                <td><a href="@detailsTaskUrl">@taskModel.Id</a></td>
+                <td>@Html.TaskState(taskModel)</td>
+                <td>@taskModel.Name</td>
+                <td>@taskModel.EnqueueTicks</td>
+                <td>@taskModel.StartExecutedTicks</td>
+                <td>@taskModel.MinimalStartTicks</td>
+                <td>@taskModel.Attempts</td>
+                <td><a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a></td>
+            </tr>
+        }
+    }
+</table>
+@Html.Paginator(Model)

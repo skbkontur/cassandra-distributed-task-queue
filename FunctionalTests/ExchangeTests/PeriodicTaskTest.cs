@@ -3,12 +3,13 @@ using System.Linq;
 using System.Threading;
 
 using ExchangeService.Exceptions;
-using ExchangeService.Repositories;
-using ExchangeService.TaskDatas;
 
 using NUnit.Framework;
 
 using RemoteQueue.Handling;
+
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskDatas;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers;
 
 namespace FunctionalTests.ExchangeTests
 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 
 using NUnit.Framework;
 
@@ -39,21 +38,21 @@ namespace FunctionalTests.RepositoriesTests
         [Test, Ignore("stress")]
         public void StressTest2()
         {
-            var metas = new[]{1,2,3,4,5,6,7,8,9,10}.Select(x=>new TaskMetaInformation
+            var metas = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.Select(x => new TaskMetaInformation
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    State = TaskState.New,
+                    MinimalStartTicks = x
+                }).ToArray();
+
+            for(int i = 0; i <= 100; i++)
             {
-                Id = Guid.NewGuid().ToString(),
-                State = TaskState.New,
-                MinimalStartTicks = x
-            }).ToArray();
-            
-            for (int i = 0; i <= 100; i++)
-            {
-                if (i % 10 == 0)
+                if(i % 10 == 0)
                     Console.WriteLine(i);
                 foreach(var t in metas)
                 {
                     t.MinimalStartTicks++;
-                    t.State = i%2 == 0 ? TaskState.Finished : TaskState.New;
+                    t.State = i % 2 == 0 ? TaskState.Finished : TaskState.New;
                     handleTasksMetaStorage.AddMeta(t);
                 }
             }

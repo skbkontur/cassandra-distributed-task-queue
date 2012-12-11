@@ -1,4 +1,5 @@
 ﻿using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Handling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
@@ -8,5 +9,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         TaskMetaInformation[] GetRange(int start, int count);
         void DropLocalStorage();
         void ActualizeDatabaseScheme();
+        bool CancelTask(string taskId);
+        RemoteTaskInfo GetTaskInfo(string taskId);
     }
 }

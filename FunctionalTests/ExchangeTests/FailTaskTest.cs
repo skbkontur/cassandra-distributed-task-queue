@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 
 using ExchangeService.Exceptions;
-using ExchangeService.Repositories;
-using ExchangeService.TaskDatas;
 
 using GroBuf;
 
@@ -22,6 +20,8 @@ using RemoteQueue.Handling;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskDatas;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers;
 
 namespace FunctionalTests.ExchangeTests
 {
@@ -82,19 +82,17 @@ namespace FunctionalTests.ExchangeTests
         public void TestStress()
         {
             for(int i = 0; i < 1000; i++)
-            {
                 TestManyFailTask();
-            }
         }
 
         [Test, Ignore("Стресс-тест-много-задач")]
         public void TestStressManyTasks()
         {
-            for (int i = 0; i < 10; i++)
+            for(int i = 0; i < 10; i++)
             {
                 const int count = 200;
                 var ids = new string[count];
-                for (int j = 0; j < count; j++)
+                for(int j = 0; j < count; j++)
                     ids[j] = AddTask(15);
                 Wait(ids, 90000);
             }

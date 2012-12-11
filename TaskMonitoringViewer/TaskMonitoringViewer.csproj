@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8BA574CA-6C25-414F-9E99-1E7F032BB962}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer</RootNamespace>
+    <AssemblyName>Catalogue.RemoteTaskQueue.TaskMonitoringViewer</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Catalogue.AccessControl">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Core.Web">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="GroboContainer">
+      <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
+    </Reference>
+    <Reference Include="GroBuf">
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Constants\ControllerConstants.cs" />
+    <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
+    <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
+    <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
+    <Compile Include="ModelBuilders\ITaskDataModelBuilder.cs" />
+    <Compile Include="ModelBuilders\ITaskMetaInfoModelBuilder.cs" />
+    <Compile Include="ModelBuilders\ITaskViewModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskDataModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskMetaInfoModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskViewModelBuilder.cs" />
+    <Compile Include="Models\ByteArrayTaskDataValue.cs" />
+    <Compile Include="Models\EmptyTaskDataValue.cs" />
+    <Compile Include="Models\ITaskDataValue.cs" />
+    <Compile Include="Models\ObjectTaskDataModel.cs" />
+    <Compile Include="Models\Paging\IPaginatorModelData.cs" />
+    <Compile Include="Models\Paging\PaginatorPageLinkModelData.cs" />
+    <Compile Include="Models\StringTaskDataValue.cs" />
+    <Compile Include="Models\TaskDataProperty.cs" />
+    <Compile Include="Models\TaskListModel.cs" />
+    <Compile Include="Models\TaskMetaInfoModel.cs" />
+    <Compile Include="Models\TaskViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderingHelpers\HtmlPaginatorPrimitives.cs" />
+    <Compile Include="RenderingHelpers\HtmlPrimitives.cs" />
+    <Compile Include="ValueHandlerRegistry\EmptyValueHandlerRegistry.cs" />
+    <Compile Include="ValueHandlerRegistry\IValueHandlerRegistry.cs" />
+    <Compile Include="ValueHandlerRegistry\IValueHandlerRegistryCollection.cs" />
+    <Compile Include="ValueHandlerRegistry\ValueHandlerRegistryBase.cs" />
+    <Compile Include="ValueHandlerRegistry\ValueHandlerRegistryCollection.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Views\RemoteTaskQueueDetailsView.cshtml" />
+    <EmbeddedResource Include="Views\Paging\_CurrentPage.cshtml" />
+    <EmbeddedResource Include="Views\Paging\_DotsLinkPage.cshtml" />
+    <EmbeddedResource Include="Views\Paging\_LinkPage.cshtml" />
+    <EmbeddedResource Include="Views\Paging\_NextLinkPage.cshtml" />
+    <EmbeddedResource Include="Views\Paging\_NextPage.cshtml" />
+    <EmbeddedResource Include="Views\Paging\_Paginator.cshtml" />
+    <EmbeddedResource Include="Views\Paging\_PrevLinkPage.cshtml" />
+    <EmbeddedResource Include="Views\Paging\_PrevPage.cshtml" />
+    <EmbeddedResource Include="Views\RemoteTaskQueueListView.cshtml" />
+    <EmbeddedResource Include="Views\TaskMonitoringLayout.cshtml" />
+    <EmbeddedResource Include="Views\_ByteArrayValue.cshtml" />
+    <EmbeddedResource Include="Views\_EmptyValue.cshtml" />
+    <EmbeddedResource Include="Views\_ObjectValue.cshtml" />
+    <EmbeddedResource Include="Views\_StringValue.cshtml" />
+    <EmbeddedResource Include="Views\_TaskState.cshtml" />
+    <None Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
+      <Project>{B0AAD20D-160A-4D99-877B-B464C295E36F}</Project>
+      <Name>MonitoringServiceClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
+      <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(SolutionDir)..\Assemblies\Temp\
+copy $(TargetDir)$(TargetName).pdb $(SolutionDir)..\Assemblies\Temp\</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

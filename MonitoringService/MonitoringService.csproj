@@ -69,26 +69,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
-    <Compile Include="Http\MonitoringServiceHttpHandler.cs" />
-    <Compile Include="Implementation\BusinessObjectWrapper.cs" />
-    <Compile Include="Implementation\IMonitoringServiceImpl.cs" />
-    <Compile Include="Implementation\LocalStorageColumnsRegistry.cs" />
-    <Compile Include="Implementation\LocalStorageTableRegistry.cs" />
-    <Compile Include="Implementation\MonitoringServiceImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\CassandraSettings.cs" />
-    <Compile Include="Sheduler\IMonitoringSchedulableRunnerSettings.cs" />
-    <Compile Include="Sheduler\IMonitoringServiceSchedulableRunner.cs" />
-    <Compile Include="Sheduler\IMonitoringTask.cs" />
-    <Compile Include="Sheduler\MonitoringSchedulableRunnerSettings.cs" />
-    <Compile Include="Sheduler\MonitoringServiceSchedulableRunner.cs" />
-    <Compile Include="Sheduler\MonitoringTask.cs" />
+    <Compile Include="TaskDataRegistry.cs" />
+    <Compile Include="TaskHandlerRegistry.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\MonitoringServiceCore\MonitoringServiceCore.csproj">
+      <Project>{EB9A3DBC-5C00-4774-93D6-925943DDE4CB}</Project>
+      <Name>MonitoringServiceCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaskDatasAndHandlers\TaskDatasAndHandlers.csproj">
+      <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
+      <Name>TaskDatasAndHandlers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

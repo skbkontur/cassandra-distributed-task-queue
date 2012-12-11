@@ -1,0 +1,10 @@
+﻿@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Paging
+@model PaginatorPageLinkModelData
+
+@{
+    var pageNumber = Model.PageNumber + 1;
+    var id = "Paginator_Page_" + pageNumber;
+}
+<li class="c-paginator-pages-page">
+    <span id="@id" class="c-paginator-pages-page-link c-paginator-pages-page-link_active inlineBlock">@pageNumber</span>
+</li>

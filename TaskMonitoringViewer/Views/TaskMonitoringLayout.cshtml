@@ -1,0 +1,118 @@
+﻿@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>@RenderSection("Title")</title>
+        @{
+            Html.RenderStyle("/Shared/Design/RemoteTaskQueueMonitoring/Styles/RemoteTaskQueueMonitoring.css");
+            Html.RenderStyle("/Shared/Design/RemoteTaskQueueMonitoring/Styles/Paginator.css");
+
+            Html.RenderScript("/Shared/Scripts/External/Base.js");
+            Html.RenderScript("/Shared/Scripts/External/Clone.js");
+            Html.RenderScript("/Shared/Scripts/External/JQuery.js");
+            Html.RenderScript("/Shared/Scripts/External/JQueryDisableTextSelect.js");
+            Html.RenderScript("/Shared/Scripts/External/JQueryEasing.js");
+            Html.RenderScript("/Shared/Scripts/External/JQueryAnimation.js");
+            Html.RenderScript("/Shared/Scripts/External/JQueryMousewheel.js");
+            Html.RenderScript("/Shared/Scripts/External/JQueryJson.js");
+            Html.RenderScript("/Shared/Scripts/External/JQuerySimulate.js");
+            Html.RenderScript("/Shared/Scripts/External/JQuerySimulateTyping.js");
+
+            Html.RenderScript("/Shared/Scripts/Browser/BrowserType.js");
+
+            Html.RenderScript("/Shared/Scripts/Extensions/Function.js");
+            Html.RenderScript("/Shared/Scripts/Extensions/String.js");
+            Html.RenderScript("/Shared/Scripts/Extensions/Helpers.js");
+
+            Html.RenderScript("/Shared/Scripts/Keyboard/Keyboard.js");
+            Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardCollection.js");
+            Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardNormalizer.js");
+            Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardKeys.js");
+
+            Html.RenderScript("/Shared/Scripts/Expressions/Expression.js");
+
+            Html.RenderAllScriptsFromDirectory("/Shared/Scripts/Autoload");
+        }
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $(".cancelTask").click(function(event) {
+                    var _this = this;
+                    if (confirm("Отменить задачу?")) {
+                        $.ajax({
+                                async: true,
+                                type: "POST",
+                                url: $(_this).attr('url'),
+                                data: $.toJSON({ x: "x" }),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                error: function() {
+                                    alert("error ajax");
+                                },
+                                success: function(operationResult) {
+                                    if (operationResult.Success) {
+                                        if (typeof isUndefined(operationResult.RedirectTo)) {
+                                            Redirect.go(operationResult.RedirectTo);
+                                        }
+                                    } else {
+                                        alert(operationResult.ErrorMessage);
+                                    }
+                                }
+                            });
+                    }
+                    });
+
+                    $(".rerunTask").click(function (event) {
+                        var _this = this;
+                        if (confirm("Перезапустить задачу?")) {
+                            $.ajax({
+                                async: true,
+                                type: "POST",
+                                url: $(_this).attr('url'),
+                                data: $.toJSON({ x: "x" }),
+                                contentType: "application/json; charset=utf-8",
+                                dataType: "json",
+                                error: function () {
+                                    alert("error ajax");
+                                },
+                                success: function (operationResult) {
+                                    if (operationResult.Success) {
+                                        if (typeof isUndefined(operationResult.RedirectTo)) {
+                                            Redirect.go(operationResult.RedirectTo);
+                                        }
+                                    } else {
+                                        alert(operationResult.ErrorMessage);
+                                    }
+                                }
+                            });
+                        }
+                    });
+            });
+
+            $(document).ready(function() {
+                $(".propertyNameValue").click(function(event) {
+                    if ($(this).hasClass("canHide")) {
+                        $(this).toggleClass("hideValue");
+                    }
+                    event.stopPropagation();
+                });
+            });
+            
+        </script>
+    </head>
+    <body>
+        <div>
+            <ul>
+                @{
+                    // ReSharper disable Asp.NotResolved
+                    var taskListUrl = @Url.Action("Run", "Task");
+                    // ReSharper restore Asp.NotResolved
+                }
+                <li><a href="@taskListUrl">Task list</a></li>
+            </ul>
+        </div>
+        <hr />
+        @RenderBody()
+    </body>
+</html>
