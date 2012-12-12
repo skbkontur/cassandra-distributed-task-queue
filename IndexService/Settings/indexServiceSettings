@@ -1,0 +1,29 @@
+﻿ListeningPort = 1468
+
+#Имя сервиса
+ServiceName = RemoteTaskQueueIndexService
+
+# Каталог для логов
+LogDirectory = logs
+
+# Конфигурирование Кассандры
+ClusterName = CatalogueCluster
+KeyspaceName = RosAlkoKeyspace
+Endpoints = 127.0.0.1:9160
+EndpointForFierceCommands = 127.0.0.1:9160
+ReadConsistencyLevel = QUORUM
+WriteConsistencyLevel = QUORUM
+Timeout = 2000
+FierceTimeout = 6000
+Attempts = 20
+MaximalColumnsCount = 1000
+MaximalRowsCount = 1000
+CheckConnectionsInterval = 00:00:10
+
+# Sql
+SqlConnectionString = server=127.0.0.1;uid=root;pwd=tc_123456;database=RosAlko;CacheServerProperties=true;tablecaching=true;
+SqlKeyBufferSize = 4294967296
+SqlMaxRowsPerTable = 1000000
+SqlUpdateSettingsInterval = 00:01:00.0
+
+IndexActualizeInterval = 00:01:00.0
