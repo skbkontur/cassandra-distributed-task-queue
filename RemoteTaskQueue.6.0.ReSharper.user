@@ -1,32 +1,66 @@
 <Configuration>
   <RecentFiles>
     <RecentFiles>
-      <File id="D8D12AC6-EC15-4EA9-92BE-80EE41A1E152/d:Cassandra/d:Primitives/f:ColumnFamilyRepositoryBase.cs" caret="930" fromTop="23" />
-      <File id="D8D12AC6-EC15-4EA9-92BE-80EE41A1E152/d:Settings/f:ICassandraSettings.cs" caret="117" fromTop="4" />
-      <File id="B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1/d:Settings/f:CassandraSettings.cs" caret="167" fromTop="8" />
-      <File id="6FE10F81-A8FC-4798-9B33-60A99777C47D/d:Settings/f:CassandraSettings.cs" caret="1189" fromTop="19" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:CassandraSettings.cs" caret="1183" fromTop="31" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:LocalStorageColumnsRegistry.cs" caret="477" fromTop="10" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:BusinessObjectWrapper.cs" caret="186" fromTop="6" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:LocalStorageTableRegistry.cs" caret="384" fromTop="11" />
-      <File id="D8D12AC6-EC15-4EA9-92BE-80EE41A1E152/d:UserClasses/f:ITaskDataRegistry.cs" caret="111" fromTop="5" />
-      <File id="B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1/d:UserClasses/f:TaskDataRegistry.cs" caret="210" fromTop="10" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:TaskDataRegistry.cs" caret="329" fromTop="12" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakeFailTaskData.cs" caret="46" fromTop="2" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakeFailTaskHandler.cs" caret="0" fromTop="0" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakePeriodicTaskData.cs" caret="46" fromTop="2" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakePeriodicTaskHandler.cs" caret="308" fromTop="9" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:TaskHandlerRegistry.cs" caret="0" fromTop="0" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Settings/f:indexServiceTopology" caret="14" fromTop="0" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Areas/d:AdminToolsArea/d:Controllers/f:RemoteTaskQueueController.cs" caret="166" fromTop="3" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/d:Controllers/f:RemoteTaskQueueControllerBase.cs" caret="656" fromTop="15" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:ColumnFamilyRegistration/f:SerializeToBlobStorageRegistry.cs" caret="394" fromTop="7" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:ColumnFamilyRegistration/f:SerializeToRowsStorageRegistry.cs" caret="135" fromTop="3" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:ColumnFamilyRegistration/f:SimpleColumnFamilyRegistry.cs" caret="1137" fromTop="24" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:Xml/f:XmlPlugin.cs" caret="27" fromTop="2" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Configuration/f:PluginRegistry.cs" caret="327" fromTop="9" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/d:Settings/f:functionalTestsSettings" caret="449" fromTop="16" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/d:Settings/f:indexServiceTopology" caret="0" fromTop="0" />
+      <File id="F4322A10-9E9F-49A1-B9AD-66A3CF5CA669/d:Settings/f:indexServiceSettings" caret="0" fromTop="0" />
+      <File id="F4322A10-9E9F-49A1-B9AD-66A3CF5CA669/f:EntryPoint.cs" caret="847" fromTop="23" />
+      <File id="F4322A10-9E9F-49A1-B9AD-66A3CF5CA669/d:Configuration/f:PluginRegistry.cs" caret="329" fromTop="9" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:ColumnFamilyRegistration/f:StoragePlugin.cs" caret="116" fromTop="4" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:TestBaseExtensions.cs" caret="1097" fromTop="29" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:ExchangeServiceClient.cs" caret="278" fromTop="9" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:IExchangeServiceClient.cs" caret="162" fromTop="7" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/f:FunctionalTestBase.cs" caret="0" fromTop="0" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:Xml/f:XmlNamespaceFactory.cs" caret="118" fromTop="4" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/f:ObjectComparer.cs" caret="340" fromTop="17" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Areas/d:LoginArea/d:Controllers/f:EnterController.cs" caret="4326" fromTop="44" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Views/d:Shared/d:Primitives/f:RemoteTaskQueueHtmlPrimitives.cs" caret="0" fromTop="0" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Controllers/f:DefaultController.cs" caret="694" fromTop="24" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Settings/f:frontSettings" caret="526" fromTop="22" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Blocks/d:StartPage/f:StartPage.cshtml" caret="4635" fromTop="14" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Views/d:Default/f:DebugView.cshtml" caret="664" fromTop="17" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Areas/d:LoginArea/d:Views/d:Enter/f:EnterView.cshtml" caret="195" fromTop="4" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/f:zzzRestoreStorage.cs" caret="1076" fromTop="21" />
     </RecentFiles>
     <RecentEdits>
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:CassandraSettings.cs" caret="1183" fromTop="31" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:LocalStorageColumnsRegistry.cs" caret="242" fromTop="5" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:BusinessObjectWrapper.cs" caret="186" fromTop="6" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:LocalStorageTableRegistry.cs" caret="81" fromTop="2" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:TaskDataRegistry.cs" caret="150" fromTop="6" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakeFailTaskData.cs" caret="46" fromTop="2" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakePeriodicTaskData.cs" caret="46" fromTop="2" />
-      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakePeriodicTaskHandler.cs" caret="160" fromTop="6" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:Xml/f:XmlPlugin.cs" caret="296" fromTop="11" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:Xml/f:XmlNamespaceFactory.cs" caret="148" fromTop="4" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/d:Xml/f:XmlPlugin.cs" caret="27" fromTop="2" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Configuration/f:PluginRegistry.cs" caret="327" fromTop="9" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:TestBaseExtensions.cs" caret="1385" fromTop="35" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:TestBaseExtensions.cs" caret="30" fromTop="2" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:TestBaseExtensions.cs" caret="740" fromTop="19" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:TestBaseExtensions.cs" caret="1141" fromTop="29" />
+      <File id="F4322A10-9E9F-49A1-B9AD-66A3CF5CA669/d:Configuration/f:PluginRegistry.cs" caret="150" fromTop="2" />
+      <File id="F4322A10-9E9F-49A1-B9AD-66A3CF5CA669/d:Configuration/f:PluginRegistry.cs" caret="332" fromTop="9" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/f:zzzRestoreStorage.cs" caret="909" fromTop="8" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/d:Settings/f:functionalTestsSettings" caret="449" fromTop="16" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:ExchangeServiceClient.cs" caret="0" fromTop="0" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:ExchangeServiceClient.cs" caret="1160" fromTop="28" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:ExchangeServiceClient.cs" caret="322" fromTop="9" />
+      <File id="27AFC62A-6F6B-443E-A83B-20D6714D8FAF/f:IExchangeServiceClient.cs" caret="15" fromTop="0" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/f:ObjectComparer.cs" caret="2685" fromTop="24" />
+      <File id="0CAD309C-379A-403E-BCB1-76D73832A9A0/f:ObjectComparer.cs" caret="947" fromTop="26" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Areas/d:LoginArea/d:Controllers/f:EnterController.cs" caret="4326" fromTop="44" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Views/d:Shared/d:Primitives/f:RemoteTaskQueueHtmlPrimitives.cs" caret="0" fromTop="0" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Controllers/f:DefaultController.cs" caret="566" fromTop="18" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Controllers/f:DefaultController.cs" caret="759" fromTop="24" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Settings/f:frontSettings" caret="55" fromTop="1" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Areas/d:LoginArea/d:Views/d:Enter/f:EnterView.cshtml" caret="338" fromTop="12" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Areas/d:LoginArea/d:Views/d:Enter/f:EnterView.cshtml" caret="2745" fromTop="58" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Blocks/d:StartPage/f:StartPage.cshtml" caret="3027" fromTop="15" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Blocks/d:StartPage/f:StartPage.cshtml" caret="4894" fromTop="37" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Areas/d:LoginArea/d:Views/d:Enter/f:EnterView.cshtml" caret="195" fromTop="4" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Views/d:Default/f:DebugView.cshtml" caret="128" fromTop="3" />
+      <File id="ADF76065-9BEB-493B-9837-7697F861803D/d:Views/d:Default/f:DebugView.cshtml" caret="664" fromTop="17" />
     </RecentEdits>
   </RecentFiles>
   <NAntValidationSettings>
@@ -47,4 +81,22 @@
       <setting name="SolutionAnalysisEnabled">True</setting>
     </boolean>
   </SettingsComponent>
+  <UnitTestSessions>
+    <Session>
+      <Name>Session #1</Name>
+      <Elements>
+        <UnitTestElement Provider="nUnit" Id="FunctionalTests.ZzzRestoreStorage" type="NUnitTestFixtureElement" Project="0CAD309C-379A-403E-BCB1-76D73832A9A0" />
+        <UnitTestElement Provider="nUnit" Id="FunctionalTests.ZzzRestoreStorage.CreateUser" ParentId="FunctionalTests.ZzzRestoreStorage" type="NUnitTestElement" TypeName="FunctionalTests.ZzzRestoreStorage" MethodName="CreateUser" Project="0CAD309C-379A-403E-BCB1-76D73832A9A0" />
+        <UnitTestElement Provider="nUnit" Id="FunctionalTests.ZzzRestoreStorage.JustCleanAll" ParentId="FunctionalTests.ZzzRestoreStorage" type="NUnitTestElement" TypeName="FunctionalTests.ZzzRestoreStorage" MethodName="JustCleanAll" Project="0CAD309C-379A-403E-BCB1-76D73832A9A0" />
+      </Elements>
+    </Session>
+  </UnitTestSessions>
+  <CompletionStatisticsManager>
+    <ItemStatistics item="CSharpCodeCompletionContext">
+      <Item value="return" priority="31" />
+      <Item value="null" priority="31" />
+      <Item value="AuthanticatedControllerBase`0" priority="26" />
+      <Item value="XmlNamespaceFactory" priority="29" />
+    </ItemStatistics>
+  </CompletionStatisticsManager>
 </Configuration>
