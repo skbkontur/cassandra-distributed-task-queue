@@ -1,4 +1,4 @@
-namespace ExchangeService.Http
+namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
 {
     public interface IExchangeServiceClient
     {

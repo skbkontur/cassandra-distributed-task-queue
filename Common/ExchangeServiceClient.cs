@@ -1,7 +1,7 @@
 ﻿using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.ClientLib.Topology;
 
-namespace ExchangeService.Http
+namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
 {
     public class ExchangeServiceClient : IExchangeServiceClient
     {

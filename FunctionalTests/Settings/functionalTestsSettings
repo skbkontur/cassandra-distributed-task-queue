@@ -1,1 +1,17 @@
-﻿
+﻿# Конфигурирование Кассандры
+ClusterName = CatalogueCluster
+KeyspaceName = RosAlkoKeyspace
+Endpoints = 127.0.0.1:9160
+EndpointForFierceCommands = 127.0.0.1:9160
+ReadConsistencyLevel = QUORUM
+WriteConsistencyLevel = QUORUM
+Timeout = 6000
+FierceTimeout = 6000
+Attempts = 20
+MaximalColumnsCount = 1000
+MaximalRowsCount = 1000
+CheckConnectionsInterval = 00:00:00.1
+
+#Инициализация для Кассандры
+RowCacheSize = 10000
+ReplicationFactor = 1

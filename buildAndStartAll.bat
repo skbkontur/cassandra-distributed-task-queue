@@ -1,4 +1,4 @@
-C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe RemoteTaskQueue.sln /target:Clean;Rebuild /verbosity:m /p:zip=false	
+rem C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe RemoteTaskQueue.sln /target:Clean;Rebuild /verbosity:m /p:zip=false	
 
 cd ..\Assemblies\Cassandra\Server\bin\
 start cassandra.bat
@@ -16,3 +16,6 @@ ping 123.45.67.89 -n 1 -w 1000 > nul
 if exist ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe (start cmd /c ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe)
 
 start cmd /c MonitoringService\bin\Debug\Catalogue.RemoteTaskQueue.MonitoringService.exe
+start cmd /c IndexService\bin\Debug\Catalogue.RemoteTaskQueue.IndexService.exe
+
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe DeployFronts.xml

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Xml;
 
 using GroboSerializer;
-using GroboSerializer.XmlNamespaces;
 
 using NUnit.Framework;
+
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.Xml;
 
 namespace FunctionalTests
 {
@@ -23,13 +23,13 @@ namespace FunctionalTests
             Assert.AreNotEqual(ReformatXml(expectedStr), badXml, "bug(expected)");
             string actualStr = actual.ObjectToString();
             Assert.AreNotEqual(ReformatXml(actualStr), badXml, "bug(actual)");
-            if (expectedStr != actualStr)
+            if(expectedStr != actualStr)
             {
-                var xmlSerializer = new XmlSerializer(new EmptyXmlNamespaceFactory());
+                var xmlSerializer = new XmlSerializer(new XmlNamespaceFactory());
                 Console.WriteLine("Expected: \n\r" + xmlSerializer.SerializeToUtfString(expected, true));
                 Console.WriteLine("Actual: \n\r" + xmlSerializer.SerializeToUtfString(actual, true));
             }
-            if (string.IsNullOrEmpty(message))
+            if(string.IsNullOrEmpty(message))
                 Assert.AreEqual(expectedStr, actualStr);
             else
                 Assert.AreEqual(expectedStr, actualStr, message, args);
@@ -41,10 +41,10 @@ namespace FunctionalTests
             document.LoadXml(xml);
             var result = new StringBuilder();
             XmlWriter writer = XmlWriter.Create(result, new XmlWriterSettings
-            {
-                Indent = true,
-                OmitXmlDeclaration = !HasXmlDeclaration(document)
-            });
+                {
+                    Indent = true,
+                    OmitXmlDeclaration = !HasXmlDeclaration(document)
+                });
             document.WriteTo(writer);
             writer.Flush();
             return result.ToString();
@@ -53,12 +53,17 @@ namespace FunctionalTests
         public static string ObjectToString<T>(this T instance)
         {
             Type type = typeof(T);
-            if (type.IsInterface)
+            if(type.IsInterface)
                 type = instance.GetType(); //throw new InvalidOperationException(string.Format("Cannot serialize interface type={0}", type.Name));
             var builder = new StringBuilder();
-            using (XmlWriter writer = XmlWriter.Create(builder, new XmlWriterSettings { Indent = true, OmitXmlDeclaration = true }))
+            using(XmlWriter writer = XmlWriter.Create(builder, new XmlWriterSettings {Indent = true, OmitXmlDeclaration = true}))
                 new ObjectWriter(writer).Write(type, instance, "root");
             return builder.ToString();
+        }
+
+        private static bool HasXmlDeclaration(XmlDocument document)
+        {
+            return document.ChildNodes.OfType<XmlDeclaration>().Any();
         }
 
         private class ObjectWriter
@@ -77,23 +82,23 @@ namespace FunctionalTests
 
             private void DoWrite(Type type, object value)
             {
-                if (TryWriteNullValue(value)) return;
-                if (TryWriteNullableTypeValue(type, value)) return;
-                if (TryWriteSimpleTypeValue(type, value)) return;
-                if (TryWriteArrayTypeValue(type, value)) return;
+                if(TryWriteNullValue(value)) return;
+                if(TryWriteNullableTypeValue(type, value)) return;
+                if(TryWriteSimpleTypeValue(type, value)) return;
+                if(TryWriteArrayTypeValue(type, value)) return;
                 WriteComplexTypeValue(type, value);
             }
 
             private void WriteComplexTypeValue(Type type, object value)
             {
-                foreach (var fieldInfo in GetFields(type))
+                foreach(var fieldInfo in GetFields(type))
                     Write(fieldInfo.FieldType, fieldInfo.GetValue(value), FieldNameToTagName(fieldInfo.Name));
             }
 
             private static IEnumerable<FieldInfo> GetFields(Type type)
             {
                 var result = new List<FieldInfo>();
-                while (type != null)
+                while(type != null)
                 {
                     FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.SetField | BindingFlags.Instance);
                     result.AddRange(fields.Where(fieldInfo => !fieldInfo.IsLiteral && !fieldInfo.FieldType.IsInterface));
@@ -104,21 +109,21 @@ namespace FunctionalTests
 
             private static string FieldNameToTagName(string name)
             {
-                if (name.EndsWith(">k__BackingField"))
+                if(name.EndsWith(">k__BackingField"))
                     return name.Substring(1, name.IndexOf('>') - 1);
                 return name;
             }
 
             private bool TryWriteArrayTypeValue(Type type, object value)
             {
-                if (!type.IsArray)
+                if(!type.IsArray)
                     return false;
                 writer.WriteAttributeString("type", "array");
                 var array = (Array)value;
-                if (array.Rank > 1)
+                if(array.Rank > 1)
                     throw new NotSupportedException("array with rank > 1");
                 Type elementType = type.GetElementType();
-                for (int i = 0; i < array.Length; ++i)
+                for(int i = 0; i < array.Length; ++i)
                     Write(elementType, array.GetValue(i), "item");
                 return true;
             }
@@ -126,7 +131,7 @@ namespace FunctionalTests
             private bool TryWriteSimpleTypeValue(Type type, object value)
             {
                 string result = FindSimpleValue(type, value);
-                if (result == null)
+                if(result == null)
                     return false;
                 writer.WriteValue(result);
                 return true;
@@ -134,20 +139,20 @@ namespace FunctionalTests
 
             private static string FindSimpleValue(Type type, object value)
             {
-                if (type.IsEnum || type.IsPrimitive || value is string || value is Guid || value is IPEndPoint || value is decimal)
+                if(type.IsEnum || type.IsPrimitive || value is string || value is Guid || value is IPEndPoint || value is decimal)
                     return value.ToString();
-                if (value is DateTime)
+                if(value is DateTime)
                     return ((DateTime)value).Ticks.ToString();
                 return null;
             }
 
             private bool TryWriteNullableTypeValue(Type type, object value)
             {
-                if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(Nullable<>))
+                if(!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(Nullable<>))
                     return false;
                 MethodInfo getMethodHasValue = type.GetProperty("HasValue").GetGetMethod();
                 var hasValue = (bool)getMethodHasValue.Invoke(value, new object[0]);
-                if (!hasValue)
+                if(!hasValue)
                     WriteNull();
                 else
                 {
@@ -160,7 +165,7 @@ namespace FunctionalTests
 
             private bool TryWriteNullValue(object value)
             {
-                if (value != null)
+                if(value != null)
                     return false;
                 WriteNull();
                 return true;
@@ -172,21 +177,6 @@ namespace FunctionalTests
             }
 
             private readonly XmlWriter writer;
-        }
-
-
-
-        private static bool HasXmlDeclaration(XmlDocument document)
-        {
-            return document.ChildNodes.OfType<XmlDeclaration>().Any();
-        }
-
-        private class EmptyXmlNamespaceFactory : IXmlNamespaceFactory
-        {
-            public XmlNamespace GetNamespace(string namespacePrefix)
-            {
-                return XmlNamespace.Default;
-            }
         }
     }
 }

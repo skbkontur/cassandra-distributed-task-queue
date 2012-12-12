@@ -1,0 +1,44 @@
+﻿# Начальная страница сайта
+defaultPage = Default/Debug
+
+# Название сервиса
+ServiceName = front
+
+# Каталог для логов
+LogDirectory = ..\FrontLogs
+
+# Конфигурирование Кассандры
+ClusterName = CatalogueCluster
+KeyspaceName = RosAlkoKeyspace
+Endpoints = 127.0.0.1:9160
+EndpointForFierceCommands = 127.0.0.1:9160
+ReadConsistencyLevel = QUORUM
+WriteConsistencyLevel = QUORUM
+Timeout = 6000
+FierceTimeout = 6000
+Attempts = 20
+MaximalColumnsCount = 1000
+MaximalRowsCount = 1000
+CheckConnectionsInterval = 00:01:00
+
+#Настройки портала
+KonturPortalKey = D3VxmqWAqAEdkBXxJ0smXm9H8VP+DkcO|nj5jzenFiQg=
+KonturPortalDomain = kepref.kontur
+
+#Топология портала
+AuthUrls = http://192.168.88.178:38452
+AuthLogin = 
+AuthPassword = 
+PropertiesUrls = http://192.168.88.82:5765
+PropertiesLogin = 
+PropertiesPassword = 
+PropertiesSearchUrls = http://192.168.88.82:43234
+PropertiesSearchLogin = 
+PropertiesSearchPassword = 
+
+#Настройки для интеграции с Диадоком
+DiadocApiClientId = ecrCat-ad1a1c9f5ce84af197f0f8c7f4f215d5
+DiadocUrl = http://dd1:27183
+
+#Для формирование правильного префикса для ссылок в письме
+UrlPrefix = http://

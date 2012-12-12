@@ -1,0 +1,50 @@
+<Configuration>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="D8D12AC6-EC15-4EA9-92BE-80EE41A1E152/d:Cassandra/d:Primitives/f:ColumnFamilyRepositoryBase.cs" caret="930" fromTop="23" />
+      <File id="D8D12AC6-EC15-4EA9-92BE-80EE41A1E152/d:Settings/f:ICassandraSettings.cs" caret="117" fromTop="4" />
+      <File id="B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1/d:Settings/f:CassandraSettings.cs" caret="167" fromTop="8" />
+      <File id="6FE10F81-A8FC-4798-9B33-60A99777C47D/d:Settings/f:CassandraSettings.cs" caret="1189" fromTop="19" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:CassandraSettings.cs" caret="1183" fromTop="31" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:LocalStorageColumnsRegistry.cs" caret="477" fromTop="10" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:BusinessObjectWrapper.cs" caret="186" fromTop="6" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:LocalStorageTableRegistry.cs" caret="384" fromTop="11" />
+      <File id="D8D12AC6-EC15-4EA9-92BE-80EE41A1E152/d:UserClasses/f:ITaskDataRegistry.cs" caret="111" fromTop="5" />
+      <File id="B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1/d:UserClasses/f:TaskDataRegistry.cs" caret="210" fromTop="10" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:TaskDataRegistry.cs" caret="329" fromTop="12" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakeFailTaskData.cs" caret="46" fromTop="2" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakeFailTaskHandler.cs" caret="0" fromTop="0" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakePeriodicTaskData.cs" caret="46" fromTop="2" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakePeriodicTaskHandler.cs" caret="308" fromTop="9" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:TaskHandlerRegistry.cs" caret="0" fromTop="0" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:CassandraSettings.cs" caret="1183" fromTop="31" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:LocalStorageColumnsRegistry.cs" caret="242" fromTop="5" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:BusinessObjectWrapper.cs" caret="186" fromTop="6" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:LocalStorageTableRegistry.cs" caret="81" fromTop="2" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:TaskDataRegistry.cs" caret="150" fromTop="6" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakeFailTaskData.cs" caret="46" fromTop="2" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakePeriodicTaskData.cs" caret="46" fromTop="2" />
+      <File id="8BA574CA-6C25-414F-9E99-1E7F032BB962/f:FakePeriodicTaskHandler.cs" caret="160" fromTop="6" />
+    </RecentEdits>
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir IsNull="False">
+    </NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="SolutionAnalysisEnabled">True</setting>
+    </boolean>
+  </SettingsComponent>
+</Configuration>

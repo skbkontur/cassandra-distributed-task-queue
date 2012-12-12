@@ -34,8 +34,17 @@
     <Reference Include="Cassandra.CassandraClient">
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.AccessControl">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.AccessControl.LocalImplementation">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.TestCore">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
@@ -82,8 +91,16 @@
     <Compile Include="RepositoriesTests\HandleTaskMetaStorageTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventsEnumeratorTests\SimpleEventsEnumerableTest.cs" />
+    <None Include="Settings\indexServiceTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="zzzRestoreStorage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ExchangeService\ExchangeService.csproj">
       <Project>{B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1}</Project>
       <Name>ExchangeService</Name>

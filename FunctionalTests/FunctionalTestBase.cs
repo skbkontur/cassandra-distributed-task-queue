@@ -1,5 +1,7 @@
 ﻿using ExchangeService.Http;
 
+using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+
 namespace FunctionalTests
 {
     public class FunctionalTestBase : FunctionalTestBaseWithoutServices

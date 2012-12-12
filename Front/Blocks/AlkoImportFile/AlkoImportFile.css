@@ -1,0 +1,144 @@
+﻿/**
+ * @package Alko.Kontur
+ * @subpackage Common
+ */
+
+/** @section AlkoImportFile */
+
+.alkoImportFile {
+    position: relative;
+    padding: 15px 20px 10px;
+    overflow: hidden;
+}
+
+.alkoImportFile__content__form {
+    position: relative;
+    top: 0;
+    
+}
+
+.alkoImportFile__content__form.uploadFile_state_camouflage {
+    position: absolute;
+    left: 0;
+    top: -10000em;
+}
+
+.alkoImportFile__content__text,
+.alkoImportFile__content__complete {
+    padding-left: 5px;
+    line-height: 1.5625em;
+    font-size: 1.34em;
+}
+
+.alkoImportFile__content__text {
+    margin-bottom: 16px;
+}
+.alkoImportFile__content__complete {
+    margin-bottom: 11px;
+}
+
+.alkoImportFile__content__panel,
+.alkoImportFile__content__uploading,
+.alkoImportFile__content__error {
+    padding-bottom: 13px;
+}
+
+/** @section Text & Uploading */
+
+.alkoImportFile__content__panel__text,
+.alkoImportFile__content__uploading {
+    font-size: 1.25em;
+    color: #36454c;
+}
+
+.alkoImportFile__content__panel__text {
+    float: left;
+    margin-left: 17px;
+    padding-top: 8px;
+}
+
+.alkoImportFile__content__uploading {
+    padding-left: 35px;
+    height: 24px;
+    line-height: 22px;
+    background: url("Uploading.gif") 5px 0 no-repeat;
+}
+
+/** @section Error */
+
+.alkoImportFile__content__error {
+    padding-left: 35px;
+    height: 26px;
+    line-height: 22px;
+    font-size: 1.25em;
+    color: #850000;
+    background: url("Error.png") no-repeat;
+}
+
+/** @section Param */
+
+.alkoImportFile__param {
+    padding: 5px 5px 6px;
+}
+
+.alkoImportFile__param__label,
+.alkoImportFile__param__value {
+    display: block;
+    font-size: 1.167em;
+    color: #36454c;
+}
+
+.alkoImportFile__param__label {
+    float: left;
+    width: 150px;
+}
+.alkoImportFile__param__value {
+    margin-left: 150px;
+}
+
+/** @section List */
+
+.alkoImportFileList__titles {
+    padding-bottom: 5px;
+    font-size: 0.917em;
+    color: #929292;
+}
+
+.alkoImportFileList__lastModification,
+.alkoImportFileList__addedDatas {
+    float: right;
+}
+
+.alkoImportFileList__lastModification {
+    padding-left: 10px;
+    width: 120px;
+    text-align: right;
+}
+.alkoImportFileList__addedDatas {
+    width: 30%;
+}
+
+.alkoImportFileList__item {
+    padding: 10px 0;
+    line-height: 1.385em;
+    font-size: 1.084em;
+}
+
+/** @section List */
+
+.alkoImportFile__content__list {
+    padding: 10px 0;
+}
+
+.alkoImportFile__content__list__item {
+    padding-bottom: 5px;
+}
+
+.alkoImportFile__content__list__item .alkoImportFile__content__list__item {
+    padding-left: 10px;
+}
+
+.alkoImportFile__content__list__item__link {
+    color: #0d0e0f;
+    border-bottom: 1px dashed #0d0e0f;
+}
