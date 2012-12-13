@@ -1,4 +1,4 @@
-﻿ListeningPort = 1468
+﻿ListeningPort = 4408
 
 #Имя сервиса
 ServiceName = RemoteTaskQueueIndexService

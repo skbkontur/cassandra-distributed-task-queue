@@ -2,7 +2,7 @@
 ServiceName = MonitoringService
 LogDirectory = logs
 
-ListeningPort = 1467
+ListeningPort = 4409
 
 # Sql
 SqlConnectionString = server=127.0.0.1;uid=root;pwd=tc_123456;database=RemoteTaskQueueMonitoringService;
