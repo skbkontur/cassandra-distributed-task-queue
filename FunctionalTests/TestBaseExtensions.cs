@@ -3,8 +3,9 @@
 using SKBKontur.Catalogue.CassandraStorageCore;
 using SKBKontur.Catalogue.CassandraStorageCore.Initializing;
 using SKBKontur.Catalogue.IndexServiceClient;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
+namespace FunctionalTests
 {
     public static class TestBaseExtensions
     {

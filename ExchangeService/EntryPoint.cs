@@ -1,6 +1,4 @@
-﻿using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
-using SKBKontur.Catalogue.ServiceLib;
+﻿using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
 
 namespace ExchangeService
@@ -16,7 +14,7 @@ namespace ExchangeService
 
         private void Run()
         {
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<CassandraSettings>());
+            //Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<CassandraSettings>());
             Container.Get<HttpService>().Run();
         }
     }

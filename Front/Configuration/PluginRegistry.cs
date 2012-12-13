@@ -1,7 +1,7 @@
 ﻿using System;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.Common.ColumnFamilyRegistration;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.Xml;
+using SKBKontur.Catalogue.RemoteTaskQueue.Storage.ColumnFamilyRegistration;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration
 {

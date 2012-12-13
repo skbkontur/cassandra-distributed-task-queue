@@ -159,6 +159,10 @@
       <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Storage\Storage.csproj">
+      <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
+      <Name>Storage</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

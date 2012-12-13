@@ -49,6 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColumnFamilyRegistration\SerializeToBlobStorageRegistry.cs" />
+    <Compile Include="ColumnFamilyRegistration\SerializeToRowsStorageRegistry.cs" />
+    <Compile Include="ColumnFamilyRegistration\SimpleColumnFamilyRegistry.cs" />
+    <Compile Include="ColumnFamilyRegistration\StoragePlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

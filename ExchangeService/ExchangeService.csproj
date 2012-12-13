@@ -66,7 +66,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\PluginRegistry.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Exceptions\TestRetryableException.cs" />
     <Compile Include="Exceptions\TooLateException.cs" />

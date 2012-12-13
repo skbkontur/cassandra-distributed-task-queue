@@ -40,10 +40,6 @@
     <Reference Include="Catalogue.AccessControl.LocalImplementation">
       <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.ClientLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
@@ -72,16 +68,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColumnFamilyRegistration\SerializeToBlobStorageRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\SerializeToRowsStorageRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\SimpleColumnFamilyRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\StoragePlugin.cs" />
     <Compile Include="ExchangeServiceClient.cs" />
     <Compile Include="IExchangeServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteTaskQueue\CassandraSettings.cs" />
     <Compile Include="RemoteTaskQueue\RemoteTaskQueuePlugin.cs" />
-    <Compile Include="TestBaseExtensions.cs" />
     <Compile Include="RemoteTaskQueue\TaskDataRegistry.cs" />
     <Compile Include="Xml\XmlNamespaceFactory.cs" />
     <Compile Include="Xml\XmlPlugin.cs" />
