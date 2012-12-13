@@ -27,16 +27,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             return monitoringServiceClient.Search(converter.ToExpressionTree(criterion), converter.ToExpressionTree(sortRules), count, rangeFrom);
         }
 
-        public RemoteTaskInfo GetTaskInfo(string taskId)
-        {
-            return monitoringServiceClient.GetTaskInfo(taskId);
-        }
-
-        public bool CancelTask(string taskId)
-        {
-            return monitoringServiceClient.CancelTask(taskId);
-        }
-
         public object[] GetDistinctValues(Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion, Expression<Func<TaskMetaInformationBusinessObjectWrap, object>> columnPath)
         {
             return monitoringServiceClient.GetDistinctValues(converter.ToExpressionTree(criterion), converter.ToExpressionTree(columnPath));

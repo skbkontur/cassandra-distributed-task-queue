@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 
+using ExchangeService.UserClasses;
+
 using FunctionalTests.Logging;
 
 using GroboContainer.Core;
@@ -12,7 +14,7 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Settings;
 
@@ -27,8 +29,8 @@ namespace FunctionalTests
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
             var applicationSettings = ApplicationSettings.LoadDefault("functionalTestsSettings");
             Container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(applicationSettings);
+            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<CassandraSettings>());
             Log4NetConfiguration.InitializeOnce();
-
             var columnFamilyRegistry = Container.Get<IColumnFamilyRegistry>();
             var columnFamilies = columnFamilyRegistry.GetAllColumnFamilyNames().Concat(new[]
                 {

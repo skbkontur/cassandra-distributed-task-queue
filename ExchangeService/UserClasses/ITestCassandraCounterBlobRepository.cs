@@ -1,6 +1,6 @@
 using RemoteQueue.Cassandra.Primitives;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers
+namespace ExchangeService.UserClasses
 {
     public interface ITestCassandraCounterBlobRepository : IBlobStorage<int>
     {

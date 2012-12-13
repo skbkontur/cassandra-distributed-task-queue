@@ -10,9 +10,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
     public class MonitoringServiceClient : IMonitoringServiceClient
     {
-        public MonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory)
+        public MonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IRemoteTaskQueue remoteTaskQueue)
         {
             this.methodDomainFactory = methodDomainFactory;
+            this.remoteTaskQueue = remoteTaskQueue;
             domainTopology = domainTopologyFactory.Create("remoteTaskQueueMonitoringServiceTopology");
         }
 
@@ -52,19 +53,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             return domain.QueryFromRandomReplica<object[], MonitoringGetDistinctValuesQuery>(monitoringGetDistinctValuesQuery);
         }
 
-        public bool CancelTask(string taskId)
-        {
-            var domain = methodDomainFactory.Create("CancelTask", domainTopology, timeout, clientName);
-            return domain.QueryFromRandomReplica<bool, string>(taskId);
-        }
-
-        public RemoteTaskInfo GetTaskInfo(string taskId)
-        {
-            var domain = methodDomainFactory.Create("GetTaskInfo", domainTopology, timeout, clientName);
-            return domain.QueryFromRandomReplica<RemoteTaskInfo, string>(taskId);
-        }
-
         private readonly IMethodDomainFactory methodDomainFactory;
+        private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly IDomainTopology domainTopology;
         private const int timeout = 30 * 1000;
         private const string clientName = "RemoteTaskQueueMonitoringServiceClient";

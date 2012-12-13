@@ -5,6 +5,7 @@ namespace RemoteQueue.Handling
     public interface IRemoteTaskQueue
     {
         bool CancelTask(string taskId);
+        bool RerunTask(string id, TimeSpan delay);
 
         RemoteTaskInfo GetTaskInfo(string taskId);
         RemoteTaskInfo<T> GetTaskInfo<T>(string taskId) where T : ITaskData;

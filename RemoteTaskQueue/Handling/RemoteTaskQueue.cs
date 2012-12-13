@@ -67,6 +67,11 @@ namespace RemoteQueue.Handling
             }
         }
 
+        public bool RerunTask(string id, TimeSpan delay)
+        {
+            return false;
+        }
+
         public RemoteTaskInfo GetTaskInfo(string taskId)
         {
             Task task = handleTaskCollection.GetTask(taskId);

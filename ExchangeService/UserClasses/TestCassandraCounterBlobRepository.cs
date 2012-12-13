@@ -3,7 +3,7 @@
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers
+namespace ExchangeService.UserClasses
 {
     public class TestCassandraCounterBlobRepository : BlobStorage<int>, ITestCassandraCounterBlobRepository
     {

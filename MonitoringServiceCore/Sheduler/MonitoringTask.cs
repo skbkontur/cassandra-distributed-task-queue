@@ -39,17 +39,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
             var updatedTasksMetas = updatedTasksIds.Select(x => handleTasksMetaStorage.GetMeta(x));
             lastTicks = updatedTasksMetas.Max(x => x.MinimalStartTicks) + 1;
             var hs = new Dictionary<string, TaskMetaInformationBusinessObjectWrap>();
-            foreach(var id in updatedTasksIds)
+            foreach(var taskId in updatedTasksIds)
             {
-                if(hs.ContainsKey(id))
-                    hs[id].Info = handleTasksMetaStorage.GetMeta(id);
+                if(hs.ContainsKey(taskId))
+                    hs[taskId].Info = handleTasksMetaStorage.GetMeta(taskId);
                 else
                 {
-                    hs.Add(id, new TaskMetaInformationBusinessObjectWrap
+                    hs.Add(taskId, new TaskMetaInformationBusinessObjectWrap
                         {
-                            Id = id,
-                            ScopeId = id,
-                            Info = handleTasksMetaStorage.GetMeta(id)
+                            Id = taskId,
+                            ScopeId = taskId,
+                            Info = handleTasksMetaStorage.GetMeta(taskId)
                         });
                 }
             }

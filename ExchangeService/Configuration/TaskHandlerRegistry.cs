@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using ExchangeService.UserClasses;
+
 using RemoteQueue.Exceptions;
 using RemoteQueue.Handling;
 using RemoteQueue.UserClasses;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers;
-
-namespace ExchangeService.UserClasses
+namespace ExchangeService.Configuration
 {
     public class TaskHandlerRegistry : ITaskHandlerRegistry
     {

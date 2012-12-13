@@ -1,4 +1,4 @@
-﻿namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers
+﻿namespace ExchangeService.UserClasses
 {
     public interface ITestCounterRepository
     {

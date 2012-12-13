@@ -40,7 +40,8 @@
     <Reference Include="Catalogue.AccessControl.LocalImplementation">
       <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore">
+    <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ClientLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -78,9 +79,22 @@
     <Compile Include="ExchangeServiceClient.cs" />
     <Compile Include="IExchangeServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteTaskQueue\CassandraSettings.cs" />
+    <Compile Include="RemoteTaskQueue\RemoteTaskQueuePlugin.cs" />
     <Compile Include="TestBaseExtensions.cs" />
+    <Compile Include="RemoteTaskQueue\TaskDataRegistry.cs" />
     <Compile Include="Xml\XmlNamespaceFactory.cs" />
     <Compile Include="Xml\XmlPlugin.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
+      <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
+      <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
+      <Name>TaskDatas</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

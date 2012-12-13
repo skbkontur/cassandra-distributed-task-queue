@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Web.Mvc;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.AccessControl.AccessRules;
 using SKBKontur.Catalogue.CassandraStorageCore.BusinessObjectStorageImpl;
@@ -32,6 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             businessObjectsStorage = remoteTaskQueueControllerBaseParameters.BusinessObjectsStorage;
             extender = remoteTaskQueueControllerBaseParameters.CatalogueExtender;
             monitoringSearchRequestCriterionBuilder = remoteTaskQueueControllerBaseParameters.MonitoringSearchRequestCriterionBuilder;
+            remoteTaskQueue = remoteTaskQueueControllerBaseParameters.RemoteTaskQueue;
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
@@ -59,31 +61,33 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             var totalPagesCount = (monitoringServiceStorage.GetCount(criterion) + countPerPage - 1) / countPerPage;
             var fullTaskMetaInfos = monitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.Info.MinimalStartTicks.Descending());
 
-            var model = new RemoteTaskQueueModel(); //PageModelBaseParameters, RemoteTaskQueueModelBuilder.BuildModel(LanguageProvider, fullTaskMetaInfos, searchRequest, allowedSearchValues));
-            model.PageNumber = page;
-            model.TotalPagesCount = totalPagesCount;
-            model.PagesWindowSize = 3;
-            model.TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
+            var model = new RemoteTaskQueueModel
                 {
-                    Attempts = x.Attempts,
-                    Id = x.Id,
-                    Name = x.Name,
-                    State = x.State,
-                }).ToArray();
+                    PageNumber = page,
+                    TotalPagesCount = totalPagesCount,
+                    PagesWindowSize = 3,
+                    TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
+                        {
+                            Attempts = x.Attempts,
+                            Id = x.Id,
+                            Name = x.Name,
+                            State = x.State,
+                        }).ToArray()
+                }; //PageModelBaseParameters, RemoteTaskQueueModelBuilder.BuildModel(LanguageProvider, fullTaskMetaInfos, searchRequest, allowedSearchValues));
             return View("RemoteTaskQueueListView", model);
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult Show(string id)
         {
-            var remoteTaskInfo = monitoringServiceStorage.GetTaskInfo(id);
+            var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
             return View("RemoteTaskQueueDetailsView", taskViewModelBuilder.Build(remoteTaskInfo));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Cancel(string id)
         {
-            if(!monitoringServiceStorage.CancelTask(id))
+            if(!remoteTaskQueue.CancelTask(id))
                 return ReturnOperationResult(new UnsuccessOperationResult {ErrorMessage = "Задача не может быть отменена"});
             return ReturnOperationResult(new SuccessOperationResult
                 {
@@ -96,8 +100,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Rerun(string id)
         {
-            //if(!remoteTaskQueue.RerunTask(id, TimeSpan.FromTicks(0)))
-            //    return ReturnOperationResult(new UnsuccessOperationResult {ErrorMessage = "Задача не может перезапущена"});
+            if(!remoteTaskQueue.RerunTask(id, TimeSpan.FromTicks(0)))
+                return ReturnOperationResult(new UnsuccessOperationResult {ErrorMessage = "Задача не может перезапущена"});
             return ReturnOperationResult(new SuccessOperationResult
                 {
                     ActionDescription = "Задача успешно перезапущена",
@@ -109,7 +113,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult GetBytes(string id, string path)
         {
-            var taskData = monitoringServiceStorage.GetTaskInfo(id).TaskData;
+            var taskData = remoteTaskQueue.GetTaskInfo(id).TaskData;
             var value = objectValueExtracter.Extract(taskData.GetType(), taskData, path);
             if(value.GetType() != typeof(byte[]))
                 throw new Exception(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
@@ -130,5 +134,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IBusinessObjectsStorage businessObjectsStorage;
         private readonly ICatalogueExtender extender;
         private readonly IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder;
+        private readonly IRemoteTaskQueue remoteTaskQueue;
     }
 }

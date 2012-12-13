@@ -1,3 +1,5 @@
+using RemoteQueue.Handling;
+
 using SKBKontur.Catalogue.CassandraStorageCore.BusinessObjectStorageImpl;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
@@ -17,8 +19,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             IMonitoringServiceStorage monitoringServiceStorage,
             IBusinessObjectsStorage businessObjectsStorage,
             ICatalogueExtender catalogueExtender,
-            IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder)
+            IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder,
+            IRemoteTaskQueue remoteTaskQueue)
         {
+            RemoteTaskQueue = remoteTaskQueue;
             BusinessObjectsStorage = businessObjectsStorage;
             CatalogueExtender = catalogueExtender;
             MonitoringSearchRequestCriterionBuilder = monitoringSearchRequestCriterionBuilder;
@@ -29,6 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             MonitoringServiceStorage = monitoringServiceStorage;
         }
 
+        public IRemoteTaskQueue RemoteTaskQueue { get; private set; }
         public IBusinessObjectsStorage BusinessObjectsStorage { get; private set; }
         public ICatalogueExtender CatalogueExtender { get; set; }
         public IMonitoringSearchRequestCriterionBuilder MonitoringSearchRequestCriterionBuilder { get; private set; }

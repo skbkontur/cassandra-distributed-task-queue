@@ -94,6 +94,9 @@
     <None Include="Settings\indexServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Settings\remoteTaskQueueMonitoringServiceTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="zzzRestoreStorage.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,13 +108,17 @@
       <Project>{B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1}</Project>
       <Name>ExchangeService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
+      <Project>{B0AAD20D-160A-4D99-877B-B464C295E36F}</Project>
+      <Name>MonitoringServiceClient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TaskDatasAndHandlers\TaskDatasAndHandlers.csproj">
+    <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
       <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
-      <Name>TaskDatasAndHandlers</Name>
+      <Name>TaskDatas</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

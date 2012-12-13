@@ -1,6 +1,8 @@
 ﻿using ExchangeService.Http;
 
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 
 namespace FunctionalTests
 {
@@ -10,6 +12,7 @@ namespace FunctionalTests
         {
             base.SetUp();
             var exchangeServiceClient = Container.Get<IExchangeServiceClient>();
+            //Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<CassandraSettings>());
             exchangeServiceClient.Start();
         }
 

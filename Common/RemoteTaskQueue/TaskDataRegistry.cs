@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using RemoteQueue.Handling;
 using RemoteQueue.UserClasses;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskDatas;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringService
+namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 {
     public class TaskDataRegistry : ITaskDataRegistry
     {

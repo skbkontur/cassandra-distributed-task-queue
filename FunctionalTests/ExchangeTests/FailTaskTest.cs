@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 
 using ExchangeService.Exceptions;
+using ExchangeService.UserClasses;
 
 using GroBuf;
 
@@ -20,8 +21,7 @@ using RemoteQueue.Handling;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskDatas;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
 namespace FunctionalTests.ExchangeTests
 {
@@ -50,6 +50,7 @@ namespace FunctionalTests.ExchangeTests
         public void TestTooLateOneFailTask()
         {
             var taskId = AddTask(8);
+            Console.WriteLine(taskId);
             try
             {
                 Wait(new[] {taskId}, 12345);

@@ -10,6 +10,8 @@ using GroboContainer.Impl;
 
 using NUnit.Framework;
 
+using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Settings;
 
@@ -28,7 +30,7 @@ namespace FunctionalTests.RemoteLock
             container = new Container(new ContainerConfiguration(assemblies));
             var applicationSettings = ApplicationSettings.LoadDefault("functionalTestsSettings");
             container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(applicationSettings);
-
+            container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(container.Get<CassandraSettings>());
             logger.InfoFormat("Start SetUp, runningThreads = {0}", runningThreads);
             runningThreads = 0;
             isEnd = false;

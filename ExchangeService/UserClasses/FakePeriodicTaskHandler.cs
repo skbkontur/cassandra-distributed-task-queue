@@ -3,9 +3,9 @@
 using RemoteQueue.Handling;
 using RemoteQueue.Handling.HandlerResults;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskDatas;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers
+namespace ExchangeService.UserClasses
 {
     public class FakePeriodicTaskHandler : TaskHandler<FakePeriodicTaskData>
     {

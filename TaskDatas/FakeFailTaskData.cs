@@ -1,6 +1,6 @@
 ﻿using RemoteQueue.Handling;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskDatas
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas
 {
     public class FakeFailTaskData : ITaskData
     {

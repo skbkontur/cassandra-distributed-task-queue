@@ -4,7 +4,7 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 
-namespace ExchangeService.Settings
+namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 {
     public class CassandraSettings : ICassandraSettings
     {

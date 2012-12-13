@@ -13,7 +13,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         int GetCount(Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion);
         TaskMetaInformation[] RangeSearch(Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion, int rangeFrom, int count, Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> sortRules = null);
         object[] GetDistinctValues(Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion, Expression<Func<TaskMetaInformationBusinessObjectWrap, object>> columnPath);
-        bool CancelTask(string taskId);
-        RemoteTaskInfo GetTaskInfo(string taskId);
     }
 }

@@ -66,24 +66,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\PluginRegistry.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Exceptions\TestRetryableException.cs" />
     <Compile Include="Exceptions\TooLateException.cs" />
     <Compile Include="Http\ExchangeServiceHttpHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\CassandraSettings.cs" />
     <Compile Include="Settings\ExchangeSchedulableRunnerSettings.cs" />
-    <Compile Include="UserClasses\TaskDataRegistry.cs" />
-    <Compile Include="UserClasses\TaskHandlerRegistry.cs" />
+    <Compile Include="Configuration\TaskHandlerRegistry.cs" />
+    <Compile Include="UserClasses\FakeFailTaskHandler.cs" />
+    <Compile Include="UserClasses\FakePeriodicTaskHandler.cs" />
+    <Compile Include="UserClasses\ITestCassandraCounterBlobRepository.cs" />
+    <Compile Include="UserClasses\ITestCounterRepository.cs" />
+    <Compile Include="UserClasses\TestCassandraCounterBlobRepository.cs" />
+    <Compile Include="UserClasses\TestCounterRepository.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TaskDatasAndHandlers\TaskDatasAndHandlers.csproj">
+    <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
       <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
-      <Name>TaskDatasAndHandlers</Name>
+      <Name>TaskDatas</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

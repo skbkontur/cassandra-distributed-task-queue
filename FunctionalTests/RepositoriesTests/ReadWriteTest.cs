@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading;
 
+using ExchangeService.UserClasses;
+
 using NUnit.Framework;
 
 using RemoteQueue.Settings;
@@ -9,7 +11,6 @@ using RemoteQueue.Settings;
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Cassandra.CassandraClient.Connections;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers;
 
 using log4net;
 

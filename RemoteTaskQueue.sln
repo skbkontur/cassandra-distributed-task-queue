@@ -15,13 +15,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskMonitoringViewer", "Tas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitoringServiceCore", "MonitoringServiceCore\MonitoringServiceCore.csproj", "{EB9A3DBC-5C00-4774-93D6-925943DDE4CB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDatasAndHandlers", "TaskDatasAndHandlers\TaskDatasAndHandlers.csproj", "{377DD77B-2032-423F-ADBA-93E965428524}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Front", "Front\Front.csproj", "{ADF76065-9BEB-493B-9837-7697F861803D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndexService", "IndexService\IndexService.csproj", "{F4322A10-9E9F-49A1-B9AD-66A3CF5CA669}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDatas", "TaskDatas\TaskDatas.csproj", "{377DD77B-2032-423F-ADBA-93E965428524}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,16 +103,6 @@ Global
 		{EB9A3DBC-5C00-4774-93D6-925943DDE4CB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EB9A3DBC-5C00-4774-93D6-925943DDE4CB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EB9A3DBC-5C00-4774-93D6-925943DDE4CB}.Release|x86.ActiveCfg = Release|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Release|Any CPU.Build.0 = Release|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{377DD77B-2032-423F-ADBA-93E965428524}.Release|x86.ActiveCfg = Release|Any CPU
 		{ADF76065-9BEB-493B-9837-7697F861803D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ADF76065-9BEB-493B-9837-7697F861803D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADF76065-9BEB-493B-9837-7697F861803D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -143,6 +133,16 @@ Global
 		{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}.Release|x86.ActiveCfg = Release|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Release|Any CPU.Build.0 = Release|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{377DD77B-2032-423F-ADBA-93E965428524}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

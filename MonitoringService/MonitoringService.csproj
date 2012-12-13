@@ -70,12 +70,13 @@
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\CassandraSettings.cs" />
-    <Compile Include="TaskDataRegistry.cs" />
-    <Compile Include="TaskHandlerRegistry.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MonitoringServiceCore\MonitoringServiceCore.csproj">
       <Project>{EB9A3DBC-5C00-4774-93D6-925943DDE4CB}</Project>
       <Name>MonitoringServiceCore</Name>
@@ -83,10 +84,6 @@
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskDatasAndHandlers\TaskDatasAndHandlers.csproj">
-      <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
-      <Name>TaskDatasAndHandlers</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,16 @@
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.dll
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.pdb
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\GroBuf.dll
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\RemoteTaskQueue.dll
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\Cassandra.CassandraClient.dll
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\log4net.dll
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\Thrift.dll
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\Apache.Cassandra.110.dll
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\RemoteTaskQueue.pdb
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\GroBuf.pdb
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\Cassandra.CassandraClient.pdb
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\Thrift.pdb
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\bin\Debug\Apache.Cassandra.110.pdb
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\obj\Debug\TaskDatasAndHandlers.csprojResolveAssemblyReference.cache
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\obj\Debug\Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.dll
+C:\work\Catalogue.trunk\RemoteTaskQueue\TaskDatasAndHandlers\obj\Debug\Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.pdb

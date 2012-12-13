@@ -1,10 +1,10 @@
 ﻿using RemoteQueue.Cassandra.RemoteLock;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers
+namespace ExchangeService.UserClasses
 {
-    public class TestCounterRepository : ITestCounterRepository
+    public class TestCounterRepository : ExchangeService.UserClasses.ITestCounterRepository
     {
-        public TestCounterRepository(ITestCassandraCounterBlobRepository storage, IRemoteLockCreator remoteLockCreator)
+        public TestCounterRepository(ExchangeService.UserClasses.ITestCassandraCounterBlobRepository storage, IRemoteLockCreator remoteLockCreator)
         {
             this.storage = storage;
             this.remoteLockCreator = remoteLockCreator;
@@ -64,7 +64,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatasAndHandlers.TaskHandlers
             return remoteLockCreator.Lock("TestCounterRepository_" + taskId);
         }
 
-        private readonly ITestCassandraCounterBlobRepository storage;
+        private readonly ExchangeService.UserClasses.ITestCassandraCounterBlobRepository storage;
         private readonly IRemoteLockCreator remoteLockCreator;
     }
 }

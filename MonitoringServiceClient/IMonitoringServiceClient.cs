@@ -12,7 +12,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 
         TaskMetaInformation[] Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0);
         object[] GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath);
-        bool CancelTask(string taskId);
-        RemoteTaskInfo GetTaskInfo(string taskId);
     }
 }
