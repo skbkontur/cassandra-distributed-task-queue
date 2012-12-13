@@ -38,8 +38,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.CommonBusinessObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.Web">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Expressions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Expressions.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.ObjectManipulation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ObjectManipulation.dll</HintPath>
     </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
@@ -60,6 +72,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ControllerConstants.cs" />
+    <Compile Include="Controllers\IMonitoringCriterionBuilder.cs" />
+    <Compile Include="Controllers\MonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
@@ -69,6 +83,7 @@
     <Compile Include="ModelBuilders\TaskDataModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskMetaInfoModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskViewModelBuilder.cs" />
+    <Compile Include="Models\AllowedSearchValues.cs" />
     <Compile Include="Models\ByteArrayTaskDataValue.cs" />
     <Compile Include="Models\EmptyTaskDataValue.cs" />
     <Compile Include="Models\ITaskDataValue.cs" />
@@ -77,7 +92,7 @@
     <Compile Include="Models\Paging\PaginatorPageLinkModelData.cs" />
     <Compile Include="Models\StringTaskDataValue.cs" />
     <Compile Include="Models\TaskDataProperty.cs" />
-    <Compile Include="Models\TaskListModel.cs" />
+    <Compile Include="Models\RemoteTaskQueueModel.cs" />
     <Compile Include="Models\TaskMetaInfoModel.cs" />
     <Compile Include="Models\TaskViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,5 +1,6 @@
 ﻿using SKBKontur.Catalogue.Core.SQL;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.Indexes;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.MonitoringEntities;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation
 {

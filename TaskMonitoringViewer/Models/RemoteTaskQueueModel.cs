@@ -4,7 +4,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Paging;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
 {
-    public class TaskListModel : IPaginatorModelData
+    public class RemoteTaskQueueModel : IPaginatorModelData
     {
         public string GetUrl(UrlHelper url, int page)
         {

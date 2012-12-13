@@ -1,14 +1,17 @@
 ﻿using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.Expressions.ExpressionTrees;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
     public interface IMonitoringServiceClient
     {
-        int GetCount();
-        TaskMetaInformation[] GetRange(int start, int count);
-        void DropLocalStorage();
         void ActualizeDatabaseScheme();
+        void DropLocalStorage();
+
+        TaskMetaInformation[] Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0);
+        object[] GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath);
         bool CancelTask(string taskId);
         RemoteTaskInfo GetTaskInfo(string taskId);
     }

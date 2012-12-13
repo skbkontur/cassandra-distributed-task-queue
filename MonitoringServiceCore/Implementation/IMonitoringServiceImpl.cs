@@ -1,15 +1,19 @@
 ﻿using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.Queries;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation
 {
     public interface IMonitoringServiceImpl
     {
-        int GetCount();
-        TaskMetaInformation[] GetRange(int start, int count);
         void ActualizeDatabaseScheme();
         void DropLocalStorage();
-        bool CancelTask(string taskId);
+
+        int GetCount(MonitoringGetCountQuery getCountQuery);
+        TaskMetaInformation[] Search(MonitoringSearchQuery searchQuery);
+        object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery);
         RemoteTaskInfo GetTaskInfo(string taskId);
+        bool CancelTask(string taskId);
     }
 }

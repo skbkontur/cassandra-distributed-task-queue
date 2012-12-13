@@ -1,6 +1,9 @@
 ﻿using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.Expressions.ExpressionTrees;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.Queries;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
@@ -14,18 +17,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
         }
 
         [HttpMethod]
-        public int GetCount()
-        {
-            return monitoringServiceImpl.GetCount();
-        }
-
-        [HttpMethod]
-        public TaskMetaInformation[] GetRange(int start, int count)
-        {
-            return monitoringServiceImpl.GetRange(start, count);
-        }
-
-        [HttpMethod]
         public void ActualizeDatabaseScheme()
         {
             monitoringServiceImpl.ActualizeDatabaseScheme();
@@ -35,6 +26,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
         public void DropLocalStorage()
         {
             monitoringServiceImpl.DropLocalStorage();
+        }
+
+        [HttpMethod]
+        public int GetCount(MonitoringGetCountQuery getCountQuery)
+        {
+            return monitoringServiceImpl.GetCount(getCountQuery);
+        }
+
+        [HttpMethod]
+        public TaskMetaInformation[] Search(MonitoringSearchQuery searchQuery)
+        {
+            return monitoringServiceImpl.Search(searchQuery);
+        }
+
+        [HttpMethod]
+        public object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery)
+        {
+            return monitoringServiceImpl.GetDistinctValues(getDistinctValuesQuery);
         }
 
         [HttpMethod]

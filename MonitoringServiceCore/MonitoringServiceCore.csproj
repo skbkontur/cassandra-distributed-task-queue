@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\MonitoringServiceHttpHandler.cs" />
-    <Compile Include="Implementation\BusinessObjectWrapper.cs" />
     <Compile Include="Implementation\IMonitoringServiceImpl.cs" />
     <Compile Include="Implementation\LocalStorageColumnsRegistry.cs" />
     <Compile Include="Implementation\LocalStorageTableRegistry.cs" />
@@ -79,11 +78,16 @@
     <Compile Include="Sheduler\MonitoringTask.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
+      <Project>{B0AAD20D-160A-4D99-877B-B464C295E36F}</Project>
+      <Name>MonitoringServiceClient</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(SolutionDir)..\Assemblies\Temp\

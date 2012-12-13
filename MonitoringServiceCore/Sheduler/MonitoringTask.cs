@@ -5,7 +5,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.MonitoringEntities;
 
 using log4net;
 
