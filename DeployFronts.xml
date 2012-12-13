@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project DefaultTargets="DeployFronts" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+
+<PropertyGroup>
+    <FrontAppName>RemoteTaskQueue.Front</FrontAppName>
+    <ScreenshotsAppName>RemoteTaskQueue.Screenshots</ScreenshotsAppName>
+    <FrontHttpPort>9876</FrontHttpPort>
+    <ScreenshotsHttpPort>6679</ScreenshotsHttpPort>
+    <ExtensionTasksPath>$(MSBuildThisFileDirectory)..\Assemblies\MSBuild.ExtensionPack\</ExtensionTasksPath>
+</PropertyGroup>
+
+
+<ItemGroup>
+    <Front Include="/">
+       <PhysicalPath>$(MSBuildThisFileDirectory)Front</PhysicalPath>
+          <AppPool>$(FrontAppName)_Pool</AppPool>
+    </Front>    
+    <Screenshots Include="/">
+        <PhysicalPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\.screenshots'))</PhysicalPath>
+        <AppPool>$(ScreenshotsAppName)_Pool</AppPool>
+    </Screenshots>
+    <Shared Include="/Shared">
+        <ApplicationPath>/</ApplicationPath>
+        <PhysicalPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\WebWorms\Web\Statics'))</PhysicalPath>
+    </Shared>
+    <Shared Include="/SharedBlocks">
+        <ApplicationPath>/</ApplicationPath>
+        <PhysicalPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\WebWorms\Web\Blocks'))</PhysicalPath>
+    </Shared>
+</ItemGroup>
+
+  <Import Project="$(ExtensionTasksPath)MSBuild.ExtensionPack.tasks"/>
+
+  <Target Name="DeployFronts">
+
+       <Iis7Website TaskAction="CheckExists" Name="$(FrontAppName)">
+           <Output TaskParameter="Exists" PropertyName="Exists"/>
+       </Iis7Website>
+       <Iis7Website TaskAction="Delete" Name="$(FrontAppName)" Condition=" '$(Exists)' "  />
+       <Iis7AppPool TaskAction="Create" Name="%(Front.AppPool)" Force="True" PipelineMode="Integrated" ManagedRuntimeVersion="v4.0" />
+       <Iis7Website TaskAction="Create" 
+            Name="$(FrontAppName)" 
+            Path="$(MSBuildThisFileDirectory)Front" 
+            Port="$(FrontHttpPort)" 
+            Force="true" 
+            Applications="@(Front)" 
+            VirtualDirectories="@(Shared) ">
+           <Output TaskParameter="SiteId" PropertyName="FrontSiteId"/>
+       </Iis7Website>
+
+       <Iis7Website TaskAction="CheckExists" Name="$(ScreenshotsAppName)">
+           <Output TaskParameter="Exists" PropertyName="Exists"/>
+       </Iis7Website>
+       <Iis7Website TaskAction="Delete" Name="$(ScreenshotsAppName)" Condition=" '$(Exists)' "  />
+       <Iis7AppPool TaskAction="Create" Name="%(Screenshots.AppPool)" Force="True" PipelineMode="Integrated" ManagedRuntimeVersion="v4.0" />
+       <Iis7Website TaskAction="Create" 
+            Name="$(ScreenshotsAppName)" 
+            Path="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\.screenshots'))" 
+            Port="$(ScreenshotsHttpPort)" 
+            Force="true"
+            Applications = "@(Screenshots)">
+           <Output TaskParameter="SiteId" PropertyName="FrontSiteId"/>
+       </Iis7Website>
+
+  </Target>
+
+</Project>
