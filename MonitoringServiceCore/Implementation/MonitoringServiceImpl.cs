@@ -1,7 +1,6 @@
 using System.Linq;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.Core.SQL;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
@@ -12,11 +11,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 {
     public class MonitoringServiceImpl : IMonitoringServiceImpl
     {
-        public MonitoringServiceImpl(ILocalStorage localStorage, IRemoteTaskQueue remoteTaskQueue, ILocalStorageTableRegistry localStorageTableRegistry, ISqlDatabase sqlDatabase)
+        public MonitoringServiceImpl(ILocalStorage localStorage, ILocalStorageTableRegistry localStorageTableRegistry, ISqlDatabase sqlDatabase, ILocalStorageUpdater localStorageUpdater)
         {
             this.localStorage = localStorage;
-            this.remoteTaskQueue = remoteTaskQueue;
             this.sqlDatabase = sqlDatabase;
+            this.localStorageUpdater = localStorageUpdater;
             taskMetaInfoTableName = localStorageTableRegistry.GetTableName(typeof(TaskMetaInformationBusinessObjectWrap));
         }
 
@@ -32,16 +31,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public int GetCount(MonitoringGetCountQuery getCountQuery)
         {
+            localStorageUpdater.UpdateLocalStorage();
             return localStorage.GetCount<TaskMetaInformationBusinessObjectWrap>(getCountQuery.Criterion);
         }
 
         public TaskMetaInformation[] Search(MonitoringSearchQuery searchQuery)
         {
-            return localStorage.Search<TaskMetaInformationBusinessObjectWrap>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules).Select(x => x.Info).ToArray();
+            localStorageUpdater.UpdateLocalStorage();
+            var taskMetaInformations = localStorage.Search<TaskMetaInformationBusinessObjectWrap>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules).Select(x => x.Info).ToArray();
+            return taskMetaInformations;
         }
 
         public object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery)
         {
+            localStorageUpdater.UpdateLocalStorage();
             var sqlSelectQuery = new SqlSelectQuery
                 {
                     Criterion = getDistinctValuesQuery.Criterion,
@@ -53,19 +56,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             return sqlDatabase.GetRows(sqlSelectQuery).Select(x => x[0]).ToArray();
         }
 
-        public bool CancelTask(string taskId)
-        {
-            return remoteTaskQueue.CancelTask(taskId);
-        }
-
-        public RemoteTaskInfo GetTaskInfo(string taskId)
-        {
-            return remoteTaskQueue.GetTaskInfo(taskId);
-        }
-
         private readonly ILocalStorage localStorage;
         private readonly string taskMetaInfoTableName;
-        private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ISqlDatabase sqlDatabase;
+        private readonly ILocalStorageUpdater localStorageUpdater;
     }
 }
