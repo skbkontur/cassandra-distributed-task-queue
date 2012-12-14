@@ -21,6 +21,8 @@
 
             Html.RenderScript("/Shared/Scripts/Browser/BrowserType.js");
 
+            Html.RenderScript("/Shared/Scripts/External/underscore.js");
+
             Html.RenderScript("/Shared/Scripts/Extensions/Function.js");
             Html.RenderScript("/Shared/Scripts/Extensions/String.js");
             Html.RenderScript("/Shared/Scripts/Extensions/Helpers.js");
@@ -33,6 +35,7 @@
             Html.RenderScript("/Shared/Scripts/Expressions/Expression.js");
 
             Html.RenderAllScriptsFromDirectory("/Shared/Scripts/Autoload");
+            Html.RenderAllScriptsFromDirectory("/SharedBlocks/");
         }
 
         <script type="text/javascript">
@@ -99,9 +102,11 @@
                 });
             });
             
+            @RenderSection("Scripts")
+            
         </script>
     </head>
-    <body>
+    <body class="subform" subform="page">
         <div>
             <ul>
                 @{

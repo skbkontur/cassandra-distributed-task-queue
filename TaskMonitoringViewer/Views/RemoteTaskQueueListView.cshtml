@@ -1,28 +1,66 @@
-﻿@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+﻿@using SKBKontur.Catalogue.Core.Web.Blocks.Button
 @using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
+@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html
 @model RemoteTaskQueueModel
 @{
+    SearchPanelHtmlModel htmlModel = Model.HtmlModel;
     Layout = "TaskMonitoringLayout.cshtml";
 }
-
 @* ReSharper disable Razor.SectionNotResolved *@
 @section Title {
-    Task list
+Task list
 }
 @* ReSharper restore Razor.SectionNotResolved *@
-
-<h1>Task list</h1>
-
+@section Scripts{
+        var PageOptions = {
+            functions: @Html.Raw(Model.GetJSFunctions())
+        };
+        $(document).ready(function() {
+            var pageController = new Page("AdminTools","RemoteTaskQueue");
+            pageController.run();
+        });
+ }
+<h1>
+    Task list</h1>
+<div id="TaskMonitoringSearchPanel">
+    <div id="searchDiv">
+        @{
+            <div class="labeledField">
+                <div class="labeledField_label">TaskName</div>
+                <div class="labeledField_field">@Html.Input(htmlModel.TaskName)</div>
+            </div>
+        }
+        @Html.Button(htmlModel.SearchButton)
+    </div>
+</div>
 <table>
     <tr>
-        <td>TaskId</td>
-        <td>TaskState</td>
-        <td>TaskName</td>
-        <td>EnqueueTicks</td>
-        <td>StartExecutedTicks</td>
-        <td>MinimalStartTicks</td>
-        <td>Attempts</td>        
-        <td>ParentTaskId</td>        
+        <td>
+            TaskId
+        </td>
+        <td>
+            TaskState
+        </td>
+        <td>
+            TaskName
+        </td>
+        <td>
+            EnqueueTicks
+        </td>
+        <td>
+            StartExecutedTicks
+        </td>
+        <td>
+            MinimalStartTicks
+        </td>
+        <td>
+            Attempts
+        </td>
+        <td>
+            ParentTaskId
+        </td>
     </tr>
     @{
         for (int index = 0; index < Model.TaskModels.Length; index++)
@@ -32,16 +70,26 @@
             var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.TaskId });
             var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.ParentTaskId });
             // ReSharper restore Asp.NotResolved
-            <tr id="Task[@index]">
-                <td id="TaskId[@index]"><a href="@detailsTaskUrl">@taskModel.TaskId</a></td>
-                <td id="TaskState[@index]">@Html.TaskState(taskModel)</td>
-                <td id="TaskName[@index]">@taskModel.Name</td>
-                <td id="EnqueueTicks[@index]">@taskModel.EnqueueTicks</td>
-                <td id="StartExecutedTicks[@index]">@taskModel.StartExecutedTicks</td>
-                <td id="MinimalStartTicks[@index]">@taskModel.MinimalStartTicks</td>
-                <td id="Attempts[@index]">@taskModel.Attempts</td>
-                <td id="ParentTaskId[@index]"><a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a></td>
-            </tr>
+        <tr id="Task[@index]">
+            <td id="TaskId[@index]">
+                <a href="@detailsTaskUrl">@taskModel.TaskId</a>
+            </td>
+            <td id="TaskState[@index]">@Html.TaskState(taskModel)
+            </td>
+            <td id="TaskName[@index]">@taskModel.Name
+            </td>
+            <td id="EnqueueTicks[@index]">@taskModel.EnqueueTicks
+            </td>
+            <td id="StartExecutedTicks[@index]">@taskModel.StartExecutedTicks
+            </td>
+            <td id="MinimalStartTicks[@index]">@taskModel.MinimalStartTicks
+            </td>
+            <td id="Attempts[@index]">@taskModel.Attempts
+            </td>
+            <td id="ParentTaskId[@index]">
+                <a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a>
+            </td>
+        </tr>
         }
     }
 </table>

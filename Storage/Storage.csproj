@@ -55,6 +55,12 @@
     <Compile Include="ColumnFamilyRegistration\StoragePlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
+      <Project>{C86636E6-89C3-4930-A6BD-CCDF61B5D8F1}</Project>
+      <Name>MonitoringDataTypes</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(SolutionDir)..\Assemblies\Temp\

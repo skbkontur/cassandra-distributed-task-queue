@@ -20,8 +20,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             IBusinessObjectsStorage businessObjectsStorage,
             ICatalogueExtender catalogueExtender,
             IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder,
-            IRemoteTaskQueue remoteTaskQueue)
+            IRemoteTaskQueue remoteTaskQueue,
+            IRemoteTaskQueueModelBuilder remoteTaskQueueModelBuilder)
         {
+            RemoteTaskQueueModelBuilder = remoteTaskQueueModelBuilder;
             RemoteTaskQueue = remoteTaskQueue;
             BusinessObjectsStorage = businessObjectsStorage;
             CatalogueExtender = catalogueExtender;
@@ -32,6 +34,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             ObjectValueExtracter = objectValueExtracter;
             MonitoringServiceStorage = monitoringServiceStorage;
         }
+
+        public IRemoteTaskQueueModelBuilder RemoteTaskQueueModelBuilder { get; private set; }
 
         public IRemoteTaskQueue RemoteTaskQueue { get; private set; }
         public IBusinessObjectsStorage BusinessObjectsStorage { get; private set; }

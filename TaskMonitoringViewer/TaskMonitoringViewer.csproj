@@ -77,15 +77,21 @@
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
+    <Compile Include="ModelBuilders\Html\IRemoteTaskQueueHtmlModelBuilder.cs" />
+    <Compile Include="ModelBuilders\Html\RemoteTaskQueueHtmlModelBuilder.cs" />
+    <Compile Include="ModelBuilders\Html\RemoteTaskQueueModelData.cs" />
+    <Compile Include="ModelBuilders\IRemoteTaskQueueModelBuilder.cs" />
     <Compile Include="ModelBuilders\ITaskDataModelBuilder.cs" />
     <Compile Include="ModelBuilders\ITaskMetadataModelBuilder.cs" />
     <Compile Include="ModelBuilders\ITaskViewModelBuilder.cs" />
+    <Compile Include="ModelBuilders\RemoteTaskQueueModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskDataModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskMetadataModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskViewModelBuilder.cs" />
     <Compile Include="Models\AllowedSearchValues.cs" />
     <Compile Include="Models\ByteArrayTaskDataValue.cs" />
     <Compile Include="Models\EmptyTaskDataValue.cs" />
+    <Compile Include="Models\Html\SearchPanelHtmlModel.cs" />
     <Compile Include="Models\ITaskDataValue.cs" />
     <Compile Include="Models\ObjectTaskDataModel.cs" />
     <Compile Include="Models\Paging\IPaginatorModelData.cs" />
@@ -137,6 +143,7 @@
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(SolutionDir)..\Assemblies\Temp\

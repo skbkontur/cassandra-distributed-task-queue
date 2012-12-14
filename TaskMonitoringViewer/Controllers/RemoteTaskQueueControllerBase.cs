@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Web.Mvc;
 
-using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.AccessControl.AccessRules;
 using SKBKontur.Catalogue.CassandraStorageCore.BusinessObjectStorageImpl;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
-using SKBKontur.Catalogue.Expressions;
-using SKBKontur.Catalogue.ObjectManipulation.Extender;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Constants;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.Html;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
@@ -26,55 +19,37 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         protected RemoteTaskQueueControllerBase(RemoteTaskQueueControllerBaseParameters remoteTaskQueueControllerBaseParameters)
             : base(remoteTaskQueueControllerBaseParameters.LoggedInControllerBaseParameters)
         {
-            taskMetadataModelBuilder = remoteTaskQueueControllerBaseParameters.TaskMetadataModelBuilder;
             taskViewModelBuilder = remoteTaskQueueControllerBaseParameters.TaskViewModelBuilder;
             objectValueExtracter = remoteTaskQueueControllerBaseParameters.ObjectValueExtracter;
-            monitoringServiceStorage = remoteTaskQueueControllerBaseParameters.MonitoringServiceStorage;
-            businessObjectsStorage = remoteTaskQueueControllerBaseParameters.BusinessObjectsStorage;
-            extender = remoteTaskQueueControllerBaseParameters.CatalogueExtender;
-            monitoringSearchRequestCriterionBuilder = remoteTaskQueueControllerBaseParameters.MonitoringSearchRequestCriterionBuilder;
             remoteTaskQueue = remoteTaskQueueControllerBaseParameters.RemoteTaskQueue;
+            remoteTaskQueueModelBuilder = remoteTaskQueueControllerBaseParameters.RemoteTaskQueueModelBuilder;
+            businessObjectsStorage = remoteTaskQueueControllerBaseParameters.BusinessObjectsStorage;
+            criterionBuilder = remoteTaskQueueControllerBaseParameters.MonitoringSearchRequestCriterionBuilder;
+
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult Run(int? pageNumber, string searchRequestId)
         {
-            Expression<Func<MonitoringTaskMetadata, bool>> criterion = x => true;
-            var names = monitoringServiceStorage.GetDistinctValues(criterion, x => x.Name).Cast<string>().ToArray();
-            var states = monitoringServiceStorage.GetDistinctValues(criterion, x => x.State).Select(x => TryPrase<TaskState>((string)x)).ToArray();
-            var allowedSearchValues = new AllowedSearchValues
-                {
-                    Names = names,
-                    States = states,
-                };
-
-            var searchRequest = new MonitoringSearchRequest();
-            if(!string.IsNullOrEmpty(searchRequestId))
-                businessObjectsStorage.TryRead(searchRequestId, searchRequestId, out searchRequest);
-            extender.Extend(searchRequest);
-
-            criterion = monitoringSearchRequestCriterionBuilder.And(criterion, monitoringSearchRequestCriterionBuilder.BuildCriterion(searchRequest));
-
-            int page = (pageNumber ?? 0);
-            var countPerPage = ControllerConstants.DefaultRecordsNumberPerPage;
-            var rangeFrom = page * ControllerConstants.DefaultRecordsNumberPerPage;
-            var totalPagesCount = (monitoringServiceStorage.GetCount(criterion) + countPerPage - 1) / countPerPage;
-            var fullTaskMetaInfos = monitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.MinimalStartTicks.Descending());
-
-            var model = new RemoteTaskQueueModel
-                {
-                    PageNumber = page,
-                    TotalPagesCount = totalPagesCount,
-                    PagesWindowSize = 3,
-                    TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
-                        {
-                            Attempts = x.Attempts,
-                            TaskId = x.TaskId,
-                            Name = x.Name,
-                            State = x.State,
-                        }).ToArray()
-                }; //PageModelBaseParameters, RemoteTaskQueueModelBuilder.BuildModel(LanguageProvider, fullTaskMetaInfos, searchRequest, allowedSearchValues));
+            var model = remoteTaskQueueModelBuilder.Build(PageModelBaseParameters, pageNumber, searchRequestId);
             return View("RemoteTaskQueueListView", model);
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Search(RemoteTaskQueueModelData modelData)
+        {
+            var requestId = Guid.NewGuid().ToString();
+            var searchRequest = new MonitoringSearchRequest
+                {
+                    Id = requestId,
+                    ScopeId = requestId,
+                    Name = modelData.TaskName
+                };
+            businessObjectsStorage.Write(searchRequest);
+            return Json(new SuccessOperationResult
+                {
+                    RedirectTo = Url.Action("Run", new {searchRequestId = requestId})
+                });
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
@@ -121,19 +96,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return File((byte[])value, "application/xml", fileDownloadName);
         }
 
-        private T TryPrase<T>(string s) where T : struct
-        {
-            T res;
-            return !Enum.TryParse(s, true, out res) ? default(T) : res;
-        }
-
-        private readonly ITaskMetadataModelBuilder taskMetadataModelBuilder;
         private readonly ITaskViewModelBuilder taskViewModelBuilder;
         private readonly IObjectValueExtracter objectValueExtracter;
-        private readonly IMonitoringServiceStorage monitoringServiceStorage;
-        private readonly IBusinessObjectsStorage businessObjectsStorage;
-        private readonly ICatalogueExtender extender;
-        private readonly IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder;
         private readonly IRemoteTaskQueue remoteTaskQueue;
+        private readonly IRemoteTaskQueueModelBuilder remoteTaskQueueModelBuilder;
+        private readonly IBusinessObjectsStorage businessObjectsStorage;
+        private readonly IMonitoringSearchRequestCriterionBuilder criterionBuilder;
     }
 }
