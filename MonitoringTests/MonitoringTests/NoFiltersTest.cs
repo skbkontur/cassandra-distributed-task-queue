@@ -33,6 +33,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             {
                 var item = tasksListPage.GetTaskListItem(i);
                 item.TaskId.WaitText(ids[9 - i]);
+                item.TaskState.WaitText("Finished");
+                item.TaskName.WaitText("SimpleTaskData");
+                item.Attempts.WaitText("1");
+                var details = tasksListPage.GoToTaskDetails(i);
+                details.TaskId.WaitText(ids[9 - i]);
+                details.TaskState.WaitText("Finished");
+                details.TaskName.WaitText("SimpleTaskData");
+                details.Attempts.WaitText("1");
+                tasksListPage = details.GoToTasksListPage();
             }
         }
 

@@ -16,31 +16,31 @@
 <table>
     <tr>
         <td><b>TaskId</b></td>
-        <td>@Model.TaskMetaInfoModel.Id</td>
+        <td id="TaskId">@Model.TaskMetaInfoModel.Id</td>
     </tr>
     <tr>
         <td><b>TaskState</b></td>
-        <td>@Html.TaskState(Model.TaskMetaInfoModel)</td>
+        <td id="TaskState">@Html.TaskState(Model.TaskMetaInfoModel)</td>
     </tr>
     <tr>
         <td><b>TaskName</b></td>
-        <td>@Model.TaskMetaInfoModel.Name</td>
+        <td id="TaskName">@Model.TaskMetaInfoModel.Name</td>
     </tr>
     <tr>
         <td><b>EnqueueTicks</b></td>
-        <td>@Model.TaskMetaInfoModel.EnqueueTicks</td>
+        <td id="EnqueueTicks">@Model.TaskMetaInfoModel.EnqueueTicks</td>
     </tr>
     <tr>
         <td><b>StartExecutedTicks</b></td>
-        <td>@Model.TaskMetaInfoModel.StartExecutedTicks</td>
+        <td id="StartExecutedTicks">@Model.TaskMetaInfoModel.StartExecutedTicks</td>
     </tr>
     <tr>
         <td><b>MinimalStartTicks</b></td>
-        <td>@Model.TaskMetaInfoModel.MinimalStartTicks</td>
+        <td id="MinimalStartTicks">@Model.TaskMetaInfoModel.MinimalStartTicks</td>
     </tr>
     <tr>
         <td><b>Attempts</b></td>
-        <td>@Model.TaskMetaInfoModel.Attempts</td>
+        <td id="Attempts">@Model.TaskMetaInfoModel.Attempts</td>
     </tr>
     <tr>
         <td><b>ParentTaskId</b></td>
@@ -49,17 +49,17 @@
             var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = Model.TaskMetaInfoModel.ParentTaskId });
             // ReSharper restore Asp.NotResolved
         }
-        <td><a href="@detailsParentTaskUrl">@Model.TaskMetaInfoModel.ParentTaskId</a></td>
+        <td id="ParentTaskId"><a href="@detailsParentTaskUrl">@Model.TaskMetaInfoModel.ParentTaskId</a></td>
     </tr>
     <tr>
         <td><b>TaskData</b></td>
-        <td>@Model.TaskDataValue.Render(Html)</td>
+        <td id="TaskData">@Model.TaskDataValue.Render(Html)</td>
     </tr>
     @{
         if(Model.ExceptionInfo != null)
         {
             <td><b>Детали ошибки</b></td>
-            <td>
+            <td id="ExceptionInfo">
                 @{
                     var text = @Model.ExceptionInfo.ExceptionMessageInfo ?? "";
                     var lines = text.Split('\n');

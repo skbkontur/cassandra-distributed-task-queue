@@ -78,6 +78,7 @@
     <Compile Include="PageBases\CommonPageBase.cs" />
     <Compile Include="PageBases\DefaultPage.cs" />
     <Compile Include="PageBases\EnterPage.cs" />
+    <Compile Include="PageBases\TaskDetailsPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBases\MonitoringFunctionalTestBase.cs" />
     <Compile Include="PageBases\TasksListPage.cs" />
