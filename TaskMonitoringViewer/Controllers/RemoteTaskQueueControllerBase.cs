@@ -12,8 +12,8 @@ using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Constants;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
@@ -26,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         protected RemoteTaskQueueControllerBase(RemoteTaskQueueControllerBaseParameters remoteTaskQueueControllerBaseParameters)
             : base(remoteTaskQueueControllerBaseParameters.LoggedInControllerBaseParameters)
         {
-            taskMetaInfoModelBuilder = remoteTaskQueueControllerBaseParameters.TaskMetaInfoModelBuilder;
+            taskMetadataModelBuilder = remoteTaskQueueControllerBaseParameters.TaskMetadataModelBuilder;
             taskViewModelBuilder = remoteTaskQueueControllerBaseParameters.TaskViewModelBuilder;
             objectValueExtracter = remoteTaskQueueControllerBaseParameters.ObjectValueExtracter;
             monitoringServiceStorage = remoteTaskQueueControllerBaseParameters.MonitoringServiceStorage;
@@ -39,9 +39,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult Run(int? pageNumber, string searchRequestId)
         {
-            Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion = x => true;
-            var names = monitoringServiceStorage.GetDistinctValues(criterion, x => x.Info.Name).Cast<string>().ToArray();
-            var states = monitoringServiceStorage.GetDistinctValues(criterion, x => x.Info.State).Select(x => TryPrase<TaskState>((string)x)).ToArray();
+            Expression<Func<MonitoringTaskMetadata, bool>> criterion = x => true;
+            var names = monitoringServiceStorage.GetDistinctValues(criterion, x => x.Name).Cast<string>().ToArray();
+            var states = monitoringServiceStorage.GetDistinctValues(criterion, x => x.State).Select(x => TryPrase<TaskState>((string)x)).ToArray();
             var allowedSearchValues = new AllowedSearchValues
                 {
                     Names = names,
@@ -50,7 +50,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
             var searchRequest = new MonitoringSearchRequest();
             if(!string.IsNullOrEmpty(searchRequestId))
-                businessObjectsStorage.TryRead("admin", searchRequestId, out searchRequest);
+                businessObjectsStorage.TryRead(searchRequestId, searchRequestId, out searchRequest);
             extender.Extend(searchRequest);
 
             criterion = monitoringSearchRequestCriterionBuilder.And(criterion, monitoringSearchRequestCriterionBuilder.BuildCriterion(searchRequest));
@@ -59,7 +59,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             var countPerPage = ControllerConstants.DefaultRecordsNumberPerPage;
             var rangeFrom = page * ControllerConstants.DefaultRecordsNumberPerPage;
             var totalPagesCount = (monitoringServiceStorage.GetCount(criterion) + countPerPage - 1) / countPerPage;
-            var fullTaskMetaInfos = monitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.Info.MinimalStartTicks.Descending());
+            var fullTaskMetaInfos = monitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.MinimalStartTicks.Descending());
 
             var model = new RemoteTaskQueueModel
                 {
@@ -69,7 +69,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                     TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
                         {
                             Attempts = x.Attempts,
-                            Id = x.Id,
+                            TaskId = x.TaskId,
                             Name = x.Name,
                             State = x.State,
                         }).ToArray()
@@ -127,7 +127,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return !Enum.TryParse(s, true, out res) ? default(T) : res;
         }
 
-        private readonly ITaskMetaInfoModelBuilder taskMetaInfoModelBuilder;
+        private readonly ITaskMetadataModelBuilder taskMetadataModelBuilder;
         private readonly ITaskViewModelBuilder taskViewModelBuilder;
         private readonly IObjectValueExtracter objectValueExtracter;
         private readonly IMonitoringServiceStorage monitoringServiceStorage;

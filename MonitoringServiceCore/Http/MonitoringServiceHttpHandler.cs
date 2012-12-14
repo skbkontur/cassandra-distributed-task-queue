@@ -1,6 +1,5 @@
-﻿using RemoteQueue.Cassandra.Entities;
-
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.Queries;
+﻿using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
@@ -32,7 +31,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
         }
 
         [HttpMethod]
-        public TaskMetaInformation[] Search(MonitoringSearchQuery searchQuery)
+        public MonitoringTaskMetadata[] Search(MonitoringSearchQuery searchQuery)
         {
             return monitoringServiceImpl.Search(searchQuery);
         }

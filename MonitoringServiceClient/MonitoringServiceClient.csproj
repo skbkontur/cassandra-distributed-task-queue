@@ -51,20 +51,14 @@
   <ItemGroup>
     <Compile Include="IMonitoringServiceClient.cs" />
     <Compile Include="IMonitoringServiceStorage.cs" />
-    <Compile Include="MonitoringEntities\TaskMetaInformationBusinessObjectWrap.cs" />
-    <Compile Include="MonitoringEntities\DateTimeRange.cs" />
-    <Compile Include="MonitoringEntities\MonitoringSearchRequest.cs" />
     <Compile Include="MonitoringServiceClient.cs" />
     <Compile Include="MonitoringServiceStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Queries\MonitoringGetDistinctValuesQuery.cs" />
-    <Compile Include="Queries\MonitoringGetCountQuery.cs" />
-    <Compile Include="Queries\MonitoringSearchQuery.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
-      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
-      <Name>RemoteTaskQueue</Name>
+    <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
+      <Project>{C86636E6-89C3-4930-A6BD-CCDF61B5D8F1}</Project>
+      <Name>MonitoringDataTypes</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

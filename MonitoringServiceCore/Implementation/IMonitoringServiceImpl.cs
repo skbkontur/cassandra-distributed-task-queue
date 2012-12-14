@@ -1,6 +1,5 @@
-﻿using RemoteQueue.Cassandra.Entities;
-
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.Queries;
+﻿using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation
 {
@@ -10,7 +9,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         void DropLocalStorage();
 
         int GetCount(MonitoringGetCountQuery getCountQuery);
-        TaskMetaInformation[] Search(MonitoringSearchQuery searchQuery);
+        MonitoringTaskMetadata[] Search(MonitoringSearchQuery searchQuery);
         object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery);
     }
 }

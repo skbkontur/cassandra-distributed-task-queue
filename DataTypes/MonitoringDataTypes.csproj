@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</ProjectGuid>
+    <ProjectGuid>{C86636E6-89C3-4930-A6BD-CCDF61B5D8F1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.Storage</RootNamespace>
-    <AssemblyName>Catalogue.RemoteTaskQueue.Storage</AssemblyName>
+    <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes</RootNamespace>
+    <AssemblyName>Catalogue.RemoteTaskQueue.MonitoringDataTypes</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,14 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catalogue.AccessControl.LocalImplementation">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Core.CommonBusinessObjects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Expressions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Expressions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,11 +47,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColumnFamilyRegistration\SerializeToBlobStorageRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\SerializeToRowsStorageRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\SimpleColumnFamilyRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\StoragePlugin.cs" />
+    <Compile Include="MonitoringEntities\Primitives\DateTimeRange.cs" />
+    <Compile Include="MonitoringEntities\MonitoringSearchRequest.cs" />
+    <Compile Include="MonitoringEntities\MonitoringTaskMetadata.cs" />
+    <Compile Include="MonitoringEntities\Primitives\TaskState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Queries\MonitoringGetCountQuery.cs" />
+    <Compile Include="Queries\MonitoringGetDistinctValuesQuery.cs" />
+    <Compile Include="Queries\MonitoringSearchQuery.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

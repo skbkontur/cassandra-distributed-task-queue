@@ -7,7 +7,7 @@
 
 @* ReSharper disable Razor.SectionNotResolved *@
 @section Title {
-    Task @Model.TaskMetaInfoModel.Id
+    Task @Model.TaskMetaInfoModel.TaskId
 }
 @* ReSharper restore Razor.SectionNotResolved *@
 
@@ -16,7 +16,7 @@
 <table>
     <tr>
         <td><b>TaskId</b></td>
-        <td id="TaskId">@Model.TaskMetaInfoModel.Id</td>
+        <td id="TaskId">@Model.TaskMetaInfoModel.TaskId</td>
     </tr>
     <tr>
         <td><b>TaskState</b></td>

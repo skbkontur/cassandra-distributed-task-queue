@@ -1,6 +1,6 @@
 ﻿using SKBKontur.Catalogue.Expressions.ExpressionTrees;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.Queries
+namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries
 {
     public class MonitoringSearchQuery
     {

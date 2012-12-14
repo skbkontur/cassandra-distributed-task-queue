@@ -78,10 +78,10 @@
     <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
     <Compile Include="ModelBuilders\ITaskDataModelBuilder.cs" />
-    <Compile Include="ModelBuilders\ITaskMetaInfoModelBuilder.cs" />
+    <Compile Include="ModelBuilders\ITaskMetadataModelBuilder.cs" />
     <Compile Include="ModelBuilders\ITaskViewModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskDataModelBuilder.cs" />
-    <Compile Include="ModelBuilders\TaskMetaInfoModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskMetadataModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskViewModelBuilder.cs" />
     <Compile Include="Models\AllowedSearchValues.cs" />
     <Compile Include="Models\ByteArrayTaskDataValue.cs" />
@@ -124,6 +124,10 @@
     <None Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
+      <Project>{C86636E6-89C3-4930-A6BD-CCDF61B5D8F1}</Project>
+      <Name>MonitoringDataTypes</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
       <Project>{B0AAD20D-160A-4D99-877B-B464C295E36F}</Project>
       <Name>MonitoringServiceClient</Name>

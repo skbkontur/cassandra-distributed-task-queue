@@ -1,6 +1,6 @@
 using System;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.MonitoringEntities
+namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives
 {
     public class DateTimeRange
     {

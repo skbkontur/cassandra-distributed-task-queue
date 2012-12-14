@@ -1,11 +1,9 @@
 using System.Linq;
 
-using RemoteQueue.Cassandra.Entities;
-
 using SKBKontur.Catalogue.Core.SQL;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.MonitoringEntities;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.Queries;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation
 {
@@ -15,8 +13,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         {
             this.localStorage = localStorage;
             this.sqlDatabase = sqlDatabase;
+            taskMetaInfoTableName = localStorageTableRegistry.GetTableName(typeof(MonitoringTaskMetadata));
             this.localStorageUpdater = localStorageUpdater;
-            taskMetaInfoTableName = localStorageTableRegistry.GetTableName(typeof(TaskMetaInformationBusinessObjectWrap));
         }
 
         public void ActualizeDatabaseScheme()
@@ -32,14 +30,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         public int GetCount(MonitoringGetCountQuery getCountQuery)
         {
             localStorageUpdater.UpdateLocalStorage();
-            return localStorage.GetCount<TaskMetaInformationBusinessObjectWrap>(getCountQuery.Criterion);
+            return localStorage.GetCount<MonitoringTaskMetadata>(getCountQuery.Criterion);
         }
 
-        public TaskMetaInformation[] Search(MonitoringSearchQuery searchQuery)
+        public MonitoringTaskMetadata[] Search(MonitoringSearchQuery searchQuery)
         {
             localStorageUpdater.UpdateLocalStorage();
-            var taskMetaInformations = localStorage.Search<TaskMetaInformationBusinessObjectWrap>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules).Select(x => x.Info).ToArray();
-            return taskMetaInformations;
+            return localStorage.Search<MonitoringTaskMetadata>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules);
         }
 
         public object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery)

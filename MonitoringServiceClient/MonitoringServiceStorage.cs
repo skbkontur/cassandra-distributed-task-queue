@@ -1,11 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Handling;
-
 using SKBKontur.Catalogue.Expressions.ExpressionTrees;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
@@ -17,17 +15,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             this.converter = converter;
         }
 
-        public int GetCount(Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion)
+        public int GetCount(Expression<Func<MonitoringTaskMetadata, bool>> criterion)
         {
             return 0;
         }
 
-        public TaskMetaInformation[] RangeSearch(Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion, int rangeFrom, int count, Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> sortRules = null)
+        public IEnumerable<MonitoringTaskMetadata> RangeSearch(Expression<Func<MonitoringTaskMetadata, bool>> criterion, int rangeFrom, int count, Expression<Func<MonitoringTaskMetadata, bool>> sortRules = null)
         {
             return monitoringServiceClient.Search(converter.ToExpressionTree(criterion), converter.ToExpressionTree(sortRules), count, rangeFrom);
         }
 
-        public object[] GetDistinctValues(Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion, Expression<Func<TaskMetaInformationBusinessObjectWrap, object>> columnPath)
+        public IEnumerable<object> GetDistinctValues(Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, object>> columnPath)
         {
             return monitoringServiceClient.GetDistinctValues(converter.ToExpressionTree(criterion), converter.ToExpressionTree(columnPath));
         }

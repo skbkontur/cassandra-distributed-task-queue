@@ -29,11 +29,11 @@
         {
             var taskModel = Model.TaskModels[index];
             // ReSharper disable Asp.NotResolved
-            var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.Id });
+            var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.TaskId });
             var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.ParentTaskId });
             // ReSharper restore Asp.NotResolved
             <tr id="Task[@index]">
-                <td id="TaskId[@index]"><a href="@detailsTaskUrl">@taskModel.Id</a></td>
+                <td id="TaskId[@index]"><a href="@detailsTaskUrl">@taskModel.TaskId</a></td>
                 <td id="TaskState[@index]">@Html.TaskState(taskModel)</td>
                 <td id="TaskName[@index]">@taskModel.Name</td>
                 <td id="EnqueueTicks[@index]">@taskModel.EnqueueTicks</td>

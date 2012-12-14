@@ -2,35 +2,36 @@ using System;
 using System.Linq.Expressions;
 
 using SKBKontur.Catalogue.Expressions.Visitors;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
     public class MonitoringSearchRequestCriterionBuilder : IMonitoringSearchRequestCriterionBuilder
     {
-        public Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> BuildCriterion(MonitoringSearchRequest searchRequest)
+        public Expression<Func<MonitoringTaskMetadata, bool>> BuildCriterion(MonitoringSearchRequest searchRequest)
         {
-            Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion = x => true;
+            Expression<Func<MonitoringTaskMetadata, bool>> criterion = x => true;
             if(searchRequest.States != null && searchRequest.States.Length > 0)
             {
-                Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> cr = x => false;
+                Expression<Func<MonitoringTaskMetadata, bool>> cr = x => false;
                 foreach(var state in searchRequest.States)
                 {
                     var state1 = state;
-                    cr = Or(cr, x => x.Info.State == state1);
+                    cr = Or(cr, x => x.State == state1);
                 }
                 criterion = And(criterion, cr);
             }
             if(!string.IsNullOrEmpty(searchRequest.Name))
-                criterion = And(criterion, x => x.Info.Name == searchRequest.Name);
-            if(!string.IsNullOrEmpty(searchRequest.Id))
-                criterion = And(criterion, x => x.Id == searchRequest.Id);
+                criterion = And(criterion, x => x.Name == searchRequest.Name);
+            if(!string.IsNullOrEmpty(searchRequest.TaskId))
+                criterion = And(criterion, x => x.TaskId == searchRequest.TaskId);
             if(!string.IsNullOrEmpty(searchRequest.ParentTaskId))
-                criterion = And(criterion, x => x.Info.ParentTaskId == searchRequest.ParentTaskId);
+                criterion = And(criterion, x => x.ParentTaskId == searchRequest.ParentTaskId);
 
-            AddDataTimeRangeCriterion(ref criterion, x => x.Info.Ticks, searchRequest.Ticks);
-            AddDataTimeRangeCriterion(ref criterion, x => x.Info.MinimalStartTicks, searchRequest.MinimalStartTicks);
-            AddDataTimeRangeCriterion(ref criterion, x => x.Info.StartExecutingTicks, searchRequest.StartExecutingTicks);
+            AddDataTimeRangeCriterion(ref criterion, x => x.Ticks, searchRequest.Ticks);
+            AddDataTimeRangeCriterion(ref criterion, x => x.MinimalStartTicks, searchRequest.MinimalStartTicks);
+            AddDataTimeRangeCriterion(ref criterion, x => x.StartExecutingTicks, searchRequest.StartExecutingTicks);
 
             return criterion;
         }
@@ -47,16 +48,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return Expression.Lambda<Func<T, bool>>(Expression.OrElse(pr.Visit(a.Body), b.Body), b.Parameters[0]);
         }
 
-        private void AddDataTimeRangeCriterion(ref Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> criterion, Func<TaskMetaInformationBusinessObjectWrap, long?> pathToTicks, DateTimeRange dateTimeRange)
+        private void AddDataTimeRangeCriterion(ref Expression<Func<MonitoringTaskMetadata, bool>> criterion, Func<MonitoringTaskMetadata, long?> pathToTicks, DateTimeRange dateTimeRange)
         {
             if(dateTimeRange.From != null)
             {
-                Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> cr = x => pathToTicks(x).HasValue ? new DateTime(pathToTicks(x).Value) >= dateTimeRange.From : false;
+                Expression<Func<MonitoringTaskMetadata, bool>> cr = x => pathToTicks(x).HasValue ? new DateTime(pathToTicks(x).Value) >= dateTimeRange.From : false;
                 criterion = And(criterion, cr);
             }
             if(dateTimeRange.To != null)
             {
-                Expression<Func<TaskMetaInformationBusinessObjectWrap, bool>> cr = x => pathToTicks(x).HasValue ? new DateTime(pathToTicks(x).Value) <= dateTimeRange.To : false;
+                Expression<Func<MonitoringTaskMetadata, bool>> cr = x => pathToTicks(x).HasValue ? new DateTime(pathToTicks(x).Value) <= dateTimeRange.To : false;
                 criterion = And(criterion, cr);
             }
         }

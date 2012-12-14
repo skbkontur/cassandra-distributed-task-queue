@@ -1,18 +1,17 @@
 using System;
 
-using RemoteQueue.Cassandra.Entities;
-
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
-    public class TaskMetaInfoModelBuilder : ITaskMetaInfoModelBuilder
+    public class TaskMetadataModelBuilder : ITaskMetadataModelBuilder
     {
-        public TaskMetaInfoModel Build(TaskMetaInformation meta)
+        public TaskMetaInfoModel Build(MonitoringTaskMetadata meta)
         {
             return new TaskMetaInfoModel
                 {
-                    Id = meta.Id,
+                    TaskId = meta.TaskId,
                     State = meta.State,
                     Name = meta.Name,
                     EnqueueTicks = TicksToDateString(meta.Ticks),
