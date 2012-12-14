@@ -14,6 +14,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
         {
             Register<FakeFailTaskData>("FakeFailTaskData");
             Register<FakePeriodicTaskData>("FakePeriodicTaskData");
+            Register<SimpleTaskData>("SimpleTaskData");
         }
 
         public KeyValuePair<Type, string>[] GetAllTaskDataInfos()

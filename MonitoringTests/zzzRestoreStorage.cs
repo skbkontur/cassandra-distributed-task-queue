@@ -9,12 +9,12 @@ using NUnit.Framework;
 
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
-using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Settings;
 using SKBKontur.Catalogue.TestCore;
 
-namespace FunctionalTests
+namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests
 {
     [Ignore]
     public class ZzzRestoreStorage : CoreTestBase
@@ -47,7 +47,7 @@ namespace FunctionalTests
                     Id = userId,
                     PasswordHash = passwordService.GetPasswordHash("psw"),
                     Login = "user",
-                    UserName = "Водкужратов Иван Михалыч"
+                    UserName = "user"
                 });
             accessControlService.AddAccess(userId, new ResourseGroupAccessRule
                 {

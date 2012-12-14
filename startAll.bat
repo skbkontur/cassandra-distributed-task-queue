@@ -17,4 +17,10 @@ start cmd /c IndexService\bin\Debug\Catalogue.RemoteTaskQueue.IndexService.exe
 
 start cmd /c MonitoringService\bin\Debug\Catalogue.RemoteTaskQueue.MonitoringService.exe
 
+cd ..
+
+pushd Assemblies\Selenium\
+start cmd /c chromedriver.exe 
+popd
+
 C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe DeployFronts.xml

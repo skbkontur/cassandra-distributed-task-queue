@@ -50,7 +50,6 @@ namespace FunctionalTests.ExchangeTests
         public void TestTooLateOneFailTask()
         {
             var taskId = AddTask(8);
-            Console.WriteLine(taskId);
             try
             {
                 Wait(new[] {taskId}, 12345);

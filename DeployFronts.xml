@@ -7,7 +7,7 @@
     <FrontAppName>RemoteTaskQueue.Front</FrontAppName>
     <ScreenshotsAppName>RemoteTaskQueue.Screenshots</ScreenshotsAppName>
     <FrontHttpPort>9876</FrontHttpPort>
-    <ScreenshotsHttpPort>6679</ScreenshotsHttpPort>
+    <ScreenshotsHttpPort>6669</ScreenshotsHttpPort>
     <ExtensionTasksPath>$(MSBuildThisFileDirectory)..\Assemblies\MSBuild.ExtensionPack\</ExtensionTasksPath>
 </PropertyGroup>
 

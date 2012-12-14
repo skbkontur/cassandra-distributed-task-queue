@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskDatas", "TaskDatas\Task
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Storage", "Storage\Storage.csproj", "{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonitoringTests", "MonitoringTests\MonitoringTests.csproj", "{FC661D64-0BAB-441A-9FB9-5D488DA7419F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +157,16 @@ Global
 		{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}.Release|x86.ActiveCfg = Release|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FC661D64-0BAB-441A-9FB9-5D488DA7419F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

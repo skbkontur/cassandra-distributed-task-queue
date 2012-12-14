@@ -25,21 +25,22 @@
         <td>ParentTaskId</td>        
     </tr>
     @{
-        foreach(var taskModel in Model.TaskModels)
+        for (int index = 0; index < Model.TaskModels.Length; index++)
         {
+            var taskModel = Model.TaskModels[index];
             // ReSharper disable Asp.NotResolved
             var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.Id });
             var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.ParentTaskId });
             // ReSharper restore Asp.NotResolved
-            <tr>
-                <td><a href="@detailsTaskUrl">@taskModel.Id</a></td>
-                <td>@Html.TaskState(taskModel)</td>
-                <td>@taskModel.Name</td>
-                <td>@taskModel.EnqueueTicks</td>
-                <td>@taskModel.StartExecutedTicks</td>
-                <td>@taskModel.MinimalStartTicks</td>
-                <td>@taskModel.Attempts</td>
-                <td><a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a></td>
+            <tr id="Task[@index]">
+                <td id="TaskId[@index]"><a href="@detailsTaskUrl">@taskModel.Id</a></td>
+                <td id="TaskState[@index]">@Html.TaskState(taskModel)</td>
+                <td id="TaskName[@index]">@taskModel.Name</td>
+                <td id="EnqueueTicks[@index]">@taskModel.EnqueueTicks</td>
+                <td id="StartExecutedTicks[@index]">@taskModel.StartExecutedTicks</td>
+                <td id="MinimalStartTicks[@index]">@taskModel.MinimalStartTicks</td>
+                <td id="Attempts[@index]">@taskModel.Attempts</td>
+                <td id="ParentTaskId[@index]"><a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a></td>
             </tr>
         }
     }

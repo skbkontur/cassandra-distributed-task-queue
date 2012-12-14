@@ -34,12 +34,6 @@
     <Reference Include="Cassandra.CassandraClient">
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.AccessControl">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.AccessControl.LocalImplementation">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
@@ -106,7 +100,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="TestBaseExtensions.cs" />
-    <Compile Include="zzzRestoreStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
@@ -117,13 +110,13 @@
       <Project>{B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1}</Project>
       <Name>ExchangeService</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
-      <Project>{B0AAD20D-160A-4D99-877B-B464C295E36F}</Project>
-      <Name>MonitoringServiceClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Storage\Storage.csproj">
+      <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
+      <Name>Storage</Name>
     </ProjectReference>
     <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
       <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>

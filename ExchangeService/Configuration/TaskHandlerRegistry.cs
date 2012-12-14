@@ -11,10 +11,11 @@ namespace ExchangeService.Configuration
 {
     public class TaskHandlerRegistry : ITaskHandlerRegistry
     {
-        public TaskHandlerRegistry(Func<FakeFailTaskHandler> createFakeFailTaskHandler, Func<FakePeriodicTaskHandler> createFakePeriodicTaskHandler)
+        public TaskHandlerRegistry(Func<FakeFailTaskHandler> createFakeFailTaskHandler, Func<FakePeriodicTaskHandler> createFakePeriodicTaskHandler, Func<SimpleTaskHandler> createSimpleTaskHandler)
         {
             Register(createFakeFailTaskHandler);
             Register(createFakePeriodicTaskHandler);
+            Register(createSimpleTaskHandler);
         }
 
         public KeyValuePair<Type, Func<ITaskHandler>>[] GetAllTaskHandlerCreators()
