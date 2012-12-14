@@ -24,7 +24,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests
             base.SetUp();
             IEnumerable<Assembly> assemblies = AssembliesLoader.Load();
             container = new Container(new ContainerConfiguration(assemblies));
-            container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(ApplicationSettings.LoadDefault("functionalTestsSettings"));
+            container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(ApplicationSettings.LoadDefault("monitoringTestsSettings"));
             container.ConfigureCassandra();
             container.ClearAllBeforeTest();
         }
