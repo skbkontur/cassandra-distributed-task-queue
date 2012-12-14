@@ -34,7 +34,7 @@ namespace RemoteQueue.Configuration
             var globalTime = new GlobalTime(ticksHolder);
             var taskMetaEventColumnInfoIndex = new TaskMetaEventColumnInfoIndex(serializer, globalTime, parameters);
             var indexRecordsCleaner = new IndexRecordsCleaner(parameters, taskMetaEventColumnInfoIndex, serializer, globalTime);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, indexRecordsCleaner, ticksHolder, serializer, globalTime);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, indexRecordsCleaner, ticksHolder, serializer, globalTime, cassandraSettings);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex);
             var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));

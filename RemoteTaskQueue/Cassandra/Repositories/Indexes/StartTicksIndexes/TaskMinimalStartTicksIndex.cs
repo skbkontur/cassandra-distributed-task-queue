@@ -7,6 +7,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.EventIndexes;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Connections;
@@ -21,9 +22,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             IIndexRecordsCleaner indexRecordsCleaner,
             ITicksHolder ticksHolder,
             ISerializer serializer,
-            IGlobalTime globalTime)
+            IGlobalTime globalTime,
+            ICassandraSettings cassandraSettings)
             : base(parameters, columnFamilyName)
         {
+            this.cassandraSettings = cassandraSettings;
             this.taskMetaEventColumnInfoIndex = taskMetaEventColumnInfoIndex;
             this.indexRecordsCleaner = indexRecordsCleaner;
             this.ticksHolder = ticksHolder;
@@ -56,6 +59,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
             //todo читать не с начала, отступать на diff
+            long diff = cassandraSettings.Attempts * cassandraSettings.Timeout + 100000000;
+            fromTicks -= diff;
             long firstTicks;
             if(!TryGetFirstEventTicks(taskState, out firstTicks))
                 return new string[0];
@@ -72,6 +77,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         private readonly IIndexRecordsCleaner indexRecordsCleaner;
 
+        private readonly ICassandraSettings cassandraSettings;
         private readonly ITaskMetaEventColumnInfoIndex taskMetaEventColumnInfoIndex;
         private readonly ITicksHolder ticksHolder;
         private readonly ISerializer serializer;

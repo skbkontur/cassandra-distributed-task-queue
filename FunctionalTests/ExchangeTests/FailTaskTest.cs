@@ -39,7 +39,7 @@ namespace FunctionalTests.ExchangeTests
             var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);
             var taskMetaEventColumnInfoIndex = new TaskMetaEventColumnInfoIndex(serializer, globalTime, parameters);
             var indexRecordsCleaner = new IndexRecordsCleaner(parameters, taskMetaEventColumnInfoIndex, serializer, globalTime);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, indexRecordsCleaner, ticksHolder, serializer, globalTime);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, indexRecordsCleaner, ticksHolder, serializer, globalTime, cassandraSettings);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(new TaskMetaInformationBlobStorage(parameters, serializer, globalTime), taskMinimalStartTicksIndex);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage);
             testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime), new RemoteLockCreator(new LockRepository(parameters)));

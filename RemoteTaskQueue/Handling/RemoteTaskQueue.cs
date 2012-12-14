@@ -27,7 +27,7 @@ namespace RemoteQueue.Handling
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskMetaEventColumnInfoIndex = new TaskMetaEventColumnInfoIndex(serializer, globalTime, parameters);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, new IndexRecordsCleaner(parameters, taskMetaEventColumnInfoIndex, serializer, globalTime), ticksHolder, serializer, globalTime);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, new IndexRecordsCleaner(parameters, taskMetaEventColumnInfoIndex, serializer, globalTime), ticksHolder, serializer, globalTime, settings);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
