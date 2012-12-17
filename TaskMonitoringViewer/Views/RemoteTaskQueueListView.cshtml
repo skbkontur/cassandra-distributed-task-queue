@@ -27,9 +27,9 @@
 <div id="TaskMonitoringSearchPanel">
     <div id="searchDiv">
         @{
-            <div class="labeledField">
-                <div class="labeledField_label">TaskName</div>
-                <div class="labeledField_field">@Html.Input(htmlModel.TaskName)</div>
+            <div>
+                <div>TaskName</div>
+                <div>@Html.Select(htmlModel.TaskName)</div>
             </div>
         }
         @Html.Button(htmlModel.SearchButton)
@@ -105,4 +105,5 @@
         }
     }
 </table>
+@Html.Selects(Model.GetAllSelects())
 @Html.Paginator(Model)

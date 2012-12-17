@@ -3,6 +3,8 @@ using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html;
 
+using System.Linq;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.Html
 {
     internal class RemoteTaskQueueHtmlModelBuilder : IRemoteTaskQueueHtmlModelBuilder
@@ -16,9 +18,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         {
             return new SearchPanelHtmlModel
                 {
-                    TaskName = htmlModelsCreator.TextBoxFor(pageModel, x => x.SearchPanel.TaskName, new TextBoxOptions
+                    TaskName = htmlModelsCreator.SelectBoxFor(pageModel, x => x.SearchPanel.TaskName, new SelectBoxOptions
                         {
-                            Size = TextBoxSize.Large
+                            Size = SelectBoxSize.Medium,
+                            ReferenceConfig = new ReferenceConfig
+                                {
+                                    ReferenceType = "TaskNames",
+                                    NeedEmptyValue = true,
+                                    SelectBoxElements = pageModel.Data.SearchPanel.AllowedTaskNames.Select(x => new SelectBoxElement
+                                        {
+                                            Text = x,
+                                            Value = x
+                                        }).ToArray()
+                                }
                         }),
                     SearchButton = htmlModelsCreator.ButtonFor(new ButtonOptions
                     {

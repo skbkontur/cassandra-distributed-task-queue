@@ -63,7 +63,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 {
                     SearchPanel = new SearchPanelModelData
                         {
-                            TaskName = searchRequest.Name
+                            TaskName = searchRequest.Name,
+                            AllowedTaskNames = allowedSearchValues.Names
                         },
                     TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
                         {

@@ -5,7 +5,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html
 {
     public class SearchPanelHtmlModel
     {
-        public TextBoxHtmlModel TaskName { get; set; }
+        public SelectBoxHtmlModel TaskName { get; set; }
         public ButtonHtmlModel SearchButton { get; set; }
     }
 }
