@@ -1,4 +1,5 @@
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls;
+using SKBKontur.Catalogue.WebTestCore.SystemControls;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 {
@@ -6,6 +7,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
     {
         public override void BrowseWaitVisible()
         {
+            NextPage = new Link("Paginator_Next");
+            PrevPage = new Link("Paginator_Prev");
         }
 
         public void CheckTaskListItemsCount(int expectedCount)
@@ -30,5 +33,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         {
             return new TaskListItem(index);
         }
+
+        public TasksListPage GoToNextPage()
+        {
+            NextPage.Click();
+            return GoTo<TasksListPage>();
+        }
+
+        public TasksListPage GoToPrevPage()
+        {
+            PrevPage.Click();
+            return GoTo<TasksListPage>();
+        }
+
+        public Link NextPage { get; private set; }
+        public Link PrevPage { get; private set; }
     }
 }
