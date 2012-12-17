@@ -17,7 +17,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 
         public int GetCount(Expression<Func<MonitoringTaskMetadata, bool>> criterion)
         {
-            return 0;
+            return monitoringServiceClient.GetCount(converter.ToExpressionTree(criterion));
         }
 
         public IEnumerable<MonitoringTaskMetadata> RangeSearch(Expression<Func<MonitoringTaskMetadata, bool>> criterion, int rangeFrom, int count, Expression<Func<MonitoringTaskMetadata, bool>> sortRules = null)

@@ -52,6 +52,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             return domain.QueryFromRandomReplica<object[], MonitoringGetDistinctValuesQuery>(monitoringGetDistinctValuesQuery);
         }
 
+        public int GetCount(ExpressionTree criterion)
+        {
+            var domain = methodDomainFactory.Create("GetCount", domainTopology, timeout, clientName);
+            var query = new MonitoringGetCountQuery
+                {
+                    Criterion = criterion
+                };
+            return domain.QueryFromRandomReplica<int, MonitoringGetCountQuery>(query);
+        }
+
         private readonly IMethodDomainFactory methodDomainFactory;
         private readonly IDomainTopology domainTopology;
         private const int timeout = 30 * 1000;

@@ -56,7 +56,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             int page = (pageNumber ?? 0);
             var countPerPage = ControllerConstants.DefaultRecordsNumberPerPage;
             var rangeFrom = page * ControllerConstants.DefaultRecordsNumberPerPage;
-            var totalPagesCount = (monitoringServiceStorage.GetCount(criterion) + countPerPage - 1) / countPerPage;
+            var cnt = monitoringServiceStorage.GetCount(criterion);
+            var totalPagesCount = (cnt + countPerPage - 1) / countPerPage;
             var fullTaskMetaInfos = monitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.MinimalStartTicks.Descending());
             var model = new RemoteTaskQueueModel(pageModelBaseParameters)
                 {

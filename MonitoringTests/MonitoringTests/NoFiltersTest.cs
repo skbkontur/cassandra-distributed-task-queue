@@ -45,6 +45,34 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             }
         }
 
+        [Test]
+        public void TestPaging()
+        {
+            CreateUser("user", "psw");
+            var ids = new string[200];
+            for (int i = 0; i < 200; i++)
+                ids[i] = AddTask(new SimpleTaskData());
+            foreach (var id in ids)
+                Console.WriteLine(id);
+            //var tasksListPage = Login("user", "psw");
+            //tasksListPage.CheckTaskListItemsCount(10);
+            //Console.WriteLine();
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    var item = tasksListPage.GetTaskListItem(i);
+            //    item.TaskId.WaitText(ids[9 - i]);
+            //    item.TaskState.WaitText("Finished");
+            //    item.TaskName.WaitText("SimpleTaskData");
+            //    item.Attempts.WaitText("1");
+            //    var details = tasksListPage.GoToTaskDetails(i);
+            //    details.TaskId.WaitText(ids[9 - i]);
+            //    details.TaskState.WaitText("Finished");
+            //    details.TaskName.WaitText("SimpleTaskData");
+            //    details.Attempts.WaitText("1");
+            //    tasksListPage = details.GoToTasksListPage();
+            //}
+        }
+
         private string AddTask<T>(T taskData) where T : ITaskData
         {
             return remoteTaskQueue.Queue(taskData);

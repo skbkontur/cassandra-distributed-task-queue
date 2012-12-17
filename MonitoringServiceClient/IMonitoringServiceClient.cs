@@ -12,5 +12,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 
         IEnumerable<MonitoringTaskMetadata> Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0);
         IEnumerable<object> GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath);
+        int GetCount(ExpressionTree criterion);
     }
 }
