@@ -47,9 +47,9 @@
         Html.RenderStyle("/SharedBlocks/BalloonLink/BalloonLink.css");
         
         Html.RenderStyle("/Statics/Design/Common/Styles/Header.css");
-        
-        Html.RenderScript("/Shared/Scripts/Globals/OnError.js");
-        Html.RenderScript("/Shared/Scripts/Globals/IsJs.js");
+
+        Html.RenderStyle("/Shared/Design/RemoteTaskQueueMonitoring/Styles/RemoteTaskQueueMonitoring.css");
+        Html.RenderStyle("/Shared/Design/RemoteTaskQueueMonitoring/Styles/Paginator.css");
 
         Html.RenderScript("/Shared/Scripts/External/Base.js");
         Html.RenderScript("/Shared/Scripts/External/Clone.js");
@@ -61,26 +61,20 @@
         Html.RenderScript("/Shared/Scripts/External/JQueryJson.js");
         Html.RenderScript("/Shared/Scripts/External/JQuerySimulate.js");
         Html.RenderScript("/Shared/Scripts/External/JQuerySimulateTyping.js");
-        
-        Html.RenderScript("/Shared/Scripts/Browser/BrowserType.js");
 
         Html.RenderScript("/Shared/Scripts/External/underscore.js");
-
-        Html.RenderScript("/Shared/Scripts/Extensions/Function.js");
-        Html.RenderScript("/Shared/Scripts/Extensions/String.js");
-        Html.RenderScript("/Shared/Scripts/Extensions/Helpers.js");
+        Html.RenderScript("/Shared/Scripts/Extensions/UnderscoreAddon.js");
+        Html.RenderScript("/Shared/Scripts/Extensions/Browser.js");
 
         Html.RenderScript("/Shared/Scripts/Keyboard/Keyboard.js");
         Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardCollection.js");
         Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardNormalizer.js");
         Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardKeys.js");
-        
+
         Html.RenderScript("/Shared/Scripts/Expressions/Expression.js");
 
-        Html.RenderAllScriptsFromDirectory("/Shared/Scripts/AutoLoad");
+        Html.RenderAllScriptsFromDirectory("/Shared/Scripts/Autoload");
         Html.RenderAllScriptsFromDirectory("/SharedBlocks/");
-        Html.RenderAllScriptsFromDirectory("/Blocks");
-        Html.RenderAllScriptsFromDirectory("/Statics/Scripts");
     }
 
     @RenderSection("Statics")
