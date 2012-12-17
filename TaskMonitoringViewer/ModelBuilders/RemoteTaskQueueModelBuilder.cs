@@ -59,11 +59,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             var cnt = monitoringServiceStorage.GetCount(criterion);
             var totalPagesCount = (cnt + countPerPage - 1) / countPerPage;
             var fullTaskMetaInfos = monitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.MinimalStartTicks.Descending());
-            var model = new RemoteTaskQueueModel(pageModelBaseParameters)
+            var remoteTaskQueueModelData = new RemoteTaskQueueModelData
                 {
-                    PageNumber = page,
-                    TotalPagesCount = totalPagesCount,
-                    PagesWindowSize = 3,
+                    SearchPanel = new SearchPanelModelData
+                        {
+                            TaskName = searchRequest.Name
+                        },
                     TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
                         {
                             Attempts = x.Attempts,
@@ -75,8 +76,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             StartExecutedTicks = TicksToDateString(x.StartExecutingTicks),
                             MinimalStartTicks = TicksToDateString(x.MinimalStartTicks)
                         }).ToArray(),
+                };
+            var model = new RemoteTaskQueueModel(pageModelBaseParameters, remoteTaskQueueModelData)
+                {
+                    PageNumber = page,
+                    TotalPagesCount = totalPagesCount,
+                    PagesWindowSize = 3,
                     SearchRequestId = searchRequestId ?? ""
-                }; //PageModelBaseParameters, RemoteTaskQueueModelBuilder.BuildModel(LanguageProvider, fullTaskMetaInfos, searchRequest, allowedSearchValues));
+                };
             model.HtmlModel = remoteTaskQueueHtmlModelBuilder.Build(model);
             return model;
         }

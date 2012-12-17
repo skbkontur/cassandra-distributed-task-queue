@@ -80,6 +80,7 @@
     <Compile Include="ModelBuilders\Html\IRemoteTaskQueueHtmlModelBuilder.cs" />
     <Compile Include="ModelBuilders\Html\RemoteTaskQueueHtmlModelBuilder.cs" />
     <Compile Include="ModelBuilders\Html\RemoteTaskQueueModelData.cs" />
+    <Compile Include="ModelBuilders\Html\SearchPanelModelData.cs" />
     <Compile Include="ModelBuilders\IRemoteTaskQueueModelBuilder.cs" />
     <Compile Include="ModelBuilders\ITaskDataModelBuilder.cs" />
     <Compile Include="ModelBuilders\ITaskMetadataModelBuilder.cs" />

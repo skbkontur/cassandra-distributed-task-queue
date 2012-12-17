@@ -43,7 +43,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                 {
                     Id = requestId,
                     ScopeId = requestId,
-                    Name = modelData.TaskName
+                    Name = modelData.SearchPanel.TaskName
                 };
             businessObjectsStorage.Write(searchRequest);
             return Json(new SuccessOperationResult

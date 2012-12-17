@@ -23,7 +23,7 @@
     });
 }
 <h1>
-    Task list</h1>
+    Хуй</h1>
 <div id="TaskMonitoringSearchPanel">
     <div id="searchDiv">
         @{
@@ -63,9 +63,9 @@
         </td>
     </tr>
     @{
-        for(int index = 0; index < Model.TaskModels.Length; index++)
+        for(int index = 0; index < Model.Data.TaskModels.Length; index++)
         {
-            var taskModel = Model.TaskModels[index];
+            var taskModel = Model.Data.TaskModels[index];
             // ReSharper disable Asp.NotResolved
             var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
             var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});

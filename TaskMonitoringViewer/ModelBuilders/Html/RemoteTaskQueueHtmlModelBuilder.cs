@@ -16,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         {
             return new SearchPanelHtmlModel
                 {
-                    TaskName = htmlModelsCreator.TextBoxFor(pageModel, x => x.TaskName, new TextBoxOptions
+                    TaskName = htmlModelsCreator.TextBoxFor(pageModel, x => x.SearchPanel.TaskName, new TextBoxOptions
                         {
                             Size = TextBoxSize.Large
                         }),

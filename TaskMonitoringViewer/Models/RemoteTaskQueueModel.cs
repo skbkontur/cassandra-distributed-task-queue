@@ -9,9 +9,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
 {
     public class RemoteTaskQueueModel : PageModelBase<RemoteTaskQueueModelData>, IPaginatorModelData
     {
-        public RemoteTaskQueueModel(PageModelBaseParameters parameters)
+        public RemoteTaskQueueModel(PageModelBaseParameters parameters, RemoteTaskQueueModelData remoteTaskQueueModelData)
             : base(parameters)
         {
+            Data = remoteTaskQueueModelData;
         }
 
         public string GetUrl(UrlHelper url, int page)
@@ -27,7 +28,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         public override sealed RemoteTaskQueueModelData Data { get; protected set; }
         public string SearchRequestId { get; set; }
 
-        public TaskMetaInfoModel[] TaskModels { get; set; }
         public SearchPanelHtmlModel HtmlModel { get; set; }
     }
 }
