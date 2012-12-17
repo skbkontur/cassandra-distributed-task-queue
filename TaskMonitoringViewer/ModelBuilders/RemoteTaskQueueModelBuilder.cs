@@ -75,6 +75,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             StartExecutedTicks = TicksToDateString(x.StartExecutingTicks),
                             MinimalStartTicks = TicksToDateString(x.MinimalStartTicks)
                         }).ToArray(),
+                    SearchRequestId = searchRequestId ?? ""
                 }; //PageModelBaseParameters, RemoteTaskQueueModelBuilder.BuildModel(LanguageProvider, fullTaskMetaInfos, searchRequest, allowedSearchValues));
             model.HtmlModel = remoteTaskQueueHtmlModelBuilder.Build(model);
             return model;

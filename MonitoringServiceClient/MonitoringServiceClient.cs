@@ -28,7 +28,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             domain.SendToEachReplica(DomainConsistencyLevel.All);
         }
 
-        public IEnumerable<MonitoringTaskMetadata> Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0)
+        public MonitoringTaskMetadata[] Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0)
         {
             var domain = methodDomainFactory.Create("Search", domainTopology, timeout, clientName);
             var searchQuery = new MonitoringSearchQuery
@@ -41,7 +41,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             return domain.QueryFromRandomReplica<MonitoringTaskMetadata[], MonitoringSearchQuery>(searchQuery);
         }
 
-        public IEnumerable<object> GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath)
+        public object[] GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath)
         {
             var domain = methodDomainFactory.Create("GetDistinctValues", domainTopology, timeout, clientName);
             var monitoringGetDistinctValuesQuery = new MonitoringGetDistinctValuesQuery

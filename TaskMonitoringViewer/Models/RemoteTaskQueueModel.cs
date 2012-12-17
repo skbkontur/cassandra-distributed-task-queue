@@ -17,7 +17,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         public string GetUrl(UrlHelper url, int page)
         {
 // ReSharper disable Asp.NotResolved
-            return url.Action("Run", "RemoteTaskQueue", new {pageNumber = page});
+            return url.Action("Run", "RemoteTaskQueue", new {pageNumber = page, searchRequestId = SearchRequestId});
 // ReSharper restore Asp.NotResolved
         }
 
@@ -25,6 +25,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         public int PageNumber { get; set; }
         public int PagesWindowSize { get; set; }
         public override sealed RemoteTaskQueueModelData Data { get; protected set; }
+        public string SearchRequestId { get; set; }
 
         public TaskMetaInfoModel[] TaskModels { get; set; }
         public SearchPanelHtmlModel HtmlModel { get; set; }

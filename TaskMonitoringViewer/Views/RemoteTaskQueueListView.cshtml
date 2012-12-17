@@ -67,8 +67,8 @@
         {
             var taskModel = Model.TaskModels[index];
             // ReSharper disable Asp.NotResolved
-            var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.TaskId, pageNumber = Model.PageNumber});
-            var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.ParentTaskId, pageNumber = Model.PageNumber});
+            var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
+            var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
             // ReSharper restore Asp.NotResolved
             <tr id="Task[@index]">
                 <td id="TaskId[@index]">
