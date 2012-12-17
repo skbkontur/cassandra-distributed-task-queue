@@ -15,6 +15,17 @@
 }
 
 <h1>Task list</h1>
+<div>
+    <ul>
+        @{
+            // ReSharper disable Asp.NotResolved
+            var taskListUrl = @Url.Action("Run", "RemoteTaskQueue", new{pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
+            // ReSharper restore Asp.NotResolved
+        }
+        <li><a href="@taskListUrl">Task list</a></li>
+    </ul>
+</div>
+<hr />
 
 <table>
     <tr>
@@ -49,7 +60,7 @@
         <td><b>ParentTaskId</b></td>
         @{
             // ReSharper disable Asp.NotResolved
-            var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = Model.TaskMetaInfoModel.ParentTaskId });
+            var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = Model.TaskMetaInfoModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequesId = Model.SearchRequestId});
             // ReSharper restore Asp.NotResolved
         }
         <td id="ParentTaskId"><a href="@detailsParentTaskUrl">@Model.TaskMetaInfoModel.ParentTaskId</a></td>

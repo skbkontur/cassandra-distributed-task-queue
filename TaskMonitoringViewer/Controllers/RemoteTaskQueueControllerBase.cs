@@ -53,10 +53,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
-        public ActionResult Show(string id)
+        public ActionResult Show(string id, int? pageNumber, string searchRequestId)
         {
             var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
-            return View("RemoteTaskQueueDetailsView", taskViewModelBuilder.Build(remoteTaskInfo));
+            return View("RemoteTaskQueueDetailsView", taskViewModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]

@@ -7,7 +7,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Paging;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
 {
-    public class RemoteTaskQueueModel :  PageModelBase<RemoteTaskQueueModelData>, IPaginatorModelData
+    public class RemoteTaskQueueModel : PageModelBase<RemoteTaskQueueModelData>, IPaginatorModelData
     {
         public RemoteTaskQueueModel(PageModelBaseParameters parameters)
             : base(parameters)
@@ -17,7 +17,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         public string GetUrl(UrlHelper url, int page)
         {
 // ReSharper disable Asp.NotResolved
-            return url.Action("Run", "RemoteTaskQueue", new { page });
+            return url.Action("Run", "RemoteTaskQueue", new {pageNumber = page});
 // ReSharper restore Asp.NotResolved
         }
 

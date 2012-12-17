@@ -135,17 +135,6 @@
         </script>
     </head>
     <body class="subform" subform="page">
-        <div>
-            <ul>
-                @{
-                    // ReSharper disable Asp.NotResolved
-                    var taskListUrl = @Url.Action("Run", "RemoteTaskQueue");
-                    // ReSharper restore Asp.NotResolved
-                }
-                <li><a href="@taskListUrl">Task list</a></li>
-            </ul>
-        </div>
-        <hr />
         @RenderBody()
     </body>
 </html>

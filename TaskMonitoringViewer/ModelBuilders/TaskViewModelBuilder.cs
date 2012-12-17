@@ -18,7 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             this.taskDataModelBuilder = taskDataModelBuilder;
         }
 
-        public TaskViewModel Build(RemoteTaskInfo remoteTaskInfo)
+        public TaskViewModel Build(RemoteTaskInfo remoteTaskInfo, int? pageNumber, string searchRequestId)
         {
             MonitoringTaskMetadata metadata;
             if(!TryConvertTaskMetaInformationToMonitoringTaskMetadata(remoteTaskInfo.Context, out metadata))
@@ -27,6 +27,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 {
                     TaskMetaInfoModel = taskMetadataModelBuilder.Build(metadata),
                     TaskDataValue = taskDataModelBuilder.Build(remoteTaskInfo.Context.Id, remoteTaskInfo.TaskData),
+                    PageNumber = pageNumber ?? 0,
+                    SearchRequestId = searchRequestId
                 };
         }
 

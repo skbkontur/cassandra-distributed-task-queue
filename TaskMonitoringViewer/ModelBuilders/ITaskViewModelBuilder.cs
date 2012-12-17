@@ -6,6 +6,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     public interface ITaskViewModelBuilder
     {
-        TaskViewModel Build(RemoteTaskInfo remoteTaskInfo);
+        TaskViewModel Build(RemoteTaskInfo remoteTaskInfo, int? pageNumber, string searchRequestId);
     }
 }
