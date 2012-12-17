@@ -1,3 +1,5 @@
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\aspnet_regiis.exe -i
+
 cd ..\Assemblies\Cassandra\Server\bin\
 start cassandra.bat
 
@@ -23,4 +25,4 @@ pushd Assemblies\Selenium\
 start cmd /c chromedriver.exe 
 popd
 
-C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe DeployFronts.xml
+C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe RemoteTaskQueue\DeployFronts.xml
