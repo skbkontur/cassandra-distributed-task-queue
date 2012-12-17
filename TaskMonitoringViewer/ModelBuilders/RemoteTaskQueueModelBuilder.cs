@@ -69,10 +69,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             TaskId = x.TaskId,
                             Name = x.Name,
                             State = x.State,
+                            EnqueueTicks = TicksToDateString(x.Ticks),
+                            ParentTaskId = x.ParentTaskId,
+                            StartExecutedTicks = TicksToDateString(x.StartExecutingTicks),
+                            MinimalStartTicks = TicksToDateString(x.MinimalStartTicks)
                         }).ToArray(),
                 }; //PageModelBaseParameters, RemoteTaskQueueModelBuilder.BuildModel(LanguageProvider, fullTaskMetaInfos, searchRequest, allowedSearchValues));
             model.HtmlModel = remoteTaskQueueHtmlModelBuilder.Build(model);
             return model;
+        }
+
+        private string TicksToDateString(long? ticks)
+        {
+            return ticks == null ? null : new DateTime(ticks.Value).ToString();
         }
 
         private T TryPrase<T>(string s) where T : struct
