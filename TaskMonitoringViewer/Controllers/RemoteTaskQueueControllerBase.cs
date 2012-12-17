@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 
 using RemoteQueue.Handling;
@@ -43,7 +44,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                 {
                     Id = requestId,
                     ScopeId = requestId,
-                    Name = modelData.SearchPanel.TaskName
+                    Name = modelData.SearchPanel.TaskName,
+                    States = modelData.SearchPanel.States.Where(x => x.Value == true).Select(x => x.Key).ToArray()
                 };
             businessObjectsStorage.Write(searchRequest);
             return Json(new SuccessOperationResult

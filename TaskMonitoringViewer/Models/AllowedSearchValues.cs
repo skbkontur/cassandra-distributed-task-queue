@@ -1,4 +1,4 @@
-﻿using RemoteQueue.Cassandra.Entities;
+﻿using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
 {

@@ -28,82 +28,98 @@
     <div id="searchDiv">
         @{
             <div>
-                <div>TaskName</div>
-                <div>@Html.Select(htmlModel.TaskName)</div>
+                <div>State</div>
+                <div>
+                    @foreach (var state in htmlModel.States)
+                    {
+                        @Html.Input(state.Key)
+                        @Html.Checkbox(state.Value)
+                    }
+                </div>
             </div>
+            if(htmlModel.TaskName != null)
+            {
+                <div>
+                    <div>TaskName</div>
+                    <div>@Html.Select(htmlModel.TaskName)</div>
+                </div>
+            } 
         }
-        @Html.Button(htmlModel.SearchButton)
+        <div>@Html.Button(htmlModel.SearchButton)
+        </div>
     </div>
 </div>
-<table>
-    <tr>
-        <td>
-            TaskId
-        </td>
-        <td>
-            TaskState
-        </td>
-        <td>
-            TaskName
-        </td>
-        <td>
-            EnqueueTicks
-        </td>
-        <td>
-            StartExecutedTicks
-        </td>
-        <td>
-            MinimalStartTicks
-        </td>
-        <td>
-            Attempts
-        </td>
-        <td>
-            ParentTaskId
-        </td>
-    </tr>
-    @{
-        for(int index = 0; index < Model.Data.TaskModels.Length; index++)
-        {
-            var taskModel = Model.Data.TaskModels[index];
-            // ReSharper disable Asp.NotResolved
-            var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
-            var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
-            // ReSharper restore Asp.NotResolved
-            <tr id="Task[@index]">
-                <td id="TaskId[@index]">
-                    <a href="@detailsTaskUrl">@taskModel.TaskId</a>
-                </td>
+<div>
+    <table>
+        <tr>
+            <td>
+                TaskId
+            </td>
+            <td>
+                TaskState
+            </td>
+            <td>
+                TaskName
+            </td>
+            <td>
+                EnqueueTicks
+            </td>
+            <td>
+                StartExecutedTicks
+            </td>
+            <td>
+                MinimalStartTicks
+            </td>
+            <td>
+                Attempts
+            </td>
+            <td>
+                ParentTaskId
+            </td>
+        </tr>
+        @{
+            for (int index = 0; index < Model.Data.TaskModels.Length; index++)
+            {
+                var taskModel = Model.Data.TaskModels[index];
+                // ReSharper disable Asp.NotResolved
+                var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId });
+                var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId });
+                // ReSharper restore Asp.NotResolved
+                <tr id="Task[@index]">
+                    <td id="TaskId[@index]">
+                        <a href="@detailsTaskUrl">@taskModel.TaskId</a>
+                    </td>
 
-                <td id="TaskState[@index]">
-                    @Html.TaskState(taskModel)
-                </td>
+                    <td id="TaskState[@index]">
+                        @Html.TaskState(taskModel)
+                    </td>
 
-                <td id="TaskName[@index]">
-                    @taskModel.Name
-                </td>
+                    <td id="TaskName[@index]">
+                        @taskModel.Name
+                    </td>
 
-                <td id="EnqueueTicks[@index]">
-                    @taskModel.EnqueueTicks
-                </td>
+                    <td id="EnqueueTicks[@index]">
+                        @taskModel.EnqueueTicks
+                    </td>
 
-                <td id="StartExecutedTicks[@index]">
-                    @taskModel.StartExecutedTicks
-                </td>
+                    <td id="StartExecutedTicks[@index]">
+                        @taskModel.StartExecutedTicks
+                    </td>
 
-                <td id="MinimalStartTicks[@index]">
-                    @taskModel.MinimalStartTicks
-                </td>
+                    <td id="MinimalStartTicks[@index]">
+                        @taskModel.MinimalStartTicks
+                    </td>
 
-                <td id="Attempts[@index]">
-                    @taskModel.Attempts
-                </td>
-                <td id="ParentTaskId[@index]">
-                    <a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a>
-                </td>
-            </tr>
+                    <td id="Attempts[@index]">
+                        @taskModel.Attempts
+                    </td>
+                    <td id="ParentTaskId[@index]">
+                        <a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a>
+                    </td>
+                </tr>
+            }
         }
-    }
-</table>
+    </table>
+</div>
 @Html.Selects(Model.GetAllSelects())
 @Html.Paginator(Model)

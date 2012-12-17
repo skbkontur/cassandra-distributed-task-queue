@@ -1,14 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-
-using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.PageModels;
 using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Constants;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers;
@@ -63,6 +63,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 {
                     SearchPanel = new SearchPanelModelData
                         {
+                            States = BuildArray(allowedSearchValues.States, searchRequest.States),
                             TaskName = searchRequest.Name,
                             AllowedTaskNames = allowedSearchValues.Names
                         },
@@ -87,6 +88,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 };
             model.HtmlModel = remoteTaskQueueHtmlModelBuilder.Build(model);
             return model;
+        }
+
+
+        private Pair<T, bool?> [] BuildArray<T>(T[] allowedValues, T[] requestValues, HashSet<T> needValues = null)
+            where T : IComparable
+        {
+            var dictionary = allowedValues.ToDictionary(x => x, x => false);
+            foreach (var requestValue in requestValues)
+            {
+                if (dictionary.ContainsKey(requestValue))
+                    dictionary[requestValue] = true;
+                else
+                    dictionary.Add(requestValue, true);
+            }
+            var array = dictionary.Select(x => new Pair<T, bool?> { Key = x.Key, Value = x.Value }).ToArray();
+            Array.Sort(array, (x, y) => x.Key.CompareTo(y.Key));
+            return array;
         }
 
         private string TicksToDateString(long? ticks)
