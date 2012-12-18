@@ -39,31 +39,31 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Search(RemoteTaskQueueModelData modelData)
+        public ActionResult Search(RemoteTaskQueuePageModel pageModel)
         {
             var requestId = Guid.NewGuid().ToString();
             var searchRequest = new MonitoringSearchRequest
                 {
                     Id = requestId,
                     ScopeId = requestId,
-                    Name = modelData.SearchPanel.TaskName,
-                    TaskId = modelData.SearchPanel.TaskId,
-                    ParentTaskId = modelData.SearchPanel.ParentTaskId,
-                    States = modelData.SearchPanel.States.Where(x => x.Value == true).Select(x => x.Key).ToArray(),
+                    Name = pageModel.SearchPanel.TaskName,
+                    TaskId = pageModel.SearchPanel.TaskId,
+                    ParentTaskId = pageModel.SearchPanel.ParentTaskId,
+                    States = pageModel.SearchPanel.States.Where(x => x.Value == true).Select(x => x.Key).ToArray(),
                     Ticks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(modelData.SearchPanel.Ticks.From),
-                            To = DateAndTime.ToDateTime(modelData.SearchPanel.Ticks.To)
+                            From = DateAndTime.ToDateTime(pageModel.SearchPanel.Ticks.From),
+                            To = DateAndTime.ToDateTime(pageModel.SearchPanel.Ticks.To)
                         },
                     StartExecutingTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(modelData.SearchPanel.StartExecutedTicks.From),
-                            To = DateAndTime.ToDateTime(modelData.SearchPanel.StartExecutedTicks.To)
+                            From = DateAndTime.ToDateTime(pageModel.SearchPanel.StartExecutedTicks.From),
+                            To = DateAndTime.ToDateTime(pageModel.SearchPanel.StartExecutedTicks.To)
                         },
                     MinimalStartTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(modelData.SearchPanel.MinimalStartTicks.From),
-                            To = DateAndTime.ToDateTime(modelData.SearchPanel.MinimalStartTicks.To)
+                            From = DateAndTime.ToDateTime(pageModel.SearchPanel.MinimalStartTicks.From),
+                            To = DateAndTime.ToDateTime(pageModel.SearchPanel.MinimalStartTicks.To)
                         }
                 };
             businessObjectsStorage.Write(searchRequest);

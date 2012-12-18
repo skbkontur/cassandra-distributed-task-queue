@@ -15,7 +15,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     internal class RemoteTaskQueueHtmlModelBuilder : IRemoteTaskQueueHtmlModelBuilder
     {
-        public RemoteTaskQueueHtmlModelBuilder(IHtmlModelsCreator<RemoteTaskQueueModelData> htmlModelsCreator)
+        public RemoteTaskQueueHtmlModelBuilder(IHtmlModelsCreator<RemoteTaskQueuePageModel> htmlModelsCreator)
         {
             this.htmlModelsCreator = htmlModelsCreator;
             taskStates = new Dictionary<TaskState, string>
@@ -88,7 +88,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                                                               }))).ToArray();
         }
 
-        private DateTimeRangeHtmlModel BulildDateTimeRangeHtmlMode(RemoteTaskQueueModel pageModel, Expression<Func<RemoteTaskQueueModelData, DateTimeRangeModel>> pathToDateTimeRange)
+        private DateTimeRangeHtmlModel BulildDateTimeRangeHtmlMode(RemoteTaskQueueModel pageModel, Expression<Func<RemoteTaskQueuePageModel, DateTimeRangeModel>> pathToDateTimeRange)
         {
             return new DateTimeRangeHtmlModel
                 {
@@ -113,7 +113,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return -1;
         }
 
-        private readonly IHtmlModelsCreator<RemoteTaskQueueModelData> htmlModelsCreator;
+        private readonly IHtmlModelsCreator<RemoteTaskQueuePageModel> htmlModelsCreator;
         private readonly Dictionary<TaskState, string> taskStates;
     }
 }

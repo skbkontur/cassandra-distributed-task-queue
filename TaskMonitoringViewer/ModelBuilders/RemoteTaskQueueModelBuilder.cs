@@ -60,7 +60,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             var cnt = monitoringServiceStorage.GetCount(criterion);
             var totalPagesCount = (cnt + countPerPage - 1) / countPerPage;
             var fullTaskMetaInfos = monitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.MinimalStartTicks.Descending());
-            var remoteTaskQueueModelData = new RemoteTaskQueueModelData
+            var remoteTaskQueueModelData = new RemoteTaskQueuePageModel
                 {
                     SearchPanel = new SearchPanelModelData
                         {
