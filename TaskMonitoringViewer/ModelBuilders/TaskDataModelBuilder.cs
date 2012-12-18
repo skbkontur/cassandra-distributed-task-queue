@@ -61,7 +61,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                     {
                         Filename = fileName,
                         // ReSharper disable Mvc.ControllerNotResolved
+// ReSharper disable Asp.NotResolved
                         GetUrl = url => url.Action("Run", "FileData", new { fileId })
+// ReSharper restore Asp.NotResolved
                         // ReSharper restore Mvc.ControllerNotResolved
                     };
                 }
