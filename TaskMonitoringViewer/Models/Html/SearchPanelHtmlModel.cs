@@ -9,6 +9,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html
     {
         public KeyValuePair<TextBoxHtmlModel, CheckBoxHtmlModel>[] States { get; set; }
         public SelectBoxHtmlModel TaskName { get; set; }
+        public TextBoxHtmlModel TaskId { get; set; }
+        public TextBoxHtmlModel ParentTaskId { get; set; }
         public ButtonHtmlModel SearchButton { get; set; }
         public DateTimeRangeHtmlModel Ticks { get; set; }
         public DateTimeRangeHtmlModel StartExecutedTicks { get; set; }

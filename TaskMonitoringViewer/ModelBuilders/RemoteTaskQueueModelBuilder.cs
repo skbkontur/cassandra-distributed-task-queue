@@ -66,6 +66,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                         {
                             States = BuildArray(allowedSearchValues.States, searchRequest.States),
                             TaskName = searchRequest.Name,
+                            TaskId = searchRequest.TaskId,
+                            ParentTaskId = searchRequest.ParentTaskId,
                             AllowedTaskNames = allowedSearchValues.Names,
                             Ticks = new DateTimeRangeModel
                                 {

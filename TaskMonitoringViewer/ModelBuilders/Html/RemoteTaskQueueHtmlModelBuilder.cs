@@ -50,6 +50,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                                         }).ToArray()
                                 }
                         }),
+                    TaskId = htmlModelsCreator.TextBoxFor(pageModel, x => x.SearchPanel.TaskId, new TextBoxOptions
+                        {
+                            Size = TextBoxSize.Large
+                        }),
+                    ParentTaskId = htmlModelsCreator.TextBoxFor(pageModel, x => x.SearchPanel.ParentTaskId, new TextBoxOptions
+                    {
+                        Size = TextBoxSize.Large
+                    }),
                     SearchButton = htmlModelsCreator.ButtonFor(new ButtonOptions
                         {
                             Action = "Search",
