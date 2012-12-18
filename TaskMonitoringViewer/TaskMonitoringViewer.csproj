@@ -84,6 +84,7 @@
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
+    <Compile Include="ModelBuilders\Html\DateTimeRangeModel.cs" />
     <Compile Include="ModelBuilders\Html\IRemoteTaskQueueHtmlModelBuilder.cs" />
     <Compile Include="ModelBuilders\Html\Pair.cs" />
     <Compile Include="ModelBuilders\Html\RemoteTaskQueueHtmlModelBuilder.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Models\AllowedSearchValues.cs" />
     <Compile Include="Models\ByteArrayTaskDataValue.cs" />
     <Compile Include="Models\EmptyTaskDataValue.cs" />
+    <Compile Include="Models\Html\DateTimeRangeHtmlModel.cs" />
     <Compile Include="Models\Html\SearchPanelHtmlModel.cs" />
     <Compile Include="Models\ITaskDataValue.cs" />
     <Compile Include="Models\ObjectTaskDataModel.cs" />
@@ -152,7 +154,9 @@
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Shared\Primitives\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(SolutionDir)..\Assemblies\Temp\

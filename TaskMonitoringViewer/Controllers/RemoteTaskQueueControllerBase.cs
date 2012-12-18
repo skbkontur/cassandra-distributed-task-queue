@@ -8,7 +8,9 @@ using SKBKontur.Catalogue.AccessControl.AccessRules;
 using SKBKontur.Catalogue.CassandraStorageCore.BusinessObjectStorageImpl;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
+using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.Html;
 
@@ -45,7 +47,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                     Id = requestId,
                     ScopeId = requestId,
                     Name = modelData.SearchPanel.TaskName,
-                    States = modelData.SearchPanel.States.Where(x => x.Value == true).Select(x => x.Key).ToArray()
+                    States = modelData.SearchPanel.States.Where(x => x.Value == true).Select(x => x.Key).ToArray(),
+                    Ticks = new DateTimeRange
+                        {
+                            From = DateAndTime.ToDateTime(modelData.SearchPanel.Ticks.From),
+                            To = DateAndTime.ToDateTime(modelData.SearchPanel.Ticks.To)
+                        },
+                    StartExecutingTicks = new DateTimeRange
+                        {
+                            From = DateAndTime.ToDateTime(modelData.SearchPanel.StartExecutedTicks.From),
+                            To = DateAndTime.ToDateTime(modelData.SearchPanel.StartExecutedTicks.To)
+                        },
+                    MinimalStartTicks = new DateTimeRange
+                        {
+                            From = DateAndTime.ToDateTime(modelData.SearchPanel.MinimalStartTicks.From),
+                            To = DateAndTime.ToDateTime(modelData.SearchPanel.MinimalStartTicks.To)
+                        }
                 };
             businessObjectsStorage.Write(searchRequest);
             return Json(new SuccessOperationResult

@@ -29,7 +29,7 @@
         @{
             <div>
                 <div>State</div>
-                <div>
+                <div class="context_novis">
                     @foreach (var state in htmlModel.States)
                     {
                         @Html.Input(state.Key)
@@ -37,16 +37,36 @@
                     }
                 </div>
             </div>
-            if(htmlModel.TaskName != null)
+            if (htmlModel.TaskName != null)
             {
                 <div>
                     <div>TaskName</div>
-                    <div>@Html.Select(htmlModel.TaskName)</div>
+                    <div class="context_novis">@Html.Select(htmlModel.TaskName)</div>
                 </div>
-            } 
+            }
+            <div>
+                <div>Ticks</div>
+                <div>From Date & Time</div>
+                <div class="context_novis">@Html.DateAndTime(htmlModel.Ticks.From)</div>
+                <div>To Date & Time</div>
+                <div class="context_novis">@Html.DateAndTime(htmlModel.Ticks.To)</div>
+            </div>
+            <div>
+                <div>StartExecutedTicks</div>
+                <div>From Date & Time</div>
+                <div class="context_novis">@Html.DateAndTime(htmlModel.StartExecutedTicks.From)</div>
+                <div>To Date & Time</div>
+                <div class="context_novis">@Html.DateAndTime(htmlModel.StartExecutedTicks.To)</div>
+            </div>
+            <div>
+                <div>MinimalStartTicks</div>
+                <div>From Date & Time</div>
+                <div class="context_novis">@Html.DateAndTime(htmlModel.MinimalStartTicks.From)</div>
+                <div>To Date & Time</div>
+                <div class="context_novis">@Html.DateAndTime(htmlModel.MinimalStartTicks.To)</div>
+            </div>
         }
-        <div>@Html.Button(htmlModel.SearchButton)
-        </div>
+        <div class="context_novis">@Html.Button(htmlModel.SearchButton)</div>
     </div>
 </div>
 <div>

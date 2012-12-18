@@ -48,9 +48,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             {
                 Name = info.Name,
                 TaskId = info.Id,
-                Ticks = info.Ticks,
-                MinimalStartTicks = info.MinimalStartTicks,
-                StartExecutingTicks = info.StartExecutingTicks,
+                Ticks = new DateTime(info.Ticks),
+                MinimalStartTicks = new DateTime(info.MinimalStartTicks),
+                StartExecutingTicks = info.StartExecutingTicks.HasValue ? (DateTime?)new DateTime(info.StartExecutingTicks.Value) : null,
                 State = default(MTaskState),
                 Attempts = info.Attempts,
                 ParentTaskId = info.ParentTaskId,

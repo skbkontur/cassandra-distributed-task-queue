@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+
+using SKBKontur.Catalogue.Expressions;
 
 using SKBKontur.Catalogue.Core.Web.Blocks.Button;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html;
-
-using System.Linq;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.Html
 {
@@ -50,12 +51,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                                 }
                         }),
                     SearchButton = htmlModelsCreator.ButtonFor(new ButtonOptions
-                    {
-                        Action = "Search",
-                        Id = "Search",
-                        Title = "Search",
-                        ValidationType = ActionValidationType.All
-                    })
+                        {
+                            Action = "Search",
+                            Id = "Search",
+                            Title = "Search",
+                            ValidationType = ActionValidationType.All
+                        }),
+                    Ticks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.Ticks),
+                    StartExecutedTicks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.StartExecutedTicks),
+                    MinimalStartTicks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.MinimalStartTicks)
                 };
         }
 
@@ -65,22 +69,39 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 (state, i) => new KeyValuePair<TextBoxHtmlModel, CheckBoxHtmlModel>(
                                   htmlModelsCreator.TextBoxFor(
                                       pageModel, x => x.SearchPanel.States[GetStateIndex(state.Key, pageModel.Data.SearchPanel.States)].Key, new TextBoxOptions
-                                      {
-                                          Hidden = true,
-                                      }),
+                                          {
+                                              Hidden = true,
+                                          }),
                                   htmlModelsCreator.CheckBoxFor(
                                       pageModel, x => x.SearchPanel.
                                                           States[GetStateIndex(state.Key, pageModel.Data.SearchPanel.States)].Value, new CheckBoxOptions
-                                                          {
-                                                              Label = taskStates[pageModel.Data.SearchPanel.States[GetStateIndex(state.Key, pageModel.Data.SearchPanel.States)].Key]
-                                                          }))).ToArray();
+                                                              {
+                                                                  Label = taskStates[pageModel.Data.SearchPanel.States[GetStateIndex(state.Key, pageModel.Data.SearchPanel.States)].Key]
+                                                              }))).ToArray();
         }
-        
+
+        private DateTimeRangeHtmlModel BulildDateTimeRangeHtmlMode(RemoteTaskQueueModel pageModel, Expression<Func<RemoteTaskQueueModelData, DateTimeRangeModel>> pathToDateTimeRange)
+        {
+            return new DateTimeRangeHtmlModel
+                {
+                    From = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.From), new DateAndTimeOptions
+                        {
+                            NeedTime = true
+                        }),
+                    To = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.To), new DateAndTimeOptions
+                        {
+                            NeedTime = true
+                        })
+                };
+        }
+
         private int GetStateIndex(TaskState state, Pair<TaskState, bool?>[] states)
         {
-            for (int i = 0; i < states.Length; i++)
-                if (states[i].Key == state)
+            for(int i = 0; i < states.Length; i++)
+            {
+                if(states[i].Key == state)
                     return i;
+            }
             return -1;
         }
 

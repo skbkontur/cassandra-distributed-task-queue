@@ -7,5 +7,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         public string TaskName { get; set; }
         public Pair<TaskState, bool?> [] States {get; set;}
         public string[] AllowedTaskNames { get; set; }
+        public DateTimeRangeModel Ticks { get; set; }
+        public DateTimeRangeModel StartExecutedTicks { get; set; }
+        public DateTimeRangeModel MinimalStartTicks { get; set; }
     }
 }

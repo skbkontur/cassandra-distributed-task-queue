@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
+using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.Expressions.Visitors;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
@@ -48,17 +49,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return Expression.Lambda<Func<T, bool>>(Expression.OrElse(pr.Visit(a.Body), b.Body), b.Parameters[0]);
         }
 
-        private void AddDataTimeRangeCriterion(ref Expression<Func<MonitoringTaskMetadata, bool>> criterion, Func<MonitoringTaskMetadata, long?> pathToTicks, DateTimeRange dateTimeRange)
+        private void AddDataTimeRangeCriterion(ref Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, DateTime?>> pathToTicks, DateTimeRange dateTimeRange)
         {
             if(dateTimeRange.From != null)
             {
-                Expression<Func<MonitoringTaskMetadata, bool>> cr = x => pathToTicks(x).HasValue ? new DateTime(pathToTicks(x).Value) >= dateTimeRange.From : false;
-                criterion = And(criterion, cr);
+                criterion = And(criterion, pathToTicks.Merge(time => time >= dateTimeRange.From));
             }
             if(dateTimeRange.To != null)
             {
-                Expression<Func<MonitoringTaskMetadata, bool>> cr = x => pathToTicks(x).HasValue ? new DateTime(pathToTicks(x).Value) <= dateTimeRange.To : false;
-                criterion = And(criterion, cr);
+                criterion = And(criterion, pathToTicks.Merge(time => time <= dateTimeRange.To));
             }
         }
     }

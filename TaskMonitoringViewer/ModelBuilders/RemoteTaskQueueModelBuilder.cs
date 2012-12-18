@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
+using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Core.Web.PageModels;
 using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
@@ -65,7 +66,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                         {
                             States = BuildArray(allowedSearchValues.States, searchRequest.States),
                             TaskName = searchRequest.Name,
-                            AllowedTaskNames = allowedSearchValues.Names
+                            AllowedTaskNames = allowedSearchValues.Names,
+                            Ticks = new DateTimeRangeModel
+                                {
+                                    From = DateAndTime.Create(searchRequest.Ticks.From),
+                                    To = DateAndTime.Create(searchRequest.Ticks.To)
+                                },
+                            StartExecutedTicks = new DateTimeRangeModel
+                                {
+                                    From = DateAndTime.Create(searchRequest.StartExecutingTicks.From),
+                                    To = DateAndTime.Create(searchRequest.StartExecutingTicks.To)
+                                },
+                            MinimalStartTicks = new DateTimeRangeModel
+                                {
+                                    From = DateAndTime.Create(searchRequest.MinimalStartTicks.From),
+                                    To = DateAndTime.Create(searchRequest.MinimalStartTicks.To)
+                                }
                         },
                     TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
                         {
@@ -73,10 +89,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             TaskId = x.TaskId,
                             Name = x.Name,
                             State = x.State,
-                            EnqueueTicks = TicksToDateString(x.Ticks),
+                            EnqueueTicks = x.Ticks.ToString(),
                             ParentTaskId = x.ParentTaskId,
-                            StartExecutedTicks = TicksToDateString(x.StartExecutingTicks),
-                            MinimalStartTicks = TicksToDateString(x.MinimalStartTicks)
+                            StartExecutedTicks = x.StartExecutingTicks.ToString(),
+                            MinimalStartTicks = x.MinimalStartTicks.ToString()
                         }).ToArray(),
                 };
             var model = new RemoteTaskQueueModel(pageModelBaseParameters, remoteTaskQueueModelData)
@@ -105,11 +121,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             var array = dictionary.Select(x => new Pair<T, bool?> { Key = x.Key, Value = x.Value }).ToArray();
             Array.Sort(array, (x, y) => x.Key.CompareTo(y.Key));
             return array;
-        }
-
-        private string TicksToDateString(long? ticks)
-        {
-            return ticks == null ? null : new DateTime(ticks.Value).ToString();
         }
 
         private T TryPrase<T>(string s) where T : struct
