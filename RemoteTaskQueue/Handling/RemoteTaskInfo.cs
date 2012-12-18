@@ -6,6 +6,7 @@ namespace RemoteQueue.Handling
     {
         public TaskMetaInformation Context { get; set; }
         public ITaskData TaskData { get; set; }
+        public TaskExceptionInfo ExceptionInfo { get; set; }
     }
 
     public class RemoteTaskInfo<T>
@@ -13,5 +14,6 @@ namespace RemoteQueue.Handling
     {
         public TaskMetaInformation Context { get; set; }
         public T TaskData { get; set; }
+        public TaskExceptionInfo ExceptionInfo { get; set; }
     }
 }

@@ -33,21 +33,8 @@ namespace RemoteQueue.Handling
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
             typeToNameMapper = new TaskDataTypeToNameMapper(taskDataRegistry);
             remoteLockCreator = new RemoteLockCreator(new LockRepository(parameters));
+            handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
         }
-
-        //public RemoteTaskQueue(
-        //    IHandleTaskCollection handleTaskCollection,
-        //    IHandleTasksMetaStorage handleTasksMetaStorage,
-        //    SerializerWrapper serializer,
-        //    ITaskDataTypeToNameMapper typeToNameMapper,
-        //    IRemoteLockCreator remoteLockCreator)
-        //{
-        //    this.handleTaskCollection = handleTaskCollection;
-        //    this.handleTasksMetaStorage = handleTasksMetaStorage;
-        //    this.serializer = serializer;
-        //    this.typeToNameMapper = typeToNameMapper;
-        //    this.remoteLockCreator = remoteLockCreator;
-        //}
 
         public bool CancelTask(string taskId)
         {
@@ -90,10 +77,13 @@ namespace RemoteQueue.Handling
         {
             Task task = handleTaskCollection.GetTask(taskId);
             var res = (ITaskData)serializer.Deserialize(typeToNameMapper.GetTaskType(task.Meta.Name), task.Data);
+            TaskExceptionInfo info;
+            handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskId, out info);
             return new RemoteTaskInfo
                 {
                     Context = task.Meta,
-                    TaskData = res
+                    TaskData = res,
+                    ExceptionInfo = info
                 };
         }
 
@@ -105,10 +95,13 @@ namespace RemoteQueue.Handling
             if(!typeof(T).IsAssignableFrom(taskType))
                 throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
             var res = (T)serializer.Deserialize(taskType, task.Data);
+            TaskExceptionInfo info;
+            handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskId, out info);
             return new RemoteTaskInfo<T>
                 {
                     Context = task.Meta,
-                    TaskData = res
+                    TaskData = res,
+                    ExceptionInfo = info
                 };
         }
 
@@ -165,5 +158,6 @@ namespace RemoteQueue.Handling
         private readonly ISerializer serializer;
         private readonly ITaskDataTypeToNameMapper typeToNameMapper;
         private readonly IRemoteLockCreator remoteLockCreator;
+        private HandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
     }
 }
