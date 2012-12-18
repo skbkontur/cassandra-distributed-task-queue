@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="EventsEnumeratorTests\EventsEnumerableTestBase.cs" />
     <Compile Include="EventsEnumeratorTests\ReverseEventsEnumerableTest.cs" />
+    <Compile Include="ExchangeTests\SimpleTaskTest.cs" />
     <Compile Include="FunctionalTestBaseWithoutServices.cs" />
     <Compile Include="Logging\Log4netConfiguration.cs" />
     <Compile Include="ObjectComparer.cs" />

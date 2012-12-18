@@ -67,9 +67,23 @@ namespace RemoteQueue.Handling
             }
         }
 
-        public bool RerunTask(string id, TimeSpan delay)
+        public bool RerunTask(string taskId, TimeSpan delay)
         {
-            return false;
+            IRemoteLock remoteLock;
+            if (!remoteLockCreator.TryGetLock(taskId, out remoteLock))
+                return false;
+            using (remoteLock)
+            {
+                var meta = handleTasksMetaStorage.GetMeta(taskId);
+                if (meta.State != TaskState.New)
+                {
+                    meta.State = TaskState.WaitingForRerun;
+                    meta.MinimalStartTicks = DateTime.UtcNow.Ticks + delay.Ticks;
+                    handleTasksMetaStorage.AddMeta(meta);
+                    return true;
+                }
+                return false;
+            }
         }
 
         public RemoteTaskInfo GetTaskInfo(string taskId)
