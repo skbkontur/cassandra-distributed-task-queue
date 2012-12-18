@@ -7,6 +7,7 @@ using SKBKontur.Catalogue.Expressions;
 
 using SKBKontur.Catalogue.Core.Web.Blocks.Button;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
+using SKBKontur.Catalogue.ObjectManipulation.Extender;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html;
@@ -15,9 +16,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     internal class RemoteTaskQueueHtmlModelBuilder : IRemoteTaskQueueHtmlModelBuilder
     {
-        public RemoteTaskQueueHtmlModelBuilder(IHtmlModelsCreator<RemoteTaskQueuePageModel> htmlModelsCreator)
+        public RemoteTaskQueueHtmlModelBuilder(IHtmlModelsCreator<RemoteTaskQueuePageModel> htmlModelsCreator, ICatalogueExtender extender)
         {
             this.htmlModelsCreator = htmlModelsCreator;
+            this.extender = extender;
             taskStates = new Dictionary<TaskState, string>
                 {
                     {TaskState.Canceled, "Canceled"},
@@ -33,6 +35,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 
         public SearchPanelHtmlModel Build(RemoteTaskQueueModel pageModel)
         {
+            pageModel.Data.SearchPanel = extender.Extend(pageModel.Data.SearchPanel);
             return new SearchPanelHtmlModel
                 {
                     States = GetStatesGroup(pageModel, x => taskStates.ContainsKey(x.Key)),
@@ -43,9 +46,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                                 {
                                     ReferenceType = "TaskNames",
                                     NeedEmptyValue = true,
-                                    SelectBoxElements = pageModel.Data.SearchPanel.AllowedTaskNames.Select(x => new SelectBoxElement
+                                    SelectBoxElements = (pageModel.Data.SearchPanel.AllowedTaskNames.Length == 0 ? new string[1] : pageModel.Data.SearchPanel.AllowedTaskNames).Select(x => new SelectBoxElement
                                         {
-                                            Text = x,
+                                            Text = string.IsNullOrEmpty(x) ? "Ничего нет": x,
                                             Value = x
                                         }).ToArray()
                                 }
@@ -114,6 +117,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         }
 
         private readonly IHtmlModelsCreator<RemoteTaskQueuePageModel> htmlModelsCreator;
+        private readonly ICatalogueExtender extender;
         private readonly Dictionary<TaskState, string> taskStates;
     }
 }

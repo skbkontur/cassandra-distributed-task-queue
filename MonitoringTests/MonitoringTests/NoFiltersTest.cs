@@ -46,6 +46,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             }
         }
 
+        [Test]
+        public void EmptyListTest()
+        {
+            CreateUser("user", "psw");
+            var tasksListPage = Login("user", "psw");
+
+        }
+
         private string AddTask<T>(T taskData) where T : ITaskData
         {
             return remoteTaskQueue.Queue(taskData);
