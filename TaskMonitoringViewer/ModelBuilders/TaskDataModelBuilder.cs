@@ -7,6 +7,7 @@ using System.Reflection;
 
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.CassandraStorageCore.FileDataStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ValueHandlerRegistry;
 
@@ -14,9 +15,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     public class TaskDataModelBuilder : ITaskDataModelBuilder
     {
-        public TaskDataModelBuilder(IValueHandlerRegistryCollection valueHandlerRegistryCollection)
+        public TaskDataModelBuilder(IValueHandlerRegistryCollection valueHandlerRegistryCollection, IFileDataStorage fileDataStorage)
         {
             this.valueHandlerRegistryCollection = valueHandlerRegistryCollection;
+            this.fileDataStorage = fileDataStorage;
         }
 
         public ITaskDataValue Build(string taskId, ITaskData taskData)
@@ -48,6 +50,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                         Path = path,
                         Size = bytes.Length
                     };
+            }
+            if (objectType == typeof(string))
+            {
+                string fileName;
+                var fileId = (string)objectValue;
+                if (!string.IsNullOrEmpty(fileId) && fileDataStorage.TryReadFilename(fileId, out fileName))
+                {
+                    return new FileDataTaskDataValue
+                    {
+                        Filename = fileName,
+                        // ReSharper disable Mvc.ControllerNotResolved
+                        GetUrl = url => url.Action("Run", "FileData", new { fileId })
+                        // ReSharper restore Mvc.ControllerNotResolved
+                    };
+                }
             }
             if(IsPrimitive(objectType))
             {
@@ -127,6 +144,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         }
 
         private readonly IValueHandlerRegistryCollection valueHandlerRegistryCollection;
+        private readonly IFileDataStorage fileDataStorage;
 
         private readonly ConcurrentDictionary<Type, PropertyInfo[]> propertiesByType = new ConcurrentDictionary<Type, PropertyInfo[]>();
     }

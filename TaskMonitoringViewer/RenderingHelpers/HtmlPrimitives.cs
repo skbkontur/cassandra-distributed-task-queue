@@ -31,5 +31,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelp
         {
             return htmlHelper.Partial("~/TaskMonitoringViewer/_TaskState.cshtml", model);
         }
+
+        public static MvcHtmlString FileDataTaskDataValue(this HtmlHelper htmlHelper, FileDataTaskDataValue model)
+        {
+            return htmlHelper.Partial("~/TaskMonitoringViewer/_FileDataValue.cshtml", model);
+        }
     }
 }

@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ByteArrayTaskData.cs" />
+    <Compile Include="FileIdTaskData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FakeFailTaskData.cs" />
     <Compile Include="FakePeriodicTaskData.cs" />

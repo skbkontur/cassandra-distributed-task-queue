@@ -40,6 +40,10 @@
     <Reference Include="Catalogue.AccessControl.LocalImplementation">
       <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.Web">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Web.dll</HintPath>
     </Reference>
@@ -96,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Areas\AdminToolsArea\AdminToolsAreaRegistration.cs" />
+    <Compile Include="Areas\AdminToolsArea\Controllers\FileDataController.cs" />
     <Compile Include="Areas\AdminToolsArea\Controllers\RemoteTaskQueueController.cs" />
     <Compile Include="Areas\LoginArea\Controllers\EnterController.cs" />
     <Compile Include="Areas\LoginArea\Controllers\LogoutController.cs" />

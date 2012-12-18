@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ControllerConstants.cs" />
+    <Compile Include="Controllers\FileDataControllerBase.cs" />
     <Compile Include="Controllers\IMonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\MonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Models\AllowedSearchValues.cs" />
     <Compile Include="Models\ByteArrayTaskDataValue.cs" />
     <Compile Include="Models\EmptyTaskDataValue.cs" />
+    <Compile Include="Models\FileDataTaskDataValue.cs" />
     <Compile Include="Models\Html\DateTimeRangeHtmlModel.cs" />
     <Compile Include="Models\Html\SearchPanelHtmlModel.cs" />
     <Compile Include="Models\ITaskDataValue.cs" />
@@ -138,6 +140,7 @@
     <EmbeddedResource Include="Views\_ObjectValue.cshtml" />
     <EmbeddedResource Include="Views\_StringValue.cshtml" />
     <EmbeddedResource Include="Views\_TaskState.cshtml" />
+    <EmbeddedResource Include="Views\_FileDataValue.cshtml" />
     <None Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

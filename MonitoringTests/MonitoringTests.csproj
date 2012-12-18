@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="Controls\TaskListItem.cs" />
     <Compile Include="MonitoringTests\NoFiltersTest.cs" />
+    <Compile Include="MonitoringTests\FileDataTest.cs" />
     <Compile Include="PageBases\CommonPageBase.cs" />
     <Compile Include="PageBases\DefaultPage.cs" />
     <Compile Include="PageBases\EnterPage.cs" />
