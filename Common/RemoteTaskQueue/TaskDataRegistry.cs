@@ -5,6 +5,7 @@ using RemoteQueue.Handling;
 using RemoteQueue.UserClasses;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 {
@@ -17,6 +18,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
             Register<SimpleTaskData>("SimpleTaskData");
             Register<ByteArrayTaskData>("ByteArrayTaskData");
             Register<FileIdTaskData>("FileIdTaskData");
+
+            Register<AlphaTaskData>("AlphaTaskData");
+            Register<BetaTaskData>("BetaTaskData");
+            Register<GammaTaskData>("GammaTaskData");
+            Register<DeltaTaskData>("DeltaTaskData");
+            Register<EpsilonTaskData>("EpsilonTaskData");
+            Register<EtaTaskData>("EtaTaskData");
+            Register<ZetaTaskData>("ZetaTaskData");
         }
 
         public KeyValuePair<Type, string>[] GetAllTaskDataInfos()

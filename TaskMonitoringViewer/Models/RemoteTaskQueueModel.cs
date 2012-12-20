@@ -28,17 +28,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         {
             base.Configure(configurator);
             configurator.Target(data => data.SearchPanel.Ticks.From.Date).Date();
-            configurator.Target(data => data.SearchPanel.Ticks.From.Time).Time();
             configurator.Target(data => data.SearchPanel.StartExecutedTicks.From.Date).Date();
-            configurator.Target(data => data.SearchPanel.StartExecutedTicks.From.Time).Time();
             configurator.Target(data => data.SearchPanel.MinimalStartTicks.From.Date).Date();
-            configurator.Target(data => data.SearchPanel.MinimalStartTicks.From.Time).Time();
             configurator.Target(data => data.SearchPanel.Ticks.To.Date).Date();
-            configurator.Target(data => data.SearchPanel.Ticks.To.Time).Time();
             configurator.Target(data => data.SearchPanel.StartExecutedTicks.To.Date).Date();
-            configurator.Target(data => data.SearchPanel.StartExecutedTicks.To.Time).Time();
             configurator.Target(data => data.SearchPanel.MinimalStartTicks.To.Date).Date();
-            configurator.Target(data => data.SearchPanel.MinimalStartTicks.To.Time).Time();
         }
 
         public int TotalPagesCount { get; set; }

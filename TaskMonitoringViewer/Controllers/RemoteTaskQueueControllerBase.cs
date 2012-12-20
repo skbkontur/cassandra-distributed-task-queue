@@ -27,7 +27,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             remoteTaskQueue = remoteTaskQueueControllerBaseParameters.RemoteTaskQueue;
             remoteTaskQueueModelBuilder = remoteTaskQueueControllerBaseParameters.RemoteTaskQueueModelBuilder;
             businessObjectsStorage = remoteTaskQueueControllerBaseParameters.BusinessObjectsStorage;
-            criterionBuilder = remoteTaskQueueControllerBaseParameters.MonitoringSearchRequestCriterionBuilder;
 
         }
 
@@ -122,6 +121,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly IRemoteTaskQueueModelBuilder remoteTaskQueueModelBuilder;
         private readonly IBusinessObjectsStorage businessObjectsStorage;
-        private readonly IMonitoringSearchRequestCriterionBuilder criterionBuilder;
     }
 }

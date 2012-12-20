@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
+using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Expressions;
 
 using SKBKontur.Catalogue.Core.Web.Blocks.Button;
@@ -93,16 +94,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 
         private DateTimeRangeHtmlModel BulildDateTimeRangeHtmlMode(RemoteTaskQueueModel pageModel, Expression<Func<RemoteTaskQueuePageModel, DateTimeRangeModel>> pathToDateTimeRange)
         {
+            var options = new DateAndTimeOptions
+                {
+                    NeedTime = true,
+                    TimeFormat = TimeFormat.Long
+                };
+            var from = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.From), options);
+            from.Time.MaxLength = 8;
+            var to = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.To), options);
+            to.Time.MaxLength = 8;
             return new DateTimeRangeHtmlModel
                 {
-                    From = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.From), new DateAndTimeOptions
-                        {
-                            NeedTime = true
-                        }),
-                    To = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.To), new DateAndTimeOptions
-                        {
-                            NeedTime = true
-                        })
+                    From = from,
+                    To = to
                 };
         }
 
