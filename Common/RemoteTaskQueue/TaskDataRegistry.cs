@@ -21,11 +21,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 
             Register<AlphaTaskData>("AlphaTaskData");
             Register<BetaTaskData>("BetaTaskData");
-            Register<GammaTaskData>("GammaTaskData");
             Register<DeltaTaskData>("DeltaTaskData");
-            Register<EpsilonTaskData>("EpsilonTaskData");
-            Register<EtaTaskData>("EtaTaskData");
-            Register<ZetaTaskData>("ZetaTaskData");
         }
 
         public KeyValuePair<Type, string>[] GetAllTaskDataInfos()

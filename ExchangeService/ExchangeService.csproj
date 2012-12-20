@@ -79,6 +79,9 @@
     <Compile Include="UserClasses\FileIdTaskDataHandler.cs" />
     <Compile Include="UserClasses\ITestCassandraCounterBlobRepository.cs" />
     <Compile Include="UserClasses\ITestCounterRepository.cs" />
+    <Compile Include="UserClasses\MonitoringTestTaskData\AlphaTaskHandler.cs" />
+    <Compile Include="UserClasses\MonitoringTestTaskData\BetaTaskHandler.cs" />
+    <Compile Include="UserClasses\MonitoringTestTaskData\DeltaTaskHandler.cs" />
     <Compile Include="UserClasses\SimpleTaskHandler.cs" />
     <Compile Include="UserClasses\TestCassandraCounterBlobRepository.cs" />
     <Compile Include="UserClasses\TestCounterRepository.cs" />
