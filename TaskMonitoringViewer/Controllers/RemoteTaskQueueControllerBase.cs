@@ -48,7 +48,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                     Name = pageModel.SearchPanel.TaskName,
                     TaskId = pageModel.SearchPanel.TaskId,
                     ParentTaskId = pageModel.SearchPanel.ParentTaskId,
-                    States = pageModel.SearchPanel.States.Where(x => x.Value == true).Select(x => x.Key).ToArray(),
+                    States = (pageModel.SearchPanel.States ?? new Pair<TaskState, bool?>[0]).Where(x => x.Value == true).Select(x => x.Key).ToArray(),
                     Ticks = new DateTimeRange
                         {
                             From = DateAndTime.ToDateTime(pageModel.SearchPanel.Ticks.From),
