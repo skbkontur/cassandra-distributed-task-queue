@@ -83,7 +83,7 @@
                                 },
                                 success: function(operationResult) {
                                     if (operationResult.Success) {
-                                        if (typeof isUndefined(operationResult.RedirectTo)) {
+                                        if (!_.isUndefined(operationResult.RedirectTo)) {
                                             Redirect.go(operationResult.RedirectTo);
                                         }
                                     } else {
@@ -109,7 +109,7 @@
                                 },
                                 success: function(operationResult) {
                                     if (operationResult.Success) {
-                                        if (typeof isUndefined(operationResult.RedirectTo)) {
+                                        if (!_.isUndefined(operationResult.RedirectTo)) {
                                             Redirect.go(operationResult.RedirectTo);
                                         }
                                     } else {
