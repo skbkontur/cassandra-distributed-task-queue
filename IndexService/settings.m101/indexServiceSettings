@@ -9,8 +9,8 @@ LogDirectory = c:\logs
 # Конфигурирование Кассандры
 ClusterName = CatalogueCluster
 KeyspaceName = RosAlkoKeyspace
-Endpoints = edi-cs-01:9160,edi-cs-02:9160,edi-cs-03:9160
-EndpointForFierceCommands = edi-cs-01:9160
+Endpoints = 192.168.191.101:9160,192.168.191.102:9160,192.168.191.103:9160
+EndpointForFierceCommands = 192.168.191.101:9160
 ReadConsistencyLevel = QUORUM
 WriteConsistencyLevel = QUORUM
 Timeout = 2000
