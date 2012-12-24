@@ -1,3 +1,5 @@
+using System;
+
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls;
 using SKBKontur.Catalogue.WebTestCore.SystemControls;
 
@@ -9,18 +11,39 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         {
             NextPage = new Link("Paginator_Next");
             PrevPage = new Link("Paginator_Prev");
+
+            TicksTimeFrom = new TextInput("SearchPanel_Ticks_From_Time");
+            TicksDateFrom = new TextInput("SearchPanel_Ticks_From_Date");
+            TicksTimeTo = new TextInput("SearchPanel_Ticks_To_Time");
+            TicksDateTo = new TextInput("SearchPanel_Ticks_To_Date");
+
+            MinimalStartTicksTimeFrom = new TextInput("SearchPanel_MinimalStartTicks_From_Time");
+            MinimalStartTicksDateFrom = new TextInput("SearchPanel_MinimalStartTicks_From_Date");
+            MinimalStartTicksTimeTo = new TextInput("SearchPanel_MinimalStartTicks_To_Time");
+            MinimalStartTicksDateTo = new TextInput("SearchPanel_MinimalStartTicks_To_Date");
+
+            TaskName = new Select("SearchPanel_TaskName");
+
+            Search = new ButtonInput("Search");
         }
 
         public void CheckTaskListItemsCount(int expectedCount)
         {
-            GetTaskListItem(expectedCount - 1).WaitPresence();
-            GetTaskListItem(expectedCount).WaitAbsence();
+            if (expectedCount > 0)
+                    GetTaskListItem(expectedCount - 1).WaitPresence();
+                GetTaskListItem(expectedCount).WaitAbsence();
         }
 
         public TaskDetailsPage GoToTaskDetails(int index)
         {
             GetTaskListItem(index).TaskId.Click();
             return GoTo<TaskDetailsPage>();
+        }
+
+        public static void SetDateTime(TextInput date, TextInput time, DateTime? dateTime)
+        {
+            date.SetValue(dateTime.HasValue ? string.Format("{0:D2}.{1:D2}.{2:D4}", dateTime.Value.Day, dateTime.Value.Month, dateTime.Value.Year) : "");
+            time.SetValue(dateTime.HasValue ? string.Format("{0:D2}:{1:D2}:{2:D2}", dateTime.Value.Hour, dateTime.Value.Minute, dateTime.Value.Second) : "");
         }
 
         public TaskDetailsPage GoToParentTaskDetails(int index)
@@ -33,10 +56,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         {
             return new TaskListItem(index);
         }
-
         public TasksListPage GoToNextPage()
         {
             NextPage.Click();
+            return GoTo<TasksListPage>();
+        }
+        public TasksListPage SearchTasks()
+        {
+            Search.Click();
             return GoTo<TasksListPage>();
         }
 
@@ -48,5 +75,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 
         public Link NextPage { get; private set; }
         public Link PrevPage { get; private set; }
+
+        public TextInput MinimalStartTicksDateFrom { get; private set; }
+        public TextInput MinimalStartTicksTimeFrom { get; private set; }
+        public TextInput MinimalStartTicksDateTo { get; private set; }
+        public TextInput MinimalStartTicksTimeTo { get; private set; }
+
+        public TextInput TicksTimeFrom { get; private set; }
+        public TextInput TicksDateFrom { get; private set; }
+        public TextInput TicksTimeTo { get; private set; }
+        public TextInput TicksDateTo { get; private set; }
+
+        public Select TaskName { get; private set; }
+
+        public ButtonInput Search { get; private set; }
     }
 }

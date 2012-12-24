@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using ExchangeService.UserClasses;
+using ExchangeService.UserClasses.MonitoringTestTaskData;
 
 using RemoteQueue.Exceptions;
 using RemoteQueue.Handling;
@@ -15,13 +16,19 @@ namespace ExchangeService.Configuration
                                    Func<FakePeriodicTaskHandler> createFakePeriodicTaskHandler,
                                    Func<SimpleTaskHandler> createSimpleTaskHandler,
                                    Func<ByteArrayTaskDataHandler> createByteArrayTaskDataHandler,
-                                   Func<FileIdTaskDataHandler> createFileIdTaskDataHandler)
+                                   Func<FileIdTaskDataHandler> createFileIdTaskDataHandler,
+                                   Func<AlphaTaskHandler> createAlphaTaskHandler,
+                                   Func<BetaTaskHandler> createBetaTaskHandler,
+                                   Func<DeltaTaskHandler> createDeltaTaskHandler)
         {
             Register(createFakeFailTaskHandler);
             Register(createFakePeriodicTaskHandler);
             Register(createSimpleTaskHandler);
             Register(createByteArrayTaskDataHandler);
             Register(createFileIdTaskDataHandler);
+            Register(createAlphaTaskHandler);
+            Register(createBetaTaskHandler);
+            Register(createDeltaTaskHandler);
         }
 
         public KeyValuePair<Type, Func<ITaskHandler>>[] GetAllTaskHandlerCreators()

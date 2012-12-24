@@ -76,6 +76,7 @@
     <Compile Include="Controls\TaskListItem.cs" />
     <Compile Include="FiltersTests\DateTimeRangeFilterTest.cs" />
     <Compile Include="FiltersTests\FiltersTestBase.cs" />
+    <Compile Include="FiltersTests\NameFiltrTest.cs" />
     <Compile Include="MonitoringTests\NoFiltersTest.cs" />
     <Compile Include="MonitoringTests\FileDataTest.cs" />
     <Compile Include="PageBases\CommonPageBase.cs" />
