@@ -68,6 +68,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             businessObjectsStorage.Write(searchRequest);
             return Json(new SuccessOperationResult
                 {
+                    NeedRedirect = true,
                     RedirectTo = Url.Action("Run", new {searchRequestId = requestId})
                 });
         }
