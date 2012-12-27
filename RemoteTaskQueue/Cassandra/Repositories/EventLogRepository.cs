@@ -45,7 +45,7 @@ namespace RemoteQueue.Cassandra.Repositories
             return new GetEventLogEnumerable(serializer, connection, fromTicks, globalTime.GetNowTicks(), batchSize);
         }
 
-        public const string columnFamilyName = "EventLog";
+        public const string columnFamilyName = "RemoteTaskQueueEventLog";
 
         private void AddEventInternal(TaskMetaUpdatedEvent taskMetaUpdatedEventEntity, long ticks)
         {
