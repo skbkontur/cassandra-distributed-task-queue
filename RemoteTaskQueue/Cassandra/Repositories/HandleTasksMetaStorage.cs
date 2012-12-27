@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,29 +11,29 @@ namespace RemoteQueue.Cassandra.Repositories
     {
         public HandleTasksMetaStorage(
             ITaskMetaInformationBlobStorage storage,
-            ITaskMinimalStartTicksIndex minimalStartTicksIndex)
+            ITaskMinimalStartTicksIndex minimalStartTicksIndex,
+            IEventLogRepository eventLogRepository)
         {
             this.storage = storage;
             this.minimalStartTicksIndex = minimalStartTicksIndex;
+            this.eventLogRepository = eventLogRepository;
         }
 
         public IEnumerable<string> GetAllTasksInStates(long toTicks, params TaskState[] states)
         {
-            return GetAllTasksInStateBase(toTicks, states);
-        }
-
-        public IEnumerable<string> GetAllTasksInStatesFromTicks(long fromTicks, params TaskState[] states)
-        {
-            return GetAllTasksInStateBase(DateTime.UtcNow.Ticks, states, fromTicks);
-        }
-
-        public IEnumerable<string> GetReverseAllTasksInStatesOrder(long ticks, params TaskState[] states)
-        {
-            return GetAllTasksInStateBase(ticks, states, 0, true);
+            IEnumerable<string> res = new List<string>();
+            var idGroups = states.Select(
+                state =>
+                    {
+                        var ids = minimalStartTicksIndex.GetTaskIds(state, toTicks).ToArray();
+                        return ids;
+                    });
+            return idGroups.Aggregate(res, (current, idGroup) => current.Concat(idGroup));
         }
 
         public void AddMeta(TaskMetaInformation meta)
         {
+            eventLogRepository.AddEvent(new TaskMetaUpdatedEvent {TaskId = meta.Id});
             storage.Write(meta.Id, meta);
             minimalStartTicksIndex.IndexMeta(meta);
         }
@@ -44,14 +43,8 @@ namespace RemoteQueue.Cassandra.Repositories
             return storage.Read(taskId);
         }
 
-        private IEnumerable<string> GetAllTasksInStateBase(long ticks, IEnumerable<TaskState> states, long fromTicks = 0, bool reverseOrder = false)
-        {
-            IEnumerable<string> res = new List<string>();
-            var idGroups = states.Select(state => minimalStartTicksIndex.GetTaskIds(state, ticks, fromTicks, reverseOrder));
-            return idGroups.Aggregate(res, (current, idGroup) => current.Concat(idGroup));
-        }
-
         private readonly ITaskMetaInformationBlobStorage storage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
+        private readonly IEventLogRepository eventLogRepository;
     }
 }

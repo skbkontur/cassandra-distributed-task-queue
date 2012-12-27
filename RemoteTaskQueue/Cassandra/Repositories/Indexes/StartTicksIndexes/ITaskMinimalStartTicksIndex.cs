@@ -6,7 +6,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public interface ITaskMinimalStartTicksIndex
     {
-        IEnumerable<string> GetTaskIds(TaskState taskState, long nowTicks, long fromTicks, bool reverseOrder = false, int batchSize = 2000);
+        IEnumerable<string> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000);
         void IndexMeta(TaskMetaInformation obj);
     }
 }

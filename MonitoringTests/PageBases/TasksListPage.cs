@@ -23,6 +23,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             MinimalStartTicksDateTo = new TextInput("SearchPanel_MinimalStartTicks_To_Date");
 
             TaskName = new Select("SearchPanel_TaskName");
+            TaskId = new TextInput("SearchPanel_TaskId");
 
             Search = new ButtonInput("Search");
         }
@@ -87,6 +88,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         public TextInput TicksDateTo { get; private set; }
 
         public Select TaskName { get; private set; }
+        public TextInput TaskId { get; private set; }
 
         public ButtonInput Search { get; private set; }
     }

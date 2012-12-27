@@ -34,6 +34,9 @@
     <Reference Include="Cassandra.CassandraClient">
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.CassandraStorageCore">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
+    </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
@@ -49,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cassandra\Entities\TaskMetaUpdatedEvent.cs" />
     <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryBase.cs" />
     <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryParameters.cs" />
     <Compile Include="Cassandra\Primitives\IColumnFamilyCreator.cs" />
@@ -62,6 +66,9 @@
     <Compile Include="Cassandra\Repositories\BlobStorages\TaskDataBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\TaskExceptionInfoBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\TaskMetaInformationBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
+    <Compile Include="Cassandra\Repositories\GetEventLogEnumerable.cs" />
+    <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ColumnInfo.cs" />
     <Compile Include="Cassandra\Entities\Task.cs" />
     <Compile Include="Cassandra\Entities\TaskExceptionInfo.cs" />
@@ -79,7 +86,6 @@
     <Compile Include="Cassandra\Repositories\Indexes\EventIndexes\ITaskMetaEventColumnInfoIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerator.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetReverseEventsEnumerator.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IIndexRecordsCleaner.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IMinTicksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IndexRecordsCleaner.cs" />

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using GroBuf;
+
+using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 {
@@ -14,11 +18,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         {
             base.SetUp();
             remoteTaskQueue = container.Get<IRemoteTaskQueue>();
+            handleTaskCollection = container.Get<IHandleTaskCollection>();
+            serializer = container.Get<ISerializer>();
         }
 
         protected class Creater
         {
-            public Creater(string taskName, int delay, Func<ITaskData> create)
+            public Creater(string taskName, long delay, Func<ITaskData> create)
             {
                 TaskName = taskName;
                 Delay = new TimeSpan(delay * 10000000);
@@ -58,8 +64,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             {
                 var ids = new List<string>();
                 var addTime = DateTime.UtcNow;
-                for(int i = 0; i < iteration; i++)
-                    ids.Add(remoteTaskQueue.Queue(creater.Create(), creater.Delay));
+                for (int i = 0; i < iteration; i++)
+                {
+                    var id = remoteTaskQueue.Queue(creater.Create(), creater.Delay);
+                    ids.Add(id);
+                    if (creater.TaskName == "BetaTaskData")
+                    {
+                        var task = handleTaskCollection.GetTask(id);
+                        var data = serializer.Deserialize<BetaTaskData>(task.Data);
+                        data.OwnTaskId = id;
+                        task.Data = serializer.Serialize(data);
+                        handleTaskCollection.AddTask(task);
+                    }
+                }
                 result.Add(creater.TaskName, new AddTaskInfo(ids, addTime));
                 System.Threading.Thread.Sleep(1000);
             }
@@ -74,11 +91,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             {
                 var task = tasksListPage.GetTaskListItem(i);
                 task.TaskId.WaitText(addTaskInfo.Ids[i]);
-                task.TaskState.WaitText("Finished");
             }
             addTaskInfo.Ids.Reverse();
         }
 
         private IRemoteTaskQueue remoteTaskQueue;
+        protected IHandleTaskCollection handleTaskCollection;
+        protected ISerializer serializer;
     }
 }

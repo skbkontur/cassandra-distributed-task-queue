@@ -11,7 +11,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerable : IEnumerable<string>
     {
-        public GetEventsEnumerable(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IMinTicksCache minTicksCache, long fromTicks, long toTicks, bool reverseOrder, int batchSize)
+        public GetEventsEnumerable(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IMinTicksCache minTicksCache, long fromTicks, long toTicks, int batchSize)
         {
             this.taskState = taskState;
             this.serializer = serializer;
@@ -20,13 +20,10 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.fromTicks = fromTicks;
             this.toTicks = toTicks;
             this.batchSize = batchSize;
-            this.reverseOrder = reverseOrder;
         }
 
         public IEnumerator<string> GetEnumerator()
         {
-            if (reverseOrder)
-                return new GetReverseEventsEnumerator(taskState, serializer, connection, minTicksCache, fromTicks, toTicks, batchSize);
             return new GetEventsEnumerator(taskState, serializer, connection, minTicksCache, fromTicks, toTicks, batchSize);
         }
 
@@ -42,6 +39,5 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly long fromTicks;
         private readonly long toTicks;
         private readonly int batchSize;
-        private readonly bool reverseOrder;
     }
 }

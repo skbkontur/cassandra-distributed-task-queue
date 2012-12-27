@@ -55,6 +55,7 @@
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
+    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="log4net">
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
@@ -77,8 +78,10 @@
     <Compile Include="FiltersTests\DateTimeRangeFilterTest.cs" />
     <Compile Include="FiltersTests\FiltersTestBase.cs" />
     <Compile Include="FiltersTests\NameFiltrTest.cs" />
+    <Compile Include="FiltersTests\TaskIdFiltrTest.cs" />
     <Compile Include="MonitoringTests\NoFiltersTest.cs" />
     <Compile Include="MonitoringTests\FileDataTest.cs" />
+    <Compile Include="MonitoringTests\RerunTest.cs" />
     <Compile Include="PageBases\CommonPageBase.cs" />
     <Compile Include="PageBases\DefaultPage.cs" />
     <Compile Include="PageBases\EnterPage.cs" />

@@ -91,10 +91,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             TaskId = x.TaskId,
                             Name = x.Name,
                             State = x.State,
-                            EnqueueTicks = x.Ticks.ToString(),
+                            EnqueueTicks = x.Ticks.Ticks.ToString(),
                             ParentTaskId = x.ParentTaskId,
                             StartExecutedTicks = x.StartExecutingTicks.ToString(),
-                            MinimalStartTicks = x.MinimalStartTicks.ToString()
+                            MinimalStartTicks = x.MinimalStartTicks.Ticks.ToString()
                         }).ToArray(),
                 };
             var model = new RemoteTaskQueueModel(pageModelBaseParameters, remoteTaskQueueModelData)

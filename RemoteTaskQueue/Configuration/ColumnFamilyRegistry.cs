@@ -2,6 +2,7 @@
 using System.Linq;
 
 using RemoteQueue.Cassandra.RemoteLock;
+using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.EventIndexes;
@@ -22,6 +23,7 @@ namespace RemoteQueue.Configuration
             Register(TicksHolder.columnFamilyName);
             Register(TaskMinimalStartTicksIndex.columnFamilyName);
             Register(TaskMetaEventColumnInfoIndex.columnFamilyName);
+            Register(EventLogRepository.columnFamilyName);
         }
 
         public ColumnFamily[] GetAllColumnFamilyNames()

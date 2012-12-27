@@ -55,16 +55,16 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             indexRecordsCleaner.RemoveIndexRecords(obj, columnInfo);
         }
 
-        public IEnumerable<string> GetTaskIds(TaskState taskState, long nowTicks, long fromTicks, bool reverseOrder = false, int batchSize = 2000)
+        public IEnumerable<string> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000)
         {
             IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
             //todo читать не с начала, отступать на diff
-            long diff = cassandraSettings.Attempts * cassandraSettings.Timeout + 100000000;
-            fromTicks -= diff;
+            long diff = cassandraSettings.Attempts * TimeSpan.FromMilliseconds(cassandraSettings.Timeout).Ticks + TimeSpan.FromSeconds(10).Ticks;
             long firstTicks;
             if(!TryGetFirstEventTicks(taskState, out firstTicks))
                 return new string[0];
-            return new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, Math.Max(firstTicks, fromTicks), nowTicks, reverseOrder, batchSize);
+            firstTicks = Math.Max(0, firstTicks - diff);
+            return new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, firstTicks, nowTicks, batchSize);
         }
 
         public const string columnFamilyName = "TaskMinimalStartTicksIndex";

@@ -51,6 +51,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         {
             CreateUser("user", "psw");
             var tasksListPage = Login("user", "psw");
+            tasksListPage.CheckTaskListItemsCount(0);
 
         }
 
