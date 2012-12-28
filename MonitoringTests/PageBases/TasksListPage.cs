@@ -33,6 +33,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             InProcess = new CheckBox("SearchPanel_States_2_Value");
         }
 
+        public TasksListPage Refresh()
+        {
+            return RefreshPage(this);
+        }
+
         public void CheckTaskListItemsCount(int expectedCount)
         {
             if(expectedCount > 0)

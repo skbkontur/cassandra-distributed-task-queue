@@ -1,4 +1,5 @@
 ﻿using SKBKontur.Catalogue.WebTestCore.SystemControls;
+using SKBKontur.Catalogue.WebTestCore.TestSystem;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls
 {
@@ -15,6 +16,31 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls
             MinimalStartTicks = new StaticText(string.Format("MinimalStartTicks[{0}]", index));
             Attempts = new StaticText(string.Format("Attempts[{0}]", index));
             ParentTaskId = new Link(string.Format("ParentTaskId[{0}]", index));
+        }
+
+        public void RerunTask()
+        {
+            var id = string.Format("{0}-{1}", "rerunTask", TaskId.GetText());
+            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(id));
+            //GetJavaScript(id);
+            new Link(id).Click();
+            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(id));
+            //GetJavaScript(id);
+        }
+
+        public void CancelTask()
+        {
+            var id = string.Format("{0}-{1}", "cancelTask", TaskId.GetText());
+            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(id));
+            //GetJavaScript(id);
+            new Link(id).Click();
+            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(id));
+            //GetJavaScript(id);
+        }
+
+        private string GetJavaScript(string idLocator)
+        {
+            return string.Format("$('#{0}').toggleClass('noConfirmation')", idLocator);
         }
 
         public Link TaskId { get; private set; }

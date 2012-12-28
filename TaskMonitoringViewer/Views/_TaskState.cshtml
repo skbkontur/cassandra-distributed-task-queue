@@ -8,9 +8,9 @@
     @{
         if(Model.State == TaskState.New || Model.State == TaskState.WaitingForRerun || Model.State == TaskState.WaitingForRerunAfterError)
         {
-            <a class="cancelTask" href="#" url="@Url.Action("Cancel", "RemoteTaskQueue", new { id = Model.TaskId })"/>
+            <a id="cancelTask-@Model.TaskId" class="cancelTask" href="#" url="@Url.Action("Cancel", "RemoteTaskQueue", new { id = Model.TaskId })"/>
         }
-        <a class="rerunTask" href="#" url="@Url.Action("Rerun", "RemoteTaskQueue", new { id = Model.TaskId })"/>
+        <a id="rerunTask-@Model.TaskId" class="rerunTask" href="#" url="@Url.Action("Rerun", "RemoteTaskQueue", new { id = Model.TaskId })"/>
     }
     @* ReSharper restore Asp.NotResolved *@
 </div>

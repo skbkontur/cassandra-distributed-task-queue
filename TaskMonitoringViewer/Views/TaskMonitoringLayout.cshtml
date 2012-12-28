@@ -132,7 +132,12 @@
             $(document).ready(function() {
                 $(".cancelTask").click(function(event) {
                     var _this = this;
-                    if (confirm("Отменить задачу?")) {
+                    var res = $(this).hasClass("noConfirmation");
+                    if (!res)
+                    {
+                        res = confirm("Отменить задачу?");
+                    }
+                    if (res) {
                         $.ajax({
                                 async: true,
                                 type: "POST",
@@ -158,7 +163,12 @@
 
                 $(".rerunTask").click(function(event) {
                     var _this = this;
-                    if (confirm("Перезапустить задачу?")) {
+                    var res = $(this).hasClass("noConfirmation");
+                    if (!res)
+                    {
+                        res = confirm("Отменить задачу?");
+                    }
+                    if (res) {
                         $.ajax({
                                 async: true,
                                 type: "POST",
@@ -191,9 +201,8 @@
                     event.stopPropagation();
                 });
             });
+        @RenderSection("Scripts")
 
-            @RenderSection("Scripts")
-            
         </script>
     </head>
     <body class="subform" subform="page">

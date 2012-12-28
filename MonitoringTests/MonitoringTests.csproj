@@ -82,7 +82,7 @@
     <Compile Include="FiltersTests\TaskStateFilterTest.cs" />
     <Compile Include="MonitoringTests\NoFiltersTest.cs" />
     <Compile Include="MonitoringTests\FileDataTest.cs" />
-    <Compile Include="MonitoringTests\RerunTest.cs" />
+    <Compile Include="MonitoringTests\CancelAndRerunTest.cs" />
     <Compile Include="PageBases\CommonPageBase.cs" />
     <Compile Include="PageBases\DefaultPage.cs" />
     <Compile Include="PageBases\EnterPage.cs" />
