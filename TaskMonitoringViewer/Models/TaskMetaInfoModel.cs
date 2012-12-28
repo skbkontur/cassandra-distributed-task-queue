@@ -10,6 +10,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         public string EnqueueTicks { get; set; }
         public string StartExecutedTicks { get; set; }
         public string MinimalStartTicks { get; set; }
+        public string EnqueueMoscowTime { get; set; }
+        public string StartExecutedMoscowTime { get; set; }
+        public string MinimalStartMoscowTime { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }
     }
