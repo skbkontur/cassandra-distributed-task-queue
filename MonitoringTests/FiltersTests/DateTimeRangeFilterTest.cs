@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-using GroBuf;
-
 using NUnit.Framework;
-
-using RemoteQueue.Cassandra.Repositories;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
@@ -21,8 +17,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             base.SetUp();
             addTasksInfo = AddTasks(7,
                     new Creater("AlphaTaskData", 3600, () => new AlphaTaskData()),
-                    new Creater("BetaTaskData", 7, () => new BetaTaskData{ IsProcess = true}),
-                    new Creater("DeltaTaskData", 3, () => new DeltaTaskData())
+                    new Creater("BetaTaskData", 4, () => new BetaTaskData{ IsProcess = true}),
+                    new Creater("DeltaTaskData", 1, () => new DeltaTaskData())
                 );
             CreateUser("user", "psw");
             Thread.Sleep(4000);
@@ -41,7 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 {
                     handleTaskCollection.AddTask(task);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                 }
             }
@@ -76,8 +72,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var maxTime = new DateTime(2020, 12, 31);
 
             addTasksInfo["AlphaTaskData"].AddTime = addTasksInfo["AlphaTaskData"].AddTime.Value.AddSeconds(11);
-            addTasksInfo["BetaTaskData"].AddTime = addTasksInfo["BetaTaskData"].AddTime.Value.AddSeconds(7);
-            addTasksInfo["DeltaTaskData"].AddTime = addTasksInfo["DeltaTaskData"].AddTime.Value.AddSeconds(3);
+            addTasksInfo["BetaTaskData"].AddTime = addTasksInfo["BetaTaskData"].AddTime.Value.AddSeconds(4);
+            addTasksInfo["DeltaTaskData"].AddTime = addTasksInfo["DeltaTaskData"].AddTime.Value.AddSeconds(1);
 
             CheckTaskSearchMinStartTicks(addTasksInfo["AlphaTaskData"], maxTime);
             CheckTaskSearchMinStartTicks(addTasksInfo["BetaTaskData"], addTasksInfo["AlphaTaskData"].AddTime);

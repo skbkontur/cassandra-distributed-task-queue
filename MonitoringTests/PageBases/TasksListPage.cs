@@ -26,13 +26,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             TaskId = new TextInput("SearchPanel_TaskId");
 
             Search = new ButtonInput("Search");
+
+            // note не всегда! только в текущих тестах.
+            New = new CheckBox("SearchPanel_States_0_Value");
+            Finished = new CheckBox("SearchPanel_States_1_Value");
+            InProcess = new CheckBox("SearchPanel_States_2_Value");
         }
 
         public void CheckTaskListItemsCount(int expectedCount)
         {
-            if (expectedCount > 0)
-                    GetTaskListItem(expectedCount - 1).WaitPresence();
-                GetTaskListItem(expectedCount).WaitAbsence();
+            if(expectedCount > 0)
+                GetTaskListItem(expectedCount - 1).WaitPresence();
+            GetTaskListItem(expectedCount).WaitAbsence();
         }
 
         public TaskDetailsPage GoToTaskDetails(int index)
@@ -57,11 +62,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         {
             return new TaskListItem(index);
         }
+
         public TasksListPage GoToNextPage()
         {
             NextPage.Click();
             return GoTo<TasksListPage>();
         }
+
         public TasksListPage SearchTasks()
         {
             Search.Click();
@@ -89,6 +96,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 
         public Select TaskName { get; private set; }
         public TextInput TaskId { get; private set; }
+
+        public CheckBox New { get; private set; }
+        public CheckBox Finished { get; private set; }
+        public CheckBox InProcess { get; private set; }
 
         public ButtonInput Search { get; private set; }
     }
