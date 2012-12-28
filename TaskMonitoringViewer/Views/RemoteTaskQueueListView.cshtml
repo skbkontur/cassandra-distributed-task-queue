@@ -79,8 +79,8 @@
 </div>
 <div>
     <table>
-        <tr>
-            <td>
+        <tr class="table_header">
+            <td class="first_column">
                 TaskId
             </td>
             <td>
@@ -113,8 +113,8 @@
                 var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId });
                 var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId });
                 // ReSharper restore Asp.NotResolved
-                <tr id="Task[@index]">
-                    <td id="TaskId[@index]">
+                <tr id="Task[@index]" class="table_row">
+                    <td id="TaskId[@index]" class="first_column">
                         <a href="@detailsTaskUrl">@taskModel.TaskId</a>
                     </td>
 
