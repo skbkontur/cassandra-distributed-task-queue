@@ -22,126 +22,102 @@
     pageController.run();
     });
 }
-<h1>
-    Task list</h1>
-<div id="TaskMonitoringSearchPanel">
-    <div id="searchDiv">
-        @{
-            <div>
-                <div>State</div>
-                <div class="context_novis">
-                    @foreach(var state in htmlModel.States)
-                    {
-                        <div class="filter_field">
-                            @Html.Input(state.Key)
-                            @Html.Checkbox(state.Value)
-                        </div>
-                    }
-                </div>
+<h1 class="remoteTaskQueueMonitoring__header">Task list</h1>
+<div class="remoteTaskQueueMonitoring__filter">
+    <div class="remoteTaskQueueMonitoring__filter__label">State</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">
+        @foreach(var state in htmlModel.States)
+        {
+            <div class="remoteTaskQueueMonitoring__filter__field__items">
+                @Html.Input(state.Key)
+                @Html.Checkbox(state.Value)
             </div>
-            <div class="context_novis">
-                <div class="filter_name">TaskId</div>
-                <div class="filter_field">@Html.Input(htmlModel.TaskId)</div>
-                <div class="filter_name">ParentTaskId</div>
-                <div class="filter_field">@Html.Input(htmlModel.ParentTaskId)</div>
-                @{ if(htmlModel.TaskName != null)
-                   {
-                       <div class="filter_name">TaskName</div>
-                       <div class="filter_field">@Html.Select(htmlModel.TaskName)</div>
-                   } }
-            </div>
-            <div class="context_novis">
-                <div class="filter_name">Ticks From</div>
-                <div class="filter_field">@Html.DateAndTime(htmlModel.Ticks.From)</div>
-                <div class="filter_name">Ticks To</div>
-                <div class="filter_field">@Html.DateAndTime(htmlModel.Ticks.To)</div>
-            </div>
-            <div class="context_novis">
-                <div class="filter_name">StartExecutedTicks From</div>
-                <div class="filter_field">@Html.DateAndTime(htmlModel.StartExecutedTicks.From)</div>
-                <div class="filter_name">StartExecutedTicks To</div>
-                <div class="filter_field">@Html.DateAndTime(htmlModel.StartExecutedTicks.To)</div>
-            </div>
-            <div class="context_novis">
-                <div class="filter_name">MinimalStartTicks From</div>
-                <div class="filter_field">@Html.DateAndTime(htmlModel.MinimalStartTicks.From)</div>
-                <div class="filter_name">MinimalStartTicks To</div>
-                <div class="filter_field">@Html.DateAndTime(htmlModel.MinimalStartTicks.To)</div>
-            </div> }
-        <div class="context_novis">@Html.Button(htmlModel.SearchButton)</div>
+        }
     </div>
 </div>
-<div>
-    <table>
-        <tr class="table_header">
-            <td class="first_column">
-                TaskId
-            </td>
-            <td>
-                TaskState
-            </td>
-            <td>
-                TaskName
-            </td>
-            <td>
-                EnqueueTicks
-            </td>
-            <td>
-                StartExecutedTicks
-            </td>
-            <td>
-                MinimalStartTicks
-            </td>
-            <td>
-                Attempts
-            </td>
-            <td>
-                ParentTaskId
-            </td>
-        </tr>
-        @{
-            for(int index = 0; index < Model.Data.TaskModels.Length; index++)
-            {
-                var taskModel = Model.Data.TaskModels[index];
-                // ReSharper disable Asp.NotResolved
-                var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
-                var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
-                // ReSharper restore Asp.NotResolved
-                <tr id="Task[@index]" class="table_row">
-                    <td id="TaskId[@index]" class="first_column">
-                        <a href="@detailsTaskUrl">@taskModel.TaskId</a>
-                    </td>
-
-                    <td id="TaskState[@index]">
-                        @Html.TaskState(taskModel)
-                    </td>
-
-                    <td id="TaskName[@index]">
-                        @taskModel.Name
-                    </td>
-
-                    <td id="EnqueueTicks[@index]" title="@taskModel.EnqueueTicks">
-                        @taskModel.EnqueueMoscowTime
-                    </td>
-
-                    <td id="StartExecutedTicks[@index]" title="@taskModel.StartExecutedTicks">
-                        @taskModel.StartExecutedMoscowTime
-                    </td>
-
-                    <td id="MinimalStartTicks[@index]" title="@taskModel.MinimalStartTicks">
-                        @taskModel.MinimalStartMoscowTime
-                    </td>
-
-                    <td id="Attempts[@index]">
-                        @taskModel.Attempts
-                    </td>
-                    <td id="ParentTaskId[@index]">
-                        <a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a>
-                    </td>
-                </tr>
-            }
-        }
-    </table>
+<div class="remoteTaskQueueMonitoring__filter">
+    <div class="remoteTaskQueueMonitoring__filter__label">TaskId</div>
+    <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(htmlModel.TaskId)</div>
 </div>
+<div class="remoteTaskQueueMonitoring__filter">
+    <div class="remoteTaskQueueMonitoring__filter__label">ParentTaskId</div>
+    <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(htmlModel.ParentTaskId)</div>
+</div>
+@{
+    if(htmlModel.TaskName != null)
+    {
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">TaskName</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.Select(htmlModel.TaskName)</div>
+        </div>
+    }
+}
+<div class="remoteTaskQueueMonitoring__filter">
+    <div class="remoteTaskQueueMonitoring__filter__label">Ticks From</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.Ticks.From)</div>
+    <div class="remoteTaskQueueMonitoring__filter__label">Ticks To</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.Ticks.To)</div>
+</div>
+<div class="remoteTaskQueueMonitoring__filter">
+    <div class="remoteTaskQueueMonitoring__filter__label">StartExecutedTicks From</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.StartExecutedTicks.From)</div>
+    <div class="remoteTaskQueueMonitoring__filter__label">StartExecutedTicks To</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.StartExecutedTicks.To)</div>
+</div>
+<div class="remoteTaskQueueMonitoring__filter">
+    <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks From</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.MinimalStartTicks.From)</div>
+    <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks To</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.MinimalStartTicks.To)</div>
+</div>
+<div class="remoteTaskQueueMonitoring__button">@Html.Button(htmlModel.SearchButton)</div>
+<table class="remoteTaskQueueMonitoring__data">
+    <tr>
+        <th class="remoteTaskQueueMonitoring__data__header">TaskId</th>
+        <th class="remoteTaskQueueMonitoring__data__header">TaskState</th>
+        <th class="remoteTaskQueueMonitoring__data__header">TaskName</th>
+        <th class="remoteTaskQueueMonitoring__data__header">EnqueueTicks</th>
+        <th class="remoteTaskQueueMonitoring__data__header">StartExecutedTicks</th>
+        <th class="remoteTaskQueueMonitoring__data__header">MinimalStartTicks</th>
+        <th class="remoteTaskQueueMonitoring__data__header">Attempts</th>
+        <th class="remoteTaskQueueMonitoring__data__header remoteTaskQueueMonitoring__last">ParentTaskId</th>
+    </tr>
+    @{
+        for(int index = 0; index < Model.Data.TaskModels.Length; index++)
+        {
+            var taskModel = Model.Data.TaskModels[index];
+            // ReSharper disable Asp.NotResolved
+            var detailsTaskUrl = Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
+            var detailsParentTaskUrl = Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
+            // ReSharper restore Asp.NotResolved
+            <tr id="Task[@index]" class="remoteTaskQueueMonitoring__data__item remoteTaskQueueMonitoring__data__item_state_@(taskModel.State)">
+                <td id="TaskId[@index]" class="remoteTaskQueueMonitoring__data__col remoteTaskQueueMonitoring__data__col_type_id">
+                    <a href="@detailsTaskUrl" target="_blank">@taskModel.TaskId</a>
+                </td>
+                <td id="TaskState[@index]" class="remoteTaskQueueMonitoring__data__col">
+                    @Html.TaskState(taskModel)
+                </td>
+                <td id="TaskName[@index]" class="remoteTaskQueueMonitoring__data__col">
+                    @taskModel.Name
+                </td>
+                <td id="EnqueueTicks[@index]" title="@taskModel.EnqueueTicks" class="remoteTaskQueueMonitoring__data__col">
+                    @taskModel.EnqueueMoscowTime
+                </td>
+                <td id="StartExecutedTicks[@index]" title="@taskModel.StartExecutedTicks" class="remoteTaskQueueMonitoring__data__col">
+                    @taskModel.StartExecutedMoscowTime
+                </td>
+                <td id="MinimalStartTicks[@index]" title="@taskModel.MinimalStartTicks" class="remoteTaskQueueMonitoring__data__col">
+                    @taskModel.MinimalStartMoscowTime
+                </td>
+                <td id="Attempts[@index]" class="remoteTaskQueueMonitoring__data__col">
+                    @taskModel.Attempts
+                </td>
+                <td id="ParentTaskId[@index]" class="remoteTaskQueueMonitoring__data__col remoteTaskQueueMonitoring__last remoteTaskQueueMonitoring__data__col_type_id">
+                    <a href="@detailsParentTaskUrl">@taskModel.ParentTaskId</a>
+                </td>
+            </tr>
+        }
+    }
+</table>
 @Html.Selects(Model.GetAllSelects())
 @Html.Paginator(Model)

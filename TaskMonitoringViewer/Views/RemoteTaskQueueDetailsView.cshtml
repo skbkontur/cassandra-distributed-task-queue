@@ -7,82 +7,84 @@
 
 @* ReSharper disable Razor.SectionNotResolved *@
 @section Title {
-    Task @Model.TaskMetaInfoModel.TaskId
+    Task: @Model.TaskMetaInfoModel.TaskId
 }
 @* ReSharper restore Razor.SectionNotResolved *@
 
 @section Scripts {
 }
-
-<h1>Task list</h1>
-<div>
-    <ul>
+@{
+    // ReSharper disable Asp.NotResolved
+    var taskListUrl = @Url.Action("Run", "RemoteTaskQueue", new {pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
+    // ReSharper restore Asp.NotResolved
+}
+<h1 class="remoteTaskQueueMonitoring__header">Task: @Model.TaskMetaInfoModel.TaskId</h1>
+<div class="remoteTaskQueueMonitoring__back"><a href="@taskListUrl">Вернуться в Task list</a></div>
+<div class="remoteTaskQueueMonitoring__details__container">
+    <table class="remoteTaskQueueMonitoring__details">
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">TaskId</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="TaskId">@Model.TaskMetaInfoModel.TaskId</td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">TaskState</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="TaskState">@Html.TaskState(Model.TaskMetaInfoModel)</td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">TaskName</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="TaskName">@Model.TaskMetaInfoModel.Name</td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">EnqueueTicks</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="EnqueueTicks">@Model.TaskMetaInfoModel.EnqueueTicks</td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">StartExecutedTicks</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="StartExecutedTicks">@Model.TaskMetaInfoModel.StartExecutedTicks</td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">MinimalStartTicks</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="MinimalStartTicks">@Model.TaskMetaInfoModel.MinimalStartTicks</td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">Attempts</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="Attempts">@Model.TaskMetaInfoModel.Attempts</td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">ParentTaskId</th>
+            @{
+                // ReSharper disable Asp.NotResolved
+                var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = Model.TaskMetaInfoModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequesId = Model.SearchRequestId});
+                // ReSharper restore Asp.NotResolved
+            }
+            <td class="remoteTaskQueueMonitoring__details__col" id="ParentTaskId"><a href="@detailsParentTaskUrl">@Model.TaskMetaInfoModel.ParentTaskId</a></td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item @(Model.ExceptionInfo == null ? "remoteTaskQueueMonitoring__details__last" : "")">
+            <th class="remoteTaskQueueMonitoring__details__header">TaskData</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="TaskData">@Model.TaskDataValue.Render(Html)</td>
+        </tr>
         @{
-            // ReSharper disable Asp.NotResolved
-            var taskListUrl = @Url.Action("Run", "RemoteTaskQueue", new{pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
-            // ReSharper restore Asp.NotResolved
+            if(Model.ExceptionInfo != null)
+            {
+                <tr class="remoteTaskQueueMonitoring__details__item remoteTaskQueueMonitoring__details__last">
+                    <td class="remoteTaskQueueMonitoring__details__header">Детали ошибки</td>
+                    <td class="remoteTaskQueueMonitoring__details__col" id="ExceptionInfo">
+                        @{
+                            var text = Model.ExceptionInfo.ExceptionMessageInfo ?? "";
+                            var lines = text.Split('\n');
+                            if(lines.Length != 0)
+                            {
+                                <ul class="remoteTaskQueueMonitoring__details__list">
+                                    @foreach(var line in lines)
+                                    {
+                                        <li class="remoteTaskQueueMonitoring__details__list__item">@line</li>
+                                    }
+                                </ul>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
         }
-        <li><a href="@taskListUrl">Task list</a></li>
-    </ul>
+    </table>
 </div>
-<hr />
-
-<table>
-    <tr>
-        <td><b>TaskId</b></td>
-        <td id="TaskId">@Model.TaskMetaInfoModel.TaskId</td>
-    </tr>
-    <tr>
-        <td><b>TaskState</b></td>
-        <td id="TaskState">@Html.TaskState(Model.TaskMetaInfoModel)</td>
-    </tr>
-    <tr>
-        <td><b>TaskName</b></td>
-        <td id="TaskName">@Model.TaskMetaInfoModel.Name</td>
-    </tr>
-    <tr>
-        <td><b>EnqueueTicks</b></td>
-        <td id="EnqueueTicks">@Model.TaskMetaInfoModel.EnqueueTicks</td>
-    </tr>
-    <tr>
-        <td><b>StartExecutedTicks</b></td>
-        <td id="StartExecutedTicks">@Model.TaskMetaInfoModel.StartExecutedTicks</td>
-    </tr>
-    <tr>
-        <td><b>MinimalStartTicks</b></td>
-        <td id="MinimalStartTicks">@Model.TaskMetaInfoModel.MinimalStartTicks</td>
-    </tr>
-    <tr>
-        <td><b>Attempts</b></td>
-        <td id="Attempts">@Model.TaskMetaInfoModel.Attempts</td>
-    </tr>
-    <tr>
-        <td><b>ParentTaskId</b></td>
-        @{
-            // ReSharper disable Asp.NotResolved
-            var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = Model.TaskMetaInfoModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequesId = Model.SearchRequestId});
-            // ReSharper restore Asp.NotResolved
-        }
-        <td id="ParentTaskId"><a href="@detailsParentTaskUrl">@Model.TaskMetaInfoModel.ParentTaskId</a></td>
-    </tr>
-    <tr>
-        <td><b>TaskData</b></td>
-        <td id="TaskData">@Model.TaskDataValue.Render(Html)</td>
-    </tr>
-    @{
-        if(Model.ExceptionInfo != null)
-        {
-            <td><b>Детали ошибки</b></td>
-            <td id="ExceptionInfo">
-                @{
-                    var text = @Model.ExceptionInfo.ExceptionMessageInfo ?? "";
-                    var lines = text.Split('\n');
-                    foreach(var line in lines)
-                    {
-                        @line<br/>
-                    }
-                }
-            </td>
-        }
-    }
-</table>

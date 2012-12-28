@@ -1,6 +1,6 @@
 ﻿@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
 @model ObjectTaskDataModel
-<table>
+<table class="remoteTaskQueueMonitoring__object">
     @{
         foreach(var property in Model.Properties)
         {
@@ -11,17 +11,10 @@
                 canHideClass = "canHide";
                 rowClass = property.Hidden ? "hideValue" : "";
             }
-
-            <tr class="propertyNameValue @canHideClass @rowClass">
-                <td>
-                    <div class="propertyName @canHideClass"><b>@property.Name</b></div>
-                </td>
-                <td class="propertyValue">
-                    @property.Value.Render(Html)
-                </td>
-                <td class="propertyHiddenValue">
-                    <i>Значение скрыто</i>
-                </td>
+            <tr class="remoteTaskQueueMonitoring__property @canHideClass @rowClass">
+                <td class="remoteTaskQueueMonitoring__property__name">@property.Name</td>
+                <td class="remoteTaskQueueMonitoring__property__value">@property.Value.Render(Html)</td>
+                <td class="propertyHiddenValue"><i>Значение скрыто</i></td>
             </tr>
         }
     }

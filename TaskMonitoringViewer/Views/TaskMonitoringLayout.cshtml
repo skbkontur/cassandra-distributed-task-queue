@@ -59,75 +59,14 @@
             Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardCollection.js");
             Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardNormalizer.js");
             Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardKeys.js");
+            
+            Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardKeys.js");
 
             Html.RenderScript("/Shared/Scripts/Expressions/Expression.js");
 
             Html.RenderAllScriptsFromDirectory("/Shared/Scripts/Autoload");
             Html.RenderAllScriptsFromDirectory("/SharedBlocks/");
         }
-
-        <style type="text/css">
-            html {
-                height: 100%;
-            }
-
-            body {
-                position: relative;
-                min-height: 100%;
-                background: #dce2e6 url('../Images/PageTop.png') repeat-x;
-            }
-
-            .page_bg {
-                position: fixed;
-                left: 0;
-                bottom: 0;
-                width: 100%;
-                height: 298px;
-            }
-
-            .site {
-                position: relative;
-                margin: 0 auto;
-                padding: 0 1px;
-                min-width: 998px;
-                max-width: 1278px;
-            }
-
-            .table_header
-            {
-                font-size: 2em;
-            }
-
-            .table_row
-            {
-                font-size: 1.5em;
-            }
-
-            .first_column
-            {
-                padding-bottom: 10px;
-            }
-            
-            .filter_name
-            {
-                width: 190px;
-                float: left;
-                font-size: 1.167em;
-                padding-top: 9px
-            }
-            
-            .filter_object
-            {
-                overflow: hidden;
-            }
-            
-            .filter_field
-            {
-                float: left;
-                margin: 0 30px 0 0px;
-            }
-        </style>
-
         <script type="text/javascript">
             $(document).ready(function() {
                 $(".cancelTask").click(function(event) {
@@ -194,10 +133,9 @@
             });
 
             $(document).ready(function() {
-                $(".propertyNameValue").click(function(event) {
-                    if ($(this).hasClass("canHide")) {
+                $(".remoteTaskQueueMonitoring__property").click(function(event) {
+                    if ($(this).hasClass("canHide"))
                         $(this).toggleClass("hideValue");
-                    }
                     event.stopPropagation();
                 });
             });
@@ -205,7 +143,7 @@
 
         </script>
     </head>
-    <body class="subform" subform="page">
+    <body class="remoteTaskQueueMonitoring subform" subform="page">
         @RenderBody()
     </body>
 </html>
