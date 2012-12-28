@@ -30,50 +30,44 @@
             <div>
                 <div>State</div>
                 <div class="context_novis">
-                    @foreach (var state in htmlModel.States)
+                    @foreach(var state in htmlModel.States)
                     {
-                        @Html.Input(state.Key)
-                        @Html.Checkbox(state.Value)
+                        <div class="filter_field">
+                            @Html.Input(state.Key)
+                            @Html.Checkbox(state.Value)
+                        </div>
                     }
                 </div>
             </div>
-            <div>
-                <div>TaskId</div>
-                <div class="context_novis">@Html.Input(htmlModel.TaskId)</div>
+            <div class="context_novis">
+                <div class="filter_name">TaskId</div>
+                <div class="filter_field">@Html.Input(htmlModel.TaskId)</div>
+                <div class="filter_name">ParentTaskId</div>
+                <div class="filter_field">@Html.Input(htmlModel.ParentTaskId)</div>
+                @{ if(htmlModel.TaskName != null)
+                   {
+                       <div class="filter_name">TaskName</div>
+                       <div class="filter_field">@Html.Select(htmlModel.TaskName)</div>
+                   } }
             </div>
-            <div>
-                <div>ParentTaskId</div>
-                <div class="context_novis">@Html.Input(htmlModel.ParentTaskId)</div>
+            <div class="context_novis">
+                <div class="filter_name">Ticks From</div>
+                <div class="filter_field">@Html.DateAndTime(htmlModel.Ticks.From)</div>
+                <div class="filter_name">Ticks To</div>
+                <div class="filter_field">@Html.DateAndTime(htmlModel.Ticks.To)</div>
             </div>
-            if (htmlModel.TaskName != null)
-            {
-                <div>
-                    <div>TaskName</div>
-                    <div class="context_novis">@Html.Select(htmlModel.TaskName)</div>
-                </div>
-            }
-            <div>
-                <div>Ticks</div>
-                <div>From Date & Time</div>
-                <div class="context_novis">@Html.DateAndTime(htmlModel.Ticks.From)</div>
-                <div>To Date & Time</div>
-                <div class="context_novis">@Html.DateAndTime(htmlModel.Ticks.To)</div>
+            <div class="context_novis">
+                <div class="filter_name">StartExecutedTicks From</div>
+                <div class="filter_field">@Html.DateAndTime(htmlModel.StartExecutedTicks.From)</div>
+                <div class="filter_name">StartExecutedTicks To</div>
+                <div class="filter_field">@Html.DateAndTime(htmlModel.StartExecutedTicks.To)</div>
             </div>
-            <div>
-                <div>StartExecutedTicks</div>
-                <div>From Date & Time</div>
-                <div class="context_novis">@Html.DateAndTime(htmlModel.StartExecutedTicks.From)</div>
-                <div>To Date & Time</div>
-                <div class="context_novis">@Html.DateAndTime(htmlModel.StartExecutedTicks.To)</div>
-            </div>
-            <div>
-                <div>MinimalStartTicks</div>
-                <div>From Date & Time</div>
-                <div class="context_novis">@Html.DateAndTime(htmlModel.MinimalStartTicks.From)</div>
-                <div>To Date & Time</div>
-                <div class="context_novis">@Html.DateAndTime(htmlModel.MinimalStartTicks.To)</div>
-            </div>
-        }
+            <div class="context_novis">
+                <div class="filter_name">MinimalStartTicks From</div>
+                <div class="filter_field">@Html.DateAndTime(htmlModel.MinimalStartTicks.From)</div>
+                <div class="filter_name">MinimalStartTicks To</div>
+                <div class="filter_field">@Html.DateAndTime(htmlModel.MinimalStartTicks.To)</div>
+            </div> }
         <div class="context_novis">@Html.Button(htmlModel.SearchButton)</div>
     </div>
 </div>
@@ -106,12 +100,12 @@
             </td>
         </tr>
         @{
-            for (int index = 0; index < Model.Data.TaskModels.Length; index++)
+            for(int index = 0; index < Model.Data.TaskModels.Length; index++)
             {
                 var taskModel = Model.Data.TaskModels[index];
                 // ReSharper disable Asp.NotResolved
-                var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId });
-                var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new { id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId });
+                var detailsTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
+                var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
                 // ReSharper restore Asp.NotResolved
                 <tr id="Task[@index]" class="table_row">
                     <td id="TaskId[@index]" class="first_column">
