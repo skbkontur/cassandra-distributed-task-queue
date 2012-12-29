@@ -4,6 +4,7 @@ using System.Linq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
@@ -17,11 +18,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 {
     public class LocalStorageUpdater : ILocalStorageUpdater
     {
-        public LocalStorageUpdater(IHandleTasksMetaStorage handleTasksMetaStorage, IEventLogRepository eventLogRepository, ILocalStorage localStorage)
+        public LocalStorageUpdater(IHandleTasksMetaStorage handleTasksMetaStorage, IEventLogRepository eventLogRepository, ILocalStorage localStorage, IGlobalTime globalTime)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.eventLogRepository = eventLogRepository;
             this.localStorage = localStorage;
+            this.globalTime = globalTime;
             lastTicks = 0;
         }
 
@@ -29,7 +31,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         {
             lock(lockObject)
             {
-                var updateTime = DateTime.UtcNow.Ticks;
+                var updateTime = globalTime.GetNowTicks();
                 var updatedTasksMetas = eventLogRepository.GetEvents(lastTicks).Select(x => handleTasksMetaStorage.GetMeta(x.TaskId)).ToArray();
                 var hs = new Dictionary<string, MonitoringTaskMetadata>();
                 foreach(var taskMetas in updatedTasksMetas)
@@ -86,6 +88,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IEventLogRepository eventLogRepository;
         private readonly ILocalStorage localStorage;
+        private readonly IGlobalTime globalTime;
         private readonly object lockObject = new object();
     }
 }
