@@ -17,11 +17,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             base.SetUp();
             addTasksInfo = AddTasks(7,
                     new Creater("AlphaTaskData", 3600, () => new AlphaTaskData()),
-                    new Creater("BetaTaskData", 4, () => new BetaTaskData{ IsProcess = true}),
+                    new Creater("BetaTaskData", 11, () => new BetaTaskData{ IsProcess = true}),
                     new Creater("DeltaTaskData", 1, () => new DeltaTaskData())
                 );
             CreateUser("user", "psw");
-            Thread.Sleep(4000);
+            Thread.Sleep(15000);
             tasksListPage = Login("user", "psw");
         }
 
@@ -71,8 +71,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         {
             var maxTime = new DateTime(2020, 12, 31);
 
-            addTasksInfo["AlphaTaskData"].AddTime = addTasksInfo["AlphaTaskData"].AddTime.Value.AddSeconds(11);
-            addTasksInfo["BetaTaskData"].AddTime = addTasksInfo["BetaTaskData"].AddTime.Value.AddSeconds(4);
+            addTasksInfo["AlphaTaskData"].AddTime = addTasksInfo["AlphaTaskData"].AddTime.Value.AddSeconds(3600);
+            addTasksInfo["BetaTaskData"].AddTime = addTasksInfo["BetaTaskData"].AddTime.Value.AddSeconds(11);
             addTasksInfo["DeltaTaskData"].AddTime = addTasksInfo["DeltaTaskData"].AddTime.Value.AddSeconds(1);
 
             CheckTaskSearchMinStartTicks(addTasksInfo["AlphaTaskData"], maxTime);

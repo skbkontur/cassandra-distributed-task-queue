@@ -50,7 +50,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     TableName = taskMetaInfoTableName
                 };
             //var debagRes = sqlDatabase.GetRows(sqlSelectQuery).Select(x => x[0]).ToArray();
-            return sqlDatabase.GetRows(sqlSelectQuery).Select(x => x[0]).ToArray();
+            var debagRes = sqlDatabase.GetRows(sqlSelectQuery).Select(x => x[0]).ToArray();
+            return debagRes;
         }
 
         private readonly ILocalStorage localStorage;

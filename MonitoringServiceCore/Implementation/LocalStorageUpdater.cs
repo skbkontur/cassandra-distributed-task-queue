@@ -6,6 +6,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
+using SKBKontur.Catalogue.Core.SynchronizationStorage.EventDevourers;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler;
@@ -39,7 +40,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     MonitoringTaskMetadata metadata;
                     if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMetas, out metadata))
                     {
-                        if (hs.ContainsKey(metadata.Id))
+                        if(hs.ContainsKey(metadata.Id))
                         {
                             if(metadata.Ticks > hs[metadata.Id].Ticks) //note это условие вроде всегда выполн€етс€
                                 hs[metadata.Id] = metadata;
@@ -49,14 +50,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     }
                 }
                 if(hs.Count != 0)
-                    localStorage.Write(hs.Select(x => x.Value).ToArray());
+                {
+                    foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(hs.Select(x => x.Value), 500))
+                        localStorage.Write(batch);
+                }
                 lastTicks = updateTime;
             }
         }
 
         private bool TryConvertTaskMetaInformationToMonitoringTaskMetadata(TaskMetaInformation info, out MonitoringTaskMetadata taskMetadata)
         {
-            if (info == null)
+            if(info == null)
             {
                 taskMetadata = new MonitoringTaskMetadata();
                 logger.Error("MetaInformation null");
@@ -74,7 +78,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     ParentTaskId = info.ParentTaskId
                 };
             MTaskState mtaskState;
-            if (!Enum.TryParse(info.State.ToString(), true, out mtaskState))
+            if(!Enum.TryParse(info.State.ToString(), true, out mtaskState))
             {
                 logger.ErrorFormat("Ќе смог сконвертировать TaskState(RemouteTaskQueue) к TaskState(MonitoringDataTypes). TaskId: {0}", taskMetadata.TaskId); // todo написать нормальное сообщение
                 return false;
