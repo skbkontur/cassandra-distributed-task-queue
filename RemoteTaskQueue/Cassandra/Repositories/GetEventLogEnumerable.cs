@@ -100,7 +100,6 @@ namespace RemoteQueue.Cassandra.Repositories
 
         object IEnumerator.Current { get { return Current; } }
 
-        private readonly string type;
         private readonly ISerializer serializer;
         private readonly IColumnFamilyConnection connection;
         private readonly long fromTicks;

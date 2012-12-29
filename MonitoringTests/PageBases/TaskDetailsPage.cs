@@ -9,18 +9,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         public TaskDetailsPage()
         {
             TaskId = new StaticText("TaskId");
-            TaskState = new StaticText("TaskState");
+            TaskState = new StaticText(By.ClassName("taskState"));
             TaskName = new StaticText("TaskName");
             EnqueueTicks = new StaticText("EnqueueTicks");
             StartExecutedTicks = new StaticText("StartExecutedTicks");
             Attempts = new StaticText("Attempts");
             ParentTaskId = new Link("ParentTaskId");
             TaskData = new StaticText("TaskData");
-            TaskList = new Link(By.LinkText("Task list"));
+            TaskList = new Link(By.LinkText("Вернуться в Task list"));
         }
 
         public override void BrowseWaitVisible()
         {
+            TaskState.WaitVisible();
+            TaskId.WaitVisible();
         }
 
         public TasksListPage GoToTasksListPage()

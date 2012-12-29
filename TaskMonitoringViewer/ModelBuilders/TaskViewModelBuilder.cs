@@ -22,7 +22,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         {
             MonitoringTaskMetadata metadata;
             if(!TryConvertTaskMetaInformationToMonitoringTaskMetadata(remoteTaskInfo.Context, out metadata))
-                throw new Exception("не смог сконвертировать TaskState(RemouteTaskQueue) к TaskState(MonitoringDataTypes)");
+                throw new Exception("Не смог сконвертировать TaskState(RemouteTaskQueue) к TaskState(MonitoringDataTypes). Возможно MetaInformation null.");
             return new TaskViewModel
                 {
                     TaskMetaInfoModel = taskMetadataModelBuilder.Build(metadata),
@@ -45,6 +45,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 info.Attempts,
                 info.ParentTaskId);
             */
+            if (info == null)
+            {
+                taskMetadata = new MonitoringTaskMetadata();
+                return false;
+            }
             taskMetadata = new MonitoringTaskMetadata
             {
                 Name = info.Name,

@@ -35,13 +35,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 foreach(var taskMetas in updatedTasksMetas)
                 {
                     MonitoringTaskMetadata metadata;
-                    if(!TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMetas, out metadata))
-                        logger.Error("не смог сконвертировать TaskState(RemouteTaskQueue) к TaskState(MonitoringDataTypes)"); // todo написать нормальное сообщение
-                    else
+                    if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMetas, out metadata))
                     {
                         if (hs.ContainsKey(metadata.Id))
                         {
-                            if(metadata.Ticks > hs[metadata.Id].Ticks)
+                            if(metadata.Ticks > hs[metadata.Id].Ticks) //note это условие вроде всегда выполняется
                                 hs[metadata.Id] = metadata;
                         }
                         else
@@ -56,6 +54,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         private bool TryConvertTaskMetaInformationToMonitoringTaskMetadata(TaskMetaInformation info, out MonitoringTaskMetadata taskMetadata)
         {
+            if (info == null)
+            {
+                taskMetadata = new MonitoringTaskMetadata();
+                logger.Error("MetaInformation null");
+                return false;
+            }
             taskMetadata = new MonitoringTaskMetadata
                 {
                     Name = info.Name,
@@ -68,8 +72,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     ParentTaskId = info.ParentTaskId
                 };
             MTaskState mtaskState;
-            if(!Enum.TryParse(info.State.ToString(), true, out mtaskState))
+            if (!Enum.TryParse(info.State.ToString(), true, out mtaskState))
+            {
+                logger.Error("не смог сконвертировать TaskState(RemouteTaskQueue) к TaskState(MonitoringDataTypes)"); // todo написать нормальное сообщение
                 return false;
+            }
             taskMetadata.State = mtaskState;
             return true;
         }

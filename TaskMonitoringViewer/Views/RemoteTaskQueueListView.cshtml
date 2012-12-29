@@ -92,7 +92,7 @@
             // ReSharper restore Asp.NotResolved
             <tr id="Task[@index]" class="remoteTaskQueueMonitoring__data__item remoteTaskQueueMonitoring__data__item_state_@(taskModel.State)">
                 <td id="TaskId[@index]" class="remoteTaskQueueMonitoring__data__col remoteTaskQueueMonitoring__data__col_type_id">
-                    <a href="@detailsTaskUrl" target="_blank">@taskModel.TaskId</a>
+                    <a href="@detailsTaskUrl">@taskModel.TaskId</a>
                 </td>
                 <td id="TaskState[@index]" class="remoteTaskQueueMonitoring__data__col">
                     @Html.TaskState(taskModel)
