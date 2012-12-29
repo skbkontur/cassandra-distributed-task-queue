@@ -3,7 +3,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
-    public interface IMonitoringServiceClient
+    public interface IRemoteTaskQueueMonitoringServiceClient
     {
         void ActualizeDatabaseScheme();
         void DropLocalStorage();

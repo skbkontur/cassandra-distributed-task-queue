@@ -24,8 +24,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
             accessControlService = container.Get<IAccessControlService>();
             passwordService = container.Get<IPasswordService>();
             DefaultPage = LoadPage<DefaultPage>("");
-            container.Get<IMonitoringServiceClient>().DropLocalStorage();
-            container.Get<IMonitoringServiceClient>().ActualizeDatabaseScheme();
+            container.Get<IRemoteTaskQueueMonitoringServiceClient>().DropLocalStorage();
+            container.Get<IRemoteTaskQueueMonitoringServiceClient>().ActualizeDatabaseScheme();
             container.Get<IExchangeServiceClient>().Start();
         }
 

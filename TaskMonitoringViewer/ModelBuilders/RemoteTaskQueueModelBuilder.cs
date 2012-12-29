@@ -20,13 +20,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     public class RemoteTaskQueueModelBuilder : IRemoteTaskQueueModelBuilder
     {
-        public RemoteTaskQueueModelBuilder(IMonitoringServiceStorage monitoringServiceStorage,
+        public RemoteTaskQueueModelBuilder(IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage,
                                            IBusinessObjectsStorage businessObjectsStorage,
                                            ICatalogueExtender extender,
                                            IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder,
                                            IRemoteTaskQueueHtmlModelBuilder remoteTaskQueueHtmlModelBuilder)
         {
-            this.monitoringServiceStorage = monitoringServiceStorage;
+            this.remoteTaskQueueMonitoringServiceStorage = remoteTaskQueueMonitoringServiceStorage;
             this.businessObjectsStorage = businessObjectsStorage;
             this.extender = extender;
             this.monitoringSearchRequestCriterionBuilder = monitoringSearchRequestCriterionBuilder;
@@ -36,8 +36,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         public RemoteTaskQueueModel Build(PageModelBaseParameters pageModelBaseParameters, int? pageNumber, string searchRequestId)
         {
             Expression<Func<MonitoringTaskMetadata, bool>> criterion = x => true;
-            var names = monitoringServiceStorage.GetDistinctValues(criterion, x => x.Name).Cast<string>().ToArray();
-            var states = monitoringServiceStorage.GetDistinctValues(criterion, x => x.State).Select(x => TryPrase<TaskState>((string)x)).ToArray();
+            var names = remoteTaskQueueMonitoringServiceStorage.GetDistinctValues(criterion, x => x.Name).Cast<string>().ToArray();
+            var states = remoteTaskQueueMonitoringServiceStorage.GetDistinctValues(criterion, x => x.State).Select(x => TryPrase<TaskState>((string)x)).ToArray();
             var allowedSearchValues = new AllowedSearchValues
                 {
                     Names = names,
@@ -57,9 +57,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             int page = (pageNumber ?? 0);
             var countPerPage = ControllerConstants.DefaultRecordsNumberPerPage;
             var rangeFrom = page * ControllerConstants.DefaultRecordsNumberPerPage;
-            var cnt = monitoringServiceStorage.GetCount(criterion);
+            var cnt = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
             var totalPagesCount = (cnt + countPerPage - 1) / countPerPage;
-            var fullTaskMetaInfos = monitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.MinimalStartTicks.Descending());
+            var fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, countPerPage, x => x.MinimalStartTicks.Descending());
             var remoteTaskQueueModelData = new RemoteTaskQueuePageModel
                 {
                     SearchPanel = new SearchPanelModelData
@@ -134,7 +134,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return !Enum.TryParse(s, true, out res) ? default(T) : res;
         }
 
-        private readonly IMonitoringServiceStorage monitoringServiceStorage;
+        private readonly IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage;
         private readonly IBusinessObjectsStorage businessObjectsStorage;
         private readonly ICatalogueExtender extender;
         private readonly IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder;

@@ -6,7 +6,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
-    public interface IMonitoringServiceStorage
+    public interface IRemoteTaskQueueMonitoringServiceStorage
     {
         int GetCount(Expression<Func<MonitoringTaskMetadata, bool>> criterion);
         IEnumerable<MonitoringTaskMetadata> RangeSearch(Expression<Func<MonitoringTaskMetadata, bool>> criterion, int rangeFrom, int count, Expression<Func<MonitoringTaskMetadata, bool>> sortRules = null);

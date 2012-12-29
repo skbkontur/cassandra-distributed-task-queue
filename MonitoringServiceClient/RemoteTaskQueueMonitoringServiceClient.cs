@@ -8,9 +8,9 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
-    public class MonitoringServiceClient : IMonitoringServiceClient
+    public class RemoteTaskQueueMonitoringServiceClient : IRemoteTaskQueueMonitoringServiceClient
     {
-        public MonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory)
+        public RemoteTaskQueueMonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory)
         {
             this.methodDomainFactory = methodDomainFactory;
             domainTopology = domainTopologyFactory.Create("remoteTaskQueueMonitoringServiceTopology");

@@ -49,10 +49,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IMonitoringServiceClient.cs" />
-    <Compile Include="IMonitoringServiceStorage.cs" />
-    <Compile Include="MonitoringServiceClient.cs" />
-    <Compile Include="MonitoringServiceStorage.cs" />
+    <Compile Include="IRemoteTaskQueueMonitoringServiceClient.cs" />
+    <Compile Include="IRemoteTaskQueueMonitoringServiceStorage.cs" />
+    <Compile Include="RemoteTaskQueueMonitoringServiceClient.cs" />
+    <Compile Include="RemoteTaskQueueMonitoringServiceStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

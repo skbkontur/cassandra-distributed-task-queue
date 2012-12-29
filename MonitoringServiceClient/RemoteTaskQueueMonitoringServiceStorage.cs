@@ -7,30 +7,30 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
-    public class MonitoringServiceStorage : IMonitoringServiceStorage
+    public class RemoteTaskQueueMonitoringServiceStorage : IRemoteTaskQueueMonitoringServiceStorage
     {
-        public MonitoringServiceStorage(IMonitoringServiceClient monitoringServiceClient, IExpressionTreeConverter converter)
+        public RemoteTaskQueueMonitoringServiceStorage(IRemoteTaskQueueMonitoringServiceClient remoteTaskQueueMonitoringServiceClient, IExpressionTreeConverter converter)
         {
-            this.monitoringServiceClient = monitoringServiceClient;
+            this.remoteTaskQueueMonitoringServiceClient = remoteTaskQueueMonitoringServiceClient;
             this.converter = converter;
         }
 
         public int GetCount(Expression<Func<MonitoringTaskMetadata, bool>> criterion)
         {
-            return monitoringServiceClient.GetCount(converter.ToExpressionTree(criterion));
+            return remoteTaskQueueMonitoringServiceClient.GetCount(converter.ToExpressionTree(criterion));
         }
 
         public IEnumerable<MonitoringTaskMetadata> RangeSearch(Expression<Func<MonitoringTaskMetadata, bool>> criterion, int rangeFrom, int count, Expression<Func<MonitoringTaskMetadata, bool>> sortRules = null)
         {
-            return monitoringServiceClient.Search(converter.ToExpressionTree(criterion), converter.ToExpressionTree(sortRules), count, rangeFrom);
+            return remoteTaskQueueMonitoringServiceClient.Search(converter.ToExpressionTree(criterion), converter.ToExpressionTree(sortRules), count, rangeFrom);
         }
 
         public IEnumerable<object> GetDistinctValues(Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, object>> columnPath)
         {
-            return monitoringServiceClient.GetDistinctValues(converter.ToExpressionTree(criterion), converter.ToExpressionTree(columnPath));
+            return remoteTaskQueueMonitoringServiceClient.GetDistinctValues(converter.ToExpressionTree(criterion), converter.ToExpressionTree(columnPath));
         }
 
-        private readonly IMonitoringServiceClient monitoringServiceClient;
+        private readonly IRemoteTaskQueueMonitoringServiceClient remoteTaskQueueMonitoringServiceClient;
         private readonly IExpressionTreeConverter converter;
     }
 }
