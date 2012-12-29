@@ -25,7 +25,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             this.eventLogRepository = eventLogRepository;
             this.localStorage = localStorage;
             this.globalTime = globalTime;
-            lastTicks = 0;
         }
 
         public void UpdateLocalStorage()
@@ -33,7 +32,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             lock(lockObject)
             {
                 var updateTime = globalTime.GetNowTicks();
-                var updatedTasksMetas = eventLogRepository.GetEvents(lastTicks).Select(x => handleTasksMetaStorage.GetMeta(x.TaskId)).ToArray();
+                var updatedTasksMetas = eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>()).Select(x => handleTasksMetaStorage.GetMeta(x.TaskId)).ToArray();
                 var hs = new Dictionary<string, MonitoringTaskMetadata>();
                 foreach(var taskMetas in updatedTasksMetas)
                 {
@@ -54,7 +53,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(hs.Select(x => x.Value), 500))
                         localStorage.Write(batch);
                 }
-                lastTicks = updateTime;
+                localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(updateTime);
             }
         }
 
@@ -87,7 +86,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             return true;
         }
 
-        private long lastTicks;
         private readonly ILog logger = LogManager.GetLogger(typeof(MonitoringTask));
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IEventLogRepository eventLogRepository;

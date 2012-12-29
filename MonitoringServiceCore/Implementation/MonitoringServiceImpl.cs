@@ -29,19 +29,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public int GetCount(MonitoringGetCountQuery getCountQuery)
         {
-            localStorageUpdater.UpdateLocalStorage();
             return localStorage.GetCount<MonitoringTaskMetadata>(getCountQuery.Criterion);
         }
 
         public MonitoringTaskMetadata[] Search(MonitoringSearchQuery searchQuery)
         {
-            localStorageUpdater.UpdateLocalStorage();
             return localStorage.Search<MonitoringTaskMetadata>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules);
         }
 
         public object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery)
         {
-            localStorageUpdater.UpdateLocalStorage();
             var sqlSelectQuery = new SqlSelectQuery
                 {
                     Criterion = getDistinctValuesQuery.Criterion,
