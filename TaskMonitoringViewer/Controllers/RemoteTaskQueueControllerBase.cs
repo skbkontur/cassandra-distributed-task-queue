@@ -51,18 +51,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                     States = (pageModel.SearchPanel.States ?? new Pair<TaskState, bool?>[0]).Where(x => x.Value == true).Select(x => x.Key).ToArray(),
                     Ticks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModel.SearchPanel.Ticks.From),
-                            To = DateAndTime.ToDateTime(pageModel.SearchPanel.Ticks.To)
+                            From = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.Ticks.From, DateTimeKind.Unspecified)),
+                            To = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.Ticks.To, DateTimeKind.Unspecified))
                         },
                     StartExecutingTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModel.SearchPanel.StartExecutedTicks.From),
-                            To = DateAndTime.ToDateTime(pageModel.SearchPanel.StartExecutedTicks.To)
+                            From = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.StartExecutedTicks.From, DateTimeKind.Unspecified)),
+                            To = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.StartExecutedTicks.To, DateTimeKind.Unspecified))
                         },
                     MinimalStartTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModel.SearchPanel.MinimalStartTicks.From),
-                            To = DateAndTime.ToDateTime(pageModel.SearchPanel.MinimalStartTicks.To)
+                            From = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.MinimalStartTicks.From, DateTimeKind.Unspecified)),
+                            To = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.MinimalStartTicks.To, DateTimeKind.Unspecified))
                         }
                 };
             businessObjectsStorage.Write(searchRequest);
@@ -71,6 +71,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                     NeedRedirect = true,
                     RedirectTo = Url.Action("Run", new {searchRequestId = requestId})
                 });
+        }
+
+        private DateTime? GetUtcFromMoscowDateTime(DateTime? moscowDateTime)
+        {
+            if(moscowDateTime.HasValue)
+                return moscowDateTime.Value.ToUtcDateTime();
+            return null;
         }
 
         [AcceptVerbs(HttpVerbs.Get)]

@@ -71,18 +71,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             AllowedTaskNames = allowedSearchValues.Names,
                             Ticks = new DateTimeRangeModel
                                 {
-                                    From = DateAndTime.Create(searchRequest.Ticks.From),
-                                    To = DateAndTime.Create(searchRequest.Ticks.To)
+                                    From = DateAndTime.Create(UtcToMocowDateTime(searchRequest.Ticks.From)),
+                                    To = DateAndTime.Create(UtcToMocowDateTime(searchRequest.Ticks.To))
                                 },
                             StartExecutedTicks = new DateTimeRangeModel
                                 {
-                                    From = DateAndTime.Create(searchRequest.StartExecutingTicks.From),
-                                    To = DateAndTime.Create(searchRequest.StartExecutingTicks.To)
+                                    From = DateAndTime.Create(UtcToMocowDateTime(searchRequest.StartExecutingTicks.From)),
+                                    To = DateAndTime.Create(UtcToMocowDateTime(searchRequest.StartExecutingTicks.To))
                                 },
                             MinimalStartTicks = new DateTimeRangeModel
                                 {
-                                    From = DateAndTime.Create(searchRequest.MinimalStartTicks.From),
-                                    To = DateAndTime.Create(searchRequest.MinimalStartTicks.To)
+                                    From = DateAndTime.Create(UtcToMocowDateTime(searchRequest.MinimalStartTicks.From)),
+                                    To = DateAndTime.Create(UtcToMocowDateTime(searchRequest.MinimalStartTicks.To))
                                 }
                         },
                     TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
@@ -111,6 +111,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return model;
         }
 
+
+        private DateTime? UtcToMocowDateTime(DateTime? utc)
+        {
+            return utc.HasValue ? (DateTime?)utc.Value.ToMoscowDateTime() : null;
+        }
 
         private Pair<T, bool?> [] BuildArray<T>(T[] allowedValues, T[] requestValues, HashSet<T> needValues = null)
             where T : IComparable

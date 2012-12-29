@@ -53,8 +53,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 
         public static void SetDateTime(TextInput date, TextInput time, DateTime? dateTime)
         {
-            date.SetValue(dateTime.HasValue ? string.Format("{0:D2}.{1:D2}.{2:D4}", dateTime.Value.Day, dateTime.Value.Month, dateTime.Value.Year) : "");
-            time.SetValue(dateTime.HasValue ? string.Format("{0:D2}:{1:D2}:{2:D2}", dateTime.Value.Hour, dateTime.Value.Minute, dateTime.Value.Second) : "");
+            var moscowDateTime = dateTime.HasValue ? TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dateTime.Value, TimeZoneInfo.Utc.Id, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time").Id)
+                                     : new DateTime();
+            date.SetValue(dateTime.HasValue ? string.Format("{0:D2}.{1:D2}.{2:D4}", moscowDateTime.Day, moscowDateTime.Month, moscowDateTime.Year) : "");
+            time.SetValue(dateTime.HasValue ? string.Format("{0:D2}:{1:D2}:{2:D2}", moscowDateTime.Hour, moscowDateTime.Minute, moscowDateTime.Second) : "");
         }
 
         public TaskDetailsPage GoToParentTaskDetails(int index)

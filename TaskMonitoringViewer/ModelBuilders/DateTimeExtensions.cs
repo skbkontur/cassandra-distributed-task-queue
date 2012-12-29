@@ -26,6 +26,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return utc.Value.GetMoscowTimeString();
         }
 
+        public static DateTime ToUtcDateTime(this DateTime moscowDateTime)
+        {
+            var res =  TimeZoneInfo.ConvertTimeBySystemTimeZoneId(moscowDateTime, moscowTimeZone.Id, TimeZoneInfo.Utc.Id);
+            return res;
+        }
+
+        public static DateTime ToMoscowDateTime(this DateTime utc)
+        {
+            var res = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, TimeZoneInfo.Utc.Id, moscowTimeZone.Id);
+            return res;
+        }
+
         public static string GetMoscowDateString(this DateTime utc)
         {
             return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("dd MMMM yyyy", CultureInfo.GetCultureInfo("ru"));
@@ -41,7 +53,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return utc.GetMoscowDateString() + " " + utc.GetMoscowTimeString();
         }
 
-        private static TimeZoneInfo GetMoscowTimeZone()
+        public static TimeZoneInfo GetMoscowTimeZone()
         {
             try
             {
