@@ -6,6 +6,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
     public class RemoteTaskQueuePageModel : ModelData
     {
         public SearchPanelModelData SearchPanel { get; set; }
+        public int TaskCount { get; set; }
         public TaskMetaInfoModel[]  TaskModels { get; set; }
     }
 }

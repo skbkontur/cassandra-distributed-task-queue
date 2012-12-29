@@ -71,6 +71,7 @@
     <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.MinimalStartTicks.To)</div>
 </div>
 <div class="remoteTaskQueueMonitoring__button">@Html.Button(htmlModel.SearchButton)</div>
+<div class="context_novis"> Найдено: @Model.Data.TaskCount</div>
 <table class="remoteTaskQueueMonitoring__data">
     <tr>
         <th class="remoteTaskQueueMonitoring__data__header">TaskId</th>

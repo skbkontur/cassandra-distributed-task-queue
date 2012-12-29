@@ -85,6 +85,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                                     To = DateAndTime.Create(UtcToMocowDateTime(searchRequest.MinimalStartTicks.To))
                                 }
                         },
+                    TaskCount = cnt,
                     TaskModels = fullTaskMetaInfos.Select(x => new TaskMetaInfoModel
                         {
                             Attempts = x.Attempts,
