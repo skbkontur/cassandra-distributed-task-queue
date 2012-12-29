@@ -76,7 +76,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             MTaskState mtaskState;
             if (!Enum.TryParse(info.State.ToString(), true, out mtaskState))
             {
-                logger.Error("не смог сконвертировать TaskState(RemouteTaskQueue) к TaskState(MonitoringDataTypes)"); // todo написать нормальное сообщение
+                logger.ErrorFormat("Ќе смог сконвертировать TaskState(RemouteTaskQueue) к TaskState(MonitoringDataTypes). TaskId: {0}", taskMetadata.TaskId); // todo написать нормальное сообщение
                 return false;
             }
             taskMetadata.State = mtaskState;
