@@ -29,7 +29,7 @@ namespace RemoteQueue.Handling
             var taskMetaEventColumnInfoIndex = new TaskMetaEventColumnInfoIndex(serializer, globalTime, parameters);
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, new IndexRecordsCleaner(parameters, taskMetaEventColumnInfoIndex, serializer, globalTime), ticksHolder, serializer, globalTime, settings);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
-            var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters);
+            var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
             typeToNameMapper = new TaskDataTypeToNameMapper(taskDataRegistry);
