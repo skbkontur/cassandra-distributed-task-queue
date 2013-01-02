@@ -121,4 +121,6 @@
     }
 </table>
 @Html.Selects(Model.GetAllSelects())
-@Html.Paginator(Model)
+<div class="remoteTaskQueueMonitoring__paginator">
+    @Html.Paginator(Model)
+</div>
