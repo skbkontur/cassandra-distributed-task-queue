@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 
 using log4net;
@@ -15,6 +16,14 @@ namespace RemoteQueue.Cassandra.RemoteLock
             this.threadId = threadId;
             var random = new Random(Guid.NewGuid().GetHashCode());
             var attempt = 1;
+
+            var localRival = localWeakRemoteLocks.GetOrAdd(lockId, this);
+            if(localRival != this)
+            {
+                concurrentThreadId = localRival.ThreadId;
+                return;
+            }
+
             while(true)
             {
                 var lockAttempt = lockRepository.TryLock(lockId, threadId);
@@ -28,6 +37,7 @@ namespace RemoteQueue.Cassandra.RemoteLock
                     return;
                 case LockAttemptStatus.AnotherThreadIsOwner:
                     concurrentThreadId = lockAttempt.OwnerId;
+                    RemoveMeFromLocalStorage();
                     return;
                 default:
                     var shortSleep = random.Next(50 * (int)Math.Exp(Math.Min(attempt, 10)));
@@ -41,12 +51,34 @@ namespace RemoteQueue.Cassandra.RemoteLock
 
         public void Dispose()
         {
-            if(stopEvent != null)
+            try
             {
-                stopEvent.Set();
-                thread.Join();
-                stopEvent.Dispose();
-                lockRepository.Unlock(lockId, threadId);
+                if(stopEvent != null)
+                {
+                    stopEvent.Set();
+                    thread.Join();
+                    stopEvent.Dispose();
+                    lockRepository.Unlock(lockId, threadId);
+                }
+            }
+            finally
+            {
+                RemoveMeFromLocalStorage();
+            }
+        }
+
+        private void RemoveMeFromLocalStorage()
+        {
+            while(true)
+            {
+                WeakRemoteLock @lock;
+                if(!(localWeakRemoteLocks.TryGetValue(lockId, out @lock) && @lock == this))
+                    break;
+                if(localWeakRemoteLocks.TryRemove(lockId, out @lock))
+                    break;
+                const int sleepTime = 100;
+                logger.WarnFormat("Не смогли удалить собственную блокировку {0} из локального хранилища. Засыпаем на {1} миллисекунд", lockId, sleepTime);
+                Thread.Sleep(sleepTime);
             }
         }
 
@@ -80,6 +112,8 @@ namespace RemoteQueue.Cassandra.RemoteLock
                 }
             }
         }
+
+        private static readonly ConcurrentDictionary<string, WeakRemoteLock> localWeakRemoteLocks = new ConcurrentDictionary<string, WeakRemoteLock>();
 
         private readonly ILog logger = LogManager.GetLogger(typeof(WeakRemoteLock));
         private readonly string lockId;
