@@ -14,7 +14,7 @@ using log4net;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
-    public class GetEventsEnumerator : IEnumerator<string>
+    public class GetEventsEnumerator : IEnumerator<Tuple<string, ColumnInfo>>
     {
         public GetEventsEnumerator(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IMinTicksCache minTicksCache, long fromTicks, long toTicks, int batchSize)
         {
@@ -76,12 +76,18 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             eventEnumerator = (new List<Column>()).GetEnumerator();
         }
 
-        public string Current
+        public Tuple<string, ColumnInfo> Current
         {
             get
             {
                 var taskId = serializer.Deserialize<string>(eventEnumerator.Current.Value);
-                return taskId;
+                var columnName = eventEnumerator.Current.Name;
+                var columnInfo = new ColumnInfo
+                    {
+                        ColumnName = columnName,
+                        RowKey = TicksNameHelper.GetRowName(taskState, TicksNameHelper.GetTicksFromColumnName(columnName))
+                    };
+                return new Tuple<string, ColumnInfo>(taskId, columnInfo);
             }
         }
 

@@ -45,7 +45,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.EventIndexes
             IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
             Column[] columns = connection.GetRow(taskId).ToArray();
             IEnumerable<string> columnNames = columns.Where(x => Less(GetColumnInfo(x), columnInfo)).Select(x => x.Name);
-            connection.DeleteBatch(taskId, columnNames);
+            connection.DeleteBatch(taskId, columnNames, globalTime.GetNowTicks());
         }
 
         public const string columnFamilyName = "TaskMetaEventColumnInfoIndex";

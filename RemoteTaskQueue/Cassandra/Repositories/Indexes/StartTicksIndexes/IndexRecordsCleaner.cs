@@ -31,9 +31,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.globalTime = globalTime;
         }
 
-        public void RemoveMeta(TaskMetaInformation obj)
+        public void RemoveMeta(TaskMetaInformation obj, ColumnInfo eventColumnInfo)
         {
             RemoveIndexRecords(obj, TicksNameHelper.GetColumnInfo(obj.State, obj.MinimalStartTicks, ""));
+            IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
+            connection.DeleteBatch(eventColumnInfo.RowKey, new[] { eventColumnInfo.ColumnName }, globalTime.GetNowTicks());
         }
 
         public void RemoveIndexRecords(TaskMetaInformation obj, ColumnInfo columnInfo)

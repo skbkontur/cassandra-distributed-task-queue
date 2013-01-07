@@ -4,6 +4,7 @@ using System.Linq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 
 using log4net;
@@ -16,7 +17,7 @@ namespace RemoteQueue.Handling
             ITaskQueue taskQueue,
             ITaskCounter taskCounter,
             IShardingManager shardingManager,
-            Func<string, HandlerTask> createHandlerTask,
+            Func<Tuple<string, ColumnInfo>, HandlerTask> createHandlerTask,
             IHandleTasksMetaStorage handleTasksMetaStorage)
         {
             this.taskQueue = taskQueue;
@@ -30,14 +31,14 @@ namespace RemoteQueue.Handling
         {
             lock(lockObject)
             {
-                IEnumerable<string> taskIds = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+                IEnumerable<Tuple<string, ColumnInfo>> taskInfos = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
                 if(logger.IsDebugEnabled)
                     logger.DebugFormat("Начали обработку очереди.");
-                foreach(string id in taskIds)
+                foreach(var taskInfo in taskInfos)
                 {
-                    if(!shardingManager.IsSituableTask(id)) continue;
+                    if(!shardingManager.IsSituableTask(taskInfo.Item1)) continue;
                     if(!taskCounter.CanQueueTask()) return;
-                    taskQueue.QueueTask(createHandlerTask(id));
+                    taskQueue.QueueTask(createHandlerTask(taskInfo));
                 }
             }
         }
@@ -64,13 +65,13 @@ namespace RemoteQueue.Handling
 
         public Tuple<long, long> GetCassandraQueueLength()
         {
-            IEnumerable<string> allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+            var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
             long all = 0;
             long forMe = 0;
             foreach(var allTasksInState in allTasksInStates)
             {
                 all++;
-                if (shardingManager.IsSituableTask(allTasksInState))
+                if (shardingManager.IsSituableTask(allTasksInState.Item1))
                     forMe++;
             }
             return new Tuple<long, long>(all, forMe);
@@ -78,7 +79,7 @@ namespace RemoteQueue.Handling
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
 
-        private readonly Func<string, HandlerTask> createHandlerTask;
+        private readonly Func<Tuple<string, ColumnInfo>, HandlerTask> createHandlerTask;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly object lockObject = new object();
         private readonly ITaskQueue taskQueue;

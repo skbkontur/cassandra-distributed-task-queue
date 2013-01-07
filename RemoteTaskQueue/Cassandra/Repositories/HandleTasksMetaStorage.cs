@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
 namespace RemoteQueue.Cassandra.Repositories
@@ -19,16 +21,14 @@ namespace RemoteQueue.Cassandra.Repositories
             this.eventLogRepository = eventLogRepository;
         }
 
-        public IEnumerable<string> GetAllTasksInStates(long toTicks, params TaskState[] states)
+        public IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long toTicks, params TaskState[] states)
         {
-            IEnumerable<string> res = new List<string>();
-            var idGroups = states.Select(
+            return states.SelectMany(
                 state =>
                     {
                         var ids = minimalStartTicksIndex.GetTaskIds(state, toTicks).ToArray();
                         return ids;
                     });
-            return idGroups.Aggregate(res, (current, idGroup) => current.Concat(idGroup));
         }
 
         public void AddMeta(TaskMetaInformation meta)

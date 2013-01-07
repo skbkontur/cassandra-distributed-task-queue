@@ -5,6 +5,7 @@ using GroBuf;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.LocalTasks.TaskQueue;
@@ -16,7 +17,7 @@ namespace RemoteQueue.Handling
     public class HandlerTask : SimpleTask
     {
         public HandlerTask(
-            string taskId,
+            Tuple<string, ColumnInfo> taskInfo,
             ITaskCounter taskCounter,
             ISerializer serializer,
             IRemoteTaskQueue remoteTaskQueue,
@@ -26,8 +27,9 @@ namespace RemoteQueue.Handling
             ITaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage,
             IIndexRecordsCleaner indexRecordsCleaner)
-            : base(taskId)
+            : base(taskInfo.Item1)
         {
+            this.taskInfo = taskInfo;
             this.taskCounter = taskCounter;
             this.serializer = serializer;
             this.remoteTaskQueue = remoteTaskQueue;
@@ -104,7 +106,7 @@ namespace RemoteQueue.Handling
                task.Meta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
-                indexRecordsCleaner.RemoveMeta(task.Meta);
+                indexRecordsCleaner.RemoveMeta(task.Meta, taskInfo.Item2);
                 return;
             }
 
@@ -185,6 +187,7 @@ namespace RemoteQueue.Handling
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IRemoteLockCreator remoteLockCreator;
         private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
+        private readonly Tuple<string, ColumnInfo> taskInfo;
         private readonly ITaskCounter taskCounter;
         private readonly ISerializer serializer;
         private readonly IRemoteTaskQueue remoteTaskQueue;
