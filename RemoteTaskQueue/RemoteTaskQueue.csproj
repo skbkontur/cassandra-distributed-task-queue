@@ -160,8 +160,8 @@
     <Compile Include="Exceptions\NotTypedTaskHandlerException.cs" />
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="StaticGrobuf.cs" />
-    <Compile Include="UserClasses\ITaskDataRegistry.cs" />
-    <Compile Include="UserClasses\ITaskHandlerRegistry.cs" />
+    <Compile Include="UserClasses\TaskDataRegistryBase.cs" />
+    <Compile Include="UserClasses\TaskHandlerRegistryBase.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

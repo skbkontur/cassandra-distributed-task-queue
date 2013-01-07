@@ -8,7 +8,7 @@ namespace RemoteQueue.Handling
 {
     public class TaskDataTypeToNameMapper : ITaskDataTypeToNameMapper
     {
-        public TaskDataTypeToNameMapper(ITaskDataRegistry taskDataRegistry)
+        public TaskDataTypeToNameMapper(TaskDataRegistryBase taskDataRegistry)
         {
             foreach(var taskDataInfo in taskDataRegistry.GetAllTaskDataInfos())
             {

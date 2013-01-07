@@ -16,7 +16,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void UpdateMinTicks(TaskState taskState, long ticks)
         {
-            ticksCache[taskState] = Math.Max(ticks - TimeSpan.FromHours(1).Ticks, 1);
+            ticksCache[taskState] = Math.Max(ticks - TimeSpan.FromMinutes(6).Ticks, 1);
         }
 
         public long GetMinTicks(TaskState taskState)

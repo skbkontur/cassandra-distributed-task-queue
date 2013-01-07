@@ -9,7 +9,7 @@ namespace RemoteQueue.Handling
 {
     public class TaskHandlerCollection : ITaskHandlerCollection
     {
-        public TaskHandlerCollection(ITaskDataTypeToNameMapper typeToNameMapper, ITaskHandlerRegistry taskHandlerRegistry)
+        public TaskHandlerCollection(ITaskDataTypeToNameMapper typeToNameMapper, TaskHandlerRegistryBase taskHandlerRegistry)
         {
             var taskNameToTaskHandler = new Dictionary<string, KeyValuePair<Type, Func<ITaskHandler>>>();
             foreach(var creator in taskHandlerRegistry.GetAllTaskHandlerCreators())

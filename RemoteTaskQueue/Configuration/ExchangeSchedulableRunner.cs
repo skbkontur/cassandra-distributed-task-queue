@@ -23,7 +23,7 @@ namespace RemoteQueue.Configuration
 {
     public class ExchangeSchedulableRunner : IExchangeSchedulableRunner
     {
-        public ExchangeSchedulableRunner(ICassandraSettings cassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, ITaskDataRegistry taskDataRegistry, ITaskHandlerRegistry taskHandlerRegistry)
+        public ExchangeSchedulableRunner(ICassandraSettings cassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry)
         {
             this.runnerSettings = runnerSettings;
             ISerializer serializer = StaticGrobuf.GetSerializer();

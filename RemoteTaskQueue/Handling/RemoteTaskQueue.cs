@@ -19,7 +19,7 @@ namespace RemoteQueue.Handling
 {
     public class RemoteTaskQueue : IRemoteTaskQueue
     {
-        public RemoteTaskQueue(ICassandraSettings settings, ITaskDataRegistry taskDataRegistry)
+        public RemoteTaskQueue(ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry)
         {
             serializer = StaticGrobuf.GetSerializer();
             var cassandraCluster = new CassandraCluster(settings);

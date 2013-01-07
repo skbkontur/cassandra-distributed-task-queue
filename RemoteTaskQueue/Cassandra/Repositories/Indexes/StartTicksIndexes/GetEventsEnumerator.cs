@@ -10,6 +10,8 @@ using RemoteQueue.Cassandra.Entities;
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 
+using log4net;
+
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerator : IEnumerator<string>
@@ -26,6 +28,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             iFrom = TicksNameHelper.GetTicksRowNumber(fromTicks);
             iTo = TicksNameHelper.GetTicksRowNumber(toTicks);
             Reset();
+            LogFromToCountStatistics();
         }
 
         public void Dispose()
@@ -84,11 +87,29 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         object IEnumerator.Current { get { return Current; } }
 
+        private void LogFromToCountStatistics()
+        {
+            totalDifferenceFromTo += (iTo - iFrom);
+            totalCount++;
+            if(lastLogDateTime <= DateTime.UtcNow - TimeSpan.FromMinutes(1))
+            {
+                logger.InfoFormat("Statistics about a number of requested rows. Mean number of processed rows = {0}", (double)totalDifferenceFromTo / (totalCount + 1));
+                lastLogDateTime = DateTime.UtcNow;
+                totalDifferenceFromTo = 0;
+                totalCount = 0;
+            }
+        }
+
         private void UpdateTicks()
         {
             long ticks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name) - 1;
             minTicksCache.UpdateMinTicks(taskState, ticks);
         }
+
+        private static long totalDifferenceFromTo;
+        private static long totalCount;
+        private static readonly ILog logger = LogManager.GetLogger(typeof(GetEventsEnumerator));
+        private static DateTime lastLogDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
         private readonly TaskState taskState;
         private readonly ISerializer serializer;
