@@ -94,6 +94,8 @@
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITaskMinimalStartTicksIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\EventIndexes\TaskMetaEventColumnInfoIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\TicksNameHelper.cs" />
+    <Compile Include="Cassandra\SeparateOnBatchesEnumerable.cs" />
+    <Compile Include="Cassandra\SeparateOnBatchesEnumerator.cs" />
     <Compile Include="Configuration\ColumnFamilyRegistry.cs" />
     <Compile Include="Configuration\ExchangeSchedulableRunner.cs" />
     <Compile Include="Configuration\IColumnFamilyRegistry.cs" />

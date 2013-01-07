@@ -1,9 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+
 using GroBuf;
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Primitives
 {
@@ -18,7 +20,7 @@ namespace RemoteQueue.Cassandra.Primitives
 
         public void Write(string id, T element)
         {
-            IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
+            var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(id, new Column
                 {
                     Name = "Data",
@@ -29,11 +31,21 @@ namespace RemoteQueue.Cassandra.Primitives
 
         public T Read(string id)
         {
-            IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
+            var connection = RetrieveColumnFamilyConnection();
             Column column;
             if(connection.TryGetColumn(id, "Data", out column))
                 return serializer.Deserialize<T>(column.Value);
             return default(T);
+        }
+
+        public IEnumerable<T> ReadAll(int batchSize = 1000)
+        {
+            var connection = RetrieveColumnFamilyConnection();
+            var keys = connection.GetKeys(batchSize);
+            return new SeparateOnBatchesEnumerable<string>(keys, batchSize).SelectMany(
+                batch => connection.GetRows(batch, "Data", 1)
+                                   .Where(x => x.Value.Length > 0)
+                                   .Select(x => serializer.Deserialize<T>(x.Value[0].Value)));
         }
 
         private readonly ISerializer serializer;
