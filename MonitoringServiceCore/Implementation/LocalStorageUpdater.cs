@@ -40,7 +40,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public void Update()
         {
-            var guid = new Guid().ToString();
+            var guid = Guid.NewGuid().ToString();
             try
             {
                 startingTicksCache.Add(guid, GetStartTime());
