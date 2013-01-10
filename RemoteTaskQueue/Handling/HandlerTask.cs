@@ -43,7 +43,7 @@ namespace RemoteQueue.Handling
 
         public override void Run()
         {
-            if (!taskCounter.TryIncrement()) return;
+            if(!taskCounter.TryIncrement()) return;
             try
             {
                 IRemoteLock remoteLock;
@@ -61,8 +61,7 @@ namespace RemoteQueue.Handling
             }
         }
 
-        private bool TryUpdateTaskState(Task task, long? minimalStartTicks, long? startExecutingTicks, int attempts,
-                                        TaskState state)
+        private bool TryUpdateTaskState(Task task, long? minimalStartTicks, long? startExecutingTicks, int attempts, TaskState state)
         {
             var metaForWrite = serializer.Copy(task.Meta);
             var ticks = minimalStartTicks != null ? minimalStartTicks.Value : 0;
