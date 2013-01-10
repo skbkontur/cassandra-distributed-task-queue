@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using GroBuf;
 
 using RemoteQueue.Cassandra;
+using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
@@ -82,9 +84,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                     }
                 }
                 result.Add(creater.TaskName, new AddTaskInfo(ids, addTime));
-                System.Threading.Thread.Sleep(1000);
+                Thread.Sleep(1000);
             }
             return result;
+        }
+
+        protected void WaitTaskState(string taskId, TaskState taskState)
+        {
+            var startTime = DateTime.UtcNow;
+            while(true)
+            {
+                if(remoteTaskQueue.GetTaskInfo(taskId).Context.State == taskState)
+                    return;
+                if(DateTime.UtcNow.Subtract(startTime) > TimeSpan.FromSeconds(15))
+                    throw new Exception("Таска не приняла ожидаемое состояние за 15 сек.");
+                Thread.Sleep(50);
+            }
         }
 
         protected void DoCheck(ref TasksListPage tasksListPage, AddTaskInfo addTaskInfo)

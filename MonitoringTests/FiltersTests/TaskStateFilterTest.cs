@@ -4,6 +4,8 @@ using System.Threading;
 
 using NUnit.Framework;
 
+using RemoteQueue.Cassandra.Entities;
+
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 using SKBKontur.Catalogue.WebTestCore.SystemControls;
@@ -20,8 +22,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                                     new Creater("BetaTaskData", 4, () => new BetaTaskData {IsProcess = true}),
                                     new Creater("DeltaTaskData", 1, () => new DeltaTaskData())
                 );
+            foreach (var deltaTaskId in addTasksInfo["DeltaTaskData"].Ids)
+                WaitTaskState(deltaTaskId, TaskState.Finished);
+            foreach (var betaTaskId in addTasksInfo["BetaTaskData"].Ids)
+                WaitTaskState(betaTaskId, TaskState.InProcess);
             CreateUser("user", "psw");
-            Thread.Sleep(4000);
             tasksListPage = Login("user", "psw");
         }
 
