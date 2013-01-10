@@ -13,7 +13,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 
         public void Run()
         {
-            localStorageUpdater.UpdateLocalStorage();
+            localStorageUpdater.Update();
         }
 
         private readonly ILocalStorageUpdater localStorageUpdater;

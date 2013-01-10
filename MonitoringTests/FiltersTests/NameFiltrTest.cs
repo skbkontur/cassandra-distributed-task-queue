@@ -30,7 +30,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             {
                 tasksListPage.TaskName.SetSelectedText(taskName);
                 tasksListPage = tasksListPage.SearchTasks();
-                DoCheck(tasksListPage, expected[taskName]);
+                DoCheck(ref tasksListPage, expected[taskName]);
             }
         }
     }

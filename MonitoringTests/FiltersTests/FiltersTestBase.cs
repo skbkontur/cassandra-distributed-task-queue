@@ -3,12 +3,14 @@ using System.Collections.Generic;
 
 using GroBuf;
 
+using RemoteQueue.Cassandra;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Constants;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 {
@@ -40,6 +42,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         {
             public AddTaskInfo( List<string> ids, DateTime? addTime)
             {
+                ids.Reverse();
                 Ids = ids;
                 AddTime = addTime;
             }
@@ -53,6 +56,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 resId.AddRange(Ids);
                 resId.AddRange(other.Ids);
                 var dateTime = AddTime.HasValue && other.AddTime.HasValue ? (DateTime?)new DateTime(Math.Min(AddTime.Value.Ticks, other.AddTime.Value.Ticks)) : null;
+                resId.Reverse();
                 return new AddTaskInfo(resId, dateTime);
             }
         }
@@ -83,16 +87,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             return result;
         }
 
-        protected void DoCheck(TasksListPage tasksListPage, AddTaskInfo addTaskInfo)
+        protected void DoCheck(ref TasksListPage tasksListPage, AddTaskInfo addTaskInfo)
         {
-            addTaskInfo.Ids.Reverse();
-            tasksListPage.CheckTaskListItemsCount(addTaskInfo.Ids.Count);
-            for (int i = 0; i < addTaskInfo.Ids.Count; i++)
+            var ids = addTaskInfo.Ids.ToArray();
+            var parts = new SeparateOnBatchesEnumerable<string>(ids, ControllerConstants.DefaultRecordsNumberPerPage);
+            int cnt = 0;
+            foreach(var pageIds in parts)
             {
-                var task = tasksListPage.GetTaskListItem(i);
-                task.TaskId.WaitText(addTaskInfo.Ids[i]);
+                cnt++;
+                tasksListPage.CheckTaskListItemsCount(pageIds.Length);
+                for (int i = 0; i < pageIds.Length; i++)
+                {
+                    var task = tasksListPage.GetTaskListItem(i);
+                    task.TaskId.WaitText(pageIds[i]);
+                }
+                if(ids.Length > cnt*ControllerConstants.DefaultRecordsNumberPerPage)
+                    tasksListPage = tasksListPage.GoToNextPage();
             }
-            addTaskInfo.Ids.Reverse();
         }
 
         private IRemoteTaskQueue remoteTaskQueue;

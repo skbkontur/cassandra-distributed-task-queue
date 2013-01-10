@@ -40,7 +40,8 @@
     <Reference Include="Catalogue.Core.SQL">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.SQL.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.Core.SynchronizationStorage">
+    <Reference Include="Catalogue.Core.SynchronizationStorage, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.SynchronizationStorage.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.Expressions">
@@ -65,12 +66,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\MonitoringServiceHttpHandler.cs" />
+    <Compile Include="Implementation\EventCache.cs" />
+    <Compile Include="Implementation\IEventCache.cs" />
     <Compile Include="Implementation\ILocalStorageUpdater.cs" />
     <Compile Include="Implementation\IMonitoringServiceImpl.cs" />
+    <Compile Include="Implementation\IThreadUpdateStartingTicksCache.cs" />
     <Compile Include="Implementation\LocalStorageColumnsRegistry.cs" />
     <Compile Include="Implementation\LocalStorageTableRegistry.cs" />
     <Compile Include="Implementation\LocalStorageUpdater.cs" />
     <Compile Include="Implementation\MonitoringServiceImpl.cs" />
+    <Compile Include="Implementation\ThreadUpdateStartingTicksCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sheduler\IMonitoringSchedulableRunnerSettings.cs" />
     <Compile Include="Sheduler\IMonitoringServiceSchedulableRunner.cs" />

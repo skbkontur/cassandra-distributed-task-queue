@@ -30,12 +30,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             taskListPage.CheckTaskListItemsCount(1);
             taskListPage.GetTaskListItem(0).TaskState.WaitText("New");
             taskListPage.GetTaskListItem(0).CancelTask();
+            Thread.Sleep(1000);
             taskListPage = taskListPage.GoTo<TasksListPage>();
             taskListPage = taskListPage.Refresh();
             taskListPage.GetTaskListItem(0).TaskState.WaitText("Canceled");
             taskListPage.GetTaskListItem(0).RerunTask();
+            Thread.Sleep(1000);
             taskListPage = taskListPage.GoTo<TasksListPage>();
-            Thread.Sleep(3);
             taskListPage = taskListPage.SearchTasks();
             taskListPage.GetTaskListItem(0).TaskState.WaitText("Finished");
         }

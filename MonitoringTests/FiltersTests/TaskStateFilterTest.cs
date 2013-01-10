@@ -50,11 +50,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             CheckTaskSearch(new []{ tasksListPage.New }, addTasksInfo["AlphaTaskData"]);
             CheckTaskSearch(new []{ tasksListPage.InProcess }, addTasksInfo["BetaTaskData"]);
             CheckTaskSearch(new []{ tasksListPage.Finished }, addTasksInfo["DeltaTaskData"]);
-            CheckTaskSearch(new []{ tasksListPage.New, tasksListPage.InProcess}, addTasksInfo["BetaTaskData"].Add(addTasksInfo["AlphaTaskData"]));
-            CheckTaskSearch(new []{ tasksListPage.New, tasksListPage.Finished}, addTasksInfo["DeltaTaskData"].Add(addTasksInfo["AlphaTaskData"]));
-            CheckTaskSearch(new []{ tasksListPage.InProcess, tasksListPage.Finished}, addTasksInfo["DeltaTaskData"].Add(addTasksInfo["BetaTaskData"]));
+            CheckTaskSearch(new[] { tasksListPage.New, tasksListPage.InProcess }, addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]));
+            CheckTaskSearch(new[] { tasksListPage.New, tasksListPage.Finished }, addTasksInfo["AlphaTaskData"].Add(addTasksInfo["DeltaTaskData"]));
+            CheckTaskSearch(new[] { tasksListPage.InProcess, tasksListPage.Finished }, addTasksInfo["BetaTaskData"].Add(addTasksInfo["DeltaTaskData"]));
             CheckTaskSearch(new []{ tasksListPage.New, tasksListPage.InProcess, tasksListPage.Finished},
-                addTasksInfo["DeltaTaskData"].Add(addTasksInfo["BetaTaskData"].Add(addTasksInfo["AlphaTaskData"])));
+                addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]).Add(addTasksInfo["DeltaTaskData"]));
         }
 
         private void CheckTaskSearch(CheckBox [] checkBoxes, AddTaskInfo addTaskInfo)
@@ -62,7 +62,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             foreach(var checkBox in checkBoxes)
                 checkBox.CheckAndWait();
             tasksListPage = tasksListPage.SearchTasks();
-            DoCheck(tasksListPage, addTaskInfo);
+            DoCheck(ref tasksListPage, addTaskInfo);
             foreach(var checkBox in checkBoxes)
                 checkBox.UncheckAndWait();
             tasksListPage = tasksListPage.SearchTasks();

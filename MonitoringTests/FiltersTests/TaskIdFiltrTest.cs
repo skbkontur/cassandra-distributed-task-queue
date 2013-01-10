@@ -23,7 +23,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             {
                 tasksListPage.TaskId.SetValue(taskId);
                 tasksListPage = tasksListPage.SearchTasks();
-                DoCheck(tasksListPage, new AddTaskInfo(new List<string>{taskId}, null));
+                DoCheck(ref tasksListPage, new AddTaskInfo(new List<string>{taskId}, null));
             }
         }
     }

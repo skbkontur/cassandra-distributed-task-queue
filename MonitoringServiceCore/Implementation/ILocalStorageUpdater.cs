@@ -2,6 +2,6 @@
 {
     public interface ILocalStorageUpdater
     {
-        void UpdateLocalStorage();
+        void Update();
     }
 }
