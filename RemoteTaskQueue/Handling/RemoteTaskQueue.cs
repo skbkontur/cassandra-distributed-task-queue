@@ -106,8 +106,9 @@ namespace RemoteQueue.Handling
                 };
         }
 
-        public IRemoteTask CreateTask<T>(T taskData, string parentTaskId) where T : ITaskData
+        public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
         {
+            createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
             long nowTicks = DateTime.UtcNow.Ticks;
             string taskId = Guid.NewGuid().ToString();
             Type type = taskData.GetType();
@@ -120,45 +121,19 @@ namespace RemoteQueue.Handling
                             Id = taskId,
                             Ticks = nowTicks,
                             Name = typeToNameMapper.GetTaskName(type),
-                            ParentTaskId = parentTaskId,
+                            ParentTaskId = createTaskOptions.ParentTaskId,
+                            TaskGroupLock = createTaskOptions.TaskGroupLock,
                             State = TaskState.New,
                         }
                 };
             return new RemoteTask(handleTaskCollection, task);
         }
-
-        public IRemoteTask CreateTask<T>(T taskData) where T : ITaskData
-        {
-            return CreateTask(taskData, null);
-        }
-
-        public string Queue<T>(T taskData, TimeSpan delay, string parentTaskId) where T : ITaskData
-        {
-            IRemoteTask remoteTask = CreateTask(taskData, parentTaskId);
-            remoteTask.Queue(delay);
-            return remoteTask.Id;
-        }
-
-        public string Queue<T>(T taskData) where T : ITaskData
-        {
-            return Queue(taskData, TimeSpan.FromMilliseconds(0), null);
-        }
-
-        public string Queue<T>(T taskData, string parentTaskId) where T : ITaskData
-        {
-            return Queue(taskData, TimeSpan.FromMilliseconds(0), parentTaskId);
-        }
-
-        public string Queue<T>(T taskData, TimeSpan delay) where T : ITaskData
-        {
-            return Queue(taskData, delay, null);
-        }
-
+        
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ISerializer serializer;
         private readonly ITaskDataTypeToNameMapper typeToNameMapper;
         private readonly IRemoteLockCreator remoteLockCreator;
-        private HandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
+        private readonly HandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
     }
 }

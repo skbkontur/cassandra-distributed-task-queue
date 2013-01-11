@@ -9,10 +9,7 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
     {
         protected override HandleResult HandleTask(AlphaTaskData taskData)
         {
-            return new HandleResult
-                {
-                    FinishAction = FinishAction.Finish
-                };
+            return Finish();
         }
     }
 }

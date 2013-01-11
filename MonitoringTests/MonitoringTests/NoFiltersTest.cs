@@ -55,7 +55,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
 
         private string AddTask<T>(T taskData) where T : ITaskData
         {
-            return remoteTaskQueue.Queue(taskData);
+            return remoteTaskQueue.CreateTask(taskData).Queue();
         }
 
         private IRemoteTaskQueue remoteTaskQueue;

@@ -43,21 +43,35 @@ namespace RemoteQueue.Handling
 
         public override void Run()
         {
-            if(!taskCounter.TryIncrement()) return;
+            var meta = handleTasksMetaStorage.GetMeta(Id);
+            IRemoteLock taskGroupRemoteLock = null;
+            if(!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
+            {
+                logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", Id, meta.TaskGroupLock);
+                return;
+            }
             try
             {
-                IRemoteLock remoteLock;
-                if(!remoteLockCreator.TryGetLock(Id, out remoteLock))
+                if(!taskCounter.TryIncrement()) return;
+                try
                 {
-                    logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", Id);
-                    return;
+                    IRemoteLock remoteLock;
+                    if(!remoteLockCreator.TryGetLock(Id, out remoteLock))
+                    {
+                        logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", Id);
+                        return;
+                    }
+                    using(remoteLock)
+                        ProcessTask();
                 }
-                using(remoteLock)
-                    ProcessTask();
+                finally
+                {
+                    taskCounter.Decrement();
+                }
             }
             finally
             {
-                taskCounter.Decrement();
+                if(taskGroupRemoteLock != null) taskGroupRemoteLock.Dispose();
             }
         }
 

@@ -26,7 +26,7 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void TestRun()
         {
-            var taskId = taskQueue.Queue(new SimpleTaskData());
+            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
             Wait(new []{taskId}, 1);
             Thread.Sleep(2000);
             Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
@@ -36,7 +36,7 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void TestCancel()
         {
-            var taskId = taskQueue.Queue(new SimpleTaskData(), TimeSpan.FromSeconds(1));
+            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(1));
             taskQueue.CancelTask(taskId);
             Wait(new[] { taskId }, 0);
             Thread.Sleep(2000);
@@ -47,7 +47,7 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void TestRerun()
         {
-            var taskId = taskQueue.Queue(new SimpleTaskData());
+            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
             Wait(new[] { taskId }, 1);
             taskQueue.RerunTask(taskId, TimeSpan.FromMilliseconds(1));
             Wait(new[] { taskId }, 2);

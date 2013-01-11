@@ -72,7 +72,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 var addTime = DateTime.UtcNow;
                 for (int i = 0; i < iteration; i++)
                 {
-                    var id = remoteTaskQueue.Queue(creater.Create(), creater.Delay);
+                    var id = remoteTaskQueue.CreateTask(creater.Create()).Queue(creater.Delay);
                     ids.Add(id);
                     if (creater.TaskName == "BetaTaskData")
                     {

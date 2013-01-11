@@ -26,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         public void CancelAndRerunTaskTest()
         {
             CreateUser("user", "psw");
-            var taskId = remoteTaskQueue.Queue(new AlphaTaskData(), TimeSpan.FromHours(3));
+            var taskId = remoteTaskQueue.CreateTask(new AlphaTaskData()).Queue(TimeSpan.FromHours(3));
             var taskListPage = Login("user", "psw");
             taskListPage.CheckTaskListItemsCount(1);
             taskListPage.GetTaskListItem(0).TaskState.WaitText("New");

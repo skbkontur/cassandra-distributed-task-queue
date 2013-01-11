@@ -34,7 +34,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var ids = new List<string>();
             for (int i = 0; i < 6000; i++)
             {
-                ids.Add(remoteTaskQueue.Queue(createTaskData[i % 3]()));
+                ids.Add(remoteTaskQueue.CreateTask(createTaskData[i % 3]()).Queue());
                 if(i % 5000 == 0)
                     Console.WriteLine(string.Format("Complete: {0}", i));
             }

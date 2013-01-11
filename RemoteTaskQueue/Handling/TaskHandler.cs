@@ -15,20 +15,17 @@ namespace RemoteQueue.Handling
             taskQueue = queue;
             Context = task.Meta;
             var taskData = serializer.Deserialize<T>(task.Data);
-            if(string.IsNullOrEmpty(taskData.QueueId))
-                return HandleTask(taskData);
-            using(remoteLockCreator.Lock(taskData.QueueId))
-                return HandleTask(taskData);
+            return HandleTask(taskData);
         }
 
         protected string ContinueWith(ITaskData data)
         {
-            return taskQueue.Queue(data, Context.Id);
+            return taskQueue.CreateTask(data, new CreateTaskOptions{ParentTaskId = Context.Id}).Queue();
         }
 
         protected string ContinueWith(ITaskData data, TimeSpan delay)
         {
-            return taskQueue.Queue(data, delay, Context.Id);
+            return taskQueue.CreateTask(data, new CreateTaskOptions { ParentTaskId = Context.Id }).Queue(delay);
         }
 
         protected HandleResult Finish()

@@ -9,10 +9,7 @@ namespace ExchangeService.UserClasses
     {
         protected override HandleResult HandleTask(ByteArrayTaskData taskData)
         {
-            return new HandleResult
-                {
-                    FinishAction = FinishAction.Finish
-                };
+            return Finish();
         }
     }
 }

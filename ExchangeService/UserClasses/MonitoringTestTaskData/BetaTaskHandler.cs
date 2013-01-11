@@ -30,10 +30,7 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
                 Console.WriteLine("Hello World");
                 taskData = serializer.Deserialize<BetaTaskData>(handleTaskCollection.GetTask(taskData.OwnTaskId).Data);
             }
-            return new HandleResult
-            {
-                FinishAction = FinishAction.Finish
-            };
+            return Finish();
         }
     }
 }

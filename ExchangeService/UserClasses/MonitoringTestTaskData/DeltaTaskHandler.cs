@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-using RemoteQueue.Handling;
+﻿using RemoteQueue.Handling;
 using RemoteQueue.Handling.HandlerResults;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
@@ -12,10 +9,7 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
     {
         protected override HandleResult HandleTask(DeltaTaskData taskData)
         {
-            return new HandleResult
-            {
-                FinishAction = FinishAction.Finish
-            };
+            return Finish();
         }
     }
 }

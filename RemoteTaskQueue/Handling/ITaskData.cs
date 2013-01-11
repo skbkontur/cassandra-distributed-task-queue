@@ -2,6 +2,5 @@
 {
     public interface ITaskData
     {
-        string QueueId { get; }
     }
 }

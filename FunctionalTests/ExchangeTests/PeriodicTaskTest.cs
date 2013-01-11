@@ -39,9 +39,22 @@ namespace FunctionalTests.ExchangeTests
             Wait(keys, 10);
         }
 
-        private string AddTask()
+        [Test]
+        public void TestManyPeriodicTaskWithTaskGroupLock()
         {
-            return taskQueue.Queue(new FakePeriodicTaskData());
+            const int count = 10;
+            var keys = new string[count];
+            for(int i = 0; i < count; i++)
+                keys[i] = AddTask("Lock" + (i % 3).ToString());
+            Wait(keys, 10);
+        }
+
+        private string AddTask(string taskGroupLock = null)
+        {
+            return taskQueue.CreateTask(new FakePeriodicTaskData(), new CreateTaskOptions
+                {
+                    TaskGroupLock = taskGroupLock
+                }).Queue();
         }
 
         private void Wait(string[] taskIds, int criticalValue, int ms = 5000)
