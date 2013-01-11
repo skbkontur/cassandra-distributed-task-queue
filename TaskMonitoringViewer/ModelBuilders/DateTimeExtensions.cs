@@ -5,7 +5,7 @@ using log4net;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
-    public static class DateTimeExtensions
+    internal static class DateTimeExtensions
     {
         public static string GetDateString(this DateTime? dateTime, string emptyValue = null)
         {
