@@ -15,6 +15,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEnti
         public TaskState State { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }
+        public string TaskGroupLock { get; set; }
         public string Id { get { return TaskId; } set { } }
 
         public string ScopeId { get { return TaskId; } set { } }

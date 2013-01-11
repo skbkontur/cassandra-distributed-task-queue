@@ -36,15 +36,15 @@
         </tr>
         <tr class="remoteTaskQueueMonitoring__details__item">
             <th class="remoteTaskQueueMonitoring__details__header">EnqueueTicks</th>
-            <td class="remoteTaskQueueMonitoring__details__col" id="EnqueueTicks">@Model.TaskMetaInfoModel.EnqueueTicks</td>
+            <td class="remoteTaskQueueMonitoring__details__col" id="EnqueueTicks">@Model.TaskMetaInfoModel.EnqueueMoscowTime (@Model.TaskMetaInfoModel.EnqueueTicks)</td>
         </tr>
         <tr class="remoteTaskQueueMonitoring__details__item">
             <th class="remoteTaskQueueMonitoring__details__header">StartExecutedTicks</th>
-            <td class="remoteTaskQueueMonitoring__details__col" id="StartExecutedTicks">@Model.TaskMetaInfoModel.StartExecutedTicks</td>
+            <td class="remoteTaskQueueMonitoring__details__col" id="StartExecutedTicks">@Model.TaskMetaInfoModel.StartExecutedMoscowTime (@Model.TaskMetaInfoModel.StartExecutedTicks)</td>
         </tr>
         <tr class="remoteTaskQueueMonitoring__details__item">
             <th class="remoteTaskQueueMonitoring__details__header">MinimalStartTicks</th>
-            <td class="remoteTaskQueueMonitoring__details__col" id="MinimalStartTicks">@Model.TaskMetaInfoModel.MinimalStartTicks</td>
+            <td class="remoteTaskQueueMonitoring__details__col" id="MinimalStartTicks">@Model.TaskMetaInfoModel.MinimalStartMoscowTime (@Model.TaskMetaInfoModel.MinimalStartTicks)</td>
         </tr>
         <tr class="remoteTaskQueueMonitoring__details__item">
             <th class="remoteTaskQueueMonitoring__details__header">Attempts</th>
@@ -58,6 +58,10 @@
                 // ReSharper restore Asp.NotResolved
             }
             <td class="remoteTaskQueueMonitoring__details__col" id="ParentTaskId"><a href="@detailsParentTaskUrl">@Model.TaskMetaInfoModel.ParentTaskId</a></td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">TaskGroupLock</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="TaskGroupLock">@Model.TaskMetaInfoModel.TaskGroupLock</td>
         </tr>
         <tr class="remoteTaskQueueMonitoring__details__item @(Model.ExceptionInfo == null ? "remoteTaskQueueMonitoring__details__last" : "")">
             <th class="remoteTaskQueueMonitoring__details__header">TaskData</th>

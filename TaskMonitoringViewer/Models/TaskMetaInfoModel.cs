@@ -15,5 +15,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         public string MinimalStartMoscowTime { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }
+        public string TaskGroupLock { get; set; }
     }
 }

@@ -12,13 +12,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                     TaskId = meta.TaskId,
                     State = meta.State,
                     Name = meta.Name,
-                    MinimalStartTicks = meta.MinimalStartTicks.Ticks.ToString(),
                     StartExecutedTicks = meta.StartExecutingTicks.HasValue ? meta.StartExecutingTicks.Value.Ticks.ToString() : "",
-                    EnqueueMoscowTime = meta.Ticks.GetMoscowDateTimeString(),
-                    MinimalStartMoscowTime = meta.MinimalStartTicks.GetMoscowDateTimeString(),
                     StartExecutedMoscowTime = meta.StartExecutingTicks.HasValue ? meta.StartExecutingTicks.Value.GetMoscowDateTimeString() : "",
+                    EnqueueTicks = meta.Ticks.Ticks.ToString(),
+                    EnqueueMoscowTime = meta.Ticks.GetMoscowDateTimeString(),
+                    MinimalStartTicks = meta.MinimalStartTicks.Ticks.ToString(),
+                    MinimalStartMoscowTime = meta.MinimalStartTicks.GetMoscowDateTimeString(),
                     Attempts = meta.Attempts,
-                    ParentTaskId = meta.ParentTaskId
+                    ParentTaskId = meta.ParentTaskId,
+                    TaskGroupLock = meta.TaskGroupLock
                 };
         }
     }

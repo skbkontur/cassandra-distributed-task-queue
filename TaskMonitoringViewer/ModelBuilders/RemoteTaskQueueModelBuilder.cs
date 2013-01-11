@@ -93,6 +93,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             Name = x.Name,
                             State = x.State,
                             ParentTaskId = x.ParentTaskId,
+                            TaskGroupLock = x.TaskGroupLock,
                             EnqueueTicks = x.Ticks.Ticks.ToString(),
                             MinimalStartTicks = x.MinimalStartTicks.Ticks.ToString(),
                             StartExecutedTicks = x.StartExecutingTicks.HasValue ? x.StartExecutingTicks.Value.Ticks.ToString() : "",

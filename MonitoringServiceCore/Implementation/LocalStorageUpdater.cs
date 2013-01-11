@@ -117,7 +117,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     StartExecutingTicks = info.StartExecutingTicks.HasValue ? (DateTime?)new DateTime(info.StartExecutingTicks.Value) : null,
                     State = default(MTaskState),
                     Attempts = info.Attempts,
-                    ParentTaskId = info.ParentTaskId
+                    ParentTaskId = info.ParentTaskId,
+                    TaskGroupLock = info.TaskGroupLock,
                 };
             MTaskState mtaskState;
             if(!Enum.TryParse(info.State.ToString(), true, out mtaskState))
