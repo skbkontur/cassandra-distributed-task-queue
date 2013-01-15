@@ -13,6 +13,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         }
 
         public string Filename { get; set; }
+        public long FileSize { get; set; }
         public Func<UrlHelper, string> GetUrl { get; set; }
     }
 }

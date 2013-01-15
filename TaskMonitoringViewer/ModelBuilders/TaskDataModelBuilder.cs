@@ -60,6 +60,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                     return new FileDataTaskDataValue
                     {
                         Filename = fileName,
+                        FileSize = fileDataStorage.GetFileSize(fileId),
                         // ReSharper disable Mvc.ControllerNotResolved
 // ReSharper disable Asp.NotResolved
                         GetUrl = url => url.Action("Run", "FileData", new { fileId })
