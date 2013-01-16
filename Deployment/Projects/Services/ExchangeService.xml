@@ -25,4 +25,57 @@
     <MSBuild.Community.Tasks.Sleep Milliseconds="1000" />
   </Target>
 
+  <Target Name="Run">
+    <ScheduleService
+      Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
+      Group="$(ServiceGroupName)-1"
+      StartStrategy="Once"
+      MachineName="$(TargetMachineName)"
+      RunThroughHostProcess="$(RunThroughHostProcess)"
+	    SleepBeforeCheckTaskAliveMilliseconds="5000" />
+
+    <ScheduleService
+      Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
+      Group="$(ServiceGroupName)-2"
+      StartStrategy="Once"
+      MachineName="$(TargetMachineName)"
+      RunThroughHostProcess="$(RunThroughHostProcess)"
+	    SleepBeforeCheckTaskAliveMilliseconds="5000" />
+
+    <ScheduleService
+      Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
+      Group="$(ServiceGroupName)-3"
+      StartStrategy="Once"
+      MachineName="$(TargetMachineName)"
+      RunThroughHostProcess="$(RunThroughHostProcess)"
+	    SleepBeforeCheckTaskAliveMilliseconds="5000" />
+
+    <ScheduleService
+      Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
+      Group="$(ServiceGroupName)-4"
+      StartStrategy="Once"
+      MachineName="$(TargetMachineName)"
+      RunThroughHostProcess="$(RunThroughHostProcess)"
+	    SleepBeforeCheckTaskAliveMilliseconds="5000" />
+
+    <ScheduleService
+      Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
+      Group="$(ServiceGroupName)-5"
+      StartStrategy="Once"
+      MachineName="$(TargetMachineName)"
+      RunThroughHostProcess="$(RunThroughHostProcess)"
+	    SleepBeforeCheckTaskAliveMilliseconds="5000" />
+
+  </Target>
+
+
+  <Target Name="Stop">
+    <StopServices WaitingToStopMilliseconds="60000" Group="$(ServiceGroupName)-1" MachineName="$(TargetMachineName)" />
+    <StopServices WaitingToStopMilliseconds="60000" Group="$(ServiceGroupName)-2" MachineName="$(TargetMachineName)" />
+    <StopServices WaitingToStopMilliseconds="60000" Group="$(ServiceGroupName)-3" MachineName="$(TargetMachineName)" />
+    <StopServices WaitingToStopMilliseconds="60000" Group="$(ServiceGroupName)-4" MachineName="$(TargetMachineName)" />
+    <StopServices WaitingToStopMilliseconds="60000" Group="$(ServiceGroupName)-5" MachineName="$(TargetMachineName)" />
+  </Target>
+
+
 </Project>

@@ -4,11 +4,11 @@
 
   <ItemGroup>
     <WebSite Include="/">
-      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\RosAlko.FunctionalTests\.screenshots\'))</PhysicalPath>
-      <HttpPort>6679</HttpPort>
-      <AppName>RosAlko.Screenshots</AppName>
-      <AppPool>RosAlko.Screenshots_Pool</AppPool>
-      <AppRootDirectory>$(CatalogueRootDirectory)\RosAlko.FunctionalTests\.screenshots\</AppRootDirectory>
+      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\RemoteTaskQueue\.screenshots\'))</PhysicalPath>
+      <HttpPort>6669</HttpPort>
+      <AppName>RemoteTaskQueue.Screenshots</AppName>
+      <AppPool>RemoteTaskQueue.Screenshots_Pool</AppPool>
+      <AppRootDirectory>$(CatalogueRootDirectory)\RemoteTaskQueue\.screenshots\</AppRootDirectory>
     </WebSite>
   </ItemGroup>
 
