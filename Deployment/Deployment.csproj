@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{898170B9-E2CB-42C4-97D5-7968C32B6FFB}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Deployment</RootNamespace>
     <AssemblyName>Deployment</AssemblyName>
@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <None Include="Projects\Common.vars" />
   </ItemGroup>
@@ -48,7 +51,7 @@
     <Content Include="Projects\Services\IndexService.xml" />
     <Content Include="Projects\Services\MonitoringService.xml" />
     <Content Include="Projects\Tests\FunctionalTests.xml" />
-    <Content Include="Projects\Tests\UnitTests.xml" />
+    <Content Include="Projects\Tools\DeployScreenshots.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

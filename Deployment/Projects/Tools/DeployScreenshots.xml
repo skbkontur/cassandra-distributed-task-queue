@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Common.vars" Condition="$(CommonVarsImported) == ''" />
+
+  <ItemGroup>
+    <WebSite Include="/">
+      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\RosAlko.FunctionalTests\.screenshots\'))</PhysicalPath>
+      <HttpPort>6679</HttpPort>
+      <AppName>RosAlko.Screenshots</AppName>
+      <AppPool>RosAlko.Screenshots_Pool</AppPool>
+      <AppRootDirectory>$(CatalogueRootDirectory)\RosAlko.FunctionalTests\.screenshots\</AppRootDirectory>
+    </WebSite>
+  </ItemGroup>
+
+  <Target Name="DeployScreenshots">
+    <CallTarget Targets="RecreateWebSite" />
+  </Target>
+
+  <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\IISWebSite.targets" />
+  
+</Project>
