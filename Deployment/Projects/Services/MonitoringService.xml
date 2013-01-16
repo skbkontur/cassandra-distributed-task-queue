@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="..\Common.vars" Condition="$(CommonVarsImported) == ''" />
+
+  <PropertyGroup>
+    <ProjectDir>$(CatalogueRootDirectory)\RemoteTaskQueue\MonitoringService\</ProjectDir>
+    <ProjectFile>$(ProjectDir)\MonitoringService.csproj</ProjectFile>
+    <OutputDirName>MonitoringService</OutputDirName>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Service.targets" />
+
+</Project>

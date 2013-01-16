@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <ServiceSuite Condition="'$(ServiceSuite)' == ''">Fake</ServiceSuite>
+  </PropertyGroup>
+
+
+  <!-- Сервисы общие для всех конфигураций -->
+  <ItemGroup></ItemGroup>
+
+  <ItemGroup Condition="'$(ServiceSuite)' == 'Fake'">
+    <Service Include="$(MSBuildThisFileDirectory)\..\Services\ExchangeService.xml">
+      <TaskGroupName>Catalogue</TaskGroupName>
+    </Service>
+    <Service Include="$(MSBuildThisFileDirectory)\..\Services\IndexService.xml">
+      <TaskGroupName>Catalogue</TaskGroupName>
+    </Service>
+    <Service Include="$(MSBuildThisFileDirectory)\..\Services\MonitoringService.xml">
+      <TaskGroupName>Catalogue</TaskGroupName>
+    </Service>
+  </ItemGroup>
+
+</Project>

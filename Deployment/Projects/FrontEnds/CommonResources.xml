@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup>
+
+    <ProjectResourceExclusion Include="CS Files">
+      <FileExtension>cs</FileExtension>
+    </ProjectResourceExclusion>
+
+    <ProjectResourceExclusion Include="CS Project Files">
+      <FileExtension>csproj</FileExtension>
+    </ProjectResourceExclusion>
+
+    <ProjectResourceExclusion Include="PSD Files">
+      <FileExtension>psd</FileExtension>
+    </ProjectResourceExclusion>
+
+  </ItemGroup>
+
+</Project>

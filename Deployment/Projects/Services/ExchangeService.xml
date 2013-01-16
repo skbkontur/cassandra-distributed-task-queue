@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="..\Common.vars" Condition="$(CommonVarsImported) == ''" />
+
+  <PropertyGroup>
+    <ProjectDir>$(CatalogueRootDirectory)\RemoteTaskQueue\ExchangeService</ProjectDir>
+    <ProjectFile>$(ProjectDir)\ExchangeService.csproj</ProjectFile>
+    <OutputDirName>ExchangeService</OutputDirName>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Service.targets" />
+
+  <Target Name="RunLocal">
+    <AsyncRunInCommandLine Path='"$(ProjectDir)\$(OutputPath)\$(AssemblyName).exe"' />
+    <MSBuild.Community.Tasks.Sleep Milliseconds="1000" />
+    <AsyncRunInCommandLine Path='"$(ProjectDir)\$(OutputPath)\$(AssemblyName).exe"' />
+    <MSBuild.Community.Tasks.Sleep Milliseconds="1000" />
+    <AsyncRunInCommandLine Path='"$(ProjectDir)\$(OutputPath)\$(AssemblyName).exe"' />
+    <MSBuild.Community.Tasks.Sleep Milliseconds="1000" />
+    <AsyncRunInCommandLine Path='"$(ProjectDir)\$(OutputPath)\$(AssemblyName).exe"' />
+    <MSBuild.Community.Tasks.Sleep Milliseconds="1000" />
+    <AsyncRunInCommandLine Path='"$(ProjectDir)\$(OutputPath)\$(AssemblyName).exe"' />
+    <MSBuild.Community.Tasks.Sleep Milliseconds="1000" />
+  </Target>
+
+</Project>

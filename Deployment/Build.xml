@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="Projects\Common.vars" Condition="$(CommonVarsImported) == ''" />
+
+  <ItemGroup>
+    <Solution Include="$(CatalogueRootDirectory)\Core\Core.sln"></Solution>
+    <Solution Include="$(CatalogueRootDirectory)\WebWorms\WebWorms.sln"></Solution>
+    <Solution Include="$(CatalogueRootDirectory)\RemoteTaskQueue\RemoteTaskQueue.sln"></Solution>
+  </ItemGroup>
+
+  <Import Project="..\..\MSBuild\DeployTargets\Targets\Build.targets" />
+
+</Project>

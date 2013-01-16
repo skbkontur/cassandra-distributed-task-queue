@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="Projects\Common.vars" Condition="$(CommonVarsImported) == ''" />
+
+  <PropertyGroup>
+    <BuildConfiguration>Debug</BuildConfiguration>
+    <BuildMode Condition="'$(BuildMode)' == ''">Full</BuildMode>
+    <ServiceSuite>Fake</ServiceSuite>
+    <SettingsSuffix></SettingsSuffix>
+    <DeployDir Condition="'$(DeployDir)' == ''">C:\dir1</DeployDir>
+    <ServiceMode>FromSources</ServiceMode>
+    <FrontEndMode>FromSources</FrontEndMode>
+    <ServiceRunMode>RunLocal</ServiceRunMode>
+  </PropertyGroup>
+
+  <Import Project="$(CatalogueRootDirectory)\MSBuild\DeployTargets\Targets\Common.targets" />
+  <Import Project="Projects\Configuration\FrontEndSuites.xml" />
+  <Import Project="Projects\Configuration\ServiceSuites.xml" />
+
+  <Target Name="Fire">
+    
+    <MSBuild Projects="$(CatalogueRootDirectory)\MSBuild\DeployTargets\GlobalServices\Cassandra.xml" Targets="StartLocal" Properties="Use1500MMemmory=true" />
+    <MSBuild Projects="$(CatalogueRootDirectory)\MSBuild\DeployTargets\GlobalServices\ChomeDriver.xml" Targets="StartLocal" />
+    
+    <CallTarget Targets="Run" />
+
+  </Target>
+
+</Project>

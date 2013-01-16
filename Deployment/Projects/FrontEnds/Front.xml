@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <!-- Возможные варианты FromSource, FromDeploy -->
+    <FrontEndMode>FromDeploy</FrontEndMode>
+    <DeploymentMode Condition="'$(DeploymentMode)' == ''">Local</DeploymentMode>
+    <!--<FrontEndMode>FromSource</FrontEndMode>-->
+  </PropertyGroup>
+  
+  <Import Project="..\Common.vars" Condition="$(CommonVarsImported) == ''" />
+  
+  <PropertyGroup Condition="'$(FrontEndMode)' == 'FromDeploy'">
+    <ProjectDir>$(CatalogueRootDirectory)\RemoteTaskQueue\Front\</ProjectDir>
+    <ProjectFile>$(ProjectDir)\Front.csproj</ProjectFile>
+    <UseSharedResources>true</UseSharedResources>
+    <OutputDirName>Front</OutputDirName>
+    <CombineScripts>true</CombineScripts>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(FrontEndMode)' == 'FromDeploy'">
+    <WebSite Include="/">
+      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(DeployDir)\Front'))</PhysicalPath>
+      <HttpPort>9876</HttpPort>
+      <AppName>RemoteTaskQueue.Front</AppName>
+      <AppPool>RemoteTaskQueue.Front_Pool</AppPool>
+      <AppRootDirectory>$(DeployDir)\Front</AppRootDirectory>
+    </WebSite>
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(FrontEndMode)' == 'FromSources'">
+    <ProjectDir>$(CatalogueRootDirectory)\RemoteTaskQueue\Front\</ProjectDir>
+    <ProjectFile>$(ProjectDir)\Front.csproj</ProjectFile>
+    <UseSharedResources>false</UseSharedResources>
+    <OutputDirName>Front</OutputDirName>
+    <CombineScripts>false</CombineScripts>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(FrontEndMode)' == 'FromSources'">
+    <WebSiteVirtualDirectory Include="/Shared">
+      <ApplicationPath>/</ApplicationPath>
+      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\WebWorms\Web\Statics'))</PhysicalPath>
+    </WebSiteVirtualDirectory>
+
+    <WebSiteVirtualDirectory Include="/SharedBlocks">
+      <ApplicationPath>/</ApplicationPath>
+      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\WebWorms\Web\Blocks'))</PhysicalPath>
+    </WebSiteVirtualDirectory>
+
+    <WebSite Include="/">
+      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\RemoteTaskQueue\Front\'))</PhysicalPath>
+      <HttpPort>9876</HttpPort>
+      <AppName>RemoteTaskQueue.Front</AppName>
+      <AppPool>RemoteTaskQueue.Front_Pool</AppPool>
+      <AppRootDirectory>$(CatalogueRootDirectory)\RemoteTaskQueue\Front\</AppRootDirectory>
+    </WebSite>
+
+
+  </ItemGroup>
+
+  <Import Project="CommonResources.xml" />
+
+  <Import Project="SharedResources.xml" />
+
+  <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\FrontEnd.targets" />
+
+</Project>

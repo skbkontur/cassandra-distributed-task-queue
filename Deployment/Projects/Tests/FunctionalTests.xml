@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="..\Common.vars"/>
+
+  <PropertyGroup>
+    <BuildConfiguration>Debug</BuildConfiguration>
+    <BuildMode>Full</BuildMode>
+    <ServiceSuite>Fake</ServiceSuite>
+    <SettingsSuffix></SettingsSuffix>
+    <DeployDir Condition="'$(DeployDir)' == ''">C:\dir1</DeployDir>
+    <ServiceMode>FromDeploy</ServiceMode>
+    <FrontEndMode>FromDeploy</FrontEndMode>
+    <ServiceRunMode>Run</ServiceRunMode>
+
+    <GlobalServices Condition="'$(GlobalServices)' == ''">Cassandra;ChomeDriver</GlobalServices>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TestSolutionDir>$(CatalogueRootDirectory)\RemoteTaskQueue\</TestSolutionDir>
+    <TestSolutionFileName>RemoteTaskQueue.sln</TestSolutionFileName>
+    <BuildSolutionsMSBuildFile>$(MSBuildThisFileDirectory)\..\..\Build.xml</BuildSolutionsMSBuildFile>    
+  </PropertyGroup>
+
+  <Import Project="..\Configuration\ServiceSuites.xml" />
+  
+  <ItemGroup>
+    <NUnitAssemblies Include="$(TestSolutionDir)\MonitoringTests\bin\$(BuildConfiguration)\Catalogue.RemoteTaskQueue.MonitoringTests.dll"></NUnitAssemblies>
+    <NUnitAssemblies Include="$(TestSolutionDir)\FunctionalTests\bin\$(BuildConfiguration)\RemoteTaskQueue.FunctionalTests.dll"></NUnitAssemblies>
+  </ItemGroup>
+  
+  <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Test_New.targets" />
+  
+</Project>
