@@ -6,6 +6,7 @@
   <PropertyGroup>
     <BuildConfiguration>Debug</BuildConfiguration>
     <BuildMode>Full</BuildMode>
+    <FrontEndSuite>DEFAULT</FrontEndSuite>
     <ServiceSuite>Fake</ServiceSuite>
     <SettingsSuffix></SettingsSuffix>
     <DeployDir Condition="'$(DeployDir)' == ''">C:\dir1</DeployDir>
