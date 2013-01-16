@@ -24,6 +24,7 @@
   </PropertyGroup>
 
   <Import Project="..\Configuration\ServiceSuites.xml" />
+  <Import Project="..\Configuration\FrontEndSuites.xml" />
   
   <ItemGroup>
     <NUnitAssemblies Include="$(TestSolutionDir)\MonitoringTests\bin\$(BuildConfiguration)\Catalogue.RemoteTaskQueue.MonitoringTests.dll"></NUnitAssemblies>
