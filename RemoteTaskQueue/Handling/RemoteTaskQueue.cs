@@ -48,6 +48,7 @@ namespace RemoteQueue.Handling
                 if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError)
                 {
                     meta.State = TaskState.Canceled;
+                    meta.FinishExecutingTicks = DateTime.UtcNow.Ticks;
                     handleTasksMetaStorage.AddMeta(meta);
                     return true;
                 }
