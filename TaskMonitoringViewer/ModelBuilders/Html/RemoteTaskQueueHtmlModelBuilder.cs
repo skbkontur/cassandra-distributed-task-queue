@@ -71,6 +71,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                         }),
                     Ticks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.Ticks),
                     StartExecutedTicks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.StartExecutedTicks),
+                    FinishExecutedTicks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.FinishExecutedTicks),
                     MinimalStartTicks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.MinimalStartTicks)
                 };
         }

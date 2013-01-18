@@ -13,5 +13,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEnti
         public DateTimeRange Ticks { get; set; }
         public DateTimeRange MinimalStartTicks { get; set; }
         public DateTimeRange StartExecutingTicks { get; set; }
+        public DateTimeRange FinishExecutingTicks { get; set; }
     }
 }

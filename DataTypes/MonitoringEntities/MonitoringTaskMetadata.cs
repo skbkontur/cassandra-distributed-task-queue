@@ -9,9 +9,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEnti
     {
         public string Name { get; set; }
         public string TaskId { get; set; }
+
         public DateTime Ticks { get; set; }
         public DateTime MinimalStartTicks { get; set; }
         public DateTime? StartExecutingTicks { get; set; }
+        public DateTime? FinishExecutingTicks { get; set; }
+
         public TaskState State { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }

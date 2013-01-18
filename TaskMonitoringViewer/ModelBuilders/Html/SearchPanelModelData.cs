@@ -11,6 +11,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         public string[] AllowedTaskNames { get; set; }
         public DateTimeRangeModel Ticks { get; set; }
         public DateTimeRangeModel StartExecutedTicks { get; set; }
+        public DateTimeRangeModel FinishExecutedTicks { get; set; }
         public DateTimeRangeModel MinimalStartTicks { get; set; }
+        
     }
 }

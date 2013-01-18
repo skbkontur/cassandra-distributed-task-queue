@@ -9,26 +9,26 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
     {
         public static string GetDateString(this DateTime? dateTime, string emptyValue = null)
         {
-            if (dateTime == null)
+            if(dateTime == null)
                 return emptyValue;
             return string.Format("{0:dd.MM.yyyy}", dateTime.Value);
         }
 
         public static string GetMoscowDateString(this DateTime? utc, string emptyValue = null)
         {
-            if (!utc.HasValue) return emptyValue;
+            if(!utc.HasValue) return emptyValue;
             return utc.Value.GetMoscowDateString();
         }
 
         public static string GetMoscowTimeString(this DateTime? utc, string emptyValue = null)
         {
-            if (!utc.HasValue) return emptyValue;
+            if(!utc.HasValue) return emptyValue;
             return utc.Value.GetMoscowTimeString();
         }
 
         public static DateTime ToUtcDateTime(this DateTime moscowDateTime)
         {
-            var res =  TimeZoneInfo.ConvertTimeBySystemTimeZoneId(moscowDateTime, moscowTimeZone.Id, TimeZoneInfo.Utc.Id);
+            var res = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(moscowDateTime, moscowTimeZone.Id, TimeZoneInfo.Utc.Id);
             return res;
         }
 
@@ -40,12 +40,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 
         public static string GetMoscowDateString(this DateTime utc)
         {
-            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("dd MMMM yyyy", CultureInfo.GetCultureInfo("ru"));
+            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("dd.MM.yyyy", CultureInfo.GetCultureInfo("ru"));
         }
 
         public static string GetMoscowTimeString(this DateTime utc)
         {
-            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("HH:mm");
+            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("HH:mm:ss");
         }
 
         public static string GetMoscowDateTimeString(this DateTime utc)
@@ -59,7 +59,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             {
                 return TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time");
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 logger.Warn("Не смогли найти TimeZoneInfo для Москвы. Используем локальное время сервера с Id = " + TimeZoneInfo.Local.Id, e);
                 return TimeZoneInfo.Local;

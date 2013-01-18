@@ -9,16 +9,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         {
             return new TaskMetaInfoModel
                 {
-                    TaskId = meta.TaskId,
-                    State = meta.State,
-                    Name = meta.Name,
-                    StartExecutedTicks = meta.StartExecutingTicks.HasValue ? meta.StartExecutingTicks.Value.Ticks.ToString() : "",
-                    StartExecutedMoscowTime = meta.StartExecutingTicks.HasValue ? meta.StartExecutingTicks.Value.GetMoscowDateTimeString() : "",
-                    EnqueueTicks = meta.Ticks.Ticks.ToString(),
-                    EnqueueMoscowTime = meta.Ticks.GetMoscowDateTimeString(),
-                    MinimalStartTicks = meta.MinimalStartTicks.Ticks.ToString(),
-                    MinimalStartMoscowTime = meta.MinimalStartTicks.GetMoscowDateTimeString(),
                     Attempts = meta.Attempts,
+                    TaskId = meta.TaskId,
+                    Name = meta.Name,
+                    State = meta.State,
+
+                    EnqueueTicks = meta.Ticks.Ticks.ToString(),
+                    MinimalStartTicks = meta.MinimalStartTicks.Ticks.ToString(),
+                    StartExecutingTicks = meta.StartExecutingTicks.HasValue ? meta.StartExecutingTicks.Value.Ticks.ToString() : "",
+                    FinishExecutingTicks = meta.FinishExecutingTicks.HasValue ? meta.FinishExecutingTicks.Value.Ticks.ToString() : "",
+                    
+                    EnqueueMoscowTime = meta.Ticks.GetMoscowDateTimeString(),
+                    MinimalStartMoscowTime = meta.MinimalStartTicks.GetMoscowDateTimeString(),
+                    StartExecutingMoscowTime = meta.StartExecutingTicks.HasValue ? meta.StartExecutingTicks.Value.GetMoscowDateTimeString() : "",
+                    FinishExecutingMoscowTime = meta.FinishExecutingTicks.HasValue ? meta.FinishExecutingTicks.Value.GetMoscowDateTimeString() : "",
+
                     ParentTaskId = meta.ParentTaskId,
                     TaskGroupLock = meta.TaskGroupLock
                 };

@@ -65,6 +65,12 @@
     <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.StartExecutedTicks.To)</div>
 </div>
 <div class="remoteTaskQueueMonitoring__filter">
+    <div class="remoteTaskQueueMonitoring__filter__label">FinishExecutedTicks From</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.FinishExecutedTicks.From)</div>
+    <div class="remoteTaskQueueMonitoring__filter__label">FinishExecutedTicks To</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.FinishExecutedTicks.To)</div>
+</div>
+<div class="remoteTaskQueueMonitoring__filter">
     <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks From</div>
     <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(htmlModel.MinimalStartTicks.From)</div>
     <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks To</div>
@@ -79,6 +85,7 @@
         <th class="remoteTaskQueueMonitoring__data__header">TaskName</th>
         <th class="remoteTaskQueueMonitoring__data__header">EnqueueTicks</th>
         <th class="remoteTaskQueueMonitoring__data__header">StartExecutedTicks</th>
+        <th class="remoteTaskQueueMonitoring__data__header">FinishExecutedTicks</th>
         <th class="remoteTaskQueueMonitoring__data__header">MinimalStartTicks</th>
         <th class="remoteTaskQueueMonitoring__data__header">Attempts</th>
         <th class="remoteTaskQueueMonitoring__data__header remoteTaskQueueMonitoring__last">ParentTaskId</th>
@@ -104,8 +111,11 @@
                 <td id="EnqueueTicks[@index]" title="@taskModel.EnqueueTicks" class="remoteTaskQueueMonitoring__data__col">
                     @taskModel.EnqueueMoscowTime
                 </td>
-                <td id="StartExecutedTicks[@index]" title="@taskModel.StartExecutedTicks" class="remoteTaskQueueMonitoring__data__col">
-                    @taskModel.StartExecutedMoscowTime
+                <td id="StartExecutedTicks[@index]" title="@taskModel.StartExecutingTicks" class="remoteTaskQueueMonitoring__data__col">
+                    @taskModel.StartExecutingMoscowTime
+                </td>
+                <td id="FinishExecutedTicks[@index]" title="@taskModel.FinishExecutingTicks" class="remoteTaskQueueMonitoring__data__col">
+                    @taskModel.FinishExecutingMoscowTime
                 </td>
                 <td id="MinimalStartTicks[@index]" title="@taskModel.MinimalStartTicks" class="remoteTaskQueueMonitoring__data__col">
                     @taskModel.MinimalStartMoscowTime

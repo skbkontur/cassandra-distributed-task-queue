@@ -9,10 +9,12 @@
 
         public string Name { get; set; }
         public string Id { get; set; }
-        public long Ticks { get; set; }
 
+        public long Ticks { get; set; }
         public long MinimalStartTicks { get; set; }
         public long? StartExecutingTicks { get; set; }
+        public long? FinishExecutingTicks { get; set; }
+
         public TaskState State { get; set; }
         public int Attempts { get; set; }
 

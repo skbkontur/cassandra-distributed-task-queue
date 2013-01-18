@@ -59,7 +59,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
         }
 
-        private void UpdateLocalStorage(TaskMetaUpdatedEvent [] events)
+        private void UpdateLocalStorage(TaskMetaUpdatedEvent[] events)
         {
             foreach(var eventBatch in new SeparateOnBatchesEnumerable<TaskMetaUpdatedEvent>(events, 300))
             {
@@ -115,6 +115,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     Ticks = new DateTime(info.Ticks),
                     MinimalStartTicks = new DateTime(info.MinimalStartTicks),
                     StartExecutingTicks = info.StartExecutingTicks.HasValue ? (DateTime?)new DateTime(info.StartExecutingTicks.Value) : null,
+                    FinishExecutingTicks = info.FinishExecutingTicks.HasValue ? (DateTime?)new DateTime(info.FinishExecutingTicks.Value) : null,
                     State = default(MTaskState),
                     Attempts = info.Attempts,
                     ParentTaskId = info.ParentTaskId,

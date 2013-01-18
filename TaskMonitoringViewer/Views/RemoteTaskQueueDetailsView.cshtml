@@ -40,7 +40,11 @@
         </tr>
         <tr class="remoteTaskQueueMonitoring__details__item">
             <th class="remoteTaskQueueMonitoring__details__header">StartExecutedTicks</th>
-            <td class="remoteTaskQueueMonitoring__details__col" id="StartExecutedTicks">@Model.TaskMetaInfoModel.StartExecutedMoscowTime (@Model.TaskMetaInfoModel.StartExecutedTicks)</td>
+            <td class="remoteTaskQueueMonitoring__details__col" id="StartExecutedTicks">@Model.TaskMetaInfoModel.StartExecutingMoscowTime (@Model.TaskMetaInfoModel.StartExecutingTicks)</td>
+        </tr>
+        <tr class="remoteTaskQueueMonitoring__details__item">
+            <th class="remoteTaskQueueMonitoring__details__header">FinishExecutedTicks</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="FinishExecutedTicks">@Model.TaskMetaInfoModel.FinishExecutingMoscowTime (@Model.TaskMetaInfoModel.FinishExecutingTicks)</td>
         </tr>
         <tr class="remoteTaskQueueMonitoring__details__item">
             <th class="remoteTaskQueueMonitoring__details__header">MinimalStartTicks</th>

@@ -14,6 +14,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html
         public ButtonHtmlModel SearchButton { get; set; }
         public DateTimeRangeHtmlModel Ticks { get; set; }
         public DateTimeRangeHtmlModel StartExecutedTicks { get; set; }
+        public DateTimeRangeHtmlModel FinishExecutedTicks { get; set; }
         public DateTimeRangeHtmlModel MinimalStartTicks { get; set; }
     }
 }

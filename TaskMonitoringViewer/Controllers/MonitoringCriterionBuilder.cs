@@ -33,6 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             AddDataTimeRangeCriterion(ref criterion, x => x.Ticks, searchRequest.Ticks);
             AddDataTimeRangeCriterion(ref criterion, x => x.MinimalStartTicks, searchRequest.MinimalStartTicks);
             AddDataTimeRangeCriterion(ref criterion, x => x.StartExecutingTicks, searchRequest.StartExecutingTicks);
+            AddDataTimeRangeCriterion(ref criterion, x => x.FinishExecutingTicks, searchRequest.FinishExecutingTicks);
 
             return criterion;
         }

@@ -79,6 +79,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                                     From = DateAndTime.Create(UtcToMocowDateTime(searchRequest.StartExecutingTicks.From)),
                                     To = DateAndTime.Create(UtcToMocowDateTime(searchRequest.StartExecutingTicks.To))
                                 },
+                            FinishExecutedTicks = new DateTimeRangeModel
+                                {
+                                    From = DateAndTime.Create(UtcToMocowDateTime(searchRequest.FinishExecutingTicks.From)),
+                                    To = DateAndTime.Create(UtcToMocowDateTime(searchRequest.FinishExecutingTicks.To))
+                                },
                             MinimalStartTicks = new DateTimeRangeModel
                                 {
                                     From = DateAndTime.Create(UtcToMocowDateTime(searchRequest.MinimalStartTicks.From)),
@@ -92,14 +97,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             TaskId = x.TaskId,
                             Name = x.Name,
                             State = x.State,
-                            ParentTaskId = x.ParentTaskId,
-                            TaskGroupLock = x.TaskGroupLock,
                             EnqueueTicks = x.Ticks.Ticks.ToString(),
                             MinimalStartTicks = x.MinimalStartTicks.Ticks.ToString(),
-                            StartExecutedTicks = x.StartExecutingTicks.HasValue ? x.StartExecutingTicks.Value.Ticks.ToString() : "",
+                            StartExecutingTicks = x.StartExecutingTicks.HasValue ? x.StartExecutingTicks.Value.Ticks.ToString() : "",
+                            FinishExecutingTicks = x.FinishExecutingTicks.HasValue ? x.FinishExecutingTicks.Value.Ticks.ToString() : "",
                             EnqueueMoscowTime = x.Ticks.GetMoscowDateTimeString(),
                             MinimalStartMoscowTime = x.MinimalStartTicks.GetMoscowDateTimeString(),
-                            StartExecutedMoscowTime = x.StartExecutingTicks.HasValue ? x.StartExecutingTicks.Value.GetMoscowDateTimeString() : ""
+                            StartExecutingMoscowTime = x.StartExecutingTicks.HasValue ? x.StartExecutingTicks.Value.GetMoscowDateTimeString() : "",
+                            FinishExecutingMoscowTime = x.FinishExecutingTicks.HasValue ? x.FinishExecutingTicks.Value.GetMoscowDateTimeString().ToString() : "",
+                            ParentTaskId = x.ParentTaskId,
+                            TaskGroupLock = x.TaskGroupLock,
                         }).ToArray(),
                 };
             var model = new RemoteTaskQueueModel(pageModelBaseParameters, remoteTaskQueueModelData)
@@ -113,24 +120,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return model;
         }
 
-
         private DateTime? UtcToMocowDateTime(DateTime? utc)
         {
             return utc.HasValue ? (DateTime?)utc.Value.ToMoscowDateTime() : null;
         }
 
-        private Pair<T, bool?> [] BuildArray<T>(T[] allowedValues, T[] requestValues, HashSet<T> needValues = null)
+        private Pair<T, bool?>[] BuildArray<T>(T[] allowedValues, T[] requestValues, HashSet<T> needValues = null)
             where T : IComparable
         {
             var dictionary = allowedValues.ToDictionary(x => x, x => false);
-            foreach (var requestValue in requestValues)
+            foreach(var requestValue in requestValues)
             {
-                if (dictionary.ContainsKey(requestValue))
+                if(dictionary.ContainsKey(requestValue))
                     dictionary[requestValue] = true;
                 else
                     dictionary.Add(requestValue, true);
             }
-            var array = dictionary.Select(x => new Pair<T, bool?> { Key = x.Key, Value = x.Value }).ToArray();
+            var array = dictionary.Select(x => new Pair<T, bool?> {Key = x.Key, Value = x.Value}).ToArray();
             Array.Sort(array, (x, y) => x.Key.CompareTo(y.Key));
             return array;
         }

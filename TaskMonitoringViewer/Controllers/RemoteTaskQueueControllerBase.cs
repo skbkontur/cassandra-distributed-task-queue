@@ -27,7 +27,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             remoteTaskQueue = remoteTaskQueueControllerBaseParameters.RemoteTaskQueue;
             remoteTaskQueueModelBuilder = remoteTaskQueueControllerBaseParameters.RemoteTaskQueueModelBuilder;
             businessObjectsStorage = remoteTaskQueueControllerBaseParameters.BusinessObjectsStorage;
-
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
@@ -59,6 +58,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                             From = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.StartExecutedTicks.From, DateTimeKind.Unspecified)),
                             To = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.StartExecutedTicks.To, DateTimeKind.Unspecified))
                         },
+                    FinishExecutingTicks = new DateTimeRange
+                        {
+                            From = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.FinishExecutedTicks.From, DateTimeKind.Unspecified)),
+                            To = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.FinishExecutedTicks.To, DateTimeKind.Unspecified))
+                        },
                     MinimalStartTicks = new DateTimeRange
                         {
                             From = GetUtcFromMoscowDateTime(DateAndTime.ToDateTime(pageModel.SearchPanel.MinimalStartTicks.From, DateTimeKind.Unspecified)),
@@ -71,13 +75,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                     NeedRedirect = true,
                     RedirectTo = Url.Action("Run", new {searchRequestId = requestId}),
                 });
-        }
-
-        private DateTime? GetUtcFromMoscowDateTime(DateTime? moscowDateTime)
-        {
-            if(moscowDateTime.HasValue)
-                return moscowDateTime.Value.ToUtcDateTime();
-            return null;
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
@@ -122,6 +119,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                 throw new Exception(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
             var fileDownloadName = string.Format("{0}_{1}.xml", DateTime.UtcNow.ToString("yyyy.MM.dd hh:mm:ss"), Guid.NewGuid());
             return File((byte[])value, "application/xml", fileDownloadName);
+        }
+
+        private DateTime? GetUtcFromMoscowDateTime(DateTime? moscowDateTime)
+        {
+            if(moscowDateTime.HasValue)
+                return moscowDateTime.Value.ToUtcDateTime();
+            return null;
         }
 
         private readonly ITaskViewModelBuilder taskViewModelBuilder;
