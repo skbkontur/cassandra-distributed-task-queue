@@ -6,7 +6,6 @@ using NUnit.Framework;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Constants;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 {
@@ -36,7 +35,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             {
                 ids.Add(remoteTaskQueue.CreateTask(createTaskData[i % 3]()).Queue());
                 if(i % 5000 == 0)
-                    Console.WriteLine(string.Format("Complete: {0}", i));
+                    Console.WriteLine("Complete: {0}", i);
             }
             CreateUser("user", "psw");
             var taskListPage = Login("user", "psw");

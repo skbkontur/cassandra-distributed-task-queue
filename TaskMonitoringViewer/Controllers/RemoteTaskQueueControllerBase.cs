@@ -14,7 +14,6 @@ using SKBKontur.Catalogue.ObjectManipulation.Extender;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Constants;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskList;
@@ -49,14 +48,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
             var criterion = monitoringSearchRequestCriterionBuilder.BuildCriterion(searchRequest);
 
-            var rangeFrom = pageNumber * ControllerConstants.DefaultRecordsNumberPerPage;
+            var rangeFrom = pageNumber * tasksPerPageCount;
             var totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
-            var fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, ControllerConstants.DefaultRecordsNumberPerPage, x => x.MinimalStartTicks.Descending()).ToArray();
+            var fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount, x => x.MinimalStartTicks.Descending()).ToArray();
 
             var modelData = taskListModelBuilder.Build(searchRequest, fullTaskMetaInfos, totalCount);
 
             var pageModel = new TaskListPageModel(PageModelBaseParameters, modelData);
-            var totalPagesCount = (totalCount + ControllerConstants.DefaultRecordsNumberPerPage - 1) / ControllerConstants.DefaultRecordsNumberPerPage;
+            var totalPagesCount = (totalCount + tasksPerPageCount - 1) / tasksPerPageCount;
             pageModel.PaginatorModelData = new TaskListPaginatorModelData
                 {
                     PageNumber = pageNumber,
@@ -162,5 +161,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder;
         private readonly IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage;
         private readonly ITaskListHtmlModelBuilder taskListModelHtmlBuilder;
+
+        private const int tasksPerPageCount = 100;
     }
 }

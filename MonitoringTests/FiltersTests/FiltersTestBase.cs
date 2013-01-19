@@ -12,7 +12,6 @@ using RemoteQueue.Handling;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Constants;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 {
@@ -102,10 +101,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             }
         }
 
-        protected void DoCheck(ref TasksListPage tasksListPage, AddTaskInfo addTaskInfo)
+        protected static void DoCheck(ref TasksListPage tasksListPage, AddTaskInfo addTaskInfo)
         {
             var ids = addTaskInfo.Ids.ToArray();
-            var parts = new SeparateOnBatchesEnumerable<string>(ids, ControllerConstants.DefaultRecordsNumberPerPage);
+            const int tasksPerPage = 100;
+            var parts = new SeparateOnBatchesEnumerable<string>(ids, tasksPerPage);
             int cnt = 0;
             foreach(var pageIds in parts)
             {
@@ -116,7 +116,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                     var task = tasksListPage.GetTaskListItem(i);
                     task.TaskId.WaitText(pageIds[i]);
                 }
-                if(ids.Length > cnt*ControllerConstants.DefaultRecordsNumberPerPage)
+                if (ids.Length > cnt * tasksPerPage)
                     tasksListPage = tasksListPage.GoToNextPage();
             }
         }
