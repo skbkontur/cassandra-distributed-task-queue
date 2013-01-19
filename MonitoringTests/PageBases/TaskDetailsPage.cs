@@ -8,14 +8,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
     {
         public TaskDetailsPage()
         {
-            TaskId = new StaticText("TaskId");
-            TaskState = new StaticText(By.ClassName("taskState"));
-            TaskName = new StaticText("TaskName");
-            EnqueueTicks = new StaticText("EnqueueTicks");
-            StartExecutedTicks = new StaticText("StartExecutedTicks");
-            Attempts = new StaticText("Attempts");
-            ParentTaskId = new Link("ParentTaskId");
-            TaskData = new StaticText("TaskData");
+            TaskId = new StaticText("TaskMetaInfoModel_TaskId");
+            TaskState = new StaticText("TaskMetaInfoModel_State");
+            TaskName = new StaticText("TaskMetaInfoModel_Name");
+            EnqueueTime = new StaticText("TaskMetaInfoModel_EnqueueTime");
+            StartExecutingTime = new StaticText("TaskMetaInfoModel_StartExecutingTime");
+            Attempts = new StaticText("TaskMetaInfoModel_Attempts");
+            ParentTaskId = new Link("TaskMetaInfoModel_ParentTaskId");
+            TaskData = new StaticText("TaskMetaInfoModel_TaskData");
             TaskList = new Link(By.LinkText("Вернуться в Task list"));
         }
 
@@ -34,8 +34,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         public StaticText TaskId { get; private set; }
         public StaticText TaskState { get; private set; }
         public StaticText TaskName { get; private set; }
-        public StaticText EnqueueTicks { get; private set; }
-        public StaticText StartExecutedTicks { get; private set; }
+        public StaticText EnqueueTime { get; private set; }
+        public StaticText StartExecutingTime { get; private set; }
         public StaticText Attempts { get; private set; }
         public Link ParentTaskId { get; private set; }
         public StaticText TaskData { get; private set; }

@@ -14,7 +14,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskLi
 
         public override sealed TaskListModelData Data { get; protected set; }
         public TaskListPaginatorModelData PaginatorModelData { get; set; }
-        public SearchPanelHtmlModel HtmlModel { get; set; }
+        public TaskListHtmlModel HtmlModel { get; set; }
 
         protected override void Configure(MutatorsConfigurator<TaskListModelData> configurator)
         {

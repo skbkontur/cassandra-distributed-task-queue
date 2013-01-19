@@ -1,4 +1,4 @@
-﻿namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList
+﻿namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel
 {
     public class Pair<TKey, TValue>
     {

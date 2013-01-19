@@ -27,9 +27,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 
             Search = new ButtonInput("Search");
 
-            // note не всегда! только в текущих тестах.
-            New = new CheckBox("SearchPanel_States_0_Value");
-            Finished = new CheckBox("SearchPanel_States_1_Value");
+            New = new CheckBox("SearchPanel_States_1_Value");
+            Finished = new CheckBox("SearchPanel_States_5_Value");
             InProcess = new CheckBox("SearchPanel_States_2_Value");
         }
 

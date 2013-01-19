@@ -31,5 +31,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer
              return urlHelper.Action("GetBytes", "RemoteTaskQueue", new {area = "AdminTools", id = taskId, path});
 // ReSharper restore Mvc.AreaNotResolved
          }
+
+         public static string GetSearchUrl(this UrlHelper urlHelper)
+         {
+// ReSharper disable Mvc.AreaNotResolved
+             return urlHelper.Action("Search", "RemoteTaskQueue", new {area = "AdminTools"});
+// ReSharper restore Mvc.AreaNotResolved
+         }
     }
 }

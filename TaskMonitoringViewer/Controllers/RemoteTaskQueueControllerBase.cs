@@ -17,7 +17,9 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskList;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
@@ -29,6 +31,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         {
             extender = remoteTaskQueueControllerBaseParameters.CatalogueExtender;
             taskDetailsModelBuilder = remoteTaskQueueControllerBaseParameters.TaskDetailsModelBuilder;
+            taskDetailsHtmlModelBuilder = remoteTaskQueueControllerBaseParameters.TaskDetailsHtmlModelBuilder;
             objectValueExtracter = remoteTaskQueueControllerBaseParameters.ObjectValueExtracter;
             remoteTaskQueue = remoteTaskQueueControllerBaseParameters.RemoteTaskQueue;
             taskListModelBuilder = remoteTaskQueueControllerBaseParameters.TaskListModelBuilder;
@@ -112,7 +115,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public ActionResult Show(string id, int pageNumber = 0, string searchRequestId = null)
         {
             var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
-            return View("TaskDetails", taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId));
+            var modelData = taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId);
+            var pageModel = new TaskDetailsPageModel(PageModelBaseParameters, modelData)
+                {
+                    Title = string.Format("Task: {0}", id),
+                    TaskListUrl = Url.Action("Run", new {pageNumber, searchRequestId}),
+                    PageNumber = pageNumber,
+                    SearchRequestId = searchRequestId,
+                };
+            pageModel.HtmlModel = taskDetailsHtmlModelBuilder.Build(pageModel); 
+            return View("TaskDetails", pageModel);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -161,6 +173,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder;
         private readonly IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage;
         private readonly ITaskListHtmlModelBuilder taskListModelHtmlBuilder;
+        private ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder;
 
         private const int tasksPerPageCount = 100;
     }

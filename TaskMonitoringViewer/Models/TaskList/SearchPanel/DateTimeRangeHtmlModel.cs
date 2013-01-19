@@ -1,6 +1,6 @@
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel
 {
     public class DateTimeRangeHtmlModel
     {

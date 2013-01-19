@@ -6,36 +6,36 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetail
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
 {
-    public static class HtmlPrimitives
+    public static class TaskDataValueHtmlPrimitives
     {
         public static MvcHtmlString ObjectValue(this HtmlHelper htmlHelper, ObjectTaskDataModel model)
         {
-            return htmlHelper.Partial("~/TaskMonitoringViewer/_ObjectValue.cshtml", model);
+            return htmlHelper.Partial("~/TaskMonitoringViewer/TaskData/_ObjectValue.cshtml", model);
         }
 
         public static MvcHtmlString StringValue(this HtmlHelper htmlHelper, StringTaskDataValue model)
         {
-            return htmlHelper.Partial("~/TaskMonitoringViewer/_StringValue.cshtml", model);
+            return htmlHelper.Partial("~/TaskMonitoringViewer/TaskData/_StringValue.cshtml", model);
         }
 
         public static MvcHtmlString EmptyValue(this HtmlHelper htmlHelper, EmptyTaskDataValue model)
         {
-            return htmlHelper.Partial("~/TaskMonitoringViewer/_EmptyValue.cshtml", model);
+            return htmlHelper.Partial("~/TaskMonitoringViewer/TaskData/_EmptyValue.cshtml", model);
         }
 
         public static MvcHtmlString ByteArrayValue(this HtmlHelper htmlHelper, ByteArrayTaskDataValue model)
         {
-            return htmlHelper.Partial("~/TaskMonitoringViewer/_ByteArrayValue.cshtml", model);
+            return htmlHelper.Partial("~/TaskMonitoringViewer/TaskData/_ByteArrayValue.cshtml", model);
         }
 
         public static MvcHtmlString TaskState(this HtmlHelper htmlHelper, TaskMetaInfoModel model)
         {
-            return htmlHelper.Partial("~/TaskMonitoringViewer/_TaskState.cshtml", model);
+            return htmlHelper.Partial("~/TaskMonitoringViewer/TaskData/_TaskState.cshtml", model);
         }
 
         public static MvcHtmlString FileDataTaskDataValue(this HtmlHelper htmlHelper, FileDataTaskDataValue model)
         {
-            return htmlHelper.Partial("~/TaskMonitoringViewer/_FileDataValue.cshtml", model);
+            return htmlHelper.Partial("~/TaskMonitoringViewer/TaskData/_FileDataValue.cshtml", model);
         }
     }
 }

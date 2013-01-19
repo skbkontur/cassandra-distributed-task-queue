@@ -33,9 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 {
                     TaskMetaInfoModel = taskMetadataModelBuilder.Build(metadata),
                     ChildTaskIds = remoteTaskQueueMonitoringServiceStorage.RangeSearch(x => x.ParentTaskId == remoteTaskInfo.Context.Id, 0, 1000).Select(x => x.Id).ToArray(),
-                    TaskDataValue = taskDataModelBuilder.Build(remoteTaskInfo.Context.Id, remoteTaskInfo.TaskData),
-                    PageNumber = pageNumber ?? 0,
-                    SearchRequestId = searchRequestId,
+                    TaskData = remoteTaskInfo.TaskData,
                     ExceptionInfo = remoteTaskInfo.ExceptionInfo
                 };
         }

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 
-using SKBKontur.Catalogue.Core.Web.Blocks.Button;
+using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel
 {
     public class SearchPanelHtmlModel
     {
@@ -11,7 +11,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskLi
         public SelectBoxHtmlModel TaskName { get; set; }
         public TextBoxHtmlModel TaskId { get; set; }
         public TextBoxHtmlModel ParentTaskId { get; set; }
-        public ButtonHtmlModel SearchButton { get; set; }
+        public ActionButtonHtmlModel SearchButton { get; set; }
         public DateTimeRangeHtmlModel Ticks { get; set; }
         public DateTimeRangeHtmlModel StartExecutedTicks { get; set; }
         public DateTimeRangeHtmlModel FinishExecutedTicks { get; set; }

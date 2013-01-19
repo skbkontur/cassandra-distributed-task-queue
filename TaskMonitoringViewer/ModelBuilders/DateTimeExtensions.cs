@@ -19,7 +19,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return null;
         }
 
-        public static string GetMoscowDateTimeString(this DateTime utc)
+        public static string GetMoscowDateTimeString(this DateTime? utc)
+        {
+            return utc == null ? null : utc.Value.GetMoscowDateTimeString();
+        }
+
+        private static string GetMoscowDateTimeString(this DateTime utc)
         {
             return utc.GetMoscowDateString() + " " + utc.GetMoscowTimeString();
         }

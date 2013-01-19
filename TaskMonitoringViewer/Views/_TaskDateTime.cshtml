@@ -1,0 +1,16 @@
+﻿@model SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primitives.TaskDateTimeHtmlModel
+           
+@{
+    if (Model.HideTicks)
+    {
+        <div id="@Model.Id" title="@Model.Ticks">
+            @Model.DateTime
+        </div>
+    }
+    else
+    {
+        <div id="@Model.Id">
+            @Model.DateTime (@Model.Ticks)
+        </div>
+    }
+}

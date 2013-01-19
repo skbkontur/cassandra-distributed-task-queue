@@ -4,6 +4,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     public interface ITaskListHtmlModelBuilder
     {
-        SearchPanelHtmlModel Build(TaskListPageModel pageModel);
+        TaskListHtmlModel Build(TaskListPageModel pageModel);
     }
 }

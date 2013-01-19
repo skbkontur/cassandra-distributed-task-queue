@@ -6,50 +6,56 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls
     public class TaskListItem : HtmlControl
     {
         public TaskListItem(int index)
-            : base(string.Format("Task[{0}]", index))
+            : base(new ByNthOfClass("remoteTaskQueueMonitoring__data__item", index))
         {
-            TaskId = new Link(string.Format("TaskId[{0}]", index));
-            TaskState = new StaticText(string.Format("TaskState[{0}]", index));
-            TaskName = new StaticText(string.Format("TaskName[{0}]", index));
-            EnqueueTicks = new StaticText(string.Format("EnqueueTicks[{0}]", index));
-            StartExecutedTicks = new StaticText(string.Format("StartExecutedTicks[{0}]", index));
-            MinimalStartTicks = new StaticText(string.Format("MinimalStartTicks[{0}]", index));
-            Attempts = new StaticText(string.Format("Attempts[{0}]", index));
-            ParentTaskId = new Link(string.Format("ParentTaskId[{0}]", index));
+            TaskId = new Link(string.Format("TaskModels_{0}_TaskId", index), this);
+            TaskState = new StaticText(string.Format("TaskModels_{0}_State", index), this);
+            TaskName = new StaticText(string.Format("TaskModels_{0}_Name", index), this);
+            EnqueueTime = new StaticText(string.Format("TaskModels_{0}_EnqueueTime", index), this);
+            StartExecutingTime = new StaticText(string.Format("TaskModels_{0}_StartExecutingTime", index), this);
+            FinishExecutingTime = new StaticText(string.Format("TaskModels_{0}_FinishExecutingTime", index), this);
+            MinimalStartTime = new StaticText(string.Format("TaskModels_{0}_MinimalStartTicks", index), this);
+            Attempts = new StaticText(string.Format("TaskModels_{0}_Attempts", index), this);
+            ParentTaskId = new Link(string.Format("TaskModels_{0}_ParentTaskId", index), this);
+
+            cancelLinkId = string.Format("TaskModels_{0}_State_CancelLink", index);
+            rerunLinkId = string.Format("TaskModels_{0}_State_RerunLink", index);
+            CancelLink = new Link(cancelLinkId, this);
+            RerunLink = new Link(rerunLinkId, this);
         }
 
         public void RerunTask()
         {
-            var id = string.Format("{0}-{1}", "rerunTask", TaskId.GetText());
-            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(id));
-            //GetJavaScript(id);
-            new Link(id).Click();
-            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(id));
-            //GetJavaScript(id);
+            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(rerunLinkId));
+            RerunLink.Click();
+            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(rerunLinkId));
         }
 
         public void CancelTask()
         {
-            var id = string.Format("{0}-{1}", "cancelTask", TaskId.GetText());
-            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(id));
-            //GetJavaScript(id);
-            new Link(id).Click();
-            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(id));
-            //GetJavaScript(id);
-        }
-
-        private string GetJavaScript(string idLocator)
-        {
-            return string.Format("$('#{0}').toggleClass('noConfirmation')", idLocator);
+            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(cancelLinkId));
+            CancelLink.Click();
+            WebDriverCache.WebDriver.ExecuteScript(GetJavaScript(cancelLinkId));
         }
 
         public Link TaskId { get; private set; }
         public StaticText TaskState { get; private set; }
         public StaticText TaskName { get; private set; }
-        public StaticText EnqueueTicks { get; private set; }
-        public StaticText StartExecutedTicks { get; private set; }
-        public StaticText MinimalStartTicks { get; private set; }
+        public StaticText EnqueueTime { get; private set; }
+        public StaticText StartExecutingTime { get; private set; }
+        public StaticText FinishExecutingTime { get; private set; }
+        public StaticText MinimalStartTime { get; private set; }
         public StaticText Attempts { get; private set; }
         public Link ParentTaskId { get; private set; }
+
+        private static string GetJavaScript(string idLocator)
+        {
+            return string.Format("$('#{0}').toggleClass('noConfirmation')", idLocator);
+        }
+
+        private Link CancelLink { get; set; }
+        private Link RerunLink { get; set; }
+        private readonly string rerunLinkId;
+        private readonly string cancelLinkId;
     }
 }
