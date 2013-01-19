@@ -136,7 +136,7 @@
 
             $(document).ready(function() {
                 $(".remoteTaskQueueMonitoring__property").click(function(event) {
-                    if ($(this).hasClass("canHide"))
+                    if ($(this).find(".remoteTaskQueueMonitoring__property__name").hasClass("canHide"))
                         $(this).toggleClass("hideValue");
                     event.stopPropagation();
                 });

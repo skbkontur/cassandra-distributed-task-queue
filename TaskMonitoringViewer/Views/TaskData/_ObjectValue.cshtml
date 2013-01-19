@@ -11,8 +11,8 @@
                 canHideClass = "canHide";
                 rowClass = property.Hidden ? "hideValue" : "";
             }
-            <tr class="remoteTaskQueueMonitoring__property @canHideClass @rowClass">
-                <td class="remoteTaskQueueMonitoring__property__name">@property.Name</td>
+            <tr class="remoteTaskQueueMonitoring__property @rowClass">
+                <td class="remoteTaskQueueMonitoring__property__name @canHideClass">@property.Name</td>
                 <td class="remoteTaskQueueMonitoring__property__value">@property.Value.Render(Html)</td>
                 <td class="propertyHiddenValue"><i>Значение скрыто</i></td>
             </tr>
