@@ -7,57 +7,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     internal static class DateTimeExtensions
     {
-        public static string GetDateString(this DateTime? dateTime, string emptyValue = null)
-        {
-            if(dateTime == null)
-                return emptyValue;
-            return string.Format("{0:dd.MM.yyyy}", dateTime.Value);
-        }
-
-        public static string GetMoscowDateString(this DateTime? utc, string emptyValue = null)
-        {
-            if(!utc.HasValue) return emptyValue;
-            return utc.Value.GetMoscowDateString();
-        }
-
-        public static string GetMoscowTimeString(this DateTime? utc, string emptyValue = null)
-        {
-            if(!utc.HasValue) return emptyValue;
-            return utc.Value.GetMoscowTimeString();
-        }
-
-        public static DateTime ToUtcDateTime(this DateTime moscowDateTime)
-        {
-            var res = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(moscowDateTime, moscowTimeZone.Id, TimeZoneInfo.Utc.Id);
-            return res;
-        }
-
         public static DateTime? UtcToMoscowDateTime(this DateTime? utc)
         {
             return utc.HasValue ? (DateTime?)utc.Value.ToMoscowDateTime() : null;
         }
 
-        public static DateTime? MoscowFromUtcDateTime(this DateTime? moscowDateTime)
+        public static DateTime? MoscowToUtcDateTime(this DateTime? moscowDateTime)
         {
             if(moscowDateTime.HasValue)
                 return moscowDateTime.Value.ToUtcDateTime();
             return null;
-        }
-
-        public static DateTime ToMoscowDateTime(this DateTime utc)
-        {
-            var res = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, TimeZoneInfo.Utc.Id, moscowTimeZone.Id);
-            return res;
-        }
-
-        public static string GetMoscowDateString(this DateTime utc)
-        {
-            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("dd.MM.yyyy", CultureInfo.GetCultureInfo("ru"));
-        }
-
-        public static string GetMoscowTimeString(this DateTime utc)
-        {
-            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("HH:mm:ss");
         }
 
         public static string GetMoscowDateTimeString(this DateTime utc)
@@ -65,7 +24,29 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return utc.GetMoscowDateString() + " " + utc.GetMoscowTimeString();
         }
 
-        public static TimeZoneInfo GetMoscowTimeZone()
+        private static DateTime ToUtcDateTime(this DateTime moscowDateTime)
+        {
+            var res = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(moscowDateTime, moscowTimeZone.Id, TimeZoneInfo.Utc.Id);
+            return res;
+        }
+
+        private static DateTime ToMoscowDateTime(this DateTime utc)
+        {
+            var res = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, TimeZoneInfo.Utc.Id, moscowTimeZone.Id);
+            return res;
+        }
+
+        private static string GetMoscowDateString(this DateTime utc)
+        {
+            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("dd.MM.yyyy", CultureInfo.GetCultureInfo("ru"));
+        }
+
+        private static string GetMoscowTimeString(this DateTime utc)
+        {
+            return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, moscowTimeZone.Id).ToString("HH:mm:ss");
+        }
+
+        private static TimeZoneInfo GetMoscowTimeZone()
         {
             try
             {
