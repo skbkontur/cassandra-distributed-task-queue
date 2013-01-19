@@ -44,7 +44,7 @@ namespace RemoteQueue.Handling
                 return false;
             using(remoteLock)
             {
-                TaskMetaInformation meta = handleTasksMetaStorage.GetMeta(taskId);
+                var meta = handleTasksMetaStorage.GetMeta(taskId);
                 if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError)
                 {
                     meta.State = TaskState.Canceled;
@@ -59,25 +59,21 @@ namespace RemoteQueue.Handling
         public bool RerunTask(string taskId, TimeSpan delay)
         {
             IRemoteLock remoteLock;
-            if (!remoteLockCreator.TryGetLock(taskId, out remoteLock))
+            if(!remoteLockCreator.TryGetLock(taskId, out remoteLock))
                 return false;
-            using (remoteLock)
+            using(remoteLock)
             {
                 var meta = handleTasksMetaStorage.GetMeta(taskId);
-                if (meta.State != TaskState.New)
-                {
-                    meta.State = TaskState.WaitingForRerun;
-                    meta.MinimalStartTicks = DateTime.UtcNow.Ticks + delay.Ticks;
-                    handleTasksMetaStorage.AddMeta(meta);
-                    return true;
-                }
-                return false;
+                meta.State = TaskState.WaitingForRerun;
+                meta.MinimalStartTicks = DateTime.UtcNow.Ticks + delay.Ticks;
+                handleTasksMetaStorage.AddMeta(meta);
+                return true;
             }
         }
 
         public RemoteTaskInfo GetTaskInfo(string taskId)
         {
-            Task task = handleTaskCollection.GetTask(taskId);
+            var task = handleTaskCollection.GetTask(taskId);
             var res = (ITaskData)serializer.Deserialize(typeToNameMapper.GetTaskType(task.Meta.Name), task.Data);
             TaskExceptionInfo info;
             handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskId, out info);
@@ -92,8 +88,8 @@ namespace RemoteQueue.Handling
         public RemoteTaskInfo<T> GetTaskInfo<T>(string taskId)
             where T : ITaskData
         {
-            Task task = handleTaskCollection.GetTask(taskId);
-            Type taskType = typeToNameMapper.GetTaskType(task.Meta.Name);
+            var task = handleTaskCollection.GetTask(taskId);
+            var taskType = typeToNameMapper.GetTaskType(task.Meta.Name);
             if(!typeof(T).IsAssignableFrom(taskType))
                 throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
             var res = (T)serializer.Deserialize(taskType, task.Data);
@@ -110,9 +106,9 @@ namespace RemoteQueue.Handling
         public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
         {
             createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
-            long nowTicks = DateTime.UtcNow.Ticks;
-            string taskId = Guid.NewGuid().ToString();
-            Type type = taskData.GetType();
+            var nowTicks = DateTime.UtcNow.Ticks;
+            var taskId = Guid.NewGuid().ToString();
+            var type = taskData.GetType();
             var task = new Task
                 {
                     Data = serializer.Serialize(type, taskData),
@@ -129,7 +125,7 @@ namespace RemoteQueue.Handling
                 };
             return new RemoteTask(handleTaskCollection, task);
         }
-        
+
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ISerializer serializer;
