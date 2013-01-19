@@ -6,7 +6,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.AdminToolsArea
     {
         public override void RegisterArea(AreaRegistrationContext context)
         {
-            context.MapRoute("AdminTools", @"AdminTools/{controller}/{action}", new { action = "Run", controller = "Task" });
+            context.MapRoute("AdminTools", @"AdminTools/{controller}/{action}", new { action = "Run", controller = "RemoteTaskQueue" });
         }
 
         public override string AreaName { get { return "AdminTools"; } }

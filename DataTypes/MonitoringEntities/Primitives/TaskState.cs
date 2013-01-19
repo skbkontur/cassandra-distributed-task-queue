@@ -3,11 +3,13 @@
     public enum TaskState
     {
         Unknown,
+
         New,
+        InProcess,
         WaitingForRerun,
         WaitingForRerunAfterError,
+        
         Finished,
-        InProcess,
         Fatal,
         Canceled,
     }

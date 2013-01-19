@@ -3,7 +3,7 @@
 using SKBKontur.Catalogue.Core.Web.Blocks.Button;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList
 {
     public class SearchPanelHtmlModel
     {

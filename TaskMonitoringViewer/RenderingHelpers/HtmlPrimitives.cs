@@ -2,6 +2,7 @@
 using System.Web.Mvc.Html;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails.TaskData;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
 {

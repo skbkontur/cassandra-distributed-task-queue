@@ -32,6 +32,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return res;
         }
 
+        public static DateTime? UtcToMoscowDateTime(this DateTime? utc)
+        {
+            return utc.HasValue ? (DateTime?)utc.Value.ToMoscowDateTime() : null;
+        }
+
+        public static DateTime? MoscowFromUtcDateTime(this DateTime? moscowDateTime)
+        {
+            if(moscowDateTime.HasValue)
+                return moscowDateTime.Value.ToUtcDateTime();
+            return null;
+        }
+
         public static DateTime ToMoscowDateTime(this DateTime utc)
         {
             var res = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(utc, TimeZoneInfo.Utc.Id, moscowTimeZone.Id);

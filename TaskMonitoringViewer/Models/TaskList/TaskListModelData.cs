@@ -1,9 +1,8 @@
 using SKBKontur.Catalogue.Core.Web.PageModels;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.Html
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList
 {
-    public class RemoteTaskQueuePageModel : ModelData
+    public class TaskListModelData : ModelData
     {
         public SearchPanelModelData SearchPanel { get; set; }
         public int TaskCount { get; set; }

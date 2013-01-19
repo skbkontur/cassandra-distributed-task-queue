@@ -1,6 +1,7 @@
-﻿@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+﻿@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails
 @using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
-@model TaskViewModel
+@model TaskDetailsModel
 @{
     Layout = "TaskMonitoringLayout.cshtml";
 }
@@ -15,7 +16,7 @@
 }
 @{
     // ReSharper disable Asp.NotResolved
-    var taskListUrl = @Url.Action("Run", "RemoteTaskQueue", new {pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
+    var taskListUrl = Url.Action("Run", "RemoteTaskQueue", new {pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
     // ReSharper restore Asp.NotResolved
 }
 <h1 class="remoteTaskQueueMonitoring__header">Task: @Model.TaskMetaInfoModel.TaskId</h1>
@@ -57,11 +58,21 @@
         <tr class="remoteTaskQueueMonitoring__details__item">
             <th class="remoteTaskQueueMonitoring__details__header">ParentTaskId</th>
             @{
-                // ReSharper disable Asp.NotResolved
-                var detailsParentTaskUrl = @Url.Action("Show", "RemoteTaskQueue", new {id = Model.TaskMetaInfoModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequesId = Model.SearchRequestId});
-                // ReSharper restore Asp.NotResolved
+                var detailsParentTaskUrl = Url.GetTaskDetailsUrl(Model.TaskMetaInfoModel.ParentTaskId, Model.PageNumber, Model.SearchRequestId);
             }
             <td class="remoteTaskQueueMonitoring__details__col" id="ParentTaskId"><a href="@detailsParentTaskUrl">@Model.TaskMetaInfoModel.ParentTaskId</a></td>
+        </tr>
+        <tr>
+            <th class="remoteTaskQueueMonitoring__details__header">ChildTaskIds</th>
+            <td class="remoteTaskQueueMonitoring__details__col" id="ChildTaskIds">
+                @{
+                    foreach(var childTaskId in Model.ChildTaskIds)
+                    {
+                        var detailsChildTaskUrl = Url.GetTaskDetailsUrl(childTaskId, Model.PageNumber, Model.SearchRequestId);
+                        <a href="@detailsChildTaskUrl">@childTaskId</a><br/>
+                    }
+                }
+            </td>
         </tr>
         <tr class="remoteTaskQueueMonitoring__details__item">
             <th class="remoteTaskQueueMonitoring__details__header">TaskGroupLock</th>
@@ -72,23 +83,23 @@
             <td class="remoteTaskQueueMonitoring__details__col" id="TaskData">@Model.TaskDataValue.Render(Html)</td>
         </tr>
         @{
-            if(Model.ExceptionInfo != null)
+            if (Model.ExceptionInfo != null)
             {
                 <tr class="remoteTaskQueueMonitoring__details__item remoteTaskQueueMonitoring__details__last">
                     <td class="remoteTaskQueueMonitoring__details__header">Детали ошибки</td>
                     <td class="remoteTaskQueueMonitoring__details__col" id="ExceptionInfo">
                         @{
-                            var text = Model.ExceptionInfo.ExceptionMessageInfo ?? "";
-                            var lines = text.Split('\n');
-                            if(lines.Length != 0)
-                            {
+                var text = Model.ExceptionInfo.ExceptionMessageInfo ?? "";
+                var lines = text.Split('\n');
+                if (lines.Length != 0)
+                {
                                 <ul class="remoteTaskQueueMonitoring__details__list">
-                                    @foreach(var line in lines)
+                                    @foreach (var line in lines)
                                     {
                                         <li class="remoteTaskQueueMonitoring__details__list__item">@line</li>
                                     }
                                 </ul>
-                            }
+                }
                         }
                     </td>
                 </tr>

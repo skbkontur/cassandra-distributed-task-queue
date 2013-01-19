@@ -1,8 +1,9 @@
+using System;
 using System.Web.Mvc;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails.TaskData
 {
     public class ByteArrayTaskDataValue : ITaskDataValue
     {
@@ -12,7 +13,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
         }
 
         public int Size { get; set; }
-        public string TaskId { get; set; }
-        public string Path { get; set; }
+        public Func<UrlHelper, string> GetUrl { get; set; }
     }
 }

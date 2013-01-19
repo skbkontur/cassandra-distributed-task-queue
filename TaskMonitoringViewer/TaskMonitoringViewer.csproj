@@ -42,6 +42,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.FileDataWebViewer">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.FileDataWebViewer.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.Web">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Web.dll</HintPath>
     </Reference>
@@ -86,43 +89,42 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\ControllerConstants.cs" />
-    <Compile Include="Controllers\FileDataControllerBase.cs" />
     <Compile Include="Controllers\IMonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\MonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
     <Compile Include="ModelBuilders\DateTimeExtensions.cs" />
-    <Compile Include="ModelBuilders\Html\DateTimeRangeModel.cs" />
-    <Compile Include="ModelBuilders\Html\IRemoteTaskQueueHtmlModelBuilder.cs" />
-    <Compile Include="ModelBuilders\Html\Pair.cs" />
-    <Compile Include="ModelBuilders\Html\RemoteTaskQueueHtmlModelBuilder.cs" />
-    <Compile Include="ModelBuilders\Html\RemoteTaskQueuePageModel.cs" />
-    <Compile Include="ModelBuilders\Html\SearchPanelModelData.cs" />
-    <Compile Include="ModelBuilders\IRemoteTaskQueueModelBuilder.cs" />
-    <Compile Include="ModelBuilders\ITaskDataModelBuilder.cs" />
+    <Compile Include="Models\TaskList\DateTimeRangeModel.cs" />
+    <Compile Include="ModelBuilders\TaskList\ITaskListHtmlModelBuilder.cs" />
+    <Compile Include="Models\TaskList\Pair.cs" />
+    <Compile Include="ModelBuilders\TaskList\TaskListHtmlModelBuilder.cs" />
+    <Compile Include="Models\TaskList\TaskListModelData.cs" />
+    <Compile Include="Models\TaskList\SearchPanelModelData.cs" />
+    <Compile Include="ModelBuilders\TaskList\ITaskListModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskDetails\ITaskDataModelBuilder.cs" />
     <Compile Include="ModelBuilders\ITaskMetadataModelBuilder.cs" />
-    <Compile Include="ModelBuilders\ITaskViewModelBuilder.cs" />
-    <Compile Include="ModelBuilders\RemoteTaskQueueModelBuilder.cs" />
-    <Compile Include="ModelBuilders\TaskDataModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskDetails\ITaskDetailsModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskList\TaskListModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskDetails\TaskDataModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskMetadataModelBuilder.cs" />
-    <Compile Include="ModelBuilders\TaskViewModelBuilder.cs" />
-    <Compile Include="Models\AllowedSearchValues.cs" />
-    <Compile Include="Models\ByteArrayTaskDataValue.cs" />
-    <Compile Include="Models\EmptyTaskDataValue.cs" />
-    <Compile Include="Models\FileDataTaskDataValue.cs" />
-    <Compile Include="Models\Html\DateTimeRangeHtmlModel.cs" />
-    <Compile Include="Models\Html\SearchPanelHtmlModel.cs" />
-    <Compile Include="Models\ITaskDataValue.cs" />
-    <Compile Include="Models\ObjectTaskDataModel.cs" />
+    <Compile Include="ModelBuilders\TaskDetails\TaskDetailsModelBuilder.cs" />
+    <Compile Include="Models\TaskDetails\TaskData\ByteArrayTaskDataValue.cs" />
+    <Compile Include="Models\TaskDetails\TaskData\EmptyTaskDataValue.cs" />
+    <Compile Include="Models\TaskDetails\TaskData\FileDataTaskDataValue.cs" />
+    <Compile Include="Models\TaskList\DateTimeRangeHtmlModel.cs" />
+    <Compile Include="Models\TaskList\SearchPanelHtmlModel.cs" />
+    <Compile Include="Models\TaskDetails\TaskData\ITaskDataValue.cs" />
+    <Compile Include="Models\TaskDetails\TaskData\ObjectTaskDataModel.cs" />
     <Compile Include="Models\Paging\IPaginatorModelData.cs" />
     <Compile Include="Models\Paging\PaginatorPageLinkModelData.cs" />
-    <Compile Include="Models\StringTaskDataValue.cs" />
-    <Compile Include="Models\TaskDataProperty.cs" />
-    <Compile Include="Models\RemoteTaskQueueModel.cs" />
+    <Compile Include="Models\TaskDetails\TaskData\StringTaskDataValue.cs" />
+    <Compile Include="Models\TaskList\TaskListPageModel.cs" />
+    <Compile Include="Models\TaskList\TaskListPaginatorModelData.cs" />
     <Compile Include="Models\TaskMetaInfoModel.cs" />
-    <Compile Include="Models\TaskViewModel.cs" />
+    <Compile Include="Models\TaskDetails\TaskDetailsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteTaskQueueUrlExtensions.cs" />
     <Compile Include="RenderingHelpers\HtmlPaginatorPrimitives.cs" />
     <Compile Include="RenderingHelpers\HtmlPrimitives.cs" />
     <Compile Include="ValueHandlerRegistry\EmptyValueHandlerRegistry.cs" />
@@ -132,7 +134,7 @@
     <Compile Include="ValueHandlerRegistry\ValueHandlerRegistryCollection.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Views\RemoteTaskQueueDetailsView.cshtml" />
+    <EmbeddedResource Include="Views\TaskDetails.cshtml" />
     <EmbeddedResource Include="Views\Paging\_CurrentPage.cshtml" />
     <EmbeddedResource Include="Views\Paging\_DotsLinkPage.cshtml" />
     <EmbeddedResource Include="Views\Paging\_LinkPage.cshtml" />
@@ -141,7 +143,7 @@
     <EmbeddedResource Include="Views\Paging\_Paginator.cshtml" />
     <EmbeddedResource Include="Views\Paging\_PrevLinkPage.cshtml" />
     <EmbeddedResource Include="Views\Paging\_PrevPage.cshtml" />
-    <EmbeddedResource Include="Views\RemoteTaskQueueListView.cshtml" />
+    <EmbeddedResource Include="Views\TaskList.cshtml" />
     <EmbeddedResource Include="Views\TaskMonitoringLayout.cshtml" />
     <EmbeddedResource Include="Views\_ByteArrayValue.cshtml" />
     <EmbeddedResource Include="Views\_EmptyValue.cshtml" />

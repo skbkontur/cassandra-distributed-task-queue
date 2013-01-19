@@ -38,19 +38,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return criterion;
         }
 
-        public Expression<Func<T, bool>> And<T>(Expression<Func<T, bool>> a, Expression<Func<T, bool>> b)
+        private static Expression<Func<T, bool>> And<T>(Expression<Func<T, bool>> a, Expression<Func<T, bool>> b)
         {
             var pr = new ParameterReplacer(a.Parameters[0], b.Parameters[0]);
             return Expression.Lambda<Func<T, bool>>(Expression.AndAlso(pr.Visit(a.Body), b.Body), b.Parameters[0]);
         }
 
-        public Expression<Func<T, bool>> Or<T>(Expression<Func<T, bool>> a, Expression<Func<T, bool>> b)
+        private static Expression<Func<T, bool>> Or<T>(Expression<Func<T, bool>> a, Expression<Func<T, bool>> b)
         {
             var pr = new ParameterReplacer(a.Parameters[0], b.Parameters[0]);
             return Expression.Lambda<Func<T, bool>>(Expression.OrElse(pr.Visit(a.Body), b.Body), b.Parameters[0]);
         }
 
-        private void AddDataTimeRangeCriterion(ref Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, DateTime?>> pathToTicks, DateTimeRange dateTimeRange)
+        private static void AddDataTimeRangeCriterion(ref Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, DateTime?>> pathToTicks, DateTimeRange dateTimeRange)
         {
             if(dateTimeRange.From != null)
             {

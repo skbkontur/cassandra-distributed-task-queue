@@ -5,19 +5,17 @@ using System.Linq.Expressions;
 
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Expressions;
-
 using SKBKontur.Catalogue.Core.Web.Blocks.Button;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.Html
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskList
 {
-    internal class RemoteTaskQueueHtmlModelBuilder : IRemoteTaskQueueHtmlModelBuilder
+    internal class TaskListHtmlModelBuilder : ITaskListHtmlModelBuilder
     {
-        public RemoteTaskQueueHtmlModelBuilder(IHtmlModelsCreator<RemoteTaskQueuePageModel> htmlModelsCreator, ICatalogueExtender extender)
+        public TaskListHtmlModelBuilder(IHtmlModelsCreator<TaskListModelData> htmlModelsCreator, ICatalogueExtender extender)
         {
             this.htmlModelsCreator = htmlModelsCreator;
             this.extender = extender;
@@ -34,7 +32,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 };
         }
 
-        public SearchPanelHtmlModel Build(RemoteTaskQueueModel pageModel)
+        public SearchPanelHtmlModel Build(TaskListPageModel pageModel)
         {
             pageModel.Data.SearchPanel = extender.Extend(pageModel.Data.SearchPanel);
             return new SearchPanelHtmlModel
@@ -76,7 +74,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 };
         }
 
-        private KeyValuePair<TextBoxHtmlModel, CheckBoxHtmlModel>[] GetStatesGroup(RemoteTaskQueueModel pageModel, Func<Pair<TaskState, bool?>, bool> criterion)
+        private KeyValuePair<TextBoxHtmlModel, CheckBoxHtmlModel>[] GetStatesGroup(TaskListPageModel pageModel, Func<Pair<TaskState, bool?>, bool> criterion)
         {
             return pageModel.Data.SearchPanel.States.Where(criterion).Select(
                 (state, i) => new KeyValuePair<TextBoxHtmlModel, CheckBoxHtmlModel>(
@@ -93,7 +91,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                                                               }))).ToArray();
         }
 
-        private DateTimeRangeHtmlModel BulildDateTimeRangeHtmlMode(RemoteTaskQueueModel pageModel, Expression<Func<RemoteTaskQueuePageModel, DateTimeRangeModel>> pathToDateTimeRange)
+        private DateTimeRangeHtmlModel BulildDateTimeRangeHtmlMode(TaskListPageModel pageModel, Expression<Func<TaskListModelData, DateTimeRangeModel>> pathToDateTimeRange)
         {
             var options = new DateAndTimeOptions
                 {
@@ -121,7 +119,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return -1;
         }
 
-        private readonly IHtmlModelsCreator<RemoteTaskQueuePageModel> htmlModelsCreator;
+        private readonly IHtmlModelsCreator<TaskListModelData> htmlModelsCreator;
         private readonly ICatalogueExtender extender;
         private readonly Dictionary<TaskState, string> taskStates;
     }

@@ -8,10 +8,11 @@ using System.Reflection;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.CassandraStorageCore.FileDataStorage;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
+using SKBKontur.Catalogue.Core.FileDataWebViewer;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails.TaskData;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ValueHandlerRegistry;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskDetails
 {
     public class TaskDataModelBuilder : ITaskDataModelBuilder
     {
@@ -46,9 +47,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 var bytes = (byte[])objectValue;
                 return new ByteArrayTaskDataValue
                     {
-                        TaskId = taskId,
-                        Path = path,
-                        Size = bytes.Length
+                        Size = bytes.Length,
+                        GetUrl = url => url.GetTaskDataBytesUrl(taskId, path)
                     };
             }
             if (objectType == typeof(string))
@@ -61,11 +61,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                     {
                         Filename = fileName,
                         FileSize = fileDataStorage.GetFileSize(fileId),
-                        // ReSharper disable Mvc.ControllerNotResolved
-// ReSharper disable Asp.NotResolved
-                        GetUrl = url => url.Action("Run", "FileData", new { fileId })
-// ReSharper restore Asp.NotResolved
-                        // ReSharper restore Mvc.ControllerNotResolved
+                        GetUrl = url => url.GetDownloadFileUrl(fileId)
                     };
                 }
             }
@@ -82,7 +78,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 var elementType = objectType.GetElementType();
                 return new ObjectTaskDataModel
                     {
-                        Properties = array.Cast<object>().Select((element, i) => new TaskDataProperty
+                        Properties = array.Cast<object>().Select((element, i) => new ObjectTaskDataModel.TaskDataProperty
                             {
                                 Name = i.ToString(),
                                 Value = BuildTaskDataValue(taskId, valueHandlerRegistry, ConcatPaths(path, i.ToString()), elementType, element),
@@ -101,7 +97,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 };
         }
 
-        private TaskDataProperty BuildTaskDataProperty<T>(string taskId, IValueHandlerRegistry<T> valueHandlerRegistry, string path, object obj, PropertyInfo propertyInfo) where T : ITaskData
+        private ObjectTaskDataModel.TaskDataProperty BuildTaskDataProperty<T>(string taskId, IValueHandlerRegistry<T> valueHandlerRegistry, string path, object obj, PropertyInfo propertyInfo) where T : ITaskData
         {
             var newPath = ConcatPaths(path, propertyInfo.Name);
             var propertyType = propertyInfo.PropertyType;
@@ -120,7 +116,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 value = BuildTaskDataValue(taskId, valueHandlerRegistry, newPath, handledValue.GetType(), handledValue);
                 hidden = true;
             }
-            return new TaskDataProperty
+            return new ObjectTaskDataModel.TaskDataProperty
                 {
                     Name = propertyInfo.Name,
                     Value = value,

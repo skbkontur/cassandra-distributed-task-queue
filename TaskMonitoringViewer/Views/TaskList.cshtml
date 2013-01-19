@@ -1,9 +1,9 @@
 ﻿@using SKBKontur.Catalogue.Core.Web.Blocks.Button
 @using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
 @using SKBKontur.Catalogue.Core.Web.RenderingHelpers
-@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models
-@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Html
-@model RemoteTaskQueueModel
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer
+@model TaskListPageModel
 @{
     SearchPanelHtmlModel htmlModel = Model.HtmlModel;
     Layout = "TaskMonitoringLayout.cshtml";
@@ -95,8 +95,10 @@
         {
             var taskModel = Model.Data.TaskModels[index];
             // ReSharper disable Asp.NotResolved
-            var detailsTaskUrl = Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.TaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
-            var detailsParentTaskUrl = Url.Action("Show", "RemoteTaskQueue", new {id = taskModel.ParentTaskId, pageNumber = Model.PageNumber, searchRequestId = Model.SearchRequestId});
+            var pageNumber = Model.PaginatorModelData.PageNumber;
+            var searchRequestId = Model.PaginatorModelData.SearchRequestId;
+            var detailsTaskUrl = Url.GetTaskDetailsUrl(taskModel.TaskId, pageNumber, searchRequestId);
+            var detailsParentTaskUrl = Url.GetTaskDetailsUrl(taskModel.ParentTaskId, pageNumber, searchRequestId);
             // ReSharper restore Asp.NotResolved
             <tr id="Task[@index]" class="remoteTaskQueueMonitoring__data__item remoteTaskQueueMonitoring__data__item_state_@(taskModel.State)">
                 <td id="TaskId[@index]" class="remoteTaskQueueMonitoring__data__col remoteTaskQueueMonitoring__data__col_type_id">
@@ -132,5 +134,5 @@
 </table>
 @Html.Selects(Model.GetAllSelects())
 <div class="remoteTaskQueueMonitoring__paginator">
-    @Html.Paginator(Model)
+    @Html.Paginator(Model.PaginatorModelData)
 </div>
