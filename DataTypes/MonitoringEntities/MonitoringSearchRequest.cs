@@ -5,8 +5,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEnti
 {
     public class MonitoringSearchRequest : BusinessObject
     {
-        public TaskState[] States { get; set; }
-        public string Name { get; set; }
+        public TaskState[] TaskStates { get; set; }
+        public string[] TaskNames { get; set; }
         public string TaskId { get; set; }
         public string ParentTaskId { get; set; }
 

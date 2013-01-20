@@ -28,11 +28,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 {
                     SearchPanel = new SearchPanelModelData
                         {
-                            States = BuildArray(states, searchRequest.States),
-                            TaskName = searchRequest.Name,
+                            TaskStates = BuildArray(states, searchRequest.TaskStates),
+                            TaskNames = BuildArray(names, searchRequest.TaskNames),
                             TaskId = searchRequest.TaskId,
                             ParentTaskId = searchRequest.ParentTaskId,
-                            AllowedTaskNames = names,
                             Ticks = new DateTimeRangeModel
                                 {
                                     From = DateAndTime.Create(searchRequest.Ticks.From.UtcToMoscowDateTime()),

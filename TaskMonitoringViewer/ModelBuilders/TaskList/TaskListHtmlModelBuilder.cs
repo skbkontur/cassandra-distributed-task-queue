@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -24,17 +23,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         {
             this.htmlModelsCreator = htmlModelsCreator;
             this.extender = extender;
-            taskStates = new Dictionary<TaskState, string>
-                {
-                    {TaskState.Canceled, "Canceled"},
-                    {TaskState.Fatal, "Fatal"},
-                    {TaskState.Finished, "Finished"},
-                    {TaskState.InProcess, "InProcess"},
-                    {TaskState.New, "New"},
-                    {TaskState.Unknown, "Unknown"},
-                    {TaskState.WaitingForRerun, "WaitingForRerun"},
-                    {TaskState.WaitingForRerunAfterError, "WaitingForRerunAfterError"}
-                };
         }
 
         public TaskListHtmlModel Build(TaskListPageModel pageModel)
@@ -58,21 +46,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             pageModel.Data.SearchPanel = extender.Extend(pageModel.Data.SearchPanel);
             return new SearchPanelHtmlModel
                 {
-                    States = GetStatesGroup(pageModel, x => taskStates.ContainsKey(x.Key)),
-                    TaskName = htmlModelsCreator.SelectBoxFor(pageModel, x => x.SearchPanel.TaskName, new SelectBoxOptions
-                        {
-                            Size = SelectBoxSize.Medium,
-                            ReferenceConfig = new ReferenceConfig
-                                {
-                                    ReferenceType = "TaskNames",
-                                    NeedEmptyValue = true,
-                                    SelectBoxElements = (pageModel.Data.SearchPanel.AllowedTaskNames.Length == 0 ? new string[1] : pageModel.Data.SearchPanel.AllowedTaskNames).Select(x => new SelectBoxElement
-                                        {
-                                            Text = string.IsNullOrEmpty(x) ? "Ничего нет" : x,
-                                            Value = x
-                                        }).ToArray()
-                                }
-                        }),
+                    TaskStates = GetGroup(pageModel, x => x.SearchPanel.TaskStates),
+                    TaskNames = GetGroup(pageModel, x => x.SearchPanel.TaskNames),
                     TaskId = htmlModelsCreator.TextBoxFor(pageModel, x => x.SearchPanel.TaskId, new TextBoxOptions
                         {
                             Size = TextBoxSize.Large
@@ -88,31 +63,37 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                                                                                  Title = "Search",
                                                                                  ValidationType = ActionValidationType.All
                                                                              }),
-                    Ticks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.Ticks),
-                    StartExecutedTicks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.StartExecutedTicks),
-                    FinishExecutedTicks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.FinishExecutedTicks),
-                    MinimalStartTicks = BulildDateTimeRangeHtmlMode(pageModel, x => x.SearchPanel.MinimalStartTicks)
+                    Ticks = BuildDateTimeRangeHtmlModel(pageModel, x => x.SearchPanel.Ticks),
+                    StartExecutedTicks = BuildDateTimeRangeHtmlModel(pageModel, x => x.SearchPanel.StartExecutedTicks),
+                    FinishExecutedTicks = BuildDateTimeRangeHtmlModel(pageModel, x => x.SearchPanel.FinishExecutedTicks),
+                    MinimalStartTicks = BuildDateTimeRangeHtmlModel(pageModel, x => x.SearchPanel.MinimalStartTicks)
                 };
         }
 
-        private KeyValuePair<TextBoxHtmlModel, CheckBoxHtmlModel>[] GetStatesGroup(TaskListPageModel pageModel, Func<Pair<TaskState, bool?>, bool> criterion)
+        private CheckboxWithValue[] GetGroup<T>(TaskListPageModel pageModel, Expression<Func<TaskListModelData, Pair<T, bool?>[]>> path)
         {
-            return pageModel.Data.SearchPanel.States.Where(criterion).Select(
-                (state, i) => new KeyValuePair<TextBoxHtmlModel, CheckBoxHtmlModel>(
-                                  htmlModelsCreator.TextBoxFor(
-                                      pageModel, x => x.SearchPanel.States[GetStateIndex(state.Key, pageModel.Data.SearchPanel.States)].Key, new TextBoxOptions
-                                          {
-                                              Hidden = true,
-                                          }),
-                                  htmlModelsCreator.CheckBoxFor(
-                                      pageModel, x => x.SearchPanel.
-                                                        States[GetStateIndex(state.Key, pageModel.Data.SearchPanel.States)].Value, new CheckBoxOptions
-                                                            {
-                                                                Label = taskStates[pageModel.Data.SearchPanel.States[GetStateIndex(state.Key, pageModel.Data.SearchPanel.States)].Key]
-                                                            }))).ToArray();
+            var func = path.Compile();
+            return func(pageModel.Data).Select(
+                (element, i) => new CheckboxWithValue
+                    {
+                        Value = htmlModelsCreator.TextBoxFor(
+                            pageModel,
+                            path.Merge(x => x[i].Key),
+                            new TextBoxOptions
+                                {
+                                    Hidden = true,
+                                }),
+                        CheckBox = htmlModelsCreator.CheckBoxFor(
+                            pageModel,
+                            path.Merge(x => x[i].Value),
+                            new CheckBoxOptions
+                                {
+                                    Label = element.Key.ToString()
+                                })
+                    }).ToArray();
         }
 
-        private DateTimeRangeHtmlModel BulildDateTimeRangeHtmlMode(TaskListPageModel pageModel, Expression<Func<TaskListModelData, DateTimeRangeModel>> pathToDateTimeRange)
+        private DateTimeRangeHtmlModel BuildDateTimeRangeHtmlModel(TaskListPageModel pageModel, Expression<Func<TaskListModelData, DateTimeRangeModel>> pathToDateTimeRange)
         {
             var options = new DateAndTimeOptions
                 {
@@ -142,6 +123,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 
         private readonly IRemoteTaskQueueHtmlModelCreator<TaskListModelData> htmlModelsCreator;
         private readonly ICatalogueExtender extender;
-        private readonly Dictionary<TaskState, string> taskStates;
     }
 }

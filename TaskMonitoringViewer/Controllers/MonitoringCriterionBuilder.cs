@@ -13,18 +13,26 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public Expression<Func<MonitoringTaskMetadata, bool>> BuildCriterion(MonitoringSearchRequest searchRequest)
         {
             Expression<Func<MonitoringTaskMetadata, bool>> criterion = x => true;
-            if(searchRequest.States != null && searchRequest.States.Length > 0)
+            if(searchRequest.TaskStates != null && searchRequest.TaskStates.Length > 0)
             {
                 Expression<Func<MonitoringTaskMetadata, bool>> cr = x => false;
-                foreach(var state in searchRequest.States)
+                foreach(var state in searchRequest.TaskStates)
                 {
                     var state1 = state;
                     cr = Or(cr, x => x.State == state1);
                 }
                 criterion = And(criterion, cr);
             }
-            if(!string.IsNullOrEmpty(searchRequest.Name))
-                criterion = And(criterion, x => x.Name == searchRequest.Name);
+            if (searchRequest.TaskNames != null && searchRequest.TaskNames.Length > 0)
+            {
+                Expression<Func<MonitoringTaskMetadata, bool>> cr = x => false;
+                foreach (var taskName in searchRequest.TaskNames)
+                {
+                    var taskName1 = taskName;
+                    cr = Or(cr, x => x.Name == taskName1);
+                }
+                criterion = And(criterion, cr);
+            }
             if(!string.IsNullOrEmpty(searchRequest.TaskId))
                 criterion = And(criterion, x => x.TaskId == searchRequest.TaskId);
             if(!string.IsNullOrEmpty(searchRequest.ParentTaskId))

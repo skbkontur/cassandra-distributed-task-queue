@@ -29,11 +29,11 @@
 <div class="remoteTaskQueueMonitoring__filter">
     <div class="remoteTaskQueueMonitoring__filter__label">State</div>
     <div class="remoteTaskQueueMonitoring__filter__field">
-        @foreach (var state in searchPanelModel.States)
+        @foreach (var taskState in searchPanelModel.TaskStates)
         {
             <div class="remoteTaskQueueMonitoring__filter__field__items">
-                @Html.Input(state.Key)
-                @Html.Checkbox(state.Value)
+                @Html.Input(taskState.Value)
+                @Html.Checkbox(taskState.CheckBox)
             </div>
         }
     </div>
@@ -46,15 +46,19 @@
     <div class="remoteTaskQueueMonitoring__filter__label">ParentTaskId</div>
     <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(searchPanelModel.ParentTaskId)</div>
 </div>
-@{
-    if (searchPanelModel.TaskName != null)
-    {
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">TaskName</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.Select(searchPanelModel.TaskName)</div>
-        </div>
-    }
-}
+<div class="remoteTaskQueueMonitoring__filter">
+    <div class="remoteTaskQueueMonitoring__filter__label">TaskName</div>
+    <div class="remoteTaskQueueMonitoring__filter__field">
+        @foreach (var taskName in searchPanelModel.TaskNames)
+        {
+            <div class="remoteTaskQueueMonitoring__filter__field__items">
+                @Html.Input(taskName.Value)
+                @Html.Checkbox(taskName.CheckBox)
+            </div>
+        }
+    </div>
+</div>
+
 <div class="remoteTaskQueueMonitoring__filter">
     <div class="remoteTaskQueueMonitoring__filter__label">Ticks From</div>
     <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.From)</div>

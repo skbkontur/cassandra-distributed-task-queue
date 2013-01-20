@@ -78,10 +78,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                 {
                     Id = requestId,
                     ScopeId = requestId,
-                    Name = pageModelData.SearchPanel.TaskName,
+                    TaskNames = (pageModelData.SearchPanel.TaskNames ?? new Pair<string, bool?>[0]).Where(x => x.Value == true).Select(x => x.Key).ToArray(),
                     TaskId = pageModelData.SearchPanel.TaskId,
                     ParentTaskId = pageModelData.SearchPanel.ParentTaskId,
-                    States = (pageModelData.SearchPanel.States ?? new Pair<TaskState, bool?>[0]).Where(x => x.Value == true).Select(x => x.Key).ToArray(),
+                    TaskStates = (pageModelData.SearchPanel.TaskStates ?? new Pair<TaskState, bool?>[0]).Where(x => x.Value == true).Select(x => x.Key).ToArray(),
                     Ticks = new DateTimeRange
                         {
                             From = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
