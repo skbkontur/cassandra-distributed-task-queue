@@ -2,7 +2,6 @@
 @using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
 @using SKBKontur.Catalogue.Core.Web.RenderingHelpers
 @using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList
-@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer
 @model TaskListPageModel
 @{
     var htmlModel = Model.HtmlModel;
@@ -26,62 +25,71 @@
 @{
     var searchPanelModel = htmlModel.SearchPanel;
 }
-<div class="remoteTaskQueueMonitoring__filter">
-    <div class="remoteTaskQueueMonitoring__filter__label">State</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">
-        @foreach (var taskState in searchPanelModel.TaskStates)
-        {
-            <div class="remoteTaskQueueMonitoring__filter__field__items">
-                @Html.Input(taskState.Value)
-                @Html.Checkbox(taskState.CheckBox)
-            </div>
-        }
-    </div>
-</div>
-<div class="remoteTaskQueueMonitoring__filter">
-    <div class="remoteTaskQueueMonitoring__filter__label">TaskId</div>
-    <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(searchPanelModel.TaskId)</div>
-</div>
-<div class="remoteTaskQueueMonitoring__filter">
-    <div class="remoteTaskQueueMonitoring__filter__label">ParentTaskId</div>
-    <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(searchPanelModel.ParentTaskId)</div>
-</div>
-<div class="remoteTaskQueueMonitoring__filter">
-    <div class="remoteTaskQueueMonitoring__filter__label">TaskName</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">
-        @foreach (var taskName in searchPanelModel.TaskNames)
-        {
-            <div class="remoteTaskQueueMonitoring__filter__field__items">
-                @Html.Input(taskName.Value)
-                @Html.Checkbox(taskName.CheckBox)
-            </div>
-        }
-    </div>
-</div>
 
-<div class="remoteTaskQueueMonitoring__filter">
-    <div class="remoteTaskQueueMonitoring__filter__label">Ticks From</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.From)</div>
-    <div class="remoteTaskQueueMonitoring__filter__label">Ticks To</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.To)</div>
-</div>
-<div class="remoteTaskQueueMonitoring__filter">
-    <div class="remoteTaskQueueMonitoring__filter__label">StartExecutedTicks From</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.StartExecutedTicks.From)</div>
-    <div class="remoteTaskQueueMonitoring__filter__label">StartExecutedTicks To</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.StartExecutedTicks.To)</div>
-</div>
-<div class="remoteTaskQueueMonitoring__filter">
-    <div class="remoteTaskQueueMonitoring__filter__label">FinishExecutedTicks From</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.FinishExecutedTicks.From)</div>
-    <div class="remoteTaskQueueMonitoring__filter__label">FinishExecutedTicks To</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.FinishExecutedTicks.To)</div>
-</div>
-<div class="remoteTaskQueueMonitoring__filter">
-    <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks From</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.MinimalStartTicks.From)</div>
-    <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks To</div>
-    <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.MinimalStartTicks.To)</div>
+<div class="slide element slide__hide">
+    <div class="slide_title_link disableSelection remoteTaskQueueMonitoring_filter_showHideLink">
+        <a href="#" class="slide_title_link_link dottedLink t-pseudoLink">Показать/скрыть</a>
+    </div>
+    <div class="slide_listWrap" style="display: none;">
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">State</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">
+                @foreach(var taskState in searchPanelModel.TaskStates)
+                {
+                    <div class="remoteTaskQueueMonitoring__filter__field__items">
+                        @Html.Input(taskState.Value)
+                        @Html.Checkbox(taskState.CheckBox)
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">TaskId</div>
+            <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(searchPanelModel.TaskId)</div>
+        </div>
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">ParentTaskId</div>
+            <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(searchPanelModel.ParentTaskId)</div>
+        </div>
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">TaskName</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">
+
+                @foreach(var taskName in searchPanelModel.TaskNames)
+                {
+                    <div class="remoteTaskQueueMonitoring__filter__field__items">
+                        @Html.Input(taskName.Value)
+                        @Html.Checkbox(taskName.CheckBox)
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">Ticks From</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.From)</div>
+            <div class="remoteTaskQueueMonitoring__filter__label">Ticks To</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.To)</div>
+        </div>
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">StartExecutedTicks From</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.StartExecutedTicks.From)</div>
+            <div class="remoteTaskQueueMonitoring__filter__label">StartExecutedTicks To</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.StartExecutedTicks.To)</div>
+        </div>
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">FinishExecutedTicks From</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.FinishExecutedTicks.From)</div>
+            <div class="remoteTaskQueueMonitoring__filter__label">FinishExecutedTicks To</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.FinishExecutedTicks.To)</div>
+        </div>
+        <div class="remoteTaskQueueMonitoring__filter">
+            <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks From</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.MinimalStartTicks.From)</div>
+            <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks To</div>
+            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.MinimalStartTicks.To)</div>
+        </div>
+    </div>
 </div>
 <div class="remoteTaskQueueMonitoring__button">@Html.ActionButton(searchPanelModel.SearchButton)</div>
 

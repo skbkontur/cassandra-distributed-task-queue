@@ -22,7 +22,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         public TaskListModelData Build(MonitoringSearchRequest searchRequest, MonitoringTaskMetadata[] fullTaskMetaInfos, int totalCount)
         {
             var names = remoteTaskQueueMonitoringServiceStorage.GetDistinctValues(x => true, x => x.Name).Cast<string>().ToArray();
-            var states = Enum.GetValues(typeof(TaskState)).Cast<TaskState>().ToArray();
+            var states = Enum.GetValues(typeof(TaskState)).Cast<TaskState>().Except(new[] {TaskState.Unknown}).ToArray();
 
             return new TaskListModelData
                 {
