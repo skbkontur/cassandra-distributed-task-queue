@@ -37,7 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             var id = Guid.NewGuid().ToString();
             fileDataStorage.Write(id, new FileData
                 {
-                    Filename = "Filename",
+                    FileName = "Filename",
                     Content = Encoding.UTF8.GetBytes("Testtesttest")
                 });
             AddTask(new FileIdTaskData
