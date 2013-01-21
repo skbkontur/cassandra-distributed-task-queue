@@ -8,7 +8,7 @@
     <ProjectDir>$(CatalogueRootDirectory)\RemoteTaskQueue\ExchangeService</ProjectDir>
     <ProjectFile>$(ProjectDir)\ExchangeService.csproj</ProjectFile>
     <OutputDirName>ExchangeService</OutputDirName>
-    <RunThroughHostProcess>ExchangeService</RunThroughHostProcess>
+    <RunThroughHostProcess>true</RunThroughHostProcess>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Service.targets" />
