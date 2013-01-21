@@ -119,6 +119,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         private void CheckTaskSearchMinStartTicks(AddTaskInfo addTaskInfo, DateTime? toTime)
         {
+            tasksListPage.ShowPanel.Click();
             TasksListPage.SetDateTime(tasksListPage.MinimalStartTicksDateFrom, tasksListPage.MinimalStartTicksTimeFrom, addTaskInfo.AddTime);
             TasksListPage.SetDateTime(tasksListPage.MinimalStartTicksDateTo, tasksListPage.MinimalStartTicksTimeTo, toTime);
             tasksListPage = tasksListPage.SearchTasks();
@@ -127,6 +128,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         private void CheckTaskSearch(AddTaskInfo addTaskInfo, DateTime? toTime)
         {
+            tasksListPage.ShowPanel.Click();
             TasksListPage.SetDateTime(tasksListPage.TicksDateFrom, tasksListPage.TicksTimeFrom, addTaskInfo.AddTime);
             TasksListPage.SetDateTime(tasksListPage.TicksDateTo, tasksListPage.TicksTimeTo, toTime);
             tasksListPage = tasksListPage.SearchTasks();

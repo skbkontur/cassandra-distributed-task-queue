@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Linq;
 
-using GroboContainer.Core;
+using ExchangeService.UserClasses;
 
+using GroboContainer.Core;
+using GroboContainer.Impl;
+
+using RemoteQueue.Configuration;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -10,8 +14,10 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
+using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.TestCore;
 using SKBKontur.Catalogue.WebTestCore;
 using SKBKontur.Catalogue.WebTestCore.TestSystem;
@@ -25,7 +31,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
             base.SetUp();
             container = ContainerCache.GetContainer(ContainerCacheKey, "monitoringTestsSettings", ConfigureContainer);
             container.ClearAllBeforeTest();
-            DropAndCreateDatabase();
+            DropAndCreateDatabase(container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
+                {
+                    new ColumnFamily
+                        {
+                            Name = TestCassandraCounterBlobRepository.columnFamilyName,
+                        }
+                }).ToArray());
             userRepository = container.Get<IUserRepository>();
             accessControlService = container.Get<IAccessControlService>();
             passwordService = container.Get<IPasswordService>();
@@ -65,11 +77,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
             });
         }
 
-        private void DropAndCreateDatabase()
+        private void DropAndCreateDatabase(ColumnFamily[] columnFamilies)
         {
             var cassandraCluster = container.Get<ICassandraCluster>();
             var settings = container.Get<ICassandraSettings>();
             var clusterConnection = cassandraCluster.RetrieveClusterConnection();
+            var keyspaceConnection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
+
             var keyspaces = clusterConnection.RetrieveKeyspaces();
             if (!keyspaces.Any(x => x.Name == settings.QueueKeyspace))
             {
@@ -81,6 +95,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
                         ReplicationFactor = 1
                     });
             }
+
+            var cassandraColumnFamilies = keyspaceConnection.DescribeKeyspace().ColumnFamilies;
+            foreach (var columnFamily in columnFamilies)
+            {
+                if (!cassandraColumnFamilies.Any(x => x.Key == columnFamily.Name))
+                    keyspaceConnection.AddColumnFamily(columnFamily);
+            }
+
+            foreach (var columnFamily in columnFamilies)
+            {
+                var columnFamilyConnection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name);
+                columnFamilyConnection.Truncate();
+            }
         }
 
         protected TasksListPage Login(string login, string password)
@@ -91,6 +118,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
         protected virtual void ConfigureContainer(IContainer c)
         {
+            //c.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(container.Get<CassandraSettings>());
         }
 
 

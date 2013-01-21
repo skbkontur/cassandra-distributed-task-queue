@@ -64,10 +64,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         private void CheckTaskSearch(CheckBox [] checkBoxes, AddTaskInfo addTaskInfo)
         {
+            tasksListPage.ShowPanel.ClickAndWaitAnimation();
             foreach(var checkBox in checkBoxes)
                 checkBox.CheckAndWait();
             tasksListPage = tasksListPage.SearchTasks();
             DoCheck(ref tasksListPage, addTaskInfo);
+            tasksListPage.ShowPanel.ClickAndWaitAnimation();
             foreach(var checkBox in checkBoxes)
                 checkBox.UncheckAndWait();
             tasksListPage = tasksListPage.SearchTasks();

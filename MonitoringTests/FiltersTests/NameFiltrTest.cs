@@ -13,7 +13,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         {
             var alphaTasksInfo = AddTasks(7, new Creater("AlphaTaskData", 0, () => new AlphaTaskData()));
             var betaTasksInfo = AddTasks(5, new Creater("BetaTaskData", 0, () => new BetaTaskData()));
-            var deltaTasksInfo = AddTasks(3, new Creater("DeltaTaskData", 1, () => new DeltaTaskData()));
+            var deltaTasksInfo = AddTasks(3, new Creater("DeltaTaskData", 0, () => new DeltaTaskData()));
 
             var expected = new Dictionary<string, AddTaskInfo>
                 {
@@ -26,11 +26,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var tasksListPage = Login("pasan", "psn");
 
             var taskNames = new[] {"AlphaTaskData", "BetaTaskData", "DeltaTaskData"};
-            foreach(var taskName in taskNames)
+
+            tasksListPage.ShowPanel.ClickAndWaitAnimation();
+            for(var i=0; i <3; i++)
             {
-                tasksListPage.TaskName.SetSelectedText(taskName);
+                tasksListPage.TaskNames[i].WaitVisibleWithRetries();
+                tasksListPage.TaskNames[i].CheckAndWait();
                 tasksListPage = tasksListPage.SearchTasks();
-                DoCheck(ref tasksListPage, expected[taskName]);
+                DoCheck(ref tasksListPage, expected[taskNames[i]]);
+                tasksListPage.ShowPanel.ClickAndWaitAnimation();
+                tasksListPage.TaskNames[i].WaitVisibleWithRetries();
+                tasksListPage.TaskNames[i].UncheckAndWait();
             }
         }
     }

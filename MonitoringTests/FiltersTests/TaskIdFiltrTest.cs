@@ -21,6 +21,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var tasksListPage = Login("user", "psw");
             foreach(var taskId in tasksIds)
             {
+                tasksListPage.ShowPanel.Click();
                 tasksListPage.TaskId.SetValue(taskId);
                 tasksListPage = tasksListPage.SearchTasks();
                 DoCheck(ref tasksListPage, new AddTaskInfo(new List<string>{taskId}, null));
