@@ -31,6 +31,7 @@
       Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
       Group="$(ServiceGroupName)"
       StartStrategy="Once"
+      Name="$(AssemblyName).exe-1"
       MachineName="$(TargetMachineName)"
       RunThroughHostProcess="$(RunThroughHostProcess)"
 	    SleepBeforeCheckTaskAliveMilliseconds="5000" />
@@ -38,6 +39,7 @@
     <ScheduleService
       Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
       Group="$(ServiceGroupName)"
+      Name="$(AssemblyName).exe-2"
       StartStrategy="Once"
       MachineName="$(TargetMachineName)"
       RunThroughHostProcess="$(RunThroughHostProcess)"
@@ -46,6 +48,7 @@
     <ScheduleService
       Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
       Group="$(ServiceGroupName)"
+      Name="$(AssemblyName).exe-3"
       StartStrategy="Once"
       MachineName="$(TargetMachineName)"
       RunThroughHostProcess="$(RunThroughHostProcess)"
@@ -54,6 +57,7 @@
     <ScheduleService
       Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
       Group="$(ServiceGroupName)"
+      Name="$(AssemblyName).exe-4"
       StartStrategy="Once"
       MachineName="$(TargetMachineName)"
       RunThroughHostProcess="$(RunThroughHostProcess)"
@@ -62,6 +66,7 @@
     <ScheduleService
       Path="$(DeployDir)\$(OutputDirName)\$(AssemblyName).exe"
       Group="$(ServiceGroupName)"
+      Name="$(AssemblyName).exe-5"
       StartStrategy="Once"
       MachineName="$(TargetMachineName)"
       RunThroughHostProcess="$(RunThroughHostProcess)"
