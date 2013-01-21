@@ -43,7 +43,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Build.xml" />
+    <Content Include="Build.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="LocalFire.xml" />
     <Content Include="Projects\Configuration\FrontEndSuites.xml" />
     <Content Include="Projects\Configuration\ServiceSuites.xml" />
