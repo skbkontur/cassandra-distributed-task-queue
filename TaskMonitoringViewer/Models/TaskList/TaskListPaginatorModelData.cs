@@ -8,7 +8,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskLi
     {
         public string GetUrl(UrlHelper url, int page)
         {
-            return url.Action("Run", "RemoteTaskQueue", new {pageNumber = page, searchRequestId = SearchRequestId});
+// ReSharper disable Asp.NotResolved
+            return url.Action("Run", "RemoteTaskQueue", new { pageNumber = page, searchRequestId = SearchRequestId });
+// ReSharper restore Asp.NotResolved
         }
 
         public int TotalPagesCount { get; set; }
