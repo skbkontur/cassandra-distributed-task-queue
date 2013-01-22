@@ -39,7 +39,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
                 {
                     FileName = "Filename",
                     Content = Encoding.UTF8.GetBytes("Testtesttest")
-                });
+                }, "FileDataTest.TestFileId");
             AddTask(new FileIdTaskData
                 {
                     FileId = id
