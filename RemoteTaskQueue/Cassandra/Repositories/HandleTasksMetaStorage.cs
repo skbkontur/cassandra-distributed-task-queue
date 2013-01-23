@@ -4,6 +4,7 @@ using System.Linq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
@@ -14,11 +15,13 @@ namespace RemoteQueue.Cassandra.Repositories
         public HandleTasksMetaStorage(
             ITaskMetaInformationBlobStorage storage,
             ITaskMinimalStartTicksIndex minimalStartTicksIndex,
-            IEventLogRepository eventLogRepository)
+            IEventLogRepository eventLogRepository,
+            IGlobalTime globalTime)
         {
             this.storage = storage;
             this.minimalStartTicksIndex = minimalStartTicksIndex;
             this.eventLogRepository = eventLogRepository;
+            this.globalTime = globalTime;
         }
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long toTicks, params TaskState[] states)
@@ -33,7 +36,9 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public void AddMeta(TaskMetaInformation meta)
         {
-            eventLogRepository.AddEvent(new TaskMetaUpdatedEvent {TaskId = meta.Id});
+            var nowTicks = globalTime.GetNowTicks();
+            eventLogRepository.AddEvent(meta.Id, nowTicks);
+            meta.LastModificationTicks = nowTicks;
             storage.Write(meta.Id, meta);
             minimalStartTicksIndex.IndexMeta(meta);
         }
@@ -46,5 +51,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly ITaskMetaInformationBlobStorage storage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
         private readonly IEventLogRepository eventLogRepository;
+        private readonly IGlobalTime globalTime;
     }
 }

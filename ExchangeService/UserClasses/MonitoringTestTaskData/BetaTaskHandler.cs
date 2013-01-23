@@ -28,7 +28,7 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
             {
                 Thread.Sleep(1000);
                 Console.WriteLine("Hello World");
-                taskData = serializer.Deserialize<BetaTaskData>(handleTaskCollection.GetTask(taskData.OwnTaskId).Data);
+                taskData = serializer.Deserialize<BetaTaskData>(handleTaskCollection.GetTask(Context.Id).Data);
             }
             return Finish();
         }

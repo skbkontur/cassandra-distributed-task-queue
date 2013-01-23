@@ -46,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 startingTicksCache.Add(guid, GetStartTime());
                 eventCache.RemoveEvents(startingTicksCache.GetMinimum());
                 var lastTicks = globalTime.GetNowTicks();
-                UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>()).ToArray());
+                UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>()));
                 lock(lockObject)
                 {
                     if(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() < lastTicks)
@@ -59,7 +59,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
         }
 
-        private void UpdateLocalStorage(TaskMetaUpdatedEvent[] events)
+        private void UpdateLocalStorage(IEnumerable<TaskMetaUpdatedEvent> events)
         {
             foreach(var eventBatch in new SeparateOnBatchesEnumerable<TaskMetaUpdatedEvent>(events, 300))
             {
@@ -69,19 +69,25 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 {
                     if(eventCache.Contains(taskEvent))
                         continue;
+
                     var taskMeta = handleTasksMetaStorage.GetMeta(taskEvent.TaskId);
-                    MonitoringTaskMetadata metadata;
-                    if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
+                    if (taskEvent.Ticks <= taskMeta.LastModificationTicks)
                     {
-                        if(hs.ContainsKey(metadata.Id))
+                        MonitoringTaskMetadata metadata;
+                        if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
                         {
-                            if(metadata.Ticks > hs[metadata.Id].Ticks) //note это условие вроде всегда выполняется
-                                hs[metadata.Id] = metadata;
+                            if(hs.ContainsKey(metadata.Id))
+                            {
+                                if(metadata.Ticks > hs[metadata.Id].Ticks) //note это условие вроде всегда выполняется
+                                    hs[metadata.Id] = metadata;
+                            }
+                            else
+                                hs.Add(metadata.Id, metadata);
                         }
-                        else
-                            hs.Add(metadata.Id, metadata);
                     }
                 }
+                eventCache.AddEvents(eventBatch);
+
                 var forUpdateWithoutR = hs.Select(x => x.Value).ToArray();
                 if(hs.Count != 0)
                 {
@@ -91,7 +97,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 hs.Clear();
                 localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(updateTime);
             }
-            eventCache.AddEvents(events);
         }
 
         private long GetStartTime()

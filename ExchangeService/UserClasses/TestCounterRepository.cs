@@ -2,9 +2,9 @@
 
 namespace ExchangeService.UserClasses
 {
-    public class TestCounterRepository : ExchangeService.UserClasses.ITestCounterRepository
+    public class TestCounterRepository : ITestCounterRepository
     {
-        public TestCounterRepository(ExchangeService.UserClasses.ITestCassandraCounterBlobRepository storage, IRemoteLockCreator remoteLockCreator)
+        public TestCounterRepository(ITestCassandraCounterBlobRepository storage, IRemoteLockCreator remoteLockCreator)
         {
             this.storage = storage;
             this.remoteLockCreator = remoteLockCreator;
@@ -64,7 +64,7 @@ namespace ExchangeService.UserClasses
             return remoteLockCreator.Lock("TestCounterRepository_" + taskId);
         }
 
-        private readonly ExchangeService.UserClasses.ITestCassandraCounterBlobRepository storage;
+        private readonly ITestCassandraCounterBlobRepository storage;
         private readonly IRemoteLockCreator remoteLockCreator;
     }
 }

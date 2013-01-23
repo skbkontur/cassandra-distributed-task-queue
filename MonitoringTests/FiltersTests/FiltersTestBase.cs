@@ -71,16 +71,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 var addTime = DateTime.UtcNow;
                 for (int i = 0; i < iteration; i++)
                 {
-                    var id = remoteTaskQueue.CreateTask(creater.Create()).Queue(creater.Delay);
-                    ids.Add(id);
-                    if (creater.TaskName == "BetaTaskData")
-                    {
-                        var task = handleTaskCollection.GetTask(id);
-                        var data = serializer.Deserialize<BetaTaskData>(task.Data);
-                        data.OwnTaskId = id;
-                        task.Data = serializer.Serialize(data);
-                        handleTaskCollection.AddTask(task);
-                    }
+                    var remoteTask = remoteTaskQueue.CreateTask(creater.Create());
+                    ids.Add(remoteTask.Id);
+                    remoteTask.Queue(creater.Delay);
                 }
                 result.Add(creater.TaskName, new AddTaskInfo(ids, addTime));
                 Thread.Sleep(1000);

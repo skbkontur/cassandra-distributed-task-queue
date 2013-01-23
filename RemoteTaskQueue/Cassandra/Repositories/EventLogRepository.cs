@@ -24,10 +24,23 @@ namespace RemoteQueue.Cassandra.Repositories
             cassandraSettings = parameters.Settings;
         }
 
-        public void AddEvent(TaskMetaUpdatedEvent taskMetaUpdatedEventEntity)
+        public void AddEvent(string taskId, long nowTicks)
         {
-            var ticks = globalTime.GetNowTicks();
-            AddEventInternal(taskMetaUpdatedEventEntity, ticks);
+            var taskMetaUpdatedEventEntity = new TaskMetaUpdatedEvent
+                {
+                    TaskId = taskId,
+                    Ticks = nowTicks
+                };
+            var connection = RetrieveColumnFamilyConnection();
+            taskMetaUpdatedEventEntity.Ticks = nowTicks;
+            ticksHolder.UpdateMinTicks(firstEventTicksRowName, nowTicks);
+            var columnInfo = GetColumnInfo(nowTicks);
+            connection.AddColumn(columnInfo.Item1, new Column
+                {
+                    Name = columnInfo.Item2,
+                    Timestamp = nowTicks,
+                    Value = serializer.Serialize(taskMetaUpdatedEventEntity)
+                });
         }
 
         public IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, int batchSize = 2000)
@@ -45,20 +58,6 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         public const string columnFamilyName = "RemoteTaskQueueEventLog";
-
-        private void AddEventInternal(TaskMetaUpdatedEvent taskMetaUpdatedEventEntity, long ticks)
-        {
-            var connection = RetrieveColumnFamilyConnection();
-            taskMetaUpdatedEventEntity.Ticks = ticks;
-            ticksHolder.UpdateMinTicks(firstEventTicksRowName, taskMetaUpdatedEventEntity.Ticks);
-            var columnInfo = GetColumnInfo(taskMetaUpdatedEventEntity.Ticks);
-            connection.AddColumn(columnInfo.Item1, new Column
-                {
-                    Name = columnInfo.Item2,
-                    Timestamp = taskMetaUpdatedEventEntity.Ticks,
-                    Value = serializer.Serialize(taskMetaUpdatedEventEntity)
-                });
-        }
 
         private static Tuple<string, string> GetColumnInfo(long ticks)
         {

@@ -6,7 +6,7 @@ namespace RemoteQueue.Cassandra.Repositories
 {
     public interface IEventLogRepository
     {
-        void AddEvent(TaskMetaUpdatedEvent taskMetaUpdatedEventEntity);
+        void AddEvent(string taskId, long nowTicks);
         IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, int batchSize = 2000);
     }
 }
