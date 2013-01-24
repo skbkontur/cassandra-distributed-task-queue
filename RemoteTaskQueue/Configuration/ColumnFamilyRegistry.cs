@@ -5,7 +5,6 @@ using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Cassandra.Repositories.Indexes.EventIndexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -22,7 +21,6 @@ namespace RemoteQueue.Configuration
             Register(TaskMetaInformationBlobStorage.columnFamilyName);
             Register(TicksHolder.columnFamilyName);
             Register(TaskMinimalStartTicksIndex.columnFamilyName);
-            Register(TaskMetaEventColumnInfoIndex.columnFamilyName);
             Register(EventLogRepository.columnFamilyName);
         }
 

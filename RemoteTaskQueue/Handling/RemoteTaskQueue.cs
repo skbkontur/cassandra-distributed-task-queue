@@ -8,7 +8,6 @@ using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Cassandra.Repositories.Indexes.EventIndexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Settings;
 using RemoteQueue.UserClasses;
@@ -26,8 +25,7 @@ namespace RemoteQueue.Handling
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, settings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
-            var taskMetaEventColumnInfoIndex = new TaskMetaEventColumnInfoIndex(serializer, globalTime, parameters);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, new IndexRecordsCleaner(parameters, taskMetaEventColumnInfoIndex, serializer, globalTime), ticksHolder, serializer, globalTime, settings);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, settings);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);

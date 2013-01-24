@@ -15,7 +15,6 @@ using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Cassandra.Repositories.Indexes.EventIndexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling;
 using RemoteQueue.Settings;
@@ -37,9 +36,7 @@ namespace FunctionalTests.ExchangeTests
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);
-            var taskMetaEventColumnInfoIndex = new TaskMetaEventColumnInfoIndex(serializer, globalTime, parameters);
-            var indexRecordsCleaner = new IndexRecordsCleaner(parameters, taskMetaEventColumnInfoIndex, serializer, globalTime);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, indexRecordsCleaner, ticksHolder, serializer, globalTime, cassandraSettings);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, cassandraSettings);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(new TaskMetaInformationBlobStorage(parameters, serializer, globalTime), taskMinimalStartTicksIndex, eventLongRepository, globalTime);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage);

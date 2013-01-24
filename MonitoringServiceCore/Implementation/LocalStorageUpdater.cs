@@ -67,8 +67,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 var hs = new Dictionary<string, MonitoringTaskMetadata>();
                 foreach(var taskEvent in eventBatch)
                 {
-                    if(eventCache.Contains(taskEvent))
-                        continue;
+                    if(eventCache.Contains(taskEvent)) continue;
+
 
                     var taskMeta = handleTasksMetaStorage.GetMeta(taskEvent.TaskId);
                     if (taskEvent.Ticks <= taskMeta.LastModificationTicks)

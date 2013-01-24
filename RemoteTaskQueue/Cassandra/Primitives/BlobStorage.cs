@@ -24,7 +24,7 @@ namespace RemoteQueue.Cassandra.Primitives
             connection.AddColumn(id, new Column
                 {
                     Name = "Data",
-                    Timestamp = globalTime.GetNowTicks(),
+                    Timestamp = globalTime.UpdateNowTicks(),
                     Value = serializer.Serialize(element)
                 });
         }

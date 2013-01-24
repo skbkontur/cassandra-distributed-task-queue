@@ -7,7 +7,6 @@ using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Cassandra.Repositories.Indexes.EventIndexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling;
 using RemoteQueue.LocalTasks.Scheduling;
@@ -32,9 +31,7 @@ namespace RemoteQueue.Configuration
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
-            var taskMetaEventColumnInfoIndex = new TaskMetaEventColumnInfoIndex(serializer, globalTime, parameters);
-            var indexRecordsCleaner = new IndexRecordsCleaner(parameters, taskMetaEventColumnInfoIndex, serializer, globalTime);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, taskMetaEventColumnInfoIndex, indexRecordsCleaner, ticksHolder, serializer, globalTime, cassandraSettings);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, cassandraSettings);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);
@@ -44,15 +41,9 @@ namespace RemoteQueue.Configuration
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
             var remoteTaskQueue = new RemoteTaskQueue(cassandraSettings, taskDataRegistry);
             var taskCounter = new TaskCounter(runnerSettings);
-            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), taskInfo => new HandlerTask(taskInfo, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, indexRecordsCleaner), handleTasksMetaStorage);
+            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), taskInfo => new HandlerTask(taskInfo, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage);
         }
-
-        //public ExchangeSchedulableRunner(IPeriodicTaskRunner periodicTaskRunner, IHandlerManager handlerManager)
-        //{
-        //    this.periodicTaskRunner = periodicTaskRunner;
-        //    this.handlerManager = handlerManager;
-        //}
-
+        
         public void Stop()
         {
             if(worked)

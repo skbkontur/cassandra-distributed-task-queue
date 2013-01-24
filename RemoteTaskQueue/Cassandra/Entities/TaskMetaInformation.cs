@@ -22,5 +22,18 @@
 
         public string ParentTaskId { get; set; }
         public string TaskGroupLock { get; set; }
+
+        internal void MakeSnapshot()
+        {
+            snapshot = StaticGrobuf.GetSerializer().Serialize(this);
+        }
+
+        internal TaskMetaInformation GetSnapshot()
+        {
+            if(snapshot == null) return null;
+            return StaticGrobuf.GetSerializer().Deserialize<TaskMetaInformation>(snapshot);
+        }
+
+        private byte[] snapshot;
     }
 }

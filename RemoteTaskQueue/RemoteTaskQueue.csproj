@@ -83,16 +83,12 @@
     <Compile Include="Cassandra\Repositories\HandleTaskExceptionInfoStorage.cs" />
     <Compile Include="Cassandra\Repositories\HandleTasksMetaStorage.cs" />
     <Compile Include="Cassandra\Primitives\IBlobStorage.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\EventIndexes\ITaskMetaEventColumnInfoIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerator.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IIndexRecordsCleaner.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IMinTicksCache.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IndexRecordsCleaner.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\MinTicksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TaskMinimalStartTicksIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITaskMinimalStartTicksIndex.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\EventIndexes\TaskMetaEventColumnInfoIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\TicksNameHelper.cs" />
     <Compile Include="Cassandra\SeparateOnBatchesEnumerable.cs" />
     <Compile Include="Cassandra\SeparateOnBatchesEnumerator.cs" />

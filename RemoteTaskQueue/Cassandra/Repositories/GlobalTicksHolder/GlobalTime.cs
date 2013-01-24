@@ -9,11 +9,16 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
             this.ticksHolder = ticksHolder;
         }
 
-        public long GetNowTicks()
+        public long UpdateNowTicks()
         {
             var actualTicks = Math.Max(DateTime.UtcNow.Ticks, ticksHolder.GetMaxTicks(globalTicksName) + 1);
             ticksHolder.UpdateMaxTicks(globalTicksName, actualTicks);
             return actualTicks;
+        }
+
+        public long GetNowTicks()
+        {
+            return Math.Max(ticksHolder.GetMaxTicks(globalTicksName), DateTime.UtcNow.Ticks);
         }
 
         private readonly ITicksHolder ticksHolder;

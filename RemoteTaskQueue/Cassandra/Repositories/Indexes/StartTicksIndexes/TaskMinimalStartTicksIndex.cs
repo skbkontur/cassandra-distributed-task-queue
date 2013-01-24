@@ -6,7 +6,6 @@ using GroBuf;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Cassandra.Repositories.Indexes.EventIndexes;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -18,8 +17,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
     {
         public TaskMinimalStartTicksIndex(
             IColumnFamilyRepositoryParameters parameters,
-            ITaskMetaEventColumnInfoIndex taskMetaEventColumnInfoIndex,
-            IIndexRecordsCleaner indexRecordsCleaner,
             ITicksHolder ticksHolder,
             ISerializer serializer,
             IGlobalTime globalTime,
@@ -27,38 +24,45 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             : base(parameters, columnFamilyName)
         {
             this.cassandraSettings = cassandraSettings;
-            this.taskMetaEventColumnInfoIndex = taskMetaEventColumnInfoIndex;
-            this.indexRecordsCleaner = indexRecordsCleaner;
             this.ticksHolder = ticksHolder;
             this.serializer = serializer;
             this.globalTime = globalTime;
             minTicksCache = new MinTicksCache(this.ticksHolder);
         }
 
-        public void IndexMeta(TaskMetaInformation obj)
+        public ColumnInfo IndexMeta(TaskMetaInformation taskMetaInformation)
         {
             IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
-            string state = obj.State.GetCassandraName();
-            long ticks = obj.MinimalStartTicks;
+            string state = taskMetaInformation.State.GetCassandraName();
+            long ticks = taskMetaInformation.MinimalStartTicks;
             ticksHolder.UpdateMaxTicks(state, ticks);
             ticksHolder.UpdateMinTicks(state, ticks);
 
-            ColumnInfo columnInfo = TicksNameHelper.GetColumnInfo(obj.State, ticks, Guid.NewGuid().ToString());
-            taskMetaEventColumnInfoIndex.AddTaskEventInfo(obj.Id, columnInfo);
-            connection.AddColumn(columnInfo.RowKey, new Column
+            ColumnInfo newColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation);
+            var oldMetaIndex = taskMetaInformation.GetSnapshot();
+
+            ColumnInfo oldColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation.GetSnapshot());
+            connection.AddColumn(newColumnInfo.RowKey, new Column
                 {
-                    Name = columnInfo.ColumnName,
+                    Name = newColumnInfo.ColumnName,
                     Timestamp = globalTime.GetNowTicks(),
-                    Value = serializer.Serialize(obj.Id)
+                    Value = serializer.Serialize(taskMetaInformation.Id)
                 });
 
-            indexRecordsCleaner.RemoveIndexRecords(obj, columnInfo);
+            if(oldColumnInfo != null && !oldColumnInfo.Equals(newColumnInfo))
+                UnindexMeta(oldColumnInfo);
+            return newColumnInfo;
+        }
+
+        public void UnindexMeta(ColumnInfo columnInfo)
+        {
+            IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
+            connection.DeleteBatch(columnInfo.RowKey, new[] { columnInfo.ColumnName });
         }
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000)
         {
             IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
-            //todo читать не с начала, отступать на diff
             long diff = cassandraSettings.Attempts * TimeSpan.FromMilliseconds(cassandraSettings.Timeout).Ticks + TimeSpan.FromSeconds(10).Ticks;
             long firstTicks;
             if(!TryGetFirstEventTicks(taskState, out firstTicks))
@@ -75,10 +79,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return ticks != 0;
         }
 
-        private readonly IIndexRecordsCleaner indexRecordsCleaner;
-
         private readonly ICassandraSettings cassandraSettings;
-        private readonly ITaskMetaEventColumnInfoIndex taskMetaEventColumnInfoIndex;
         private readonly ITicksHolder ticksHolder;
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;

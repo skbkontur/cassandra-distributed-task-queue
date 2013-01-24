@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
@@ -71,7 +70,7 @@ namespace RemoteQueue.Handling
             foreach(var allTasksInState in allTasksInStates)
             {
                 all++;
-                if (shardingManager.IsSituableTask(allTasksInState.Item1))
+                if(shardingManager.IsSituableTask(allTasksInState.Item1))
                     forMe++;
             }
             return new Tuple<long, long>(all, forMe);

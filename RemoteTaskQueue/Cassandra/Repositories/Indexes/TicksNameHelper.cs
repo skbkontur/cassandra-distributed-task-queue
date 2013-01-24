@@ -17,6 +17,18 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
             return ticks.ToString("D20", CultureInfo.InvariantCulture) + "_" + suffix;
         }
 
+        public static string GetRowName(TaskMetaInformation taskMetaInformation)
+        {
+            if(taskMetaInformation == null) return null;
+            return GetRowName(taskMetaInformation.State, taskMetaInformation.MinimalStartTicks);
+        }
+
+        public static string GetColumnName(TaskMetaInformation taskMetaInformation)
+        {
+            if(taskMetaInformation == null) return null;
+            return GetColumnName(taskMetaInformation.MinimalStartTicks, taskMetaInformation.Id);
+        }
+
         public static long GetTicksFromColumnName(string columnName)
         {
             string ticksString = columnName.Split('_')[0];
@@ -34,6 +46,16 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
         public static long GetMinimalTicksForRow(long rowNumber)
         {
             return rowNumber * tickPartition;
+        }
+
+        public static ColumnInfo GetColumnInfo(TaskMetaInformation taskMetaInformation)
+        {
+            if(taskMetaInformation == null) return null;
+            return new ColumnInfo
+                {
+                    RowKey = GetRowName(taskMetaInformation),
+                    ColumnName = GetColumnName(taskMetaInformation)
+                };
         }
 
         public static ColumnInfo GetColumnInfo(TaskState taskState, long ticks, string colSuffix)

@@ -26,7 +26,7 @@ namespace RemoteQueue.Handling
             IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
             ITaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage,
-            IIndexRecordsCleaner indexRecordsCleaner)
+            ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex)
             : base(taskInfo.Item1)
         {
             this.taskInfo = taskInfo;
@@ -38,7 +38,7 @@ namespace RemoteQueue.Handling
             this.handleTaskExceptionInfoStorage = handleTaskExceptionInfoStorage;
             this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
-            this.indexRecordsCleaner = indexRecordsCleaner;
+            this.taskMinimalStartTicksIndex = taskMinimalStartTicksIndex;
         }
 
         public override void Run()
@@ -121,13 +121,14 @@ namespace RemoteQueue.Handling
                task.Meta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
-                indexRecordsCleaner.RemoveMeta(task.Meta, taskInfo.Item2);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
                 return;
             }
 
             if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > DateTime.UtcNow.Ticks))
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
                 return;
             }
 
@@ -209,6 +210,6 @@ namespace RemoteQueue.Handling
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ITaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
-        private readonly IIndexRecordsCleaner indexRecordsCleaner;
+        private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
     }
 }

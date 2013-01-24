@@ -37,15 +37,18 @@ namespace RemoteQueue.Cassandra.Repositories
         public void AddMeta(TaskMetaInformation meta)
         {
             var nowTicks = globalTime.GetNowTicks();
-            eventLogRepository.AddEvent(meta.Id, nowTicks);
             meta.LastModificationTicks = nowTicks;
+            eventLogRepository.AddEvent(meta.Id, nowTicks);
             storage.Write(meta.Id, meta);
             minimalStartTicksIndex.IndexMeta(meta);
+            meta.MakeSnapshot();
         }
 
         public TaskMetaInformation GetMeta(string taskId)
         {
-            return storage.Read(taskId);
+            var meta = storage.Read(taskId);
+            meta.MakeSnapshot();
+            return meta;
         }
 
         private readonly ITaskMetaInformationBlobStorage storage;
