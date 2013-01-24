@@ -39,9 +39,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             ticksHolder.UpdateMinTicks(state, ticks);
 
             ColumnInfo newColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation);
-            var oldMetaIndex = taskMetaInformation.GetSnapshot();
-
-            ColumnInfo oldColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation.GetSnapshot());
             connection.AddColumn(newColumnInfo.RowKey, new Column
                 {
                     Name = newColumnInfo.ColumnName,
@@ -49,15 +46,20 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     Value = serializer.Serialize(taskMetaInformation.Id)
                 });
 
-            if(oldColumnInfo != null && !oldColumnInfo.Equals(newColumnInfo))
-                UnindexMeta(oldColumnInfo);
+            var oldMetaIndex = taskMetaInformation.GetSnapshot();
+            if(oldMetaIndex != null)
+            {
+                ColumnInfo oldColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation.GetSnapshot());
+                if(!oldColumnInfo.Equals(newColumnInfo))
+                    UnindexMeta(oldColumnInfo);
+            }
             return newColumnInfo;
         }
 
         public void UnindexMeta(ColumnInfo columnInfo)
         {
             IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
-            connection.DeleteBatch(columnInfo.RowKey, new[] { columnInfo.ColumnName });
+            connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName});
         }
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000)
