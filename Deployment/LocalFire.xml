@@ -19,10 +19,10 @@
   <Import Project="Projects\Configuration\ServiceSuites.xml" />
 
   <Target Name="Fire">
-    
+
     <MSBuild Projects="$(CatalogueRootDirectory)\MSBuild\DeployTargets\GlobalServices\Cassandra.xml" Targets="StartLocal" Properties="Use1500MMemmory=true" />
     <MSBuild Projects="$(CatalogueRootDirectory)\MSBuild\DeployTargets\GlobalServices\ChomeDriver.xml" Targets="StartLocal" />
-    
+
     <CallTarget Targets="Run" />
 
   </Target>
