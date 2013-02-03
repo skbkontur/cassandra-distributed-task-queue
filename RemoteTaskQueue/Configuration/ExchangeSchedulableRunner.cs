@@ -22,13 +22,13 @@ namespace RemoteQueue.Configuration
 {
     public class ExchangeSchedulableRunner : IExchangeSchedulableRunner
     {
-        public ExchangeSchedulableRunner(ICassandraSettings cassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry)
+        public ExchangeSchedulableRunner(ICassandraClusterSettings cassandraSettings, IRemoteTaskQueueCassandraSettings remoteTaskQueueCassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry)
         {
             this.runnerSettings = runnerSettings;
             ISerializer serializer = StaticGrobuf.GetSerializer();
             periodicTaskRunner = new PeriodicTaskRunner();
             var cassandraCluster = new CassandraCluster(cassandraSettings);
-            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
+            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings, remoteTaskQueueCassandraSettings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, cassandraSettings);
@@ -39,11 +39,11 @@ namespace RemoteQueue.Configuration
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
             var remoteLockCreator = new RemoteLockCreator(new LockRepository(parameters));
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
-            var remoteTaskQueue = new RemoteTaskQueue(cassandraSettings, taskDataRegistry);
+            var remoteTaskQueue = new RemoteTaskQueue(cassandraSettings, remoteTaskQueueCassandraSettings, taskDataRegistry);
             var taskCounter = new TaskCounter(runnerSettings);
-            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), taskInfo => new HandlerTask(taskInfo, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage);
+            remoteTaskQueueHandlerManager = new RemoteTaskQueueHandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), taskInfo => new HandlerTask(taskInfo, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage, remoteTaskQueue);
         }
-        
+
         public void Stop()
         {
             if(worked)
@@ -52,8 +52,8 @@ namespace RemoteQueue.Configuration
                 {
                     if(worked)
                     {
-                        periodicTaskRunner.Unregister(handlerManager.Id, 15000);
-                        handlerManager.Stop();
+                        periodicTaskRunner.Unregister(remoteTaskQueueHandlerManager.Id, 15000);
+                        remoteTaskQueueHandlerManager.Stop();
                         worked = false;
                         logger.Info("Stop ExchangeSchedulableRunner.");
                     }
@@ -69,8 +69,8 @@ namespace RemoteQueue.Configuration
                 {
                     if(!worked)
                     {
-                        handlerManager.Start();
-                        periodicTaskRunner.Register(handlerManager, runnerSettings.PeriodicInterval);
+                        remoteTaskQueueHandlerManager.Start();
+                        periodicTaskRunner.Register(remoteTaskQueueHandlerManager, runnerSettings.PeriodicInterval);
                         worked = true;
                         logger.InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManager with period {0}", runnerSettings.PeriodicInterval);
                     }
@@ -78,14 +78,24 @@ namespace RemoteQueue.Configuration
             }
         }
 
-        public Tuple<long, long> GetQueueLength()
+        public Tuple<long, long> GetCassandraQueueLength()
         {
-            return handlerManager.GetCassandraQueueLength();
+            return remoteTaskQueueHandlerManager.GetCassandraQueueLength();
+        }
+
+        public long GetQueueLength()
+        {
+            return remoteTaskQueueHandlerManager.GetQueueLength();
+        }
+
+        public void CancelAllTasks()
+        {
+            remoteTaskQueueHandlerManager.CancelAllTasks();
         }
 
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
 
-        private readonly IHandlerManager handlerManager;
+        private readonly IRemoteTaskQueueHandlerManager remoteTaskQueueHandlerManager;
         private readonly object lockObject = new object();
         private readonly ILog logger = LogManager.GetLogger(typeof(ExchangeSchedulableRunner));
 

@@ -21,9 +21,9 @@ namespace FunctionalTests.RepositoriesTests
         public override void SetUp()
         {
             base.SetUp();
-            settings = Container.Get<ICassandraSettings>();
+            remoteTaskQueueCassandraSettings = Container.Get<IRemoteTaskQueueCassandraSettings>();
             cassandraCluster = Container.Get<ICassandraCluster>();
-            connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, TestCassandraCounterBlobRepository.columnFamilyName);
+            connection = cassandraCluster.RetrieveColumnFamilyConnection(remoteTaskQueueCassandraSettings.QueueKeyspace, TestCassandraCounterBlobRepository.columnFamilyName);
             logger = LogManager.GetLogger(typeof(ReadWriteTest));
         }
 
@@ -100,11 +100,11 @@ namespace FunctionalTests.RepositoriesTests
         }
 
         private volatile bool stop;
-        private ICassandraSettings settings;
         private ICassandraCluster cassandraCluster;
         private IColumnFamilyConnection connection;
         private ILog logger;
         private Thread[] threads;
+        private IRemoteTaskQueueCassandraSettings remoteTaskQueueCassandraSettings;
         private const int threadsCount = 30;
     }
 }

@@ -10,20 +10,22 @@ using log4net;
 
 namespace RemoteQueue.Handling
 {
-    public class HandlerManager : IHandlerManager
+    public class RemoteTaskQueueHandlerManager : IRemoteTaskQueueHandlerManager
     {
-        public HandlerManager(
+        public RemoteTaskQueueHandlerManager(
             ITaskQueue taskQueue,
             ITaskCounter taskCounter,
             IShardingManager shardingManager,
             Func<Tuple<string, ColumnInfo>, HandlerTask> createHandlerTask,
-            IHandleTasksMetaStorage handleTasksMetaStorage)
+            IHandleTasksMetaStorage handleTasksMetaStorage,
+            IRemoteTaskQueue remoteTaskQueue)
         {
             this.taskQueue = taskQueue;
             this.taskCounter = taskCounter;
             this.shardingManager = shardingManager;
             this.createHandlerTask = createHandlerTask;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
+            this.remoteTaskQueue = remoteTaskQueue;
         }
 
         public void Run()
@@ -76,10 +78,20 @@ namespace RemoteQueue.Handling
             return new Tuple<long, long>(all, forMe);
         }
 
-        private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
+        public void CancelAllTasks()
+        {
+            var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+            foreach(var task in allTasksInStates)
+            {
+                remoteTaskQueue.CancelTask(task.Item1);
+            }
+        }
+
+        private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueHandlerManager));
 
         private readonly Func<Tuple<string, ColumnInfo>, HandlerTask> createHandlerTask;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
+        private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly object lockObject = new object();
         private readonly ITaskQueue taskQueue;
         private readonly ITaskCounter taskCounter;

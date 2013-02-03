@@ -9,6 +9,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
@@ -20,7 +21,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             ITicksHolder ticksHolder,
             ISerializer serializer,
             IGlobalTime globalTime,
-            ICassandraSettings cassandraSettings)
+            ICassandraClusterSettings cassandraSettings)
             : base(parameters, columnFamilyName)
         {
             this.cassandraSettings = cassandraSettings;
@@ -81,7 +82,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return ticks != 0;
         }
 
-        private readonly ICassandraSettings cassandraSettings;
+        private readonly ICassandraClusterSettings cassandraSettings;
         private readonly ITicksHolder ticksHolder;
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;

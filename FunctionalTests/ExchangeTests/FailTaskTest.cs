@@ -29,14 +29,15 @@ namespace FunctionalTests.ExchangeTests
         public override void SetUp()
         {
             base.SetUp();
-            var cassandraSettings = Container.Get<ICassandraSettings>();
+            var cassandraClusterSettings = Container.Get<ICassandraClusterSettings>();
+            var remoteTaskQueueCassandraSettings = Container.Get<IRemoteTaskQueueCassandraSettings>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
-            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
+            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraClusterSettings, remoteTaskQueueCassandraSettings);
             var serializer = new Serializer();
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, cassandraSettings);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, cassandraClusterSettings);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(new TaskMetaInformationBlobStorage(parameters, serializer, globalTime), taskMinimalStartTicksIndex, eventLongRepository, globalTime);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage);

@@ -7,6 +7,7 @@ namespace RemoteQueue.Cassandra.Primitives
     public interface IColumnFamilyRepositoryParameters
     {
         ICassandraCluster CassandraCluster { get; }
-        ICassandraSettings Settings { get; }
+        ICassandraClusterSettings Settings { get; }
+        IRemoteTaskQueueCassandraSettings RemoteTaskQueueCassandraSettings { get; }
     }
 }

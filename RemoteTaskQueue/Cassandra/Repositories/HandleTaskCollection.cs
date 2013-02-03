@@ -1,5 +1,6 @@
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Exceptions;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -20,7 +21,10 @@ namespace RemoteQueue.Cassandra.Repositories
         public Task GetTask(string taskId)
         {
             var taskData = taskDataStorage.Read(taskId);
+            if (taskData == null) throw new TaskNotFoundException(taskId);
             var meta = handleTasksMetaStorage.GetMeta(taskId);
+            if (meta == null) throw new TaskNotFoundException(taskId);
+            
             return new Task
                 {
                     Data = taskData,
