@@ -80,17 +80,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
         private void DropAndCreateDatabase(ColumnFamily[] columnFamilies)
         {
             var cassandraCluster = container.Get<ICassandraCluster>();
-            var remoteTaskQueueCassandraSettings = container.Get<IRemoteTaskQueueCassandraSettings>();
+            var settings = container.Get<ICassandraSettings>();
             var clusterConnection = cassandraCluster.RetrieveClusterConnection();
-            var keyspaceConnection = cassandraCluster.RetrieveKeyspaceConnection(remoteTaskQueueCassandraSettings.QueueKeyspace);
+            var keyspaceConnection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
 
             var keyspaces = clusterConnection.RetrieveKeyspaces();
-            if (!keyspaces.Any(x => x.Name == remoteTaskQueueCassandraSettings.QueueKeyspace))
+            if (!keyspaces.Any(x => x.Name == settings.QueueKeyspace))
             {
                 clusterConnection.AddKeyspace(
                     new Keyspace
                     {
-                        Name = remoteTaskQueueCassandraSettings.QueueKeyspace,
+                        Name = settings.QueueKeyspace,
                         ReplicaPlacementStrategy = "org.apache.cassandra.locator.SimpleStrategy",
                         ReplicationFactor = 1
                     });
@@ -105,7 +105,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
             foreach (var columnFamily in columnFamilies)
             {
-                var columnFamilyConnection = cassandraCluster.RetrieveColumnFamilyConnection(remoteTaskQueueCassandraSettings.QueueKeyspace, columnFamily.Name);
+                var columnFamilyConnection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name);
                 columnFamilyConnection.Truncate();
             }
         }

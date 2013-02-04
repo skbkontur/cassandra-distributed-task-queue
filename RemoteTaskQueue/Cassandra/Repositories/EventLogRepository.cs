@@ -7,9 +7,9 @@ using GroBuf;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -69,7 +69,7 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
         private readonly ITicksHolder ticksHolder;
-        private readonly ICassandraClusterSettings cassandraSettings;
+        private readonly ICassandraSettings cassandraSettings;
 
         private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;
         private const string firstEventTicksRowName = "firstEventTicksRowName";

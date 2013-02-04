@@ -4,12 +4,11 @@ using RemoteQueue.LocalTasks.Scheduling;
 
 namespace RemoteQueue.Handling
 {
-    public interface IRemoteTaskQueueHandlerManager : IPeriodicTask
+    public interface IHandlerManager : IPeriodicTask
     {
         void Start();
         void Stop();
         long GetQueueLength();
         Tuple<long, long> GetCassandraQueueLength();
-        void CancelAllTasks();
     }
 }

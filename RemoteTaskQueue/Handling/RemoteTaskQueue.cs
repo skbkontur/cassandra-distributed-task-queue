@@ -18,11 +18,11 @@ namespace RemoteQueue.Handling
 {
     public class RemoteTaskQueue : IRemoteTaskQueue
     {
-        public RemoteTaskQueue(ICassandraClusterSettings settings, IRemoteTaskQueueCassandraSettings remoteTaskQueueCassandraSettings, TaskDataRegistryBase taskDataRegistry)
+        public RemoteTaskQueue(ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry)
         {
             serializer = StaticGrobuf.GetSerializer();
             var cassandraCluster = new CassandraCluster(settings);
-            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, settings, remoteTaskQueueCassandraSettings);
+            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, settings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, settings);

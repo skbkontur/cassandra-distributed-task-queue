@@ -15,6 +15,11 @@ namespace FunctionalTests.RepositoriesTests
 {
     public class BlobStorageTest : FunctionalTestBase
     {
+        public class Class1
+        {
+            public string Field1 { get; set; }
+        }
+
         public override void SetUp()
         {
             base.SetUp();
@@ -22,9 +27,9 @@ namespace FunctionalTests.RepositoriesTests
             var serializer = Container.Get<ISerializer>();
             var globalTime = Container.Get<IGlobalTime>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
-            var remoteTaskQueueCassandraSettings = Container.Get<IRemoteTaskQueueCassandraSettings>();
+            var settings = Container.Get<ICassandraSettings>();
             const string columnFamilyName = "Class1CF";
-            var connection = cassandraCluster.RetrieveKeyspaceConnection(remoteTaskQueueCassandraSettings.QueueKeyspace);
+            var connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
             var keyspace = connection.DescribeKeyspace();
             if(!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
             {
@@ -43,14 +48,9 @@ namespace FunctionalTests.RepositoriesTests
         {
             const string id = "a";
             const string field1 = "yyy";
-            blobStorage.Write(id, new Class1 {Field1 = field1});
+            blobStorage.Write(id, new Class1{Field1 = field1});
             var elem = blobStorage.Read(id);
             Assert.AreEqual(field1, elem.Field1);
-        }
-
-        public class Class1
-        {
-            public string Field1 { get; set; }
         }
 
         private IBlobStorage<Class1> blobStorage;

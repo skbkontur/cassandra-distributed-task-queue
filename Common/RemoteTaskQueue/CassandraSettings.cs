@@ -3,11 +3,10 @@
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 {
-    public class CassandraSettings : ICassandraClusterSettings, IRemoteTaskQueueCassandraSettings
+    public class CassandraSettings : ICassandraSettings
     {
         public IPEndPoint[] Endpoints
         {

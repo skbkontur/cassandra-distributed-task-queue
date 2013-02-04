@@ -10,17 +10,17 @@ namespace RemoteQueue.Cassandra.Primitives
         protected ColumnFamilyRepositoryBase(IColumnFamilyRepositoryParameters parameters, string columnFamilyName)
         {
             cassandraCluster = parameters.CassandraCluster;
-            remoteTaskQueueCassandraSettings = parameters.RemoteTaskQueueCassandraSettings;
+            settings = parameters.Settings;
             ColumnFamilyName = columnFamilyName;
         }
 
         public IColumnFamilyConnection RetrieveColumnFamilyConnection()
         {
-            return cassandraCluster.RetrieveColumnFamilyConnection(remoteTaskQueueCassandraSettings.QueueKeyspace, ColumnFamilyName);
+            return cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName);
         }
 
         public string ColumnFamilyName { get; private set; }
         private readonly ICassandraCluster cassandraCluster;
-        private readonly IRemoteTaskQueueCassandraSettings remoteTaskQueueCassandraSettings;
+        private readonly ICassandraSettings settings;
     }
 }

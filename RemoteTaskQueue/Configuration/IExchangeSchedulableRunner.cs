@@ -6,8 +6,6 @@ namespace RemoteQueue.Configuration
     {
         void Start();
         void Stop();
-        long GetQueueLength();
-        Tuple<long, long> GetCassandraQueueLength();
-        void CancelAllTasks();
+        Tuple<long, long> GetQueueLength();
     }
 }

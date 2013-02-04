@@ -13,6 +13,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
     public class RemoteTaskQueueControllerBaseParameters
     {
+
         public RemoteTaskQueueControllerBaseParameters(
             LoggedInControllerBaseParameters loggedInControllerBaseParameters,
             ITaskMetadataModelBuilder taskMetadataModelBuilder,
