@@ -1,8 +1,8 @@
-﻿using GroboContainer.Infection;
+﻿using SKBKontur.Catalogue.Core.Web.Languages;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Models.Enter
 {
-    [DeclareContract("RU")]
+    [Language("RU")]
     public class RuEnterPageText : IEnterPageText
     {
         public string Title { get { return "Вход в систему"; } }
