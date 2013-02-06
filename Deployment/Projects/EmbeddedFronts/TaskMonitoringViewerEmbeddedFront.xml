@@ -7,10 +7,24 @@
   <PropertyGroup>
     <TargetFrontPath>$(CatalogueRootDirectory)\RemoteTaskQueue\TaskMonitoringViewer</TargetFrontPath>
     <FrontName>TaskMonitoringViewer</FrontName>
+
+    <VirtualStaticContentOutput>Shared/</VirtualStaticContentOutput>
+    <PhysicalStaticContentOutput>$(CatalogueRootDirectory)\WebWorms\Web\Statics</PhysicalStaticContentOutput>
   </PropertyGroup>
 
   <ItemGroup>
+
     <ResourcesHostPage Include="$(CatalogueRootDirectory)\RemoteTaskQueue\TaskMonitoringViewer\**\*.cshtml" />
+
+    <SharedResources Include="Shared">
+      <VirtualName>Shared/</VirtualName>
+      <PhysicalPath>$(CatalogueRootDirectory)\WebWorms\Web\Statics</PhysicalPath>
+    </SharedResources>
+    <SharedResources Include="SharedBlocks">
+      <VirtualName>SharedBlocks/</VirtualName>
+      <PhysicalPath>$(CatalogueRootDirectory)\WebWorms\Web\Blocks</PhysicalPath>
+    </SharedResources>
+
   </ItemGroup>
 
 </Project>
