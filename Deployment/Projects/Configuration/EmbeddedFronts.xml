@@ -6,8 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedFront Include="Projects\EmbeddedFronts\RemoteTaskQueueEmbeddedFront.xml"></EmbeddedFront>
     <EmbeddedFront Include="Projects\EmbeddedFronts\TaskMonitoringViewerEmbeddedFront.xml"></EmbeddedFront>
   </ItemGroup>
-  
+
 </Project>
