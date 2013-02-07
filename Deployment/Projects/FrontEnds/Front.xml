@@ -37,7 +37,7 @@
       <AppPool>RemoteTaskQueue.Front_Pool</AppPool>
       <AppRootDirectory>$(DeployDir)\Front</AppRootDirectory>
     </WebSite>
-  </ItemGroup>
+  </ItemGroup>  
 
   <PropertyGroup Condition="'$(FrontEndMode)' == 'FromSources'">
     <ProjectDir>$(CatalogueRootDirectory)\RemoteTaskQueue\Front\</ProjectDir>
