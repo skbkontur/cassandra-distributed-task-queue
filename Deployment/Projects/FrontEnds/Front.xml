@@ -21,15 +21,6 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(FrontEndMode)' == 'FromDeploy'">
-    <SharedResources Include="Shared">
-      <VirtualName>Shared/</VirtualName>
-      <PhysicalPath>$(CatalogueRootDirectory)\WebWorms\Web\Statics</PhysicalPath>
-    </SharedResources>
-    <SharedResources Include="SharedBlocks">
-      <VirtualName>SharedBlocks/</VirtualName>
-      <PhysicalPath>$(CatalogueRootDirectory)\WebWorms\Web\Blocks</PhysicalPath>
-    </SharedResources>
-
     <WebSite Include="/">
       <PhysicalPath>$([System.IO.Path]::GetFullPath('$(DeployDir)\Front'))</PhysicalPath>
       <HttpPort>9876</HttpPort>
@@ -49,7 +40,7 @@
 
   <ItemGroup Condition="'$(FrontEndMode)' == 'FromSources'">
     <WebSiteVirtualDirectory Include="/Shared">
-      <ApplicationPath>/</ApplicationPath> 
+      <ApplicationPath>/</ApplicationPath>
       <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\WebWorms\Web\Statics'))</PhysicalPath>
     </WebSiteVirtualDirectory>
 
@@ -65,6 +56,8 @@
       <AppPool>RemoteTaskQueue.Front_Pool</AppPool>
       <AppRootDirectory>$(CatalogueRootDirectory)\RemoteTaskQueue\Front\</AppRootDirectory>
     </WebSite>
+
+
   </ItemGroup>
 
   <Import Project="CommonResources.xml" />
