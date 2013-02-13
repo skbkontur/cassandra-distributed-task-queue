@@ -53,14 +53,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             }
             if (objectType == typeof(string))
             {
-                string fileName;
+                FileMetaInformation fileMetaInformation;
                 var fileId = (string)objectValue;
-                if (!string.IsNullOrEmpty(fileId) && fileDataStorage.TryReadFilename(fileId, out fileName))
+                if (!string.IsNullOrEmpty(fileId) && fileDataStorage.TryReadInfo(fileId, out fileMetaInformation))
                 {
                     return new FileDataTaskDataValue
                     {
-                        Filename = fileName,
-                        FileSize = fileDataStorage.GetFileSize(fileId),
+                        Filename = fileMetaInformation.Name,
+                        FileSize = fileMetaInformation.Size,
                         GetUrl = url => url.GetDownloadFileUrl(fileId)
                     };
                 }

@@ -46,20 +46,39 @@
     <Content Include="Build.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="LocalFire.xml" />
-    <Content Include="Projects\Configuration\FrontEndSuites.xml" />
-    <Content Include="Projects\Configuration\ServiceSuites.xml" />
-    <Content Include="Projects\FrontEnds\CommonResources.xml" />
-    <Content Include="Projects\FrontEnds\Front.xml" />
-    <Content Include="Projects\FrontEnds\SharedResources.xml" />
-    <Content Include="Projects\Services\ExchangeService.xml" />
+    <Content Include="LocalFire.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Projects\Configuration\FrontEndSuites.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Projects\Configuration\ServiceSuites.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Projects\Configuration\EmbeddedFronts.xml" />
+    <Content Include="Projects\EmbeddedFronts\RemoteTaskQueueEmbeddedFront.xml" />
+    <Content Include="Projects\EmbeddedFronts\TaskMonitoringViewerEmbeddedFront.xml" />
+    <Content Include="Projects\FrontEnds\CommonResources.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Projects\FrontEnds\Front.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Projects\FrontEnds\SharedResources.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Projects\Services\ExchangeService.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Projects\Services\IndexService.xml" />
     <Content Include="Projects\Services\MonitoringService.xml" />
     <Content Include="Projects\Tests\FunctionalTests.xml" />
     <Content Include="Projects\Tools\DeployScreenshots.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Projects\Common.vars" />
+    <None Include="Projects\Common.vars">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

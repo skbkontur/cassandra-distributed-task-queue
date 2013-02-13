@@ -2,6 +2,7 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Import Project="Projects\Common.vars" Condition="$(CommonVarsImported) == ''" />
+  <Import Project="Projects\Configuration\EmbeddedFronts.xml"/>
 
   <ItemGroup>
     <Solution Include="$(CatalogueRootDirectory)\Core\Core.sln"></Solution>
@@ -9,6 +10,6 @@
     <Solution Include="$(CatalogueRootDirectory)\RemoteTaskQueue\RemoteTaskQueue.sln"></Solution>
   </ItemGroup>
 
-  <Import Project="..\..\MSBuild\DeployTargets\Targets\Build.targets" />
+  <Import Project="$(CatalogueRootDirectory)\MSBuild\DeployTargets\Targets\Build.targets" />
 
 </Project>

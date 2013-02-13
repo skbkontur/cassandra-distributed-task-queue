@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="..\..\Projects\Common.vars" Condition="$(CommonVarsImported) == ''" />
+  <Import Project="$(CatalogueRootDirectory)\MsBuild\DeployTargets\Targets\EmbeddedFront.targets"/>
+
+  <PropertyGroup>
+    <TargetFrontPath>$(CatalogueRootDirectory)\RemoteTaskQueue\Front</TargetFrontPath>
+    <FrontName>Front</FrontName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ResourcesHostPage Include="$(CatalogueRootDirectory)\RemoteTaskQueue\Front\**\*.cshtml" />
+  </ItemGroup>
+
+
+</Project>
