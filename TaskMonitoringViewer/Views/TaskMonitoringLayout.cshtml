@@ -34,6 +34,7 @@
             Html.RenderStyle("/SharedBlocks/DragAndDropUpload/DragAndDropUpload.css");
             Html.RenderStyle("/SharedBlocks/BalloonLink/BalloonLink.css");
 
+            Html.RenderStyle("/Shared/Design/ObjectTreeWebViewer/Styles/ObjectTreeWebViewer.css");
             Html.RenderStyle("/Shared/Design/RemoteTaskQueueMonitoring/Styles/RemoteTaskQueueMonitoring.css");
             Html.RenderStyle("/Shared/Design/RemoteTaskQueueMonitoring/Styles/Paginator.css");
 
@@ -131,11 +132,7 @@
             });
 
             $(document).ready(function() {
-                $(".remoteTaskQueueMonitoring__property").click(function(event) {
-                    if ($(this).find(".remoteTaskQueueMonitoring__property__name").hasClass("canHide"))
-                        $(this).toggleClass("hideValue");
-                    event.stopPropagation();
-                });
+                ObjectTreeViewerRegistrator.registerHandlers();
             });
         @RenderSection("Scripts")
 

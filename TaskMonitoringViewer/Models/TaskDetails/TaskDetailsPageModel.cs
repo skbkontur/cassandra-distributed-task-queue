@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-
-using SKBKontur.Catalogue.Core.Web.PageModels;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primitives;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails.TaskData;
+﻿using SKBKontur.Catalogue.Core.Web.PageModels;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails
 {
@@ -21,13 +17,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDe
         public string SearchRequestId { get; set; }
         public string Title { get; set; }
         public string TaskListUrl { get; set; }
-    }
-
-    public class TaskDetailsHtmlModel
-    {
-        public TaskMetaInfoHtmlModel TaskMetaInfo { get; set; }
-        public TaskIdHtmlModel[] ChildTaskIds { get; set; }
-        public ITaskDataValue TaskDataValue { get; set; }
-        public ExceptionInfoHtmlModel ExceptionInfo { get; set; }
     }
 }
