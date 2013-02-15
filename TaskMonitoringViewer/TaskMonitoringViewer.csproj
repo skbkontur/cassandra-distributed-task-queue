@@ -45,6 +45,9 @@
     <Reference Include="Catalogue.Core.FileDataWebViewer">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.FileDataWebViewer.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.ObjectTreeWebViewer">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ObjectTreeWebViewer.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.Web">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Web.dll</HintPath>
     </Reference>
@@ -97,10 +100,12 @@
     <Compile Include="ModelBuilders\IRemoteTaskQueueHtmlModelCreator.cs" />
     <Compile Include="ModelBuilders\RemoteTaskQueueHtmlModelCreator.cs" />
     <Compile Include="ModelBuilders\TaskDetails\ITaskDetailsHtmlModelBuilder.cs" />
+    <Compile Include="ModelBuilders\TaskDetails\TaskDetailsHtmlModelBuilder.cs" />
     <Compile Include="Models\Primitives\ExceptionInfoHtmlModel.cs" />
     <Compile Include="Models\Primitives\TaskIdHtmlModel.cs" />
     <Compile Include="Models\Primitives\TaskDateTimeHtmlModel.cs" />
     <Compile Include="Models\Primitives\TaskStateHtmlModel.cs" />
+    <Compile Include="Models\TaskDetails\TaskDetailsHtmlModel.cs" />
     <Compile Include="Models\TaskDetails\TaskDetailsPageModel.cs" />
     <Compile Include="Models\TaskList\SearchPanel\DateTimeRangeModel.cs" />
     <Compile Include="ModelBuilders\TaskList\ITaskListHtmlModelBuilder.cs" />
@@ -110,23 +115,15 @@
     <Compile Include="Models\TaskList\TaskListModelData.cs" />
     <Compile Include="Models\TaskList\SearchPanel\SearchPanelModelData.cs" />
     <Compile Include="ModelBuilders\TaskList\ITaskListModelBuilder.cs" />
-    <Compile Include="ModelBuilders\TaskDetails\ITaskDataModelBuilder.cs" />
     <Compile Include="ModelBuilders\ITaskMetadataModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskDetails\ITaskDetailsModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskList\TaskListModelBuilder.cs" />
-    <Compile Include="ModelBuilders\TaskDetails\TaskDataModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskMetadataModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskDetails\TaskDetailsModelBuilder.cs" />
-    <Compile Include="Models\TaskDetails\TaskData\ByteArrayTaskDataValue.cs" />
-    <Compile Include="Models\TaskDetails\TaskData\EmptyTaskDataValue.cs" />
-    <Compile Include="Models\TaskDetails\TaskData\FileDataTaskDataValue.cs" />
     <Compile Include="Models\TaskList\SearchPanel\DateTimeRangeHtmlModel.cs" />
     <Compile Include="Models\TaskList\SearchPanel\SearchPanelHtmlModel.cs" />
-    <Compile Include="Models\TaskDetails\TaskData\ITaskDataValue.cs" />
-    <Compile Include="Models\TaskDetails\TaskData\ObjectTaskDataModel.cs" />
     <Compile Include="Models\Paging\IPaginatorModelData.cs" />
     <Compile Include="Models\Paging\PaginatorPageLinkModelData.cs" />
-    <Compile Include="Models\TaskDetails\TaskData\StringTaskDataValue.cs" />
     <Compile Include="Models\TaskList\TaskListPageModel.cs" />
     <Compile Include="Models\TaskList\TaskListPaginatorModelData.cs" />
     <Compile Include="Models\TaskMetaInfoHtmlModel.cs" />
@@ -136,7 +133,6 @@
     <Compile Include="RemoteTaskQueueUrlExtensions.cs" />
     <Compile Include="RenderingHelpers\HtmlPaginatorPrimitives.cs" />
     <Compile Include="RenderingHelpers\HtmlPrimtives.cs" />
-    <Compile Include="RenderingHelpers\TaskDataValueHtmlPrimitives.cs" />
     <Compile Include="ValueHandlerRegistry\EmptyValueHandlerRegistry.cs" />
     <Compile Include="ValueHandlerRegistry\IValueHandlerRegistry.cs" />
     <Compile Include="ValueHandlerRegistry\IValueHandlerRegistryCollection.cs" />
@@ -155,12 +151,7 @@
     <EmbeddedResource Include="Views\Paging\_PrevPage.cshtml" />
     <EmbeddedResource Include="Views\TaskList.cshtml" />
     <EmbeddedResource Include="Views\TaskMonitoringLayout.cshtml" />
-    <EmbeddedResource Include="Views\TaskData\_ByteArrayValue.cshtml" />
-    <EmbeddedResource Include="Views\TaskData\_EmptyValue.cshtml" />
-    <EmbeddedResource Include="Views\TaskData\_ObjectValue.cshtml" />
-    <EmbeddedResource Include="Views\TaskData\_StringValue.cshtml" />
     <EmbeddedResource Include="Views\_TaskState.cshtml" />
-    <EmbeddedResource Include="Views\TaskData\_FileDataValue.cshtml" />
     <EmbeddedResource Include="Views\_TaskId.cshtml" />
     <EmbeddedResource Include="Views\_TaskDateTime.cshtml" />
     <EmbeddedResource Include="Views\_ExceptionInfo.cshtml" />
