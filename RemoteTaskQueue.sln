@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteTaskQueue", "RemoteTaskQueue\RemoteTaskQueue.csproj", "{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalTests", "FunctionalTests\FunctionalTests.csproj", "{0CAD309C-379A-403E-BCB1-76D73832A9A0}"
