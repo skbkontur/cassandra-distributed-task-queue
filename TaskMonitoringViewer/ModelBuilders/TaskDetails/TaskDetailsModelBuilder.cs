@@ -16,11 +16,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
     {
         public TaskDetailsModelBuilder(
             ITaskMetadataModelBuilder taskMetadataModelBuilder,
-            ITaskDataModelBuilder taskDataModelBuilder,
             IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage)
         {
             this.taskMetadataModelBuilder = taskMetadataModelBuilder;
-            this.taskDataModelBuilder = taskDataModelBuilder;
             this.remoteTaskQueueMonitoringServiceStorage = remoteTaskQueueMonitoringServiceStorage;
         }
 
@@ -67,7 +65,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         }
 
         private readonly ITaskMetadataModelBuilder taskMetadataModelBuilder;
-        private readonly ITaskDataModelBuilder taskDataModelBuilder;
         private readonly IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage;
     }
 }
