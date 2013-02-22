@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="ExchangeServiceClient.cs" />
     <Compile Include="IExchangeServiceClient.cs" />
+    <Compile Include="LockRepositoryContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteTaskQueue\CassandraSettings.cs" />
     <Compile Include="RemoteTaskQueue\RemoteTaskQueuePlugin.cs" />
@@ -78,6 +79,10 @@
     <Compile Include="Xml\XmlPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\RemoteLock\RemoteLock.csproj">
+      <Project>{de07e057-2370-4025-ba29-772d4751133c}</Project>
+      <Name>RemoteLock</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>

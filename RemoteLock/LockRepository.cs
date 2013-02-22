@@ -2,18 +2,19 @@
 using System.Linq;
 using System.Threading;
 
-using RemoteQueue.Cassandra.Primitives;
-
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 
-namespace RemoteQueue.Cassandra.RemoteLock
+namespace RemoteLock
 {
-    public class LockRepository : ColumnFamilyRepositoryBase, ILockRepository
+    public class LockRepository : ILockRepository
     {
-        public LockRepository(IColumnFamilyRepositoryParameters parameters)
-            : base(parameters, columnFamilyName)
+        public LockRepository(ICassandraCluster cassandraCluster, string keyspace, string columnFamily)
         {
+            this.cassandraCluster = cassandraCluster;
+            this.keyspace = keyspace;
+            this.columnFamily = columnFamily;
         }
 
         public LockAttemptResult TryLock(string lockId, string threadId)
@@ -23,7 +24,7 @@ namespace RemoteQueue.Cassandra.RemoteLock
                 return items[0] == threadId ? LockAttemptResult.Success() : LockAttemptResult.AnotherOwner(items[0]);
             if(items.Length > 1)
             {
-                if (items.Any(s => s == threadId))
+                if(items.Any(s => s == threadId))
                     throw new Exception("Lock unknown exception");
                 return LockAttemptResult.AnotherOwner(items[0]);
             }
@@ -64,7 +65,7 @@ namespace RemoteQueue.Cassandra.RemoteLock
             return Search(GetShadeRow(lockId));
         }
 
-        public const string columnFamilyName = "lock";
+        //public const string columnFamilyName = "lock";
 
         private string GetShadeRow(string rowName)
         {
@@ -78,7 +79,7 @@ namespace RemoteQueue.Cassandra.RemoteLock
 
         private long GetNowTicks()
         {
-            long ticks = DateTime.UtcNow.Ticks;
+            var ticks = DateTime.UtcNow.Ticks;
             while(true)
             {
                 var last = Interlocked.Read(ref lastTicks);
@@ -108,19 +109,23 @@ namespace RemoteQueue.Cassandra.RemoteLock
         {
             var res = new string[0];
             MakeInConnection(connection =>
-                                 {
-                                     var columns = connection.GetRow(rowName).ToArray();
-                                     if(columns.Length != 0)
-                                         res = columns.Where(x => x.Value != null && x.Value.Length != 0).Select(x => x.Name).ToArray();
-                                 });
+                {
+                    var columns = connection.GetRow(rowName).ToArray();
+                    if(columns.Length != 0)
+                        res = columns.Where(x => x.Value != null && x.Value.Length != 0).Select(x => x.Name).ToArray();
+                });
             return res;
         }
 
         private void MakeInConnection(Action<IColumnFamilyConnection> action)
         {
-            var connection = RetrieveColumnFamilyConnection();
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(keyspace, columnFamily);
             action(connection);
         }
+
+        private readonly ICassandraCluster cassandraCluster;
+        private readonly string keyspace;
+        private readonly string columnFamily;
 
         private long lastTicks;
     }

@@ -17,6 +17,8 @@ using SKBKontur.Catalogue.ServiceLib.Settings;
 
 using log4net;
 
+using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+
 namespace FunctionalTests.RemoteLock
 {
     [TestFixture]
@@ -31,6 +33,7 @@ namespace FunctionalTests.RemoteLock
             var applicationSettings = ApplicationSettings.LoadDefault("functionalTestsSettings");
             container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(applicationSettings);
             container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(container.Get<CassandraSettings>());
+            container.ConfigureLockRepository();
             logger.InfoFormat("Start SetUp, runningThreads = {0}", runningThreads);
             runningThreads = 0;
             isEnd = false;

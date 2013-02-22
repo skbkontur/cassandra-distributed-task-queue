@@ -3,7 +3,7 @@ using System.Threading;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.RemoteLock;
+using RemoteLock;
 
 using log4net;
 
@@ -32,7 +32,7 @@ namespace FunctionalTests.RemoteLock
 
         private void DoTestIncrementDecrementLock(int threadCount, int timeInterval)
         {
-            for(int i = 0; i < threadCount; i++)
+            for(var i = 0; i < threadCount; i++)
                 AddThread(IncrementDecrementAction);
             RunThreads(timeInterval);
             JoinThreads();
@@ -40,15 +40,23 @@ namespace FunctionalTests.RemoteLock
 
         private void IncrementDecrementAction(Random random)
         {
-            using(var remoteLock = lockCreator.Lock(lockId))
+            try
             {
-                logger.Info("MakeLock with threadId: " + remoteLock.ThreadId);
-                CheckLocks(remoteLock.ThreadId);
-                Assert.AreEqual(0, ReadX());
-                logger.Info("Increment");
-                Interlocked.Increment(ref x);
-                logger.Info("Decrement");
-                Interlocked.Decrement(ref x);
+                using(var remoteLock = lockCreator.Lock(lockId))
+                {
+                    logger.Info("MakeLock with threadId: " + remoteLock.ThreadId);
+                    CheckLocks(remoteLock.ThreadId);
+                    Assert.AreEqual(0, ReadX());
+                    logger.Info("Increment");
+                    Interlocked.Increment(ref x);
+                    logger.Info("Decrement");
+                    Interlocked.Decrement(ref x);
+                }
+            }
+            catch(Exception e)
+            {
+                logger.Error(e);
+                throw;
             }
         }
 
@@ -59,7 +67,7 @@ namespace FunctionalTests.RemoteLock
 
         private void CheckLocks(string threadId)
         {
-            var lr = container.Get<LockRepository>();
+            var lr = container.Get<ILockRepository>();
             var locks = lr.GetLockThreads(lockId);
             logger.Info("Locks: " + string.Join(", ", locks));
             Assert.That(locks.Length <= 1, "Too many locks");

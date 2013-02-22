@@ -3,7 +3,7 @@ using System.Threading;
 
 using log4net;
 
-namespace RemoteQueue.Cassandra.RemoteLock
+namespace RemoteLock
 {
     public class RemoteLock : IRemoteLock
     {
