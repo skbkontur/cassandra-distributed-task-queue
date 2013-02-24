@@ -19,7 +19,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage.ColumnFamilyRegistration
             RegisterLocal(EventLogRepository.LocalColumnFamilyName);
             RegisterLocal(FileDataStorage.ColumnFamilyName);
             RegisterLocal(EventLogRepository.CommonColumnFamilyName);
-            RegisterLocal(ColumnFamilyRepositoryParameters.lockColumnFamilyName);
+            RegisterLocal(ColumnFamilyRepositoryParameters.LockColumnFamily);
+            RegisterLocal(RemoteLockConfigurator.RemoteLockColumnFamily);
         }
     }
 }

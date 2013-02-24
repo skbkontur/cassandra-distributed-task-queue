@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Catalogue.AccessControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.AccessControl.LocalImplementation">
       <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
     </Reference>
