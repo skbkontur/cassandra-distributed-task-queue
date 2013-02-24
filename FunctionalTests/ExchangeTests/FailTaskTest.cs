@@ -9,9 +9,10 @@ using GroBuf;
 
 using NUnit.Framework;
 
+using RemoteLock;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -40,7 +41,8 @@ namespace FunctionalTests.ExchangeTests
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(new TaskMetaInformationBlobStorage(parameters, serializer, globalTime), taskMinimalStartTicksIndex, eventLongRepository, globalTime);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage);
-            testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime), new RemoteLockCreator(new LockRepository(parameters)));
+            testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime),
+                                                              new RemoteLockCreator(new LockRepository(parameters.CassandraCluster, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
             taskQueue = Container.Get<IRemoteTaskQueue>();
         }
 
@@ -62,7 +64,7 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void TestOneFailTask()
         {
-            string taskId = AddTask(3);
+            var taskId = AddTask(3);
             Wait(new[] {taskId});
         }
 
@@ -71,7 +73,7 @@ namespace FunctionalTests.ExchangeTests
         {
             const int count = 2;
             var ids = new string[count];
-            for(int i = 0; i < count; i++)
+            for(var i = 0; i < count; i++)
                 ids[i] = AddTask(3);
             Wait(ids, 15000);
         }
@@ -79,18 +81,18 @@ namespace FunctionalTests.ExchangeTests
         [Test, Ignore("Стресс-тест")]
         public void TestStress()
         {
-            for(int i = 0; i < 1000; i++)
+            for(var i = 0; i < 1000; i++)
                 TestManyFailTask();
         }
 
         [Test, Ignore("Стресс-тест-много-задач")]
         public void TestStressManyTasks()
         {
-            for(int i = 0; i < 10; i++)
+            for(var i = 0; i < 10; i++)
             {
                 const int count = 200;
                 var ids = new string[count];
-                for(int j = 0; j < count; j++)
+                for(var j = 0; j < count; j++)
                     ids[j] = AddTask(15);
                 Wait(ids, 90000);
             }
@@ -106,22 +108,22 @@ namespace FunctionalTests.ExchangeTests
 
         private void Wait(string[] taskIds, int ms = 5000)
         {
-            int current = 0;
+            var current = 0;
             while(true)
             {
-                bool fail = false;
-                for(int i = 0; i < taskIds.Length; i++)
+                var fail = false;
+                for(var i = 0; i < taskIds.Length; i++)
                 {
-                    Task task = handleTaskCollection.GetTask(taskIds[i]);
+                    var task = handleTaskCollection.GetTask(taskIds[i]);
                     if(task.Meta.State != TaskState.Finished)
                         fail = true;
                 }
 
-                int[] attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
+                var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
                 Console.WriteLine(Now() + " CurrentValues: " + String.Join(", ", attempts));
                 if(!fail)
                 {
-                    for(int i = 0; i < attempts.Length; i++)
+                    for(var i = 0; i < attempts.Length; i++)
                     {
                         var attempt = attempts[i];
                         if(attempt != 0)

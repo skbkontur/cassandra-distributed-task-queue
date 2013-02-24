@@ -3,7 +3,7 @@ using System.Threading;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.RemoteLock;
+using RemoteLock;
 
 using log4net;
 
@@ -80,7 +80,7 @@ namespace FunctionalTests.RemoteLock
 
         private void CheckLocks(string threadId)
         {
-            var lr = container.Get<LockRepository>();
+            var lr = container.Get<ILockRepository>();
             var locks = lr.GetLockThreads(lockId);
             logger.Info("Locks: " + string.Join(", ", locks));
             Assert.That(locks.Length <= 1, "Too many locks");

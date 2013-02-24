@@ -1,4 +1,4 @@
-﻿using RemoteQueue.Cassandra.RemoteLock;
+﻿using RemoteLock;
 
 namespace ExchangeService.UserClasses
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RemoteQueue.Cassandra.RemoteLock
+namespace RemoteLock
 {
     public interface IRemoteLock : IDisposable
     {

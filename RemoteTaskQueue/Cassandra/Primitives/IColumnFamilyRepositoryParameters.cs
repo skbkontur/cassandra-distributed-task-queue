@@ -8,5 +8,6 @@ namespace RemoteQueue.Cassandra.Primitives
     {
         ICassandraCluster CassandraCluster { get; }
         ICassandraSettings Settings { get; }
+        string LockColumnFamilyName { get; }
     }
 }

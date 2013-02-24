@@ -1,4 +1,4 @@
-﻿namespace RemoteQueue.Cassandra.RemoteLock
+﻿namespace RemoteLock
 {
     public interface ILockRepository
     {

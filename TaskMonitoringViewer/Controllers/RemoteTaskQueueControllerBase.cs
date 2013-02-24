@@ -23,7 +23,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.S
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
-    [ResourseGroup(ResourseGroups.AdminResourse)]
+    [ResourseGroup(ResourseGroups.SupportResourse)]
     public abstract class RemoteTaskQueueControllerBase : AuthanticatedControllerBase
     {
         protected RemoteTaskQueueControllerBase(RemoteTaskQueueControllerBaseParameters remoteTaskQueueControllerBaseParameters)
@@ -128,6 +128,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [ResourseGroup(ResourseGroups.AdminResourse)]
         public ActionResult Cancel(string id)
         {
             if(!remoteTaskQueue.CancelTask(id))
@@ -141,6 +142,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [ResourseGroup(ResourseGroups.AdminResourse)]
         public ActionResult Rerun(string id)
         {
             if(!remoteTaskQueue.RerunTask(id, TimeSpan.FromTicks(0)))
