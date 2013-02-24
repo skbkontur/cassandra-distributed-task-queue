@@ -82,9 +82,6 @@
     <Compile Include="FunctionalTestBaseWithoutServices.cs" />
     <Compile Include="Logging\Log4netConfiguration.cs" />
     <Compile Include="ObjectComparer.cs" />
-    <Compile Include="RemoteLock\RemoteLockAndWeakLockTest.cs" />
-    <Compile Include="RemoteLock\RemoteLockTest.cs" />
-    <Compile Include="RemoteLock\ThreadsTestBase.cs" />
     <Compile Include="RepositoriesTests\BlobStorageTest.cs" />
     <Compile Include="ExchangeTests\FailTaskTest.cs" />
     <Compile Include="ExchangeTests\PeriodicTaskTest.cs" />
