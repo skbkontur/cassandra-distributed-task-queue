@@ -60,6 +60,10 @@
       <Project>{C86636E6-89C3-4930-A6BD-CCDF61B5D8F1}</Project>
       <Name>MonitoringDataTypes</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{d8d12ac6-ec15-4ea9-92be-80ee41a1e152}</Project>
+      <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

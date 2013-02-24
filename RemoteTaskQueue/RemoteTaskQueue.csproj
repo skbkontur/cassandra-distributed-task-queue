@@ -43,6 +43,10 @@
     <Reference Include="log4net">
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="RemoteLock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\RemoteLock.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -150,12 +154,6 @@
     <Compile Include="StaticGrobuf.cs" />
     <Compile Include="UserClasses\TaskDataRegistryBase.cs" />
     <Compile Include="UserClasses\TaskHandlerRegistryBase.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RemoteLock\RemoteLock.csproj">
-      <Project>{de07e057-2370-4025-ba29-772d4751133c}</Project>
-      <Name>RemoteLock</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
