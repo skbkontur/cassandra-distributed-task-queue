@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Catalogue.AccessControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.AccessControl.LocalImplementation">
       <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
     </Reference>
@@ -59,6 +63,10 @@
     <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
       <Project>{C86636E6-89C3-4930-A6BD-CCDF61B5D8F1}</Project>
       <Name>MonitoringDataTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{d8d12ac6-ec15-4ea9-92be-80ee41a1e152}</Project>
+      <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

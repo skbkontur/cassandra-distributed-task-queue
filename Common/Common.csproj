@@ -59,6 +59,10 @@
     <Reference Include="GroboSerializer">
       <HintPath>..\..\Assemblies\Temp\GroboSerializer.dll</HintPath>
     </Reference>
+    <Reference Include="RemoteLock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\RemoteLock.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -79,10 +83,6 @@
     <Compile Include="Xml\XmlPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RemoteLock\RemoteLock.csproj">
-      <Project>{de07e057-2370-4025-ba29-772d4751133c}</Project>
-      <Name>RemoteLock</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>

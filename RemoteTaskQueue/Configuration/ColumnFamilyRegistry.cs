@@ -15,7 +15,7 @@ namespace RemoteQueue.Configuration
     {
         public ColumnFamilyRegistry()
         {
-            Register(ColumnFamilyRepositoryParameters.lockColumnFamilyName);
+            Register(ColumnFamilyRepositoryParameters.LockColumnFamily);
 
             Register(TaskDataBlobStorage.columnFamilyName);
             Register(TaskExceptionInfoBlobStorage.columnFamilyName);

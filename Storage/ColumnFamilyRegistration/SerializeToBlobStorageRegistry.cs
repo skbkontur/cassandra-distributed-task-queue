@@ -1,4 +1,5 @@
-﻿using SKBKontur.Catalogue.AccessControl.LocalImplementation;
+﻿using SKBKontur.Catalogue.AccessControl;
+using SKBKontur.Catalogue.AccessControl.LocalImplementation;
 using SKBKontur.Catalogue.CassandraStorageCore;
 using SKBKontur.Catalogue.CassandraStorageCore.ColumnFamilyRegistration;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects.Parties;
@@ -18,6 +19,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage.ColumnFamilyRegistration
             RegisterLocal<AccessRuleStorageElement>("AccessRuleStorageElement");
             RegisterLocal<FtpUser>("FtpUser");
             RegisterLocal<MonitoringSearchRequest>("MonitoringSearchRequest");
+
+            RegisterLocal<UserLoginRecord>("UserLoginRecord");
+            RegisterLocal<ActualUserId>("ActualUserId");
         }
     }
 }
