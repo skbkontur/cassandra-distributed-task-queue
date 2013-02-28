@@ -2,8 +2,9 @@
 
 using GroBuf;
 
+using RemoteLock;
+
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Handling.HandlerResults;
 
 namespace RemoteQueue.Handling

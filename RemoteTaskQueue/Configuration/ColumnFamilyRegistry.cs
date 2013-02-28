@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using RemoteQueue.Cassandra.RemoteLock;
+using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -15,7 +15,8 @@ namespace RemoteQueue.Configuration
     {
         public ColumnFamilyRegistry()
         {
-            Register(LockRepository.columnFamilyName);
+            Register(ColumnFamilyRepositoryParameters.LockColumnFamily);
+
             Register(TaskDataBlobStorage.columnFamilyName);
             Register(TaskExceptionInfoBlobStorage.columnFamilyName);
             Register(TaskMetaInformationBlobStorage.columnFamilyName);

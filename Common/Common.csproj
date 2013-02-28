@@ -59,6 +59,10 @@
     <Reference Include="GroboSerializer">
       <HintPath>..\..\Assemblies\Temp\GroboSerializer.dll</HintPath>
     </Reference>
+    <Reference Include="RemoteLock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\RemoteLock.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -70,6 +74,7 @@
   <ItemGroup>
     <Compile Include="ExchangeServiceClient.cs" />
     <Compile Include="IExchangeServiceClient.cs" />
+    <Compile Include="LockRepositoryContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteTaskQueue\CassandraSettings.cs" />
     <Compile Include="RemoteTaskQueue\RemoteTaskQueuePlugin.cs" />

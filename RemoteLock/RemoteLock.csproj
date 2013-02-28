@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</ProjectGuid>
+    <ProjectGuid>{DE07E057-2370-4025-BA29-772D4751133C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.Storage</RootNamespace>
-    <AssemblyName>Catalogue.RemoteTaskQueue.Storage</AssemblyName>
+    <RootNamespace>RemoteLock</RootNamespace>
+    <AssemblyName>RemoteLock</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,18 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catalogue.AccessControl, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
+    <Reference Include="Cassandra.CassandraClient">
+      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.AccessControl.LocalImplementation">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.CommonBusinessObjects">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
+    <Reference Include="log4net">
+      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,21 +45,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColumnFamilyRegistration\SerializeToBlobStorageRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\SerializeToRowsStorageRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\SimpleColumnFamilyRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\StoragePlugin.cs" />
+    <Compile Include="ILockRepository.cs" />
+    <Compile Include="IRemoteLock.cs" />
+    <Compile Include="IRemoteLockCreator.cs" />
+    <Compile Include="LockAttemptResult.cs" />
+    <Compile Include="LockAttemptStatus.cs" />
+    <Compile Include="LockRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
-      <Project>{C86636E6-89C3-4930-A6BD-CCDF61B5D8F1}</Project>
-      <Name>MonitoringDataTypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
-      <Project>{d8d12ac6-ec15-4ea9-92be-80ee41a1e152}</Project>
-      <Name>RemoteTaskQueue</Name>
-    </ProjectReference>
+    <Compile Include="RemoteLock.cs" />
+    <Compile Include="RemoteLockCreator.cs" />
+    <Compile Include="WeakRemoteLock.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

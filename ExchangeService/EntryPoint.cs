@@ -1,4 +1,5 @@
-﻿using SKBKontur.Catalogue.ServiceLib;
+﻿using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
 
 namespace ExchangeService
@@ -14,7 +15,7 @@ namespace ExchangeService
 
         private void Run()
         {
-            //Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<CassandraSettings>());
+            Container.ConfigureLockRepository();
             Container.Get<HttpService>().Run();
         }
     }

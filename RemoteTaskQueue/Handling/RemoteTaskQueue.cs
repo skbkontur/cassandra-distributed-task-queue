@@ -2,9 +2,10 @@
 
 using GroBuf;
 
+using RemoteLock;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -31,7 +32,7 @@ namespace RemoteQueue.Handling
             handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
             typeToNameMapper = new TaskDataTypeToNameMapper(taskDataRegistry);
-            remoteLockCreator = new RemoteLockCreator(new LockRepository(parameters));
+            remoteLockCreator = new RemoteLockCreator(new LockRepository(cassandraCluster, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
             handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
         }
 

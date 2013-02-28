@@ -14,5 +14,7 @@ namespace RemoteQueue.Cassandra.Primitives
 
         public ICassandraCluster CassandraCluster { get; private set; }
         public ICassandraSettings Settings { get; private set; }
+        public string LockColumnFamilyName { get { return LockColumnFamily; } }
+        public const string LockColumnFamily = "lock";
     }
 }

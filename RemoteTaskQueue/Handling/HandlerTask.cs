@@ -2,8 +2,9 @@
 
 using GroBuf;
 
+using RemoteLock;
+
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.RemoteLock;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
