@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
@@ -54,7 +55,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Controllers
             enterPageModel.BackUrl = backUrl;
             enterPageModel.AuthenticatorType = authenticatorType;
             enterPageModel.LoginButton = htmlModelsCreator.PostActionButtonFor(
-                new PostUrl<EnterModelData>(url => url.Action("Login", "Enter")),
+                new PostUrl<EnterModelData>(url => url.Action("Login", "Enter")).AddParameter("backUrl", enterPageModel.BackUrl).AddParameter("authenticatorType", enterPageModel.AuthenticatorType),
                 new PostActionButtonOptions
                 {
                     Id = "loginSubmit",
@@ -66,23 +67,36 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Login(string backUrl, string authenticatorType, string login, string password)
+        public ActionResult Login(string backUrl, string authenticatorType, EnterModelData data)
         {
-            Cookies.Login = new Cookie<string>(login, null);
+            Cookies.Login = new Cookie<string>(data.Login, Expiration.never);
             try
             {
-                var userSession = authenticatorFactory.GetAuthenticator(authenticatorType).Authenticate(login, password);
+                var userSession = authenticatorFactory.GetAuthenticator(authenticatorType)
+                                                      .Authenticate(data.Login, data.Password);
                 Cookies.SetSession(userSession);
             }
-            catch(UserNotFoundException)
+            catch (UserNotFoundException)
             {
-                return RedirectToAction(string.Empty, new {backUrl, message = userNotFound, authenticatorType});
+                return Json(new SuccessOperationResult
+                {
+                    NeedRedirect = true,
+                    RedirectTo = Url.Action("Run", new { backUrl, message = userNotFound, authenticatorType })
+                });
             }
-            catch(InvalidPasswordException)
+            catch (InvalidPasswordException)
             {
-                return RedirectToAction(string.Empty, new {backUrl, message = invalidPassword, authenticatorType});
+                return Json(new SuccessOperationResult
+                {
+                    NeedRedirect = true,
+                    RedirectTo = Url.Action("Run", new { backUrl, message = invalidPassword, authenticatorType })
+                });
             }
-            return Redirect(string.IsNullOrEmpty(backUrl) ? successUrl : backUrl);
+            return Json(new SuccessOperationResult
+            {
+                NeedRedirect = true,
+                RedirectTo = string.IsNullOrEmpty(backUrl) ? successUrl : backUrl
+            });
         }
 
         private readonly IAuthenticatorFactory authenticatorFactory;
