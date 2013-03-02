@@ -1,7 +1,9 @@
 ﻿using System.Web.Mvc;
 
 using SKBKontur.Catalogue.AccessControl;
-using SKBKontur.Catalogue.Core.Web.Blocks.Button;
+using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
+using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton.Post;
+using SKBKontur.Catalogue.Core.Web.Blocks.KeyboardNavigation;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.CookiesManagement;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Models.Enter;
@@ -51,11 +53,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Controllers
             }
             enterPageModel.BackUrl = backUrl;
             enterPageModel.AuthenticatorType = authenticatorType;
-            enterPageModel.LoginButton = htmlModelsCreator.ButtonFor(new ButtonOptions
+            enterPageModel.LoginButton = htmlModelsCreator.PostActionButtonFor(
+                new PostUrl<EnterModelData>(url => url.Action("Login", "Enter")),
+                new PostActionButtonOptions
                 {
                     Id = "loginSubmit",
-                    Style = ButtonStyle.Enter,
-                    Title = enterPageModel.EnterPageText.DoLogin
+                    Style = ActionButtonStyle.Enter,
+                    Title = enterPageModel.EnterPageText.DoLogin,
+                    KeyCombination = KeyCombination.Enter
                 });
             return View("EnterView", enterPageModel);
         }

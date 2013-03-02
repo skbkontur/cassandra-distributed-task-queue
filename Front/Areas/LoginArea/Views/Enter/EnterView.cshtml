@@ -1,4 +1,4 @@
-﻿@using SKBKontur.Catalogue.Core.Web.Blocks.Button
+﻿@using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton
 @using SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Models.Enter
 @model EnterPageModel
 @{
@@ -13,7 +13,7 @@
     }
     <script type="text/javascript">
         $(document).ready(function() {
-            var pageController = new LoginPageController("Login", "Enter");
+            var pageController = new Page("Login", "Enter");
             pageController.run();
         });
     </script>
@@ -53,7 +53,7 @@
                         <span class="input_ls"></span>
                         <span class="input_rs"></span>
                     </span>
-                    @Html.Button(Model.LoginButton)
+                    @Html.ActionButton(Model.LoginButton)
                 </div>
             </div>
         }
