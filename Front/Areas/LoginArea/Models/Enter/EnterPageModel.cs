@@ -1,4 +1,4 @@
-﻿using SKBKontur.Catalogue.Core.Web.Blocks.Button;
+﻿using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
 using SKBKontur.Catalogue.Core.Web.PageModels;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Models.Enter
@@ -18,6 +18,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Models.Enter
         public string InvalidPasswordClass { get; set; }
         public string BackUrl { get; set; }
         public string AuthenticatorType { get; set; }
-        public ButtonHtmlModel LoginButton { get; set; }
+        public ActionButtonHtmlModel LoginButton { get; set; }
     }
 }
