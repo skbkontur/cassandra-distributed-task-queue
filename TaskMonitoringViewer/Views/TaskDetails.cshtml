@@ -17,49 +17,49 @@
 
 @section Scripts {
 }
-<h1 class="remoteTaskQueueMonitoring__header">@Model.Title</h1>
-<div class="remoteTaskQueueMonitoring__back"><a href="@Model.TaskListUrl">Вернуться в Task list</a></div>
-<div class="remoteTaskQueueMonitoring__details__container">
-    <table class="remoteTaskQueueMonitoring__details">
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">TaskId</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.TaskId(htmlModel.TaskMetaInfo.TaskId)</td>
+<h1 class="adminTools__header">@Model.Title</h1>
+<div class="adminTools__back"><a href="@Model.TaskListUrl">Вернуться в Task list</a></div>
+<div class="adminTools__details__container">
+    <table class="adminTools__details">
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">TaskId</th>
+            <td class="adminTools__details__col">@Html.TaskId(htmlModel.TaskMetaInfo.TaskId)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">TaskState</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.TaskState(htmlModel.TaskMetaInfo.TaskState)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">TaskState</th>
+            <td class="adminTools__details__col">@Html.TaskState(htmlModel.TaskMetaInfo.TaskState)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">TaskName</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.Text(htmlModel.TaskMetaInfo.TaskName)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">TaskName</th>
+            <td class="adminTools__details__col">@Html.Text(htmlModel.TaskMetaInfo.TaskName)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">EnqueueTicks</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.EnqueueTime)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">EnqueueTicks</th>
+            <td class="adminTools__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.EnqueueTime)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">StartExecutedTicks</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.StartExecutingTime)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">StartExecutedTicks</th>
+            <td class="adminTools__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.StartExecutingTime)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">FinishExecutedTicks</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.FinishExecutingTime)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">FinishExecutedTicks</th>
+            <td class="adminTools__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.FinishExecutingTime)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">MinimalStartTicks</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.MinimalStartTime)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">MinimalStartTicks</th>
+            <td class="adminTools__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.MinimalStartTime)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">Attempts</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.Text(htmlModel.TaskMetaInfo.Attempts)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">Attempts</th>
+            <td class="adminTools__details__col">@Html.Text(htmlModel.TaskMetaInfo.Attempts)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">ParentTaskId</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.TaskId(htmlModel.TaskMetaInfo.ParentTaskId)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">ParentTaskId</th>
+            <td class="adminTools__details__col">@Html.TaskId(htmlModel.TaskMetaInfo.ParentTaskId)</td>
         </tr>
         <tr>
-            <th class="remoteTaskQueueMonitoring__details__header">ChildTaskIds</th>
-            <td class="remoteTaskQueueMonitoring__details__col">
+            <th class="adminTools__details__header">ChildTaskIds</th>
+            <td class="adminTools__details__col">
                 @{
                     foreach (var childTaskId in htmlModel.ChildTaskIds)
                     {
@@ -68,20 +68,20 @@
                 }
             </td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item">
-            <th class="remoteTaskQueueMonitoring__details__header">TaskGroupLock</th>
-            <td class="remoteTaskQueueMonitoring__details__col">@Html.Text(htmlModel.TaskMetaInfo.TaskGroupLock)</td>
+        <tr class="adminTools__details__item">
+            <th class="adminTools__details__header">TaskGroupLock</th>
+            <td class="adminTools__details__col">@Html.Text(htmlModel.TaskMetaInfo.TaskGroupLock)</td>
         </tr>
-        <tr class="remoteTaskQueueMonitoring__details__item @(htmlModel.ExceptionInfo == null ? "remoteTaskQueueMonitoring__details__last" : "")">
-            <th class="remoteTaskQueueMonitoring__details__header">TaskData</th>
-            <td class="remoteTaskQueueMonitoring__details__col" id="TaskData">@htmlModel.TaskDataValue.Render(Html)</td>
+        <tr class="adminTools__details__item @(htmlModel.ExceptionInfo == null ? "adminTools__details__last" : "")">
+            <th class="adminTools__details__header">TaskData</th>
+            <td class="adminTools__details__col" id="TaskData">@htmlModel.TaskDataValue.Render(Html)</td>
         </tr>
         @{
             if (htmlModel.ExceptionInfo != null)
             {
-                <tr class="remoteTaskQueueMonitoring__details__item remoteTaskQueueMonitoring__details__last">
-                    <td class="remoteTaskQueueMonitoring__details__header">Детали ошибки</td>
-                    <td class="remoteTaskQueueMonitoring__details__col">
+                <tr class="adminTools__details__item adminTools__details__last">
+                    <td class="adminTools__details__header">Детали ошибки</td>
+                    <td class="adminTools__details__col">
                         @Html.ExceptionInfo(htmlModel.ExceptionInfo)
                     </td>
                 </tr>

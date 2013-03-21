@@ -21,43 +21,43 @@
     pageController.run();
     });
 }
-<h1 class="remoteTaskQueueMonitoring__header">Task list</h1>
+<h1 class="adminTools__header">Task list</h1>
 @{
     var searchPanelModel = htmlModel.SearchPanel;
 }
 
 <div class="slide element slide__hide">
-    <div class="slide_title_link disableSelection remoteTaskQueueMonitoring_filter_showHideLink">
+    <div class="slide_title_link disableSelection adminTools_filter_showHideLink">
         <a href="#" class="slide_title_link_link dottedLink t-pseudoLink">Показать/скрыть</a>
     </div>
     <div class="slide_listWrap" style="display: none;">
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">State</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">
+        <div class="adminTools__filter">
+            <div class="adminTools__filter__label">State</div>
+            <div class="adminTools__filter__field">
                 @foreach(var taskState in searchPanelModel.TaskStates)
                 {
-                    <div class="remoteTaskQueueMonitoring__filter__field__items">
+                    <div class="adminTools__filter__field__items">
                         @Html.Input(taskState.Value)
                         @Html.Checkbox(taskState.CheckBox)
                     </div>
                 }
             </div>
         </div>
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">TaskId</div>
-            <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(searchPanelModel.TaskId)</div>
+        <div class="adminTools__filter">
+            <div class="adminTools__filter__label">TaskId</div>
+            <div class="adminTools__filter__field adminTools__filter__field_type_big">@Html.Input(searchPanelModel.TaskId)</div>
         </div>
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">ParentTaskId</div>
-            <div class="remoteTaskQueueMonitoring__filter__field remoteTaskQueueMonitoring__filter__field_type_big">@Html.Input(searchPanelModel.ParentTaskId)</div>
+        <div class="adminTools__filter">
+            <div class="adminTools__filter__label">ParentTaskId</div>
+            <div class="adminTools__filter__field adminTools__filter__field_type_big">@Html.Input(searchPanelModel.ParentTaskId)</div>
         </div>
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">TaskName</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">
+        <div class="adminTools__filter">
+            <div class="adminTools__filter__label">TaskName</div>
+            <div class="adminTools__filter__field">
 
                 @foreach(var taskName in searchPanelModel.TaskNames)
                 {
-                    <div class="remoteTaskQueueMonitoring__filter__field__items">
+                    <div class="adminTools__filter__field__items">
                         @Html.Input(taskName.Value)
                         @Html.Checkbox(taskName.CheckBox)
                     </div>
@@ -65,76 +65,76 @@
             </div>
         </div>
 
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">Ticks From</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.From)</div>
-            <div class="remoteTaskQueueMonitoring__filter__label">Ticks To</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.To)</div>
+        <div class="adminTools__filter">
+            <div class="adminTools__filter__label">Ticks From</div>
+            <div class="adminTools__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.From)</div>
+            <div class="adminTools__filter__label">Ticks To</div>
+            <div class="adminTools__filter__field">@Html.DateAndTime(searchPanelModel.Ticks.To)</div>
         </div>
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">StartExecutedTicks From</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.StartExecutedTicks.From)</div>
-            <div class="remoteTaskQueueMonitoring__filter__label">StartExecutedTicks To</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.StartExecutedTicks.To)</div>
+        <div class="adminTools__filter">
+            <div class="adminTools__filter__label">StartExecutedTicks From</div>
+            <div class="adminTools__filter__field">@Html.DateAndTime(searchPanelModel.StartExecutedTicks.From)</div>
+            <div class="adminTools__filter__label">StartExecutedTicks To</div>
+            <div class="adminTools__filter__field">@Html.DateAndTime(searchPanelModel.StartExecutedTicks.To)</div>
         </div>
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">FinishExecutedTicks From</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.FinishExecutedTicks.From)</div>
-            <div class="remoteTaskQueueMonitoring__filter__label">FinishExecutedTicks To</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.FinishExecutedTicks.To)</div>
+        <div class="adminTools__filter">
+            <div class="adminTools__filter__label">FinishExecutedTicks From</div>
+            <div class="adminTools__filter__field">@Html.DateAndTime(searchPanelModel.FinishExecutedTicks.From)</div>
+            <div class="adminTools__filter__label">FinishExecutedTicks To</div>
+            <div class="adminTools__filter__field">@Html.DateAndTime(searchPanelModel.FinishExecutedTicks.To)</div>
         </div>
-        <div class="remoteTaskQueueMonitoring__filter">
-            <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks From</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.MinimalStartTicks.From)</div>
-            <div class="remoteTaskQueueMonitoring__filter__label">MinimalStartTicks To</div>
-            <div class="remoteTaskQueueMonitoring__filter__field">@Html.DateAndTime(searchPanelModel.MinimalStartTicks.To)</div>
+        <div class="adminTools__filter">
+            <div class="adminTools__filter__label">MinimalStartTicks From</div>
+            <div class="adminTools__filter__field">@Html.DateAndTime(searchPanelModel.MinimalStartTicks.From)</div>
+            <div class="adminTools__filter__label">MinimalStartTicks To</div>
+            <div class="adminTools__filter__field">@Html.DateAndTime(searchPanelModel.MinimalStartTicks.To)</div>
         </div>
     </div>
 </div>
-<div class="remoteTaskQueueMonitoring__button">@Html.ActionButton(searchPanelModel.SearchButton)</div>
+<div class="adminTools__button">@Html.ActionButton(searchPanelModel.SearchButton)</div>
 
 <div class="context_novis"> Найдено: @Html.Text(htmlModel.TaskCount)</div>
-<table class="remoteTaskQueueMonitoring__data">
+<table class="adminTools__data">
     <tr>
-        <th class="remoteTaskQueueMonitoring__data__header">TaskId</th>
-        <th class="remoteTaskQueueMonitoring__data__header">TaskState</th>
-        <th class="remoteTaskQueueMonitoring__data__header">TaskName</th>
-        <th class="remoteTaskQueueMonitoring__data__header">EnqueueTicks</th>
-        <th class="remoteTaskQueueMonitoring__data__header">StartExecutedTicks</th>
-        <th class="remoteTaskQueueMonitoring__data__header">FinishExecutedTicks</th>
-        <th class="remoteTaskQueueMonitoring__data__header">MinimalStartTicks</th>
-        <th class="remoteTaskQueueMonitoring__data__header">Attempts</th>
-        <th class="remoteTaskQueueMonitoring__data__header remoteTaskQueueMonitoring__last">ParentTaskId</th>
+        <th class="adminTools__data__header">TaskId</th>
+        <th class="adminTools__data__header">TaskState</th>
+        <th class="adminTools__data__header">TaskName</th>
+        <th class="adminTools__data__header">EnqueueTicks</th>
+        <th class="adminTools__data__header">StartExecutedTicks</th>
+        <th class="adminTools__data__header">FinishExecutedTicks</th>
+        <th class="adminTools__data__header">MinimalStartTicks</th>
+        <th class="adminTools__data__header">Attempts</th>
+        <th class="adminTools__data__header adminTools__last">ParentTaskId</th>
     </tr>
     @{
         foreach(var taskModel in htmlModel.Tasks)
         {
-            <tr class="remoteTaskQueueMonitoring__data__item remoteTaskQueueMonitoring__data__item_state_@(taskModel.TaskState.Value)">
-                <td class="remoteTaskQueueMonitoring__data__col remoteTaskQueueMonitoring__data__col_type_id">
+            <tr class="adminTools__data__item adminTools__data__item_state_@(taskModel.TaskState.Value)">
+                <td class="adminTools__data__col adminTools__data__col_type_id">
                     @Html.TaskId(taskModel.TaskId)
                 </td>
-                <td class="remoteTaskQueueMonitoring__data__col">
+                <td class="adminTools__data__col">
                     @Html.TaskState(taskModel.TaskState)
                 </td>
-                <td class="remoteTaskQueueMonitoring__data__col">
+                <td class="adminTools__data__col">
                     @Html.Text(taskModel.TaskName)
                 </td>
-                <td class="remoteTaskQueueMonitoring__data__col">
+                <td class="adminTools__data__col">
                     @Html.TaskDateTime(taskModel.EnqueueTime)
                 </td>
-                <td class="remoteTaskQueueMonitoring__data__col">
+                <td class="adminTools__data__col">
                     @Html.TaskDateTime(taskModel.StartExecutingTime)
                 </td>
-                <td class="remoteTaskQueueMonitoring__data__col">
+                <td class="adminTools__data__col">
                     @Html.TaskDateTime(taskModel.FinishExecutingTime)
                 </td>
-                <td class="remoteTaskQueueMonitoring__data__col">
+                <td class="adminTools__data__col">
                     @Html.TaskDateTime(taskModel.MinimalStartTime)
                 </td>
-                <td class="remoteTaskQueueMonitoring__data__col">
+                <td class="adminTools__data__col">
                     @Html.Text(taskModel.Attempts)
                 </td>
-                <td class="remoteTaskQueueMonitoring__data__col remoteTaskQueueMonitoring__last remoteTaskQueueMonitoring__data__col_type_id">
+                <td class="adminTools__data__col adminTools__last adminTools__data__col_type_id">
                     @Html.TaskId(taskModel.ParentTaskId)
                 </td>
             </tr>
@@ -142,6 +142,6 @@
     }
 </table>
 @Html.Selects(Model.GetAllSelects())
-<div class="remoteTaskQueueMonitoring__paginator">
+<div class="adminTools__paginator">
     @Html.Paginator(Model.PaginatorModelData)
 </div>
