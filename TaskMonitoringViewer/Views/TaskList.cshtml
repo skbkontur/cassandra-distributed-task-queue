@@ -9,7 +9,7 @@
 }
 @* ReSharper disable Razor.SectionNotResolved *@
 @section Title {
-    Task list
+    Очередь задач
 }
 @* ReSharper restore Razor.SectionNotResolved *@
 @section Scripts{
@@ -21,14 +21,14 @@
     pageController.run();
     });
 }
-<h1 class="adminTools__header">Task list</h1>
+<h1 class="adminTools__header">Очередь задач</h1>
 @{
     var searchPanelModel = htmlModel.SearchPanel;
 }
 
-<div class="slide element slide__hide">
+<div class="adminTools__filters slide element slide__hide">
     <div class="slide_title_link disableSelection adminTools_filter_showHideLink">
-        <a href="#" class="slide_title_link_link dottedLink t-pseudoLink">Показать/скрыть</a>
+        <a href="#" class="slide_title_link_link dottedLink t-pseudoLink">Показать/скрыть фильтры</a>
     </div>
     <div class="slide_listWrap" style="display: none;">
         <div class="adminTools__filter">
@@ -92,8 +92,9 @@
     </div>
 </div>
 <div class="adminTools__button">@Html.ActionButton(searchPanelModel.SearchButton)</div>
-
-<div class="context_novis"> Найдено: @Html.Text(htmlModel.TaskCount)</div>
+<div class="adminTools__filters__count">
+    <span class="adminTools__filters__count__content">Найдено: @Html.Text(htmlModel.TaskCount)</span>
+</div>
 <table class="adminTools__data">
     <tr>
         <th class="adminTools__data__header">TaskId</th>
