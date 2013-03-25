@@ -1,4 +1,6 @@
-﻿using GroboContainer.Core;
+﻿using GroBuf;
+
+using GroboContainer.Core;
 
 using RemoteLock;
 
@@ -10,12 +12,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
     {
         public static void ConfigureLockRepository(this IContainer container)
         {
+            var serializer = container.Get<ISerializer>();
             var columnFamilyRepositoryParameters = container.Get<IColumnFamilyRepositoryParameters>();
-            container.Configurator.ForAbstraction<ILockRepository>().UseInstances(
-                new LockRepository(
+            container.Configurator.ForAbstraction<IRemoteLockImplementation>().UseInstances(
+                new CassandraRemoteLockImplementation(
                     columnFamilyRepositoryParameters.CassandraCluster,
+                    columnFamilyRepositoryParameters.Settings,
+                    serializer,
                     columnFamilyRepositoryParameters.Settings.QueueKeyspace,
-                    columnFamilyRepositoryParameters.LockColumnFamilyName));
+                    columnFamilyRepositoryParameters.LockColumnFamilyName))
+                ;
         }
     }
 }
