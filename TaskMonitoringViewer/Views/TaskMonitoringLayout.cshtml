@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <link rel="shortcut icon" href="/Icon.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/AdminToolsIcon.ico" type="image/x-icon" />
         <title>@RenderSection("Title")</title>
         @{
             Html.RenderStyle("/Shared/Design/Common/Styles/Reset.css");
@@ -35,8 +35,8 @@
             Html.RenderStyle("/SharedBlocks/BalloonLink/BalloonLink.css");
 
             Html.RenderStyle("/Shared/Design/ObjectTreeWebViewer/Styles/ObjectTreeWebViewer.css");
-            Html.RenderStyle("/Shared/Design/RemoteTaskQueueMonitoring/Styles/RemoteTaskQueueMonitoring.css");
-            Html.RenderStyle("/Shared/Design/RemoteTaskQueueMonitoring/Styles/Paginator.css");
+            Html.RenderStyle("/Shared/Design/AdminTools/Styles/AdminTools.css");
+            Html.RenderStyle("/Shared/Design/AdminTools/Styles/Paginator.css");
 
             Html.RenderScript("/Shared/Scripts/External/Base.js");
             Html.RenderScript("/Shared/Scripts/External/Clone.js");
@@ -58,7 +58,7 @@
             Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardCollection.js");
             Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardNormalizer.js");
             Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardKeys.js");
-            
+
             Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardKeys.js");
 
             Html.RenderScript("/Shared/Scripts/Expressions/Expression.js");
@@ -71,62 +71,60 @@
                 $(".cancelTask").click(function(event) {
                     var _this = this;
                     var res = $(this).hasClass("noConfirmation");
-                    if (!res)
-                    {
+                    if (!res) {
                         res = confirm("Отменить задачу?");
                     }
                     if (res) {
                         $.ajax({
-                                async: true,
-                                type: "POST",
-                                url: $(_this).attr('url'),
-                                data: $.toJSON({ x: "x" }),
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
-                                error: function() {
-                                    alert("error ajax");
-                                },
-                                success: function(operationResult) {
-                                    if (operationResult.Success) {
-                                        if (!_.isUndefined(operationResult.RedirectTo)) {
-                                            Redirect.go(operationResult.RedirectTo);
-                                        }
-                                    } else {
-                                        alert(operationResult.ErrorMessage);
+                            async: true,
+                            type: "POST",
+                            url: $(_this).attr('url'),
+                            data: $.toJSON({ x: "x" }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            error: function() {
+                                alert("error ajax");
+                            },
+                            success: function(operationResult) {
+                                if (operationResult.Success) {
+                                    if (!_.isUndefined(operationResult.RedirectTo)) {
+                                        Redirect.go(operationResult.RedirectTo);
                                     }
+                                } else {
+                                    alert(operationResult.ErrorMessage);
                                 }
-                            });
+                            }
+                        });
                     }
                 });
 
                 $(".rerunTask").click(function(event) {
                     var _this = this;
                     var res = $(this).hasClass("noConfirmation");
-                    if (!res)
-                    {
+                    if (!res) {
                         res = confirm("Перезапустить задачу?");
                     }
                     if (res) {
                         $.ajax({
-                                async: true,
-                                type: "POST",
-                                url: $(_this).attr('url'),
-                                data: $.toJSON({ x: "x" }),
-                                contentType: "application/json; charset=utf-8",
-                                dataType: "json",
-                                error: function() {
-                                    alert("error ajax");
-                                },
-                                success: function(operationResult) {
-                                    if (operationResult.Success) {
-                                        if (!_.isUndefined(operationResult.RedirectTo)) {
-                                            Redirect.go(operationResult.RedirectTo);
-                                        }
-                                    } else {
-                                        alert(operationResult.ErrorMessage);
+                            async: true,
+                            type: "POST",
+                            url: $(_this).attr('url'),
+                            data: $.toJSON({ x: "x" }),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            error: function() {
+                                alert("error ajax");
+                            },
+                            success: function(operationResult) {
+                                if (operationResult.Success) {
+                                    if (!_.isUndefined(operationResult.RedirectTo)) {
+                                        Redirect.go(operationResult.RedirectTo);
                                     }
+                                } else {
+                                    alert(operationResult.ErrorMessage);
                                 }
-                            });
+                            }
+                        });
                     }
                 });
             });
@@ -134,11 +132,11 @@
             $(document).ready(function() {
                 ObjectTreeViewerRegistrator.registerHandlers();
             });
-        @RenderSection("Scripts")
+            @RenderSection("Scripts")
 
         </script>
     </head>
-    <body class="remoteTaskQueueMonitoring subform" subform="page">
+    <body class="adminTools subform" subform="page">
         @RenderBody()
     </body>
 </html>
