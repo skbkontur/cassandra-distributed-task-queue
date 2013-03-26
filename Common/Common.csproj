@@ -59,6 +59,10 @@
     <Reference Include="GroboSerializer">
       <HintPath>..\..\Assemblies\Temp\GroboSerializer.dll</HintPath>
     </Reference>
+    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
     <Reference Include="RemoteLock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\RemoteLock.dll</HintPath>

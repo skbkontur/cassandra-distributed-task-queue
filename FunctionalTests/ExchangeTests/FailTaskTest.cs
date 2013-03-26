@@ -42,7 +42,7 @@ namespace FunctionalTests.ExchangeTests
             var handleTasksMetaStorage = new HandleTasksMetaStorage(new TaskMetaInformationBlobStorage(parameters, serializer, globalTime), taskMinimalStartTicksIndex, eventLongRepository, globalTime);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage);
             testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime),
-                                                              new RemoteLockCreator(new LockRepository(parameters.CassandraCluster, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
+                                                              new RemoteLockCreator(new CassandraRemoteLockImplementation(parameters.CassandraCluster, parameters.Settings, serializer, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
             taskQueue = Container.Get<IRemoteTaskQueue>();
         }
 

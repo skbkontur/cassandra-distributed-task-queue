@@ -17,8 +17,10 @@
 
 @section Scripts {
 }
-<h1 class="adminTools__header">@Model.Title</h1>
-<div class="adminTools__back"><a href="@Model.TaskListUrl" id="TaskListBackLink">Вернуться к списку задач</a></div>
+<h1 class="adminTools__header">
+    @Model.Title
+    <a class="adminTools__header__back" href="@Model.TaskListUrl" id="TaskListBackLink">Вернуться к списку задач</a>
+</h1>
 <div class="adminTools__details__container">
     <table class="adminTools__details">
         <tr class="adminTools__details__item">
