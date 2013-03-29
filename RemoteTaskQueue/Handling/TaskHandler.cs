@@ -11,7 +11,7 @@ namespace RemoteQueue.Handling
 {
     public abstract class TaskHandler<T> : ITaskHandler where T : ITaskData
     {
-        public HandleResult HandleTask(IRemoteTaskQueue queue, ISerializer serializer, IRemoteLockCreator remoteLockCreator, Task task)
+        public virtual HandleResult HandleTask(IRemoteTaskQueue queue, ISerializer serializer, IRemoteLockCreator remoteLockCreator, Task task)
         {
             taskQueue = queue;
             Context = task.Meta;
