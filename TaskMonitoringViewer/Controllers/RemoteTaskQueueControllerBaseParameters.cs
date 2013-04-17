@@ -1,5 +1,6 @@
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.CassandraStorageCore.BusinessObjectStorageImpl;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
@@ -13,7 +14,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
     public class RemoteTaskQueueControllerBaseParameters
     {
-
         public RemoteTaskQueueControllerBaseParameters(
             LoggedInControllerBaseParameters loggedInControllerBaseParameters,
             ITaskMetadataModelBuilder taskMetadataModelBuilder,
@@ -26,7 +26,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder,
             IRemoteTaskQueue remoteTaskQueue,
             ITaskListModelBuilder taskListModelBuilder,
-            ITaskListHtmlModelBuilder taskListHtmlModelBuilder)
+            ITaskListHtmlModelBuilder taskListHtmlModelBuilder, 
+            IAccessControlService accessControlService)
         {
             TaskListHtmlModelBuilder = taskListHtmlModelBuilder;
             TaskListModelBuilder = taskListModelBuilder;
@@ -40,6 +41,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             TaskDetailsHtmlModelBuilder = taskDetailsHtmlModelBuilder;
             ObjectValueExtracter = objectValueExtracter;
             RemoteTaskQueueMonitoringServiceStorage = remoteTaskQueueMonitoringServiceStorage;
+            AccessControlService = accessControlService;
         }
 
         public ITaskListModelBuilder TaskListModelBuilder { get; private set; }
@@ -55,5 +57,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public IObjectValueExtractor ObjectValueExtracter { get; private set; }
         public IRemoteTaskQueueMonitoringServiceStorage RemoteTaskQueueMonitoringServiceStorage { get; private set; }
         public ITaskListHtmlModelBuilder TaskListHtmlModelBuilder { get; private set; }
+        public IAccessControlService AccessControlService { get; private set; }
     }
 }
