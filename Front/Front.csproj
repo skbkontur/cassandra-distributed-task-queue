@@ -142,10 +142,10 @@
     <Compile Include="Views\Shared\Primitives\RemoteTaskQueueHtmlPrimitives.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AdminToolsIcon.ico" />
     <Content Include="Areas\LoginArea\Views\Enter\EnterView.cshtml" />
     <Content Include="Blocks\StartPage\StartPage.css" />
     <Content Include="Blocks\StartPage\StartPage.png" />
-    <Content Include="Icon.ico" />
     <Content Include="Blocks\StartPage\StartPage.cshtml" />
     <EmbeddedResource Include="Settings\front.log4net.config" />
     <None Include="Settings\frontSettings" />

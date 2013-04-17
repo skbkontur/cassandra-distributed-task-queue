@@ -6,7 +6,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls
     public class TaskListItem : HtmlControl
     {
         public TaskListItem(int index)
-            : base(new ByNthOfClass("remoteTaskQueueMonitoring__data__item", index))
+            : base(new ByNthOfClass("adminTools__data__item", index))
         {
             TaskId = new Link(string.Format("TaskModels_{0}_TaskId", index), this);
             TaskState = new StaticText(string.Format("TaskModels_{0}_State", index), this);

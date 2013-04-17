@@ -32,7 +32,7 @@ namespace RemoteQueue.Handling
             handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
             typeToNameMapper = new TaskDataTypeToNameMapper(taskDataRegistry);
-            remoteLockCreator = new RemoteLockCreator(new LockRepository(cassandraCluster, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
+            remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, parameters.Settings, serializer, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
             handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
         }
 

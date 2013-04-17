@@ -16,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             Attempts = new StaticText("TaskMetaInfoModel_Attempts");
             ParentTaskId = new Link("TaskMetaInfoModel_ParentTaskId");
             TaskData = new StaticText("TaskMetaInfoModel_TaskData");
-            TaskList = new Link(By.LinkText("Вернуться в Task list"));
+            TaskList = new Link(By.Id("TaskListBackLink"));
         }
 
         public override void BrowseWaitVisible()
