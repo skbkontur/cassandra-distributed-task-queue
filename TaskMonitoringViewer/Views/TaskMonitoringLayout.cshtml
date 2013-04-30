@@ -6,65 +6,9 @@
         <link rel="shortcut icon" href="/AdminToolsIcon.ico" type="image/x-icon" />
         <title>@RenderSection("Title")</title>
         @{
-            Html.RenderStyle("/Shared/Design/Common/Styles/Reset.css");
-            Html.RenderStyle("/Shared/Design/Common/Styles/Typography.css");
-            Html.RenderStyle("/Shared/Design/Common/Styles/Common.css");
-            Html.RenderStyle("/Shared/Design/Common/Styles/Header.css");
-            Html.RenderStyle("/Shared/Design/Common/Styles/Content.css");
-            Html.RenderStyle("/Shared/Design/Common/Styles/Footer.css");
-            Html.RenderStyle("/Shared/Design/Login/Styles/Login.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/Fields.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/Input.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/Mask.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/Select.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/Reference.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/Array.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/Checkbox.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/ExtendedCheckbox.css");
-            Html.RenderStyle("/Shared/Design/Fields/Styles/Autocomplete.css");
-            Html.RenderStyle("/Shared/Design/Balloon/Styles/Balloon.css");
-            Html.RenderStyle("/Shared/Design/Calendar/Styles/Calendar.css");
-            Html.RenderStyle("/Shared/Design/List/Styles/List.css");
-
-            Html.RenderStyle("/SharedBlocks/ActionButton/ActionButton.css");
-            Html.RenderStyle("/SharedBlocks/RadioButton/RadioButton.css");
-            Html.RenderStyle("/SharedBlocks/Autocomplete/AutocompleteControl.css");
-            Html.RenderStyle("/SharedBlocks/KeyboardNavigation/KeyboardNavigation.css");
-            Html.RenderStyle("/SharedBlocks/CertificatesList/CertificatesList.css");
-            Html.RenderStyle("/SharedBlocks/DragAndDropUpload/DragAndDropUpload.css");
-            Html.RenderStyle("/SharedBlocks/BalloonLink/BalloonLink.css");
-
-            Html.RenderStyle("/Shared/Design/ObjectTreeWebViewer/Styles/ObjectTreeWebViewer.css");
-            Html.RenderStyle("/Shared/Design/AdminTools/Styles/AdminTools.css");
-            Html.RenderStyle("/Shared/Design/AdminTools/Styles/Paginator.css");
-
-            Html.RenderScript("/Shared/Scripts/External/Base.js");
-            Html.RenderScript("/Shared/Scripts/External/Clone.js");
-            Html.RenderScript("/Shared/Scripts/External/JQuery.js");
-            Html.RenderScript("/Shared/Scripts/External/JQueryDisableTextSelect.js");
-            Html.RenderScript("/Shared/Scripts/External/JQueryEasing.js");
-            Html.RenderScript("/Shared/Scripts/External/JQueryAnimation.js");
-            Html.RenderScript("/Shared/Scripts/External/JQueryMousewheel.js");
-            Html.RenderScript("/Shared/Scripts/External/JQueryJson.js");
-            Html.RenderScript("/Shared/Scripts/External/JQuerySimulate.js");
-            Html.RenderScript("/Shared/Scripts/External/JQuerySimulateTyping.js");
-            Html.RenderScript("/Shared/Scripts/External/JQueryCookie.js");
-
-            Html.RenderScript("/Shared/Scripts/External/underscore.js");
-            Html.RenderScript("/Shared/Scripts/Extensions/UnderscoreAddon.js");
-            Html.RenderScript("/Shared/Scripts/Extensions/Browser.js");
-
-            Html.RenderScript("/Shared/Scripts/Keyboard/Keyboard.js");
-            Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardCollection.js");
-            Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardNormalizer.js");
-            Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardKeys.js");
-
-            Html.RenderScript("/Shared/Scripts/Keyboard/KeyboardKeys.js");
-
-            Html.RenderScript("/Shared/Scripts/Expressions/Expression.js");
-
-            Html.RenderAllScriptsFromDirectory("/Shared/Scripts/Autoload");
-            Html.RenderAllScriptsFromDirectory("/SharedBlocks/");
+            Html.RenderMetaAttributes();
+            Html.RenderSharedStyles();
+            Html.RenderSharedScripts();
         }
         <script type="text/javascript">
             $(document).ready(function() {
