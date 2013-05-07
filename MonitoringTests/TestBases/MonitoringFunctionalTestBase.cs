@@ -17,6 +17,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
+using SKBKontur.Catalogue.RemoteTaskQueue.Storage;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.TestCore;
 using SKBKontur.Catalogue.WebTestCore;
@@ -119,6 +120,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
         protected virtual void ConfigureContainer(IContainer c)
         {
             //c.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(container.Get<CassandraSettings>());
+            c.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(c);
         }
 
 
