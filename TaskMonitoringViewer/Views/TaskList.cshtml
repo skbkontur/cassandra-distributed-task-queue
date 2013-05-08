@@ -13,9 +13,7 @@
 }
 @* ReSharper restore Razor.SectionNotResolved *@
 @section Scripts{
-    var PageOptions = {
-    functions: @Html.Raw(Model.GetJSFunctions())
-    };
+    var PageOptions = @Html.Raw(Model.GetPageOptions());
     $(document).ready(function() {
     var pageController = new Page("AdminTools","RemoteTaskQueue");
     pageController.run();

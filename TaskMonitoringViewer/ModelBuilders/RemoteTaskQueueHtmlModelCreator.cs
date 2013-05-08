@@ -5,7 +5,6 @@ using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 using SKBKontur.Catalogue.Core.Web.PageModels;
-using SKBKontur.Catalogue.Core.Web.ReferencesHelpers;
 using SKBKontur.Catalogue.Core.Web.RenderingHelpers;
 using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
@@ -18,8 +17,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
     public class RemoteTaskQueueHtmlModelCreator<TData> : HtmlModelsCreatorBase<TData>, IRemoteTaskQueueHtmlModelCreator<TData>
         where TData : ModelData
     {
-        public RemoteTaskQueueHtmlModelCreator(ISelectModelBuilder selectModelBuilder, IHtmlModelTemplateBuilder htmlModelTemplateBuilder)
-            : base(selectModelBuilder, htmlModelTemplateBuilder)
+        public RemoteTaskQueueHtmlModelCreator(HtmlModelCreatorParameters htmlModelCreatorParameters)
+            : base(htmlModelCreatorParameters)
         {
         }
 

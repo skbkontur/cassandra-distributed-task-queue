@@ -5,11 +5,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.RenderingHelpers
 {
     public class SelectReferenceProvider : ISelectReferenceProvider
     {
-        public SelectReferenceProvider()
-        {
-        }
-
-        public SelectBoxElement[] GetReference(ReferenceConfig referenceConfig)
+        public SelectBoxElement[] GetReference(SelectReferenceConfig referenceConfig)
         {
             return null;
         }
