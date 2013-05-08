@@ -170,6 +170,10 @@
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
+      <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
+      <Name>TaskDatas</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
