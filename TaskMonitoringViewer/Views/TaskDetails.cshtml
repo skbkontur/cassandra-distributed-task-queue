@@ -1,6 +1,8 @@
-﻿@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
+﻿@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsHeader
+@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskId
+@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskState
+@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsDetails
 @using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails
-@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
 @model TaskDetailsPageModel
 @{
     Layout = "TaskMonitoringLayout.cshtml";
@@ -15,78 +17,112 @@
 }
 @* ReSharper restore Razor.SectionNotResolved *@
 
-@section Scripts {
+@section Scripts{
+    var PageOptions = @Html.Raw(Model.GetPageOptions());
+    $(document).ready(function() {
+        var pageController = new Page();
+        pageController.run();
+    });
 }
-<h1 class="adminTools__header">
-    @Model.Title
-    <a class="adminTools__header__back" href="@Model.TaskListUrl" id="TaskListBackLink">Вернуться к списку задач</a>
-</h1>
+@Html.AdminToolsHeader(new AdminToolsHeaderHtmlModel
+    {
+        Text = Model.Title,
+        BackText = "вернуться к списку задач",
+        BackUrl = Url.Action("Run", "RemoteTaskQueue")
+    })
 <div class="adminTools__details__container">
     <table class="adminTools__details">
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">TaskId</th>
-            <td class="adminTools__details__col">@Html.TaskId(htmlModel.TaskMetaInfo.TaskId)</td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">TaskState</th>
-            <td class="adminTools__details__col">@Html.TaskState(htmlModel.TaskMetaInfo.TaskState)</td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">TaskName</th>
-            <td class="adminTools__details__col">@Html.Text(htmlModel.TaskMetaInfo.TaskName)</td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">EnqueueTicks</th>
-            <td class="adminTools__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.EnqueueTime)</td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">StartExecutedTicks</th>
-            <td class="adminTools__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.StartExecutingTime)</td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">FinishExecutedTicks</th>
-            <td class="adminTools__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.FinishExecutingTime)</td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">MinimalStartTicks</th>
-            <td class="adminTools__details__col">@Html.TaskDateTime(htmlModel.TaskMetaInfo.MinimalStartTime)</td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">Attempts</th>
-            <td class="adminTools__details__col">@Html.Text(htmlModel.TaskMetaInfo.Attempts)</td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">ParentTaskId</th>
-            <td class="adminTools__details__col">@Html.TaskId(htmlModel.TaskMetaInfo.ParentTaskId)</td>
-        </tr>
-        <tr>
-            <th class="adminTools__details__header">ChildTaskIds</th>
-            <td class="adminTools__details__col">
-                @{
-                    foreach (var childTaskId in htmlModel.ChildTaskIds)
-                    {
-                        @Html.TaskId(childTaskId)<br/>
-                    }
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "TaskId",
+            TaskId = new AdminTaskIdHtmlModel
+                {
+                    Id = htmlModel.TaskMetaInfo.TaskId.Id,
+                    Url = htmlModel.TaskMetaInfo.TaskId.GetDetailsUrl(Url),
+                    Value = htmlModel.TaskMetaInfo.TaskId.Value
                 }
-            </td>
-        </tr>
-        <tr class="adminTools__details__item">
-            <th class="adminTools__details__header">TaskGroupLock</th>
-            <td class="adminTools__details__col">@Html.Text(htmlModel.TaskMetaInfo.TaskGroupLock)</td>
-        </tr>
-        <tr class="adminTools__details__item @(htmlModel.ExceptionInfo == null ? "adminTools__details__last" : "")">
-            <th class="adminTools__details__header">TaskData</th>
-            <td class="adminTools__details__col" id="TaskData">@htmlModel.TaskDataValue.Render(Html)</td>
-        </tr>
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "TaskState",
+            State = new AdminTaskStateHtmlModel
+                {
+                    Id = htmlModel.TaskMetaInfo.TaskState.Id,
+                    CancelUrl = htmlModel.TaskMetaInfo.TaskState.GetCancelUrl(Url),
+                    RerunUrl = htmlModel.TaskMetaInfo.TaskState.GetRerunUrl(Url),
+                    State = htmlModel.TaskMetaInfo.TaskState.Value.ToString()
+                }
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "TaskName",
+            Object = htmlModel.TaskMetaInfo.TaskName
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "EnqueueTicks",
+            Object = htmlModel.TaskMetaInfo.EnqueueTime
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "StartExecutedTicks",
+            Object = htmlModel.TaskMetaInfo.StartExecutingTime
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "FinishExecutedTicks",
+            Object = htmlModel.TaskMetaInfo.FinishExecutingTime
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "MinimalStartTicks",
+            Object = htmlModel.TaskMetaInfo.MinimalStartTime
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "Attempts",
+            Object = htmlModel.TaskMetaInfo.Attempts
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "ParentTaskId",
+            TaskId = new AdminTaskIdHtmlModel
+                {
+                    Id = htmlModel.TaskMetaInfo.ParentTaskId.Id,
+                    Url = htmlModel.TaskMetaInfo.ParentTaskId.GetDetailsUrl(Url),
+                    Value = htmlModel.TaskMetaInfo.ParentTaskId.Value
+                }
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "ParentTaskId",
+            TaskIds = htmlModel.ChildTaskIds.Select(x => new AdminTaskIdHtmlModel {Id = x.Id, Url = x.GetDetailsUrl(Url), Value = x.Value } ).ToArray()
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "TaskGroupLock",
+            Object = htmlModel.TaskMetaInfo.TaskGroupLock
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "TaskData",
+            Object = htmlModel.TaskMetaInfo.TaskGroupLock
+        })
+        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+        {
+            Label = "TaskData",
+            IsLast = htmlModel.ExceptionInfo == null,
+            Object = htmlModel.TaskDataValue
+        })
         @{
             if (htmlModel.ExceptionInfo != null)
             {
-                <tr class="adminTools__details__item adminTools__details__last">
-                    <td class="adminTools__details__header">Детали ошибки</td>
-                    <td class="adminTools__details__col">
-                        @Html.ExceptionInfo(htmlModel.ExceptionInfo)
-                    </td>
-                </tr>
+                @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
+                {
+                    Label = "ExceptionInfo",
+                    IsLast = true,
+                    Object = htmlModel.ExceptionInfo
+                })
             }
         }
     </table>

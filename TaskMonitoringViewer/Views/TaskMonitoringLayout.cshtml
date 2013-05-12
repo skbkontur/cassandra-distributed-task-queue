@@ -13,69 +13,7 @@
             Html.RenderSharedScripts();
         }
         <script type="text/javascript">
-            $(document).ready(function() {
-                $(".cancelTask").click(function(event) {
-                    var _this = this;
-                    var res = $(this).hasClass("noConfirmation");
-                    if (!res) {
-                        res = confirm("Отменить задачу?");
-                    }
-                    if (res) {
-                        $.ajax({
-                            async: true,
-                            type: "POST",
-                            url: $(_this).attr('url'),
-                            data: $.toJSON({ x: "x" }),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            error: function() {
-                                alert("error ajax");
-                            },
-                            success: function(operationResult) {
-                                if (operationResult.Success) {
-                                    if (!_.isUndefined(operationResult.RedirectTo)) {
-                                        Redirect.go(operationResult.RedirectTo);
-                                    }
-                                } else {
-                                    alert(operationResult.ErrorMessage);
-                                }
-                            }
-                        });
-                    }
-                });
-
-                $(".rerunTask").click(function(event) {
-                    var _this = this;
-                    var res = $(this).hasClass("noConfirmation");
-                    if (!res) {
-                        res = confirm("Перезапустить задачу?");
-                    }
-                    if (res) {
-                        $.ajax({
-                            async: true,
-                            type: "POST",
-                            url: $(_this).attr('url'),
-                            data: $.toJSON({ x: "x" }),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            error: function() {
-                                alert("error ajax");
-                            },
-                            success: function(operationResult) {
-                                if (operationResult.Success) {
-                                    if (!_.isUndefined(operationResult.RedirectTo)) {
-                                        Redirect.go(operationResult.RedirectTo);
-                                    }
-                                } else {
-                                    alert(operationResult.ErrorMessage);
-                                }
-                            }
-                        });
-                    }
-                });
-            });
-
-            $(document).ready(function() {
+            $(document).ready(function () {
                 ObjectTreeViewerRegistrator.registerHandlers();
             });
             @RenderSection("Scripts")
