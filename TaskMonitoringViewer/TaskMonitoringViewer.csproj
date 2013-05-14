@@ -132,7 +132,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteTaskQueueUrlExtensions.cs" />
     <Compile Include="RenderingHelpers\HtmlPaginatorPrimitives.cs" />
-    <Compile Include="RenderingHelpers\HtmlPrimtives.cs" />
     <Compile Include="ValueHandlerRegistry\EmptyValueHandlerRegistry.cs" />
     <Compile Include="ValueHandlerRegistry\IValueHandlerRegistry.cs" />
     <Compile Include="ValueHandlerRegistry\IValueHandlerRegistryCollection.cs" />
@@ -151,8 +150,6 @@
     <EmbeddedResource Include="Views\Paging\_PrevPage.cshtml" />
     <EmbeddedResource Include="Views\TaskList.cshtml" />
     <EmbeddedResource Include="Views\TaskMonitoringLayout.cshtml" />
-    <EmbeddedResource Include="Views\_TaskState.cshtml" />
-    <EmbeddedResource Include="Views\_TaskId.cshtml" />
     <EmbeddedResource Include="Views\_TaskDateTime.cshtml" />
     <EmbeddedResource Include="Views\_ExceptionInfo.cshtml" />
     <None Include="Web.config" />
