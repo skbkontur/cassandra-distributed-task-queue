@@ -24,15 +24,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 
         protected override void ConfigureBusinessObjectScheme(BusinessObjectStoringSchema schema)
         {
-            schema.DefineType<Party>();
-            schema.DefineType<PartySynonym>();
-            schema.DefineType<UserStorageElement>();
-            schema.DefineType<AccessRuleStorageElement>();
-            schema.DefineType<FtpUser>();
-            schema.DefineType<MonitoringSearchRequest>();
+            schema.DefineType<Party>(c => c.TypeIdentifier("Party"));
+            schema.DefineType<PartySynonym>(c => c.TypeIdentifier("PartySynonym"));
+            schema.DefineType<UserStorageElement>(c => c.TypeIdentifier("UserStorageElement"));
+            schema.DefineType<AccessRuleStorageElement>(c => c.TypeIdentifier("AccessRuleStorageElement"));
+            schema.DefineType<FtpUser>(c => c.TypeIdentifier("FtpUser"));
+            schema.DefineType<MonitoringSearchRequest>(c => c.TypeIdentifier("MonitoringSearchRequest"));
 
-            schema.DefineType<UserLoginRecord>();
-            schema.DefineType<ActualUserId>();
+            schema.DefineType<UserLoginRecord>(c => c.TypeIdentifier("UserLoginRecord"));
+            schema.DefineType<ActualUserId>(c => c.TypeIdentifier("ActualUserId"));
         }
 
         protected override void ConfigureCassandraBasicSchema(CassandraStoringSchema schema)
