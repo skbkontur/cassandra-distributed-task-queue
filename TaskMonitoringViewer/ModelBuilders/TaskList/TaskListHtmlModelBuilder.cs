@@ -18,7 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
     public class TaskListHtmlModelBuilder : ITaskListHtmlModelBuilder
     {
         public TaskListHtmlModelBuilder(
-            IRemoteTaskQueueHtmlModelCreator<TaskListModelData> htmlModelsCreator,
+            IHtmlModelsCreator<TaskListModelData> htmlModelsCreator,
             ICatalogueExtender extender)
         {
             this.htmlModelsCreator = htmlModelsCreator;
@@ -121,7 +121,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return -1;
         }
 
-        private readonly IRemoteTaskQueueHtmlModelCreator<TaskListModelData> htmlModelsCreator;
+        private readonly IHtmlModelsCreator<TaskListModelData> htmlModelsCreator;
         private readonly ICatalogueExtender extender;
     }
 }
