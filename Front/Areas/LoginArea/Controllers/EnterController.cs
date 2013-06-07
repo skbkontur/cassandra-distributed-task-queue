@@ -5,6 +5,7 @@ using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton.Post;
 using SKBKontur.Catalogue.Core.Web.Blocks.KeyboardNavigation;
+using SKBKontur.Catalogue.Core.Web.Blocks.PostUrl;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.CookiesManagement;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Models.Enter;
