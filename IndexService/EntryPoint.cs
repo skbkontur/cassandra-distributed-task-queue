@@ -1,7 +1,7 @@
 ﻿using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
 using SKBKontur.Catalogue.Core.IndexServiceCore;
 using SKBKontur.Catalogue.Core.IndexServiceCore.Configuration;
-using SKBKontur.Catalogue.Core.IndexServiceCore.LocalStorageRegistry;
+using SKBKontur.Catalogue.Core.SynchronizationStorage.Indexes;
 using SKBKontur.Catalogue.RemoteTaskQueue.Storage;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
