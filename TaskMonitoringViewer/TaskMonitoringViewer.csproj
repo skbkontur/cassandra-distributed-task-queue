@@ -97,7 +97,6 @@
     <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
     <Compile Include="ModelBuilders\DateTimeExtensions.cs" />
-    <Compile Include="ModelBuilders\IRemoteTaskQueueHtmlModelCreator.cs" />
     <Compile Include="ModelBuilders\RemoteTaskQueueHtmlModelCreator.cs" />
     <Compile Include="ModelBuilders\TaskDetails\ITaskDetailsHtmlModelBuilder.cs" />
     <Compile Include="ModelBuilders\TaskDetails\TaskDetailsHtmlModelBuilder.cs" />

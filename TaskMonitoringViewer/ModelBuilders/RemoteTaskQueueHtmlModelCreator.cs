@@ -14,67 +14,61 @@ using TaskState = SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Monito
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
-    public class RemoteTaskQueueHtmlModelCreator<TData> : HtmlModelsCreatorBase<TData>, IRemoteTaskQueueHtmlModelCreator<TData>
-        where TData : ModelData
+    public static class HtmlModelCreatorRemoteTaskQueueExtensions
     {
-        public RemoteTaskQueueHtmlModelCreator(HtmlModelCreatorParameters htmlModelCreatorParameters)
-            : base(htmlModelCreatorParameters)
-        {
-        }
-
-        public TaskMetaInfoHtmlModel TaskInfoFor(IPageModel<TData> pageModel, Expression<Func<TData, TaskMetaInfoModel>> path, bool hideTicks, Func<TaskIdHtmlModel> createEmptyModel)
+        public static TaskMetaInfoHtmlModel TaskInfoFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, TaskMetaInfoModel>> path, bool hideTicks, Func<TaskIdHtmlModel> createEmptyModel) where TData : ModelData
         {
             var pathToTaskId = path.Merge(x => x.TaskId);
             return new TaskMetaInfoHtmlModel
                 {
-                    TaskId = TaskIdFor(pageModel, pathToTaskId, createEmptyModel),
-                    TaskState = TaskStateFor(pageModel, path.Merge(x => x.State), GetValue(pageModel.Data, pathToTaskId)),
-                    TaskName = TextFor(pageModel, path.Merge(x => x.Name)),
-                    EnqueueTime = TaskDateTimeFor(pageModel, path.Merge(x => x.EnqueueTime), hideTicks),
-                    StartExecutingTime = TaskDateTimeFor(pageModel, path.Merge(x => x.StartExecutingTime), hideTicks),
-                    FinishExecutingTime = TaskDateTimeFor(pageModel, path.Merge(x => x.FinishExecutingTime), hideTicks),
-                    MinimalStartTime = TaskDateTimeFor(pageModel, path.Merge(x => x.MinimalStartTime), hideTicks),
-                    Attempts = TextFor(pageModel, path.Merge(x => x.Attempts)),
-                    ParentTaskId = TaskIdFor(pageModel, path.Merge(x => x.ParentTaskId), createEmptyModel),
-                    TaskGroupLock = TextFor(pageModel, path.Merge(x => x.TaskGroupLock))
+                    TaskId = htmlModelsCreator.TaskIdFor(pageModel, pathToTaskId, createEmptyModel),
+                    TaskState = htmlModelsCreator.TaskStateFor(pageModel, path.Merge(x => x.State), htmlModelsCreator.GetValue(pageModel.Data, pathToTaskId)),
+                    TaskName = htmlModelsCreator.TextFor(pageModel, path.Merge(x => x.Name)),
+                    EnqueueTime = htmlModelsCreator.TaskDateTimeFor(pageModel, path.Merge(x => x.EnqueueTime), hideTicks),
+                    StartExecutingTime = htmlModelsCreator.TaskDateTimeFor(pageModel, path.Merge(x => x.StartExecutingTime), hideTicks),
+                    FinishExecutingTime = htmlModelsCreator.TaskDateTimeFor(pageModel, path.Merge(x => x.FinishExecutingTime), hideTicks),
+                    MinimalStartTime = htmlModelsCreator.TaskDateTimeFor(pageModel, path.Merge(x => x.MinimalStartTime), hideTicks),
+                    Attempts = htmlModelsCreator.TextFor(pageModel, path.Merge(x => x.Attempts)),
+                    ParentTaskId = htmlModelsCreator.TaskIdFor(pageModel, path.Merge(x => x.ParentTaskId), createEmptyModel),
+                    TaskGroupLock = htmlModelsCreator.TextFor(pageModel, path.Merge(x => x.TaskGroupLock))
                 };
         }
 
-        public TaskIdHtmlModel TaskIdFor(IPageModel<TData> pageModel, Expression<Func<TData, string>> path, Func<TaskIdHtmlModel> createEmptyModel)
+        public static TaskIdHtmlModel TaskIdFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, string>> path, Func<TaskIdHtmlModel> createEmptyModel) where TData : ModelData
         {
             var result = createEmptyModel();
-            result.Value = GetValue(pageModel.Data, path);
-            result.Id = GetName(path).ToId();
+            result.Value = htmlModelsCreator.GetValue(pageModel.Data, path);
+            result.Id = htmlModelsCreator.GetName(path).ToId();
             return result;
         }
 
-        public ExceptionInfoHtmlModel ExceptionInfoFor(IPageModel<TData> pageModel, Expression<Func<TData, TaskExceptionInfo>> path)
+        public static ExceptionInfoHtmlModel ExceptionInfoFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, TaskExceptionInfo>> path) where TData : ModelData
         {
-            var taskExceptionInfo = GetValue(pageModel.Data, path);
+            var taskExceptionInfo = htmlModelsCreator.GetValue(pageModel.Data, path);
             if(taskExceptionInfo == null)
                 return null;
             return new ExceptionInfoHtmlModel
                 {
-                    Id = GetName(path).ToId(),
+                    Id = htmlModelsCreator.GetName(path).ToId(),
                     ExceptionMessageInfo = taskExceptionInfo.ExceptionMessageInfo
                 };
         }
 
-        private TaskStateHtmlModel TaskStateFor(IPageModel<TData> pageModel, Expression<Func<TData, TaskState>> path, string taskId)
+        private static TaskStateHtmlModel TaskStateFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, TaskState>> path, string taskId) where TData : ModelData
         {
             return new TaskStateHtmlModel(taskId)
                 {
-                    Id = GetName(path).ToId(),
-                    Value = GetValue(pageModel.Data, path)
+                    Id = htmlModelsCreator.GetName(path).ToId(),
+                    Value = htmlModelsCreator.GetValue(pageModel.Data, path)
                 };
         }
 
-        private TaskDateTimeHtmlModel TaskDateTimeFor(IPageModel<TData> pageModel, Expression<Func<TData, DateTime?>> path, bool hideTicks)
+        private static TaskDateTimeHtmlModel TaskDateTimeFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, DateTime?>> path, bool hideTicks) where TData : ModelData
         {
-            var dateTime = GetValue(pageModel.Data, path);
+            var dateTime = htmlModelsCreator.GetValue(pageModel.Data, path);
             return new TaskDateTimeHtmlModel
                 {
-                    Id = GetName(path).ToId(),
+                    Id = htmlModelsCreator.GetName(path).ToId(),
                     HideTicks = hideTicks,
                     Ticks = dateTime == null ? (long?)null : dateTime.Value.Ticks,
                     DateTime = dateTime.GetMoscowDateTimeString()

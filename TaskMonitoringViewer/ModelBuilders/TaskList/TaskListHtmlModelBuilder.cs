@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton.Post;
+using SKBKontur.Catalogue.Core.Web.Blocks.PostUrl;
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 using SKBKontur.Catalogue.Expressions;
@@ -18,7 +19,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
     public class TaskListHtmlModelBuilder : ITaskListHtmlModelBuilder
     {
         public TaskListHtmlModelBuilder(
-            IRemoteTaskQueueHtmlModelCreator<TaskListModelData> htmlModelsCreator,
+            IHtmlModelsCreator<TaskListModelData> htmlModelsCreator,
             ICatalogueExtender extender)
         {
             this.htmlModelsCreator = htmlModelsCreator;
@@ -121,7 +122,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
             return -1;
         }
 
-        private readonly IRemoteTaskQueueHtmlModelCreator<TaskListModelData> htmlModelsCreator;
+        private readonly IHtmlModelsCreator<TaskListModelData> htmlModelsCreator;
         private readonly ICatalogueExtender extender;
     }
 }
