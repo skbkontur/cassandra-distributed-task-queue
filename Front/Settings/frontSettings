@@ -26,15 +26,18 @@ KonturPortalKey = D3VxmqWAqAEdkBXxJ0smXm9H8VP+DkcO|nj5jzenFiQg=
 KonturPortalDomain = kepref.kontur
 
 #Топология портала
-AuthUrls = http://192.168.88.178:38452
+AuthUrls = http://razr04.kontur:38452
 AuthLogin = 
 AuthPassword = 
-PropertiesUrls = http://192.168.88.82:5765
+PropertiesUrls = http://razr11.kontur:5765
 PropertiesLogin = 
 PropertiesPassword = 
-PropertiesSearchUrls = http://192.168.88.82:43234
+PropertiesSearchUrls = http://razr11.kontur:43234
 PropertiesSearchLogin = 
 PropertiesSearchPassword = 
+CertificatesUrls = http://razr04.kontur:8088
+CertificatesLogin = 
+CertificatesPassword = 
 
 #Настройки для интеграции с Диадоком
 DiadocApiClientId = ecrCat-ad1a1c9f5ce84af197f0f8c7f4f215d5
