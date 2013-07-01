@@ -106,11 +106,6 @@
         @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
         {
             Label = "TaskData",
-            Object = htmlModel.TaskMetaInfo.TaskGroupLock
-        })
-        @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
-        {
-            Label = "TaskData",
             IsLast = htmlModel.ExceptionInfo == null,
             Object = htmlModel.TaskDataValue
         })
