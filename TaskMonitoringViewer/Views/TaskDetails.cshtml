@@ -95,7 +95,7 @@
         })
         @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
         {
-            Label = "ParentTaskId",
+            Label = "ChildTaskIds",
             TaskIds = htmlModel.ChildTaskIds.Select(x => new AdminTaskIdHtmlModel {Id = x.Id, Url = x.GetDetailsUrl(Url), Value = x.Value } ).ToArray()
         })
         @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel

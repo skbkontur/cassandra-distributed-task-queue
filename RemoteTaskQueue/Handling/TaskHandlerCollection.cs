@@ -25,9 +25,14 @@ namespace RemoteQueue.Handling
 
         public ITaskHandler CreateHandler(string taskName)
         {
-            if(!taskNameToTaskHandlerCreator.ContainsKey(taskName))
+            if(!ContainsHandlerFor(taskName))
                 throw new TaskHandlerNotFoundException(taskName);
             return taskNameToTaskHandlerCreator[taskName]();
+        }
+
+        public bool ContainsHandlerFor(string taskName)
+        {
+            return taskNameToTaskHandlerCreator.ContainsKey(taskName);
         }
 
         private Type GetTaskDataType(Type handlerType)
