@@ -45,6 +45,11 @@ namespace RemoteQueue.Handling
         public override void Run()
         {
             var meta = handleTasksMetaStorage.GetMeta(Id);
+            if (!taskHandlerCollection.ContainsHandlerFor(meta.Name))
+            {
+                logger.InfoFormat("Пропускаем задачу [name='{0}', id='{1}'], так как для нее отсутствует обработчик.", meta.Name, Id);
+                return;
+            }
             IRemoteLock taskGroupRemoteLock = null;
             if(!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
             {

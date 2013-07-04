@@ -51,14 +51,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
         public override void TearDown()
         {
             container.Get<IExchangeServiceClient>().Start();
-            try
-            {
-                container.Dispose();
-            }
-            finally
-            {
-                base.TearDown();
-            }
+            base.TearDown();
         }
 
         protected void CreateUser(string login, string password)
