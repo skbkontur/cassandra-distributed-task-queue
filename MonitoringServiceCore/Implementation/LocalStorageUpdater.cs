@@ -59,19 +59,38 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
         }
 
+        public void RecalculateInProcess()
+        {
+            var metadatas = localStorage.Search<MonitoringTaskMetadata>(
+                x => x.State == MTaskState.New ||
+                     x.State == MTaskState.InProcess ||
+                     x.State == MTaskState.WaitingForRerun ||
+                     x.State == MTaskState.WaitingForRerunAfterError).ToArray();
+            var list = new List<MonitoringTaskMetadata>();
+            foreach(var metadata in metadatas)
+            {
+                var meta = handleTasksMetaStorage.GetMeta(metadata.TaskId);
+                MonitoringTaskMetadata newMetadata;
+                if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(meta, out newMetadata))
+                    list.Add(newMetadata);
+            }
+            foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(list, 100))
+                localStorage.Write(batch);
+        }
+
         private void UpdateLocalStorage(IEnumerable<TaskMetaUpdatedEvent> events)
         {
+            var updateTime = globalTime.GetNowTicks();
+            var list = new List<TaskMetaUpdatedEvent>();
             foreach(var eventBatch in new SeparateOnBatchesEnumerable<TaskMetaUpdatedEvent>(events, 300))
             {
-                var updateTime = globalTime.GetNowTicks();
                 var hs = new Dictionary<string, MonitoringTaskMetadata>();
                 foreach(var taskEvent in eventBatch)
                 {
                     if(eventCache.Contains(taskEvent)) continue;
 
-
                     var taskMeta = handleTasksMetaStorage.GetMeta(taskEvent.TaskId);
-                    if (taskEvent.Ticks <= taskMeta.LastModificationTicks)
+                    if(taskEvent.Ticks <= taskMeta.LastModificationTicks)
                     {
                         MonitoringTaskMetadata metadata;
                         if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
@@ -86,7 +105,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                         }
                     }
                 }
-                eventCache.AddEvents(eventBatch);
+                list.AddRange(eventBatch);
 
                 var forUpdateWithoutR = hs.Select(x => x.Value).ToArray();
                 if(hs.Count != 0)
@@ -95,8 +114,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                         localStorage.Write(batch);
                 }
                 hs.Clear();
-                localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(updateTime);
             }
+            eventCache.AddEvents(list);
+            localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(updateTime);
         }
 
         private long GetStartTime()

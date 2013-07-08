@@ -33,6 +33,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             return localStorage.GetCount<MonitoringTaskMetadata>(getCountQuery.Criterion);
         }
 
+        public void RecalculateInProcess()
+        {
+            localStorageUpdater.RecalculateInProcess();
+        }
+
         public MonitoringTaskMetadata[] Search(MonitoringSearchQuery searchQuery)
         {
             //localStorageUpdater.Update();
