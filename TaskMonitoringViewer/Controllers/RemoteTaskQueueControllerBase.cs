@@ -177,7 +177,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IObjectValueExtractor objectValueExtracter;
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ITaskListModelBuilder taskListModelBuilder;
-        private readonly IBusinessObjectsStorage businessObjectsStorage;
+        private readonly IBusinessObjectStorage businessObjectsStorage;
         private readonly ICatalogueExtender extender;
         private readonly IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder;
         private readonly IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage;
