@@ -2,6 +2,7 @@
 {
     public interface ILocalStorageUpdater
     {
+        void RecalculateInProcess();
         void Update();
     }
 }

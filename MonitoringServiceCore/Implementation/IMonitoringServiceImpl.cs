@@ -7,6 +7,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
     {
         void ActualizeDatabaseScheme();
         void DropLocalStorage();
+        void RecalculateInProcess();
 
         int GetCount(MonitoringGetCountQuery getCountQuery);
         MonitoringTaskMetadata[] Search(MonitoringSearchQuery searchQuery);
