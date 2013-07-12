@@ -37,6 +37,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
         }
 
         [HttpMethod]
+        public int RecalculateInProcess()
+        {
+            monitoringServiceImpl.RecalculateInProcess();
+            return 0;
+        }
+
+        [HttpMethod]
         public object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery)
         {
             return monitoringServiceImpl.GetDistinctValues(getDistinctValuesQuery);
