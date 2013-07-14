@@ -10,6 +10,7 @@
   <ItemGroup>
     <Solution Include="Core\Core.sln"></Solution>
     <Solution Include="RemoteTaskQueue\Deployment\Projects\EmbeddedFronts\WebWormsEmbeddedFront.xml"></Solution>
+    <Solution Include="RemoteTaskQueue/Deployment\Projects\EmbeddedFronts\TaskMonitoringViewerEmbeddedFront.xml"></Solution>
     <Solution Include="RemoteTaskQueue\RemoteTaskQueue.sln"></Solution>
   </ItemGroup>
 
