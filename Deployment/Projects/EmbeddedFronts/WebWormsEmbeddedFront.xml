@@ -5,26 +5,24 @@
   <Import Project="$(CatalogueRootDirectory)\MsBuild\DeployTargets\Targets\EmbeddedFront.targets"/>
 
   <PropertyGroup>
-    <TargetFrontPath>$(CatalogueRootDirectory)\RemoteTaskQueue\TaskMonitoringViewer</TargetFrontPath>
-    <FrontName>TaskMonitoringViewer</FrontName>
+    <TargetFrontSolution>WebWorms</TargetFrontSolution>
+    <FrontName>WebWorms</FrontName>
+	<ResourcesPage>WebWorms</ResourcesPage>
 
-    <VirtualStaticContentOutput>Shared/</VirtualStaticContentOutput>
-    <PhysicalStaticContentOutput>$(CatalogueRootDirectory)\WebWorms\Web\Statics</PhysicalStaticContentOutput>
+    <VirtualStaticContentOutput></VirtualStaticContentOutput>
+    <PhysicalStaticContentOutput>WebWorms\Web\Statics</PhysicalStaticContentOutput>
   </PropertyGroup>
 
   <ItemGroup>
-
-    <ResourcesHostPage Include="$(CatalogueRootDirectory)\RemoteTaskQueue\TaskMonitoringViewer\**\*.cshtml" />
-
+    <EmbeddedFrontSolutionFile Include="WebWorms\WebWorms.sln"/>
     <SharedResources Include="Shared">
       <VirtualName>Shared/</VirtualName>
-      <PhysicalPath>$(CatalogueRootDirectory)\WebWorms\Web\Statics</PhysicalPath>
+      <PhysicalPath>WebWorms\Web\Statics</PhysicalPath>
     </SharedResources>
     <SharedResources Include="SharedBlocks">
       <VirtualName>SharedBlocks/</VirtualName>
-      <PhysicalPath>$(CatalogueRootDirectory)\WebWorms\Web\Blocks</PhysicalPath>
+      <PhysicalPath>WebWorms\Web\Blocks</PhysicalPath>
     </SharedResources>
-
   </ItemGroup>
 
 </Project>
