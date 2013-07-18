@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 
 using SKBKontur.Catalogue.WebTestCore.SystemControls;
+using SKBKontur.Catalogue.WebTestCore.TestSystem;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 {
@@ -8,7 +9,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
     {
         public TaskDetailsPage()
         {
-            TaskId = new StaticText("TaskMetaInfoModel_TaskId");
+            TaskId = new Link("'TaskMetaInfoModel_TaskId'");
             TaskState = new StaticText("TaskMetaInfoModel_State");
             TaskName = new StaticText("TaskMetaInfoModel_Name");
             EnqueueTime = new StaticText("TaskMetaInfoModel_EnqueueTime");
@@ -16,13 +17,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             Attempts = new StaticText("TaskMetaInfoModel_Attempts");
             ParentTaskId = new Link("TaskMetaInfoModel_ParentTaskId");
             TaskData = new StaticText("TaskMetaInfoModel_TaskData");
-            TaskList = new Link(By.Id("TaskListBackLink"));
+            TaskList = new Link("Backward_Link");
         }
 
         public override void BrowseWaitVisible()
         {
-            TaskState.WaitVisible();
-            TaskId.WaitVisible();
+            TaskState.WaitVisibleWithRetries();
+            TaskId.WaitVisibleWithRetries();
         }
 
         public TasksListPage GoToTasksListPage()
@@ -31,7 +32,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             return GoTo<TasksListPage>();
         }
 
-        public StaticText TaskId { get; private set; }
+        public Link TaskId { get; private set; }
         public StaticText TaskState { get; private set; }
         public StaticText TaskName { get; private set; }
         public StaticText EnqueueTime { get; private set; }

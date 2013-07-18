@@ -63,6 +63,10 @@
     <Reference Include="Catalogue.Core.Web">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Web.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.RemoteTaskQueue.TaskMonitoringViewer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskMonitoringViewer.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
@@ -177,10 +181,6 @@
     <ProjectReference Include="..\Storage\Storage.csproj">
       <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
       <Name>Storage</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskMonitoringViewer\TaskMonitoringViewer.csproj">
-      <Project>{8BA574CA-6C25-414F-9E99-1E7F032BB962}</Project>
-      <Name>TaskMonitoringViewer</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
