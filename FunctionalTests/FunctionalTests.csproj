@@ -63,7 +63,7 @@
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\Assemblies\nunit.framework.dll</HintPath>
+      <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="RemoteLock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
