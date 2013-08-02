@@ -11,5 +11,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         int GetCount(Expression<Func<MonitoringTaskMetadata, bool>> criterion);
         IEnumerable<MonitoringTaskMetadata> RangeSearch(Expression<Func<MonitoringTaskMetadata, bool>> criterion, int rangeFrom, int count, Expression<Func<MonitoringTaskMetadata, bool>> sortRules = null);
         IEnumerable<object> GetDistinctValues(Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, object>> columnPath);
+        IEnumerable<string> GetChildrenTaskIds(string taskId);
     }
 }

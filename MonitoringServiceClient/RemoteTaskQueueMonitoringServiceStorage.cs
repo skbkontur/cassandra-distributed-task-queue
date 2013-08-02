@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 using SKBKontur.Catalogue.Expressions.ExpressionTrees;
@@ -28,6 +29,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         public IEnumerable<object> GetDistinctValues(Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, object>> columnPath)
         {
             return remoteTaskQueueMonitoringServiceClient.GetDistinctValues(converter.ToExpressionTree(criterion), converter.ToExpressionTree(columnPath));
+        }
+
+        public IEnumerable<string> GetChildrenTaskIds(string taskId)
+        {
+            return RangeSearch(x => x.ParentTaskId == taskId, 0, 1000).Select(x => x.Id).ToArray();
         }
 
         private readonly IRemoteTaskQueueMonitoringServiceClient remoteTaskQueueMonitoringServiceClient;
