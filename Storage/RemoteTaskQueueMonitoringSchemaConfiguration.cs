@@ -15,14 +15,14 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 {
-    public class RemoteTaskQueueMonitoringSchemaConfiguration : StorageSchemeConfigurator
+    public class RemoteTaskQueueMonitoringSchemaConfiguration : StorageSchemaConfigurator
     {
         public RemoteTaskQueueMonitoringSchemaConfiguration(ICassandraCoreSettings cassandraCoreSettings)
             : base(cassandraCoreSettings.KeyspaceName)
         {
         }
 
-        protected override void ConfigureBusinessObjectScheme(BusinessObjectStoringSchema schema)
+        protected override void ConfigureBusinessObjectSchema(BusinessObjectStoringSchema schema)
         {
             schema.DefineType<Party>(c => c.TypeIdentifier("Party"));
             schema.DefineType<PartySynonym>(c => c.TypeIdentifier("PartySynonym"));
