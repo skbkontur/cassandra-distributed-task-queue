@@ -11,5 +11,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         MonitoringTaskMetadata[] Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0);
         object[] GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath);
         int GetCount(ExpressionTree criterion);
+        MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId);
     }
 }

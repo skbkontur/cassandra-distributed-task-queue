@@ -35,7 +35,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         {
             return RangeSearch(x => x.ParentTaskId == taskId, 0, 1000).Select(x => x.Id).ToArray();
         }
-
+        
         private readonly IRemoteTaskQueueMonitoringServiceClient remoteTaskQueueMonitoringServiceClient;
         private readonly IExpressionTreeConverter converter;
     }
