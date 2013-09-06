@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.ClientLib.Topology;
 using SKBKontur.Catalogue.Expressions.ExpressionTrees;
@@ -32,12 +30,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         {
             var domain = methodDomainFactory.Create("Search", domainTopology, timeout, clientName);
             var searchQuery = new MonitoringSearchQuery
-                {
-                    Criterion = criterion,
-                    SortRules = sortRules,
-                    RangeFrom = rangeFrom,
-                    Count = count,
-                };
+                                  {
+                                      Criterion = criterion,
+                                      SortRules = sortRules,
+                                      RangeFrom = rangeFrom,
+                                      Count = count,
+                                  };
             return domain.QueryFromRandomReplica<MonitoringTaskMetadata[], MonitoringSearchQuery>(searchQuery);
         }
 
@@ -45,10 +43,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         {
             var domain = methodDomainFactory.Create("GetDistinctValues", domainTopology, timeout, clientName);
             var monitoringGetDistinctValuesQuery = new MonitoringGetDistinctValuesQuery
-                {
-                    Criterion = criterion,
-                    ColumnPath = columnPath,
-                };
+                                                       {
+                                                           Criterion = criterion,
+                                                           ColumnPath = columnPath,
+                                                       };
             return domain.QueryFromRandomReplica<object[], MonitoringGetDistinctValuesQuery>(monitoringGetDistinctValuesQuery);
         }
 
@@ -56,10 +54,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         {
             var domain = methodDomainFactory.Create("GetCount", domainTopology, timeout, clientName);
             var query = new MonitoringGetCountQuery
-                {
-                    Criterion = criterion
-                };
+                            {
+                                Criterion = criterion
+                            };
             return domain.QueryFromRandomReplica<int, MonitoringGetCountQuery>(query);
+        }
+
+        public MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId)
+        {
+            var domain = methodDomainFactory.Create("GetTaskWithAllDescendants", domainTopology, timeout, clientName);
+            return domain.QueryFromRandomReplica<MonitoringTaskMetadata[], string>(taskId);
         }
 
         private readonly IMethodDomainFactory methodDomainFactory;
