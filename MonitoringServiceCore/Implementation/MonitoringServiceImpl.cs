@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 using SKBKontur.Catalogue.Core.SQL;
@@ -56,6 +57,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 };
             var debagRes = sqlDatabase.GetRows(sqlSelectQuery).Select(x => x[0]).ToArray();
             return debagRes;
+        }
+
+        public MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId)
+        {
+            var task = localStorage.Get<MonitoringTaskMetadata>(taskId, taskId);
+            if(task == null)
+                return null;
+            return GetTaskWithAllDescendants(task).ToArray();
+        }
+
+        private IEnumerable<MonitoringTaskMetadata> GetTaskWithAllDescendants(MonitoringTaskMetadata task)
+        {
+            return new []{task}.Concat(localStorage.Search<MonitoringTaskMetadata>(meta => meta.ParentTaskId == task.Id).SelectMany(GetTaskWithAllDescendants));
         }
 
         private readonly ILocalStorage localStorage;
