@@ -6,9 +6,7 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
-using SKBKontur.Catalogue.CassandraStorageCore.BusinessObjectStorageImpl;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
-using SKBKontur.Catalogue.Core.ObjectTreeWebViewer.Models;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Expressions;
@@ -36,7 +34,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             extender = remoteTaskQueueControllerBaseParameters.CatalogueExtender;
             taskDetailsModelBuilder = remoteTaskQueueControllerBaseParameters.TaskDetailsModelBuilder;
             taskDetailsHtmlModelBuilder = remoteTaskQueueControllerBaseParameters.TaskDetailsHtmlModelBuilder;
-            objectValueExtracter = remoteTaskQueueControllerBaseParameters.ObjectValueExtracter;
             remoteTaskQueue = remoteTaskQueueControllerBaseParameters.RemoteTaskQueue;
             taskListModelBuilder = remoteTaskQueueControllerBaseParameters.TaskListModelBuilder;
             businessObjectsStorage = remoteTaskQueueControllerBaseParameters.BusinessObjectsStorage;
@@ -121,7 +118,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
             var modelData = taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId);
             var hasAccessToTaskData = accessControlService.CheckAccess(Session.UserId, new ResourseGroupAccessRule {ResourseGroupName = ResourseGroups.AdminResourse});
-            if (!hasAccessToTaskData)
+            if(!hasAccessToTaskData)
                 modelData.TaskData = new SimpleTaskData();
             var pageModel = new TaskDetailsPageModel(PageModelBaseParameters, modelData)
                 {
@@ -166,7 +163,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public ActionResult GetBytes(string id, string path)
         {
             var taskData = remoteTaskQueue.GetTaskInfo(id).TaskData;
-            var value = objectValueExtracter.Extract(taskData.GetType(), taskData, path);
+            var value = ObjectValueExtractor.Extract(taskData.GetType(), taskData, path);
             if(value.GetType() != typeof(byte[]))
                 throw new Exception(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
             var fileDownloadName = string.Format("{0}_{1}.data", DateTime.UtcNow.ToString("yyyy.MM.dd hh:mm:ss"), Guid.NewGuid());
@@ -174,7 +171,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         private readonly ITaskDetailsModelBuilder taskDetailsModelBuilder;
-        private readonly IObjectValueExtractor objectValueExtracter;
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ITaskListModelBuilder taskListModelBuilder;
         private readonly IBusinessObjectStorage businessObjectsStorage;
@@ -182,7 +178,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder;
         private readonly IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage;
         private readonly ITaskListHtmlModelBuilder taskListModelHtmlBuilder;
-        private ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder;
+        private readonly ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder;
         private readonly IAccessControlService accessControlService;
 
         private const int tasksPerPageCount = 100;

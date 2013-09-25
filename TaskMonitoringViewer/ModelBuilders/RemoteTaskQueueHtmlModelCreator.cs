@@ -18,6 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
     {
         public static TaskMetaInfoHtmlModel TaskInfoFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, TaskMetaInfoModel>> path, bool hideTicks, Func<TaskIdHtmlModel> createEmptyModel) where TData : ModelData
         {
+            path = path.Simplify();
             var pathToTaskId = path.Merge(x => x.TaskId);
             return new TaskMetaInfoHtmlModel
                 {
@@ -36,39 +37,47 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 
         public static TaskIdHtmlModel TaskIdFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, string>> path, Func<TaskIdHtmlModel> createEmptyModel) where TData : ModelData
         {
+            path = path.Simplify();
             var result = createEmptyModel();
-            result.Value = htmlModelsCreator.GetValue(pageModel.Data, path);
-            result.Id = htmlModelsCreator.GetName(path).ToId();
+            var name = htmlModelsCreator.GetName(path);
+            result.Value = htmlModelsCreator.GetValue<TData, string>(pageModel.Data, name);
+            result.Id = name.ToId();
             return result;
         }
 
         public static ExceptionInfoHtmlModel ExceptionInfoFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, TaskExceptionInfo>> path) where TData : ModelData
         {
-            var taskExceptionInfo = htmlModelsCreator.GetValue(pageModel.Data, path);
+            path = path.Simplify();
+            var name = htmlModelsCreator.GetName(path);
+            var taskExceptionInfo = htmlModelsCreator.GetValue<TData, TaskExceptionInfo>(pageModel.Data, name);
             if(taskExceptionInfo == null)
                 return null;
             return new ExceptionInfoHtmlModel
                 {
-                    Id = htmlModelsCreator.GetName(path).ToId(),
+                    Id = name.ToId(),
                     ExceptionMessageInfo = taskExceptionInfo.ExceptionMessageInfo
                 };
         }
 
         private static TaskStateHtmlModel TaskStateFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, TaskState>> path, string taskId) where TData : ModelData
         {
+            path = path.Simplify();
+            var name = htmlModelsCreator.GetName(path);
             return new TaskStateHtmlModel(taskId)
                 {
-                    Id = htmlModelsCreator.GetName(path).ToId(),
-                    Value = htmlModelsCreator.GetValue(pageModel.Data, path)
+                    Id = name.ToId(),
+                    Value = htmlModelsCreator.GetValue<TData, TaskState>(pageModel.Data, name)
                 };
         }
 
         private static TaskDateTimeHtmlModel TaskDateTimeFor<TData>(this IHtmlModelsCreator<TData> htmlModelsCreator, IPageModel<TData> pageModel, Expression<Func<TData, DateTime?>> path, bool hideTicks) where TData : ModelData
         {
-            var dateTime = htmlModelsCreator.GetValue(pageModel.Data, path);
+            path = path.Simplify();
+            var name = htmlModelsCreator.GetName(path);
+            var dateTime = htmlModelsCreator.GetValue<TData, DateTime?>(pageModel.Data, name);
             return new TaskDateTimeHtmlModel
                 {
-                    Id = htmlModelsCreator.GetName(path).ToId(),
+                    Id = name.ToId(),
                     HideTicks = hideTicks,
                     Ticks = dateTime == null ? (long?)null : dateTime.Value.Ticks,
                     DateTime = dateTime.GetMoscowDateTimeString()
