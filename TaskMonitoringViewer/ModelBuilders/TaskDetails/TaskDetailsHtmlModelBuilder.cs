@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 
 using SKBKontur.Catalogue.Core.ObjectTreeWebViewer.ModelBuilders;
-using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
 
@@ -10,7 +9,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     public class TaskDetailsHtmlModelBuilder : ITaskDetailsHtmlModelBuilder
     {
-        public TaskDetailsHtmlModelBuilder(IObjectTreeValueModelBuilder objectTreeValueModelBuilder, IHtmlModelsCreator<TaskDetailsModel> htmlModelCreator)
+        public TaskDetailsHtmlModelBuilder(IObjectTreeValueModelBuilder objectTreeValueModelBuilder, IRemoteTaskQueueHtmlModelsCreator<TaskDetailsModel> htmlModelCreator)
         {
             this.objectTreeValueModelBuilder = objectTreeValueModelBuilder;
             this.htmlModelCreator = htmlModelCreator;
@@ -29,6 +28,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         }
 
         private readonly IObjectTreeValueModelBuilder objectTreeValueModelBuilder;
-        private readonly IHtmlModelsCreator<TaskDetailsModel> htmlModelCreator;
+        private readonly IRemoteTaskQueueHtmlModelsCreator<TaskDetailsModel> htmlModelCreator;
     }
 }
