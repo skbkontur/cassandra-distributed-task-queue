@@ -55,12 +55,6 @@
     <Content Include="Projects\Configuration\ServiceSuites.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Projects\Configuration\EmbeddedFronts.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Projects\EmbeddedFronts\RemoteTaskQueueEmbeddedFront.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Projects\EmbeddedFronts\TaskMonitoringViewerEmbeddedFront.xml">
       <SubType>Designer</SubType>
     </Content>
