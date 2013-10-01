@@ -1,7 +1,6 @@
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.AccessControl;
-using SKBKontur.Catalogue.CassandraStorageCore.BusinessObjectStorageImpl;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
@@ -19,14 +18,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             ITaskMetadataModelBuilder taskMetadataModelBuilder,
             ITaskDetailsModelBuilder taskDetailsModelBuilder,
             ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder,
-            IObjectValueExtractor objectValueExtracter,
             IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage,
             IBusinessObjectStorage businessObjectsStorage,
             ICatalogueExtender catalogueExtender,
             IMonitoringSearchRequestCriterionBuilder monitoringSearchRequestCriterionBuilder,
             IRemoteTaskQueue remoteTaskQueue,
             ITaskListModelBuilder taskListModelBuilder,
-            ITaskListHtmlModelBuilder taskListHtmlModelBuilder, 
+            ITaskListHtmlModelBuilder taskListHtmlModelBuilder,
             IAccessControlService accessControlService)
         {
             TaskListHtmlModelBuilder = taskListHtmlModelBuilder;
@@ -39,7 +37,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             LoggedInControllerBaseParameters = loggedInControllerBaseParameters;
             TaskDetailsModelBuilder = taskDetailsModelBuilder;
             TaskDetailsHtmlModelBuilder = taskDetailsHtmlModelBuilder;
-            ObjectValueExtracter = objectValueExtracter;
             RemoteTaskQueueMonitoringServiceStorage = remoteTaskQueueMonitoringServiceStorage;
             AccessControlService = accessControlService;
         }
@@ -54,7 +51,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public ITaskMetadataModelBuilder TaskMetadataModelBuilder { get; private set; }
         public ITaskDetailsModelBuilder TaskDetailsModelBuilder { get; private set; }
         public ITaskDetailsHtmlModelBuilder TaskDetailsHtmlModelBuilder { get; private set; }
-        public IObjectValueExtractor ObjectValueExtracter { get; private set; }
         public IRemoteTaskQueueMonitoringServiceStorage RemoteTaskQueueMonitoringServiceStorage { get; private set; }
         public ITaskListHtmlModelBuilder TaskListHtmlModelBuilder { get; private set; }
         public IAccessControlService AccessControlService { get; private set; }
