@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 
@@ -17,20 +18,22 @@ namespace RemoteQueue.Handling
             ITaskCounter taskCounter,
             IShardingManager shardingManager,
             Func<Tuple<string, ColumnInfo>, HandlerTask> createHandlerTask,
-            IHandleTasksMetaStorage handleTasksMetaStorage)
+            IHandleTasksMetaStorage handleTasksMetaStorage,
+            IGlobalTime globalTime)
         {
             this.taskQueue = taskQueue;
             this.taskCounter = taskCounter;
             this.shardingManager = shardingManager;
             this.createHandlerTask = createHandlerTask;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
+            this.globalTime = globalTime;
         }
 
         public void Run()
         {
             lock(lockObject)
             {
-                IEnumerable<Tuple<string, ColumnInfo>> taskInfos = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+                IEnumerable<Tuple<string, ColumnInfo>> taskInfos = handleTasksMetaStorage.GetAllTasksInStates(globalTime.GetNowTicks(), TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
                 if(logger.IsDebugEnabled)
                     logger.DebugFormat("Начали обработку очереди.");
                 foreach(var taskInfo in taskInfos)
@@ -64,7 +67,7 @@ namespace RemoteQueue.Handling
 
         public Tuple<long, long> GetCassandraQueueLength()
         {
-            var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+            var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(globalTime.GetNowTicks(), TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
             long all = 0;
             long forMe = 0;
             foreach(var allTasksInState in allTasksInStates)
@@ -80,6 +83,7 @@ namespace RemoteQueue.Handling
 
         private readonly Func<Tuple<string, ColumnInfo>, HandlerTask> createHandlerTask;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
+        private readonly IGlobalTime globalTime;
         private readonly object lockObject = new object();
         private readonly ITaskQueue taskQueue;
         private readonly ITaskCounter taskCounter;

@@ -25,7 +25,7 @@ namespace RemoteQueue.Handling
             var cassandraCluster = new CassandraCluster(settings);
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, settings);
             var ticksHolder = new TicksHolder(serializer, parameters);
-            var globalTime = new GlobalTime(ticksHolder);
+            globalTime = new GlobalTime(ticksHolder);
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, settings);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
@@ -122,7 +122,7 @@ namespace RemoteQueue.Handling
                             State = TaskState.New,
                         }
                 };
-            return new RemoteTask(handleTaskCollection, task);
+            return new RemoteTask(handleTaskCollection, task, globalTime);
         }
 
         private readonly IHandleTaskCollection handleTaskCollection;
@@ -131,5 +131,6 @@ namespace RemoteQueue.Handling
         private readonly ITaskDataTypeToNameMapper typeToNameMapper;
         private readonly IRemoteLockCreator remoteLockCreator;
         private readonly HandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
+        private readonly GlobalTime globalTime;
     }
 }
