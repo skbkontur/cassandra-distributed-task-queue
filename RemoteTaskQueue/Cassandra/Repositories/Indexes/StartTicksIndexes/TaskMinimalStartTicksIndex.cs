@@ -69,7 +69,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             long firstTicks;
             if(!TryGetFirstEventTicks(taskState, out firstTicks))
                 return new Tuple<string, ColumnInfo>[0];
-            firstTicks = Math.Max(0, firstTicks - diff);
+            firstTicks = (DateTime.UtcNow - TimeSpan.FromDays(1)).Ticks;
             return new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, firstTicks, nowTicks, batchSize);
         }
 
