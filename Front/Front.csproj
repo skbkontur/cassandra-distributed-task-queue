@@ -141,8 +141,6 @@
     </Compile>
     <Compile Include="Models\Default\DefaultModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RenderingHelpers\IEmptyHtmlModelsCreator.cs" />
-    <Compile Include="RenderingHelpers\EmptyHtmlModelsCreator.cs" />
     <Compile Include="RenderingHelpers\JSFunctionBuilder.cs" />
     <Compile Include="RenderingHelpers\SelectReferenceProvider.cs" />
     <Compile Include="RenderingHelpers\UrlExtensions.cs" />
