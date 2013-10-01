@@ -2,15 +2,17 @@
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 namespace RemoteQueue.Handling
 {
     public class RemoteTask : IRemoteTask
     {
-        public RemoteTask(IHandleTaskCollection handleTaskCollection, Task task)
+        public RemoteTask(IHandleTaskCollection handleTaskCollection, Task task, IGlobalTime globalTime)
         {
             this.handleTaskCollection = handleTaskCollection;
             this.task = task;
+            this.globalTime = globalTime;
         }
 
         public string Queue()
@@ -21,7 +23,7 @@ namespace RemoteQueue.Handling
         public string Queue(TimeSpan delay)
         {
             var delayTicks = Math.Max(delay.Ticks, 0);
-            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, DateTime.UtcNow.Ticks + delayTicks) + 1;
+            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, globalTime.UpdateNowTicks() + delayTicks) + 1;
             handleTaskCollection.AddTask(task);
             return Id;
         }
@@ -30,5 +32,6 @@ namespace RemoteQueue.Handling
 
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly Task task;
+        private readonly IGlobalTime globalTime;
     }
 }

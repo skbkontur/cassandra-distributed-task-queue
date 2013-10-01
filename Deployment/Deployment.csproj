@@ -58,6 +58,7 @@
     <Content Include="Projects\EmbeddedFronts\TaskMonitoringViewerEmbeddedFront.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Projects\EmbeddedFronts\WebWormsEmbeddedFront.xml" />
     <Content Include="Projects\FrontEnds\CommonResources.xml">
       <SubType>Designer</SubType>
     </Content>
