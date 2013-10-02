@@ -38,6 +38,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.CommonBusinessObjects">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.IndexServiceCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.IndexServiceCore.dll</HintPath>
     </Reference>

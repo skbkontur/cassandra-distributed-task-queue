@@ -44,6 +44,9 @@
     <Reference Include="Catalogue.CassandraStorageCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.CommonBusinessObjects">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.SynchronizationStorage">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.SynchronizationStorage.dll</HintPath>
     </Reference>

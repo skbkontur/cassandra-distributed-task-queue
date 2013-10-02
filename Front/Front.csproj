@@ -57,6 +57,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.CommonBusinessObjects">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.FileDataWebViewer">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.FileDataWebViewer.dll</HintPath>
     </Reference>
