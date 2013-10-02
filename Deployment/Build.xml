@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <Solution Include="Commons\Commons.sln"></Solution>
+    <Solution Include="CassandraPrimitives\CassandraPrimitives.sln"></Solution>
     <Solution Include="Core\Core.sln"></Solution>
     <Solution Include="RemoteTaskQueue\Deployment\Projects\EmbeddedFronts\WebWormsEmbeddedFront.xml"></Solution>
     <Solution Include="RemoteTaskQueue/Deployment\Projects\EmbeddedFronts\TaskMonitoringViewerEmbeddedFront.xml"></Solution>
