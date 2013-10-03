@@ -40,7 +40,7 @@ namespace RemoteQueue.Configuration
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
             var remoteTaskQueue = new RemoteTaskQueue(cassandraSettings, taskDataRegistry);
             var taskCounter = new TaskCounter(runnerSettings);
-            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), taskInfo => new HandlerTask(taskInfo, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage, globalTime);
+            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), taskInfo => new HandlerTask(taskInfo, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex, globalTime), handleTasksMetaStorage, globalTime);
         }
 
         public void Stop()

@@ -6,6 +6,7 @@ using RemoteLock;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling.HandlerResults;
@@ -27,7 +28,8 @@ namespace RemoteQueue.Handling
             IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
             ITaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage,
-            ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex)
+            ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex,
+            IGlobalTime globalTime)
             : base(taskInfo.Item1)
         {
             this.taskInfo = taskInfo;
@@ -40,6 +42,7 @@ namespace RemoteQueue.Handling
             this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskMinimalStartTicksIndex = taskMinimalStartTicksIndex;
+            this.globalTime = globalTime;
         }
 
         public override void Run()
@@ -131,7 +134,7 @@ namespace RemoteQueue.Handling
                 return;
             }
 
-            if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > DateTime.UtcNow.Ticks))
+            if (task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > globalTime.GetNowTicks()))
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
@@ -217,5 +220,6 @@ namespace RemoteQueue.Handling
         private readonly ITaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
+        private readonly IGlobalTime globalTime;
     }
 }
