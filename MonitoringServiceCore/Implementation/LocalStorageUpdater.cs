@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using MoreLinq;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -82,9 +84,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         {
             var updateTime = globalTime.GetNowTicks();
             var list = new List<TaskMetaUpdatedEvent>();
-            foreach(var eventBatch in new SeparateOnBatchesEnumerable<TaskMetaUpdatedEvent>(events, 300))
+            foreach(var eventBatch in events.Batch(300, Enumerable.ToArray))
             {
-                var hs = new Dictionary<string, MonitoringTaskMetadata>();
+                var dict = new Dictionary<string, MonitoringTaskMetadata>();
                 foreach(var taskEvent in eventBatch)
                 {
                     if(eventCache.Contains(taskEvent)) continue;
@@ -95,28 +97,35 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                         MonitoringTaskMetadata metadata;
                         if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
                         {
-                            if(hs.ContainsKey(metadata.Id))
+                            if(dict.ContainsKey(metadata.Id))
                             {
-                                if(metadata.Ticks > hs[metadata.Id].Ticks) //note это условие вроде всегда выполняется
-                                    hs[metadata.Id] = metadata;
+                                if (GetTicks(metadata.LastModificationDateTime) >= GetTicks(dict[metadata.Id].LastModificationDateTime))
+                                    dict[metadata.Id] = metadata;
                             }
                             else
-                                hs.Add(metadata.Id, metadata);
+                                dict.Add(metadata.Id, metadata);
                         }
+                        else logger.ErrorFormat("Error while index metadata for task '{0}'", taskMeta.Id);
                     }
                 }
                 list.AddRange(eventBatch);
 
-                var forUpdateWithoutR = hs.Select(x => x.Value).ToArray();
-                if(hs.Count != 0)
+                var forUpdateWithoutR = dict.Select(x => x.Value).ToArray();
+                if(dict.Count != 0)
                 {
-                    foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(forUpdateWithoutR, 100))
+                    foreach(var batch in forUpdateWithoutR.Batch(100, Enumerable.ToArray))
                         localStorage.Write(batch);
                 }
-                hs.Clear();
+                dict.Clear();
             }
             eventCache.AddEvents(list);
             localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(updateTime);
+        }
+
+        private long GetTicks(DateTime? dateTime)
+        {
+            if(dateTime == null) return 0;
+            return dateTime.Value.Ticks;
         }
 
         private long GetStartTime()

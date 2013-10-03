@@ -47,11 +47,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
         }
 
-        private HashSet<TaskMetaUpdatedEvent> GetSet()
-        {
-            return set;
-        }
-
         private readonly HashSet<TaskMetaUpdatedEvent> set = new HashSet<TaskMetaUpdatedEvent>();
     }
 }
