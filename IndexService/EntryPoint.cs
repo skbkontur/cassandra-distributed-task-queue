@@ -1,4 +1,6 @@
-﻿using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
+﻿using GroboTrace;
+
+using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
 using SKBKontur.Catalogue.Core.IndexServiceCore;
 using SKBKontur.Catalogue.Core.IndexServiceCore.Configuration;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.Indexes;
@@ -10,6 +12,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.IndexService
 {
     public class EntryPoint : ApplicationBase
     {
+        protected override void ConfigureTracingWrapper(TracingWrapperConfigurator configurator)
+        {
+        }
+
         protected override string ConfigFileName { get { return "indexServiceSettings"; } }
 
         private static void Main()

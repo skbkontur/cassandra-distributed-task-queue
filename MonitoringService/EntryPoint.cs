@@ -1,4 +1,6 @@
-﻿using SKBKontur.Cassandra.CassandraClient.Clusters;
+﻿using GroboTrace;
+
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler;
@@ -9,6 +11,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringService
 {
     public class EntryPoint : ApplicationBase
     {
+        protected override void ConfigureTracingWrapper(TracingWrapperConfigurator configurator)
+        {
+        }
+
         protected override string ConfigFileName { get { return "monitoringServiceSettings"; } }
 
         private static void Main()
