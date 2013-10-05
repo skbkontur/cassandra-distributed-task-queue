@@ -6,6 +6,7 @@ namespace RemoteQueue.Cassandra.Primitives
     {
         void Write(string id, T element);
         T Read(string id);
+        T[] Read(string[] ids);
         IEnumerable<T> ReadAll(int batchSize = 1000);
     }
 }
