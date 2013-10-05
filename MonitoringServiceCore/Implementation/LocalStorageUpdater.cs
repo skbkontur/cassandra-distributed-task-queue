@@ -82,44 +82,46 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         private void UpdateLocalStorage(IEnumerable<TaskMetaUpdatedEvent> events)
         {
-            var updateTime = globalTime.GetNowTicks();
-            var list = new List<TaskMetaUpdatedEvent>();
-            foreach(var eventBatch in events.Batch(300, Enumerable.ToArray))
+            var batchCount = 0;
+            foreach(var eventBatch in events.Batch(1000, Enumerable.ToArray))
             {
-                var dict = new Dictionary<string, MonitoringTaskMetadata>();
-                foreach(var taskEvent in eventBatch)
-                {
-                    if(eventCache.Contains(taskEvent)) continue;
+                logger.InfoFormat("Reading batch #{0}", batchCount++);
 
-                    var taskMeta = handleTasksMetaStorage.GetMeta(taskEvent.TaskId);
-                    if(taskEvent.Ticks <= taskMeta.LastModificationTicks)
+                var uniqueEventBatch = eventBatch.DistinctBy(x => x.TaskId).ToArray();
+
+                var taskMetas = handleTasksMetaStorage.GetMetas(uniqueEventBatch.Select(x => x.TaskId).ToArray()).ToDictionary(x => x.Id);
+
+                var list = new List<MonitoringTaskMetadata>();
+
+                foreach (var taskEvent in uniqueEventBatch)
+                {
+                    if(eventCache.Contains(taskEvent)) 
+                        continue;
+
+                    TaskMetaInformation taskMeta;
+                    if(!taskMetas.TryGetValue(taskEvent.TaskId, out taskMeta))
+                    {
+                        logger.WarnFormat("Cannot read meta for '{0}'", taskEvent.TaskId);
+                        continue;
+                    }
+                    if (taskEvent.Ticks <= taskMeta.LastModificationTicks)
                     {
                         MonitoringTaskMetadata metadata;
+                        
                         if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
-                        {
-                            if(dict.ContainsKey(metadata.Id))
-                            {
-                                if (GetTicks(metadata.LastModificationDateTime) >= GetTicks(dict[metadata.Id].LastModificationDateTime))
-                                    dict[metadata.Id] = metadata;
-                            }
-                            else
-                                dict.Add(metadata.Id, metadata);
-                        }
-                        else logger.ErrorFormat("Error while index metadata for task '{0}'", taskMeta.Id);
+                            list.Add(metadata); 
+                        else 
+                            logger.WarnFormat("Error while index metadata for task '{0}'", taskMeta.Id);
                     }
                 }
-                list.AddRange(eventBatch);
 
-                var forUpdateWithoutR = dict.Select(x => x.Value).ToArray();
-                if(dict.Count != 0)
-                {
-                    foreach(var batch in forUpdateWithoutR.Batch(100, Enumerable.ToArray))
-                        localStorage.Write(batch);
-                }
-                dict.Clear();
+                foreach(var batch in list.Batch(100, Enumerable.ToArray))
+                    localStorage.Write(batch);
+                
+                eventCache.AddEvents(eventBatch);
+                localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(eventBatch.Last().Ticks);
             }
-            eventCache.AddEvents(list);
-            localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(updateTime);
+            
         }
 
         private long GetTicks(DateTime? dateTime)
