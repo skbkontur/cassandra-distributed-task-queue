@@ -77,7 +77,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     list.Add(newMetadata);
             }
             foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(list, 100))
-                localStorage.Write(batch);
+                localStorage.Write(batch, false);
         }
 
         private void UpdateLocalStorage(IEnumerable<TaskMetaUpdatedEvent> events)
@@ -87,7 +87,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             {
                 logger.InfoFormat("Reading batch #{0}", batchCount++);
 
-                var uniqueEventBatch = eventBatch.DistinctBy(x => x.TaskId).ToArray();
+
+                var uniqueEventBatch = eventBatch.GroupBy(x => x.TaskId).Select(x => x.MaxBy(y => y.Ticks)).ToArray();
 
                 var taskMetas = handleTasksMetaStorage.GetMetas(uniqueEventBatch.Select(x => x.TaskId).ToArray()).ToDictionary(x => x.Id);
 
@@ -112,13 +113,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                             list.Add(metadata); 
                         else 
                             logger.WarnFormat("Error while index metadata for task '{0}'", taskMeta.Id);
+                        eventCache.AddEvents(new [] { taskEvent });
                     }
                 }
 
                 foreach(var batch in list.Batch(100, Enumerable.ToArray))
-                    localStorage.Write(batch);
+                    localStorage.Write(batch, false);
                 
-                eventCache.AddEvents(eventBatch);
+                
                 localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(eventBatch.Last().Ticks);
             }
             
@@ -150,8 +152,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     TaskId = info.Id,
                     Ticks = new DateTime(info.Ticks),
                     MinimalStartTicks = new DateTime(info.MinimalStartTicks),
-                    StartExecutingTicks = info.StartExecutingTicks.HasValue ? (DateTime?)new DateTime(info.StartExecutingTicks.Value) : null,
-                    FinishExecutingTicks = info.FinishExecutingTicks.HasValue ? (DateTime?)new DateTime(info.FinishExecutingTicks.Value) : null,
+                    StartExecutingTicks = NullableTickToNullableDateTime(info.StartExecutingTicks),
+                    FinishExecutingTicks = NullableTickToNullableDateTime(info.FinishExecutingTicks),
+                    LastModificationDateTime = NullableTickToNullableDateTime(info.LastModificationTicks),
                     State = default(MTaskState),
                     Attempts = info.Attempts,
                     ParentTaskId = info.ParentTaskId,
@@ -165,6 +168,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
             taskMetadata.State = mtaskState;
             return true;
+        }
+
+        private static DateTime? NullableTickToNullableDateTime(long? value)
+        {
+            return value.HasValue ? (DateTime?)new DateTime(value.Value) : null;
         }
 
         private readonly ILog logger = LogManager.GetLogger(typeof(MonitoringTask));
