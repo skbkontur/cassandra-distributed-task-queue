@@ -20,6 +20,7 @@ namespace RemoteQueue.Handling
     {
         public HandlerTask(
             Tuple<string, ColumnInfo> taskInfo,
+            long startProcessingTicks,
             ITaskCounter taskCounter,
             ISerializer serializer,
             IRemoteTaskQueue remoteTaskQueue,
@@ -28,11 +29,11 @@ namespace RemoteQueue.Handling
             IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
             ITaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage,
-            ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex,
-            IGlobalTime globalTime)
+            ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex)
             : base(taskInfo.Item1)
         {
             this.taskInfo = taskInfo;
+            this.startProcessingTicks = startProcessingTicks;
             this.taskCounter = taskCounter;
             this.serializer = serializer;
             this.remoteTaskQueue = remoteTaskQueue;
@@ -42,7 +43,6 @@ namespace RemoteQueue.Handling
             this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskMinimalStartTicksIndex = taskMinimalStartTicksIndex;
-            this.globalTime = globalTime;
         }
 
         public override void Run()
@@ -134,7 +134,7 @@ namespace RemoteQueue.Handling
                 return;
             }
 
-            if (task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > globalTime.GetNowTicks()))
+            if (task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks)))
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
@@ -214,12 +214,12 @@ namespace RemoteQueue.Handling
         private readonly IRemoteLockCreator remoteLockCreator;
         private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
         private readonly Tuple<string, ColumnInfo> taskInfo;
+        private readonly long startProcessingTicks;
         private readonly ITaskCounter taskCounter;
         private readonly ISerializer serializer;
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ITaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
-        private readonly IGlobalTime globalTime;
     }
 }
