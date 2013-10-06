@@ -1,4 +1,6 @@
-﻿using RemoteQueue.Handling;
+﻿using System;
+
+using RemoteQueue.Handling;
 using RemoteQueue.Handling.HandlerResults;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;

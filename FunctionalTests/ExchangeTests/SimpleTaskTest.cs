@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -10,6 +11,7 @@ using NUnit.Framework;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
 namespace FunctionalTests.ExchangeTests
@@ -27,10 +29,44 @@ namespace FunctionalTests.ExchangeTests
         public void TestRun()
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
-            Wait(new []{taskId}, 1);
+            Wait(new[] {taskId}, 1);
             Thread.Sleep(2000);
             Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
+        }
+
+        [Test]
+        public void TestRunMultipleTasks()
+        {
+            Enumerable.Range(0, 42).AsParallel().ForAll((i) =>
+                {
+                    var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
+                    //Wait(new[] { taskId }, 1, (int)TimeSpan.FromSeconds(50).TotalMilliseconds);
+                    Thread.Sleep(2000);
+                    //Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
+                    var monitoringServiceClient = Container.Get<IRemoteTaskQueueMonitoringServiceStorage>();
+                    WaitFor(
+                        () =>
+                        {
+                            var count = monitoringServiceClient.GetCount(x => x.TaskId == taskId && x.State == SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives.TaskState.Finished);
+                            Console.WriteLine(count);
+                            return count == 1;
+                        },
+                    TimeSpan.FromSeconds(50));
+                });
+
+        }
+
+        private void WaitFor(Func<bool> func, TimeSpan timeout)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            while (stopwatch.Elapsed < timeout)
+            {
+                Thread.Sleep(99);
+                if (func())
+                    return;
+            }
+            Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
         }
 
         [Test]
@@ -38,7 +74,7 @@ namespace FunctionalTests.ExchangeTests
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(1));
             taskQueue.CancelTask(taskId);
-            Wait(new[] { taskId }, 0);
+            Wait(new[] {taskId}, 0);
             Thread.Sleep(2000);
             Assert.AreEqual(0, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Canceled, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
@@ -48,9 +84,9 @@ namespace FunctionalTests.ExchangeTests
         public void TestRerun()
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
-            Wait(new[] { taskId }, 1);
+            Wait(new[] {taskId}, 1);
             taskQueue.RerunTask(taskId, TimeSpan.FromMilliseconds(1));
-            Wait(new[] { taskId }, 2);
+            Wait(new[] {taskId}, 2);
             Thread.Sleep(2000);
             Assert.AreEqual(2, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
@@ -59,17 +95,17 @@ namespace FunctionalTests.ExchangeTests
 
         private void Wait(string[] taskIds, int criticalValue, int ms = 5000)
         {
-            int current = 0;
-            while (true)
+            var current = 0;
+            while(true)
             {
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
                 Console.WriteLine(Now() + " CurrentValues: " + String.Join(", ", attempts));
-                int minValue = attempts.Min();
-                if (minValue >= criticalValue)
+                var minValue = attempts.Min();
+                if(minValue >= criticalValue)
                     break;
                 Thread.Sleep(sleepInterval);
                 current += sleepInterval;
-                if (current > ms)
+                if(current > ms)
                     throw new TooLateException("Время ожидания превысило {0} мс.", ms);
             }
         }
