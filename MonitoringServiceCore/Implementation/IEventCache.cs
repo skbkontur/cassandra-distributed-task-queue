@@ -8,7 +8,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
     {
         void AddEvents(IEnumerable<TaskMetaUpdatedEvent> events);
         void RemoveEvents(long threshold);
-        void RemoveAll();
         bool Contains(TaskMetaUpdatedEvent elmentaryEvent);
         int GetCount();
     }
