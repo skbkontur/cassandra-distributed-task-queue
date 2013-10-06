@@ -49,11 +49,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 eventCache.RemoveEvents(startingTicksCache.GetMinimum());
                 var lastTicks = globalTime.GetNowTicks();
                 UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>()));
-                lock(lockObject)
-                {
-                    if(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() < lastTicks)
-                        localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(lastTicks);
-                }
+                UpdateLocalStorageTicks(lastTicks);
             }
             finally
             {
@@ -87,16 +83,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             {
                 logger.InfoFormat("Reading batch #{0}", batchCount++);
 
-
                 var uniqueEventBatch = eventBatch.GroupBy(x => x.TaskId).Select(x => x.MaxBy(y => y.Ticks)).ToArray();
 
                 var taskMetas = handleTasksMetaStorage.GetMetas(uniqueEventBatch.Select(x => x.TaskId).ToArray()).ToDictionary(x => x.Id);
+                if(uniqueEventBatch.Length > taskMetas.Count)
+                    logger.WarnFormat("Lost {0} task metas", uniqueEventBatch.Length - taskMetas.Count);
 
                 var list = new List<MonitoringTaskMetadata>();
 
-                foreach (var taskEvent in uniqueEventBatch)
+                foreach(var taskEvent in uniqueEventBatch)
                 {
-                    if(eventCache.Contains(taskEvent)) 
+                    if(eventCache.Contains(taskEvent))
                         continue;
 
                     TaskMetaInformation taskMeta;
@@ -105,31 +102,44 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                         logger.WarnFormat("Cannot read meta for '{0}'", taskEvent.TaskId);
                         continue;
                     }
-                    if (taskEvent.Ticks <= taskMeta.LastModificationTicks)
+
+                    if(taskMeta.LastModificationTicks == null)
                     {
-                        MonitoringTaskMetadata metadata;
-                        
-                        if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
-                            list.Add(metadata); 
-                        else 
-                            logger.WarnFormat("Error while index metadata for task '{0}'", taskMeta.Id);
-                        eventCache.AddEvents(new [] { taskEvent });
+                        logger.WarnFormat("TaskMeta with id='{0}' have LastModificationTicks==[null]", taskEvent.TaskId);
+                        continue;
                     }
+
+                    if(taskEvent.Ticks > taskMeta.LastModificationTicks)
+                    {
+                        logger.InfoFormat("TaskMeta with id='{0}' have too old LastModificationTicks", taskEvent.TaskId);
+                        continue;
+                    }
+
+                    MonitoringTaskMetadata metadata;
+                    if(!TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
+                    {
+                        logger.WarnFormat("Error while index metadata for task '{0}'", taskMeta.Id);
+                        continue;
+                    }
+
+                    list.Add(metadata);
+                    eventCache.AddEvents(new[] {taskEvent});
                 }
 
                 foreach(var batch in list.Batch(100, Enumerable.ToArray))
                     localStorage.Write(batch, false);
-                
-                
-                localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(eventBatch.Last().Ticks);
+
+                UpdateLocalStorageTicks(eventBatch.Last().Ticks);
             }
-            
         }
 
-        private long GetTicks(DateTime? dateTime)
+        private void UpdateLocalStorageTicks(long lastTicks)
         {
-            if(dateTime == null) return 0;
-            return dateTime.Value.Ticks;
+            lock (lockObject)
+            {
+                if (localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() < lastTicks)
+                    localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(lastTicks);
+            }
         }
 
         private long GetStartTime()
