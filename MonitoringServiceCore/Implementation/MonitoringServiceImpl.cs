@@ -64,17 +64,29 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             var task = localStorage.Get<MonitoringTaskMetadata>(taskId, taskId);
             if(task == null)
                 return null;
-            return GetTaskWithAllDescendants(task).ToArray();
+            return GetTaskWithAllDescendants(task, 0).ToArray();
         }
 
-        private IEnumerable<MonitoringTaskMetadata> GetTaskWithAllDescendants(MonitoringTaskMetadata task)
+        private List<MonitoringTaskMetadata> GetTaskWithAllDescendants(MonitoringTaskMetadata task, int count)
         {
-            return new []{task}.Concat(localStorage.Search<MonitoringTaskMetadata>(meta => meta.ParentTaskId == task.Id).SelectMany(GetTaskWithAllDescendants));
+            var list = new List<MonitoringTaskMetadata> {task};
+            count++;
+            var monitoringTaskMetadatas = localStorage.Search<MonitoringTaskMetadata>(meta => meta.ParentTaskId == task.Id);
+            foreach(var monitoringTaskMetadata in monitoringTaskMetadatas)
+            {
+                var range = GetTaskWithAllDescendants(monitoringTaskMetadata, count);
+                list.AddRange(range);
+                count += range.Count;
+                if(count > maxCount)
+                    return list;
+            }
+            return list;
         }
 
         private readonly ILocalStorage localStorage;
         private readonly string taskMetaInfoTableName;
         private readonly ISqlDatabase sqlDatabase;
         private readonly ILocalStorageUpdater localStorageUpdater;
+        private const int maxCount = 300;
     }
 }
