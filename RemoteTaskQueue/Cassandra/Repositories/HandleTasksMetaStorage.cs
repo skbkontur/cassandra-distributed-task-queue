@@ -8,6 +8,8 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
+using MoreLinq;
+
 namespace RemoteQueue.Cassandra.Repositories
 {
     public class HandleTasksMetaStorage : IHandleTasksMetaStorage
@@ -49,6 +51,13 @@ namespace RemoteQueue.Cassandra.Repositories
             var meta = storage.Read(taskId);
             meta.MakeSnapshot();
             return meta;
+        }
+
+        public TaskMetaInformation[] GetMetas(string[] taskIds)
+        {
+            var metas = storage.Read(taskIds);
+            metas.ForEach(x => x.MakeSnapshot());
+            return metas;
         }
 
         private readonly ITaskMetaInformationBlobStorage storage;

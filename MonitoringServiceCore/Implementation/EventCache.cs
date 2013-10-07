@@ -15,14 +15,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
         }
 
-        public void RemoveAll()
-        {
-            lock(set)
-            {
-                set.Clear();
-            }
-        }
-
         public void RemoveEvents(long threshold)
         {
             lock(set)
@@ -45,11 +37,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             {
                 return set.Count;
             }
-        }
-
-        private HashSet<TaskMetaUpdatedEvent> GetSet()
-        {
-            return set;
         }
 
         private readonly HashSet<TaskMetaUpdatedEvent> set = new HashSet<TaskMetaUpdatedEvent>();
