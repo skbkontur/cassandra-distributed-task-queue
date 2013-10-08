@@ -85,23 +85,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                     TaskStates = (pageModelData.SearchPanel.TaskStates ?? new Pair<TaskState, bool?>[0]).Where(x => x.Value == true).Select(x => x.Key).ToArray(),
                     Ticks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
-                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
+                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.From),
+                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.To)
                         },
                     StartExecutingTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.StartExecutedTicks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
-                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.StartExecutedTicks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
+                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.StartExecutedTicks.From),
+                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.StartExecutedTicks.To)
                         },
                     FinishExecutingTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.FinishExecutedTicks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
-                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.FinishExecutedTicks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
+                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.FinishExecutedTicks.From),
+                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.FinishExecutedTicks.To)
                         },
                     MinimalStartTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
-                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
+                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.From),
+                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.To)
                         }
                 };
             businessObjectsStorage.Write(searchRequest);
