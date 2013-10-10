@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 using GroBuf;
 
@@ -10,8 +11,6 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-
-using System.Linq;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -28,6 +27,8 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public void AddEvent(string taskId, long nowTicks)
         {
+            if(string.IsNullOrEmpty(taskId))
+                throw new Exception("Try to log event with null taskId!");
             var taskMetaUpdatedEventEntity = new TaskMetaUpdatedEvent
                 {
                     TaskId = taskId,
