@@ -39,6 +39,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
         }
 
+        public void Clear()
+        {
+            lock(set)
+            {
+                set.Clear();
+            }
+        }
+
         private readonly HashSet<TaskMetaUpdatedEvent> set = new HashSet<TaskMetaUpdatedEvent>();
     }
 }
