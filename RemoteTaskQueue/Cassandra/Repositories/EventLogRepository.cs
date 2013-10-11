@@ -58,6 +58,37 @@ namespace RemoteQueue.Cassandra.Repositories
             return new GetEventLogEnumerable(serializer, connection, fromTicks, globalTime.GetNowTicks(), batchSize);
         }
 
+        [Obsolete("для конвертаций")]
+        public void AddEvents(KeyValuePair<string, long>[] taskIdAndTicks)
+        {
+            if(taskIdAndTicks.Length == 0)
+                return;
+
+            var events = taskIdAndTicks.Select(kvp => new TaskMetaUpdatedEvent
+                {
+                    TaskId = kvp.Key,
+                    Ticks = kvp.Value
+                }).ToArray();
+            var connection = RetrieveColumnFamilyConnection();
+            ticksHolder.UpdateMinTicks(firstEventTicksRowName, events.Min(x => x.Ticks));
+
+            var nowTicks = globalTime.GetNowTicks();
+            var columns = events.Select(@event =>
+                {
+                    var columnInfo = GetColumnInfo(@event.Ticks);
+                    return new KeyValuePair<string, Column>(columnInfo.Item1, new Column
+                        {
+                            Name = columnInfo.Item2,
+                            Timestamp = nowTicks,
+                            Value = serializer.Serialize(@event)
+                        });
+                });
+            connection.BatchInsert(columns.GroupBy(x => x.Key)
+                                          .Select(group => new KeyValuePair<string, IEnumerable<Column>>(
+                                                               group.Key,
+                                                               group.Select(x => x.Value))));
+        }
+
         public const string columnFamilyName = "RemoteTaskQueueEventLog";
 
         private static Tuple<string, string> GetColumnInfo(long ticks)

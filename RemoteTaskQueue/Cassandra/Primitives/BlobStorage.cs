@@ -4,12 +4,11 @@ using System.Linq;
 
 using GroBuf;
 
+using MoreLinq;
+
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-
-using MoreLinq;
-
 using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Primitives
@@ -45,31 +44,10 @@ namespace RemoteQueue.Cassandra.Primitives
 
         public T[] Read(string[] ids)
         {
-            if (ids.Length == 0)
+            if(ids.Length == 0)
                 return new T[0];
             return TryReadInternal(ids);
         }
-
-        private T[] TryReadInternal(string[] ids)
-        {
-            if (ids == null) throw new ArgumentNullException("ids");
-            if (ids.Length == 0) return new T[0];
-            var rows = new List<KeyValuePair<string, Column[]>>();
-            ids
-                .Batch(1000, Enumerable.ToArray)
-                .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
-            var rowsDict = rows.ToDictionary(row => row.Key);
-
-            return ids.Where(rowsDict.ContainsKey)
-                .Select(id => Read(rowsDict[id].Value))
-                .Where(obj => obj != null).ToArray();
-        }
-
-        private T Read(IEnumerable<Column> columns)
-        {
-            return columns.Where(column => column.Name == dataColumnName).Select(column => serializer.Deserialize<T>(column.Value)).FirstOrDefault();
-        }
-
 
         public IEnumerable<T> ReadAll(int batchSize = 1000)
         {
@@ -81,12 +59,49 @@ namespace RemoteQueue.Cassandra.Primitives
                                    .Select(x => serializer.Deserialize<T>(x.Value[0].Value)));
         }
 
+        [Obsolete("для конвертаций")]
+        public void Write(KeyValuePair<string, T>[] elements)
+        {
+            var connection = RetrieveColumnFamilyConnection();
+            var updateNowTicks = globalTime.UpdateNowTicks();
+            connection.BatchInsert(elements.Select(x => new KeyValuePair<string, IEnumerable<Column>>(
+                                                            x.Key,
+                                                            new[]
+                                                                {
+                                                                    new Column
+                                                                        {
+                                                                            Name = dataColumnName,
+                                                                            Timestamp = updateNowTicks,
+                                                                            Value = serializer.Serialize(x.Value)
+                                                                        }
+                                                                })));
+        }
+
+        private T[] TryReadInternal(string[] ids)
+        {
+            if(ids == null) throw new ArgumentNullException("ids");
+            if(ids.Length == 0) return new T[0];
+            var rows = new List<KeyValuePair<string, Column[]>>();
+            ids
+                .Batch(1000, Enumerable.ToArray)
+                .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
+            var rowsDict = rows.ToDictionary(row => row.Key);
+
+            return ids.Where(rowsDict.ContainsKey)
+                      .Select(id => Read(rowsDict[id].Value))
+                      .Where(obj => obj != null).ToArray();
+        }
+
+        private T Read(IEnumerable<Column> columns)
+        {
+            return columns.Where(column => column.Name == dataColumnName).Select(column => serializer.Deserialize<T>(column.Value)).FirstOrDefault();
+        }
+
         private void MakeInConnection(Action<IColumnFamilyConnection> action)
         {
             var connection = RetrieveColumnFamilyConnection();
             action(connection);
         }
-
 
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
