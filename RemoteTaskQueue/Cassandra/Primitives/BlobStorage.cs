@@ -75,10 +75,7 @@ namespace RemoteQueue.Cassandra.Primitives
         {
             var connection = RetrieveColumnFamilyConnection();
             var keys = connection.GetKeys(batchSize);
-            return new SeparateOnBatchesEnumerable<string>(keys, batchSize).SelectMany(
-                batch => connection.GetRows(batch, dataColumnName, 1)
-                                   .Where(x => x.Value.Length > 0)
-                                   .Select(x => serializer.Deserialize<T>(x.Value[0].Value)));
+            return TryReadInternal(keys.ToArray());
         }
 
         private void MakeInConnection(Action<IColumnFamilyConnection> action)
