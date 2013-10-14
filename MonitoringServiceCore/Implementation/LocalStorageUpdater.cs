@@ -93,37 +93,44 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
                 foreach(var taskEvent in uniqueEventBatch)
                 {
-                    if(eventCache.Contains(taskEvent))
-                        continue;
-
-                    TaskMetaInformation taskMeta;
-                    if(!taskMetas.TryGetValue(taskEvent.TaskId, out taskMeta))
+                    try
                     {
-                        logger.WarnFormat("Cannot read meta for '{0}'", taskEvent.TaskId);
-                        continue;
-                    }
+                        if(eventCache.Contains(taskEvent))
+                            continue;
 
-                    if(taskMeta.LastModificationTicks == null)
+                        TaskMetaInformation taskMeta;
+                        if(!taskMetas.TryGetValue(taskEvent.TaskId, out taskMeta))
+                        {
+                            logger.WarnFormat("Cannot read meta for '{0}'", taskEvent.TaskId);
+                            continue;
+                        }
+
+                        if(taskMeta.LastModificationTicks == null)
+                        {
+                            logger.WarnFormat("TaskMeta with id='{0}' have LastModificationTicks==[null]", taskEvent.TaskId);
+                            continue;
+                        }
+
+                        if(taskEvent.Ticks > taskMeta.LastModificationTicks)
+                        {
+                            logger.InfoFormat("TaskMeta with id='{0}' have too old LastModificationTicks", taskEvent.TaskId);
+                            continue;
+                        }
+
+                        MonitoringTaskMetadata metadata;
+                        if(!TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
+                        {
+                            logger.WarnFormat("Error while index metadata for task '{0}'", taskMeta.Id);
+                            continue;
+                        }
+
+                        list.Add(metadata);
+                        eventCache.AddEvents(new[] {taskEvent});
+                    }
+                    catch(Exception e)
                     {
-                        logger.WarnFormat("TaskMeta with id='{0}' have LastModificationTicks==[null]", taskEvent.TaskId);
-                        continue;
+                        logger.Error(string.Format("Error while processing taskEvent taskId='{0}'", taskEvent.TaskId), e);
                     }
-
-                    if(taskEvent.Ticks > taskMeta.LastModificationTicks)
-                    {
-                        logger.InfoFormat("TaskMeta with id='{0}' have too old LastModificationTicks", taskEvent.TaskId);
-                        continue;
-                    }
-
-                    MonitoringTaskMetadata metadata;
-                    if(!TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
-                    {
-                        logger.WarnFormat("Error while index metadata for task '{0}'", taskMeta.Id);
-                        continue;
-                    }
-
-                    list.Add(metadata);
-                    eventCache.AddEvents(new[] {taskEvent});
                 }
 
                 foreach(var batch in list.Batch(100, Enumerable.ToArray))
