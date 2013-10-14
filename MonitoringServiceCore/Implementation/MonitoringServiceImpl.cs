@@ -5,17 +5,24 @@ using SKBKontur.Catalogue.Core.SQL;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Settings;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation
 {
     public class MonitoringServiceImpl : IMonitoringServiceImpl
     {
-        public MonitoringServiceImpl(ILocalStorage localStorage, ILocalStorageTableRegistry localStorageTableRegistry, ISqlDatabase sqlDatabase, ILocalStorageUpdater localStorageUpdater)
+        public MonitoringServiceImpl(
+            ILocalStorage localStorage,
+            ILocalStorageTableRegistry localStorageTableRegistry,
+            ISqlDatabase sqlDatabase,
+            ILocalStorageUpdater localStorageUpdater,
+            IMonitoringServiceSettings monitoringServiceSettings)
         {
             this.localStorage = localStorage;
             this.sqlDatabase = sqlDatabase;
             taskMetaInfoTableName = localStorageTableRegistry.GetTableName(typeof(MonitoringTaskMetadata));
             this.localStorageUpdater = localStorageUpdater;
+            this.monitoringServiceSettings = monitoringServiceSettings;
         }
 
         public void ActualizeDatabaseScheme()
@@ -30,7 +37,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public int GetCount(MonitoringGetCountQuery getCountQuery)
         {
-            //localStorageUpdater.Update();
+            if(monitoringServiceSettings.ActualizeOnQuery)
+                localStorageUpdater.Update();
             return localStorage.GetCount<MonitoringTaskMetadata>(getCountQuery.Criterion);
         }
 
@@ -41,13 +49,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public MonitoringTaskMetadata[] Search(MonitoringSearchQuery searchQuery)
         {
-            //localStorageUpdater.Update();
+            if (monitoringServiceSettings.ActualizeOnQuery)
+                localStorageUpdater.Update();
             return localStorage.Search<MonitoringTaskMetadata>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules);
         }
 
         public object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery)
         {
-            //localStorageUpdater.Update();
+            if (monitoringServiceSettings.ActualizeOnQuery)
+                localStorageUpdater.Update();
             var sqlSelectQuery = new SqlSelectQuery
                 {
                     Criterion = getDistinctValuesQuery.Criterion,
@@ -61,20 +71,31 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId)
         {
+            if (monitoringServiceSettings.ActualizeOnQuery)
+                localStorageUpdater.Update();
             var task = localStorage.Get<MonitoringTaskMetadata>(taskId, taskId);
             if(task == null)
                 return null;
-            return GetTaskWithAllDescendants(task).ToArray();
+            var list = new List<MonitoringTaskMetadata>();
+            GetTaskWithAllDescendants(task, list);
+            return list.ToArray();
         }
 
-        private IEnumerable<MonitoringTaskMetadata> GetTaskWithAllDescendants(MonitoringTaskMetadata task)
+        private void GetTaskWithAllDescendants(MonitoringTaskMetadata task, List<MonitoringTaskMetadata> list)
         {
-            return new []{task}.Concat(localStorage.Search<MonitoringTaskMetadata>(meta => meta.ParentTaskId == task.Id).SelectMany(GetTaskWithAllDescendants));
+            if(list.Count < maxCount) list.Add(task);
+            else return;
+
+            var monitoringTaskMetadatas = localStorage.Search<MonitoringTaskMetadata>(meta => meta.ParentTaskId == task.Id);
+            foreach(var monitoringTaskMetadata in monitoringTaskMetadatas)
+                GetTaskWithAllDescendants(monitoringTaskMetadata, list);
         }
 
         private readonly ILocalStorage localStorage;
         private readonly string taskMetaInfoTableName;
         private readonly ISqlDatabase sqlDatabase;
         private readonly ILocalStorageUpdater localStorageUpdater;
+        private readonly IMonitoringServiceSettings monitoringServiceSettings;
+        private const int maxCount = 300;
     }
 }
