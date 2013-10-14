@@ -84,6 +84,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 logger.InfoFormat("Reading batch #{0}", batchCount++);
 
                 var uniqueEventBatch = eventBatch.GroupBy(x => x.TaskId).Select(x => x.MaxBy(y => y.Ticks)).ToArray();
+                var eventsWithNotEmptyTaskId = uniqueEventBatch.Where(x => !string.IsNullOrEmpty(x.TaskId)).ToArray();
+                if(eventsWithNotEmptyTaskId.Length < uniqueEventBatch.Length)
+                    logger.Error("Some events has taskId=[null]");
+                uniqueEventBatch = eventsWithNotEmptyTaskId;
 
                 var taskMetas = handleTasksMetaStorage.GetMetas(uniqueEventBatch.Select(x => x.TaskId).ToArray()).ToDictionary(x => x.Id);
                 if(uniqueEventBatch.Length > taskMetas.Count)
@@ -142,9 +146,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         private void UpdateLocalStorageTicks(long lastTicks)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
-                if (localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() < lastTicks)
+                if(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() < lastTicks)
                     localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(lastTicks);
             }
         }
