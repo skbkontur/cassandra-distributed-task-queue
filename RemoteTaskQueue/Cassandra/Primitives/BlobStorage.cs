@@ -53,10 +53,24 @@ namespace RemoteQueue.Cassandra.Primitives
         {
             var connection = RetrieveColumnFamilyConnection();
             var keys = connection.GetKeys(batchSize);
-            return new SeparateOnBatchesEnumerable<string>(keys, batchSize).SelectMany(
-                batch => connection.GetRows(batch, dataColumnName, 1)
-                                   .Where(x => x.Value.Length > 0)
-                                   .Select(x => serializer.Deserialize<T>(x.Value[0].Value)));
+            return TryReadInternal(keys.ToArray());
+        }
+
+        public void Delete(string id, long timestamp)
+        {
+            CheckObjectIdentityValidness(id);
+
+            MakeInConnection(connection =>
+                {
+                    var columns = connection.GetColumns(id, null, maximalColumnsCount);
+                    connection.DeleteBatch(id, columns.Select(col => col.Name), timestamp);
+                });
+        }
+
+        public void Delete(string[] ids, long? timestamp)
+        {
+            CheckObjectIdentitiesValidness(ids);
+            ids.Batch(1000, Enumerable.ToArray).ForEach(x => DeleteInternal(x, timestamp));
         }
 
         [Obsolete("для конвертаций")]
@@ -97,14 +111,33 @@ namespace RemoteQueue.Cassandra.Primitives
             return columns.Where(column => column.Name == dataColumnName).Select(column => serializer.Deserialize<T>(column.Value)).FirstOrDefault();
         }
 
+        private void DeleteInternal(string[] ids, long? timestamp)
+        {
+            MakeInConnection(
+                connection => connection.DeleteRows(ids, timestamp.HasValue ? timestamp.Value : (long?)null));
+        }
+
         private void MakeInConnection(Action<IColumnFamilyConnection> action)
         {
             var connection = RetrieveColumnFamilyConnection();
             action(connection);
         }
 
+        private static void CheckObjectIdentityValidness(string id)
+        {
+            if(id == null)
+                throw new ArgumentNullException("id");
+        }
+
+        private static void CheckObjectIdentitiesValidness(string[] ids)
+        {
+            if(ids == null)
+                throw new ArgumentNullException("ids");
+        }
+
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
+        private const int maximalColumnsCount = 1000;
         private const string dataColumnName = "Data";
     }
 }
