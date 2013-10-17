@@ -6,6 +6,7 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
+using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
@@ -21,6 +22,8 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.Tas
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel;
+
+using log4net;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
@@ -53,8 +56,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             var criterion = monitoringSearchRequestCriterionBuilder.BuildCriterion(searchRequest);
 
             var rangeFrom = pageNumber * tasksPerPageCount;
-            var totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
-            var fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount, x => x.MinimalStartTicks.Descending()).ToArray();
+            int totalCount;
+            MonitoringTaskMetadata[] fullTaskMetaInfos;
+            try
+            {
+                totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
+                fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount, x => x.MinimalStartTicks.Descending()).ToArray();
+            }
+            catch(DomainIsDisabledException e)
+            {
+                logger.Error("Can not build TaskList", e);
+                totalCount = 0;
+                fullTaskMetaInfos = new MonitoringTaskMetadata[0];
+                // TODO вытащить во вьюшку инфу о том, что случился Exception
+            }
 
             var modelData = taskListModelBuilder.Build(searchRequest, fullTaskMetaInfos, totalCount);
 
@@ -181,6 +196,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder;
         private readonly IAccessControlService accessControlService;
 
+        private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueControllerBase));
         private const int tasksPerPageCount = 100;
     }
 }

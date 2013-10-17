@@ -57,6 +57,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
         }
 
+        public void ClearCache()
+        {
+            eventCache.Clear();
+        }
+
         public void RecalculateInProcess()
         {
             var metadatas = localStorage.Search<MonitoringTaskMetadata>(
@@ -79,9 +84,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private void UpdateLocalStorage(IEnumerable<TaskMetaUpdatedEvent> events)
         {
             var batchCount = 0;
-            foreach(var eventBatch in events.Batch(1000, Enumerable.ToArray))
+            foreach (var eventBatch in events.Batch(1000, Enumerable.ToArray))
             {
-                logger.InfoFormat("Reading batch #{0}", batchCount++);
+                logger.InfoFormat("Reading batch #{0} with {1} events", batchCount++, eventBatch.Length);
 
                 var uniqueEventBatch = eventBatch.GroupBy(x => x.TaskId).Select(x => x.MaxBy(y => y.Ticks)).ToArray();
                 var eventsWithNotEmptyTaskId = uniqueEventBatch.Where(x => !string.IsNullOrEmpty(x.TaskId)).ToArray();
@@ -139,6 +144,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
                 foreach(var batch in list.Batch(100, Enumerable.ToArray))
                     localStorage.Write(batch, false);
+                logger.InfoFormat("Wrote {0} rows in sql", list.Count);
 
                 UpdateLocalStorageTicks(eventBatch.Last().Ticks);
             }

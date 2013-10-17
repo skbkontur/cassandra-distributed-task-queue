@@ -73,6 +73,24 @@ namespace RemoteQueue.Cassandra.Primitives
             ids.Batch(1000, Enumerable.ToArray).ForEach(x => DeleteInternal(x, timestamp));
         }
 
+        [Obsolete("для конвертаций")]
+        public void Write(KeyValuePair<string, T>[] elements)
+        {
+            var connection = RetrieveColumnFamilyConnection();
+            var updateNowTicks = globalTime.UpdateNowTicks();
+            connection.BatchInsert(elements.Select(x => new KeyValuePair<string, IEnumerable<Column>>(
+                                                            x.Key,
+                                                            new[]
+                                                                {
+                                                                    new Column
+                                                                        {
+                                                                            Name = dataColumnName,
+                                                                            Timestamp = updateNowTicks,
+                                                                            Value = serializer.Serialize(x.Value)
+                                                                        }
+                                                                })));
+        }
+
         private T[] TryReadInternal(string[] ids)
         {
             if(ids == null) throw new ArgumentNullException("ids");
