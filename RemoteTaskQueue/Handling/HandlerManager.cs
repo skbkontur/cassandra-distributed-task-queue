@@ -17,30 +17,29 @@ namespace RemoteQueue.Handling
             ITaskQueue taskQueue,
             ITaskCounter taskCounter,
             IShardingManager shardingManager,
-            Func<Tuple<string, ColumnInfo>, HandlerTask> createHandlerTask,
-            IHandleTasksMetaStorage handleTasksMetaStorage,
-            IGlobalTime globalTime)
+            Func<Tuple<string, ColumnInfo>, long, HandlerTask> createHandlerTask,
+            IHandleTasksMetaStorage handleTasksMetaStorage)
         {
             this.taskQueue = taskQueue;
             this.taskCounter = taskCounter;
             this.shardingManager = shardingManager;
             this.createHandlerTask = createHandlerTask;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
-            this.globalTime = globalTime;
         }
 
         public void Run()
         {
             lock(lockObject)
             {
-                IEnumerable<Tuple<string, ColumnInfo>> taskInfos = handleTasksMetaStorage.GetAllTasksInStates(globalTime.GetNowTicks(), TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+                var nowTicks = DateTime.UtcNow.Ticks;
+                IEnumerable<Tuple<string, ColumnInfo>> taskInfos = handleTasksMetaStorage.GetAllTasksInStates(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
                 if(logger.IsDebugEnabled)
                     logger.DebugFormat("Начали обработку очереди.");
                 foreach(var taskInfo in taskInfos)
                 {
                     if(!shardingManager.IsSituableTask(taskInfo.Item1)) continue;
                     if(!taskCounter.CanQueueTask()) return;
-                    taskQueue.QueueTask(createHandlerTask(taskInfo));
+                    taskQueue.QueueTask(createHandlerTask(taskInfo, nowTicks));
                 }
             }
         }
@@ -67,7 +66,7 @@ namespace RemoteQueue.Handling
 
         public Tuple<long, long> GetCassandraQueueLength()
         {
-            var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(globalTime.GetNowTicks(), TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+            var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
             long all = 0;
             long forMe = 0;
             foreach(var allTasksInState in allTasksInStates)
@@ -81,9 +80,8 @@ namespace RemoteQueue.Handling
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
 
-        private readonly Func<Tuple<string, ColumnInfo>, HandlerTask> createHandlerTask;
+        private readonly Func<Tuple<string, ColumnInfo>, long, HandlerTask> createHandlerTask;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
-        private readonly IGlobalTime globalTime;
         private readonly object lockObject = new object();
         private readonly ITaskQueue taskQueue;
         private readonly ITaskCounter taskCounter;

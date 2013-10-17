@@ -11,5 +11,6 @@ namespace RemoteQueue.Cassandra.Repositories
         IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long ticks, params TaskState[] states);
         void AddMeta(TaskMetaInformation meta);
         TaskMetaInformation GetMeta(string taskId);
+        TaskMetaInformation[] GetMetas(string[] taskIds);
     }
 }

@@ -56,6 +56,10 @@
     <Reference Include="log4net">
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="MoreLinq, Version=1.0.11522.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\MoreLinq\MoreLinq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -77,10 +81,10 @@
     <Compile Include="Implementation\MonitoringServiceImpl.cs" />
     <Compile Include="Implementation\ThreadUpdateStartingTicksCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sheduler\IMonitoringSchedulableRunnerSettings.cs" />
+    <Compile Include="Settings\IMonitoringServiceSettings.cs" />
     <Compile Include="Sheduler\IMonitoringServiceSchedulableRunner.cs" />
     <Compile Include="Sheduler\IMonitoringTask.cs" />
-    <Compile Include="Sheduler\MonitoringSchedulableRunnerSettings.cs" />
+    <Compile Include="Settings\MonitoringServiceSettings.cs" />
     <Compile Include="Sheduler\MonitoringServiceSchedulableRunner.cs" />
     <Compile Include="Sheduler\MonitoringTask.cs" />
   </ItemGroup>

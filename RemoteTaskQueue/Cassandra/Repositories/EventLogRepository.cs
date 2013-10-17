@@ -11,6 +11,8 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 
+using System.Linq;
+
 namespace RemoteQueue.Cassandra.Repositories
 {
     public class EventLogRepository : ColumnFamilyRepositoryBase, IEventLogRepository
@@ -51,9 +53,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 return new TaskMetaUpdatedEvent[0];
             firstEventTicks -= tickPartition; //note что это ?
             var diff = cassandraSettings.Attempts * TimeSpan.FromMilliseconds(cassandraSettings.Timeout).Ticks + TimeSpan.FromSeconds(10).Ticks;
-            fromTicks = Math.Max(0, fromTicks - diff);
-            if(fromTicks < firstEventTicks)
-                fromTicks = firstEventTicks;
+            fromTicks = new[] {0, fromTicks - diff, firstEventTicks}.Max();
             return new GetEventLogEnumerable(serializer, connection, fromTicks, globalTime.GetNowTicks(), batchSize);
         }
 

@@ -1,6 +1,8 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 
+using GroboTrace;
+
 using SKBKontur.Catalogue.Core.Web.Globals;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Controllers;
@@ -28,6 +30,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
         protected override void DoConfigure()
         {
             Configurator.Configure(Container);
+        }
+
+        protected override void ConfigureTracingWrapper(TracingWrapperConfigurator configurator)
+        {
         }
 
         protected override string ConfigFileName { get { return "frontSettings"; } }

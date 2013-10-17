@@ -6,6 +6,7 @@ using RemoteLock;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling.HandlerResults;
@@ -19,6 +20,7 @@ namespace RemoteQueue.Handling
     {
         public HandlerTask(
             Tuple<string, ColumnInfo> taskInfo,
+            long startProcessingTicks,
             ITaskCounter taskCounter,
             ISerializer serializer,
             IRemoteTaskQueue remoteTaskQueue,
@@ -31,6 +33,7 @@ namespace RemoteQueue.Handling
             : base(taskInfo.Item1)
         {
             this.taskInfo = taskInfo;
+            this.startProcessingTicks = startProcessingTicks;
             this.taskCounter = taskCounter;
             this.serializer = serializer;
             this.remoteTaskQueue = remoteTaskQueue;
@@ -131,7 +134,7 @@ namespace RemoteQueue.Handling
                 return;
             }
 
-            if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > DateTime.UtcNow.Ticks))
+            if (task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks)))
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
@@ -211,6 +214,7 @@ namespace RemoteQueue.Handling
         private readonly IRemoteLockCreator remoteLockCreator;
         private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
         private readonly Tuple<string, ColumnInfo> taskInfo;
+        private readonly long startProcessingTicks;
         private readonly ITaskCounter taskCounter;
         private readonly ISerializer serializer;
         private readonly IRemoteTaskQueue remoteTaskQueue;

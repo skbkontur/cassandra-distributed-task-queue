@@ -1,14 +1,16 @@
 using RemoteQueue.LocalTasks.Scheduling;
 
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Settings;
+
 using log4net;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 {
     public class MonitoringServiceSchedulableRunner : IMonitoringServiceSchedulableRunner
     {
-        public MonitoringServiceSchedulableRunner(IMonitoringSchedulableRunnerSettings runnerSettings, IMonitoringTask monitoringTask, IPeriodicTaskRunner periodicTaskRunner)
+        public MonitoringServiceSchedulableRunner(IMonitoringServiceSettings settings, IMonitoringTask monitoringTask, IPeriodicTaskRunner periodicTaskRunner)
         {
-            this.runnerSettings = runnerSettings;
+            this.settings = settings;
             this.monitoringTask = monitoringTask;
             this.periodicTaskRunner = periodicTaskRunner;
         }
@@ -37,15 +39,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
                 {
                     if(!worked)
                     {
-                        periodicTaskRunner.Register(monitoringTask, runnerSettings.PeriodicInterval);
+                        periodicTaskRunner.Register(monitoringTask, settings.PeriodicInterval);
                         worked = true;
-                        logger.InfoFormat("Start MonitoringShedulableRunner: schedule monitoringTask with period {0}", runnerSettings.PeriodicInterval);
+                        logger.InfoFormat("Start MonitoringShedulableRunner: schedule monitoringTask with period {0}", settings.PeriodicInterval);
                     }
                 }
             }
         }
 
-        private readonly IMonitoringSchedulableRunnerSettings runnerSettings;
+        private readonly IMonitoringServiceSettings settings;
         private readonly IPeriodicTask monitoringTask;
         private readonly object lockObject = new object();
         private readonly IPeriodicTaskRunner periodicTaskRunner;
