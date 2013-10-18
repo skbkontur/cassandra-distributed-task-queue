@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 
 using RemoteQueue.Cassandra.Entities;
 
+using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 using SKBKontur.Catalogue.Core.Web.PageModels;
 using SKBKontur.Catalogue.Core.Web.RenderingHelpers;
@@ -79,16 +80,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 };
         }
 
-        private TaskDateTimeHtmlModel TaskDateTimeFor(IPageModel<TData> pageModel, SimplifiedExpression<Func<TData, DateTime?>> path, bool hideTicks)
+        private TaskDateTimeHtmlModel TaskDateTimeFor(IPageModel<TData> pageModel, SimplifiedExpression<Func<TData, DateAndTime>> path, bool hideTicks)
         {
             var name = GetName(path);
-            var dateTime = GetValue<DateTime?>(pageModel.Data, name);
+            var dateTime = DateAndTime.ToDateTime(GetValue<DateAndTime>(pageModel.Data, name));
             return new TaskDateTimeHtmlModel
                 {
                     Id = name.ToId(),
                     HideTicks = hideTicks,
-                    Ticks = dateTime == null ? (long?)null : dateTime.Value.Ticks,
-                    DateTime = dateTime.GetMoscowDateTimeString()
+                    Ticks = !dateTime.HasValue ? (long?)null : dateTime.Value.Ticks,
+                    DateTime = DateAndTimeFor(pageModel, path, new DateAndTimeOptions{TimeFormat = TimeFormat.Long})//dateTime.GetMoscowDateTimeString()
                 };
         }
     }

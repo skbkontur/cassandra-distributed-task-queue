@@ -34,23 +34,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             ParentTaskId = searchRequest.ParentTaskId,
                             Ticks = new DateTimeRangeModel
                                 {
-                                    From = DateAndTime.Create(searchRequest.Ticks.From.UtcToMoscowDateTime()),
-                                    To = DateAndTime.Create(searchRequest.Ticks.To.UtcToMoscowDateTime())
+                                    From = DateAndTime.Create(searchRequest.Ticks.From, TimeZoneId.MoscowTimeZoneId),
+                                    To = DateAndTime.Create(searchRequest.Ticks.To, TimeZoneId.MoscowTimeZoneId)
                                 },
                             StartExecutedTicks = new DateTimeRangeModel
                                 {
-                                    From = DateAndTime.Create(searchRequest.StartExecutingTicks.From.UtcToMoscowDateTime()),
-                                    To = DateAndTime.Create(searchRequest.StartExecutingTicks.To.UtcToMoscowDateTime())
+                                    From = DateAndTime.Create(searchRequest.StartExecutingTicks.From, TimeZoneId.MoscowTimeZoneId),
+                                    To = DateAndTime.Create(searchRequest.StartExecutingTicks.To, TimeZoneId.MoscowTimeZoneId)
                                 },
                             FinishExecutedTicks = new DateTimeRangeModel
                                 {
-                                    From = DateAndTime.Create(searchRequest.FinishExecutingTicks.From.UtcToMoscowDateTime()),
-                                    To = DateAndTime.Create(searchRequest.FinishExecutingTicks.To.UtcToMoscowDateTime())
+                                    From = DateAndTime.Create(searchRequest.FinishExecutingTicks.From, TimeZoneId.MoscowTimeZoneId),
+                                    To = DateAndTime.Create(searchRequest.FinishExecutingTicks.To, TimeZoneId.MoscowTimeZoneId)
                                 },
                             MinimalStartTicks = new DateTimeRangeModel
                                 {
-                                    From = DateAndTime.Create(searchRequest.MinimalStartTicks.From.UtcToMoscowDateTime()),
-                                    To = DateAndTime.Create(searchRequest.MinimalStartTicks.To.UtcToMoscowDateTime())
+                                    From = DateAndTime.Create(searchRequest.MinimalStartTicks.From, TimeZoneId.MoscowTimeZoneId),
+                                    To = DateAndTime.Create(searchRequest.MinimalStartTicks.To, TimeZoneId.MoscowTimeZoneId)
                                 }
                         },
                     TaskCount = totalCount,
