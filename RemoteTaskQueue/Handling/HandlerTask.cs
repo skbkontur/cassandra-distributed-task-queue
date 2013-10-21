@@ -137,6 +137,12 @@ namespace RemoteQueue.Handling
                 return;
             }
 
+            if(task.Meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+            {
+                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
+            }
+
             logger.InfoFormat("Начинаем обрабатывать задачу [{0}]", task.Meta);
 
             if(!TryUpdateTaskState(task, null, DateTime.UtcNow.Ticks, null, task.Meta.Attempts + 1, TaskState.InProcess))
