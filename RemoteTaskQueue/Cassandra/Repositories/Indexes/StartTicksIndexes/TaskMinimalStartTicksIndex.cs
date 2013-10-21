@@ -76,11 +76,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var startTicks = Math.Max(twoDaysEarlier, firstTicksWithDiff);
             if(startTicks < (DateTime.UtcNow - TimeSpan.FromMinutes(12)).Ticks)
             {
-                logger.WarnFormat("Strange startTicks: {0}. TwoDaysEarlier: {1}, FirsTicksWithDiff: {2}, FirstTicks: {3}", 
+                logger.WarnFormat("Strange startTicks. State = {4}: {0}. TwoDaysEarlier: {1}, FirsTicksWithDiff: {2}, FirstTicks: {3}", 
                     new DateTime(startTicks, DateTimeKind.Utc), 
                     new DateTime(twoDaysEarlier, DateTimeKind.Utc), 
                     new DateTime(firstTicksWithDiff, DateTimeKind.Utc),
-                    new DateTime(firstTicks, DateTimeKind.Utc));
+                    new DateTime(firstTicks, DateTimeKind.Utc),
+                    taskState);
             }
             return new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, startTicks, nowTicks, batchSize);
         }
