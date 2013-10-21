@@ -25,6 +25,8 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.S
 
 using log4net;
 
+using SKBKontur.Catalogue.Core.CommonBusinessObjects.ScopedStorage.Extensions;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
     [ResourseGroup(ResourseGroups.SupportResourse)]
@@ -49,7 +51,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public ActionResult Run(string searchRequestId, int pageNumber = 0)
         {
             MonitoringSearchRequest searchRequest;
-            if(string.IsNullOrEmpty(searchRequestId) || !businessObjectsStorage.TryRead(searchRequestId, searchRequestId, out searchRequest))
+            if (string.IsNullOrEmpty(searchRequestId) || !businessObjectsStorage.InScope<MonitoringSearchRequest>(searchRequestId).TryRead(searchRequestId, out searchRequest))
                 searchRequest = new MonitoringSearchRequest();
             extender.Extend(searchRequest);
 
@@ -119,7 +121,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                             To = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
                         }
                 };
-            businessObjectsStorage.Write(searchRequest);
+            businessObjectsStorage.InScope<MonitoringSearchRequest>(requestId).Write(searchRequest);
             return Json(new SuccessOperationResult
                 {
                     NeedRedirect = true,
