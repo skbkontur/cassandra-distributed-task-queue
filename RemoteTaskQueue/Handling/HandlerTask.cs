@@ -1,6 +1,7 @@
 ﻿using System;
 
 using GroBuf;
+using GroBuf.DataMembersExtracters;
 
 using RemoteLock;
 
@@ -47,6 +48,11 @@ namespace RemoteQueue.Handling
         public override void Run()
         {
             var meta = handleTasksMetaStorage.GetMeta(Id);
+            if(meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+            {
+                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
+            }
             if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
                 return;
             IRemoteLock taskGroupRemoteLock = null;
@@ -82,7 +88,7 @@ namespace RemoteQueue.Handling
 
         private bool TryUpdateTaskState(Task task, long? minimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
         {
-            var metaForWrite = serializer.Copy(task.Meta);
+            var metaForWrite = allFieldsSerializer.Copy(task.Meta);
 
             metaForWrite.MinimalStartTicks = Math.Max(metaForWrite.MinimalStartTicks, minimalStartTicks ?? 0) + 1;
             metaForWrite.StartExecutingTicks = startExecutingTicks;
@@ -204,6 +210,8 @@ namespace RemoteQueue.Handling
                 logger.Error(string.Format("Ошибка во время обработки задачи '{0}'.", meta), e);
             handleTaskExceptionInfoStorage.TryAddExceptionInfo(Id, e);
         }
+
+        private static readonly SerializerImpl allFieldsSerializer = new SerializerImpl(new AllFieldsExtractor());
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private readonly IHandleTaskCollection handleTaskCollection;
