@@ -6,7 +6,6 @@ using RemoteLock;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling.HandlerResults;
@@ -48,11 +47,8 @@ namespace RemoteQueue.Handling
         public override void Run()
         {
             var meta = handleTasksMetaStorage.GetMeta(Id);
-            if (!taskHandlerCollection.ContainsHandlerFor(meta.Name))
-            {
-                logger.InfoFormat("Пропускаем задачу [name='{0}', id='{1}'], так как для нее отсутствует обработчик.", meta.Name, Id);
+            if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
                 return;
-            }
             IRemoteLock taskGroupRemoteLock = null;
             if(!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
             {
@@ -134,7 +130,7 @@ namespace RemoteQueue.Handling
                 return;
             }
 
-            if (task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks)))
+            if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks)))
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
