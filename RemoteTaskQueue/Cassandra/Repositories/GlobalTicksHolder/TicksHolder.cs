@@ -18,7 +18,6 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 
         public long UpdateMaxTicks(string name, long ticks)
         {
-            logger.InfoFormat("UpdateMaxTicks(name {0}, ticks {1})", name, ticks);
             var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(name, new Column
                 {
@@ -40,7 +39,6 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 
         public long UpdateMinTicks(string name, long ticks)
         {
-            logger.InfoFormat("UpdateMinTicks(name {0}, ticks {1})", name, ticks);
             var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(name, new Column
                 {

@@ -1,12 +1,12 @@
 ﻿using System;
 
 using GroBuf;
+using GroBuf.DataMembersExtracters;
 
 using RemoteLock;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling.HandlerResults;
@@ -48,11 +48,13 @@ namespace RemoteQueue.Handling
         public override void Run()
         {
             var meta = handleTasksMetaStorage.GetMeta(Id);
-            if (!taskHandlerCollection.ContainsHandlerFor(meta.Name))
+            if(meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
             {
-                logger.InfoFormat("Пропускаем задачу [name='{0}', id='{1}'], так как для нее отсутствует обработчик.", meta.Name, Id);
-                return;
+                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
             }
+            if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
+                return;
             IRemoteLock taskGroupRemoteLock = null;
             if(!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
             {
@@ -86,7 +88,7 @@ namespace RemoteQueue.Handling
 
         private bool TryUpdateTaskState(Task task, long? minimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
         {
-            var metaForWrite = serializer.Copy(task.Meta);
+            var metaForWrite = allFieldsSerializer.Copy(task.Meta);
 
             metaForWrite.MinimalStartTicks = Math.Max(metaForWrite.MinimalStartTicks, minimalStartTicks ?? 0) + 1;
             metaForWrite.StartExecutingTicks = startExecutingTicks;
@@ -134,7 +136,7 @@ namespace RemoteQueue.Handling
                 return;
             }
 
-            if (task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks)))
+            if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks)))
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
@@ -208,6 +210,8 @@ namespace RemoteQueue.Handling
                 logger.Error(string.Format("Ошибка во время обработки задачи '{0}'.", meta), e);
             handleTaskExceptionInfoStorage.TryAddExceptionInfo(Id, e);
         }
+
+        private static readonly SerializerImpl allFieldsSerializer = new SerializerImpl(new AllFieldsExtractor());
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private readonly IHandleTaskCollection handleTaskCollection;
