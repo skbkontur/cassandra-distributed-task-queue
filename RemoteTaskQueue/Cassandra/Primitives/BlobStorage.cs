@@ -44,7 +44,7 @@ namespace RemoteQueue.Cassandra.Primitives
 
         public T[] Read(string[] ids)
         {
-            if(ids.Length == 0)
+            if (ids.Length == 0)
                 return new T[0];
             return TryReadInternal(ids);
         }
@@ -93,8 +93,8 @@ namespace RemoteQueue.Cassandra.Primitives
 
         private T[] TryReadInternal(string[] ids)
         {
-            if(ids == null) throw new ArgumentNullException("ids");
-            if(ids.Length == 0) return new T[0];
+            if (ids == null) throw new ArgumentNullException("ids");
+            if (ids.Length == 0) return new T[0];
             var rows = new List<KeyValuePair<string, Column[]>>();
             ids
                 .Batch(1000, Enumerable.ToArray)
@@ -102,8 +102,8 @@ namespace RemoteQueue.Cassandra.Primitives
             var rowsDict = rows.ToDictionary(row => row.Key);
 
             return ids.Where(rowsDict.ContainsKey)
-                      .Select(id => Read(rowsDict[id].Value))
-                      .Where(obj => obj != null).ToArray();
+                .Select(id => Read(rowsDict[id].Value))
+                .Where(obj => obj != null).ToArray();
         }
 
         private T Read(IEnumerable<Column> columns)
