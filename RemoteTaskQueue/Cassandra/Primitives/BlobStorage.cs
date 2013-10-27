@@ -49,6 +49,28 @@ namespace RemoteQueue.Cassandra.Primitives
             return TryReadInternal(ids);
         }
 
+        public T[] ReadQuiet(string[] cassandraIds)
+        {
+            CheckObjectIdentitiesValidness(cassandraIds);
+
+            var rows = new List<KeyValuePair<string, Column[]>>();
+            cassandraIds
+                .Batch(1000, Enumerable.ToArray)
+                .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
+
+            var rowsDict = rows.ToDictionary(row => row.Key);
+            var result = new T[cassandraIds.Length];
+            for (var i = 0; i < cassandraIds.Length; i++)
+            {
+                var id = cassandraIds[i];
+                KeyValuePair<string, Column[]> row;
+                if (rowsDict.TryGetValue(id, out row))
+                    result[i] = Read(row.Value);
+            }
+            return result;
+
+        }
+
         public IEnumerable<T> ReadAll(int batchSize = 1000)
         {
             var connection = RetrieveColumnFamilyConnection();

@@ -36,6 +36,11 @@ namespace RemoteQueue.Cassandra.Repositories
             return exceptionInfo != null;
         }
 
+        public TaskExceptionInfo[] ReadExceptionInfosQuiet(string[] taskIds)
+        {
+            return storage.ReadQuiet(taskIds);
+        }
+
         private readonly ITaskExceptionInfoBlobStorage storage;
         private readonly ILog logger;
     }

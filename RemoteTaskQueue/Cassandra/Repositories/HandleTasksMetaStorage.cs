@@ -60,6 +60,13 @@ namespace RemoteQueue.Cassandra.Repositories
             return metas;
         }
 
+        public TaskMetaInformation[] GetMetasQuiet(string[] taskIds)
+        {
+            var metas = storage.ReadQuiet(taskIds);
+            metas.Where(x => x != null).ForEach(x => x.MakeSnapshot());
+            return metas;
+        }
+
         private readonly ITaskMetaInformationBlobStorage storage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
         private readonly IEventLogRepository eventLogRepository;

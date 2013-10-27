@@ -48,7 +48,8 @@ namespace FunctionalTests.ExchangeTests
                     WaitFor(
                         () =>
                         {
-                            var count = monitoringServiceClient.GetCount(x => x.TaskId == taskId && x.State == SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives.TaskState.Finished);
+                            var count = monitoringServiceClient
+                                .GetCount(x => x.TaskId == taskId && x.State == SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives.TaskState.Finished);
                             Console.WriteLine(count);
                             return count == 1;
                         },

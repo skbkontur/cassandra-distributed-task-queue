@@ -8,5 +8,6 @@ namespace RemoteQueue.Cassandra.Repositories
     {
         void TryAddExceptionInfo(string taskId, Exception e);
         bool TryGetExceptionInfo(string taskId, out TaskExceptionInfo exceptionInfo);
+        TaskExceptionInfo[] ReadExceptionInfosQuiet(string[] taskIds);
     }
 }
