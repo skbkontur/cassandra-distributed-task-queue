@@ -52,7 +52,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         {
             if (monitoringServiceSettings.ActualizeOnQuery)
                 localStorageUpdater.Update();
-            return localStorage.Search<MonitoringTaskMetadata>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules);
+            return localStorage.SearchWithoutScopeIdIdSort<MonitoringTaskMetadata>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules);
         }
 
         public object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery)

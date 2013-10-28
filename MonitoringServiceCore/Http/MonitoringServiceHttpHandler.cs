@@ -55,6 +55,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
             return monitoringServiceImpl.GetTaskWithAllDescendants(taskId);
         }
 
+        [HttpMethod]
+        public string State()
+        {
+            return "Started";
+        }
+
         private readonly IMonitoringServiceImpl monitoringServiceImpl;
     }
 }
