@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 using RemoteQueue.Settings;
 
@@ -24,6 +25,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
         public int Attempts { get { return 5; } }
         public int Timeout { get { return 6000; } }
         public int FierceTimeout { get { return 10000; } }
+        public TimeSpan? ConnectionIdleTimeout { get { return TimeSpan.FromMinutes(10); } }
         public ConsistencyLevel ReadConsistencyLevel { get { return ConsistencyLevel.QUORUM; } }
         public ConsistencyLevel WriteConsistencyLevel { get { return ConsistencyLevel.QUORUM; } }
         public string ClusterName { get { return "CoreCluster"; } }
