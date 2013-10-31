@@ -4,6 +4,9 @@ using ExchangeService.UserClasses;
 
 using FunctionalTests.Logging;
 
+using GroBuf;
+using GroBuf.DataMembersExtracters;
+
 using GroboContainer.Core;
 using GroboContainer.Impl;
 
@@ -31,6 +34,7 @@ namespace FunctionalTests
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
             var applicationSettings = ApplicationSettings.LoadDefault("functionalTestsSettings");
             Container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(applicationSettings);
+            Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new PropertiesExtractor(), null, GroBufOptions.MergeOnRead));
             Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<CassandraSettings>());
             Container.ConfigureLockRepository();
             Log4NetConfiguration.InitializeOnce();

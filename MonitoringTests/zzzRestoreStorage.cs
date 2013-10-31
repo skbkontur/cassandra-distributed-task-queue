@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 
+using GroBuf;
+using GroBuf.DataMembersExtracters;
+
 using GroboContainer.Core;
 using GroboContainer.Impl;
 
@@ -25,6 +28,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests
             IEnumerable<Assembly> assemblies = AssembliesLoader.Load();
             container = new Container(new ContainerConfiguration(assemblies));
             container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(ApplicationSettings.LoadDefault("monitoringTestsSettings"));
+            container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new PropertiesExtractor(), null, GroBufOptions.MergeOnRead));
             container.ConfigureCassandra();
             container.ClearAllBeforeTest();
         }
