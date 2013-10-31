@@ -211,7 +211,7 @@ namespace RemoteQueue.Handling
             handleTaskExceptionInfoStorage.TryAddExceptionInfo(Id, e);
         }
 
-        private static readonly SerializerImpl allFieldsSerializer = new SerializerImpl(new AllFieldsExtractor());
+        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private readonly IHandleTaskCollection handleTaskCollection;
