@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Cassandra.CassandraClient">
-      <HintPath>..\..\Assemblies\Temp\Cassandra.CassandraClient.dll</HintPath>
+      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.Core.CommonBusinessObjects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
