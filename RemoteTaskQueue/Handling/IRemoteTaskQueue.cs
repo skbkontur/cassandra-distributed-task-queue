@@ -10,6 +10,9 @@ namespace RemoteQueue.Handling
         RemoteTaskInfo GetTaskInfo(string taskId);
         RemoteTaskInfo<T> GetTaskInfo<T>(string taskId) where T : ITaskData;
 
+        RemoteTaskInfo[] GetTaskInfos(string[] taskIds);
+        RemoteTaskInfo<T>[] GetTaskInfos<T>(string[] taskIds) where T : ITaskData;
+
         IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions = null) where T : ITaskData;
     }
 }

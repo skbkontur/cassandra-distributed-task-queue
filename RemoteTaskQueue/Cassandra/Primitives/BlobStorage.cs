@@ -44,9 +44,31 @@ namespace RemoteQueue.Cassandra.Primitives
 
         public T[] Read(string[] ids)
         {
-            if(ids.Length == 0)
+            if (ids.Length == 0)
                 return new T[0];
             return TryReadInternal(ids);
+        }
+
+        public T[] ReadQuiet(string[] cassandraIds)
+        {
+            CheckObjectIdentitiesValidness(cassandraIds);
+
+            var rows = new List<KeyValuePair<string, Column[]>>();
+            cassandraIds
+                .Batch(1000, Enumerable.ToArray)
+                .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
+
+            var rowsDict = rows.ToDictionary(row => row.Key);
+            var result = new T[cassandraIds.Length];
+            for (var i = 0; i < cassandraIds.Length; i++)
+            {
+                var id = cassandraIds[i];
+                KeyValuePair<string, Column[]> row;
+                if (rowsDict.TryGetValue(id, out row))
+                    result[i] = Read(row.Value);
+            }
+            return result;
+
         }
 
         public IEnumerable<T> ReadAll(int batchSize = 1000)
@@ -93,8 +115,8 @@ namespace RemoteQueue.Cassandra.Primitives
 
         private T[] TryReadInternal(string[] ids)
         {
-            if(ids == null) throw new ArgumentNullException("ids");
-            if(ids.Length == 0) return new T[0];
+            if (ids == null) throw new ArgumentNullException("ids");
+            if (ids.Length == 0) return new T[0];
             var rows = new List<KeyValuePair<string, Column[]>>();
             ids
                 .Batch(1000, Enumerable.ToArray)
@@ -102,8 +124,8 @@ namespace RemoteQueue.Cassandra.Primitives
             var rowsDict = rows.ToDictionary(row => row.Key);
 
             return ids.Where(rowsDict.ContainsKey)
-                      .Select(id => Read(rowsDict[id].Value))
-                      .Where(obj => obj != null).ToArray();
+                .Select(id => Read(rowsDict[id].Value))
+                .Where(obj => obj != null).ToArray();
         }
 
         private T Read(IEnumerable<Column> columns)
