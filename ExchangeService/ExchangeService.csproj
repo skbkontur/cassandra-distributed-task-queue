@@ -53,7 +53,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
     </Reference>
-    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GroBuf">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
