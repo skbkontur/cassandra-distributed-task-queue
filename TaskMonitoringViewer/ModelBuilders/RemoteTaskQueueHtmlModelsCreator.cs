@@ -89,7 +89,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                     Id = name.ToId(),
                     HideTicks = hideTicks,
                     Ticks = !dateTime.HasValue ? (long?)null : dateTime.Value.Ticks,
-                    DateTime = DateAndTimeFor(pageModel, path, new DateAndTimeOptions{TimeFormat = TimeFormat.Long})//dateTime.GetMoscowDateTimeString()
+                    DateTime = ReadonlyDateAndTimeFor(pageModel, path, new ReadonlyDateAndTimeOptions{TimeFormat = TimeFormat.Long})//dateTime.GetMoscowDateTimeString()
                 };
         }
     }
