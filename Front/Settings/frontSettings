@@ -27,6 +27,7 @@ KonturPortalKey = D3VxmqWAqAEdkBXxJ0smXm9H8VP+DkcO|nj5jzenFiQg=
 KonturPortalDomain = kepref.kontur
 
 #Топология портала
+PortalServiceName = iCat
 AuthUrls = http://razr04.kontur:38452
 AuthLogin = 
 AuthPassword = 
