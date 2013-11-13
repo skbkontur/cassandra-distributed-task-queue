@@ -1,4 +1,5 @@
-﻿@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskState
+﻿@using RemoteQueue.Cassandra.Entities
+@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskState
 @using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsData
 @using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsHeader
 @using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton
@@ -125,7 +126,8 @@
                             Id = taskModel.TaskState.Id,
                             CancelUrl = taskModel.TaskState.GetCancelUrl(Url),
                             RerunUrl = taskModel.TaskState.GetRerunUrl(Url),
-                            State = taskModel.TaskState.Value.ToString()
+                            State = taskModel.TaskState.Value.ToString(),
+                            CanCancel = taskModel.TaskState.CanCancel
                         }
                     })
                 @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Field = taskModel.TaskName })

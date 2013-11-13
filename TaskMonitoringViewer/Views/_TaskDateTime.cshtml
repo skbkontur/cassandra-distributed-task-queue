@@ -11,7 +11,7 @@
     else
     {
         <div id="@Model.Id">
-            @Model.Ticks.ToString()
+            @Html.ReadonlyDateAndTime(Model.DateTime) (@Model.Ticks)
         </div>
     }
 }
