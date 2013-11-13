@@ -14,7 +14,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
     public class RemoteTaskQueueControllerBaseParameters
     {
         public RemoteTaskQueueControllerBaseParameters(
-            LoggedInControllerBaseParameters loggedInControllerBaseParameters,
+            AuthenticatedControllerBaseParameters authenticatedControllerBaseParameters,
             ITaskMetadataModelBuilder taskMetadataModelBuilder,
             ITaskDetailsModelBuilder taskDetailsModelBuilder,
             ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder,
@@ -34,7 +34,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             CatalogueExtender = catalogueExtender;
             MonitoringSearchRequestCriterionBuilder = monitoringSearchRequestCriterionBuilder;
             TaskMetadataModelBuilder = taskMetadataModelBuilder;
-            LoggedInControllerBaseParameters = loggedInControllerBaseParameters;
+            AuthenticatedControllerBaseParameters = authenticatedControllerBaseParameters;
             TaskDetailsModelBuilder = taskDetailsModelBuilder;
             TaskDetailsHtmlModelBuilder = taskDetailsHtmlModelBuilder;
             RemoteTaskQueueMonitoringServiceStorage = remoteTaskQueueMonitoringServiceStorage;
@@ -47,7 +47,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public IBusinessObjectStorage BusinessObjectsStorage { get; private set; }
         public ICatalogueExtender CatalogueExtender { get; set; }
         public IMonitoringSearchRequestCriterionBuilder MonitoringSearchRequestCriterionBuilder { get; private set; }
-        public LoggedInControllerBaseParameters LoggedInControllerBaseParameters { get; private set; }
+        public AuthenticatedControllerBaseParameters AuthenticatedControllerBaseParameters { get; private set; }
         public ITaskMetadataModelBuilder TaskMetadataModelBuilder { get; private set; }
         public ITaskDetailsModelBuilder TaskDetailsModelBuilder { get; private set; }
         public ITaskDetailsHtmlModelBuilder TaskDetailsHtmlModelBuilder { get; private set; }

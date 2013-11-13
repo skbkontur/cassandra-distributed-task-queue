@@ -57,10 +57,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColumnFamilyRegistration\SerializeToBlobStorageRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\SerializeToRowsStorageRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\SimpleColumnFamilyRegistry.cs" />
-    <Compile Include="ColumnFamilyRegistration\StoragePlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteTaskQueueMonitoringSchemaConfiguration.cs" />
   </ItemGroup>

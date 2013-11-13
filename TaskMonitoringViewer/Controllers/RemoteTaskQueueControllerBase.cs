@@ -29,10 +29,10 @@ using SKBKontur.Catalogue.Core.CommonBusinessObjects.ScopedStorage.Extensions;
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
     [ResourseGroup(ResourseGroups.SupportResourse)]
-    public abstract class RemoteTaskQueueControllerBase : AuthanticatedControllerBase
+    public abstract class RemoteTaskQueueControllerBase : AuthenticatedControllerBase
     {
         protected RemoteTaskQueueControllerBase(RemoteTaskQueueControllerBaseParameters remoteTaskQueueControllerBaseParameters)
-            : base(remoteTaskQueueControllerBaseParameters.LoggedInControllerBaseParameters)
+            : base(remoteTaskQueueControllerBaseParameters.AuthenticatedControllerBaseParameters)
         {
             accessControlService = remoteTaskQueueControllerBaseParameters.AccessControlService;
             extender = remoteTaskQueueControllerBaseParameters.CatalogueExtender;

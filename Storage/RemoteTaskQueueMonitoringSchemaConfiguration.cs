@@ -10,7 +10,6 @@ using SKBKontur.Catalogue.CassandraStorageCore.FileDataStorage;
 using SKBKontur.Catalogue.CassandraStorageCore.GlobalTicks;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.Persistent.Cassandra.Schema;
-using SKBKontur.Catalogue.Core.CommonBusinessObjects.Parties;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
@@ -24,8 +23,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 
         protected override void ConfigureBusinessObjectSchema(BusinessObjectStoringSchema schema)
         {
-            schema.DefineType<Party>(c => c.TypeIdentifier("Party"));
-            schema.DefineType<PartySynonym>(c => c.TypeIdentifier("PartySynonym"));
             schema.DefineType<UserStorageElement>(c => c.TypeIdentifier("UserStorageElement"));
             schema.DefineType<AccessRuleStorageElement>(c => c.TypeIdentifier("AccessRuleStorageElement"));
             schema.DefineType<FtpUser>(c => c.TypeIdentifier("FtpUser"));
@@ -46,7 +43,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 
         protected override void ConfigureCassandraBusinessObjects(CassandraStoringSchema schema, IContainer container)
         {
-            
         }
     }
 }
