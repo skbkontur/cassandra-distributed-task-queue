@@ -6,6 +6,7 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
+using SKBKontur.Catalogue.AccessControl.Services;
 using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;

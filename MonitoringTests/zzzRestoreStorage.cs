@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
+using SKBKontur.Catalogue.AccessControl.Services;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Settings;
