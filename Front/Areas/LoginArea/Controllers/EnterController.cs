@@ -2,6 +2,7 @@
 
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.Exceptions;
+using SKBKontur.Catalogue.AccessControl.Services;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton.Post;
 using SKBKontur.Catalogue.Core.Web.Blocks.KeyboardNavigation;
