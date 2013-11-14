@@ -28,7 +28,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
             schema.DefineType<PartySynonym>(c => c.TypeIdentifier("PartySynonym"));
             schema.DefineType<UserStorageElement>(c => c.TypeIdentifier("UserStorageElement"));
             schema.DefineType<AccessRuleStorageElement>(c => c.TypeIdentifier("AccessRuleStorageElement"));
-            schema.DefineType<FtpUser>(c => c.TypeIdentifier("FtpUser"));
             schema.DefineType<MonitoringSearchRequest>(c => c.TypeIdentifier("MonitoringSearchRequest"));
 
             schema.DefineType<UserLoginRecord>(c => c.TypeIdentifier("UserLoginRecord"));
