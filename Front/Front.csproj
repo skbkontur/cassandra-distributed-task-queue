@@ -70,6 +70,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Expressions.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Mutators">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Mutators.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.RemoteTaskQueue.TaskMonitoringViewer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskMonitoringViewer.dll</HintPath>

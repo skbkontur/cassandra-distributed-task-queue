@@ -3,11 +3,13 @@ using RemoteQueue.Handling;
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
+using SKBKontur.Catalogue.Core.Web.Models.ModelConfigurations;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskList;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
@@ -25,7 +27,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             IRemoteTaskQueue remoteTaskQueue,
             ITaskListModelBuilder taskListModelBuilder,
             ITaskListHtmlModelBuilder taskListHtmlModelBuilder,
-            IAccessControlService accessControlService)
+            IAccessControlService accessControlService,
+            IWebMutatorsTreeCollection<TaskListModelData> webMutatorsTreeCollection)
         {
             TaskListHtmlModelBuilder = taskListHtmlModelBuilder;
             TaskListModelBuilder = taskListModelBuilder;
@@ -39,6 +42,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             TaskDetailsHtmlModelBuilder = taskDetailsHtmlModelBuilder;
             RemoteTaskQueueMonitoringServiceStorage = remoteTaskQueueMonitoringServiceStorage;
             AccessControlService = accessControlService;
+            WebMutatorsTreeCollection = webMutatorsTreeCollection;
         }
 
         public ITaskListModelBuilder TaskListModelBuilder { get; private set; }
@@ -54,5 +58,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public IRemoteTaskQueueMonitoringServiceStorage RemoteTaskQueueMonitoringServiceStorage { get; private set; }
         public ITaskListHtmlModelBuilder TaskListHtmlModelBuilder { get; private set; }
         public IAccessControlService AccessControlService { get; private set; }
+        public IWebMutatorsTreeCollection<TaskListModelData> WebMutatorsTreeCollection { get; private set; }
     }
 }
