@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using GroBuf;
 
@@ -72,34 +73,33 @@ namespace RemoteQueue.Handling
 
         public RemoteTaskInfo GetTaskInfo(string taskId)
         {
-            var task = handleTaskCollection.GetTask(taskId);
-            var res = (ITaskData)serializer.Deserialize(typeToNameMapper.GetTaskType(task.Meta.Name), task.Data);
-            TaskExceptionInfo info;
-            handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskId, out info);
-            return new RemoteTaskInfo
-                {
-                    Context = task.Meta,
-                    TaskData = res,
-                    ExceptionInfo = info
-                };
+            return GetTaskInfos(new[] {taskId}).First();
         }
 
         public RemoteTaskInfo<T> GetTaskInfo<T>(string taskId)
             where T : ITaskData
         {
-            var task = handleTaskCollection.GetTask(taskId);
-            var taskType = typeToNameMapper.GetTaskType(task.Meta.Name);
-            if(!typeof(T).IsAssignableFrom(taskType))
-                throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
-            var res = (T)serializer.Deserialize(taskType, task.Data);
-            TaskExceptionInfo info;
-            handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskId, out info);
-            return new RemoteTaskInfo<T>
-                {
-                    Context = task.Meta,
-                    TaskData = res,
-                    ExceptionInfo = info
-                };
+            return GetTaskInfos<T>(new[] {taskId}).First();
+        }
+
+        public RemoteTaskInfo[] GetTaskInfos(string[] taskIds)
+        {
+            var tasks = handleTaskCollection.GetTasks(taskIds);
+            var taskExceptionInfos = handleTaskExceptionInfoStorage.ReadExceptionInfosQuiet(taskIds);
+            return tasks.Zip(
+                taskExceptionInfos,
+                (t, e) =>
+                new RemoteTaskInfo
+                    {
+                        Context = t.Meta,
+                        TaskData = (ITaskData)serializer.Deserialize(typeToNameMapper.GetTaskType(t.Meta.Name), t.Data),
+                        ExceptionInfo = e
+                    }).ToArray();
+        }
+
+        public RemoteTaskInfo<T>[] GetTaskInfos<T>(string[] taskIds) where T : ITaskData
+        {
+            return GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>).ToArray();
         }
 
         public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
@@ -123,6 +123,19 @@ namespace RemoteQueue.Handling
                         }
                 };
             return new RemoteTask(handleTaskCollection, task, globalTime);
+        }
+
+        private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>(RemoteTaskInfo task) where T : ITaskData
+        {
+            var taskType = task.TaskData.GetType();
+            if(!typeof(T).IsAssignableFrom(taskType))
+                throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
+            return new RemoteTaskInfo<T>
+                {
+                    Context = task.Context,
+                    TaskData = (T)task.TaskData,
+                    ExceptionInfo = task.ExceptionInfo
+                };
         }
 
         private readonly IHandleTaskCollection handleTaskCollection;

@@ -6,5 +6,6 @@ namespace RemoteQueue.Cassandra.Repositories
     {
         void AddTask(Task task);
         Task GetTask(string taskId);
+        Task[] GetTasks(string[] taskIds);
     }
 }

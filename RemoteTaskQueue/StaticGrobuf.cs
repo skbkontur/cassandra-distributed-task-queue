@@ -1,4 +1,5 @@
 ﻿using GroBuf;
+using GroBuf.DataMembersExtracters;
 
 namespace RemoteQueue
 {
@@ -9,6 +10,6 @@ namespace RemoteQueue
             return serializer;
         }
 
-        private static readonly ISerializer serializer = new Serializer();
+        private static readonly ISerializer serializer = new Serializer(new PropertiesExtractor(), null, GroBufOptions.MergeOnRead);
     }
 }

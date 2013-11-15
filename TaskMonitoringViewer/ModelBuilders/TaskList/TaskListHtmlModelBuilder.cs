@@ -98,7 +98,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         {
             var options = new DateAndTimeOptions
                 {
-                    NeedTime = true,
                     TimeFormat = TimeFormat.Long
                 };
             var from = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.From), options);

@@ -4,6 +4,8 @@ using RemoteQueue.Cassandra.Primitives;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 
+using log4net;
+
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
     public class TicksHolder : ColumnFamilyRepositoryBase, ITicksHolder
@@ -60,5 +62,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
         private readonly ISerializer serializer;
         private const string maxTicksColumnName = "MaxTicks";
         private const string minTicksColumnName = "MinTicks";
+
+        private static readonly ILog logger = LogManager.GetLogger(typeof(TicksHolder));
     }
 }

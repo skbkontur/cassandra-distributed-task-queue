@@ -1,16 +1,17 @@
-﻿@model SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primitives.TaskDateTimeHtmlModel
+﻿@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
+@model SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primitives.TaskDateTimeHtmlModel
            
 @{
     if (Model.HideTicks)
     {
         <div id="@Model.Id" title="@Model.Ticks">
-            @Model.DateTime
+            @Html.ReadonlyDateAndTime(Model.DateTime)
         </div>
     }
     else
     {
         <div id="@Model.Id">
-            @Model.DateTime (@Model.Ticks)
+            @Html.ReadonlyDateAndTime(Model.DateTime) (@Model.Ticks)
         </div>
     }
 }

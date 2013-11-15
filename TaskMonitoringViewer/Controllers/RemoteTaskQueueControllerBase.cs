@@ -6,6 +6,8 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
+using SKBKontur.Catalogue.AccessControl.Services;
+using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
@@ -17,20 +19,23 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskList;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel;
 
+using log4net;
+
+using SKBKontur.Catalogue.Core.CommonBusinessObjects.ScopedStorage.Extensions;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
     [ResourseGroup(ResourseGroups.SupportResourse)]
-    public abstract class RemoteTaskQueueControllerBase : AuthanticatedControllerBase
+    public abstract class RemoteTaskQueueControllerBase : AuthenticatedControllerBase
     {
         protected RemoteTaskQueueControllerBase(RemoteTaskQueueControllerBaseParameters remoteTaskQueueControllerBaseParameters)
-            : base(remoteTaskQueueControllerBaseParameters.LoggedInControllerBaseParameters)
+            : base(remoteTaskQueueControllerBaseParameters.AuthenticatedControllerBaseParameters)
         {
             accessControlService = remoteTaskQueueControllerBaseParameters.AccessControlService;
             extender = remoteTaskQueueControllerBaseParameters.CatalogueExtender;
@@ -49,15 +54,28 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public ActionResult Run(string searchRequestId, int pageNumber = 0)
         {
             MonitoringSearchRequest searchRequest;
-            if(string.IsNullOrEmpty(searchRequestId) || !businessObjectsStorage.TryRead(searchRequestId, searchRequestId, out searchRequest))
+            if (string.IsNullOrEmpty(searchRequestId) || !businessObjectsStorage.InScope<MonitoringSearchRequest>(searchRequestId).TryRead(searchRequestId, out searchRequest))
                 searchRequest = new MonitoringSearchRequest();
             extender.Extend(searchRequest);
 
             var criterion = monitoringSearchRequestCriterionBuilder.BuildCriterion(searchRequest);
 
             var rangeFrom = pageNumber * tasksPerPageCount;
-            var totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
-            var fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount, x => x.MinimalStartTicks.Descending()).ToArray();
+            int totalCount;
+            MonitoringTaskMetadata[] fullTaskMetaInfos;
+            try
+            {
+                totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
+                fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount, 
+                    x => x.MinimalStartTicks.Descending() && x.Id.Descending()).ToArray();
+            }
+            catch(DomainIsDisabledException e)
+            {
+                logger.Error("Can not build TaskList", e);
+                totalCount = 0;
+                fullTaskMetaInfos = new MonitoringTaskMetadata[0];
+                // TODO вытащить во вьюшку инфу о том, что случился Exception
+            }
 
             var modelData = taskListModelBuilder.Build(searchRequest, fullTaskMetaInfos, totalCount);
 
@@ -88,26 +106,26 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                     TaskStates = (pageModelData.SearchPanel.TaskStates ?? new Pair<TaskState, bool?>[0]).Where(x => x.Value == true).Select(x => x.Key).ToArray(),
                     Ticks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
-                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
+                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.From),
+                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.Ticks.To)
                         },
                     StartExecutingTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.StartExecutedTicks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
-                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.StartExecutedTicks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
+                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.StartExecutedTicks.From),
+                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.StartExecutedTicks.To)
                         },
                     FinishExecutingTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.FinishExecutedTicks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
-                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.FinishExecutedTicks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
+                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.FinishExecutedTicks.From),
+                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.FinishExecutedTicks.To)
                         },
                     MinimalStartTicks = new DateTimeRange
                         {
-                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.From, DateTimeKind.Unspecified).MoscowToUtcDateTime(),
-                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.To, DateTimeKind.Unspecified).MoscowToUtcDateTime()
+                            From = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.From),
+                            To = DateAndTime.ToDateTime(pageModelData.SearchPanel.MinimalStartTicks.To)
                         }
                 };
-            businessObjectsStorage.Write(searchRequest);
+            businessObjectsStorage.InScope<MonitoringSearchRequest>(requestId).Write(searchRequest);
             return Json(new SuccessOperationResult
                 {
                     NeedRedirect = true,
@@ -185,6 +203,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IAccessControlService accessControlService;
         private IWebMutatorsTreeCollection<TaskListModelData> webMutatorsTreeCollection;
 
+        private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueControllerBase));
         private const int tasksPerPageCount = 100;
     }
 }

@@ -12,5 +12,6 @@ namespace RemoteQueue.Cassandra.Repositories
         void AddMeta(TaskMetaInformation meta);
         TaskMetaInformation GetMeta(string taskId);
         TaskMetaInformation[] GetMetas(string[] taskIds);
+        TaskMetaInformation[] GetMetasQuiet(string[] taskIds);
     }
 }

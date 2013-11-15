@@ -13,7 +13,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primit
             return htmlHelper.Partial("~/TaskMonitoringViewer/_TaskDateTime.cshtml", this);
         }
 
-        public string DateTime { get; set; }
+        public ReadonlyDateAndTimeHtmlModel DateTime { get; set; }
         public long? Ticks { get; set; }
         public bool HideTicks { get; set; }
     }

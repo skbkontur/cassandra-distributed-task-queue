@@ -4,5 +4,6 @@
     {
         void RecalculateInProcess();
         void Update();
+        void ClearCache();
     }
 }

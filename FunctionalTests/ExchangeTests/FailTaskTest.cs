@@ -6,6 +6,7 @@ using ExchangeService.Exceptions;
 using ExchangeService.UserClasses;
 
 using GroBuf;
+using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
@@ -33,7 +34,7 @@ namespace FunctionalTests.ExchangeTests
             var cassandraSettings = Container.Get<ICassandraSettings>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
-            var serializer = new Serializer();
+            var serializer = new Serializer(new PropertiesExtractor());
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);

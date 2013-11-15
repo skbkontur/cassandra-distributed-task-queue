@@ -110,6 +110,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             long ticks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name) - 1;
             minTicksCache.UpdateMinTicks(taskState, ticks);
+            if(ticks < (DateTime.UtcNow - TimeSpan.FromMinutes(12)).Ticks)
+            {
+                logger.WarnFormat("Strange UpdateTicks for state {4}: {0}. eventEnumerator.Current = [TaskId = {1}, ColumnName = {2}, RowKey = {3}]", 
+                    new DateTime(ticks, DateTimeKind.Utc), Current.Item1, Current.Item2.ColumnName, Current.Item2.RowKey, taskState);
+            }
         }
 
         private static long totalDifferenceFromTo;

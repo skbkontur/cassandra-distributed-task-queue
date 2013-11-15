@@ -38,6 +38,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.ClientLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.CommonBusinessObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
@@ -96,7 +100,6 @@
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
-    <Compile Include="ModelBuilders\DateTimeExtensions.cs" />
     <Compile Include="ModelBuilders\IRemoteTaskQueueHtmlModelsCreator.cs" />
     <Compile Include="ModelBuilders\RemoteTaskQueueHtmlModelsCreator.cs" />
     <Compile Include="ModelBuilders\TaskDetails\ITaskDetailsHtmlModelBuilder.cs" />

@@ -33,6 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         public void DropLocalStorage()
         {
             localStorage.DropDatabase();
+            localStorageUpdater.ClearCache();
         }
 
         public int GetCount(MonitoringGetCountQuery getCountQuery)
@@ -51,7 +52,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         {
             if (monitoringServiceSettings.ActualizeOnQuery)
                 localStorageUpdater.Update();
-            return localStorage.Search<MonitoringTaskMetadata>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules);
+            return localStorage.SearchWithoutScopeIdIdSort<MonitoringTaskMetadata>(searchQuery.Criterion, searchQuery.RangeFrom, searchQuery.Count, searchQuery.SortRules);
         }
 
         public object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery)
@@ -76,23 +77,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             var task = localStorage.Get<MonitoringTaskMetadata>(taskId, taskId);
             if(task == null)
                 return null;
-            return GetTaskWithAllDescendants(task, 0).ToArray();
+            var list = new List<MonitoringTaskMetadata>();
+            GetTaskWithAllDescendants(task, list);
+            return list.ToArray();
         }
 
-        private List<MonitoringTaskMetadata> GetTaskWithAllDescendants(MonitoringTaskMetadata task, int count)
+        private void GetTaskWithAllDescendants(MonitoringTaskMetadata task, List<MonitoringTaskMetadata> list)
         {
-            var list = new List<MonitoringTaskMetadata> {task};
-            count++;
+            if(list.Count < maxCount) list.Add(task);
+            else return;
+
             var monitoringTaskMetadatas = localStorage.Search<MonitoringTaskMetadata>(meta => meta.ParentTaskId == task.Id);
             foreach(var monitoringTaskMetadata in monitoringTaskMetadatas)
-            {
-                var range = GetTaskWithAllDescendants(monitoringTaskMetadata, count);
-                list.AddRange(range);
-                count += range.Count;
-                if(count > maxCount)
-                    return list;
-            }
-            return list;
+                GetTaskWithAllDescendants(monitoringTaskMetadata, list);
         }
 
         private readonly ILocalStorage localStorage;

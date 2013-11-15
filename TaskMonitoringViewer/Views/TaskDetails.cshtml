@@ -1,4 +1,5 @@
-﻿@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsHeader
+﻿
+\@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsHeader
 @using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskId
 @using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskState
 @using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsDetails
@@ -50,7 +51,8 @@
                     Id = htmlModel.TaskMetaInfo.TaskState.Id,
                     CancelUrl = htmlModel.TaskMetaInfo.TaskState.GetCancelUrl(Url),
                     RerunUrl = htmlModel.TaskMetaInfo.TaskState.GetRerunUrl(Url),
-                    State = htmlModel.TaskMetaInfo.TaskState.Value.ToString()
+                    State = htmlModel.TaskMetaInfo.TaskState.Value.ToString(),
+                    CanCancel = htmlModel.TaskMetaInfo.TaskState.CanCancel
                 }
         })
         @Html.AdminToolsDetailsItem(new AdminToolsDetailsItemHtmlModel
