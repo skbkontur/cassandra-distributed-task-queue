@@ -8,8 +8,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskLi
 {
     public class TaskListModelDataConfiguratorCollection : WebDataConfiguratorCollection<TaskListModelData>
     {
-        public TaskListModelDataConfiguratorCollection(IContainer container)
-            : base(container)
+        public TaskListModelDataConfiguratorCollection(IContainer container, IPathFormatterCollection pathFormatterCollection)
+            : base(container, pathFormatterCollection)
         {
         }
 
