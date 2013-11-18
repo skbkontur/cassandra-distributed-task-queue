@@ -67,7 +67,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000)
         {
             IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
-            long diff = cassandraSettings.Attempts * TimeSpan.FromMilliseconds(cassandraSettings.Timeout).Ticks + TimeSpan.FromSeconds(10).Ticks;
+            //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
+            //что потребует изменения этого отката. Поэтому берется, как кажется, с запасом
+            long diff = TimeSpan.FromMinutes(8).Ticks;
             long firstTicks;
             if(!TryGetFirstEventTicks(taskState, out firstTicks))
                 return new Tuple<string, ColumnInfo>[0];
