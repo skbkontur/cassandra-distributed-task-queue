@@ -1,4 +1,4 @@
-﻿using RemoteLock;
+﻿using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
 namespace ExchangeService.UserClasses
 {

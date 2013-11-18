@@ -3,14 +3,14 @@
 using GroBuf;
 using GroBuf.DataMembersExtracters;
 
-using RemoteLock;
-
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.LocalTasks.TaskQueue;
+
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
 using log4net;
 

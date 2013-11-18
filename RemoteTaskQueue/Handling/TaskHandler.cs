@@ -2,10 +2,10 @@
 
 using GroBuf;
 
-using RemoteLock;
-
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling.HandlerResults;
+
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
 namespace RemoteQueue.Handling
 {
@@ -21,12 +21,12 @@ namespace RemoteQueue.Handling
 
         protected string ContinueWith(ITaskData data)
         {
-            return taskQueue.CreateTask(data, new CreateTaskOptions{ParentTaskId = Context.Id}).Queue();
+            return taskQueue.CreateTask(data, new CreateTaskOptions {ParentTaskId = Context.Id}).Queue();
         }
 
         protected string ContinueWith(ITaskData data, TimeSpan delay)
         {
-            return taskQueue.CreateTask(data, new CreateTaskOptions { ParentTaskId = Context.Id }).Queue(delay);
+            return taskQueue.CreateTask(data, new CreateTaskOptions {ParentTaskId = Context.Id}).Queue(delay);
         }
 
         protected HandleResult Finish()
