@@ -36,7 +36,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
             FileDataStorageConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
             EventLogStorageConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
             GlobalTicksHolderConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
-            RemoteLockConfigurator.ConfigureCassandraSchema(schema, LocalKeyspaceName);
             schema.ColumnFamily("lock", c => c.Name(ColumnFamilyRepositoryParameters.LockColumnFamily).KeyspaceName(LocalKeyspaceName));
         }
 
