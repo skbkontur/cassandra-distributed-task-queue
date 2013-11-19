@@ -33,6 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 
         protected override void ConfigureCassandraBasicSchema(CassandraStoringSchema schema)
         {
+            base.ConfigureCassandraBasicSchema(schema);
             FileDataStorageConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
             EventLogStorageConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
             GlobalTicksHolderConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
