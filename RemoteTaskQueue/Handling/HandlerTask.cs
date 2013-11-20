@@ -51,7 +51,7 @@ namespace RemoteQueue.Handling
             if(meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
             {
                 logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
             }
             if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
                 return;
@@ -132,14 +132,14 @@ namespace RemoteQueue.Handling
                task.Meta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
                 return;
             }
 
             if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks)))
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item2);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
                 return;
             }
 

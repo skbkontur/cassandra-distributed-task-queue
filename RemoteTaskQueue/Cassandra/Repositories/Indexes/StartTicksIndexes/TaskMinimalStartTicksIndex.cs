@@ -9,7 +9,6 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
@@ -28,17 +27,18 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.serializer = serializer;
             this.globalTime = globalTime;
             minTicksCache = new MinTicksCache(this.ticksHolder);
+            inProcessTasksCache = new TasksCache();
         }
 
         public ColumnInfo IndexMeta(TaskMetaInformation taskMetaInformation)
         {
-            IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
-            string state = taskMetaInformation.State.GetCassandraName();
-            long ticks = taskMetaInformation.MinimalStartTicks;
+            var connection = RetrieveColumnFamilyConnection();
+            var state = taskMetaInformation.State.GetCassandraName();
+            var ticks = taskMetaInformation.MinimalStartTicks;
             ticksHolder.UpdateMaxTicks(state, ticks);
             ticksHolder.UpdateMinTicks(state, ticks);
 
-            ColumnInfo newColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation);
+            var newColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation);
             connection.AddColumn(newColumnInfo.RowKey, new Column
                 {
                     Name = newColumnInfo.ColumnName,
@@ -49,32 +49,36 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var oldMetaIndex = taskMetaInformation.GetSnapshot();
             if(oldMetaIndex != null)
             {
-                ColumnInfo oldColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation.GetSnapshot());
+                var oldColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation.GetSnapshot());
                 if(!oldColumnInfo.Equals(newColumnInfo))
-                    UnindexMeta(oldColumnInfo);
+                    UnindexMeta(taskMetaInformation.Id, oldColumnInfo);
             }
             return newColumnInfo;
         }
 
-        public void UnindexMeta(ColumnInfo columnInfo)
+        public void UnindexMeta(string taskId, ColumnInfo columnInfo)
         {
-            IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
+            inProcessTasksCache.Remove(taskId);
+            var connection = RetrieveColumnFamilyConnection();
             connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName});
         }
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000)
         {
-            IColumnFamilyConnection connection = RetrieveColumnFamilyConnection();
+            var connection = RetrieveColumnFamilyConnection();
             //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
             //что потребует изменения этого отката. Поэтому берется, как кажется, с запасом
-            long diff = TimeSpan.FromMinutes(8).Ticks;
+            var diff = TimeSpan.FromMinutes(8).Ticks;
             long firstTicks;
             if(!TryGetFirstEventTicks(taskState, out firstTicks))
                 return new Tuple<string, ColumnInfo>[0];
             var twoDaysEarlier = (DateTime.UtcNow - TimeSpan.FromDays(2)).Ticks;
             var firstTicksWithDiff = firstTicks - diff;
             var startTicks = Math.Max(twoDaysEarlier, firstTicksWithDiff);
-            return new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, startTicks, nowTicks, batchSize);
+            var getEventsEnumerable = new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, startTicks, nowTicks, batchSize);
+            if(taskState == TaskState.InProcess)
+                return inProcessTasksCache.PassThroughtCache(getEventsEnumerable);
+            return getEventsEnumerable;
         }
 
         public const string columnFamilyName = "TaskMinimalStartTicksIndex";
@@ -90,5 +94,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
         private readonly IMinTicksCache minTicksCache;
+        private readonly TasksCache inProcessTasksCache;
     }
 }
