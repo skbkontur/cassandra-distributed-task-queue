@@ -26,7 +26,7 @@
   <Import Project="..\Configuration\FrontEndSuites.xml" />
   
   <ItemGroup>
-    <NUnitAssemblies Include="$(TestSolutionDir)\FunctionalTests\bin\$(BuildConfiguration)\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
+    <NUnitAssemblies Include="$(TestSolutionDir)\Tests\bin\$(BuildConfiguration)\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
   </ItemGroup>
 
   <Target BeforeTargets="RunNUnitTests" Name="DeployScreenshots">
