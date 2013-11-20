@@ -13,8 +13,7 @@
     <ServiceMode>FromDeploy</ServiceMode>
     <FrontEndMode>FromDeploy</FrontEndMode>
     <ServiceRunMode>Run</ServiceRunMode>
-
-    <GlobalServices Condition="'$(GlobalServices)' == ''">Cassandra;ChomeDriver</GlobalServices>
+    <GlobalServices Condition="'$(GlobalServices)' == ''"></GlobalServices>
   </PropertyGroup>
 
   <PropertyGroup>
