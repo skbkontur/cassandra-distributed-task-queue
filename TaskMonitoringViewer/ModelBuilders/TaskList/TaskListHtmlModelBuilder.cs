@@ -101,9 +101,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                     TimeFormat = TimeFormat.Long
                 };
             var from = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.From), options);
-            from.Time.MaxLength = 8;
             var to = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.To), options);
-            to.Time.MaxLength = 8;
             return new DateTimeRangeHtmlModel
                 {
                     From = from,
