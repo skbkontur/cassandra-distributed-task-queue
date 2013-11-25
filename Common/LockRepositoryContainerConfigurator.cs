@@ -2,9 +2,11 @@
 
 using GroboContainer.Core;
 
-using RemoteLock;
 
 using RemoteQueue.Cassandra.Primitives;
+
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
 {
@@ -19,9 +21,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
                     columnFamilyRepositoryParameters.CassandraCluster,
                     columnFamilyRepositoryParameters.Settings,
                     serializer,
-                    columnFamilyRepositoryParameters.Settings.QueueKeyspace,
-                    columnFamilyRepositoryParameters.LockColumnFamilyName))
-                ;
+                    new ColumnFamilyFullName(columnFamilyRepositoryParameters.Settings.QueueKeyspace,
+                    columnFamilyRepositoryParameters.LockColumnFamilyName)));
         }
     }
 }

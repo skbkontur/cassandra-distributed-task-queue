@@ -34,6 +34,12 @@
     <Reference Include="Cassandra.CassandraClient">
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.CassandraPrimitives.Storages">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
@@ -68,10 +74,6 @@
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="RemoteLock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\RemoteLock.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

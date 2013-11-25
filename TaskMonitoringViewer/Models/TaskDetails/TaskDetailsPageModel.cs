@@ -5,7 +5,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDe
     public class TaskDetailsPageModel : PageModelBase<TaskDetailsModel>
     {
         public TaskDetailsPageModel(PageModelBaseParameters parameters, TaskDetailsModel modelData)
-            : base(parameters)
+            : base(parameters, null)
         {
             Data = modelData;
         }

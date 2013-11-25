@@ -5,9 +5,6 @@ using RemoteQueue.Cassandra.Primitives;
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.LocalImplementation;
 using SKBKontur.Catalogue.CassandraStorageCore;
-using SKBKontur.Catalogue.CassandraStorageCore.EventLog;
-using SKBKontur.Catalogue.CassandraStorageCore.FileDataStorage;
-using SKBKontur.Catalogue.CassandraStorageCore.GlobalTicks;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.Persistent.Cassandra.Schema;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
@@ -31,12 +28,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
             schema.DefineType<ActualUserId>(c => c.TypeIdentifier("ActualUserId"));
         }
 
-        protected override void ConfigureCassandraBasicSchema(CassandraStoringSchema schema)
+        protected override void DoConfigureCassandraBasicSchema(CassandraStoringSchema schema)
         {
-            FileDataStorageConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
-            EventLogStorageConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
-            GlobalTicksHolderConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
-            RemoteLockConfigurator.ConfigureCassandraSchema(schema, LocalKeyspaceName);
             schema.ColumnFamily("lock", c => c.Name(ColumnFamilyRepositoryParameters.LockColumnFamily).KeyspaceName(LocalKeyspaceName));
         }
 
