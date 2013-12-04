@@ -45,7 +45,7 @@ namespace RemoteQueue.Handling
             using(remoteLock)
             {
                 var meta = handleTasksMetaStorage.GetMeta(taskId);
-                if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError)
+                if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError || meta.State == TaskState.InProcess)
                 {
                     meta.State = TaskState.Canceled;
                     meta.FinishExecutingTicks = DateTime.UtcNow.Ticks;
