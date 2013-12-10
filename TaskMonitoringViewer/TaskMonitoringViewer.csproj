@@ -127,6 +127,7 @@
     <Compile Include="Models\TaskList\SearchPanel\SearchPanelHtmlModel.cs" />
     <Compile Include="Models\Paging\IPaginatorModelData.cs" />
     <Compile Include="Models\Paging\PaginatorPageLinkModelData.cs" />
+    <Compile Include="Models\TaskList\TaskListModelDataConfiguratorCollection.cs" />
     <Compile Include="Models\TaskList\TaskListPageModel.cs" />
     <Compile Include="Models\TaskList\TaskListPaginatorModelData.cs" />
     <Compile Include="Models\TaskMetaInfoHtmlModel.cs" />

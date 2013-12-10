@@ -11,6 +11,8 @@ using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
+using SKBKontur.Catalogue.Core.Web.Models.ModelConfigurations;
+using SKBKontur.Catalogue.Core.Web.PageModels;
 using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
@@ -45,6 +47,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             monitoringSearchRequestCriterionBuilder = remoteTaskQueueControllerBaseParameters.MonitoringSearchRequestCriterionBuilder;
             remoteTaskQueueMonitoringServiceStorage = remoteTaskQueueControllerBaseParameters.RemoteTaskQueueMonitoringServiceStorage;
             taskListModelHtmlBuilder = remoteTaskQueueControllerBaseParameters.TaskListHtmlModelBuilder;
+            webMutatorsTreeCollection = remoteTaskQueueControllerBaseParameters.WebMutatorsTreeCollection;
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
@@ -76,7 +79,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
             var modelData = taskListModelBuilder.Build(searchRequest, fullTaskMetaInfos, totalCount);
 
-            var pageModel = new TaskListPageModel(PageModelBaseParameters, modelData);
+            var pageModel = new TaskListPageModel(PageModelBaseParameters, webMutatorsTreeCollection.GetWebMutatorsTree(new PageModelContext(LanguageProvider)), modelData);
             var totalPagesCount = (totalCount + tasksPerPageCount - 1) / tasksPerPageCount;
             pageModel.PaginatorModelData = new TaskListPaginatorModelData
                 {
@@ -198,6 +201,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly ITaskListHtmlModelBuilder taskListModelHtmlBuilder;
         private readonly ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder;
         private readonly IAccessControlService accessControlService;
+        private IWebMutatorsTreeCollection<TaskListModelData> webMutatorsTreeCollection;
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueControllerBase));
         private const int tasksPerPageCount = 100;

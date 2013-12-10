@@ -70,6 +70,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Expressions.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Mutators">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Mutators.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>

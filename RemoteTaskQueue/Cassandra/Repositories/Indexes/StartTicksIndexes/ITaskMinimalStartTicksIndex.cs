@@ -9,6 +9,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
     {
         IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000);
         ColumnInfo IndexMeta(TaskMetaInformation taskMetaInformation);
-        void UnindexMeta(ColumnInfo columnInfo);
+        void UnindexMeta(string taskId, ColumnInfo columnInfo);
     }
 }

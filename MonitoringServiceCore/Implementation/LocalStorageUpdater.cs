@@ -70,9 +70,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                      x.State == MTaskState.WaitingForRerun ||
                      x.State == MTaskState.WaitingForRerunAfterError).ToArray();
             var list = new List<MonitoringTaskMetadata>();
-            foreach(var metadata in metadatas)
+            var metas = handleTasksMetaStorage.GetMetas(metadatas.Select(x => x.TaskId).ToArray());
+            foreach (var meta in metas)
             {
-                var meta = handleTasksMetaStorage.GetMeta(metadata.TaskId);
                 MonitoringTaskMetadata newMetadata;
                 if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(meta, out newMetadata))
                     list.Add(newMetadata);
