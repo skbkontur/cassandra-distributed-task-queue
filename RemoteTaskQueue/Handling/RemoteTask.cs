@@ -23,7 +23,8 @@ namespace RemoteQueue.Handling
         public string Queue(TimeSpan delay)
         {
             var delayTicks = Math.Max(delay.Ticks, 0);
-            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, globalTime.UpdateNowTicks() + delayTicks) + 1;
+            //task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, globalTime.UpdateNowTicks() + delayTicks) + 1;
+            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, DateTime.UtcNow.Ticks + delayTicks) + 1;
             handleTaskCollection.AddTask(task);
             return Id;
         }
