@@ -1,5 +1,7 @@
 ﻿using System;
 
+using GroBuf;
+
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
@@ -21,10 +23,9 @@ namespace RemoteQueue.Configuration
 {
     public class ExchangeSchedulableRunner : IExchangeSchedulableRunner
     {
-        public ExchangeSchedulableRunner(ICassandraSettings cassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry)
+        public ExchangeSchedulableRunner(ICassandraSettings cassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry, ISerializer serializer)
         {
             this.runnerSettings = runnerSettings;
-            var serializer = StaticGrobuf.GetSerializer();
             periodicTaskRunner = new PeriodicTaskRunner();
             var cassandraCluster = new CassandraCluster(cassandraSettings);
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
@@ -38,7 +39,7 @@ namespace RemoteQueue.Configuration
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
             var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, parameters.Settings, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
-            var remoteTaskQueue = new RemoteTaskQueue(cassandraSettings, taskDataRegistry);
+            var remoteTaskQueue = new RemoteTaskQueue(cassandraSettings, taskDataRegistry, serializer);
             var taskCounter = new TaskCounter(runnerSettings);
             handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), (taskInfo, startProcessingTicks) => new HandlerTask(taskInfo, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage);
         }
