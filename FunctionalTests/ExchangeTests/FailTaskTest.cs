@@ -116,7 +116,7 @@ namespace FunctionalTests.ExchangeTests
                 for(var i = 0; i < taskIds.Length; i++)
                 {
                     var task = handleTaskCollection.GetTask(taskIds[i]);
-                    if(task.Meta.State != TaskState.Finished)
+                    if(task.Meta.State != TaskState.Fatal)
                         fail = true;
                 }
 
@@ -131,6 +131,7 @@ namespace FunctionalTests.ExchangeTests
                             Console.WriteLine(taskIds[i]);
                         Assert.AreEqual(0, attempt);
                     }
+                    Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskState.Fatal));
                     break;
                 }
 

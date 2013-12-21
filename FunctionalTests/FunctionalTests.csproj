@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExchangeTests\SimpleTaskTest.cs" />
+    <Compile Include="ExchangeTests\TaskTestsExtensions.cs" />
     <Compile Include="FunctionalTestBaseWithoutServices.cs" />
     <Compile Include="Logging\Log4netConfiguration.cs" />
     <Compile Include="ObjectComparer.cs" />
