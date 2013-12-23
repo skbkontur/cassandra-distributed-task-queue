@@ -1,8 +1,9 @@
 using System;
 using System.Linq.Expressions;
 
-using SKBKontur.Catalogue.Expressions;
-using SKBKontur.Catalogue.Expressions.Visitors;
+using GrobExp.Mutators;
+using GrobExp.Mutators.Visitors;
+
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 
@@ -23,10 +24,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                 }
                 criterion = And(criterion, cr);
             }
-            if (searchRequest.TaskNames != null && searchRequest.TaskNames.Length > 0)
+            if(searchRequest.TaskNames != null && searchRequest.TaskNames.Length > 0)
             {
                 Expression<Func<MonitoringTaskMetadata, bool>> cr = x => false;
-                foreach (var taskName in searchRequest.TaskNames)
+                foreach(var taskName in searchRequest.TaskNames)
                 {
                     var taskName1 = taskName;
                     cr = Or(cr, x => x.Name == taskName1);
@@ -61,13 +62,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private static void AddDataTimeRangeCriterion(ref Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, DateTime?>> pathToTicks, DateTimeRange dateTimeRange)
         {
             if(dateTimeRange.From != null)
-            {
                 criterion = And(criterion, pathToTicks.Merge(time => time >= dateTimeRange.From));
-            }
             if(dateTimeRange.To != null)
-            {
                 criterion = And(criterion, pathToTicks.Merge(time => time <= dateTimeRange.To));
-            }
         }
     }
 }
