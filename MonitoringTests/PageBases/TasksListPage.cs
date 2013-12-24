@@ -46,10 +46,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             return RefreshPage(this);
         }
 
+        public TasksListPage RefreshUntilState(int index, string state)
+        {
+            return RefreshUntil(this, page => page.GetTaskListItem(index).TaskState.GetText() == state);
+        }
+
         public void CheckTaskListItemsCount(int expectedCount)
         {
             if(expectedCount > 0)
-                GetTaskListItem(expectedCount - 1).WaitPresence();
+                GetTaskListItem(expectedCount - 1).WaitPresenceWithRetries();
             GetTaskListItem(expectedCount).WaitAbsence();
         }
 
@@ -76,6 +81,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         public TaskListItem GetTaskListItem(int index)
         {
             return new TaskListItem(index);
+        }
+
+        public TasksListPage RerunTask(int index)
+        {
+            GetTaskListItem(index).RerunTask();
+            return GoTo<TasksListPage>();
+        }
+
+        public TasksListPage CancelTask(int index)
+        {
+            GetTaskListItem(index).CancelTask();
+            return GoTo<TasksListPage>();
         }
 
         public TasksListPage GoToNextPage()
