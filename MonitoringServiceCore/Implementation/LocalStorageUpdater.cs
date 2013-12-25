@@ -38,6 +38,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             this.startingTicksCache = startingTicksCache;
             this.eventCache = eventCache;
             this.cassandraClusterSettings = cassandraClusterSettings;
+            this.maxCassandraTimeoutTicks = GetMaxCassandraTimeout();
         }
 
         public void Update()
@@ -46,9 +47,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             try
             {
                 startingTicksCache.Add(guid, GetStartTime());
-                eventCache.RemoveEvents(startingTicksCache.GetMinimum());
+                eventCache.RemoveEvents(startingTicksCache.GetMinimum() - 2 * maxCassandraTimeoutTicks);
                 var lastTicks = globalTime.GetNowTicks();
-                UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>()));
+                UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraTimeoutTicks));
                 UpdateLocalStorageTicks(lastTicks);
             }
             finally
@@ -159,10 +160,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             }
         }
 
+        private long GetMaxCassandraTimeout()
+        {
+            return cassandraClusterSettings.Timeout * 10000 * cassandraClusterSettings.Attempts;
+        }
+
         private long GetStartTime()
         {
-            var maxCassandraWriteTimeout = cassandraClusterSettings.Timeout * 10000 * cassandraClusterSettings.Attempts;
-            return localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraWriteTimeout;
+            return localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraTimeoutTicks;
         }
 
         private bool TryConvertTaskMetaInformationToMonitoringTaskMetadata(TaskMetaInformation info, out MonitoringTaskMetadata taskMetadata)
@@ -211,5 +216,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private readonly IEventCache eventCache;
         private readonly ICassandraClusterSettings cassandraClusterSettings;
         private readonly object lockObject = new object();
+        private readonly long maxCassandraTimeoutTicks;
     }
 }

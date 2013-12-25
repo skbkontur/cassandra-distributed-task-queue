@@ -53,8 +53,7 @@ namespace RemoteQueue.Cassandra.Repositories
             if(firstEventTicks == 0)
                 return new TaskMetaUpdatedEvent[0];
             firstEventTicks -= tickPartition; //note что это ?
-            var diff = cassandraSettings.Attempts * TimeSpan.FromMilliseconds(cassandraSettings.Timeout).Ticks + TimeSpan.FromSeconds(10).Ticks;
-            fromTicks = new[] {0, fromTicks - diff, firstEventTicks}.Max();
+            fromTicks = new[] {0, fromTicks, firstEventTicks}.Max();
             return new GetEventLogEnumerable(serializer, connection, fromTicks, globalTime.GetNowTicks(), batchSize);
         }
 
