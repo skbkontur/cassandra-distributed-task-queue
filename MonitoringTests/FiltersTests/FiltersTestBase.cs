@@ -67,15 +67,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var result = new Dictionary<string, AddTaskInfo>();
             foreach (var creater in creaters)
             {
+                var dt = DateTime.UtcNow;
                 var ids = new List<string>();
-                var addTime = DateTime.UtcNow;
                 for (int i = 0; i < iteration; i++)
                 {
                     var remoteTask = remoteTaskQueue.CreateTask(creater.Create());
                     ids.Add(remoteTask.Id);
                     remoteTask.Queue(creater.Delay);
                 }
-                result.Add(creater.TaskName, new AddTaskInfo(ids, addTime));
+                result.Add(creater.TaskName, new AddTaskInfo(ids, dt));
                 Thread.Sleep(1000);
             }
             return result;
@@ -100,10 +100,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             const int tasksPerPage = 100;
             var parts = new SeparateOnBatchesEnumerable<string>(ids, tasksPerPage);
             int cnt = 0;
+            tasksListPage = tasksListPage.SearchTasks();
             foreach(var pageIds in parts)
             {
                 cnt++;
-                tasksListPage.CheckTaskListItemsCount(pageIds.Length);
+                tasksListPage = tasksListPage.SearchUntilTaskListItemsCountIs(pageIds.Length);
                 for (int i = 0; i < pageIds.Length; i++)
                 {
                     var task = tasksListPage.GetTaskListItem(i);

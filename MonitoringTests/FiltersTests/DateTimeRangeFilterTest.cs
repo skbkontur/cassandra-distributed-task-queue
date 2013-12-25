@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
 using NUnit.Framework;
 
@@ -17,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         public override void SetUp()
         {
             base.SetUp();
-            addTasksInfo = AddTasks(70,
+            addTasksInfo = AddTasks(30,
                     new Creater("AlphaTaskData", 3600, () => new AlphaTaskData()),
                     new Creater("BetaTaskData", 5, () => new BetaTaskData{ IsProcess = true}),
                     new Creater("DeltaTaskData", 1, () => new DeltaTaskData())
@@ -49,6 +48,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             base.TearDown();
         }
 
+        [Repeat(10)]
         [Test]
         public void SearchOnTicksTest()
         {
@@ -81,6 +81,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             CheckTaskSearch(new AddTaskInfo(new List<string>(), null), addTasksInfo["AlphaTaskData"].AddTime);
         }
 
+        [Repeat(10)]
         [Test]
         public void SearchOnMinimalStartTicksTest()
         {
@@ -119,23 +120,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         private void CheckTaskSearchMinStartTicks(AddTaskInfo addTaskInfo, DateTime? toTime)
         {
-            tasksListPage.ShowPanel.Click();
+            tasksListPage.ShowPanel.ClickAndWaitAnimation();
             TasksListPage.SetDateTime(tasksListPage.MinimalStartTicksDateFrom, tasksListPage.MinimalStartTicksTimeFrom, addTaskInfo.AddTime);
             TasksListPage.SetDateTime(tasksListPage.MinimalStartTicksDateTo, tasksListPage.MinimalStartTicksTimeTo, toTime);
-            tasksListPage = tasksListPage.SearchTasks();
             DoCheck(ref tasksListPage, addTaskInfo);
         }
 
         private void CheckTaskSearch(AddTaskInfo addTaskInfo, DateTime? toTime)
         {
-            tasksListPage.ShowPanel.Click();
+            tasksListPage.ShowPanel.ClickAndWaitAnimation();
             TasksListPage.SetDateTime(tasksListPage.TicksDateFrom, tasksListPage.TicksTimeFrom, addTaskInfo.AddTime);
             TasksListPage.SetDateTime(tasksListPage.TicksDateTo, tasksListPage.TicksTimeTo, toTime);
-            tasksListPage = tasksListPage.SearchTasks();
             DoCheck(ref tasksListPage, addTaskInfo);
         }
-
-
 
         private Dictionary<string, AddTaskInfo> addTasksInfo;
         private TasksListPage tasksListPage;

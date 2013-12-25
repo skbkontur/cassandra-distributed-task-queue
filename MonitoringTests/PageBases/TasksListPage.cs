@@ -1,5 +1,7 @@
 using System;
 
+using NUnit.Framework;
+
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls;
 using SKBKontur.Catalogue.WebTestCore.SystemControls;
 using SKBKontur.Catalogue.WebTestCore.TestSystem;
@@ -51,11 +53,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             return RefreshUntil(this, page => page.GetTaskListItem(index).TaskState.GetText() == state);
         }
 
-        public void CheckTaskListItemsCount(int expectedCount)
+        public TasksListPage SearchUntilTaskListItemsCountIs(int expectedCount, int timeout = 20000)
         {
-            if(expectedCount > 0)
-                GetTaskListItem(expectedCount - 1).WaitPresenceWithRetries();
-            GetTaskListItem(expectedCount).WaitAbsence();
+            var start = DateTime.UtcNow;
+            var page = this;
+            while(DateTime.UtcNow.Subtract(start) < TimeSpan.FromMilliseconds(timeout))
+            {
+                page = page.SearchTasks();
+                if(expectedCount > 0
+                    ? page.GetTaskListItem(expectedCount - 1).IsPresent
+                    : !page.GetTaskListItem(expectedCount).IsPresent)
+                    return page;
+            }
+            Assert.Fail("Ќедождались ожидаесого кол-во задач в списке за {0}", timeout);
+            return null;
+        }
+
+        public TasksListPage RefreshUntilTaskListItemsCountIs(int expectedCount)
+        {
+            return RefreshUntil(this, page => expectedCount > 0 
+                ? page.GetTaskListItem(expectedCount - 1).IsPresent 
+                : !page.GetTaskListItem(expectedCount).IsPresent);
         }
 
         public TaskDetailsPage GoToTaskDetails(int index)
@@ -68,6 +86,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         {
             var moscowDateTime = dateTime.HasValue ? TimeZoneInfo.ConvertTimeBySystemTimeZoneId(dateTime.Value, TimeZoneInfo.Utc.Id, TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time").Id)
                                      : new DateTime();
+            date.WaitEnabledWithRetries();
+            time.WaitEnabledWithRetries();
             date.SetValue(dateTime.HasValue ? string.Format("{0:D2}.{1:D2}.{2:D4}", moscowDateTime.Day, moscowDateTime.Month, moscowDateTime.Year) : "");
             time.SetValue(dateTime.HasValue ? string.Format("{0:D2}:{1:D2}:{2:D2}", moscowDateTime.Hour, moscowDateTime.Minute, moscowDateTime.Second) : "");
         }

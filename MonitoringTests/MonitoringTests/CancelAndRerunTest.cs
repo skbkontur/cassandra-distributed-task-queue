@@ -18,14 +18,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             remoteTaskQueue = container.Get<IRemoteTaskQueue>();
         }
 
-        [Repeat(10)]
+        [Repeat(3)]
         [Test]
         public void CancelAndRerunTaskTest()
         {
             CreateUser("user", "psw");
             var taskId = remoteTaskQueue.CreateTask(new AlphaTaskData()).Queue(TimeSpan.FromHours(3));
             var taskListPage = Login("user", "psw");
-            taskListPage.CheckTaskListItemsCount(1);
+            taskListPage = taskListPage.RefreshUntilTaskListItemsCountIs(1);
             taskListPage = taskListPage.RefreshUntilState(0, "New");
 
             taskListPage = taskListPage.CancelTask(0);
