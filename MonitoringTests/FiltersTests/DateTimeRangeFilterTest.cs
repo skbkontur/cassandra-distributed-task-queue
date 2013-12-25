@@ -48,7 +48,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             base.TearDown();
         }
 
-        [Repeat(10)]
+        [Repeat(1)]
         [Test]
         public void SearchOnTicksTest()
         {
@@ -81,7 +81,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             CheckTaskSearch(new AddTaskInfo(new List<string>(), null), addTasksInfo["AlphaTaskData"].AddTime);
         }
 
-        [Repeat(10)]
+        [Repeat(1)]
         [Test]
         public void SearchOnMinimalStartTicksTest()
         {
