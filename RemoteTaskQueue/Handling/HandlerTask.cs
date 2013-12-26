@@ -93,6 +93,8 @@ namespace RemoteQueue.Handling
             }
         }
 
+        internal string Reason { get; set; }
+
         private bool TryUpdateTaskState(Task task, long? minimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
         {
             var metaForWrite = allFieldsSerializer.Copy(task.Meta);
@@ -156,7 +158,7 @@ namespace RemoteQueue.Handling
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
             }
 
-            logger.InfoFormat("Начинаем обрабатывать задачу [{0}]", task.Meta);
+            logger.InfoFormat("Начинаем обрабатывать задачу [{0}]. Reason = {1}", task.Meta, Reason);
 
             if(!TryUpdateTaskState(task, null, DateTime.UtcNow.Ticks, null, task.Meta.Attempts + 1, TaskState.InProcess))
             {

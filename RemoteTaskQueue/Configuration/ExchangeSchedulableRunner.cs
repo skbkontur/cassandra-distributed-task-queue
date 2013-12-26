@@ -39,9 +39,11 @@ namespace RemoteQueue.Configuration
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
             var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, parameters.Settings, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
-            var remoteTaskQueue = new RemoteTaskQueue(cassandraSettings, taskDataRegistry, serializer);
+            var remoteTaskQueue = new RemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry);
             var taskCounter = new TaskCounter(runnerSettings);
             handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), (taskInfo, startProcessingTicks) => new HandlerTask(taskInfo, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage);
+            handleTasksMetaStorage.OnIndexMeta = info => ((HandlerManager)handlerManager).QueueTask(info, DateTime.UtcNow.Ticks, "Реакция на добавление задачи");
+            RemoteTaskQueue = remoteTaskQueue;
         }
 
         public void Stop()
@@ -82,6 +84,8 @@ namespace RemoteQueue.Configuration
         {
             return handlerManager.GetCassandraQueueLength();
         }
+
+        public IRemoteTaskQueue RemoteTaskQueue { get; private set; }
 
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
 
