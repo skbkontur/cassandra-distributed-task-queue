@@ -57,6 +57,7 @@ namespace RemoteQueue.Handling
                meta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", Id, meta.State);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
                 return;
             }
             if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
