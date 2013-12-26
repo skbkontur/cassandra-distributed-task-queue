@@ -7,6 +7,8 @@ using ExchangeService.UserClasses;
 
 using NUnit.Framework;
 
+using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
@@ -20,13 +22,14 @@ namespace FunctionalTests.ExchangeTests
             base.SetUp();
             testCounterRepository = Container.Get<ITestCounterRepository>();
             taskQueue = Container.Get<IRemoteTaskQueue>();
+            handleTaskCollection = Container.Get<IHandleTaskCollection>();
         }
 
         [Test]
         public void TestOnePeriodicTask()
         {
-            var taskId = AddTask();
-            Wait(new[] {taskId}, 10);
+            var taskId = AddTask(3);
+            Wait(new[] {taskId});
         }
 
         [Test]
@@ -35,8 +38,8 @@ namespace FunctionalTests.ExchangeTests
             const int count = 10;
             var keys = new string[count];
             for(int i = 0; i < count; i++)
-                keys[i] = AddTask();
-            Wait(keys, 10);
+                keys[i] = AddTask(3);
+            Wait(keys);
         }
 
         [Test]
@@ -45,31 +48,52 @@ namespace FunctionalTests.ExchangeTests
             const int count = 10;
             var keys = new string[count];
             for(int i = 0; i < count; i++)
-                keys[i] = AddTask("Lock" + (i % 3).ToString());
-            Wait(keys, 10);
+                keys[i] = AddTask(3, "Lock" + (i % 3).ToString());
+            Wait(keys);
         }
 
-        private string AddTask(string taskGroupLock = null)
+        private string AddTask(int attempts, string taskGroupLock = null)
         {
-            return taskQueue.CreateTask(new FakePeriodicTaskData(), new CreateTaskOptions
+            var task = taskQueue.CreateTask(new FakePeriodicTaskData(), new CreateTaskOptions
                 {
                     TaskGroupLock = taskGroupLock
-                }).Queue();
+                });
+            testCounterRepository.SetValueForCounter(task.Id, attempts);
+            task.Queue();
+            return task.Id;
         }
 
-        private void Wait(string[] taskIds, int criticalValue, int ms = 5000)
+        private void Wait(string[] taskIds, int ms = 15000)
         {
-            int current = 0;
-            while(true)
+            var current = 0;
+            while (true)
             {
+                var running = false;
+                for (var i = 0; i < taskIds.Length; i++)
+                {
+                    var task = handleTaskCollection.GetTask(taskIds[i]);
+                    if(task.Meta.State != TaskState.Finished)
+                        running = true;
+                }
+
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
                 Console.WriteLine(Now() + " CurrentValues: " + String.Join(", ", attempts));
-                int minValue = attempts.Min();
-                if(minValue >= criticalValue)
+                if (!running)
+                {
+                    for (var i = 0; i < attempts.Length; i++)
+                    {
+                        var attempt = attempts[i];
+                        if (attempt != 0)
+                            Console.WriteLine(taskIds[i]);
+                        Assert.AreEqual(0, attempt);
+                    }
+                    Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskState.Finished));
                     break;
+                }
+
                 Thread.Sleep(sleepInterval);
                 current += sleepInterval;
-                if(current > ms)
+                if (current > ms)
                     throw new TooLateException("Время ожидания превысило {0} мс.", ms);
             }
         }
@@ -81,6 +105,7 @@ namespace FunctionalTests.ExchangeTests
 
         private ITestCounterRepository testCounterRepository;
         private IRemoteTaskQueue taskQueue;
+        private IHandleTaskCollection handleTaskCollection;
         private const int sleepInterval = 200;
     }
 }

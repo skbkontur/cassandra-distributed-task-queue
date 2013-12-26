@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -33,41 +34,36 @@ namespace FunctionalTests.ExchangeTests
             Thread.Sleep(2000);
             Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskState>
+                {
+                    {taskId, TaskState.Finished}
+                });
         }
 
         [Test]
         public void TestRunMultipleTasks()
         {
+            var taskIds = new List<string>();
             Enumerable.Range(0, 42).AsParallel().ForAll((i) =>
                 {
                     var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
                     //Wait(new[] { taskId }, 1, (int)TimeSpan.FromSeconds(50).TotalMilliseconds);
+                    lock(taskIds)
+                        taskIds.Add(taskId);
                     Thread.Sleep(2000);
                     //Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
                     var monitoringServiceClient = Container.Get<IRemoteTaskQueueMonitoringServiceStorage>();
                     WaitFor(
                         () =>
-                        {
-                            var count = monitoringServiceClient
-                                .GetCount(x => x.TaskId == taskId && x.State == SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives.TaskState.Finished);
-                            Console.WriteLine(count);
-                            return count == 1;
-                        },
-                    TimeSpan.FromSeconds(50));
+                            {
+                                var count = monitoringServiceClient
+                                    .GetCount(x => x.TaskId == taskId && x.State == SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives.TaskState.Finished);
+                                Console.WriteLine(count);
+                                return count == 1;
+                            },
+                        TimeSpan.FromSeconds(50));
                 });
-
-        }
-
-        private void WaitFor(Func<bool> func, TimeSpan timeout)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            while (stopwatch.Elapsed < timeout)
-            {
-                Thread.Sleep(99);
-                if (func())
-                    return;
-            }
-            Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
+            Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskState.Finished));
         }
 
         [Test]
@@ -79,6 +75,10 @@ namespace FunctionalTests.ExchangeTests
             Thread.Sleep(2000);
             Assert.AreEqual(0, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Canceled, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskState>
+                {
+                    {taskId, TaskState.Canceled}
+                });
         }
 
         [Test]
@@ -92,6 +92,22 @@ namespace FunctionalTests.ExchangeTests
             Assert.AreEqual(2, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
             Assert.AreEqual(2, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.Attempts);
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskState>
+                {
+                    {taskId, TaskState.Finished}
+                });
+        }
+
+        private void WaitFor(Func<bool> func, TimeSpan timeout)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            while(stopwatch.Elapsed < timeout)
+            {
+                Thread.Sleep(99);
+                if(func())
+                    return;
+            }
+            Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
         }
 
         private void Wait(string[] taskIds, int criticalValue, int ms = 5000)
