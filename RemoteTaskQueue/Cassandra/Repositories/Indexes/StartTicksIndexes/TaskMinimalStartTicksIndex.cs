@@ -45,14 +45,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     Timestamp = globalTime.GetNowTicks(),
                     Value = serializer.Serialize(taskMetaInformation.Id)
                 });
-
-            var oldMetaIndex = taskMetaInformation.GetSnapshot();
-            if(oldMetaIndex != null)
-            {
-                var oldColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation.GetSnapshot());
-                if(!oldColumnInfo.Equals(newColumnInfo))
-                    UnindexMeta(taskMetaInformation.Id, oldColumnInfo);
-            }
             return newColumnInfo;
         }
 

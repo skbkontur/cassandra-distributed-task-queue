@@ -48,10 +48,16 @@ namespace RemoteQueue.Handling
         public override void Run()
         {
             var meta = handleTasksMetaStorage.GetMeta(Id);
-            if(meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+            if(meta == null)
             {
-                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
+                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", Id);
+                return;
+            }
+            if (meta.State == TaskState.Finished || meta.State == TaskState.Fatal ||
+               meta.State == TaskState.Canceled)
+            {
+                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", Id, meta.State);
+                return;
             }
             if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
                 return;
@@ -141,6 +147,12 @@ namespace RemoteQueue.Handling
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", Id);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
                 return;
+            }
+
+            if (task.Meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+            {
+                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
             }
 
             logger.InfoFormat("Начинаем обрабатывать задачу [{0}]", task.Meta);
