@@ -53,6 +53,12 @@ namespace RemoteQueue.Handling
                 logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", Id);
                 return;
             }
+            if (meta.State == TaskState.Finished || meta.State == TaskState.Fatal ||
+               meta.State == TaskState.Canceled)
+            {
+                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", Id, meta.State);
+                return;
+            }
             if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
                 return;
             IRemoteLock taskGroupRemoteLock = null;
