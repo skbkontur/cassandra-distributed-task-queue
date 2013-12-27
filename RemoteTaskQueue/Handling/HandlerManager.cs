@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 
@@ -32,14 +30,13 @@ namespace RemoteQueue.Handling
             lock(lockObject)
             {
                 var nowTicks = DateTime.UtcNow.Ticks;
-                IEnumerable<Tuple<string, ColumnInfo>> taskInfos = handleTasksMetaStorage.GetAllTasksInStates(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+                var taskInfos = handleTasksMetaStorage.GetAllTasksInStates(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
                 if(logger.IsDebugEnabled)
                     logger.DebugFormat("Начали обработку очереди.");
                 foreach(var taskInfo in taskInfos)
                 {
-                    if(!shardingManager.IsSituableTask(taskInfo.Item1)) continue;
                     if(!taskCounter.CanQueueTask()) return;
-                    taskQueue.QueueTask(createHandlerTask(taskInfo, nowTicks));
+                    QueueTask(taskInfo, nowTicks, "Периодическое разгребание");
                 }
             }
         }
@@ -76,6 +73,15 @@ namespace RemoteQueue.Handling
                     forMe++;
             }
             return new Tuple<long, long>(all, forMe);
+        }
+
+        internal void QueueTask(Tuple<string, ColumnInfo> taskInfo, long nowTicks, string reason)
+        {
+            if(!shardingManager.IsSituableTask(taskInfo.Item1))
+                return;
+            var handlerTask = createHandlerTask(taskInfo, nowTicks);
+            handlerTask.Reason = reason;
+            taskQueue.QueueTask(handlerTask);
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));

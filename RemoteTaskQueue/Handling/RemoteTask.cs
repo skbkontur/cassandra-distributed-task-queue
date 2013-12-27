@@ -6,7 +6,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 namespace RemoteQueue.Handling
 {
-    public class RemoteTask : IRemoteTask
+    internal class RemoteTask : IRemoteTask
     {
         public RemoteTask(IHandleTaskCollection handleTaskCollection, Task task, IGlobalTime globalTime)
         {
