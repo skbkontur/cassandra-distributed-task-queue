@@ -53,7 +53,7 @@ namespace RemoteQueue.Handling
             if(!started)
                 return;
             started = false;
-            taskQueue.StopAndWait();
+            taskQueue.StopAndWait(100 * 1000);
         }
 
         public long GetQueueLength()
