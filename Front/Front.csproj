@@ -70,9 +70,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Expressions.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.RemoteTaskQueue.TaskMonitoringViewer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskMonitoringViewer.dll</HintPath>
+    <Reference Include="Catalogue.Mutators">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Mutators.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
@@ -190,6 +189,10 @@
     <ProjectReference Include="..\Storage\Storage.csproj">
       <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
       <Name>Storage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaskMonitoringViewer\TaskMonitoringViewer.csproj">
+      <Project>{8ba574ca-6c25-414f-9e99-1e7f032bb962}</Project>
+      <Name>TaskMonitoringViewer</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

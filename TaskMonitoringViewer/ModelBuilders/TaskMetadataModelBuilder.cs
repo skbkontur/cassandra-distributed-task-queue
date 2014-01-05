@@ -1,3 +1,4 @@
+using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models;
 
@@ -14,10 +15,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                     Name = meta.Name,
                     State = meta.State,
 
-                    EnqueueTime = meta.Ticks,
-                    MinimalStartTime = meta.MinimalStartTicks,
-                    StartExecutingTime = meta.StartExecutingTicks,
-                    FinishExecutingTime = meta.FinishExecutingTicks,
+                    EnqueueTime = DateAndTime.Create(meta.Ticks, TimeZoneId.MoscowTimeZoneId),
+                    MinimalStartTime = DateAndTime.Create(meta.MinimalStartTicks, TimeZoneId.MoscowTimeZoneId),
+                    StartExecutingTime = DateAndTime.Create(meta.StartExecutingTicks, TimeZoneId.MoscowTimeZoneId),
+                    FinishExecutingTime = DateAndTime.Create(meta.FinishExecutingTicks, TimeZoneId.MoscowTimeZoneId),
 
                     ParentTaskId = meta.ParentTaskId,
                     TaskGroupLock = meta.TaskGroupLock

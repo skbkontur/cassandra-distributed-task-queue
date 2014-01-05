@@ -10,7 +10,8 @@ LogDirectory = ..\FrontLogs
 # Конфигурирование Кассандры
 ClusterName = CatalogueCluster
 KeyspaceName = RosAlkoKeyspace
-Endpoints = 127.0.0.1:9160
+ConnectionIdleTimeout = 00:10:00
+Endpoints =  127.0.0.1:9160
 EndpointForFierceCommands = 127.0.0.1:9160
 ReadConsistencyLevel = QUORUM
 WriteConsistencyLevel = QUORUM
@@ -26,6 +27,7 @@ KonturPortalKey = D3VxmqWAqAEdkBXxJ0smXm9H8VP+DkcO|nj5jzenFiQg=
 KonturPortalDomain = kepref.kontur
 
 #Топология портала
+PortalServiceName = iCat
 AuthUrls = http://razr04.kontur:38452
 AuthLogin = 
 AuthPassword = 

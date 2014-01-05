@@ -1,6 +1,6 @@
 ﻿using System;
 
-using RemoteLock;
+using GroBuf;
 
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
@@ -14,6 +14,8 @@ using RemoteQueue.Settings;
 using RemoteQueue.UserClasses;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 
 using log4net;
 
@@ -21,10 +23,9 @@ namespace RemoteQueue.Configuration
 {
     public class ExchangeSchedulableRunner : IExchangeSchedulableRunner
     {
-        public ExchangeSchedulableRunner(ICassandraSettings cassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry)
+        public ExchangeSchedulableRunner(ICassandraSettings cassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry, ISerializer serializer)
         {
             this.runnerSettings = runnerSettings;
-            var serializer = StaticGrobuf.GetSerializer();
             periodicTaskRunner = new PeriodicTaskRunner();
             var cassandraCluster = new CassandraCluster(cassandraSettings);
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
@@ -36,11 +37,13 @@ namespace RemoteQueue.Configuration
             var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);
             var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
-            var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, parameters.Settings, serializer, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
+            var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, parameters.Settings, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
-            var remoteTaskQueue = new RemoteTaskQueue(cassandraSettings, taskDataRegistry);
+            var remoteTaskQueue = new RemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry);
             var taskCounter = new TaskCounter(runnerSettings);
             handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), (taskInfo, startProcessingTicks) => new HandlerTask(taskInfo, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage);
+            handleTasksMetaStorage.OnIndexMeta = info => ((HandlerManager)handlerManager).QueueTask(info, DateTime.UtcNow.Ticks, "Реакция на добавление задачи");
+            RemoteTaskQueue = remoteTaskQueue;
         }
 
         public void Stop()
@@ -81,6 +84,8 @@ namespace RemoteQueue.Configuration
         {
             return handlerManager.GetCassandraQueueLength();
         }
+
+        public IRemoteTaskQueue RemoteTaskQueue { get; private set; }
 
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
 

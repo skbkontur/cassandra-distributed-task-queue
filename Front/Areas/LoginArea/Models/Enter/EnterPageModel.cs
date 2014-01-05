@@ -6,7 +6,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.LoginArea.Models.Enter
     public class EnterPageModel : PageModelBase<EnterModelData>
     {
         public EnterPageModel(PageModelBaseParameters parameters)
-            : base(parameters)
+            : base(parameters, null)
         {
             EnterPageText = parameters.Request.LanguageProvider.GetPageText<IEnterPageText>();
             Data = new EnterModelData();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 using GroBuf;
 
@@ -10,8 +11,6 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-
-using System.Linq;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -28,6 +27,8 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public void AddEvent(string taskId, long nowTicks)
         {
+            if(string.IsNullOrEmpty(taskId))
+                throw new Exception("Try to log event with null taskId!");
             var taskMetaUpdatedEventEntity = new TaskMetaUpdatedEvent
                 {
                     TaskId = taskId,
@@ -52,9 +53,39 @@ namespace RemoteQueue.Cassandra.Repositories
             if(firstEventTicks == 0)
                 return new TaskMetaUpdatedEvent[0];
             firstEventTicks -= tickPartition; //note что это ?
-            var diff = cassandraSettings.Attempts * TimeSpan.FromMilliseconds(cassandraSettings.Timeout).Ticks + TimeSpan.FromSeconds(10).Ticks;
-            fromTicks = new[] {0, fromTicks - diff, firstEventTicks}.Max();
+            fromTicks = new[] {0, fromTicks, firstEventTicks}.Max();
             return new GetEventLogEnumerable(serializer, connection, fromTicks, globalTime.GetNowTicks(), batchSize);
+        }
+
+        [Obsolete("для конвертаций")]
+        public void AddEvents(KeyValuePair<string, long>[] taskIdAndTicks)
+        {
+            if(taskIdAndTicks.Length == 0)
+                return;
+
+            var events = taskIdAndTicks.Select(kvp => new TaskMetaUpdatedEvent
+                {
+                    TaskId = kvp.Key,
+                    Ticks = kvp.Value
+                }).ToArray();
+            var connection = RetrieveColumnFamilyConnection();
+            ticksHolder.UpdateMinTicks(firstEventTicksRowName, events.Min(x => x.Ticks));
+
+            var nowTicks = globalTime.GetNowTicks();
+            var columns = events.Select(@event =>
+                {
+                    var columnInfo = GetColumnInfo(@event.Ticks);
+                    return new KeyValuePair<string, Column>(columnInfo.Item1, new Column
+                        {
+                            Name = columnInfo.Item2,
+                            Timestamp = nowTicks,
+                            Value = serializer.Serialize(@event)
+                        });
+                });
+            connection.BatchInsert(columns.GroupBy(x => x.Key)
+                                          .Select(group => new KeyValuePair<string, IEnumerable<Column>>(
+                                                               group.Key,
+                                                               group.Select(x => x.Value))));
         }
 
         public const string columnFamilyName = "RemoteTaskQueueEventLog";

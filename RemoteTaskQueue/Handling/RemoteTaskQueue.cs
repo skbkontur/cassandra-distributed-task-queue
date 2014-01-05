@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Linq;
 
 using GroBuf;
-
-using RemoteLock;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
@@ -14,26 +13,41 @@ using RemoteQueue.Settings;
 using RemoteQueue.UserClasses;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 
 namespace RemoteQueue.Handling
 {
     public class RemoteTaskQueue : IRemoteTaskQueue
     {
-        public RemoteTaskQueue(ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry)
+        public RemoteTaskQueue(ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry, ISerializer serializer)
         {
-            serializer = StaticGrobuf.GetSerializer();
+            // ReSharper disable LocalVariableHidesMember
             var cassandraCluster = new CassandraCluster(settings);
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, settings);
             var ticksHolder = new TicksHolder(serializer, parameters);
-            globalTime = new GlobalTime(ticksHolder);
+            var globalTime = new GlobalTime(ticksHolder);
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, settings);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
-            handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);
-            handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
-            typeToNameMapper = new TaskDataTypeToNameMapper(taskDataRegistry);
-            remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, parameters.Settings, serializer, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
-            handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
+            var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);
+            var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
+            var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, parameters.Settings, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
+            var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
+            InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry);
+            // ReSharper restore LocalVariableHidesMember
+        }
+
+        internal RemoteTaskQueue(
+            IGlobalTime globalTime,
+            ISerializer serializer,
+            IHandleTasksMetaStorage handleTasksMetaStorage,
+            IHandleTaskCollection handleTaskCollection,
+            IRemoteLockCreator remoteLockCreator,
+            IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
+            TaskDataRegistryBase taskDataRegistryBase)
+        {
+            InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistryBase);
         }
 
         public bool CancelTask(string taskId)
@@ -44,7 +58,7 @@ namespace RemoteQueue.Handling
             using(remoteLock)
             {
                 var meta = handleTasksMetaStorage.GetMeta(taskId);
-                if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError)
+                if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError || meta.State == TaskState.InProcess)
                 {
                     meta.State = TaskState.Canceled;
                     meta.FinishExecutingTicks = DateTime.UtcNow.Ticks;
@@ -72,34 +86,33 @@ namespace RemoteQueue.Handling
 
         public RemoteTaskInfo GetTaskInfo(string taskId)
         {
-            var task = handleTaskCollection.GetTask(taskId);
-            var res = (ITaskData)serializer.Deserialize(typeToNameMapper.GetTaskType(task.Meta.Name), task.Data);
-            TaskExceptionInfo info;
-            handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskId, out info);
-            return new RemoteTaskInfo
-                {
-                    Context = task.Meta,
-                    TaskData = res,
-                    ExceptionInfo = info
-                };
+            return GetTaskInfos(new[] {taskId}).First();
         }
 
         public RemoteTaskInfo<T> GetTaskInfo<T>(string taskId)
             where T : ITaskData
         {
-            var task = handleTaskCollection.GetTask(taskId);
-            var taskType = typeToNameMapper.GetTaskType(task.Meta.Name);
-            if(!typeof(T).IsAssignableFrom(taskType))
-                throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
-            var res = (T)serializer.Deserialize(taskType, task.Data);
-            TaskExceptionInfo info;
-            handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskId, out info);
-            return new RemoteTaskInfo<T>
-                {
-                    Context = task.Meta,
-                    TaskData = res,
-                    ExceptionInfo = info
-                };
+            return GetTaskInfos<T>(new[] {taskId}).First();
+        }
+
+        public RemoteTaskInfo[] GetTaskInfos(string[] taskIds)
+        {
+            var tasks = handleTaskCollection.GetTasks(taskIds);
+            var taskExceptionInfos = handleTaskExceptionInfoStorage.ReadExceptionInfosQuiet(taskIds);
+            return tasks.Zip(
+                taskExceptionInfos,
+                (t, e) =>
+                new RemoteTaskInfo
+                    {
+                        Context = t.Meta,
+                        TaskData = (ITaskData)serializer.Deserialize(typeToNameMapper.GetTaskType(t.Meta.Name), t.Data),
+                        ExceptionInfo = e
+                    }).ToArray();
+        }
+
+        public RemoteTaskInfo<T>[] GetTaskInfos<T>(string[] taskIds) where T : ITaskData
+        {
+            return GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>).ToArray();
         }
 
         public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
@@ -125,12 +138,45 @@ namespace RemoteQueue.Handling
             return new RemoteTask(handleTaskCollection, task, globalTime);
         }
 
-        private readonly IHandleTaskCollection handleTaskCollection;
-        private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
-        private readonly ISerializer serializer;
-        private readonly ITaskDataTypeToNameMapper typeToNameMapper;
-        private readonly IRemoteLockCreator remoteLockCreator;
-        private readonly HandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
-        private readonly GlobalTime globalTime;
+        // ReSharper disable ParameterHidesMember
+        private void InitRemoteTaskQueue(IGlobalTime globalTime,
+                                         ISerializer serializer,
+                                         IHandleTasksMetaStorage handleTasksMetaStorage,
+                                         IHandleTaskCollection handleTaskCollection,
+                                         IRemoteLockCreator remoteLockCreator,
+                                         IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
+                                         TaskDataRegistryBase taskDataRegistryBase)
+        {
+            this.serializer = serializer;
+            this.globalTime = globalTime;
+            this.handleTasksMetaStorage = handleTasksMetaStorage;
+            this.handleTaskCollection = handleTaskCollection;
+            typeToNameMapper = new TaskDataTypeToNameMapper(taskDataRegistryBase);
+            this.remoteLockCreator = remoteLockCreator;
+            this.handleTaskExceptionInfoStorage = handleTaskExceptionInfoStorage;
+        }
+
+        // ReSharper restore ParameterHidesMember
+
+        private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>(RemoteTaskInfo task) where T : ITaskData
+        {
+            var taskType = task.TaskData.GetType();
+            if(!typeof(T).IsAssignableFrom(taskType))
+                throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
+            return new RemoteTaskInfo<T>
+                {
+                    Context = task.Context,
+                    TaskData = (T)task.TaskData,
+                    ExceptionInfo = task.ExceptionInfo
+                };
+        }
+
+        private IHandleTaskCollection handleTaskCollection;
+        private IHandleTasksMetaStorage handleTasksMetaStorage;
+        private ISerializer serializer;
+        private ITaskDataTypeToNameMapper typeToNameMapper;
+        private IRemoteLockCreator remoteLockCreator;
+        private IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
+        private IGlobalTime globalTime;
     }
 }

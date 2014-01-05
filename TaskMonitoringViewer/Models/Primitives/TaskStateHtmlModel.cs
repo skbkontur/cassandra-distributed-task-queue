@@ -12,6 +12,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primit
             this.taskId = taskId;
         }
 
+        public string Id { get; set; }
+
         public string GetCancelUrl(UrlHelper url)
         {
             return url.GetCancelTaskUrl(taskId);
@@ -22,8 +24,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primit
             return url.GetRerunTaskUrl(taskId);
         }
 
-        public string Id { get; set; }
         public TaskState Value { get; set; }
+        public bool CanCancel { get { return Value == TaskState.New || Value == TaskState.WaitingForRerun || Value == TaskState.WaitingForRerunAfterError; } }
 
         private readonly string taskId;
     }

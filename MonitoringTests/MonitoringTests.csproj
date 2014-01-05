@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cassandra.CassandraClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cassandra.CassandraClient">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
@@ -65,7 +65,10 @@
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
-    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="GroBuf">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>

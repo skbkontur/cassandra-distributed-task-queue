@@ -10,5 +10,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         void RemoveEvents(long threshold);
         bool Contains(TaskMetaUpdatedEvent elmentaryEvent);
         int GetCount();
+        void Clear();
     }
 }

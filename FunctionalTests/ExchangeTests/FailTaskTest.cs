@@ -6,10 +6,9 @@ using ExchangeService.Exceptions;
 using ExchangeService.UserClasses;
 
 using GroBuf;
+using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
-
-using RemoteLock;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
@@ -21,6 +20,8 @@ using RemoteQueue.Handling;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
 namespace FunctionalTests.ExchangeTests
@@ -33,7 +34,7 @@ namespace FunctionalTests.ExchangeTests
             var cassandraSettings = Container.Get<ICassandraSettings>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
-            var serializer = new Serializer();
+            var serializer = new Serializer(new PropertiesExtractor());
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);
@@ -42,7 +43,7 @@ namespace FunctionalTests.ExchangeTests
             var handleTasksMetaStorage = new HandleTasksMetaStorage(new TaskMetaInformationBlobStorage(parameters, serializer, globalTime), taskMinimalStartTicksIndex, eventLongRepository, globalTime);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage);
             testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime),
-                                                              new RemoteLockCreator(new CassandraRemoteLockImplementation(parameters.CassandraCluster, parameters.Settings, serializer, parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
+                                                              new RemoteLockCreator(new CassandraRemoteLockImplementation(parameters.CassandraCluster, parameters.Settings, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName))));
             taskQueue = Container.Get<IRemoteTaskQueue>();
         }
 
@@ -115,7 +116,7 @@ namespace FunctionalTests.ExchangeTests
                 for(var i = 0; i < taskIds.Length; i++)
                 {
                     var task = handleTaskCollection.GetTask(taskIds[i]);
-                    if(task.Meta.State != TaskState.Finished)
+                    if(task.Meta.State != TaskState.Fatal)
                         fail = true;
                 }
 
@@ -130,6 +131,7 @@ namespace FunctionalTests.ExchangeTests
                             Console.WriteLine(taskIds[i]);
                         Assert.AreEqual(0, attempt);
                     }
+                    Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskState.Fatal));
                     break;
                 }
 

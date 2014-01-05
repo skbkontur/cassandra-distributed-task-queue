@@ -35,9 +35,15 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cassandra.CassandraClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cassandra.CassandraClient">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.CassandraPrimitives.Storages">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ClientLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
@@ -53,17 +59,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
     </Reference>
-    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="GroBuf">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="RemoteLock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\RemoteLock.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

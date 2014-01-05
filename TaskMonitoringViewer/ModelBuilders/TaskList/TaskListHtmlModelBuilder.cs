@@ -2,12 +2,13 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
+using GrobExp.Mutators;
+
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton.Post;
 using SKBKontur.Catalogue.Core.Web.Blocks.PostUrl;
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
-using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.Primitives;
@@ -98,13 +99,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
         {
             var options = new DateAndTimeOptions
                 {
-                    NeedTime = true,
                     TimeFormat = TimeFormat.Long
                 };
             var from = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.From), options);
-            from.Time.MaxLength = 8;
             var to = htmlModelsCreator.DateAndTimeFor(pageModel, pathToDateTimeRange.Merge(dtr => dtr.To), options);
-            to.Time.MaxLength = 8;
             return new DateTimeRangeHtmlModel
                 {
                     From = from,

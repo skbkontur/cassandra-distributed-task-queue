@@ -9,7 +9,8 @@ LogDirectory = c:\logs
 # Конфигурирование Кассандры
 ClusterName = CatalogueCluster
 KeyspaceName = RosAlkoKeyspace
-Endpoints = 192.168.191.50:9160,192.168.191.48:9160,192.168.191.27:9160
+ConnectionIdleTimeout = 00:10:00
+Endpoints =  192.168.191.50:9160,192.168.191.48:9160,192.168.191.27:9160
 EndpointForFierceCommands = 192.168.191.50:9160
 ReadConsistencyLevel = QUORUM
 WriteConsistencyLevel = QUORUM
@@ -21,7 +22,7 @@ MaximalRowsCount = 1000
 CheckConnectionsInterval = 00:00:10
 
 # Sql
-SqlConnectionString = server=127.0.0.1;uid=root;pwd=Pa$$w0rd;database=RosAlko;CacheServerProperties=true;tablecaching=true;
+SqlConnectionString = server=127.0.0.1;uid=root;pwd=Pa$$w0rd;database=RosAlko;
 SqlKeyBufferSize = 4294967296
 SqlMaxRowsPerTable = 1000000
 SqlUpdateSettingsInterval = 00:01:00.0

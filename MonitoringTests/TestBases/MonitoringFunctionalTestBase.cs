@@ -13,6 +13,7 @@ using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
+using SKBKontur.Catalogue.AccessControl.Services;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
@@ -125,7 +126,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
         protected IUserRepository userRepository;
 
         protected IContainer container;
-        private static readonly FunctionTestsConfiguration configuration = new FunctionTestsConfiguration(9876, 6669);
+        private static readonly FunctionTestsConfiguration configuration = new FunctionTestsConfiguration(9876);
         private IAccessControlService accessControlService;
         private IPasswordService passwordService;
     }

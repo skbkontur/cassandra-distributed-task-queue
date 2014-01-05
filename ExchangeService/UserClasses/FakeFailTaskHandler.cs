@@ -21,12 +21,12 @@ namespace ExchangeService.UserClasses
             if(decrementCounter == 0)
             {
                 Log("Finish\n");
-                return Finish();
+                return Fatal(new Exception());
             }
             var now = DateTime.UtcNow.Ticks;
             var rerunInterval = GetMinimalStartTicks(Context.Attempts, now) - now;
             Log("Rerun\n");
-            return Rerun(TimeSpan.FromTicks(rerunInterval));
+            return RerunAfterError(new Exception(), TimeSpan.FromTicks(rerunInterval));
         }
 
         private long GetMinimalStartTicks(int attempts, long nowTicks)

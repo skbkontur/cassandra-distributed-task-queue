@@ -34,8 +34,11 @@
     <Reference Include="Cassandra.CassandraClient">
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
+    <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.CassandraPrimitives.Storages">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
@@ -47,17 +50,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\MoreLinq\MoreLinq.dll</HintPath>
     </Reference>
-    <Reference Include="RemoteLock, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\RemoteLock.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cassandra\Entities\TaskMetaUpdatedEvent.cs" />
@@ -93,7 +88,9 @@
     <Compile Include="Cassandra\Primitives\IBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerator.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITasksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IMinTicksCache.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TasksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\MinTicksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TaskMinimalStartTicksIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITaskMinimalStartTicksIndex.cs" />
@@ -125,6 +122,7 @@
     <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ITaskHandler.cs" />
     <Compile Include="Handling\ITaskHandlerCollection.cs" />
+    <Compile Include="Handling\OnIndexMeta.cs" />
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
