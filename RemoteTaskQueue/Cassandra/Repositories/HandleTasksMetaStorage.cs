@@ -9,6 +9,7 @@ using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using RemoteQueue.Handling;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -43,6 +44,8 @@ namespace RemoteQueue.Cassandra.Repositories
             eventLogRepository.AddEvent(meta.Id, nowTicks);
             var columnInfo = minimalStartTicksIndex.IndexMeta(meta);
             storage.Write(meta.Id, meta);
+            if (OnIndexMeta != null)
+                OnIndexMeta(new Tuple<string, ColumnInfo>(meta.Id, columnInfo));
 
             var oldMeta = meta.GetSnapshot();
             if(oldMeta != null)
@@ -76,6 +79,8 @@ namespace RemoteQueue.Cassandra.Repositories
             metas.Where(x => x != null).ForEach(x => x.MakeSnapshot());
             return metas;
         }
+
+        internal OnIndexMeta OnIndexMeta { get; set; }
 
         private readonly ITaskMetaInformationBlobStorage storage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
