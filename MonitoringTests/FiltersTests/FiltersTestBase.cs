@@ -4,6 +4,8 @@ using System.Threading;
 
 using GroBuf;
 
+using NUnit.Framework;
+
 using RemoteQueue.Cassandra;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
@@ -12,6 +14,8 @@ using RemoteQueue.Handling;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
+
+using System.Linq;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 {
@@ -97,6 +101,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         protected static void DoCheck(ref TasksListPage tasksListPage, AddTaskInfo addTaskInfo)
         {
             var ids = addTaskInfo.Ids.ToArray();
+            var expectedIds = new HashSet<string>();
+            Array.ForEach(ids, x => expectedIds.Add(x));
             const int tasksPerPage = 100;
             var parts = new SeparateOnBatchesEnumerable<string>(ids, tasksPerPage);
             int cnt = 0;
@@ -108,7 +114,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 for (int i = 0; i < pageIds.Length; i++)
                 {
                     var task = tasksListPage.GetTaskListItem(i);
-                    task.TaskId.WaitText(pageIds[i]);
+                    Assert.True(expectedIds.Contains(task.TaskId.GetText()), "Не ожиданная таска с id: {0}", task.TaskId.GetText());
                 }
                 if (ids.Length > cnt * tasksPerPage)
                     tasksListPage = tasksListPage.GoToNextPage();

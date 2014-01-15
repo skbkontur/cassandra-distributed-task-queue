@@ -16,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         public override void SetUp()
         {
             base.SetUp();
-            addTasksInfo = AddTasks(30,
+            addTasksInfo = AddTasks(70,
                     new Creater("AlphaTaskData", 3600, () => new AlphaTaskData()),
                     new Creater("BetaTaskData", 5, () => new BetaTaskData{ IsProcess = true}),
                     new Creater("DeltaTaskData", 1, () => new DeltaTaskData())
@@ -48,7 +48,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             base.TearDown();
         }
 
-        [Repeat(1)]
         [Test]
         public void SearchOnTicksTest()
         {
@@ -81,7 +80,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             CheckTaskSearch(new AddTaskInfo(new List<string>(), null), addTasksInfo["AlphaTaskData"].AddTime);
         }
 
-        [Repeat(1)]
         [Test]
         public void SearchOnMinimalStartTicksTest()
         {
