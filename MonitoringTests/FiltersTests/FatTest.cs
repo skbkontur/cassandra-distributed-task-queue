@@ -39,7 +39,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             }
             CreateUser("user", "psw");
             var taskListPage = Login("user", "psw");
-            DoCheck(ref taskListPage, new AddTaskInfo(ids, new DateTime()));
+            DoCheck(ref taskListPage, ids.ToArray());
         }
     }
 }

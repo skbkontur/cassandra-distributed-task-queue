@@ -45,7 +45,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         protected class AddTaskInfo
         {
-            public AddTaskInfo( List<string> ids, DateTime? addTime)
+            public AddTaskInfo( List<string> ids, DateTime addTime)
             {
                 ids.Reverse();
                 Ids = ids;
@@ -53,14 +53,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             }
 
             public List<string> Ids { get; private set; }
-            public DateTime? AddTime { get; set; }
+            public DateTime AddTime { get; set; }
 
             public AddTaskInfo Add(AddTaskInfo other)
             {
                 var resId = new List<string>();
                 resId.AddRange(Ids);
                 resId.AddRange(other.Ids);
-                var dateTime = AddTime.HasValue && other.AddTime.HasValue ? (DateTime?)new DateTime(Math.Min(AddTime.Value.Ticks, other.AddTime.Value.Ticks)) : null;
+                var dateTime = new DateTime(Math.Min(AddTime.Ticks, other.AddTime.Ticks));
                 resId.Reverse();
                 return new AddTaskInfo(resId, dateTime);
             }
@@ -98,9 +98,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             }
         }
 
-        protected static void DoCheck(ref TasksListPage tasksListPage, AddTaskInfo addTaskInfo)
+        protected static void DoCheck(ref TasksListPage tasksListPage, string[] ids)
         {
-            var ids = addTaskInfo.Ids.ToArray();
             var expectedIds = new HashSet<string>();
             Array.ForEach(ids, x => expectedIds.Add(x));
             const int tasksPerPage = 100;

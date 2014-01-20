@@ -68,7 +68,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             foreach(var checkBox in checkBoxes)
                 checkBox.CheckAndWait();
             tasksListPage = tasksListPage.SearchTasks();
-            DoCheck(ref tasksListPage, addTaskInfo);
+            DoCheck(ref tasksListPage, addTaskInfo.Ids.ToArray());
             tasksListPage.ShowPanel.ClickAndWaitAnimation();
             foreach(var checkBox in checkBoxes)
                 checkBox.UncheckAndWait();

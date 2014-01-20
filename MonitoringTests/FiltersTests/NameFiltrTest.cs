@@ -33,7 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 tasksListPage.TaskNames[i].WaitVisibleWithRetries();
                 tasksListPage.TaskNames[i].CheckAndWait();
                 tasksListPage = tasksListPage.SearchTasks();
-                DoCheck(ref tasksListPage, expected[taskNames[i]]);
+                DoCheck(ref tasksListPage, expected[taskNames[i]].Ids.ToArray());
                 tasksListPage.ShowPanel.ClickAndWaitAnimation();
                 tasksListPage.TaskNames[i].WaitVisibleWithRetries();
                 tasksListPage.TaskNames[i].UncheckAndWait();

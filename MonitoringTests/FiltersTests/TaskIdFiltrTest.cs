@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using NUnit.Framework;
@@ -24,7 +25,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 tasksListPage.ShowPanel.Click();
                 tasksListPage.TaskId.SetValue(taskId);
                 tasksListPage = tasksListPage.SearchTasks();
-                DoCheck(ref tasksListPage, new AddTaskInfo(new List<string>{taskId}, null));
+                DoCheck(ref tasksListPage, new[] {taskId});
             }
         }
     }
