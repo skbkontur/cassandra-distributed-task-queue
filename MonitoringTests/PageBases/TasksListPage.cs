@@ -10,7 +10,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 {
     public class TasksListPage : CommonPageBase
     {
-        public override void BrowseWaitVisible()
+        public TasksListPage()
         {
             NextPage = new Link("Paginator_Next");
             PrevPage = new Link("Paginator_Prev");
@@ -41,6 +41,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             New = new CheckBox("SearchPanel_TaskStates_0_Value");
             Finished = new CheckBox("SearchPanel_TaskStates_4_Value");
             InProcess = new CheckBox("SearchPanel_TaskStates_1_Value");
+        }
+
+        public override void BrowseWaitVisible()
+        {
         }
 
         public TasksListPage Refresh()
