@@ -34,7 +34,7 @@ namespace FunctionalTests.ExchangeTests
             var cassandraSettings = Container.Get<ICassandraSettings>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
-            var serializer = new Serializer(new PropertiesExtractor());
+            var serializer = new Serializer(new AllPropertiesExtractor());
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);

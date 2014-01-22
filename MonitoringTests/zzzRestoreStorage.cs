@@ -29,7 +29,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests
             IEnumerable<Assembly> assemblies = AssembliesLoader.Load();
             container = new Container(new ContainerConfiguration(assemblies));
             container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(ApplicationSettings.LoadDefault("monitoringTestsSettings"));
-            container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new PropertiesExtractor(), null, GroBufOptions.MergeOnRead));
+            container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
             container.ConfigureCassandra();
             container.ClearAllBeforeTest();
         }
