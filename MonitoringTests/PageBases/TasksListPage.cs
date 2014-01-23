@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 
 using NUnit.Framework;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests;
 using SKBKontur.Catalogue.WebTestCore.SystemControls;
 using SKBKontur.Catalogue.WebTestCore.TestSystem;
 
@@ -10,6 +13,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 {
     public class TasksListPage : CommonPageBase
     {
+        public readonly StaticText TasksCount;
+
         public TasksListPage()
         {
             NextPage = new Link("Paginator_Next");
@@ -21,6 +26,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             TicksDateTo = new TextInput("SearchPanel_Ticks_To_Date");
 
             ShowPanel = new Link(new ByNthOfClass("slide_title_link_link", 0));
+
+            TasksCount = new StaticText("TaskCount");
 
             MinimalStartTicksTimeFrom = new TextInput("SearchPanel_MinimalStartTicks_From_Time");
             MinimalStartTicksDateFrom = new TextInput("SearchPanel_MinimalStartTicks_From_Date");
@@ -64,13 +71,29 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             while(DateTime.UtcNow.Subtract(start) < TimeSpan.FromMilliseconds(timeout))
             {
                 page = page.SearchTasks();
-                if(expectedCount > 0
-                    ? page.GetTaskListItem(expectedCount - 1).IsPresent
-                    : !page.GetTaskListItem(expectedCount).IsPresent)
+                if(expectedCount.ToString(CultureInfo.InvariantCulture) == TasksCount.GetText())
                     return page;
             }
             Assert.Fail("Ќедождались ожидаесого кол-во задач в списке за {0}", timeout);
             return null;
+        }
+
+        public IEnumerable<TaskInfo> GetTaskInfos(int count)
+        {
+            var taskInfos = new List<TaskInfo>();
+            
+            for(var i = 0; i < count; i++)
+            {
+                var taskListItem = GetTaskListItem(i);
+                taskInfos.Add(new TaskInfo
+                    {
+                        TaskId = taskListItem.TaskId.GetText(),
+                        EnqueueTime = taskListItem.EnqueueTime.GetDateTimeUtc(),
+                        MinimalStartTime = taskListItem.MinimalStartTime.GetDateTimeUtc(),
+                    });
+            }
+
+            return taskInfos;
         }
 
         public TasksListPage RefreshUntilTaskListItemsCountIs(int expectedCount)

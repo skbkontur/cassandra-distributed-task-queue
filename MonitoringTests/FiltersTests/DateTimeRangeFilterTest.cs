@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -12,14 +13,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 {
     public class DateTimeRangeFilterTest : FiltersTestBase
     {
-
         public override void SetUp()
         {
             base.SetUp();
-            addTasksInfo = AddTasks(70,
-                    new Creater("AlphaTaskData", 3600, () => new AlphaTaskData()),
-                    new Creater("BetaTaskData", 7, () => new BetaTaskData{ IsProcess = true}),
-                    new Creater("DeltaTaskData", 0, () => new DeltaTaskData())
+            addTasksInfo = AddTasks(40,
+                                    new Creater("AlphaTaskData", 3600, () => new AlphaTaskData()),
+                                    new Creater("BetaTaskData", 7, () => new BetaTaskData {IsProcess = true}),
+                                    new Creater("DeltaTaskData", 0, () => new DeltaTaskData())
                 );
             CreateUser("user", "psw");
             foreach(var deltaTaskId in addTasksInfo["DeltaTaskData"].Ids)
@@ -31,7 +31,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         public override void TearDown()
         {
-            foreach (var betaId in addTasksInfo["BetaTaskData"].Ids)
+            foreach(var betaId in addTasksInfo["BetaTaskData"].Ids)
             {
                 var task = handleTaskCollection.GetTask(betaId);
                 var data = serializer.Deserialize<BetaTaskData>(task.Data);
@@ -41,107 +41,102 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 {
                     handleTaskCollection.AddTask(task);
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                 }
             }
             base.TearDown();
         }
 
-        [Test, Repeat(7)]
-        public void SearchOnTicksTest()
+        [Test, Repeat(3)]
+        public void SearchByEnqueTicksTest()
         {
-            var maxTime = new DateTime(2020, 12, 31);
+            var taskInfos = GetAllTaskInfos().ToArray();
 
-            var expectedTasksInfo = addTasksInfo["AlphaTaskData"];
-            CheckTaskSearch(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, addTasksInfo["BetaTaskData"].AddTime);
+            var alfasEnqueueTime = addTasksInfo["AlphaTaskData"].AddTime;
+            var betasEnqueueTime = addTasksInfo["BetaTaskData"].AddTime;
+            var deltasEnqueueTime = addTasksInfo["DeltaTaskData"].AddTime;
 
-            expectedTasksInfo = addTasksInfo["BetaTaskData"];
-            CheckTaskSearch(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, addTasksInfo["DeltaTaskData"].AddTime);
+            SearchByEnqueTicksTestBase(taskInfos, alfasEnqueueTime, betasEnqueueTime);
+            SearchByEnqueTicksTestBase(taskInfos, betasEnqueueTime, deltasEnqueueTime);
+            SearchByEnqueTicksTestBase(taskInfos, deltasEnqueueTime, maxTime);
 
-            expectedTasksInfo = addTasksInfo["DeltaTaskData"];
-            CheckTaskSearch(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, maxTime);
+            SearchByEnqueTicksTestBase(taskInfos, alfasEnqueueTime, deltasEnqueueTime);
+            SearchByEnqueTicksTestBase(taskInfos, betasEnqueueTime, maxTime);
+            SearchByEnqueTicksTestBase(taskInfos, alfasEnqueueTime, maxTime);
 
-            expectedTasksInfo = addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]);
-            CheckTaskSearch(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, addTasksInfo["DeltaTaskData"].AddTime);
+            SearchByEnqueTicksTestBase(taskInfos, betasEnqueueTime, null);
+            SearchByEnqueTicksTestBase(taskInfos, deltasEnqueueTime, null);
+            SearchByEnqueTicksTestBase(taskInfos, DateTime.UtcNow, null);
 
-            expectedTasksInfo = addTasksInfo["BetaTaskData"].Add(addTasksInfo["DeltaTaskData"]);
-            CheckTaskSearch(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, maxTime);
-
-            expectedTasksInfo = (addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"])).Add(addTasksInfo["DeltaTaskData"]);
-            CheckTaskSearch(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, maxTime);
-
-            expectedTasksInfo = addTasksInfo["BetaTaskData"].Add(addTasksInfo["DeltaTaskData"]);
-            CheckTaskSearch(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, null);
-
-            expectedTasksInfo = addTasksInfo["DeltaTaskData"];
-            CheckTaskSearch(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, null);
-
-            CheckTaskSearch(new string[0], DateTime.UtcNow, null);
-
-            var revAlpha = addTasksInfo["AlphaTaskData"].Ids.ToArray();
-            Array.Reverse(revAlpha);
-            var revBeta = addTasksInfo["BetaTaskData"].Ids.ToArray();
-            Array.Reverse(revBeta);
-
-            var list = new List<string>();
-            list.AddRange(revBeta);
-            list.AddRange(revAlpha);
-            CheckTaskSearch(list.ToArray(), null, addTasksInfo["DeltaTaskData"].AddTime);
-            list.Clear();
-            list.AddRange(revAlpha);
-            CheckTaskSearch(list.ToArray(), null, addTasksInfo["BetaTaskData"].AddTime);
-            CheckTaskSearch(new string[0], null, addTasksInfo["AlphaTaskData"].AddTime);
+            SearchByEnqueTicksTestBase(taskInfos, null, deltasEnqueueTime);
+            SearchByEnqueTicksTestBase(taskInfos, null, betasEnqueueTime);
+            SearchByEnqueTicksTestBase(taskInfos, null, alfasEnqueueTime);
         }
 
-        [Test, Repeat(7)]
-        public void SearchOnMinimalStartTicksTest()
+        [Test, Repeat(3)]
+        public void SearchByMinimalStartTicksTest()
         {
-            var maxTime = new DateTime(2020, 12, 31);
+            var taskInfos = GetAllTaskInfos().ToArray();
 
-            addTasksInfo["AlphaTaskData"].AddTime = addTasksInfo["AlphaTaskData"].AddTime.AddSeconds(3600);
-            addTasksInfo["BetaTaskData"].AddTime = addTasksInfo["BetaTaskData"].AddTime.AddSeconds(5);
-            addTasksInfo["DeltaTaskData"].AddTime = addTasksInfo["DeltaTaskData"].AddTime.AddSeconds(1);
+            var alfasEnqueueTime = addTasksInfo["AlphaTaskData"].AddTime.AddSeconds(3600);
+            ;
+            var betasEnqueueTime = addTasksInfo["BetaTaskData"].AddTime.AddSeconds(5);
+            var deltasEnqueueTime = addTasksInfo["DeltaTaskData"].AddTime.AddSeconds(1);
 
-            var expectedTasksInfo = addTasksInfo["AlphaTaskData"];
-            CheckTaskSearchMinStartTicks(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, maxTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, alfasEnqueueTime, maxTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, betasEnqueueTime, alfasEnqueueTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, deltasEnqueueTime, betasEnqueueTime);
 
-            expectedTasksInfo = addTasksInfo["BetaTaskData"];
-            CheckTaskSearchMinStartTicks(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, addTasksInfo["AlphaTaskData"].AddTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, betasEnqueueTime, maxTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, deltasEnqueueTime, alfasEnqueueTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, deltasEnqueueTime, maxTime);
 
-            expectedTasksInfo = addTasksInfo["DeltaTaskData"];
-            CheckTaskSearchMinStartTicks(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, addTasksInfo["BetaTaskData"].AddTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, betasEnqueueTime, null);
+            SearchByMinimalStartTicksTestBase(taskInfos, alfasEnqueueTime, null);
+            SearchByMinimalStartTicksTestBase(taskInfos, maxTime, null);
 
-            expectedTasksInfo = addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]);
-            CheckTaskSearchMinStartTicks(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, maxTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, null, alfasEnqueueTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, null, betasEnqueueTime);
+            SearchByMinimalStartTicksTestBase(taskInfos, null, deltasEnqueueTime);
+        }
 
-            expectedTasksInfo = addTasksInfo["BetaTaskData"].Add(addTasksInfo["DeltaTaskData"]);
-            CheckTaskSearchMinStartTicks(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, addTasksInfo["AlphaTaskData"].AddTime);
+        private IEnumerable<TaskInfo> GetAllTaskInfos()
+        {
+            var taskInfos = new List<TaskInfo>();
+            var last = tasksCount;
+            tasksListPage = tasksListPage.SearchUntilTaskListItemsCountIs(tasksCount);
 
-            expectedTasksInfo = (addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"])).Add(addTasksInfo["DeltaTaskData"]);
-            CheckTaskSearchMinStartTicks(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, maxTime);
+            while(true)
+            {
+                var pageTasksCount = Math.Min(pageSize, last);
+                tasksListPage = tasksListPage.RefreshUntilTaskListItemsCountIs(pageTasksCount);
+                taskInfos.AddRange(tasksListPage.GetTaskInfos(pageTasksCount));
 
-            expectedTasksInfo = addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]);
-            CheckTaskSearchMinStartTicks(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, null);
+                last -= pageTasksCount;
+                if(last <= 0)
+                    break;
+                tasksListPage = tasksListPage.GoToNextPage();
+            }
+            return taskInfos;
+        }
 
-            expectedTasksInfo = addTasksInfo["AlphaTaskData"];
-            CheckTaskSearchMinStartTicks(expectedTasksInfo.Ids.ToArray(), expectedTasksInfo.AddTime, null);
+        private void SearchByEnqueTicksTestBase(IEnumerable<TaskInfo> taskInfos, DateTime? fromTime, DateTime? toTime)
+        {
+            SimpleTestBase(taskInfos, fromTime, toTime, x => x.EnqueueTime, CheckTaskSearch);
+        }
 
-            CheckTaskSearchMinStartTicks(new string[0], maxTime, null);
+        private void SearchByMinimalStartTicksTestBase(IEnumerable<TaskInfo> taskInfos, DateTime? fromTime, DateTime? toTime)
+        {
+            SimpleTestBase(taskInfos, fromTime, toTime, x => x.MinimalStartTime, CheckTaskSearchMinStartTicks);
+        }
 
-            var revDelta = addTasksInfo["DeltaTaskData"].Ids.ToArray();
-            Array.Reverse(revDelta);
-            var revBeta = addTasksInfo["BetaTaskData"].Ids.ToArray();
-            Array.Reverse(revBeta);
-
-            var list = new List<string>();
-            list.AddRange(revDelta);
-            list.AddRange(revBeta);
-            CheckTaskSearchMinStartTicks(list.ToArray(), null, addTasksInfo["AlphaTaskData"].AddTime);
-            list.Clear();
-            list.AddRange(revDelta);
-            CheckTaskSearchMinStartTicks(list.ToArray(), null, addTasksInfo["BetaTaskData"].AddTime);
-            CheckTaskSearchMinStartTicks(new string[0], null, addTasksInfo["DeltaTaskData"].AddTime);
+        private void SimpleTestBase(IEnumerable<TaskInfo> taskInfos, DateTime? fromTime, DateTime? toTime, Func<TaskInfo, DateTime?> pathToTime, Action<string[], DateTime?, DateTime?> checkMethod)
+        {
+            var lowerBound = fromTime ?? new DateTime(2012, 11, 11);
+            var upperBound = toTime ?? maxTime;
+            var expectedIds = taskInfos.Where(x => pathToTime(x) <= upperBound && pathToTime(x) >= lowerBound).Select(x => x.TaskId);
+            checkMethod(expectedIds.ToArray(), fromTime, toTime);
         }
 
         private void CheckTaskSearchMinStartTicks(string[] ids, DateTime? fromTime, DateTime? toTime)
@@ -159,12 +154,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         private void CheckTaskSearch(string[] ids, DateTime? fromTime, DateTime? toTime)
         {
             tasksListPage.ShowPanel.ClickAndWaitAnimation();
+            tasksListPage.TicksDateFrom.WaitVisibleWithRetries();
+            tasksListPage.TicksTimeFrom.WaitVisibleWithRetries();
+            tasksListPage.TicksDateTo.WaitVisibleWithRetries();
+            tasksListPage.TicksTimeTo.WaitVisibleWithRetries();
             TasksListPage.SetDateTime(tasksListPage.TicksDateFrom, tasksListPage.TicksTimeFrom, fromTime);
             TasksListPage.SetDateTime(tasksListPage.TicksDateTo, tasksListPage.TicksTimeTo, toTime);
             DoCheck(ref tasksListPage, ids);
         }
 
+        private readonly DateTime maxTime = new DateTime(2020, 12, 31);
+
         private Dictionary<string, AddTaskInfo> addTasksInfo;
         private TasksListPage tasksListPage;
+        private const int pageSize = 100;
+        private const int tasksCount = 120;
     }
 }

@@ -11,10 +11,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls
             TaskId = new Link(new ByNthOfClass("adminTaskId__link", 0), this);
             TaskState = new StaticText(string.Format("TaskModels_{0}_State", index), this);
             TaskName = new StaticText(string.Format("TaskModels_{0}_Name", index), this);
-            EnqueueTime = new StaticText(string.Format("TaskModels_{0}_EnqueueTime", index), this);
-            StartExecutingTime = new StaticText(string.Format("TaskModels_{0}_StartExecutingTime", index), this);
-            FinishExecutingTime = new StaticText(string.Format("TaskModels_{0}_FinishExecutingTime", index), this);
-            MinimalStartTime = new StaticText(string.Format("TaskModels_{0}_MinimalStartTicks", index), this);
+            EnqueueTime = new DateAndTimeHtmlControl(string.Format("TaskModels_{0}_EnqueueTime", index));
+            StartExecutingTime = new DateAndTimeHtmlControl(string.Format("TaskModels_{0}_StartExecutingTime", index));
+            FinishExecutingTime = new DateAndTimeHtmlControl(string.Format("TaskModels_{0}_FinishExecutingTime", index));
+            MinimalStartTime = new DateAndTimeHtmlControl(string.Format("TaskModels_{0}_MinimalStartTime", index));
+            
             Attempts = new StaticText(string.Format("TaskModels_{0}_Attempts", index), this);
             ParentTaskId = new Link(string.Format("TaskModels_{0}_ParentTaskId", index), this);
 
@@ -41,10 +42,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.Controls
         public Link TaskId { get; private set; }
         public StaticText TaskState { get; private set; }
         public StaticText TaskName { get; private set; }
-        public StaticText EnqueueTime { get; private set; }
-        public StaticText StartExecutingTime { get; private set; }
-        public StaticText FinishExecutingTime { get; private set; }
-        public StaticText MinimalStartTime { get; private set; }
+        public DateAndTimeHtmlControl EnqueueTime { get; private set; }
+        public DateAndTimeHtmlControl StartExecutingTime { get; private set; }
+        public DateAndTimeHtmlControl FinishExecutingTime { get; private set; }
+        public DateAndTimeHtmlControl MinimalStartTime { get; private set; }
         public StaticText Attempts { get; private set; }
         public Link ParentTaskId { get; private set; }
 

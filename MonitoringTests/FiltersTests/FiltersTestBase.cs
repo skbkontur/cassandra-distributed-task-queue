@@ -13,9 +13,6 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
-
-using System.Linq;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 {

@@ -87,12 +87,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\DateAndTimeHtmlControl.cs" />
     <Compile Include="Controls\TaskListItem.cs" />
     <Compile Include="FiltersTests\DateTimeRangeFilterTest.cs" />
     <Compile Include="FiltersTests\FatTest.cs" />
     <Compile Include="FiltersTests\FiltersTestBase.cs" />
     <Compile Include="FiltersTests\NameFiltrTest.cs" />
     <Compile Include="FiltersTests\TaskIdFiltrTest.cs" />
+    <Compile Include="FiltersTests\TaskInfo.cs" />
     <Compile Include="FiltersTests\TaskStateFilterTest.cs" />
     <Compile Include="MonitoringTests\NoFiltersTest.cs" />
     <Compile Include="MonitoringTests\FileDataTest.cs" />
