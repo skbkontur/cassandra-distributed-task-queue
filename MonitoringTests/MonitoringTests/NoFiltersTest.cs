@@ -50,7 +50,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         {
             CreateUser("user", "psw");
             var tasksListPage = Login("user", "psw");
-            tasksListPage  = tasksListPage.RefreshUntilTaskRowIsPresent(0);
+            tasksListPage.GetTaskListItem(0).WaitAbsence();
         }
 
         private string AddTask<T>(T taskData) where T : ITaskData
