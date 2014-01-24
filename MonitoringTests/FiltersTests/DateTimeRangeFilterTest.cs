@@ -16,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         public override void SetUp()
         {
             base.SetUp();
-            addTasksInfo = AddTasks(40,
+            addTasksInfo = AddTasks(7,
                                     new Creater("AlphaTaskData", 3600, () => new AlphaTaskData()),
                                     new Creater("BetaTaskData", 7, () => new BetaTaskData {IsProcess = true}),
                                     new Creater("DeltaTaskData", 0, () => new DeltaTaskData())
@@ -48,7 +48,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             base.TearDown();
         }
 
-        [Test, Repeat(3)]
+        [Test, Repeat(15)]
         public void SearchByEnqueTicksTest()
         {
             var taskInfos = GetAllTaskInfos().ToArray();
@@ -74,7 +74,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             SearchByEnqueTicksTestBase(taskInfos, null, alfasEnqueueTime);
         }
 
-        [Test, Repeat(3)]
+        [Test, Repeat(15)]
         public void SearchByMinimalStartTicksTest()
         {
             var taskInfos = GetAllTaskInfos().ToArray();
@@ -110,7 +110,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             while(true)
             {
                 var pageTasksCount = Math.Min(pageSize, last);
-                tasksListPage = tasksListPage.RefreshUntilTaskListItemsCountIs(pageTasksCount);
+                tasksListPage = tasksListPage.RefreshUntilTaskRowIsPresent(pageTasksCount);
                 taskInfos.AddRange(tasksListPage.GetTaskInfos(pageTasksCount));
 
                 last -= pageTasksCount;

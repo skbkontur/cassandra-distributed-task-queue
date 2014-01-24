@@ -96,11 +96,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             return taskInfos;
         }
 
-        public TasksListPage RefreshUntilTaskListItemsCountIs(int expectedCount)
+        public TasksListPage RefreshUntilTaskRowIsPresent(int expectedCount)
         {
-            return RefreshUntil(this, page => expectedCount > 0 
-                ? page.GetTaskListItem(expectedCount - 1).IsPresent 
-                : !page.GetTaskListItem(expectedCount).IsPresent);
+            return RefreshUntil(this, page => page.GetTaskListItem(expectedCount - 1).IsPresent);
         }
 
         public TaskDetailsPage GoToTaskDetails(int index)

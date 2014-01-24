@@ -27,7 +27,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             foreach(var id in ids)
                 Console.WriteLine(id);
             var tasksListPage = Login("user", "psw");
-            tasksListPage = tasksListPage.RefreshUntilTaskListItemsCountIs(10);
+            tasksListPage = tasksListPage.RefreshUntilTaskRowIsPresent(10);
             Console.WriteLine();
             for(int i = 0; i < 10; i++)
             {
@@ -50,7 +50,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         {
             CreateUser("user", "psw");
             var tasksListPage = Login("user", "psw");
-            tasksListPage  = tasksListPage.RefreshUntilTaskListItemsCountIs(0);
+            tasksListPage  = tasksListPage.RefreshUntilTaskRowIsPresent(0);
         }
 
         private string AddTask<T>(T taskData) where T : ITaskData
