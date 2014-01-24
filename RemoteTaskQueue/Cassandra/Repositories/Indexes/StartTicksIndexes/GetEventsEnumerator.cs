@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 
 using GroBuf;
 
@@ -63,7 +64,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 }
                 iCur++;
                 string startColumnName = null;
-                ColumnInfo columnInfo = TicksNameHelper.GetColumnInfo(taskState, TicksNameHelper.GetMinimalTicksForRow(iCur), "");
+                var columnInfo = TicksNameHelper.GetColumnInfo(taskState, TicksNameHelper.GetMinimalTicksForRow(iCur), "");
                 if(iCur == iFrom) startColumnName = TicksNameHelper.GetColumnInfo(taskState, fromTicks, "").ColumnName;
                 eventEnumerator = connection.GetRow(columnInfo.RowKey, startColumnName, batchSize).GetEnumerator();
             }
@@ -95,27 +96,42 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         private void LogFromToCountStatistics()
         {
-            totalDifferenceFromTo += (iTo - iFrom);
-            totalCount++;
-            if(lastLogDateTime <= DateTime.UtcNow - TimeSpan.FromMinutes(1))
+            lock (statisticsLockObject)
             {
-                logger.InfoFormat("Statistics about a number of requested rows. Mean number of processed rows = {0}", (double)totalDifferenceFromTo / (totalCount + 1));
-                lastLogDateTime = DateTime.UtcNow;
-                totalDifferenceFromTo = 0;
-                totalCount = 0;
+                if (statistics == null)
+                    statistics = new Dictionary<TaskState, TaskStateStatistics>();
+                if(!statistics.ContainsKey(taskState))
+                    statistics[taskState] = new TaskStateStatistics();
+                statistics[taskState].Update(iTo - iFrom);
+                if(lastStatisticsLogDateTime <= DateTime.UtcNow - TimeSpan.FromMinutes(1))
+                {
+                    PrintStatistics();
+                    statistics = new Dictionary<TaskState, TaskStateStatistics>();
+                    lastStatisticsLogDateTime = DateTime.UtcNow;
+                }
             }
+        }
+
+        private static void PrintStatistics()
+        {
+            var result = new StringBuilder();
+            result.AppendLine("Statistics about a number of requested rows:");
+            foreach(var statistic in statistics)
+                result.AppendLine(string.Format(" {0} {1}", statistic.Key, (double)statistic.Value.TotalProcessedRows / (statistic.Value.TotalCount + 1)));
+            logger.InfoFormat(result.ToString());
         }
 
         private void UpdateTicks()
         {
-            long ticks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name) - 1;
+            var ticks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name) - 1;
             minTicksCache.UpdateMinTicks(taskState, ticks);
         }
 
-        private static long totalDifferenceFromTo;
-        private static long totalCount;
+        private static Dictionary<TaskState, TaskStateStatistics> statistics;
+        private static readonly object statisticsLockObject = new object();
+
         private static readonly ILog logger = LogManager.GetLogger(typeof(GetEventsEnumerator));
-        private static DateTime lastLogDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
+        private static DateTime lastStatisticsLogDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
         private readonly TaskState taskState;
         private readonly ISerializer serializer;
@@ -129,5 +145,17 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private long iCur;
         private bool startPosition;
         private IEnumerator<Column> eventEnumerator;
+
+        private class TaskStateStatistics
+        {
+            public void Update(long processedRows)
+            {
+                TotalProcessedRows += processedRows;
+                TotalCount++;
+            }
+
+            public long TotalProcessedRows { get; private set; }
+            public long TotalCount { get; private set; }
+        }
     }
 }

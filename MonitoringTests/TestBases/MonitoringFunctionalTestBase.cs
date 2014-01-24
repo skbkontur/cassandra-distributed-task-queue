@@ -126,7 +126,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
         protected IUserRepository userRepository;
 
         protected IContainer container;
-        private static readonly FunctionTestsConfiguration configuration = new FunctionTestsConfiguration(9876, 6669);
+        private static readonly FunctionTestsConfiguration configuration = new FunctionTestsConfiguration(9876);
         private IAccessControlService accessControlService;
         private IPasswordService passwordService;
     }

@@ -122,6 +122,7 @@
     <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ITaskHandler.cs" />
     <Compile Include="Handling\ITaskHandlerCollection.cs" />
+    <Compile Include="Handling\OnIndexMeta.cs" />
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />

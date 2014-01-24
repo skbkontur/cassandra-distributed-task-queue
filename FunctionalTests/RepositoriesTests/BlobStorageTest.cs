@@ -37,7 +37,7 @@ namespace FunctionalTests.RepositoriesTests
                     {
                         Name = columnFamilyName,
                         GCGraceSeconds = 10,
-                        RowCacheSize = 1,
+                        Caching = ColumnFamilyCaching.All
                     });
             }
             blobStorage = new BlobStorage<Class1>(repositoryParameters, serializer, globalTime, columnFamilyName);
