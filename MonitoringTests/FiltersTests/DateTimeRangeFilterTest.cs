@@ -48,7 +48,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             base.TearDown();
         }
 
-        [Test, Repeat(15)]
+        [Test]
         public void SearchByEnqueTicksTest()
         {
             var taskInfos = GetAllTaskInfos().ToArray();
@@ -57,24 +57,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var betasEnqueueTime = addTasksInfo["BetaTaskData"].AddTime;
             var deltasEnqueueTime = addTasksInfo["DeltaTaskData"].AddTime;
 
-            SearchByEnqueTicksTestBase(taskInfos, alfasEnqueueTime, betasEnqueueTime);
             SearchByEnqueTicksTestBase(taskInfos, betasEnqueueTime, deltasEnqueueTime);
-            SearchByEnqueTicksTestBase(taskInfos, deltasEnqueueTime, maxTime);
-
             SearchByEnqueTicksTestBase(taskInfos, alfasEnqueueTime, deltasEnqueueTime);
-            SearchByEnqueTicksTestBase(taskInfos, betasEnqueueTime, maxTime);
-            SearchByEnqueTicksTestBase(taskInfos, alfasEnqueueTime, maxTime);
-
             SearchByEnqueTicksTestBase(taskInfos, betasEnqueueTime, null);
-            SearchByEnqueTicksTestBase(taskInfos, deltasEnqueueTime, null);
-            SearchByEnqueTicksTestBase(taskInfos, DateTime.UtcNow, null);
-
-            SearchByEnqueTicksTestBase(taskInfos, null, deltasEnqueueTime);
             SearchByEnqueTicksTestBase(taskInfos, null, betasEnqueueTime);
-            SearchByEnqueTicksTestBase(taskInfos, null, alfasEnqueueTime);
+            SearchByEnqueTicksTestBase(taskInfos, maxTime, alfasEnqueueTime);
         }
 
-        [Test, Repeat(15)]
+        [Test]
         public void SearchByMinimalStartTicksTest()
         {
             var taskInfos = GetAllTaskInfos().ToArray();
@@ -83,20 +73,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var betasEnqueueTime = addTasksInfo["BetaTaskData"].AddTime.AddSeconds(5);
             var deltasEnqueueTime = addTasksInfo["DeltaTaskData"].AddTime.AddSeconds(1);
 
-            SearchByMinimalStartTicksTestBase(taskInfos, alfasEnqueueTime, maxTime);
             SearchByMinimalStartTicksTestBase(taskInfos, betasEnqueueTime, alfasEnqueueTime);
-            SearchByMinimalStartTicksTestBase(taskInfos, deltasEnqueueTime, betasEnqueueTime);
-
             SearchByMinimalStartTicksTestBase(taskInfos, betasEnqueueTime, maxTime);
-            SearchByMinimalStartTicksTestBase(taskInfos, deltasEnqueueTime, alfasEnqueueTime);
-            SearchByMinimalStartTicksTestBase(taskInfos, deltasEnqueueTime, maxTime);
-
-            SearchByMinimalStartTicksTestBase(taskInfos, betasEnqueueTime, null);
             SearchByMinimalStartTicksTestBase(taskInfos, alfasEnqueueTime, null);
             SearchByMinimalStartTicksTestBase(taskInfos, maxTime, null);
-
-            SearchByMinimalStartTicksTestBase(taskInfos, null, alfasEnqueueTime);
-            SearchByMinimalStartTicksTestBase(taskInfos, null, betasEnqueueTime);
             SearchByMinimalStartTicksTestBase(taskInfos, null, deltasEnqueueTime);
         }
 
