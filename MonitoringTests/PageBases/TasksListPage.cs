@@ -68,13 +68,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         {
             var start = DateTime.UtcNow;
             var page = this;
+            TasksCount.WaitPresenceWithRetries();
             while(DateTime.UtcNow.Subtract(start) < TimeSpan.FromMilliseconds(timeout))
             {
                 page = page.SearchTasks();
                 if(expectedCount.ToString(CultureInfo.InvariantCulture) == TasksCount.GetText())
                     return page;
             }
-            Assert.Fail("Ќедождались ожидаесого кол-во задач в списке за {0}", timeout);
+            Assert.Fail("Ќедождались ожидаесого кол-во задач в списке за {0}. ќжидалось: \"{1}\", но было \"{2}.\"", timeout, expectedCount, TasksCount.GetText());
             return null;
         }
 
@@ -98,7 +99,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 
         public TasksListPage RefreshUntilTaskRowIsPresent(int expectedCount)
         {
-            return RefreshUntil(this, page => page.GetTaskListItem(expectedCount - 1).IsPresent);
+            return RefreshUntil(this, page => { 
+                page.GetTaskListItem(expectedCount - 1).WaitPresenceWithRetries();
+                return true;
+            });
         }
 
         public TaskDetailsPage GoToTaskDetails(int index)

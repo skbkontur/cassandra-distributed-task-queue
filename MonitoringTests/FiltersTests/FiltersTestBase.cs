@@ -98,23 +98,28 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         protected static void DoCheck(ref TasksListPage tasksListPage, string[] ids)
         {
             var expectedIds = new HashSet<string>();
+            var actualIds = new HashSet<string>();
             Array.ForEach(ids, x => expectedIds.Add(x));
             const int tasksPerPage = 100;
             var parts = new SeparateOnBatchesEnumerable<string>(ids, tasksPerPage);
             int cnt = 0;
-            tasksListPage = tasksListPage.SearchTasks();
+            tasksListPage = tasksListPage.SearchUntilTaskListItemsCountIs(ids.Length);
+
             foreach(var pageIds in parts)
             {
+                tasksListPage = tasksListPage.RefreshUntilTaskRowIsPresent(pageIds.Length);
                 cnt++;
-                tasksListPage = tasksListPage.SearchUntilTaskListItemsCountIs(pageIds.Length);
                 for (int i = 0; i < pageIds.Length; i++)
                 {
-                    var task = tasksListPage.GetTaskListItem(i);
-                    Assert.True(expectedIds.Contains(task.TaskId.GetText()), "Не ожиданная таска с id: {0}", task.TaskId.GetText());
+                    var taskId = tasksListPage.GetTaskListItem(i).TaskId.GetText();
+
+                    Assert.True(expectedIds.Contains(taskId), "Не ожиданная таска с id: {0}.", taskId);
+                    actualIds.Add(taskId);
                 }
                 if (ids.Length > cnt * tasksPerPage)
                     tasksListPage = tasksListPage.GoToNextPage();
             }
+            Assert.AreEqual(actualIds.Count, expectedIds.Count, "Ожидалось найти {0} тасок, а было найдено {1}.", expectedIds.Count, actualIds.Count);
         }
 
         private IRemoteTaskQueue remoteTaskQueue;

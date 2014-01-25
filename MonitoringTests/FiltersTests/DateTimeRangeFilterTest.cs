@@ -80,7 +80,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var taskInfos = GetAllTaskInfos().ToArray();
 
             var alfasEnqueueTime = addTasksInfo["AlphaTaskData"].AddTime.AddSeconds(3600);
-            ;
             var betasEnqueueTime = addTasksInfo["BetaTaskData"].AddTime.AddSeconds(5);
             var deltasEnqueueTime = addTasksInfo["DeltaTaskData"].AddTime.AddSeconds(1);
 
@@ -121,6 +120,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             return taskInfos;
         }
 
+        private DateTime RoundDateTimeSeconds(DateTime datetime)
+        {
+            return new DateTime(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, DateTimeKind.Utc);
+        }
         private void SearchByEnqueTicksTestBase(IEnumerable<TaskInfo> taskInfos, DateTime? fromTime, DateTime? toTime)
         {
             SimpleTestBase(taskInfos, fromTime, toTime, x => x.EnqueueTime, CheckTaskSearch);
@@ -133,8 +136,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         private void SimpleTestBase(IEnumerable<TaskInfo> taskInfos, DateTime? fromTime, DateTime? toTime, Func<TaskInfo, DateTime?> pathToTime, Action<string[], DateTime?, DateTime?> checkMethod)
         {
-            var lowerBound = fromTime ?? new DateTime(2012, 11, 11);
-            var upperBound = toTime ?? maxTime;
+            Func<DateTime, DateTime> transform = x => RoundDateTimeSeconds(x).Subtract(TimeSpan.FromMilliseconds(50));
+            
+            var lowerBound = transform(fromTime ?? new DateTime(2012, 11, 11));
+            var upperBound = transform(toTime ?? maxTime);
             var expectedIds = taskInfos.Where(x => pathToTime(x) <= upperBound && pathToTime(x) >= lowerBound).Select(x => x.TaskId);
             checkMethod(expectedIds.ToArray(), fromTime, toTime);
         }
@@ -168,6 +173,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         private Dictionary<string, AddTaskInfo> addTasksInfo;
         private TasksListPage tasksListPage;
         private const int pageSize = 100;
-        private const int tasksCount = 120;
+        private const int tasksCount = 21;
     }
 }
