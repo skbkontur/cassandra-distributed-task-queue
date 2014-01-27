@@ -125,6 +125,13 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             var ticks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name) - 1;
             minTicksCache.UpdateMinTicks(taskState, ticks);
+
+            if(ticks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
+            {
+                var current = Current;
+                logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]", 
+                    current.Item1, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
+            }
         }
 
         private static Dictionary<TaskState, TaskStateStatistics> statistics;

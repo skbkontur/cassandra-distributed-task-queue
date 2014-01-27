@@ -10,6 +10,6 @@ namespace RemoteQueue
             return serializer;
         }
 
-        private static readonly ISerializer serializer = new Serializer(new PropertiesExtractor(), null, GroBufOptions.MergeOnRead);
+        private static readonly ISerializer serializer = new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead);
     }
 }

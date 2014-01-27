@@ -19,14 +19,19 @@ namespace RemoteQueue.Handling
             return HandleTask(taskData);
         }
 
+        protected IRemoteTask CreateNextTask(ITaskData data)
+        {
+            return taskQueue.CreateTask(data, new CreateTaskOptions {ParentTaskId = Context.Id});
+        }
+
         protected string ContinueWith(ITaskData data)
         {
-            return taskQueue.CreateTask(data, new CreateTaskOptions {ParentTaskId = Context.Id}).Queue();
+            return CreateNextTask(data).Queue();
         }
 
         protected string ContinueWith(ITaskData data, TimeSpan delay)
         {
-            return taskQueue.CreateTask(data, new CreateTaskOptions {ParentTaskId = Context.Id}).Queue(delay);
+            return CreateNextTask(data).Queue(delay);
         }
 
         protected HandleResult Finish()
