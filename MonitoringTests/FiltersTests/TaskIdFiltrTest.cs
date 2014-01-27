@@ -13,7 +13,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         [Test]
         public void SearchOnTaskIdTest()
         {
-            var tasksIds = AddTasks(7,
+            var tasksIds = AddTasks(2,
                      new Creater("AlphaTaskData", 0, () => new AlphaTaskData()),
                      new Creater("BetaTaskData", 0, () => new BetaTaskData()),
                      new Creater("DeltaTaskData", 0, () => new DeltaTaskData())
@@ -22,7 +22,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var tasksListPage = Login("user", "psw");
             foreach(var taskId in tasksIds)
             {
-                tasksListPage.ShowPanel.Click();
+                tasksListPage.ShowPanel.ClickAndWaitAnimation();
+                tasksListPage.TaskId.WaitVisibleWithRetries();
+                tasksListPage.TaskId.WaitEnabledWithRetries();
                 tasksListPage.TaskId.SetValue(taskId);
                 tasksListPage = tasksListPage.SearchTasks();
                 DoCheck(ref tasksListPage, new[] {taskId});
