@@ -43,10 +43,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         {
             lock (lockObject)
             {
-                var startTime = GetStartTime();
-                eventCache.RemoveEvents(startTime - 2 * TimeSpan.FromMinutes(20).Ticks);
                 var lastTicks = globalTime.GetNowTicks();
-                UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraTimeoutTicks));
+                UpdateLocalStorage(eventLogRepository.GetEvents(GetStartTime()));
                 UpdateLocalStorageTicks(lastTicks);
             }
         }
@@ -147,6 +145,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 logger.InfoFormat("Wrote {0} rows in sql", list.Count);
 
                 UpdateLocalStorageTicks(eventBatch.Last().Ticks);
+                eventCache.RemoveEvents(eventBatch.Min(@event => @event.Ticks) - TimeSpan.FromMinutes(20).Ticks);
             }
         }
 
