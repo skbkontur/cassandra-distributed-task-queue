@@ -50,7 +50,7 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void TestTooLateOneFailTask()
         {
-            var taskId = AddTask(8);
+            var taskId = AddTask(9);
             try
             {
                 Wait(new[] {taskId}, 12345);
@@ -58,8 +58,19 @@ namespace FunctionalTests.ExchangeTests
             }
             catch(TooLateException)
             {
-                Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
+                var count = testCounterRepository.GetCounter(taskId);
+                Assert.That(count < 9 && count >= 1);
             }
+        }
+
+        [Test]
+        public void TestManyFails()
+        {
+            const int count = 5;
+            var ids = new string[count];
+            for (var i = 0; i < count; i++)
+                ids[i] = AddTask(7);
+            Wait(ids, 60000);
         }
 
         [Test]
