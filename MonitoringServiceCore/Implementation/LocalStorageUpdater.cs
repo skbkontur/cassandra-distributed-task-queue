@@ -38,54 +38,63 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             this.startingTicksCache = startingTicksCache;
             this.eventCache = eventCache;
             this.cassandraClusterSettings = cassandraClusterSettings;
-            this.maxCassandraTimeoutTicks = GetMaxCassandraTimeout();
+            maxCassandraTimeoutTicks = GetMaxCassandraTimeout();
         }
 
         public void Update()
         {
-            var guid = Guid.NewGuid().ToString();
-            try
+            lock(lockObject)
             {
-                startingTicksCache.Add(guid, GetStartTime());
-                eventCache.RemoveEvents(startingTicksCache.GetMinimum() - 2 * maxCassandraTimeoutTicks);
-                var lastTicks = globalTime.GetNowTicks();
-                UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraTimeoutTicks));
-                UpdateLocalStorageTicks(lastTicks);
-            }
-            finally
-            {
-                startingTicksCache.Remove(guid);
+                var guid = Guid.NewGuid().ToString();
+                try
+                {
+                    startingTicksCache.Add(guid, GetStartTime());
+                    eventCache.RemoveEvents(startingTicksCache.GetMinimum() - 2 * maxCassandraTimeoutTicks);
+                    var lastTicks = globalTime.GetNowTicks();
+                    UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraTimeoutTicks));
+                    UpdateLocalStorageTicks(lastTicks);
+                }
+                finally
+                {
+                    startingTicksCache.Remove(guid);
+                }
             }
         }
 
         public void ClearCache()
         {
-            eventCache.Clear();
+            lock(lockObject)
+            {
+                eventCache.Clear();
+            }
         }
 
         public void RecalculateInProcess()
         {
-            var metadatas = localStorage.Search<MonitoringTaskMetadata>(
-                x => x.State == MTaskState.New ||
-                     x.State == MTaskState.InProcess ||
-                     x.State == MTaskState.WaitingForRerun ||
-                     x.State == MTaskState.WaitingForRerunAfterError).ToArray();
-            var list = new List<MonitoringTaskMetadata>();
-            var metas = handleTasksMetaStorage.GetMetas(metadatas.Select(x => x.TaskId).ToArray());
-            foreach (var meta in metas)
+            lock(lockObject)
             {
-                MonitoringTaskMetadata newMetadata;
-                if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(meta, out newMetadata))
-                    list.Add(newMetadata);
+                var metadatas = localStorage.Search<MonitoringTaskMetadata>(
+                    x => x.State == MTaskState.New ||
+                         x.State == MTaskState.InProcess ||
+                         x.State == MTaskState.WaitingForRerun ||
+                         x.State == MTaskState.WaitingForRerunAfterError).ToArray();
+                var list = new List<MonitoringTaskMetadata>();
+                var metas = handleTasksMetaStorage.GetMetas(metadatas.Select(x => x.TaskId).ToArray());
+                foreach(var meta in metas)
+                {
+                    MonitoringTaskMetadata newMetadata;
+                    if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(meta, out newMetadata))
+                        list.Add(newMetadata);
+                }
+                foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(list, 100))
+                    localStorage.Write(batch, false);
             }
-            foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(list, 100))
-                localStorage.Write(batch, false);
         }
 
         private void UpdateLocalStorage(IEnumerable<TaskMetaUpdatedEvent> events)
         {
             var batchCount = 0;
-            foreach (var eventBatch in events.Batch(1000, Enumerable.ToArray))
+            foreach(var eventBatch in events.Batch(1000, Enumerable.ToArray))
             {
                 logger.InfoFormat("Reading batch #{0} with {1} events", batchCount++, eventBatch.Length);
 
