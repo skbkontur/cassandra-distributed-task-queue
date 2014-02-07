@@ -86,7 +86,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             {
                 logger.InfoFormat("Reading batch #{0} with {1} events", batchCount++, eventBatch.Length);
 
-                var uniqueEventBatch = eventBatch.GroupBy(x => x.TaskId).Select(x => x.MaxBy(y => y.Ticks)).ToArray();
+                var uniqueEventBatch = eventBatch
+                    .Where(@event => !eventCache.Contains(@event))
+                    .GroupBy(x => x.TaskId)
+                    .Select(x => x.MinBy(y => y.Ticks))
+                    .ToArray();
                 var eventsWithNotEmptyTaskId = uniqueEventBatch.Where(x => !string.IsNullOrEmpty(x.TaskId)).ToArray();
                 if (eventsWithNotEmptyTaskId.Length < uniqueEventBatch.Length)
                     logger.Error("Some events has taskId=[null]");
@@ -102,9 +106,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 {
                     try
                     {
-                        if (eventCache.Contains(taskEvent))
-                            continue;
-
                         TaskMetaInformation taskMeta;
                         if (!taskMetas.TryGetValue(taskEvent.TaskId, out taskMeta))
                         {
@@ -139,13 +140,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                         logger.Error(string.Format("Error while processing taskEvent taskId='{0}'", taskEvent.TaskId), e);
                     }
                 }
+                eventCache.RemoveEvents(eventBatch.Min(@event => @event.Ticks) - TimeSpan.FromMinutes(20).Ticks);
 
                 foreach (var batch in list.Batch(100, Enumerable.ToArray))
                     localStorage.Write(batch, false);
                 logger.InfoFormat("Wrote {0} rows in sql", list.Count);
 
                 UpdateLocalStorageTicks(eventBatch.Last().Ticks);
-                eventCache.RemoveEvents(eventBatch.Min(@event => @event.Ticks) - TimeSpan.FromMinutes(20).Ticks);
             }
         }
 
