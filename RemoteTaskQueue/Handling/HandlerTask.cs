@@ -153,6 +153,14 @@ namespace RemoteQueue.Handling
                 return;
             }
 
+            var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
+            if (task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > startTicks))
+            {
+                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
+                                  task.Meta.MinimalStartTicks, task.Meta.Id, startTicks);
+                return;
+            }
+
             if(task.Meta.State == TaskState.Finished || task.Meta.State == TaskState.Fatal ||
                task.Meta.State == TaskState.Canceled)
             {
