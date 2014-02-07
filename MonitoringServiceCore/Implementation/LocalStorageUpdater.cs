@@ -101,6 +101,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     logger.WarnFormat("Lost {0} task metas", uniqueEventBatch.Length - taskMetas.Count);
 
                 var list = new List<MonitoringTaskMetadata>();
+                var localProcessedEvents = new List<TaskMetaUpdatedEvent>();
 
                 foreach (var taskEvent in uniqueEventBatch)
                 {
@@ -133,7 +134,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                         }
 
                         list.Add(metadata);
-                        eventCache.AddEvents(new[] { taskEvent });
+                        localProcessedEvents.Add(taskEvent);
                     }
                     catch (Exception e)
                     {
@@ -145,8 +146,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 foreach (var batch in list.Batch(100, Enumerable.ToArray))
                     localStorage.Write(batch, false);
                 logger.InfoFormat("Wrote {0} rows in sql", list.Count);
-
+                
                 UpdateLocalStorageTicks(eventBatch.Last().Ticks);
+                eventCache.AddEvents(localProcessedEvents);
             }
         }
 
