@@ -33,7 +33,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         public void DropLocalStorage()
         {
             localStorage.DropDatabase();
-            localStorageUpdater.ClearCache();
         }
 
         public int GetCount(MonitoringGetCountQuery getCountQuery)
