@@ -4,7 +4,7 @@ using RemoteQueue.Cassandra.Entities;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation
 {
-    public interface IEventCache
+    public interface IProcessedEvents
     {
         void AddEvents(IEnumerable<TaskMetaUpdatedEvent> events);
         void RemoveEvents(long threshold);

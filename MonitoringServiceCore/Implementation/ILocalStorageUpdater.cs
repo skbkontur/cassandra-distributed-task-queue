@@ -4,6 +4,6 @@
     {
         void RecalculateInProcess();
         void Update();
-        void ClearCache();
+        void ClearProcessedEvents();
     }
 }
