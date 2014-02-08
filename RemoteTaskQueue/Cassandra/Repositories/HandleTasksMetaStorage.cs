@@ -39,7 +39,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public void AddMeta(TaskMetaInformation meta)
         {
-            var nowTicks = globalTime.GetNowTicks();
+            var nowTicks = Math.Max((meta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
             meta.LastModificationTicks = nowTicks;
             eventLogRepository.AddEvent(meta.Id, nowTicks);
             var columnInfo = minimalStartTicksIndex.IndexMeta(meta);
