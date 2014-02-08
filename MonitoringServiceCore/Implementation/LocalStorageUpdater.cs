@@ -27,12 +27,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
              IEventLogRepository eventLogRepository,
              ILocalStorage localStorage,
              IGlobalTime globalTime,
+             IEventCache eventCache,
              ICassandraClusterSettings cassandraClusterSettings)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.eventLogRepository = eventLogRepository;
             this.localStorage = localStorage;
             this.globalTime = globalTime;
+            this.eventCache = eventCache;
             this.cassandraClusterSettings = cassandraClusterSettings;
             maxCassandraTimeoutTicks = GetMaxCassandraTimeout();
         }
@@ -44,6 +46,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 var lastTicks = globalTime.GetNowTicks();
                 UpdateLocalStorage(eventLogRepository.GetEvents(GetStartTime()));
                 UpdateLocalStorageTicks(lastTicks);
+            }
+        }
+
+        public void ClearCache()
+        {
+            lock (lockObject)
+            {
+                eventCache.Clear();
             }
         }
 
@@ -77,6 +87,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 logger.InfoFormat("Reading batch #{0} with {1} events", batchCount++, eventBatch.Length);
 
                 var uniqueEventBatch = eventBatch
+                    .Where(@event => !eventCache.Contains(@event))
                     .GroupBy(x => x.TaskId)
                     .Select(x => x.MinBy(y => y.Ticks))
                     .ToArray();
@@ -130,12 +141,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                         logger.Error(string.Format("Error while processing taskEvent taskId='{0}'", taskEvent.TaskId), e);
                     }
                 }
+                eventCache.RemoveEvents(eventBatch.Min(@event => @event.Ticks) - TimeSpan.FromMinutes(20).Ticks);
 
                 foreach (var batch in list.Batch(100, Enumerable.ToArray))
                     localStorage.Write(batch, false);
                 logger.InfoFormat("Wrote {0} rows in sql", list.Count);
                 
                 UpdateLocalStorageTicks(eventBatch.Last().Ticks);
+                eventCache.AddEvents(localProcessedEvents);
             }
         }
 
@@ -200,6 +213,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private readonly IEventLogRepository eventLogRepository;
         private readonly ILocalStorage localStorage;
         private readonly IGlobalTime globalTime;
+        private readonly IEventCache eventCache;
         private readonly ICassandraClusterSettings cassandraClusterSettings;
         private readonly object lockObject = new object();
         private readonly long maxCassandraTimeoutTicks;
