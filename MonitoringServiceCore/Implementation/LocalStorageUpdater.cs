@@ -34,7 +34,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             this.localStorage = localStorage;
             this.globalTime = globalTime;
             this.cassandraClusterSettings = cassandraClusterSettings;
-            maxCassandraTimeoutTicks = this.cassandraClusterSettings.Timeout * 10000 * this.cassandraClusterSettings.Attempts;
+            maxCassandraTimeoutTicks = GetMaxCassandraTimeout();
         }
 
         public void Update()
@@ -42,7 +42,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             lock (lockObject)
             {
                 var lastTicks = globalTime.GetNowTicks();
-                UpdateLocalStorage(eventLogRepository.GetEvents(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraTimeoutTicks));
+                UpdateLocalStorage(eventLogRepository.GetEvents(GetStartTime()));
                 UpdateLocalStorageTicks(lastTicks);
             }
         }
@@ -146,6 +146,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 if (localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() < lastTicks)
                     localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(lastTicks);
             }
+        }
+
+        private long GetMaxCassandraTimeout()
+        {
+            return cassandraClusterSettings.Timeout * 10000 * cassandraClusterSettings.Attempts;
+        }
+
+        private long GetStartTime()
+        {
+            return localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraTimeoutTicks;
         }
 
         private bool TryConvertTaskMetaInformationToMonitoringTaskMetadata(TaskMetaInformation info, out MonitoringTaskMetadata taskMetadata)
