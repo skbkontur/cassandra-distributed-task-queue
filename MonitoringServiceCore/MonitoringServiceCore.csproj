@@ -70,6 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\MonitoringServiceHttpHandler.cs" />
+    <Compile Include="Implementation\EventCache.cs" />
+    <Compile Include="Implementation\IEventCache.cs" />
     <Compile Include="Implementation\ILocalStorageUpdater.cs" />
     <Compile Include="Implementation\IMonitoringServiceImpl.cs" />
     <Compile Include="Implementation\LocalStorageColumnsRegistry.cs" />
