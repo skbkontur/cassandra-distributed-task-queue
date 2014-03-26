@@ -1,4 +1,8 @@
+using System;
+
 using SKBKontur.Catalogue.ClientLib.Domains;
+using SKBKontur.Catalogue.ClientLib.HttpClientBase;
+using SKBKontur.Catalogue.ClientLib.HttpClientBase.Configuration;
 using SKBKontur.Catalogue.ClientLib.Topology;
 using SKBKontur.Catalogue.Expressions.ExpressionTrees;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
@@ -6,69 +10,67 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 {
-    public class RemoteTaskQueueMonitoringServiceClient : IRemoteTaskQueueMonitoringServiceClient
+    public class RemoteTaskQueueMonitoringServiceClient : HttpClientBase, IRemoteTaskQueueMonitoringServiceClient
     {
-        public RemoteTaskQueueMonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory)
+        public RemoteTaskQueueMonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration)
+            : base(domainTopologyFactory, methodDomainFactory, configuration)
         {
-            this.methodDomainFactory = methodDomainFactory;
-            domainTopology = domainTopologyFactory.Create("remoteTaskQueueMonitoringServiceTopology");
         }
 
         public void ActualizeDatabaseScheme()
         {
-            var domain = methodDomainFactory.Create("ActualizeDatabaseScheme", domainTopology, timeout, clientName);
-            domain.SendToEachReplica(DomainConsistencyLevel.All);
+            CreateMethodDomain("ActualizeDatabaseScheme").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
         public void DropLocalStorage()
         {
-            var domain = methodDomainFactory.Create("DropLocalStorage", domainTopology, timeout, clientName);
-            domain.SendToEachReplica(DomainConsistencyLevel.All);
+            CreateMethodDomain("DropLocalStorage").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
         public MonitoringTaskMetadata[] Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0)
         {
-            var domain = methodDomainFactory.Create("Search", domainTopology, timeout, clientName);
             var searchQuery = new MonitoringSearchQuery
-                                  {
-                                      Criterion = criterion,
-                                      SortRules = sortRules,
-                                      RangeFrom = rangeFrom,
-                                      Count = count,
-                                  };
-            return domain.QueryFromRandomReplica<MonitoringTaskMetadata[], MonitoringSearchQuery>(searchQuery);
+                {
+                    Criterion = criterion,
+                    SortRules = sortRules,
+                    RangeFrom = rangeFrom,
+                    Count = count,
+                };
+            return CreateMethodDomain("Search").QueryFromRandomReplica<MonitoringTaskMetadata[], MonitoringSearchQuery>(searchQuery);
         }
 
         public object[] GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath)
         {
-            var domain = methodDomainFactory.Create("GetDistinctValues", domainTopology, timeout, clientName);
             var monitoringGetDistinctValuesQuery = new MonitoringGetDistinctValuesQuery
-                                                       {
-                                                           Criterion = criterion,
-                                                           ColumnPath = columnPath,
-                                                       };
-            return domain.QueryFromRandomReplica<object[], MonitoringGetDistinctValuesQuery>(monitoringGetDistinctValuesQuery);
+                {
+                    Criterion = criterion,
+                    ColumnPath = columnPath,
+                };
+            return CreateMethodDomain("GetDistinctValues").QueryFromRandomReplica<object[], MonitoringGetDistinctValuesQuery>(monitoringGetDistinctValuesQuery);
         }
 
         public int GetCount(ExpressionTree criterion)
         {
-            var domain = methodDomainFactory.Create("GetCount", domainTopology, timeout, clientName);
             var query = new MonitoringGetCountQuery
-                            {
-                                Criterion = criterion
-                            };
-            return domain.QueryFromRandomReplica<int, MonitoringGetCountQuery>(query);
+                {
+                    Criterion = criterion
+                };
+            return CreateMethodDomain("GetCount").QueryFromRandomReplica<int, MonitoringGetCountQuery>(query);
         }
 
         public MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId)
         {
-            var domain = methodDomainFactory.Create("GetTaskWithAllDescendants", domainTopology, timeout, clientName);
-            return domain.QueryFromRandomReplica<MonitoringTaskMetadata[], string>(taskId);
+            return CreateMethodDomain("GetTaskWithAllDescendants").QueryFromRandomReplica<MonitoringTaskMetadata[], string>(taskId);
         }
 
-        private readonly IMethodDomainFactory methodDomainFactory;
-        private readonly IDomainTopology domainTopology;
-        private const int timeout = 30 * 1000;
-        private const string clientName = "RemoteTaskQueueMonitoringServiceClient";
+        protected override IHttpServiceClientConfiguration GetConfiguration()
+        {
+            return base.GetConfiguration().WithTimeout(TimeSpan.FromSeconds(30));
+        }
+
+        protected override string GetDefaultTopologyFileName()
+        {
+            return "remoteTaskQueueMonitoringServiceTopology";
+        }
     }
 }
