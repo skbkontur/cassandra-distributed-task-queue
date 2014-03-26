@@ -19,12 +19,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 
         public void ActualizeDatabaseScheme()
         {
-            CreateMethodDomain("ActualizeDatabaseScheme").SendToEachReplica(DomainConsistencyLevel.All);
+            Method("ActualizeDatabaseScheme").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
         public void DropLocalStorage()
         {
-            CreateMethodDomain("DropLocalStorage").SendToEachReplica(DomainConsistencyLevel.All);
+            Method("DropLocalStorage").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
         public MonitoringTaskMetadata[] Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0)
@@ -36,7 +36,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
                     RangeFrom = rangeFrom,
                     Count = count,
                 };
-            return CreateMethodDomain("Search").QueryFromRandomReplica<MonitoringTaskMetadata[], MonitoringSearchQuery>(searchQuery);
+            return Method("Search").QueryFromRandomReplica<MonitoringTaskMetadata[], MonitoringSearchQuery>(searchQuery);
         }
 
         public object[] GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath)
@@ -46,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
                     Criterion = criterion,
                     ColumnPath = columnPath,
                 };
-            return CreateMethodDomain("GetDistinctValues").QueryFromRandomReplica<object[], MonitoringGetDistinctValuesQuery>(monitoringGetDistinctValuesQuery);
+            return Method("GetDistinctValues").QueryFromRandomReplica<object[], MonitoringGetDistinctValuesQuery>(monitoringGetDistinctValuesQuery);
         }
 
         public int GetCount(ExpressionTree criterion)
@@ -55,12 +55,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
                 {
                     Criterion = criterion
                 };
-            return CreateMethodDomain("GetCount").QueryFromRandomReplica<int, MonitoringGetCountQuery>(query);
+            return Method("GetCount").QueryFromRandomReplica<int, MonitoringGetCountQuery>(query);
         }
 
         public MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId)
         {
-            return CreateMethodDomain("GetTaskWithAllDescendants").QueryFromRandomReplica<MonitoringTaskMetadata[], string>(taskId);
+            return Method("GetTaskWithAllDescendants").QueryFromRandomReplica<MonitoringTaskMetadata[], string>(taskId);
         }
 
         protected override IHttpServiceClientConfiguration GetConfiguration()

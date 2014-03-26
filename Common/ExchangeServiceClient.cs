@@ -16,12 +16,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
 
         public void Start()
         {
-            CreateMethodDomain("Start").SendToEachReplica(DomainConsistencyLevel.All);
+            Method("Start").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
         public void Stop()
         {
-            CreateMethodDomain("Stop").SendToEachReplica(DomainConsistencyLevel.All);
+            Method("Stop").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
         protected override IHttpServiceClientConfiguration GetConfiguration()
