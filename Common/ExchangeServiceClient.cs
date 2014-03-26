@@ -24,9 +24,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
             Method("Stop").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
-        protected override IHttpServiceClientConfiguration DoGetConfiguration()
+        protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
         {
-            return DefaultConfiguration.WithTimeout(TimeSpan.FromSeconds(30));
+            return defaultConfiguration.WithTimeout(TimeSpan.FromSeconds(30));
         }
 
         protected override string GetDefaultTopologyFileName()

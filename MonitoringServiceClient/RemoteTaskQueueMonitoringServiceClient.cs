@@ -63,9 +63,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             return Method("GetTaskWithAllDescendants").InvokeOnRandomReplica(taskId).ThanReturn<MonitoringTaskMetadata[]>();
         }
 
-        protected override IHttpServiceClientConfiguration DoGetConfiguration()
+        protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
         {
-            return DefaultConfiguration.WithTimeout(TimeSpan.FromSeconds(30));
+            return defaultConfiguration.WithTimeout(TimeSpan.FromSeconds(30));
         }
 
         protected override string GetDefaultTopologyFileName()
