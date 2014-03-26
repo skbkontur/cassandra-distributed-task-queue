@@ -65,7 +65,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 
         protected override IHttpServiceClientConfiguration GetConfiguration()
         {
-            return base.GetConfiguration().WithTimeout(TimeSpan.FromSeconds(30));
+            return DefaultConfiguration.WithTimeout(TimeSpan.FromSeconds(30));
         }
 
         protected override string GetDefaultTopologyFileName()
