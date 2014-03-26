@@ -36,7 +36,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
                     RangeFrom = rangeFrom,
                     Count = count,
                 };
-            return Method("Search").QueryFromRandomReplica<MonitoringTaskMetadata[], MonitoringSearchQuery>(searchQuery);
+            return Method("Search").InvokeOnRandomReplica(searchQuery).ThanReturn<MonitoringTaskMetadata[]>();
         }
 
         public object[] GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath)
@@ -46,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
                     Criterion = criterion,
                     ColumnPath = columnPath,
                 };
-            return Method("GetDistinctValues").QueryFromRandomReplica<object[], MonitoringGetDistinctValuesQuery>(monitoringGetDistinctValuesQuery);
+            return Method("GetDistinctValues").InvokeOnRandomReplica(monitoringGetDistinctValuesQuery).ThanReturn<object[]>();
         }
 
         public int GetCount(ExpressionTree criterion)
@@ -55,12 +55,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
                 {
                     Criterion = criterion
                 };
-            return Method("GetCount").QueryFromRandomReplica<int, MonitoringGetCountQuery>(query);
+            return Method("GetCount").InvokeOnRandomReplica(query).ThanReturn<int>();
         }
 
         public MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId)
         {
-            return Method("GetTaskWithAllDescendants").QueryFromRandomReplica<MonitoringTaskMetadata[], string>(taskId);
+            return Method("GetTaskWithAllDescendants").InvokeOnRandomReplica(taskId).ThanReturn<MonitoringTaskMetadata[]>();
         }
 
         protected override IHttpServiceClientConfiguration GetConfiguration()
