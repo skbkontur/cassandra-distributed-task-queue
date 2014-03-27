@@ -2,7 +2,7 @@
 
 using SKBKontur.Catalogue.CassandraStorageCore;
 using SKBKontur.Catalogue.CassandraStorageCore.Initializing;
-using SKBKontur.Catalogue.IndexServiceClient;
+using SKBKontur.Catalogue.IndexService.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 
 namespace FunctionalTests

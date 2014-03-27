@@ -1,8 +1,8 @@
 ﻿using GroboTrace;
 
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
-using SKBKontur.Catalogue.Core.IndexServiceCore;
-using SKBKontur.Catalogue.Core.IndexServiceCore.Configuration;
+using SKBKontur.Catalogue.Core.IndexService.Core;
+using SKBKontur.Catalogue.Core.IndexService.Core.Configuration;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.Indexes;
 using SKBKontur.Catalogue.RemoteTaskQueue.Storage;
 using SKBKontur.Catalogue.ServiceLib;
