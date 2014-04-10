@@ -22,7 +22,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 {
                     TaskMetaInfo = htmlModelCreator.TaskInfoFor(pageModel, data => data.TaskMetaInfoModel, false, createEmptyTaskIdModel),
                     ChildTaskIds = pageModel.Data.ChildTaskIds.Select((id, i) => htmlModelCreator.TaskIdFor(pageModel, data => data.ChildTaskIds[i], createEmptyTaskIdModel)).ToArray(),
-                    TaskDataValue = objectTreeValueModelBuilder.Build(pageModel.Data.TaskData, false, (url, path) => url.GetTaskDataBytesUrl(pageModel.Data.TaskMetaInfoModel.TaskId, path)),
+                    TaskDataValue = objectTreeValueModelBuilder.Build(pageModel.Data.TaskData, null, (url, path) => url.GetTaskDataBytesUrl(pageModel.Data.TaskMetaInfoModel.TaskId, path)),
                     ExceptionInfo = htmlModelCreator.ExceptionInfoFor(pageModel, data => data.ExceptionInfo)
                 };
         }
