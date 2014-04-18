@@ -9,7 +9,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.Front.Controllers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
 {
-    public class Global : CatalogueGlobalBase
+    public class Global : CatalogueFrontGlobalBase
     {
         protected override void OnError()
         {
