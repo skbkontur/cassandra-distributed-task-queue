@@ -72,6 +72,8 @@
     <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\ChildTaskIndex.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\IChildTaskIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ColumnInfo.cs" />
     <Compile Include="Cassandra\Entities\Task.cs" />
     <Compile Include="Cassandra\Entities\TaskExceptionInfo.cs" />

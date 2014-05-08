@@ -8,6 +8,7 @@ using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
@@ -30,12 +31,12 @@ namespace RemoteQueue.Handling
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, settings);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
-            var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);
-            
+            var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
+            var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex);
             var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime), remoteTaskQueueProfiler);
             var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
-            InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry);
+            InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
             // ReSharper restore LocalVariableHidesMember
         }
 
@@ -46,9 +47,10 @@ namespace RemoteQueue.Handling
             IHandleTaskCollection handleTaskCollection,
             IRemoteLockCreator remoteLockCreator,
             IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
-            TaskDataRegistryBase taskDataRegistryBase)
+            TaskDataRegistryBase taskDataRegistryBase,
+            IChildTaskIndex childTaskIndex)
         {
-            InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistryBase);
+            InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistryBase, childTaskIndex);
         }
 
         public bool CancelTask(string taskId)
@@ -139,14 +141,13 @@ namespace RemoteQueue.Handling
             return new RemoteTask(handleTaskCollection, task, globalTime);
         }
 
+        public string[] GetChildrenTaskIds(string taskId)
+        {
+            return childTaskIndex.GetChildTaskIds(taskId);
+        }
+
         // ReSharper disable ParameterHidesMember
-        private void InitRemoteTaskQueue(IGlobalTime globalTime,
-                                         ISerializer serializer,
-                                         IHandleTasksMetaStorage handleTasksMetaStorage,
-                                         IHandleTaskCollection handleTaskCollection,
-                                         IRemoteLockCreator remoteLockCreator,
-                                         IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
-                                         TaskDataRegistryBase taskDataRegistryBase)
+        private void InitRemoteTaskQueue(IGlobalTime globalTime, ISerializer serializer, IHandleTasksMetaStorage handleTasksMetaStorage, IHandleTaskCollection handleTaskCollection, IRemoteLockCreator remoteLockCreator, IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage, TaskDataRegistryBase taskDataRegistryBase, IChildTaskIndex childTaskIndex)
         {
             this.serializer = serializer;
             this.globalTime = globalTime;
@@ -155,6 +156,7 @@ namespace RemoteQueue.Handling
             typeToNameMapper = new TaskDataTypeToNameMapper(taskDataRegistryBase);
             this.remoteLockCreator = remoteLockCreator;
             this.handleTaskExceptionInfoStorage = handleTaskExceptionInfoStorage;
+            this.childTaskIndex = childTaskIndex;
         }
 
         // ReSharper restore ParameterHidesMember
@@ -179,5 +181,6 @@ namespace RemoteQueue.Handling
         private IRemoteLockCreator remoteLockCreator;
         private IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
         private IGlobalTime globalTime;
+        private IChildTaskIndex childTaskIndex;
     }
 }
