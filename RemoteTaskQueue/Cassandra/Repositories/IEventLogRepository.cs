@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using RemoteQueue.Cassandra.Entities;
 
@@ -8,5 +9,6 @@ namespace RemoteQueue.Cassandra.Repositories
     {
         void AddEvent(string taskId, long nowTicks);
         IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, int batchSize = 2000);
+        TimeSpan UnstableZoneLength { get; }
     }
 }

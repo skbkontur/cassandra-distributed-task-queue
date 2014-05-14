@@ -20,10 +20,9 @@ namespace RemoteQueue.Handling
 {
     public class RemoteTaskQueue : IRemoteTaskQueue
     {
-        public RemoteTaskQueue(ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry, ISerializer serializer)
+        public RemoteTaskQueue(ICassandraCluster cassandraCluster, ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry, ISerializer serializer)
         {
             // ReSharper disable LocalVariableHidesMember
-            var cassandraCluster = new CassandraCluster(settings);
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, settings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);

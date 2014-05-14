@@ -25,7 +25,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringService
         private void Run()
         {
             Container.Get<ILocalStorage>().ActualizeDatabaseScheme();
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<CassandraSettings>());
             Container.Get<IMonitoringServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();
         }

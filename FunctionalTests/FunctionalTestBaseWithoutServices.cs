@@ -17,11 +17,9 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Settings;
-
-using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 
 namespace FunctionalTests
 {
@@ -35,7 +33,6 @@ namespace FunctionalTests
             var applicationSettings = ApplicationSettings.LoadDefault("functionalTestsSettings");
             Container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(applicationSettings);
             Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<CassandraSettings>());
             Container.ConfigureLockRepository();
             Log4NetConfiguration.InitializeOnce();
             var columnFamilyRegistry = Container.Get<IColumnFamilyRegistry>();
