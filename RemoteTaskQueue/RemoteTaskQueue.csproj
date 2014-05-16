@@ -127,6 +127,7 @@
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
     <Compile Include="Handling\ShardingManager.cs" />
+    <Compile Include="Handling\SingleTaskCounter.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\TaskHandler.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Cassandra\Repositories\IHandleTaskExceptionInfoStorage.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
+    <Compile Include="Handling\TaskQueueReason.cs" />
     <Compile Include="LocalTasks\TaskQueue\ActionTask.cs" />
     <Compile Include="LocalTasks\TaskQueue\ITask.cs" />
     <Compile Include="LocalTasks\TaskQueue\ITaskQueue.cs" />

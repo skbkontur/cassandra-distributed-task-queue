@@ -86,7 +86,7 @@ namespace RemoteQueue.Handling
             }
             try
             {
-                if(!taskCounter.TryIncrement()) return;
+                if(!taskCounter.TryIncrement(Reason)) return;
                 try
                 {
                     IRemoteLock remoteLock;
@@ -100,7 +100,7 @@ namespace RemoteQueue.Handling
                 }
                 finally
                 {
-                    taskCounter.Decrement();
+                    taskCounter.Decrement(Reason);
                 }
             }
             finally
@@ -109,7 +109,7 @@ namespace RemoteQueue.Handling
             }
         }
 
-        internal string Reason { get; set; }
+        internal TaskQueueReason Reason { get; set; }
 
         private bool TryUpdateTaskState(Task task, long? minimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
         {

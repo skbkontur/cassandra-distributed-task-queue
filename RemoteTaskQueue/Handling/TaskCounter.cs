@@ -1,4 +1,6 @@
-﻿using RemoteQueue.Settings;
+﻿using System;
+
+using RemoteQueue.Settings;
 
 namespace RemoteQueue.Handling
 {
@@ -6,46 +8,35 @@ namespace RemoteQueue.Handling
     {
         public TaskCounter(IExchangeSchedulableRunnerSettings settings)
         {
-            this.settings = settings;
-            needLock = settings.MaxRunningTasksCount > 0;
+            pullFromQueueCounter = new SingleTaskCounter(settings.MaxRunningTasksCount);
+            continuationCounter = new SingleTaskCounter(0);
         }
 
-        public bool CanQueueTask()
+        public bool CanQueueTask(TaskQueueReason reason)
         {
-            if(!needLock) return true;
-            lock(lockObject)
-            {
-                return count < settings.MaxRunningTasksCount;
-            }
+            return GetCounter(reason).CanQueueTask();
         }
 
-        public bool TryIncrement()
+        public bool TryIncrement(TaskQueueReason reason)
         {
-            if(!needLock) return true;
-            lock(lockObject)
-            {
-                if(count < settings.MaxRunningTasksCount)
-                {
-                    count++;
-                    return true;
-                }
-                return false;
-            }
+            return GetCounter(reason).TryIncrement();
         }
 
-        public void Decrement()
+        public void Decrement(TaskQueueReason reason)
         {
-            if(!needLock) return;
-            lock(lockObject)
-            {
-                count--;
-            }
+            GetCounter(reason).Decrement();
         }
 
-        private volatile int count;
-        private readonly object lockObject = new object();
+        private SingleTaskCounter GetCounter(TaskQueueReason reason)
+        {
+            if(reason == TaskQueueReason.PullFromQueue)
+                return pullFromQueueCounter;
+            if(reason == TaskQueueReason.TaskContinuation)
+                return continuationCounter;
+            throw new NotSupportedException(string.Format("Unknown reason of task queueing: {0}", reason));
+        }
 
-        private readonly IExchangeSchedulableRunnerSettings settings;
-        private readonly bool needLock;
+        private readonly SingleTaskCounter pullFromQueueCounter;
+        private readonly SingleTaskCounter continuationCounter;
     }
 }

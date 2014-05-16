@@ -35,8 +35,8 @@ namespace RemoteQueue.Handling
                     logger.DebugFormat("Начали обработку очереди.");
                 foreach(var taskInfo in taskInfos)
                 {
-                    if(!taskCounter.CanQueueTask()) return;
-                    QueueTask(taskInfo, nowTicks, "Периодическое разгребание");
+                    if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue)) return;
+                    QueueTask(taskInfo, nowTicks, TaskQueueReason.PullFromQueue);
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace RemoteQueue.Handling
             return new Tuple<long, long>(all, forMe);
         }
 
-        internal void QueueTask(Tuple<string, ColumnInfo> taskInfo, long nowTicks, string reason)
+        internal void QueueTask(Tuple<string, ColumnInfo> taskInfo, long nowTicks, TaskQueueReason reason)
         {
             if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;

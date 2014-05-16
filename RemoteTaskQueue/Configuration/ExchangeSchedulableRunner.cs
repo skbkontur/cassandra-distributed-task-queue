@@ -42,7 +42,7 @@ namespace RemoteQueue.Configuration
             var remoteTaskQueue = new RemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry);
             var taskCounter = new TaskCounter(runnerSettings);
             handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), (taskInfo, startProcessingTicks) => new HandlerTask(taskInfo, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage);
-            handleTasksMetaStorage.OnIndexMeta = info => ((HandlerManager)handlerManager).QueueTask(info, DateTime.UtcNow.Ticks, "Реакция на добавление задачи");
+            handleTasksMetaStorage.OnIndexMeta = info => ((HandlerManager)handlerManager).QueueTask(info, DateTime.UtcNow.Ticks, TaskQueueReason.TaskContinuation);
             RemoteTaskQueue = remoteTaskQueue;
         }
 
