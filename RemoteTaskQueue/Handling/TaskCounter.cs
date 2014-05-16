@@ -9,7 +9,7 @@ namespace RemoteQueue.Handling
         public TaskCounter(IExchangeSchedulableRunnerSettings settings)
         {
             pullFromQueueCounter = new SingleTaskCounter(settings.MaxRunningTasksCount);
-            continuationCounter = new SingleTaskCounter(0);
+            continuationCounter = new SingleTaskCounter(settings.MaxRunningContinuationsCount);
         }
 
         public bool CanQueueTask(TaskQueueReason reason)
