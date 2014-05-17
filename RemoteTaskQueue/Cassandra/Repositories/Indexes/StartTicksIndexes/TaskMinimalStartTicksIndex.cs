@@ -53,7 +53,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             inProcessTasksCache.Remove(taskId);
             var connection = RetrieveColumnFamilyConnection();
-            connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName});
+            connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName}, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
         }
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000)
