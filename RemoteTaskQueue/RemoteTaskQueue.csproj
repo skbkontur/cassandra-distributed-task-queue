@@ -127,7 +127,6 @@
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
     <Compile Include="Handling\ShardingManager.cs" />
-    <Compile Include="Handling\SingleTaskCounter.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\TaskHandler.cs" />
