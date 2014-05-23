@@ -82,7 +82,7 @@
     <Compile Include="IExchangeServiceClient.cs" />
     <Compile Include="LockRepositoryContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteTaskQueue\CassandraSettings.cs" />
+    <Compile Include="RemoteTaskQueue\RemoteQueueTestsCassandraSettings.cs" />
     <Compile Include="RemoteTaskQueue\RemoteTaskQueuePlugin.cs" />
     <Compile Include="RemoteTaskQueue\TaskDataRegistry.cs" />
     <Compile Include="Xml\XmlNamespaceFactory.cs" />
