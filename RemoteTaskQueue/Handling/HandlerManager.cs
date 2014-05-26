@@ -17,12 +17,14 @@ namespace RemoteQueue.Handling
             ITaskCounter taskCounter,
             IShardingManager shardingManager,
             Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask,
+            ITaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage)
         {
             this.taskQueue = taskQueue;
             this.taskCounter = taskCounter;
             this.shardingManager = shardingManager;
             this.createHandlerTask = createHandlerTask;
+            this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
         }
 
@@ -81,6 +83,8 @@ namespace RemoteQueue.Handling
 
         internal void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason reason)
         {
+            if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
+                return;
             if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;
             var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
@@ -91,6 +95,7 @@ namespace RemoteQueue.Handling
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
 
         private readonly Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask;
+        private readonly ITaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly object lockObject = new object();
         private readonly ITaskQueue taskQueue;
