@@ -44,8 +44,8 @@ namespace RemoteQueue.Cassandra.Repositories
             eventLogRepository.AddEvent(meta.Id, nowTicks);
             var columnInfo = minimalStartTicksIndex.IndexMeta(meta);
             storage.Write(meta.Id, meta);
-            if (OnIndexMeta != null)
-                OnIndexMeta(new Tuple<string, ColumnInfo>(meta.Id, columnInfo));
+            if(OnIndexMeta != null)
+                OnIndexMeta(new Tuple<string, ColumnInfo>(meta.Id, columnInfo), meta);
 
             var oldMeta = meta.GetSnapshot();
             if(oldMeta != null)

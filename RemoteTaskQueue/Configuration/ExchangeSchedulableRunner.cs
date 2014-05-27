@@ -41,8 +41,8 @@ namespace RemoteQueue.Configuration
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
             var remoteTaskQueue = new RemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry);
             var taskCounter = new TaskCounter(runnerSettings);
-            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), (taskInfo, startProcessingTicks) => new HandlerTask(taskInfo, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), handleTasksMetaStorage);
-            handleTasksMetaStorage.OnIndexMeta = info => ((HandlerManager)handlerManager).QueueTask(info, DateTime.UtcNow.Ticks, TaskQueueReason.TaskContinuation);
+            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), (taskInfo, startProcessingTicks) => new HandlerTask(taskInfo, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex), taskHandlerCollection, handleTasksMetaStorage);
+            handleTasksMetaStorage.OnIndexMeta = (info, meta) => ((HandlerManager)handlerManager).QueueTask(info, meta, DateTime.UtcNow.Ticks, TaskQueueReason.TaskContinuation);
             RemoteTaskQueue = remoteTaskQueue;
         }
 
