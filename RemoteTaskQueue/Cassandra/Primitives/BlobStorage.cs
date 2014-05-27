@@ -58,7 +58,7 @@ namespace RemoteQueue.Cassandra.Primitives
                 .Batch(1000, Enumerable.ToArray)
                 .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
 
-            var rowsDict = rows.ToDictionary(row => row.Key);
+            var rowsDict = rows.DistinctBy(x => x.Key).ToDictionary(row => row.Key);
             var result = new T[cassandraIds.Length];
             for (var i = 0; i < cassandraIds.Length; i++)
             {
