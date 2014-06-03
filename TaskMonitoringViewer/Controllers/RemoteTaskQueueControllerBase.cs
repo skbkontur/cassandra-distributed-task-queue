@@ -92,6 +92,34 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return View("TaskList", pageModel);
         }
 
+        [AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult GetCount(string searchRequestId)
+        {
+            MonitoringSearchRequest searchRequest;
+            if (string.IsNullOrEmpty(searchRequestId) || !businessObjectsStorage.InScope<MonitoringSearchRequest>(searchRequestId).TryRead(searchRequestId, out searchRequest))
+                searchRequest = new MonitoringSearchRequest();
+            extender.Extend(searchRequest);
+
+            int totalCount;
+            var criterion = monitoringSearchRequestCriterionBuilder.BuildCriterion(searchRequest);
+            try
+            {
+                totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
+            }
+            catch (DomainIsDisabledException e)
+            {
+                logger.Error("Can not build TaskList", e);
+                totalCount = 0;
+            }
+            return Json(totalCount, JsonRequestBehavior.AllowGet);
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult FullScreenTaskCount(string id)
+        {
+            return View("FullScreenTaskCount", (object)id);
+        }
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Search(TaskListModelData pageModelData)
         {
