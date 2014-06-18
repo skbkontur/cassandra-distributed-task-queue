@@ -67,8 +67,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var firstTicksWithDiff = firstTicks - diff;
             var startTicks = Math.Max(twoDaysEarlier, firstTicksWithDiff);
             var getEventsEnumerable = new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, startTicks, nowTicks, batchSize);
-            if(taskState == TaskState.InProcess)
-                return inProcessTasksCache.PassThroughtCache(getEventsEnumerable);
+            //if(taskState == TaskState.InProcess)
+            //    return inProcessTasksCache.PassThroughtCache(getEventsEnumerable);
             return getEventsEnumerable;
         }
 
