@@ -18,7 +18,7 @@ namespace RemoteQueue.Handling
             ITaskQueue taskQueue,
             ITaskCounter taskCounter,
             IShardingManager shardingManager,
-            Func<Tuple<string, ColumnInfo>, long, HandlerTask> createHandlerTask,
+            Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask,
             TaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage)
         {
@@ -94,14 +94,14 @@ namespace RemoteQueue.Handling
                 return;
             if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;
-            var handlerTask = createHandlerTask(taskInfo, nowTicks);
+            var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
             taskQueue.QueueTask(handlerTask);
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
 
-        private readonly Func<Tuple<string, ColumnInfo>, long, HandlerTask> createHandlerTask;
+        private readonly Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask;
         private readonly TaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly object lockObject = new object();
