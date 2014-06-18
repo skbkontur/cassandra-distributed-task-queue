@@ -47,8 +47,6 @@ namespace RemoteQueue.Handling
                     {
                         var meta = metas[i];
                         var taskInfo = taskInfoBatch[i];
-                        if(meta == null)
-                            continue;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue)) return;
                         QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
                     }
