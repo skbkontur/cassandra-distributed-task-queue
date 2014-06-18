@@ -20,6 +20,7 @@ namespace RemoteQueue.Handling
     {
         public HandlerTask(
             Tuple<string, ColumnInfo> taskInfo,
+            TaskMetaInformation meta,
             long startProcessingTicks,
             ITaskCounter taskCounter,
             ISerializer serializer,
@@ -33,6 +34,7 @@ namespace RemoteQueue.Handling
             : base(taskInfo.Item1)
         {
             this.taskInfo = taskInfo;
+            taskMetaInformation = meta;
             this.startProcessingTicks = startProcessingTicks;
             this.taskCounter = taskCounter;
             this.serializer = serializer;
@@ -47,7 +49,7 @@ namespace RemoteQueue.Handling
 
         public override void Run()
         {
-            var meta = handleTasksMetaStorage.GetMeta(Id);
+            var meta = taskMetaInformation;
             if(meta == null)
             {
                 logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", Id);
@@ -244,6 +246,7 @@ namespace RemoteQueue.Handling
         private readonly IRemoteLockCreator remoteLockCreator;
         private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
         private readonly Tuple<string, ColumnInfo> taskInfo;
+        private readonly TaskMetaInformation taskMetaInformation;
         private readonly long startProcessingTicks;
         private readonly ITaskCounter taskCounter;
         private readonly ISerializer serializer;

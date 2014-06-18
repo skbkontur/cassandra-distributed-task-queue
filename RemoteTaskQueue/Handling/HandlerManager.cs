@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Linq;
+
+using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
@@ -15,7 +18,7 @@ namespace RemoteQueue.Handling
             ITaskQueue taskQueue,
             ITaskCounter taskCounter,
             IShardingManager shardingManager,
-            Func<Tuple<string, ColumnInfo>, long, HandlerTask> createHandlerTask,
+            Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask,
             TaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage)
         {
@@ -32,13 +35,21 @@ namespace RemoteQueue.Handling
             lock(lockObject)
             {
                 var nowTicks = DateTime.UtcNow.Ticks;
-                var taskInfos = handleTasksMetaStorage.GetAllTasksInStates(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
+                var taskInfoBatches = handleTasksMetaStorage
+                    .GetAllTasksInStates(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError)
+                    .Batch(100, Enumerable.ToArray);
                 if(logger.IsDebugEnabled)
                     logger.DebugFormat("Начали обработку очереди.");
-                foreach(var taskInfo in taskInfos)
+                foreach(var taskInfoBatch in taskInfoBatches)
                 {
-                    if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue)) return;
-                    QueueTask(taskInfo, null, nowTicks, TaskQueueReason.PullFromQueue);
+                    var metas = handleTasksMetaStorage.GetMetasQuiet(taskInfoBatch.Select(x => x.Item1).ToArray());
+                    for(var i = 0; i < taskInfoBatch.Length; i++)
+                    {
+                        var meta = metas[i];
+                        var taskInfo = taskInfoBatch[i];
+                        if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue)) return;
+                        QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
+                    }
                 }
             }
         }
@@ -83,14 +94,14 @@ namespace RemoteQueue.Handling
                 return;
             if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;
-            var handlerTask = createHandlerTask(taskInfo, nowTicks);
+            var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
             taskQueue.QueueTask(handlerTask);
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
 
-        private readonly Func<Tuple<string, ColumnInfo>, long, HandlerTask> createHandlerTask;
+        private readonly Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask;
         private readonly TaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly object lockObject = new object();
