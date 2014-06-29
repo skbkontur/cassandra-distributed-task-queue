@@ -165,7 +165,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         {
             var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
             var modelData = taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId);
-            var hasAccessToTaskData = accessControlService.CheckAccess(Session.UserId, new ResourseGroupAccessRule {ResourseGroupName = ResourseGroups.SupervisorResourse});
+            var hasAccessToTaskData = true;
             if(!hasAccessToTaskData)
                 modelData.TaskData = new SimpleTaskData();
             var pageModel = new TaskDetailsPageModel(PageModelBaseParameters, modelData)
