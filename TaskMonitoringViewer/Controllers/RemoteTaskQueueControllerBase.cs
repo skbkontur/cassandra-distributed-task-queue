@@ -66,7 +66,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             try
             {
                 totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
-                fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount).ToArray();
+                fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount, x=>x.Ticks.Descending()).ToArray();
             }
             catch(DomainIsDisabledException e)
             {
