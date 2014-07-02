@@ -97,8 +97,17 @@ namespace RemoteQueue.Cassandra.Primitives
         public IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000)
         {
             var connection = RetrieveColumnFamilyConnection();
-            var keys = connection.GetKeys(batchSize);
-            return TryReadInternalWithIds(keys.ToArray());
+            string exclusiveStartKey = null;
+            while(true)
+            {
+                var keys = connection.GetKeys(exclusiveStartKey, batchSize);
+                if(keys.Length == 0)
+                    yield break;
+                exclusiveStartKey = keys.Last();
+                var objects = TryReadInternalWithIds(keys);
+                foreach(var @object in objects)
+                    yield return @object;
+            }
         }
 
         public void Delete(string id, long timestamp)
