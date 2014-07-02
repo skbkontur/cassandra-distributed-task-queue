@@ -1,4 +1,6 @@
-﻿using RemoteQueue.Settings;
+﻿using System;
+
+using RemoteQueue.Settings;
 
 namespace RemoteQueue.Handling
 {
@@ -6,46 +8,83 @@ namespace RemoteQueue.Handling
     {
         public TaskCounter(IExchangeSchedulableRunnerSettings settings)
         {
-            this.settings = settings;
-            needLock = settings.MaxRunningTasksCount > 0;
+            maxRunningTasksCount = settings.MaxRunningTasksCount;
+            maxRunningContinuationsCount = settings.MaxRunningContinuationsCount;
         }
 
-        public bool CanQueueTask()
+        public bool CanQueueTask(TaskQueueReason reason)
         {
-            if(!needLock) return true;
-            lock(lockObject)
+            if(reason == TaskQueueReason.TaskContinuation)
             {
-                return count < settings.MaxRunningTasksCount;
-            }
-        }
-
-        public bool TryIncrement()
-        {
-            if(!needLock) return true;
-            lock(lockObject)
-            {
-                if(count < settings.MaxRunningTasksCount)
-                {
-                    count++;
+                if(maxRunningContinuationsCount == 0)
                     return true;
-                }
-                return false;
+                return continuationsCount < maxRunningContinuationsCount;
             }
-        }
-
-        public void Decrement()
-        {
-            if(!needLock) return;
-            lock(lockObject)
+            if(reason == TaskQueueReason.PullFromQueue)
             {
-                count--;
+                if(maxRunningTasksCount == 0)
+                    return true;
+                if(maxRunningContinuationsCount == 0)
+                    return (continuationsCount + tasksCount) < (maxRunningTasksCount);
+                else
+                    return (tasksCount) < (maxRunningTasksCount);
             }
+            throw new InvalidOperationException(string.Format("Неизвестный тип TaskQueueReason: {0}", reason));
         }
 
-        private volatile int count;
-        private readonly object lockObject = new object();
+        public bool TryIncrement(TaskQueueReason reason)
+        {
+            if(reason == TaskQueueReason.TaskContinuation)
+            {
+                lock(lockObject)
+                {
+                    if(CanQueueTask(reason))
+                    {
+                        continuationsCount++;
+                        return true;
+                    }
+                    return maxRunningContinuationsCount == 0;
+                }
+            }
+            else if(reason == TaskQueueReason.PullFromQueue)
+            {
+                lock(lockObject)
+                {
+                    if(CanQueueTask(reason))
+                    {
+                        tasksCount++;
+                        return true;
+                    }
+                    return maxRunningTasksCount == 0;
+                }
+            }
+            throw new InvalidOperationException(string.Format("Неизвестный тип TaskQueueReason: {0}", reason));
+        }
 
-        private readonly IExchangeSchedulableRunnerSettings settings;
-        private readonly bool needLock;
+        public void Decrement(TaskQueueReason reason)
+        {
+            if(reason == TaskQueueReason.TaskContinuation)
+            {
+                lock(lockObject)
+                {
+                    continuationsCount--;
+                }
+            }
+            else if(reason == TaskQueueReason.PullFromQueue)
+            {
+                lock(lockObject)
+                {
+                    tasksCount--;
+                }
+            }
+            else
+                throw new InvalidOperationException(string.Format("Неизвестный тип TaskQueueReason: {0}", reason));
+        }
+
+        private readonly int maxRunningTasksCount;
+        private readonly int maxRunningContinuationsCount;
+        private int tasksCount;
+        private int continuationsCount;
+        private readonly object lockObject = new object();
     }
 }

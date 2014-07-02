@@ -1,8 +1,6 @@
-﻿using SKBKontur.Cassandra.CassandraClient.Clusters;
-
-namespace RemoteQueue.Settings
+﻿namespace RemoteQueue.Settings
 {
-    public interface ICassandraSettings : ICassandraClusterSettings
+    public interface ICassandraSettings
     {
         string QueueKeyspace { get; }
     }

@@ -54,7 +54,7 @@ namespace RemoteQueue.Cassandra.Primitives
             CheckObjectIdentitiesValidness(cassandraIds);
 
             var rows = new List<KeyValuePair<string, Column[]>>();
-            cassandraIds
+            cassandraIds.Distinct()
                 .Batch(1000, Enumerable.ToArray)
                 .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
 

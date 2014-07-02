@@ -8,7 +8,6 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.EventDevourers;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
@@ -26,21 +25,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             (IHandleTasksMetaStorage handleTasksMetaStorage,
              IEventLogRepository eventLogRepository,
              ILocalStorage localStorage,
-             IGlobalTime globalTime,
-             ICassandraClusterSettings cassandraClusterSettings)
+             IGlobalTime globalTime)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.eventLogRepository = eventLogRepository;
             this.localStorage = localStorage;
             this.globalTime = globalTime;
             processedEvents = new ProcessedEvents();
-            this.cassandraClusterSettings = cassandraClusterSettings;
-            maxCassandraTimeoutTicks = GetMaxCassandraTimeout();
         }
 
         public void Update()
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 var lastTicks = globalTime.GetNowTicks();
                 UpdateLocalStorage(eventLogRepository.GetEvents(GetStartTime()));
@@ -50,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public void ClearProcessedEvents()
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 processedEvents.Clear();
             }
@@ -58,7 +54,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public void RecalculateInProcess()
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 var metadatas = localStorage.Search<MonitoringTaskMetadata>(
                     x => x.State == MTaskState.New ||
@@ -67,13 +63,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                          x.State == MTaskState.WaitingForRerunAfterError).ToArray();
                 var list = new List<MonitoringTaskMetadata>();
                 var metas = handleTasksMetaStorage.GetMetas(metadatas.Select(x => x.TaskId).ToArray());
-                foreach (var meta in metas)
+                foreach(var meta in metas)
                 {
                     MonitoringTaskMetadata newMetadata;
-                    if (TryConvertTaskMetaInformationToMonitoringTaskMetadata(meta, out newMetadata))
+                    if(TryConvertTaskMetaInformationToMonitoringTaskMetadata(meta, out newMetadata))
                         list.Add(newMetadata);
                 }
-                foreach (var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(list, 100))
+                foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(list, 100))
                     localStorage.Write(batch, false);
             }
         }
@@ -81,7 +77,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private void UpdateLocalStorage(IEnumerable<TaskMetaUpdatedEvent> events)
         {
             var batchCount = 0;
-            foreach (var eventBatch in events.Batch(1000, Enumerable.ToArray))
+            foreach(var eventBatch in events.Batch(1000, Enumerable.ToArray))
             {
                 logger.InfoFormat("Reading batch #{0} with {1} events", batchCount++, eventBatch.Length);
 
@@ -91,42 +87,42 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     .Select(x => x.MinBy(y => y.Ticks))
                     .ToArray();
                 var eventsWithNotEmptyTaskId = uniqueEventBatch.Where(x => !string.IsNullOrEmpty(x.TaskId)).ToArray();
-                if (eventsWithNotEmptyTaskId.Length < uniqueEventBatch.Length)
+                if(eventsWithNotEmptyTaskId.Length < uniqueEventBatch.Length)
                     logger.Error("Some events has taskId=[null]");
                 uniqueEventBatch = eventsWithNotEmptyTaskId;
 
                 var taskMetas = handleTasksMetaStorage.GetMetas(uniqueEventBatch.Select(x => x.TaskId).ToArray()).ToDictionary(x => x.Id);
-                if (uniqueEventBatch.Length > taskMetas.Count)
+                if(uniqueEventBatch.Length > taskMetas.Count)
                     logger.WarnFormat("Lost {0} task metas", uniqueEventBatch.Length - taskMetas.Count);
 
                 var list = new List<MonitoringTaskMetadata>();
                 var localProcessedEvents = new List<TaskMetaUpdatedEvent>();
 
-                foreach (var taskEvent in uniqueEventBatch)
+                foreach(var taskEvent in uniqueEventBatch)
                 {
                     try
                     {
                         TaskMetaInformation taskMeta;
-                        if (!taskMetas.TryGetValue(taskEvent.TaskId, out taskMeta))
+                        if(!taskMetas.TryGetValue(taskEvent.TaskId, out taskMeta))
                         {
                             logger.WarnFormat("Cannot read meta for '{0}'", taskEvent.TaskId);
                             continue;
                         }
 
-                        if (taskMeta.LastModificationTicks == null)
+                        if(taskMeta.LastModificationTicks == null)
                         {
                             logger.WarnFormat("TaskMeta with id='{0}' have LastModificationTicks==[null]", taskEvent.TaskId);
                             continue;
                         }
 
-                        if (taskEvent.Ticks > taskMeta.LastModificationTicks)
+                        if(taskEvent.Ticks > taskMeta.LastModificationTicks)
                         {
                             logger.InfoFormat("TaskMeta with id='{0}' have too old LastModificationTicks", taskEvent.TaskId);
                             continue;
                         }
 
                         MonitoringTaskMetadata metadata;
-                        if (!TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
+                        if(!TryConvertTaskMetaInformationToMonitoringTaskMetadata(taskMeta, out metadata))
                         {
                             logger.WarnFormat("Error while index metadata for task '{0}'", taskMeta.Id);
                             continue;
@@ -135,17 +131,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                         list.Add(metadata);
                         localProcessedEvents.Add(taskEvent);
                     }
-                    catch (Exception e)
+                    catch(Exception e)
                     {
                         logger.Error(string.Format("Error while processing taskEvent taskId='{0}'", taskEvent.TaskId), e);
                     }
                 }
                 processedEvents.RemoveEvents(eventBatch.Min(@event => @event.Ticks) - TimeSpan.FromMinutes(20).Ticks);
 
-                foreach (var batch in list.Batch(100, Enumerable.ToArray))
+                foreach(var batch in list.Batch(100, Enumerable.ToArray))
                     localStorage.Write(batch, false);
                 logger.InfoFormat("Wrote {0} rows in sql", list.Count);
-                
+
                 UpdateLocalStorageTicks(eventBatch.Last().Ticks);
                 processedEvents.AddEvents(localProcessedEvents);
             }
@@ -153,26 +149,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         private void UpdateLocalStorageTicks(long lastTicks)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
-                if (localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() < lastTicks)
+                if(localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() < lastTicks)
                     localStorage.SetLastUpdateTime<MonitoringTaskMetadata>(lastTicks);
             }
         }
 
-        private long GetMaxCassandraTimeout()
-        {
-            return cassandraClusterSettings.Timeout * 10000 * cassandraClusterSettings.Attempts;
-        }
-
         private long GetStartTime()
         {
-            return localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - maxCassandraTimeoutTicks;
+            return localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - eventLogRepository.UnstableZoneLength.Ticks;
         }
 
         private bool TryConvertTaskMetaInformationToMonitoringTaskMetadata(TaskMetaInformation info, out MonitoringTaskMetadata taskMetadata)
         {
-            if (info == null)
+            if(info == null)
             {
                 taskMetadata = new MonitoringTaskMetadata();
                 logger.Error("MetaInformation null");
@@ -193,7 +184,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     TaskGroupLock = info.TaskGroupLock,
                 };
             MTaskState mtaskState;
-            if (!Enum.TryParse(info.State.ToString(), true, out mtaskState))
+            if(!Enum.TryParse(info.State.ToString(), true, out mtaskState))
             {
                 logger.ErrorFormat("Не смог сконвертировать TaskState(RemouteTaskQueue) к TaskState(MonitoringDataTypes). TaskId: {0}", taskMetadata.TaskId); // todo написать нормальное сообщение
                 return false;
@@ -213,8 +204,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private readonly ILocalStorage localStorage;
         private readonly IGlobalTime globalTime;
         private readonly IProcessedEvents processedEvents;
-        private readonly ICassandraClusterSettings cassandraClusterSettings;
         private readonly object lockObject = new object();
-        private readonly long maxCassandraTimeoutTicks;
     }
 }

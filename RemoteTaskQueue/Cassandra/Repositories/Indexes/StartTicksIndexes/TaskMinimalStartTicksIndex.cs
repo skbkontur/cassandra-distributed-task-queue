@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 using GroBuf;
@@ -52,15 +53,13 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             inProcessTasksCache.Remove(taskId);
             var connection = RetrieveColumnFamilyConnection();
-            connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName});
+            connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName}, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
         }
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000)
         {
             var connection = RetrieveColumnFamilyConnection();
-            //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
-            //что потребует изменения этого отката. Поэтому берется, как кажется, с запасом
-            var diff = TimeSpan.FromMinutes(8).Ticks;
+            var diff = GetDiff(taskState).Ticks;
             long firstTicks;
             if(!TryGetFirstEventTicks(taskState, out firstTicks))
                 return new Tuple<string, ColumnInfo>[0];
@@ -68,12 +67,26 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var firstTicksWithDiff = firstTicks - diff;
             var startTicks = Math.Max(twoDaysEarlier, firstTicksWithDiff);
             var getEventsEnumerable = new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, startTicks, nowTicks, batchSize);
-            if(taskState == TaskState.InProcess)
-                return inProcessTasksCache.PassThroughtCache(getEventsEnumerable);
+            //if(taskState == TaskState.InProcess)
+            //    return inProcessTasksCache.PassThroughtCache(getEventsEnumerable);
             return getEventsEnumerable;
         }
 
         public const string columnFamilyName = "TaskMinimalStartTicksIndex";
+
+        private TimeSpan GetDiff(TaskState taskState)
+        {
+            var lastBigDiffTime = lastBigDiffTimes.GetOrAdd(taskState, t => DateTime.MinValue);
+            var now = DateTime.UtcNow;
+            if((now - lastBigDiffTime) > TimeSpan.FromMinutes(1))
+            {
+                lastBigDiffTimes.AddOrUpdate(taskState, DateTime.MinValue, (t, p) => now);
+                //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
+                //что потребует изменения этого отката. Поэтому берется, как кажется, с запасом
+                return TimeSpan.FromMinutes(8);
+            }
+            return TimeSpan.FromMinutes(1);
+        }
 
         private bool TryGetFirstEventTicks(TaskState taskState, out long ticks)
         {
@@ -81,6 +94,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return ticks != 0;
         }
 
+        private readonly ConcurrentDictionary<TaskState, DateTime> lastBigDiffTimes = new ConcurrentDictionary<TaskState, DateTime>();
         private readonly ICassandraSettings cassandraSettings;
         private readonly ITicksHolder ticksHolder;
         private readonly ISerializer serializer;

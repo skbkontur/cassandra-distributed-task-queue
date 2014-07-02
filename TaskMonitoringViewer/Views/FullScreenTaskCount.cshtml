@@ -1,0 +1,25 @@
+﻿@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
+@model string
+<!doctype html>
+<html>
+    <head>
+        @* ReSharper disable Html.PathError *@
+        <link rel="shortcut icon" href="/AdminToolsIcon.ico" type="image/x-icon" />
+        @* ReSharper restore Html.PathError *@
+        <title>Monitor</title>
+        @{
+            Html.RenderStyle("/SharedBlocks/Common/Reset.css");
+            Html.RenderStyle("/SharedBlocks/Monitor/Monitor.css");
+
+            Html.RenderCommonScripts();
+            Html.RenderScript("/SharedBlocks/Monitor/Monitor.js");
+        }
+    </head>
+    <body>
+        <div class="monitor" requestId="@Model">
+            <div class="monitor-now"></div>
+            <div class="monitor-graph"></div>
+            <div class="monitor-blood"></div>
+        </div>
+    </body>
+</html>
