@@ -33,6 +33,23 @@ namespace RemoteQueue.Cassandra.Primitives
                 });
         }
 
+        public void Write(KeyValuePair<string, T>[] elements)
+        {
+            var connection = RetrieveColumnFamilyConnection();
+            var updateNowTicks = globalTime.UpdateNowTicks();
+            connection.BatchInsert(elements.Select(x => new KeyValuePair<string, IEnumerable<Column>>(
+                                                            x.Key,
+                                                            new[]
+                                                                {
+                                                                    new Column
+                                                                        {
+                                                                            Name = dataColumnName,
+                                                                            Timestamp = updateNowTicks,
+                                                                            Value = serializer.Serialize(x.Value)
+                                                                        }
+                                                                })));
+        }
+
         public T Read(string id)
         {
             var connection = RetrieveColumnFamilyConnection();
@@ -44,7 +61,7 @@ namespace RemoteQueue.Cassandra.Primitives
 
         public T[] Read(string[] ids)
         {
-            if (ids.Length == 0)
+            if(ids.Length == 0)
                 return new T[0];
             return TryReadInternal(ids);
         }
@@ -55,20 +72,19 @@ namespace RemoteQueue.Cassandra.Primitives
 
             var rows = new List<KeyValuePair<string, Column[]>>();
             cassandraIds.Distinct()
-                .Batch(1000, Enumerable.ToArray)
-                .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
+                        .Batch(1000, Enumerable.ToArray)
+                        .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
 
             var rowsDict = rows.ToDictionary(row => row.Key);
             var result = new T[cassandraIds.Length];
-            for (var i = 0; i < cassandraIds.Length; i++)
+            for(var i = 0; i < cassandraIds.Length; i++)
             {
                 var id = cassandraIds[i];
                 KeyValuePair<string, Column[]> row;
-                if (rowsDict.TryGetValue(id, out row))
+                if(rowsDict.TryGetValue(id, out row))
                     result[i] = Read(row.Value);
             }
             return result;
-
         }
 
         public IEnumerable<T> ReadAll(int batchSize = 1000)
@@ -76,6 +92,13 @@ namespace RemoteQueue.Cassandra.Primitives
             var connection = RetrieveColumnFamilyConnection();
             var keys = connection.GetKeys(batchSize);
             return TryReadInternal(keys.ToArray());
+        }
+
+        public IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000)
+        {
+            var connection = RetrieveColumnFamilyConnection();
+            var keys = connection.GetKeys(batchSize);
+            return TryReadInternalWithIds(keys.ToArray());
         }
 
         public void Delete(string id, long timestamp)
@@ -95,28 +118,10 @@ namespace RemoteQueue.Cassandra.Primitives
             ids.Batch(1000, Enumerable.ToArray).ForEach(x => DeleteInternal(x, timestamp));
         }
 
-        [Obsolete("для конвертаций")]
-        public void Write(KeyValuePair<string, T>[] elements)
-        {
-            var connection = RetrieveColumnFamilyConnection();
-            var updateNowTicks = globalTime.UpdateNowTicks();
-            connection.BatchInsert(elements.Select(x => new KeyValuePair<string, IEnumerable<Column>>(
-                                                            x.Key,
-                                                            new[]
-                                                                {
-                                                                    new Column
-                                                                        {
-                                                                            Name = dataColumnName,
-                                                                            Timestamp = updateNowTicks,
-                                                                            Value = serializer.Serialize(x.Value)
-                                                                        }
-                                                                })));
-        }
-
         private T[] TryReadInternal(string[] ids)
         {
-            if (ids == null) throw new ArgumentNullException("ids");
-            if (ids.Length == 0) return new T[0];
+            if(ids == null) throw new ArgumentNullException("ids");
+            if(ids.Length == 0) return new T[0];
             var rows = new List<KeyValuePair<string, Column[]>>();
             ids
                 .Batch(1000, Enumerable.ToArray)
@@ -124,8 +129,23 @@ namespace RemoteQueue.Cassandra.Primitives
             var rowsDict = rows.ToDictionary(row => row.Key);
 
             return ids.Where(rowsDict.ContainsKey)
-                .Select(id => Read(rowsDict[id].Value))
-                .Where(obj => obj != null).ToArray();
+                      .Select(id => Read(rowsDict[id].Value))
+                      .Where(obj => obj != null).ToArray();
+        }
+
+        private KeyValuePair<string, T>[] TryReadInternalWithIds(string[] ids)
+        {
+            if(ids == null) throw new ArgumentNullException("ids");
+            if(ids.Length == 0) return new KeyValuePair<string, T>[0];
+            var rows = new List<KeyValuePair<string, Column[]>>();
+            ids
+                .Batch(1000, Enumerable.ToArray)
+                .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRowsExclusive(batchIds, null, 1000))));
+            var rowsDict = rows.ToDictionary(row => row.Key);
+
+            return ids.Where(rowsDict.ContainsKey)
+                      .Select(id => new KeyValuePair<string, T>(id, Read(rowsDict[id].Value)))
+                      .Where(obj => obj.Value != null).ToArray();
         }
 
         private T Read(IEnumerable<Column> columns)
