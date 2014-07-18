@@ -79,7 +79,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common</Name>
+      <Name>Common %28Solution.RemoteTaskQueue\Common%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonitoringServiceCore\MonitoringServiceCore.csproj">
       <Project>{EB9A3DBC-5C00-4774-93D6-925943DDE4CB}</Project>
