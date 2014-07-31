@@ -67,6 +67,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.ObjectManipulation.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Objects">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
+    </Reference>
     <Reference Include="GrobExp.Mutators">
       <HintPath>..\..\Assemblies\GrobExp.Mutators.dll</HintPath>
     </Reference>
