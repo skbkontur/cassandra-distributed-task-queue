@@ -45,7 +45,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests
             var userRepository = container.Get<IUserRepository>();
             var passwordService = container.Get<IPasswordService>();
             var accessControlService = container.Get<IAccessControlService>();
-            userRepository.ReleaseLogin("user");
+            userRepository.ReleaseLoginForOtherUsers("user", null);
             var userId = Guid.NewGuid().ToString();
             userRepository.SaveUser(new User
                 {
