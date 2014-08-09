@@ -17,10 +17,10 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.ServiceLib;
-using SKBKontur.Catalogue.ServiceLib.Settings;
 
 namespace FunctionalTests
 {
