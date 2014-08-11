@@ -1,6 +1,6 @@
 using System;
 
-using SKBKontur.Catalogue.ServiceLib.Settings;
+using SKBKontur.Catalogue.Core.Configuration.Settings;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Settings
 {

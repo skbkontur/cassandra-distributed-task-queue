@@ -19,10 +19,10 @@ start cmd /c IndexService\bin\Debug\Catalogue.RemoteTaskQueue.IndexService.exe
 
 start cmd /c MonitoringService\bin\Debug\Catalogue.RemoteTaskQueue.MonitoringService.exe
 
+%WinDir%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe Deployment\LocalFire.xml /t:Fire /p:ServiceSuite=None;FrontEndSuite=DEFAULT
+
 cd ..
 
 pushd Assemblies\Selenium\
 start cmd /c chromedriver.exe 
 popd
-
-C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe RemoteTaskQueue\DeployFronts.xml

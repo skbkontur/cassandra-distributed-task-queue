@@ -87,7 +87,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\MVC3\System.Web.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.WebPages">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\MVC3\System.Web.WebPages.dll</HintPath>
     </Reference>
@@ -169,7 +169,7 @@
     </ProjectReference>
     <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
       <Project>{B0AAD20D-160A-4D99-877B-B464C295E36F}</Project>
-      <Name>MonitoringServiceClient</Name>
+      <Name>MonitoringServiceClient %28Solution.RemoteTaskQueue\MonitoringServiceClient%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>

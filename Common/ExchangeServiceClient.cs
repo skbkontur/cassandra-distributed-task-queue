@@ -1,8 +1,8 @@
 ﻿using System;
 
 using SKBKontur.Catalogue.ClientLib.Domains;
-using SKBKontur.Catalogue.ClientLib.HttpClientBase;
-using SKBKontur.Catalogue.ClientLib.HttpClientBase.Configuration;
+using SKBKontur.Catalogue.ClientLib.HttpClientBases;
+using SKBKontur.Catalogue.ClientLib.HttpClientBases.Configuration;
 using SKBKontur.Catalogue.ClientLib.Topology;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Common

@@ -51,6 +51,9 @@
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.Configuration.Settings">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
+    </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
@@ -83,11 +86,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common</Name>
+      <Name>Common %28Solution.RemoteTaskQueue\Common%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\Storage\Storage.csproj">
       <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
-      <Name>Storage</Name>
+      <Name>Storage %28Solution.RemoteTaskQueue\Storage%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

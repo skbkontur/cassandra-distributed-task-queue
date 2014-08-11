@@ -36,8 +36,11 @@
       <AppName>RemoteTaskQueue.Front</AppName>
       <AppPool>RemoteTaskQueue.Front_Pool</AppPool>
       <AppRootDirectory>$(DeployDir)\Front</AppRootDirectory>
+
+      <AppPoolConfigFilePath>$(CommonAppPoolIISConfigFilePath)</AppPoolConfigFilePath>
+      <SiteConfigFilePath>$(CommonWebSiteIISConfigFilePath)</SiteConfigFilePath>
     </WebSite>
-  </ItemGroup>  
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(FrontEndMode)' == 'FromSources'">
     <ProjectDir>$(CatalogueRootDirectory)\RemoteTaskQueue\Front\</ProjectDir>
@@ -48,22 +51,15 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(FrontEndMode)' == 'FromSources'">
-    <WebSiteVirtualDirectory Include="/Shared">
-      <ApplicationPath>/</ApplicationPath> 
-      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\WebWorms\Web\Statics'))</PhysicalPath>
-    </WebSiteVirtualDirectory>
-
-    <WebSiteVirtualDirectory Include="/SharedBlocks">
-      <ApplicationPath>/</ApplicationPath>
-      <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\WebWorms\Web\Blocks'))</PhysicalPath>
-    </WebSiteVirtualDirectory>
-
     <WebSite Include="/">
       <PhysicalPath>$([System.IO.Path]::GetFullPath('$(CatalogueRootDirectory)\RemoteTaskQueue\Front\'))</PhysicalPath>
       <HttpPort>9876</HttpPort>
       <AppName>RemoteTaskQueue.Front</AppName>
       <AppPool>RemoteTaskQueue.Front_Pool</AppPool>
       <AppRootDirectory>$(CatalogueRootDirectory)\RemoteTaskQueue\Front\</AppRootDirectory>
+
+      <AppPoolConfigFilePath>$(CommonAppPoolIISConfigFilePath)</AppPoolConfigFilePath>
+      <SiteConfigFilePath>$(CommonWebSiteIISConfigFilePath_Local)</SiteConfigFilePath>
     </WebSite>
   </ItemGroup>
 
