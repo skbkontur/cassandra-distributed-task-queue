@@ -20,16 +20,14 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 
         public long UpdateMaxTicks(string name, long ticks)
         {
-            var currentMaxTicks = GetMaxTicks(name);
-            var newMaxTicks = Math.Max(currentMaxTicks + 1, ticks);
             var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(name, new Column
                 {
                     Name = maxTicksColumnName,
-                    Timestamp = newMaxTicks,
-                    Value = serializer.Serialize(newMaxTicks)
+                    Timestamp = ticks,
+                    Value = serializer.Serialize(ticks)
                 });
-            return newMaxTicks;
+            return GetMaxTicks(name);
         }
 
         public long GetMaxTicks(string name)

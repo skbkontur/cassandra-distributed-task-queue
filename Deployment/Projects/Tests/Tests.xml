@@ -29,10 +29,6 @@
     <NUnitAssemblies Include="$(TestSolutionDir)\Tests\bin\$(BuildConfiguration)\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
   </ItemGroup>
 
-  <Target BeforeTargets="RunNUnitTests" Name="DeployScreenshots">
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\..\Tools\DeployScreenshots.xml" />
-  </Target>
-
   <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Test_New.targets" />
   
 </Project>

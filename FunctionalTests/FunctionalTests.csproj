@@ -55,6 +55,9 @@
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.Configuration.Settings">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.TestCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
@@ -92,6 +95,7 @@
     <Compile Include="RepositoriesTests\BlobStorageTest.cs" />
     <Compile Include="ExchangeTests\FailTaskTest.cs" />
     <Compile Include="ExchangeTests\PeriodicTaskTest.cs" />
+    <Compile Include="RepositoriesTests\GlobalTimeTest.cs" />
     <Compile Include="RepositoriesTests\ReadWriteTest.cs" />
     <Compile Include="RepositoriesTests\HandleTaskExceptionInfoStorageTest.cs" />
     <Compile Include="RepositoriesTests\TicksHolderTest.cs" />

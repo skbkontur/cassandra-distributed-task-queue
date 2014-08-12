@@ -2,7 +2,7 @@
 
 using RemoteQueue.Settings;
 
-using SKBKontur.Catalogue.ServiceLib.Settings;
+using SKBKontur.Catalogue.Core.Configuration.Settings;
 
 namespace ExchangeService.Settings
 {

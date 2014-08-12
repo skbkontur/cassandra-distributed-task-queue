@@ -4,8 +4,8 @@ using GroboContainer.Core;
 
 using RemoteQueue.Configuration;
 
+using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
-using SKBKontur.Catalogue.ServiceLib.Settings;
 
 namespace ExchangeService.Http
 {
