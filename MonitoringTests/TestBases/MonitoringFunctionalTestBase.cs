@@ -58,7 +58,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
         protected void CreateUser(string login, string password)
         {
-            userRepository.ReleaseLogin(login);
+            userRepository.ReleaseLoginForOtherUsers(login, null);
             var userId = Guid.NewGuid().ToString();
             userRepository.SaveUser(new User
             {
