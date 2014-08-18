@@ -14,6 +14,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
 using SKBKontur.Catalogue.AccessControl.Services;
+using SKBKontur.Catalogue.CassandraStorageCore;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
@@ -57,7 +58,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
         protected void CreateUser(string login, string password)
         {
-            userRepository.ReleaseLogin(login);
+            userRepository.ReleaseLoginForOtherUsers(login, null);
             var userId = Guid.NewGuid().ToString();
             userRepository.SaveUser(new User
             {
@@ -113,7 +114,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
         protected virtual void ConfigureContainer(IContainer c)
         {
-            //c.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(container.Get<CassandraSettings>());
             c.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(c);
         }
 

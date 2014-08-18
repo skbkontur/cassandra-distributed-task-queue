@@ -2,7 +2,7 @@
 
 using RemoteQueue.Settings;
 
-using SKBKontur.Catalogue.ServiceLib.Settings;
+using SKBKontur.Catalogue.Core.Configuration.Settings;
 
 namespace ExchangeService.Settings
 {
@@ -11,11 +11,13 @@ namespace ExchangeService.Settings
         public ExchangeSchedulableRunnerSettings(IApplicationSettings applicationSettings)
         {
             this.applicationSettings = applicationSettings;
+            MaxRunningContinuationsCount = applicationSettings.GetInt("MaxRunningContinuationsCount");
         }
 
         public TimeSpan PeriodicInterval { get { return applicationSettings.GetTimeSpan("SchedulerInterval"); } }
 
         public int MaxRunningTasksCount { get { return applicationSettings.GetInt("MaxRunningTasksCount"); } }
+        public int MaxRunningContinuationsCount { get; private set; }
         public int ShardsCount { get { return GetIntOrDefault("ShardsCount", 1); } }
 
         public int ShardIndex { get { return GetIntOrDefault("ShardIndex", 1); } }

@@ -19,7 +19,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
             container.Configurator.ForAbstraction<IRemoteLockImplementation>().UseInstances(
                 new CassandraRemoteLockImplementation(
                     columnFamilyRepositoryParameters.CassandraCluster,
-                    columnFamilyRepositoryParameters.Settings,
                     serializer,
                     new ColumnFamilyFullName(columnFamilyRepositoryParameters.Settings.QueueKeyspace,
                     columnFamilyRepositoryParameters.LockColumnFamilyName)));

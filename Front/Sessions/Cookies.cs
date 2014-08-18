@@ -1,7 +1,7 @@
 ﻿using System.Web;
 
+using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.Core.Web.CookiesManagement;
-using SKBKontur.Catalogue.ServiceLib.Settings;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Sessions
 {

@@ -8,7 +8,6 @@ using GroBuf;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 
@@ -22,7 +21,8 @@ namespace RemoteQueue.Cassandra.Repositories
             this.serializer = serializer;
             this.globalTime = globalTime;
             this.ticksHolder = ticksHolder;
-            cassandraSettings = parameters.Settings;
+            var connectionParameters = parameters.CassandraCluster.RetrieveColumnFamilyConnection(parameters.Settings.QueueKeyspace, columnFamilyName).GetConnectionParameters();
+            UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
         }
 
         public void AddEvent(string taskId, long nowTicks)
@@ -56,6 +56,8 @@ namespace RemoteQueue.Cassandra.Repositories
             fromTicks = new[] {0, fromTicks, firstEventTicks}.Max();
             return new GetEventLogEnumerable(serializer, connection, fromTicks, globalTime.GetNowTicks(), batchSize);
         }
+
+        public TimeSpan UnstableZoneLength { get; private set; }
 
         [Obsolete("для конвертаций")]
         public void AddEvents(KeyValuePair<string, long>[] taskIdAndTicks)
@@ -100,7 +102,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
         private readonly ITicksHolder ticksHolder;
-        private readonly ICassandraSettings cassandraSettings;
 
         private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;
         private const string firstEventTicksRowName = "firstEventTicksRowName";

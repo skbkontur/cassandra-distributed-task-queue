@@ -10,8 +10,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 {
     public class LocalStorageColumnsRegistry : LocalStorageColumnsRegistryBase
     {
-        public LocalStorageColumnsRegistry(ISqlDataTypeMapper sqlDataTypeMapper, IPropertiesExtracter propertiesExtracter)
-            : base(sqlDataTypeMapper, propertiesExtracter)
+        public LocalStorageColumnsRegistry(ISqlDataTypeMapper sqlDataTypeMapper, IPropertiesExtractor propertiesExtractor)
+            : base(sqlDataTypeMapper, propertiesExtractor)
         {
             Register(x => x.AllProperties(), new List<Expression<Func<MonitoringTaskMetadata, object>>[]>
                 {

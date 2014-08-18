@@ -59,6 +59,9 @@
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.Configuration.Settings">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
+    </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
@@ -82,7 +85,7 @@
     <Compile Include="IExchangeServiceClient.cs" />
     <Compile Include="LockRepositoryContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteTaskQueue\CassandraSettings.cs" />
+    <Compile Include="RemoteTaskQueue\RemoteQueueTestsCassandraSettings.cs" />
     <Compile Include="RemoteTaskQueue\RemoteTaskQueuePlugin.cs" />
     <Compile Include="RemoteTaskQueue\TaskDataRegistry.cs" />
     <Compile Include="Xml\XmlNamespaceFactory.cs" />

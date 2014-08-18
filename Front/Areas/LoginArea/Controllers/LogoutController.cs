@@ -2,7 +2,6 @@
 
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.CookiesManagement;
-using SKBKontur.Catalogue.ServiceLib.Settings;
 
 using ControllerBase = SKBKontur.Catalogue.Core.Web.Controllers.ControllerBase;
 

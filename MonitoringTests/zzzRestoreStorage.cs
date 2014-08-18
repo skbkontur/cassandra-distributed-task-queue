@@ -13,9 +13,9 @@ using NUnit.Framework;
 using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
 using SKBKontur.Catalogue.AccessControl.Services;
+using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
 using SKBKontur.Catalogue.ServiceLib;
-using SKBKontur.Catalogue.ServiceLib.Settings;
 using SKBKontur.Catalogue.TestCore;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests
@@ -45,7 +45,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests
             var userRepository = container.Get<IUserRepository>();
             var passwordService = container.Get<IPasswordService>();
             var accessControlService = container.Get<IAccessControlService>();
-            userRepository.ReleaseLogin("user");
+            userRepository.ReleaseLoginForOtherUsers("user", null);
             var userId = Guid.NewGuid().ToString();
             userRepository.SaveUser(new User
                 {

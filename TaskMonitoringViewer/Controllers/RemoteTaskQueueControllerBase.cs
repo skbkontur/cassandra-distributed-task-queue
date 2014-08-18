@@ -2,19 +2,22 @@
 using System.Linq;
 using System.Web.Mvc;
 
+using log4net;
+
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.AccessControl;
 using SKBKontur.Catalogue.AccessControl.AccessRules;
 using SKBKontur.Catalogue.AccessControl.Services;
 using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
+using SKBKontur.Catalogue.Core.CommonBusinessObjects.ScopedStorage.Extensions;
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Core.Web.Models.ModelConfigurations;
 using SKBKontur.Catalogue.Core.Web.PageModels;
 using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
+using SKBKontur.Catalogue.Objects.ValueExtracting;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
@@ -24,10 +27,6 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.Tas
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel;
-
-using log4net;
-
-using SKBKontur.Catalogue.Core.CommonBusinessObjects.ScopedStorage.Extensions;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
@@ -54,7 +53,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public ActionResult Run(string searchRequestId, int pageNumber = 0)
         {
             MonitoringSearchRequest searchRequest;
-            if (string.IsNullOrEmpty(searchRequestId) || !businessObjectsStorage.InScope<MonitoringSearchRequest>(searchRequestId).TryRead(searchRequestId, out searchRequest))
+            if(string.IsNullOrEmpty(searchRequestId) || !businessObjectsStorage.InScope<MonitoringSearchRequest>(searchRequestId).TryRead(searchRequestId, out searchRequest))
                 searchRequest = new MonitoringSearchRequest();
             extender.Extend(searchRequest);
 
@@ -90,6 +89,34 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
                 };
             pageModel.HtmlModel = taskListModelHtmlBuilder.Build(pageModel);
             return View("TaskList", pageModel);
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult GetCount(string searchRequestId)
+        {
+            MonitoringSearchRequest searchRequest;
+            if(string.IsNullOrEmpty(searchRequestId) || !businessObjectsStorage.InScope<MonitoringSearchRequest>(searchRequestId).TryRead(searchRequestId, out searchRequest))
+                searchRequest = new MonitoringSearchRequest();
+            extender.Extend(searchRequest);
+
+            int totalCount;
+            var criterion = monitoringSearchRequestCriterionBuilder.BuildCriterion(searchRequest);
+            try
+            {
+                totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
+            }
+            catch(DomainIsDisabledException e)
+            {
+                logger.Error("Can not build TaskList", e);
+                totalCount = 0;
+            }
+            return Json(totalCount, JsonRequestBehavior.AllowGet);
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult FullScreenTaskCount(string id)
+        {
+            return View("FullScreenTaskCount", (object)id);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -138,7 +165,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         {
             var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
             var modelData = taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId);
-            var hasAccessToTaskData = accessControlService.CheckAccess(Session.UserId, new ResourseGroupAccessRule {ResourseGroupName = ResourseGroups.AdminResourse});
+            var hasAccessToTaskData = HasAccessToTaskData();
             if(!hasAccessToTaskData)
                 modelData.TaskData = new SimpleTaskData();
             var pageModel = new TaskDetailsPageModel(PageModelBaseParameters, modelData)
@@ -191,6 +218,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return File((byte[])value, "application/octet-stream", fileDownloadName);
         }
 
+        protected virtual bool HasAccessToTaskData()
+        {
+            return accessControlService.CheckAccess(Session.UserId, new ResourseGroupAccessRule {ResourseGroupName = ResourseGroups.SupervisorResourse});
+        }
+
         private readonly ITaskDetailsModelBuilder taskDetailsModelBuilder;
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ITaskListModelBuilder taskListModelBuilder;
@@ -201,7 +233,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly ITaskListHtmlModelBuilder taskListModelHtmlBuilder;
         private readonly ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder;
         private readonly IAccessControlService accessControlService;
-        private IWebMutatorsTreeCollection<TaskListModelData> webMutatorsTreeCollection;
+        private readonly IWebMutatorsTreeCollection<TaskListModelData> webMutatorsTreeCollection;
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueControllerBase));
         private const int tasksPerPageCount = 100;

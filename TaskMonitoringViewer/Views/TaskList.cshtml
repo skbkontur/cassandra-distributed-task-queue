@@ -100,6 +100,7 @@
 <div class="adminTools__button">@Html.ActionButton(searchPanelModel.SearchButton)</div>
 <div class="adminTools__filters__count">
     <span class="adminTools__filters__count__content">Найдено: @Html.Text(htmlModel.TaskCount)</span>
+    <a class="monitor-link" href="@Url.Action("FullScreenTaskCount", "RemoteTaskQueue", new { id = Model.PaginatorModelData.SearchRequestId })" target="_blank">Отслеживать результаты на отдельном экране</a>
 </div>
 
 <table class="adminTools__data">

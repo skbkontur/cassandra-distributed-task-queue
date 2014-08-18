@@ -41,7 +41,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 {
                     handleTaskCollection.AddTask(task);
                 }
-                catch(Exception e)
+                catch
                 {
                 }
             }
