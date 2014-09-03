@@ -58,6 +58,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
             aggregator.AddEvent((int)taskExecutionTime.TotalMilliseconds);
         }
 
+        public void RecordTaskExecutionResult(TaskMetaInformation meta, HandleResult handleResult)
+        {
+            IStatisticsAggregator aggregator;
+            var dictionaryKey = string.Format("{0}_{1}", meta.Name, handleResult.FinishAction);
+            if(!statisticsAggregators.TryGetValue(dictionaryKey, out aggregator))
+            {
+                lock(lockObject)
+                {
+                    if(!statisticsAggregators.TryGetValue(dictionaryKey, out aggregator))
+                    {
+                        aggregator = new StatisticsAggregator.StatisticsAggregator(aggregationPeriod, TimeSpan.FromTicks(aggregationPeriod.Ticks * 5));
+                        var statisticsName = string.Format("EDI.services.RemoteTaskQueue.{0}.NumberOfExecutedTasks.{1}.{2}", Environment.MachineName, meta.Name, handleResult.FinishAction);
+                        graphitePeriodicSender.AddSource(new AmountStatisticsSource(aggregator, statisticsName, aggregationPeriod), aggregationPeriod);
+                        if(!statisticsAggregators.TryAdd(dictionaryKey, aggregator))
+                            throw new Exception("Some strange concurrent behaviour. Should never happen");
+                    }
+                }
+            }
+            aggregator.AddEvent(0);
+        }
+
         private static string GetStatisticsKey(TaskMetaInformation meta)
         {
             return string.Format("EDI.services.RemoteTaskQueue.TaskWaitingForStartTime.{0}", meta.Name);

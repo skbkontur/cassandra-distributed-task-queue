@@ -1,6 +1,7 @@
 ﻿using System;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Handling.HandlerResults;
 
 namespace RemoteQueue.Profiling
 {
@@ -15,6 +16,10 @@ namespace RemoteQueue.Profiling
         }
 
         public void RecordTaskExecutionTime(TaskMetaInformation meta, TimeSpan taskExecutionTime)
+        {
+        }
+
+        public void RecordTaskExecutionResult(TaskMetaInformation meta, HandleResult handleResult)
         {
         }
     }

@@ -203,6 +203,7 @@ namespace RemoteQueue.Handling
                 remoteTaskQueueProfiler.ProcessTaskDequeueing(task.Meta);
                 var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
                 remoteTaskQueueProfiler.RecordTaskExecutionTime(task.Meta, sw.Elapsed);
+                remoteTaskQueueProfiler.RecordTaskExecutionResult(task.Meta, handleResult);
                 UpdateTaskMetaByHandleResult(task, handleResult);
             }
             catch(Exception e)
