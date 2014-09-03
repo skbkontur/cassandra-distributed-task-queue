@@ -7,6 +7,10 @@ namespace RemoteQueue.Profiling
 {
     public class EmptyRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
+        public void ProcessTaskCreation(TaskMetaInformation meta)
+        {
+        }
+
         public void ProcessTaskEnqueueing(TaskMetaInformation meta)
         {
         }

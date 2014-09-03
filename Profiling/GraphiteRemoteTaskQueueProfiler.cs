@@ -26,6 +26,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
             aggregationPeriod = settings.AggregationPeriod;
         }
 
+        public void ProcessTaskCreation(TaskMetaInformation meta)
+        {
+            var statisticsKey = string.Format("EDI.services.RemoteTaskQueue.{0}.TasksCreated.{1}", Environment.MachineName, meta.Name);
+            distributedEventsProfiler.LogEvent(meta.Id, statisticsKey, DistributedEventType.Atomic);
+        }
+
         public void ProcessTaskEnqueueing(TaskMetaInformation meta)
         {
             distributedEventsProfiler.LogEvent(string.Format("{0}_{1}", meta.Id, meta.Attempts + 1), GetStatisticsKey(meta), DistributedEventType.Start);

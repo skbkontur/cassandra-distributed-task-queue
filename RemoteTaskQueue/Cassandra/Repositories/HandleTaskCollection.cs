@@ -18,6 +18,9 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public void AddTask(Task task)
         {
+            if (task.Meta.Attempts == 0)
+                remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
+
             if(task.Meta.MinimalStartTicks <= DateTime.UtcNow.Ticks + 1)
                 remoteTaskQueueProfiler.ProcessTaskEnqueueing(task.Meta);
 
