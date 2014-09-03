@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 
 using GroBuf;
 using GroBuf.DataMembersExtracters;
@@ -9,6 +11,7 @@ using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.LocalTasks.TaskQueue;
+using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
@@ -30,7 +33,8 @@ namespace RemoteQueue.Handling
             IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
             ITaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage,
-            ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex)
+            ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex,
+            IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
             : base(taskInfo.Item1)
         {
             this.taskInfo = taskInfo;
@@ -45,6 +49,7 @@ namespace RemoteQueue.Handling
             this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskMinimalStartTicksIndex = taskMinimalStartTicksIndex;
+            this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 
         public override void Run()
@@ -194,7 +199,10 @@ namespace RemoteQueue.Handling
             try
             {
                 task.Meta = task.Meta;
+                var sw = Stopwatch.StartNew();
+                remoteTaskQueueProfiler.ProcessTaskDequeueing(task.Meta);
                 var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
+                remoteTaskQueueProfiler.RecordTaskExecutionTime(task.Meta, sw.Elapsed);
                 UpdateTaskMetaByHandleResult(task, handleResult);
             }
             catch(Exception e)
@@ -254,5 +262,6 @@ namespace RemoteQueue.Handling
         private readonly ITaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
+        private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
     }
 }

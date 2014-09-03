@@ -1,20 +1,26 @@
+using System;
 using System.Linq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Profiling;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
     public class HandleTaskCollection : IHandleTaskCollection
     {
-        public HandleTaskCollection(IHandleTasksMetaStorage handleTasksMetaStorage, ITaskDataBlobStorage taskDataStorage)
+        public HandleTaskCollection(IHandleTasksMetaStorage handleTasksMetaStorage, ITaskDataBlobStorage taskDataStorage, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskDataStorage = taskDataStorage;
+            this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 
         public void AddTask(Task task)
         {
+            if(task.Meta.MinimalStartTicks <= DateTime.UtcNow.Ticks + 1)
+                remoteTaskQueueProfiler.ProcessTaskEnqueueing(task.Meta);
+
             taskDataStorage.Write(task.Meta.Id, task.Data);
             handleTasksMetaStorage.AddMeta(task.Meta);
         }
@@ -43,5 +49,6 @@ namespace RemoteQueue.Cassandra.Repositories
 
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskDataBlobStorage taskDataStorage;
+        private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
     }
 }

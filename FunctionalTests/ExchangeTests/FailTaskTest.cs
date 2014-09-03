@@ -17,6 +17,7 @@ using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling;
+using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
@@ -41,7 +42,7 @@ namespace FunctionalTests.ExchangeTests
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, cassandraSettings);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(new TaskMetaInformationBlobStorage(parameters, serializer, globalTime), taskMinimalStartTicksIndex, eventLongRepository, globalTime);
-            handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage);
+            handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage, new EmptyRemoteTaskQueueProfiler());
             testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime),
                                                               new RemoteLockCreator(new CassandraRemoteLockImplementation(parameters.CassandraCluster, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName))));
             taskQueue = Container.Get<IRemoteTaskQueue>();

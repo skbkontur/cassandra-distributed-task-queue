@@ -9,6 +9,7 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 using RemoteQueue.UserClasses;
 
@@ -20,7 +21,7 @@ namespace RemoteQueue.Handling
 {
     public class RemoteTaskQueue : IRemoteTaskQueue
     {
-        public RemoteTaskQueue(ICassandraCluster cassandraCluster, ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry, ISerializer serializer)
+        public RemoteTaskQueue(ICassandraCluster cassandraCluster, ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry, ISerializer serializer, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             // ReSharper disable LocalVariableHidesMember
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, settings);
@@ -30,7 +31,8 @@ namespace RemoteQueue.Handling
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime);
-            var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime));
+            
+            var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime), remoteTaskQueueProfiler);
             var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
             InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry);
