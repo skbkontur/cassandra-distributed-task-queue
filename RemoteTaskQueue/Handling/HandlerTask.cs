@@ -131,6 +131,7 @@ namespace RemoteQueue.Handling
             try
             {
                 handleTasksMetaStorage.AddMeta(metaForWrite);
+                logger.InfoFormat("Changed task state. Task = {0}", task.Meta);
                 task.Meta = metaForWrite;
                 return true;
             }
