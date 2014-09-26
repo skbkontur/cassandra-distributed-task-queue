@@ -72,6 +72,8 @@
     <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\ChildTaskIndex.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\IChildTaskIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ColumnInfo.cs" />
     <Compile Include="Cassandra\Entities\Task.cs" />
     <Compile Include="Cassandra\Entities\TaskExceptionInfo.cs" />
@@ -144,6 +146,8 @@
     <Compile Include="LocalTasks\TaskQueue\TaskQueueException.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskResult.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskWrapper.cs" />
+    <Compile Include="Profiling\EmptyRemoteTaskQueueProfiler.cs" />
+    <Compile Include="Profiling\IRemoteTaskQueueProfiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="LocalTasks\Scheduling\ActionPeriodicTask.cs" />
     <Compile Include="LocalTasks\Scheduling\IPeriodicTask.cs" />

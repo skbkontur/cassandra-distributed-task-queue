@@ -5,6 +5,7 @@ using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -23,6 +24,7 @@ namespace RemoteQueue.Configuration
             Register(TicksHolder.columnFamilyName);
             Register(TaskMinimalStartTicksIndex.columnFamilyName);
             Register(EventLogRepository.columnFamilyName);
+            Register(ChildTaskIndex.columnFamilyName);
         }
 
         public ColumnFamily[] GetAllColumnFamilyNames()

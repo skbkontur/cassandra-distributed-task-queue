@@ -8,6 +8,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
+using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling;
 
@@ -19,12 +20,14 @@ namespace RemoteQueue.Cassandra.Repositories
             ITaskMetaInformationBlobStorage storage,
             ITaskMinimalStartTicksIndex minimalStartTicksIndex,
             IEventLogRepository eventLogRepository,
-            IGlobalTime globalTime)
+            IGlobalTime globalTime, 
+            IChildTaskIndex childTaskIndex)
         {
             this.storage = storage;
             this.minimalStartTicksIndex = minimalStartTicksIndex;
             this.eventLogRepository = eventLogRepository;
             this.globalTime = globalTime;
+            this.childTaskIndex = childTaskIndex;
         }
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long toTicks, params TaskState[] states)
@@ -43,6 +46,8 @@ namespace RemoteQueue.Cassandra.Repositories
             meta.LastModificationTicks = nowTicks;
             eventLogRepository.AddEvent(meta.Id, nowTicks);
             var columnInfo = minimalStartTicksIndex.IndexMeta(meta);
+            if(meta.State == TaskState.New)
+                childTaskIndex.AddMeta(meta);
             storage.Write(meta.Id, meta);
             if(OnIndexMeta != null)
                 OnIndexMeta(new Tuple<string, ColumnInfo>(meta.Id, columnInfo), meta);
@@ -86,5 +91,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IGlobalTime globalTime;
+        private readonly IChildTaskIndex childTaskIndex;
     }
 }
