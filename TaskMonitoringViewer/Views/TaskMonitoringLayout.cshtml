@@ -1,4 +1,5 @@
-﻿@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
+﻿@using SKBKontur.Catalogue.Core.Web.Models.HtmlModels
+@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
 <!doctype html>
 <html>
     <head>
@@ -21,5 +22,6 @@
     </head>
     <body class="adminTools subform" subform="page">
         @RenderBody()
+        @Html.Reference(ReferenceContainer.Body)
     </body>
 </html>

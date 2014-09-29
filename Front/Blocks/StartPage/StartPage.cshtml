@@ -1,4 +1,5 @@
-﻿@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
+﻿@using SKBKontur.Catalogue.Core.Web.Models.HtmlModels
+@using SKBKontur.Catalogue.Core.Web.RenderingHelpers
 <!doctype html>
 <!--[if IE]><![endif]-->
 <!--[if lt IE 7]><html class="nojs ie-lt7 ie-lt8 ie-lt9"><![endif]-->
@@ -33,6 +34,6 @@
     </div>
     @RenderSection("Layers")
     @Html.LightboxOverlay()
-    @Html.AutocompleteReferenceControl()
+    @Html.Reference(ReferenceContainer.Body)
 </body>
 </html>

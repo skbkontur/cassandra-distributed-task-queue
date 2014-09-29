@@ -151,7 +151,6 @@
     <Compile Include="Models\Default\DefaultModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RenderingHelpers\JSFunctionBuilder.cs" />
-    <Compile Include="RenderingHelpers\SelectReferenceProvider.cs" />
     <Compile Include="RenderingHelpers\UrlExtensions.cs" />
     <Compile Include="Sessions\Cookies.cs" />
     <Compile Include="Views\Shared\Primitives\RemoteTaskQueueHtmlPrimitives.cs" />

@@ -1,12 +1,10 @@
-﻿@using RemoteQueue.Cassandra.Entities
+﻿@using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton
 @using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskState
 @using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsData
 @using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsHeader
-@using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton
-@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
 @using SKBKontur.Catalogue.Core.Web.RenderingHelpers
-@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList
-@model TaskListPageModel
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.RenderingHelpers
+@model SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.TaskListPageModel
 @{
     var htmlModel = Model.HtmlModel;
     Layout = "TaskMonitoringLayout.cshtml";
@@ -19,8 +17,8 @@
 @section Scripts{
     var PageOptions = @Html.Raw(Model.GetPageOptions());
     $(document).ready(function() {
-        var pageController = new Page("AdminTools","RemoteTaskQueue");
-        pageController.run();
+    var pageController = new Page("AdminTools","RemoteTaskQueue");
+    pageController.run();
     });
 }
 @Html.AdminToolsHeader(new AdminToolsHeaderHtmlModel
@@ -100,49 +98,48 @@
 <div class="adminTools__button">@Html.ActionButton(searchPanelModel.SearchButton)</div>
 <div class="adminTools__filters__count">
     <span class="adminTools__filters__count__content">Найдено: @Html.Text(htmlModel.TaskCount)</span>
-    <a class="monitor-link" href="@Url.Action("FullScreenTaskCount", "RemoteTaskQueue", new { id = Model.PaginatorModelData.SearchRequestId })" target="_blank">Отслеживать результаты на отдельном экране</a>
+    <a class="monitor-link" href="@Url.Action("FullScreenTaskCount", "RemoteTaskQueue", new {id = Model.PaginatorModelData.SearchRequestId})" target="_blank">Отслеживать результаты на отдельном экране</a>
 </div>
 
 <table class="adminTools__data">
     <tr>
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "TaskId" })
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "TaskState" })
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "TaskName" })
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "EnqueueTime" })
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "StartExecutingTime" })
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "FinishExecutingTime" })
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "MinimalStartTime" })
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "Attempts" })
-        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel { Header = "ParentTaskId", IsLast = true })
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "TaskId"})
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "TaskState"})
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "TaskName"})
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "EnqueueTime"})
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "StartExecutingTime"})
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "FinishExecutingTime"})
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "MinimalStartTime"})
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "Attempts"})
+        @Html.AdminToolsDataHeader(new AdminToolsDataHeaderHtmlModel {Header = "ParentTaskId", IsLast = true})
     </tr>
     @{
         foreach(var taskModel in htmlModel.Tasks)
         {
             <tr class="adminTools__data__item @AdminToolsData.GetStateClass(taskModel.TaskState.Value.ToString())">
-                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Text = taskModel.TaskId.Value, Id = taskModel.TaskId.Id, Url = taskModel.TaskId.GetDetailsUrl(Url) })
+                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel {Text = taskModel.TaskId.Value, Id = taskModel.TaskId.Id, Url = taskModel.TaskId.GetDetailsUrl(Url)})
                 @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel
                     {
                         State = new AdminTaskStateHtmlModel
-                        {
-                            Id = taskModel.TaskState.Id,
-                            CancelUrl = taskModel.TaskState.GetCancelUrl(Url),
-                            RerunUrl = taskModel.TaskState.GetRerunUrl(Url),
-                            State = taskModel.TaskState.Value.ToString(),
-                            CanCancel = taskModel.TaskState.CanCancel
-                        }
+                            {
+                                Id = taskModel.TaskState.Id,
+                                CancelUrl = taskModel.TaskState.GetCancelUrl(Url),
+                                RerunUrl = taskModel.TaskState.GetRerunUrl(Url),
+                                State = taskModel.TaskState.Value.ToString(),
+                                CanCancel = taskModel.TaskState.CanCancel
+                            }
                     })
-                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Field = taskModel.TaskName })
-                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Field = taskModel.EnqueueTime })
-                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Field = taskModel.StartExecutingTime })
-                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Field = taskModel.FinishExecutingTime })
-                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Field = taskModel.MinimalStartTime })
-                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Field = taskModel.Attempts })
-                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel { Text = taskModel.ParentTaskId.Value, Id = taskModel.ParentTaskId.Id, Url = taskModel.ParentTaskId.GetDetailsUrl(Url)})
+                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel {Field = taskModel.TaskName})
+                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel {Field = taskModel.EnqueueTime})
+                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel {Field = taskModel.StartExecutingTime})
+                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel {Field = taskModel.FinishExecutingTime})
+                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel {Field = taskModel.MinimalStartTime})
+                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel {Field = taskModel.Attempts})
+                @Html.AdminToolsDataCol(new AdminToolsDataColHtmlModel {Text = taskModel.ParentTaskId.Value, Id = taskModel.ParentTaskId.Id, Url = taskModel.ParentTaskId.GetDetailsUrl(Url)})
             </tr>
         }
     }
 </table>
-@Html.Selects(Model.GetAllSelects())
 <div class="adminTools__paginator">
     @Html.Paginator(Model.PaginatorModelData)
 </div>
