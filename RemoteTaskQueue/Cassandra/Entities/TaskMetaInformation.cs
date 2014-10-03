@@ -4,8 +4,8 @@
     {
         public override string ToString()
         {
-            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}]", 
-                Name, Id, Attempts, ParentTaskId, TaskGroupLock, State);
+            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, LastModificationTickFuckup: {6}]", 
+                Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, LastModificationTicksFuckup);
         }
 
         public string Name { get; set; }
@@ -17,6 +17,7 @@
         public long? FinishExecutingTicks { get; set; }
 
         public long? LastModificationTicks { get; set; }
+        public long? LastModificationTicksFuckup { get; set; }
 
         public TaskState State { get; set; }
         public int Attempts { get; set; }
