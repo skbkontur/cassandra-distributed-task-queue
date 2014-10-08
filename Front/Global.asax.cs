@@ -3,9 +3,12 @@ using System.Web.Routing;
 
 using GroboTrace;
 
+using SKBKontur.Catalogue.Core.Configuration.Settings;
+using SKBKontur.Catalogue.Core.ObjectTreeWebViewer.Globals;
 using SKBKontur.Catalogue.Core.Web.Globals;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Controllers;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Globals;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
 {
@@ -15,6 +18,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
         {
             if(!ErrorRedirectHandler.Handle(Context))
                 ErrorHtmlHandler.HandleError(Context);
+        }
+
+        protected override void ConfigurePrecompiledViewEngines(IPrecompiledViewEngineCollection engineCollection, IApplicationSettings applicationSettings)
+        {
+            engineCollection.RegisterEngine(new WebWormsCommonPrecompiledMvcEngine());
+            engineCollection.RegisterEngine(new WebWormsPrecompiledMvcEngine());
+            engineCollection.RegisterEngine(new TaskMonitoringPrecompiledMvcEngine());
+            engineCollection.RegisterEngine(new ObjectTreeViewerPrecompiledMvcEngine());
         }
 
         protected override void OnBeginRequest()
