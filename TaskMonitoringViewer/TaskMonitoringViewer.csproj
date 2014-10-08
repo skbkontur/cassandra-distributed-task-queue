@@ -70,6 +70,9 @@
     <Reference Include="Catalogue.Objects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.ViewPrecompilation">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ViewPrecompilation.dll</HintPath>
+    </Reference>
     <Reference Include="GrobExp.Mutators">
       <HintPath>..\..\Assemblies\GrobExp.Mutators.dll</HintPath>
     </Reference>
@@ -82,6 +85,9 @@
     <Reference Include="log4net">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="RazorGenerator.Mvc">
+      <HintPath>..\..\Assemblies\RazorGenerator\RazorGenerator.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -105,6 +111,7 @@
     <Compile Include="Controllers\MonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
+    <Compile Include="Globals\TaskMonitoringPrecompiledMvcEngine.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
     <Compile Include="ModelBuilders\IRemoteTaskQueueHtmlModelsCreator.cs" />
     <Compile Include="ModelBuilders\RemoteTaskQueueHtmlModelsCreator.cs" />
@@ -185,6 +192,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\Assemblies\RazorGenerator.MSBuild\RazorGenerator.MsBuild.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(SolutionDir)..\Assemblies\Temp\
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)..\Assemblies\Temp\</PostBuildEvent>
