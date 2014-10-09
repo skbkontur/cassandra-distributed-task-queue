@@ -25,7 +25,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
             TicksTimeTo = new TextInput("SearchPanel_Ticks_To_Time");
             TicksDateTo = new TextInput("SearchPanel_Ticks_To_Date");
 
-            ShowPanel = new Link(new ByNthOfClass("slide_title_link_link", 0));
+            ShowPanel = new Link(BY.NthOfClass("slide_title_link_link", 0));
 
             TasksCount = new StaticText("TaskCount");
 
