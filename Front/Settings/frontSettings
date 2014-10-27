@@ -37,7 +37,7 @@ PropertiesPassword =
 PropertiesSearchUrls = http://vm-cs2:43234
 PropertiesSearchLogin = 
 PropertiesSearchPassword = 
-CertificatesUrls = http://vm-pservice2:2666
+CertificatesUrls = http://vm-pservice2:3666
 CertificatesLogin = 
 CertificatesPassword = 
 
