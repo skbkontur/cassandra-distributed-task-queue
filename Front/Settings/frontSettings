@@ -28,16 +28,16 @@ KonturPortalDomain = kepref.kontur
 
 #Топология портала
 PortalServiceName = iCat
-AuthUrls = http://razr04.kontur:38452
+AuthUrls = http://vm-pservice1:38452
 AuthLogin = 
 AuthPassword = 
-PropertiesUrls = http://razr11.kontur:5765
+PropertiesUrls = http://vm-cs1:5765
 PropertiesLogin = 
 PropertiesPassword = 
-PropertiesSearchUrls = http://razr11.kontur:43234
+PropertiesSearchUrls = http://vm-cs2:43234
 PropertiesSearchLogin = 
 PropertiesSearchPassword = 
-CertificatesUrls = http://razr04.kontur:8088
+CertificatesUrls = http://vm-pservice2:3666
 CertificatesLogin = 
 CertificatesPassword = 
 
