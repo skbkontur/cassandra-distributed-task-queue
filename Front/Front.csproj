@@ -73,6 +73,9 @@
     <Reference Include="Catalogue.Mutators">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Mutators.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.ReferencesCore">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ReferencesCore.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
@@ -150,6 +153,10 @@
     </Compile>
     <Compile Include="Models\Default\DefaultModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenderingHelpers\ReferenceProvider.cs" />
+    <Compile Include="RenderingHelpers\ReferenceItem.cs" />
+    <Compile Include="RenderingHelpers\IReferenceProvider.cs" />
+    <Compile Include="RenderingHelpers\SelectReferenceProvider.cs" />
     <Compile Include="RenderingHelpers\JSFunctionBuilder.cs" />
     <Compile Include="RenderingHelpers\UrlExtensions.cs" />
     <Compile Include="Sessions\Cookies.cs" />
