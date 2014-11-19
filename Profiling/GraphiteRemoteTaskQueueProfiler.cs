@@ -18,8 +18,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
     [IgnoredImplementation]
     public class GraphiteRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
-        public GraphiteRemoteTaskQueueProfiler(IGraphiteRemoteTaskQueueProfilerSettings settings, IGraphitePeriodicSender graphitePeriodicSender, IDistributedEventsProfiler distributedEventsProfiler)
+        public GraphiteRemoteTaskQueueProfiler(
+            IGraphiteRemoteTaskQueueProfilerSettings settings, 
+            IGraphitePeriodicSender graphitePeriodicSender, 
+            IDistributedEventsProfiler distributedEventsProfiler)
         {
+            this.settings = settings;
             this.graphitePeriodicSender = graphitePeriodicSender;
             this.distributedEventsProfiler = distributedEventsProfiler;
             statisticsAggregators = new ConcurrentDictionary<string, IStatisticsAggregator>();
@@ -28,7 +32,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
 
         public void ProcessTaskCreation(TaskMetaInformation meta)
         {
-            var statisticsKey = string.Format("EDI.services.RemoteTaskQueue.{0}.TasksCreated.{1}", Environment.MachineName, meta.Name);
+            var statisticsKey = FormatKeyName("{0}.TasksCreated.{1}", Environment.MachineName, meta.Name);
             distributedEventsProfiler.LogEvent(meta.Id, statisticsKey, DistributedEventType.Atomic);
         }
 
@@ -52,9 +56,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
                     if(!statisticsAggregators.TryGetValue(meta.Name, out aggregator))
                     {
                         aggregator = new StatisticsAggregator.StatisticsAggregator(aggregationPeriod, TimeSpan.FromTicks(aggregationPeriod.Ticks * 5));
-                        var avgStatisticsName = string.Format("EDI.services.RemoteTaskQueue.{0}.TaskExecutionTime.{1}_avg", Environment.MachineName, meta.Name);
+                        var avgStatisticsName = FormatKeyName("{0}.TaskExecutionTime.{1}.Average", Environment.MachineName, meta.Name);
                         graphitePeriodicSender.AddSource(new AverageStatisticsSource(aggregator, avgStatisticsName, aggregationPeriod), aggregationPeriod);
-                        var quantileStatisticsName = string.Format("EDI.services.RemoteTaskQueue.{0}.TaskExecutionTime.{1}_95", Environment.MachineName, meta.Name);
+                        var quantileStatisticsName = FormatKeyName("{0}.TaskExecutionTime.{1}.Quantile95", Environment.MachineName, meta.Name);
                         graphitePeriodicSender.AddSource(new QuantileStatisticsSource(aggregator, quantileStatisticsName, aggregationPeriod, 95), aggregationPeriod);
                         if(!statisticsAggregators.TryAdd(meta.Name, aggregator))
                             throw new Exception("Some strange concurrent behaviour. Should never happen");
@@ -75,7 +79,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
                     if(!statisticsAggregators.TryGetValue(dictionaryKey, out aggregator))
                     {
                         aggregator = new StatisticsAggregator.StatisticsAggregator(aggregationPeriod, TimeSpan.FromTicks(aggregationPeriod.Ticks * 5));
-                        var statisticsName = string.Format("EDI.services.RemoteTaskQueue.{0}.NumberOfExecutedTasks.{1}.{2}", Environment.MachineName, meta.Name, handleResult.FinishAction);
+                        var statisticsName = FormatKeyName("{0}.NumberOfExecutedTasks.{1}.{2}", Environment.MachineName, meta.Name, handleResult.FinishAction);
                         graphitePeriodicSender.AddSource(new AmountStatisticsSource(aggregator, statisticsName, aggregationPeriod), aggregationPeriod);
                         if(!statisticsAggregators.TryAdd(dictionaryKey, aggregator))
                             throw new Exception("Some strange concurrent behaviour. Should never happen");
@@ -85,12 +89,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
             aggregator.AddEvent(0);
         }
 
-        private static string GetStatisticsKey(TaskMetaInformation meta)
+        private string FormatKeyName(string format, params object[] args)
         {
-            return string.Format("EDI.services.RemoteTaskQueue.TaskWaitingForStartTime.{0}", meta.Name);
+            return settings.KeyNamePrefix + "." + string.Format(format, args);
+        }
+
+        private string GetStatisticsKey(TaskMetaInformation meta)
+        {
+            return FormatKeyName("TaskWaitingForStartTime.{0}", meta.Name);
         }
 
         private readonly ConcurrentDictionary<string, IStatisticsAggregator> statisticsAggregators;
+        private readonly IGraphiteRemoteTaskQueueProfilerSettings settings;
         private readonly IGraphitePeriodicSender graphitePeriodicSender;
         private readonly IDistributedEventsProfiler distributedEventsProfiler;
         private TimeSpan aggregationPeriod;

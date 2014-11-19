@@ -5,5 +5,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
     public interface IGraphiteRemoteTaskQueueProfilerSettings
     {
         TimeSpan AggregationPeriod { get; }
+        string KeyNamePrefix { get; }
     }
 }
