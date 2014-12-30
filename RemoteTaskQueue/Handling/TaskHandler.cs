@@ -24,6 +24,11 @@ namespace RemoteQueue.Handling
             return taskQueue.CreateTask(data, new CreateTaskOptions {ParentTaskId = Context.Id});
         }
 
+        protected IRemoteTask CreateNextTask(ITaskData data, string taskGroupLock)
+        {
+            return taskQueue.CreateTask(data, new CreateTaskOptions {ParentTaskId = Context.Id, TaskGroupLock = taskGroupLock});
+        }
+
         protected string ContinueWith(ITaskData data)
         {
             return CreateNextTask(data).Queue();
