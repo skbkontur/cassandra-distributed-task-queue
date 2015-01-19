@@ -157,6 +157,7 @@
     <Compile Include="Areas\LoginArea\Models\Enter\IEnterPageText.cs" />
     <Compile Include="Areas\LoginArea\Models\Enter\RuEnterPageText.cs" />
     <Compile Include="Configuration\Configurator.cs" />
+    <Compile Include="Configuration\EmptyAuthorizationStrategy.cs" />
     <Compile Include="Configuration\PluginRegistry.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Global.asax.cs">

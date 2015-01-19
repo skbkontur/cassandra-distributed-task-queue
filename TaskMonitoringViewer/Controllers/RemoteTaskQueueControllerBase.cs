@@ -220,7 +220,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
         protected virtual bool HasAccessToTaskData()
         {
-            return accessControlService.CheckAccess(Session.UserId, new ResourseGroupAccessRule {ResourseGroupName = ResourseGroups.SupervisorResourse});
+            return CheckAccess(ResourseGroups.SupervisorResourse);
         }
 
         private readonly ITaskDetailsModelBuilder taskDetailsModelBuilder;
