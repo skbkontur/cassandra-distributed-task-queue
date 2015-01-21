@@ -28,18 +28,18 @@ KonturPortalDomain = kepref.kontur
 
 #Топология портала
 PortalServiceName = iCat
-AuthUrls = http://vm-pservice1:38452
-AuthLogin = 
-AuthPassword = 
-PropertiesUrls = http://vm-portal1:5765,http://vm-portal2:5765
-PropertiesLogin = 
-PropertiesPassword = 
-PropertiesSearchUrls = http://vm-portal1:43234,http://vm-portal2:43234
-PropertiesSearchLogin = 
-PropertiesSearchPassword = 
-CertificatesUrls = http://vm-pservice2:3666
-CertificatesLogin = 
-CertificatesPassword = 
+AuthUrls = https://portal-services-test.kontur.ru/auth/
+AuthLogin = edi 
+AuthPassword = MiertEgderb7
+PropertiesUrls = https://portal-services-test.kontur.ru/UsersProps/
+PropertiesLogin = edi 
+PropertiesPassword = MiertEgderb7
+PropertiesSearchUrls = https://portal-services-test.kontur.ru/UsersPropsSearch/
+PropertiesSearchLogin = edi 
+PropertiesSearchPassword = MiertEgderb7
+CertificatesUrls = https://portal-services-test.kontur.ru/certs/
+CertificatesLogin = edi 
+CertificatesPassword = MiertEgderb7
 
 #Настройки для интеграции с Диадоком
 DiadocApiClientId = ecrCat-ad1a1c9f5ce84af197f0f8c7f4f215d5
