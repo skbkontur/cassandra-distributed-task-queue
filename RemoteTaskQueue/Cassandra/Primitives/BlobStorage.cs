@@ -6,7 +6,6 @@ using GroBuf;
 
 using MoreLinq;
 
-using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -27,8 +26,6 @@ namespace RemoteQueue.Cassandra.Primitives
         {
             var connection = RetrieveColumnFamilyConnection();
             long nowTicks = globalTime.UpdateNowTicks();
-            if(element is TaskMetaInformation)
-                (element as TaskMetaInformation).LastModificationTicksFuckup = nowTicks;
             connection.AddColumn(id, new Column
                 {
                     Name = dataColumnName,
