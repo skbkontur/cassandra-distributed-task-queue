@@ -48,6 +48,7 @@
     <Compile Include="ByteArrayTaskData.cs" />
     <Compile Include="MonitoringTestTaskData\DeltaTaskData.cs" />
     <Compile Include="FileIdTaskData.cs" />
+    <Compile Include="MonitoringTestTaskData\SlowTaskData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FakeFailTaskData.cs" />
     <Compile Include="FakePeriodicTaskData.cs" />

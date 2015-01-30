@@ -2,7 +2,7 @@
 
 namespace FunctionalTests
 {
-    public class FunctionalTestBase : FunctionalTestBaseWithoutServices
+    public abstract class FunctionalTestBase : FunctionalTestBaseWithoutServices
     {
         public override void SetUp()
         {

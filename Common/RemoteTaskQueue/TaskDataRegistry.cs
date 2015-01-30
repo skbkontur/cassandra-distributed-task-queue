@@ -15,6 +15,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
             Register<ByteArrayTaskData>("ByteArrayTaskData");
             Register<FileIdTaskData>("FileIdTaskData");
 
+            Register<SlowTaskData>("SlowTaskData");
             Register<AlphaTaskData>("AlphaTaskData");
             Register<BetaTaskData>("BetaTaskData");
             Register<DeltaTaskData>("DeltaTaskData");

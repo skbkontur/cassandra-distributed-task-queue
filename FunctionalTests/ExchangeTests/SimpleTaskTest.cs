@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -96,18 +95,6 @@ namespace FunctionalTests.ExchangeTests
                 {
                     {taskId, TaskState.Finished}
                 });
-        }
-
-        private void WaitFor(Func<bool> func, TimeSpan timeout)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            while(stopwatch.Elapsed < timeout)
-            {
-                Thread.Sleep(99);
-                if(func())
-                    return;
-            }
-            Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
         }
 
         private void Wait(string[] taskIds, int criticalValue, int ms = 5000)

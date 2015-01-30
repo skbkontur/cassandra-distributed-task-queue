@@ -1,14 +1,17 @@
-﻿using System.Linq;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 
 using ExchangeService.UserClasses;
 
 using FunctionalTests.Logging;
 
-using GroBuf;
-using GroBuf.DataMembersExtracters;
-
 using GroboContainer.Core;
 using GroboContainer.Impl;
+
+using GroBuf;
+using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
@@ -20,12 +23,13 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.ServiceLib;
 
 namespace FunctionalTests
 {
     [TestFixture]
-    public class FunctionalTestBaseWithoutServices
+    public abstract class FunctionalTestBaseWithoutServices
     {
         [SetUp]
         public virtual void SetUp()
@@ -45,13 +49,27 @@ namespace FunctionalTests
                             Name = TestCassandraCounterBlobRepository.columnFamilyName,
                         }
                 }).ToArray();
-
+            var client = Container.Get<IRemoteTaskQueueMonitoringServiceClient>();
+            client.DropLocalStorage();
+            client.ActualizeDatabaseScheme();
             DropAndCreateDatabase(columnFamilies);
         }
 
         [TearDown]
         public virtual void TearDown()
         {
+        }
+
+        protected void WaitFor(Func<bool> func, TimeSpan timeout, int checkTimeout = 99)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            while(stopwatch.Elapsed < timeout)
+            {
+                Thread.Sleep(checkTimeout);
+                if(func())
+                    return;
+            }
+            Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
         }
 
         protected Container Container { get; private set; }
