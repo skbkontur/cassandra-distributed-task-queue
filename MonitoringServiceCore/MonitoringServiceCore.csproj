@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -56,6 +58,10 @@
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
+    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
@@ -73,6 +79,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\MonitoringServiceHttpHandler.cs" />
+    <Compile Include="Implementation\Counters\CounterService.cs" />
+    <Compile Include="Implementation\Counters\CounterSettings.cs" />
+    <Compile Include="Implementation\Counters\IMetaConsumer.cs" />
+    <Compile Include="Implementation\Counters\IProcessedTasksCounter.cs" />
+    <Compile Include="Implementation\Counters\MetaProvider.cs" />
+    <Compile Include="Implementation\Counters\ProcessedTasksCounter.cs" />
+    <Compile Include="Implementation\Counters\SnapshotsManager.cs" />
+    <Compile Include="Implementation\Counters\Utils\DateTimeFormatter.cs" />
+    <Compile Include="Implementation\Counters\Utils\ThreadSafeInitializer.cs" />
     <Compile Include="Implementation\ProcessedEvents.cs" />
     <Compile Include="Implementation\IProcessedEvents.cs" />
     <Compile Include="Implementation\ILocalStorageUpdater.cs" />
@@ -83,6 +98,8 @@
     <Compile Include="Implementation\MonitoringServiceImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\IMonitoringServiceSettings.cs" />
+    <Compile Include="Sheduler\SaveSnapshotTask.cs" />
+    <Compile Include="Sheduler\CounterUpdaterTask.cs" />
     <Compile Include="Sheduler\IMonitoringServiceSchedulableRunner.cs" />
     <Compile Include="Sheduler\IMonitoringTask.cs" />
     <Compile Include="Settings\MonitoringServiceSettings.cs" />

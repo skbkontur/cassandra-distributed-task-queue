@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,8 +34,16 @@
     <Reference Include="Catalogue.TestCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
+    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Rhino.Mocks, Version=3.6.0.0, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,15 +55,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TasksCacheTest.cs" />
+    <Compile Include="MonitoringServiceCore\MetaProviderTest.cs" />
+    <Compile Include="MonitoringServiceCore\ProcessedTasksCounterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskCounterTests\TaskCounterTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
+      <Project>{c86636e6-89c3-4930-a6bd-ccdf61b5d8f1}</Project>
+      <Name>MonitoringDataTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonitoringServiceCore\MonitoringServiceCore.csproj">
+      <Project>{eb9a3dbc-5c00-4774-93d6-925943dde4cb}</Project>
+      <Name>MonitoringServiceCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{d8d12ac6-ec15-4ea9-92be-80ee41a1e152}</Project>
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

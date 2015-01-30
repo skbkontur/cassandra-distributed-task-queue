@@ -9,6 +9,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
     public interface IRemoteTaskQueueMonitoringServiceStorage
     {
         int GetCount(Expression<Func<MonitoringTaskMetadata, bool>> criterion);
+        TaskCount GetProcessingTaskCount();
+        void RestartProcessgingTaskCounter(DateTime? fromTime);
         IEnumerable<MonitoringTaskMetadata> RangeSearch(Expression<Func<MonitoringTaskMetadata, bool>> criterion, int rangeFrom, int count, Expression<Func<MonitoringTaskMetadata, bool>> sortRules = null);
         IEnumerable<object> GetDistinctValues(Expression<Func<MonitoringTaskMetadata, bool>> criterion, Expression<Func<MonitoringTaskMetadata, object>> columnPath);
         IEnumerable<string> GetChildrenTaskIds(string taskId);

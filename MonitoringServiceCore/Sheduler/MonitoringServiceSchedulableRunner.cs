@@ -1,18 +1,24 @@
+using log4net;
+
 using RemoteQueue.LocalTasks.Scheduling;
 
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation.Counters;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Settings;
-
-using log4net;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 {
     public class MonitoringServiceSchedulableRunner : IMonitoringServiceSchedulableRunner
     {
-        public MonitoringServiceSchedulableRunner(IMonitoringServiceSettings settings, IMonitoringTask monitoringTask, IPeriodicTaskRunner periodicTaskRunner)
+        public MonitoringServiceSchedulableRunner(IMonitoringServiceSettings settings,
+                                                  IMonitoringTask monitoringTask, IPeriodicTaskRunner periodicTaskRunner,
+                                                  CounterUpdaterTask counterUpdaterTask,
+                                                  SaveSnapshotTask saveSnapshotTask)
         {
             this.settings = settings;
             this.monitoringTask = monitoringTask;
             this.periodicTaskRunner = periodicTaskRunner;
+            this.counterUpdaterTask = counterUpdaterTask;
+            this.saveSnapshotTask = saveSnapshotTask;
         }
 
         public void Stop()
@@ -24,6 +30,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
                     if(worked)
                     {
                         periodicTaskRunner.Unregister(monitoringTask.Id, 15000);
+                        periodicTaskRunner.Unregister(counterUpdaterTask.Id, 15000);
+                        periodicTaskRunner.Unregister(saveSnapshotTask.Id, 15000);
                         worked = false;
                         logger.Info("Stop MonitoringService");
                     }
@@ -40,6 +48,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
                     if(!worked)
                     {
                         periodicTaskRunner.Register(monitoringTask, settings.PeriodicInterval);
+                        periodicTaskRunner.Register(counterUpdaterTask, CounterSettings.CounterUpdateInterval);
+                        periodicTaskRunner.Register(saveSnapshotTask, CounterSettings.CounterSaveSnapshotInterval);
                         worked = true;
                         logger.InfoFormat("Start MonitoringShedulableRunner: schedule monitoringTask with period {0}", settings.PeriodicInterval);
                     }
@@ -51,6 +61,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
         private readonly IPeriodicTask monitoringTask;
         private readonly object lockObject = new object();
         private readonly IPeriodicTaskRunner periodicTaskRunner;
+        private readonly CounterUpdaterTask counterUpdaterTask;
+        private readonly SaveSnapshotTask saveSnapshotTask;
 
         private volatile bool worked;
 

@@ -51,6 +51,7 @@
     <Compile Include="MonitoringEntities\MonitoringSearchRequest.cs" />
     <Compile Include="MonitoringEntities\MonitoringTaskMetadata.cs" />
     <Compile Include="MonitoringEntities\Primitives\TaskState.cs" />
+    <Compile Include="MonitoringEntities\TaskCount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Queries\MonitoringGetCountQuery.cs" />
     <Compile Include="Queries\MonitoringGetDistinctValuesQuery.cs" />

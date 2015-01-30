@@ -1,6 +1,9 @@
-﻿using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
+﻿using System;
+
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation;
+using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation.Counters;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
@@ -28,6 +31,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
         public int GetCount(MonitoringGetCountQuery monitoringGetCountQuery)
         {
             return monitoringServiceImpl.GetCount(monitoringGetCountQuery);
+        }
+
+        [HttpMethod]
+        public TaskCount GetProcessingTaskCount()
+        {
+            return monitoringServiceImpl.GetProcessingTaskCount();
+        }
+
+        [HttpMethod]
+        public void RestartProcessgingTaskCounter(DateTime? fromTime)
+        {
+            monitoringServiceImpl.RestartProcessgingTaskCounter(fromTime);
         }
 
         [HttpMethod]

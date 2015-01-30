@@ -1,4 +1,6 @@
-﻿using SKBKontur.Catalogue.Expressions.ExpressionTrees;
+﻿using System;
+
+using SKBKontur.Catalogue.Expressions.ExpressionTrees;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
@@ -11,6 +13,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
         MonitoringTaskMetadata[] Search(ExpressionTree criterion, ExpressionTree sortRules, int count = 1000, int rangeFrom = 0);
         object[] GetDistinctValues(ExpressionTree criterion, ExpressionTree columnPath);
         int GetCount(ExpressionTree criterion);
+        TaskCount GetProcessingTaskCount();
+        void RestartProcessgingTaskCounter(DateTime? fromTime);
         MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId);
     }
 }
