@@ -1,6 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Web.Mvc;
+
+using GrobExp.Mutators;
+
+using GroboContainer.Core;
 
 using log4net;
 
@@ -65,8 +71,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             try
             {
                 totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
-                fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount, 
-                    x => x.MinimalStartTicks.Descending() && x.Id.Descending()).ToArray();
+                fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount,
+                                                                                        x => x.MinimalStartTicks.Descending() && x.Id.Descending()).ToArray();
             }
             catch(DomainIsDisabledException e)
             {
@@ -113,10 +119,51 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return Json(totalCount, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public JsonResult GetProcessingTaskCount()
+        {
+            int count;
+            DateTime time;
+            DateTime startTime;
+            try
+            {
+                var c = remoteTaskQueueMonitoringServiceStorage.GetProcessingTaskCount();
+                time = new DateTime(c.UpdateTicks, DateTimeKind.Utc);
+                startTime = new DateTime(c.StartTicks, DateTimeKind.Utc);
+                count = c.Count;
+            }
+            catch(DomainIsDisabledException e)
+            {
+                logger.Error("Can not get TaskCount", e);
+                time = jsMinTime;
+                startTime = jsMinTime;
+                count = 0;
+            }
+            return Json(new
+                {
+                    Count = count,
+                    UpdateTimeJsTicks = ConvertToJsTicksLocal(time),
+                    StartTimeJsTicks = ConvertToJsTicksLocal(startTime),
+                }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public int RestartCounter(TaskListModelData pageModelData)
+        {
+            remoteTaskQueueMonitoringServiceStorage.RestartProcessgingTaskCounter(DateAndTime.ToDateTime(pageModelData.RestartTime));
+            return 1;
+        }
+
         [AcceptVerbs(HttpVerbs.Get)]
         public ActionResult FullScreenTaskCount(string id)
         {
             return View("FullScreenTaskCount", (object)id);
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult FullScreenTaskCountFast()
+        {
+            return View("FullScreenTaskCountFast");
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -222,6 +269,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         {
             return CheckAccess(ResourseGroups.SupervisorResourse);
         }
+
+        private static long ConvertToJsTicksLocal(DateTime time)
+        {
+            return (long)time.ToLocalTime().Subtract(jsMinTime).TotalMilliseconds;
+        }
+
+        private static readonly DateTime jsMinTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).ToLocalTime();
 
         private readonly ITaskDetailsModelBuilder taskDetailsModelBuilder;
         private readonly IRemoteTaskQueue remoteTaskQueue;

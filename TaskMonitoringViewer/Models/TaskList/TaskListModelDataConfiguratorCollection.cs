@@ -22,6 +22,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskLi
             configurator.Target(data => data.SearchPanel.Ticks.To.Date).Date();
             configurator.Target(data => data.SearchPanel.StartExecutedTicks.To.Date).Date();
             configurator.Target(data => data.SearchPanel.MinimalStartTicks.To.Date).Date();
+            configurator.Target(x => x.RestartTime.Time).Time();
+            configurator.Target(x => x.RestartTime.Date).Date();
+
         }
     }
 }

@@ -123,6 +123,7 @@
     <Compile Include="Models\Primitives\TaskStateHtmlModel.cs" />
     <Compile Include="Models\TaskDetails\TaskDetailsHtmlModel.cs" />
     <Compile Include="Models\TaskDetails\TaskDetailsPageModel.cs" />
+    <Compile Include="Models\TaskList\CounterHtmlModel.cs" />
     <Compile Include="Models\TaskList\SearchPanel\DateTimeRangeModel.cs" />
     <Compile Include="ModelBuilders\TaskList\ITaskListHtmlModelBuilder.cs" />
     <Compile Include="Models\TaskList\SearchPanel\Pair.cs" />
@@ -170,6 +171,7 @@
     <EmbeddedResource Include="Views\_TaskDateTime.cshtml" />
     <EmbeddedResource Include="Views\_ExceptionInfo.cshtml" />
     <EmbeddedResource Include="Views\FullScreenTaskCount.cshtml" />
+    <EmbeddedResource Include="Views\FullScreenTaskCountFast.cshtml" />
     <None Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

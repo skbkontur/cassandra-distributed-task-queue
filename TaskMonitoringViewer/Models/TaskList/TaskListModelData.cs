@@ -1,3 +1,4 @@
+using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Core.Web.PageModels;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel;
 
@@ -8,5 +9,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskLi
         public int TaskCount { get; set; }
         public SearchPanelModelData SearchPanel { get; set; }
         public TaskMetaInfoModel[]  TaskModels { get; set; }
+        public DateAndTime RestartTime { get; set; }
     }
 }

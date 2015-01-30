@@ -8,5 +8,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskLi
         public TextHtmlModel TaskCount { get; set; }
         public SearchPanelHtmlModel SearchPanel { get; set; }
         public TaskMetaInfoHtmlModel[] Tasks { get; set; }
+        public CounterHtmlModel Counter { get; set; }
     }
 }
