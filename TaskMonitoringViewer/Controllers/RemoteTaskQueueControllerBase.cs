@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 using System.Web.Mvc;
-
-using GrobExp.Mutators;
-
-using GroboContainer.Core;
 
 using log4net;
 
@@ -42,7 +36,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         protected RemoteTaskQueueControllerBase(RemoteTaskQueueControllerBaseParameters remoteTaskQueueControllerBaseParameters)
             : base(remoteTaskQueueControllerBaseParameters.AuthenticatedControllerBaseParameters)
         {
-            accessControlService = remoteTaskQueueControllerBaseParameters.AccessControlService;
             extender = remoteTaskQueueControllerBaseParameters.CatalogueExtender;
             taskDetailsModelBuilder = remoteTaskQueueControllerBaseParameters.TaskDetailsModelBuilder;
             taskDetailsHtmlModelBuilder = remoteTaskQueueControllerBaseParameters.TaskDetailsHtmlModelBuilder;
@@ -142,8 +135,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return Json(new
                 {
                     Count = count,
-                    UpdateTimeJsTicks = ConvertToJsTicksLocal(time),
-                    StartTimeJsTicks = ConvertToJsTicksLocal(startTime),
+                    UpdateTimeJsTicks = ConvertToJsTicksUtc(time),
+                    StartTimeJsTicks = ConvertToJsTicksUtc(startTime),
                 }, JsonRequestBehavior.AllowGet);
         }
 
@@ -270,12 +263,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return CheckAccess(ResourseGroups.SupervisorResourse);
         }
 
-        private static long ConvertToJsTicksLocal(DateTime time)
+        private static long ConvertToJsTicksUtc(DateTime time)
         {
-            return (long)time.ToLocalTime().Subtract(jsMinTime).TotalMilliseconds;
+            return (long)time.Subtract(jsMinTime).TotalMilliseconds;
         }
 
-        private static readonly DateTime jsMinTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).ToLocalTime();
+        private static readonly DateTime jsMinTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private readonly ITaskDetailsModelBuilder taskDetailsModelBuilder;
         private readonly IRemoteTaskQueue remoteTaskQueue;
@@ -286,7 +279,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage;
         private readonly ITaskListHtmlModelBuilder taskListModelHtmlBuilder;
         private readonly ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder;
-        private readonly IAccessControlService accessControlService;
         private readonly IWebMutatorsTreeCollection<TaskListModelData> webMutatorsTreeCollection;
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueControllerBase));

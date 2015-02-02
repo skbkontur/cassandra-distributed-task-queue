@@ -56,7 +56,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public void FetchMetas()
         {
-            if(!CanWork()) return;
+            logger.InfoFormat("Fetch request");
+            if(!CanWork())
+            {
+                logger.InfoFormat("Fetch request - stopped");
+
+                return;
+
+            }
             lock(updateLock)
                 UpdateNoLock();
         }
@@ -160,6 +167,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private void UpdateNoLock()
         {
             var nowTicks = globalTime.GetNowTicks();
+            logger.InfoFormat("Fetch metas at {0}", DateTimeFormatter.FormatWithMsAndTicks(nowTicks));
             var events = eventLogRepository.GetEvents(GetLastTicks(), maxBatch);
 
             var notEmpty = false;
