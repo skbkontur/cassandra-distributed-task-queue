@@ -41,14 +41,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         {
             logger.InfoFormat("LoadSnapshot begin");
             var bytes = ReadOrNull();
+            InternalSnapshot internalSnapshot;
+            var isBad = false;
             if(bytes == null)
             {
-                logger.InfoFormat("No snapshot found");
-                return;
+                logger.WarnFormat("No snapshot found");
+                internalSnapshot = emptyOldSnapshot;
             }
-            var internalSnapshot = serializer.Deserialize<InternalSnapshot>(bytes);
-            var isBad = IsSnapshotBad(internalSnapshot);
-            logger.InfoFormat("Snapshot found. version={0}. isBad={1}", internalSnapshot.Version, isBad);
+            else
+            {
+                internalSnapshot = serializer.Deserialize<InternalSnapshot>(bytes);
+                isBad = IsSnapshotBad(internalSnapshot);
+                logger.InfoFormat("Snapshot found. version={0}. isBad={1}", internalSnapshot.Version, isBad);
+            }
             if(!isBad)
                 LoadSnapshots(internalSnapshot);
 
@@ -151,6 +156,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private readonly ISerializer serializer;
 
         private readonly ILog logger = LogManager.GetLogger("SnapshotsManager");
+        private readonly InternalSnapshot emptyOldSnapshot = new InternalSnapshot(version, new MetaProvider.MetaProviderSnapshot(0, 0, null, null), new ProcessedTasksCounter.CounterSnapshot(null, 0, 0));
 
         private class InternalSnapshot
         {
