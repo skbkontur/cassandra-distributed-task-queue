@@ -19,6 +19,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             return FormatWithMsAndTicks(new DateTime(ticksUtc, DateTimeKind.Utc));
         }
 
+        public static string FormatTimeSpan(TimeSpan span)
+        {
+            return span.ToString("c") + " s";
+        }
+
         private const string formatWithMs = "dd.MM.yyyy HH:mm:ss.fff";
     }
 }

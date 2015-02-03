@@ -11,6 +11,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 {
     public class ProcessedTasksCounter : IProcessedTasksCounter
     {
+        public ProcessedTasksCounter()
+        {
+            Reset();
+        }
+
         public void NewMetainformationAvailable(TaskMetaInformation[] metas, long nowTime)
         {
             lock(lockObject)
@@ -22,7 +27,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     if(meta.LastModificationTicks.HasValue)
                         stateTime = Math.Max(meta.LastModificationTicks.Value, stateTime);
                 }
-                Interlocked.Exchange(ref lastCalculationTime, Math.Max(stateTime, nowTime));
+                var calculatedTime = stateTime == 0 ? nowTime : stateTime;
+                Interlocked.Exchange(ref lastCalculationTime, calculatedTime);
             }
         }
 

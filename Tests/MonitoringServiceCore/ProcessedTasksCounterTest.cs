@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System;
+
+using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 
@@ -21,7 +23,7 @@ namespace RemoteQueue.Tests.MonitoringServiceCore
             CheckCounts(counter, 1, 100);
 
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("a", TaskState.Finished, 100)), 101);
-            CheckCounts(counter, 0, 101);
+            CheckCounts(counter, 0, 100);
         }
 
         [Test]
@@ -57,13 +59,13 @@ namespace RemoteQueue.Tests.MonitoringServiceCore
             var counter = new ProcessedTasksCounter();
 
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("a", TaskState.New, 10)), 11);
-            CheckCounts(counter, 1, 11);
+            CheckCounts(counter, 1, 10);
 
             counter.Reset();
             CheckCounts(counter, 0, 0);
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("a", TaskState.Fatal, 11)), 12);
 
-            CheckCounts(counter, 0, 12);
+            CheckCounts(counter, 0, 11);
         }
 
         [Test]
@@ -134,7 +136,7 @@ namespace RemoteQueue.Tests.MonitoringServiceCore
             CheckCounts(counter, 0, 10);
 
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("a", TaskState.Canceled, 10)), 11);
-            CheckCounts(counter, 0, 11);
+            CheckCounts(counter, 0, 10);
         }
 
         [Test]

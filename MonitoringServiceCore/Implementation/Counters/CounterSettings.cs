@@ -8,6 +8,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         public static readonly TimeSpan MaxHistoryDepth = TimeSpan.FromDays(3);
         public static readonly TimeSpan CounterUpdateInterval = TimeSpan.FromSeconds(2);
         public static readonly TimeSpan CounterSaveSnapshotInterval = TimeSpan.FromMinutes(1);
+        public static readonly TimeSpan SlowCalculationIntervalMs = TimeSpan.FromSeconds(10);
         public const int MaxStoredSnapshotLength = 2000;
         public const int MaxBatch = 1000;
     }

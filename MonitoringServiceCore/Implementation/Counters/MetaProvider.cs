@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -56,13 +57,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         public void FetchMetas()
         {
-            logger.InfoFormat("Fetch request");
             if(!CanWork())
             {
                 logger.InfoFormat("Fetch request - stopped");
-
                 return;
-
             }
             lock(updateLock)
                 UpdateNoLock();
@@ -167,29 +165,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         private void UpdateNoLock()
         {
             var nowTicks = globalTime.GetNowTicks();
-            logger.InfoFormat("Fetch metas at {0}", DateTimeFormatter.FormatWithMsAndTicks(nowTicks));
-            long lastTicks = GetLastTicks();
-            logger.InfoFormat("LastTicks:{0}", DateTimeFormatter.FormatWithMsAndTicks(lastTicks));
+            var lastTicks = GetLastTicks();
             var events = eventLogRepository.GetEvents(lastTicks, maxBatch);
-            logger.InfoFormat("Events got");
 
+            var w = Stopwatch.StartNew();
             var notEmpty = false;
             events.Batch(maxBatch).ForEach(enumerable =>
                 {
                     notEmpty = true;
-                    ProcessEventsBatch(enumerable, nowTicks);
+                    ProcessEventsBatch(w, enumerable, nowTicks);
                 });
 
             if(!notEmpty)
-            {
-                logger.InfoFormat("Empty batch");
-                ProcessEventsBatch(new TaskMetaUpdatedEvent[0], nowTicks);
-                logger.InfoFormat("Empty batch ok");
-            }
+                ProcessEventsBatch(w, new TaskMetaUpdatedEvent[0], nowTicks);
 
             lock(dataLock)
                 lastUpdateTicks = nowTicks;
-            logger.InfoFormat("Fetch metas done");
         }
 
         private void CollectUnprocessedEventsGarbage(Dictionary<string, long> events, long nowTicks)
@@ -220,9 +211,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 readEvents.Remove(id);
         }
 
-        private void ProcessEventsBatch(IEnumerable<TaskMetaUpdatedEvent> events, long nowTicks)
+        private void ProcessEventsBatch(Stopwatch w, IEnumerable<TaskMetaUpdatedEvent> events, long nowTicks)
         {
-            logger.InfoFormat("Process batch begin");
+            var elapesed = w.Elapsed;
             Dictionary<string, long> readEventsCopy;
             Dictionary<string, long> notReadEventsCopy;
             lock(dataLock)
@@ -231,22 +222,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 notReadEventsCopy = new Dictionary<string, long>(notReadEvents);
             }
 
-            logger.InfoFormat("Collect garbage");
             CollectAlreadyReadEventsGarbage(readEventsCopy, nowTicks);
             CollectUnprocessedEventsGarbage(notReadEventsCopy, nowTicks);
-            logger.InfoFormat("Collect garbage ok");
-
+            long maxTicks = 0;
             foreach(var @event in events)
             {
                 var taskId = @event.TaskId;
+                maxTicks = Math.Max(maxTicks, @event.Ticks);
                 UpdateMaxTicks(notReadEventsCopy, taskId, @event.Ticks);
             }
-            logger.InfoFormat("RemoveAlreadyRead. was={0}", notReadEventsCopy.Count);
+            if(elapesed > CounterSettings.SlowCalculationIntervalMs)
+            {
+                logger.InfoFormat("Update is slow. Time elapsed={0}. Read Events before {1}. Now={2}",
+                                  DateTimeFormatter.FormatTimeSpan(elapesed),
+                                  DateTimeFormatter.FormatWithMsAndTicks(maxTicks),
+                                  DateTimeFormatter.FormatWithMsAndTicks(nowTicks));
+            }
             RemoveAlreadyReadEvents(notReadEventsCopy, readEventsCopy);
-            logger.InfoFormat("RemoveAlreadyRead ok. new={0}", notReadEventsCopy.Count);
-            logger.InfoFormat("get metas begin");
             var metas = handleTasksMetaStorage.GetMetas(notReadEventsCopy.Keys.ToArray());
-            logger.InfoFormat("get metas end. metas: {0}", metas.Length);
             var newMetas = new List<TaskMetaInformation>();
             foreach(var meta in metas)
             {
@@ -260,16 +253,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     }
                 }
             }
-            logger.InfoFormat("Counter update. metas: {0}", newMetas.Count);
             NotifyConsumers(newMetas.ToArray(), nowTicks);
-            logger.InfoFormat("Counter update ok");
 
             lock(dataLock)
             {
                 notReadEvents = notReadEventsCopy;
                 readEvents = readEventsCopy;
             }
-            logger.InfoFormat("Process batch end");
         }
 
         private static void RemoveAlreadyReadEvents(Dictionary<string, long> notReadEventsCopy, Dictionary<string, long> readEventsCopy)
