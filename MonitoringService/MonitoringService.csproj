@@ -41,21 +41,11 @@
     <Reference Include="Catalogue.Core.CommonBusinessObjects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.Core.SQL">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.SQL.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Core.SynchronizationStorage">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.SynchronizationStorage.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.Expressions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Expressions.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.Configuration.Settings">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
     </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
@@ -64,16 +54,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
@@ -82,8 +64,8 @@
   <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common %28Solution.RemoteTaskQueue\Common%29</Name>
+      <Project>{27afc62a-6f6b-443e-a83b-20d6714d8faf}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonitoringServiceCore\MonitoringServiceCore.csproj">
       <Project>{EB9A3DBC-5C00-4774-93D6-925943DDE4CB}</Project>

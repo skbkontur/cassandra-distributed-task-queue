@@ -35,29 +35,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.AccessControl">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.AccessControl.LocalImplementation">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.CassandraStorageCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.CommonBusinessObjects">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.SynchronizationStorage">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.SynchronizationStorage.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.IndexServiceClient">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.IndexServiceClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.ServiceLib">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.Configuration.Settings">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.TestCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
@@ -72,19 +51,11 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="WebDriver">
       <HintPath>..\..\Assemblies\Selenium\WebDriver.dll</HintPath>
     </Reference>
@@ -103,43 +74,35 @@
     <Compile Include="MonitoringTests\FileDataTest.cs" />
     <Compile Include="MonitoringTests\CancelAndRerunTest.cs" />
     <Compile Include="PageBases\CommonPageBase.cs" />
-    <Compile Include="PageBases\DefaultPage.cs" />
-    <Compile Include="PageBases\EnterPage.cs" />
     <Compile Include="PageBases\TaskDetailsPage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestBases\MonitoringFunctionalTestBase.cs" />
     <Compile Include="PageBases\TasksListPage.cs" />
-    <Compile Include="TestBases\TestBaseExtensions.cs" />
-    <Compile Include="zzzRestoreStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common %28Solution.RemoteTaskQueue\Common%29</Name>
+      <Project>{27afc62a-6f6b-443e-a83b-20d6714d8faf}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\ExchangeService\ExchangeService.csproj">
-      <Project>{B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1}</Project>
-      <Name>ExchangeService %28Solution.RemoteTaskQueue\ExchangeService%29</Name>
+      <Project>{b505aee0-0cd1-4c54-af2a-c7d1ee3d4ef1}</Project>
+      <Name>ExchangeService</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
-      <Project>{B0AAD20D-160A-4D99-877B-B464C295E36F}</Project>
-      <Name>MonitoringServiceClient %28Solution.RemoteTaskQueue\MonitoringServiceClient%29</Name>
+      <Project>{b0aad20d-160a-4d99-877b-b464c295e36f}</Project>
+      <Name>MonitoringServiceClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
     <ProjectReference Include="..\Storage\Storage.csproj">
-      <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
-      <Name>Storage %28Solution.RemoteTaskQueue\Storage%29</Name>
+      <Project>{07f04a01-2ea7-4cd0-9ed5-d0c6d6e98e6b}</Project>
+      <Name>Storage</Name>
     </ProjectReference>
     <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
       <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
       <Name>TaskDatas</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskMonitoringViewer\TaskMonitoringViewer.csproj">
-      <Project>{8BA574CA-6C25-414F-9E99-1E7F032BB962}</Project>
-      <Name>TaskMonitoringViewer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

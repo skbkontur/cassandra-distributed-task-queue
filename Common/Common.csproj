@@ -34,12 +34,6 @@
     <Reference Include="Cassandra.CassandraClient">
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.AccessControl">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.AccessControl.LocalImplementation">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
     </Reference>
@@ -49,18 +43,6 @@
     <Reference Include="Catalogue.ClientLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.CommonBusinessObjects">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.IndexServiceClient">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.IndexServiceClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.ServiceLib">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.Configuration.Settings">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
     </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
@@ -74,11 +56,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExchangeServiceClient.cs" />

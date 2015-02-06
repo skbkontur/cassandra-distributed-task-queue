@@ -71,7 +71,6 @@
     <Content Include="Projects\Services\ExchangeService.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Projects\Services\IndexService.xml" />
     <Content Include="Projects\Services\MonitoringService.xml" />
     <Content Include="Projects\Tests\Tests.xml" />
     <Content Include="Projects\Tests\FunctionalTests.xml" />

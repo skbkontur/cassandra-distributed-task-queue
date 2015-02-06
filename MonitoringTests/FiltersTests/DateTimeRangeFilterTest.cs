@@ -21,12 +21,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                                     new Creater("BetaTaskData", 7, () => new BetaTaskData {IsProcess = true}),
                                     new Creater("DeltaTaskData", 0, () => new DeltaTaskData())
                 );
-            CreateUser("user", "psw");
             foreach(var deltaTaskId in addTasksInfo["DeltaTaskData"].Ids)
                 WaitTaskState(deltaTaskId, TaskState.Finished);
             foreach(var betaTaskId in addTasksInfo["BetaTaskData"].Ids)
                 WaitTaskState(betaTaskId, TaskState.InProcess);
-            tasksListPage = Login("user", "psw");
+            tasksListPage = LoadTasksListPage();
         }
 
         public override void TearDown()
@@ -104,6 +103,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         {
             return new DateTime(datetime.Year, datetime.Month, datetime.Day, datetime.Hour, datetime.Minute, datetime.Second, DateTimeKind.Utc);
         }
+
         private void SearchByEnqueTicksTestBase(IEnumerable<TaskInfo> taskInfos, DateTime? fromTime, DateTime? toTime)
         {
             SimpleTestBase(taskInfos, fromTime, toTime, x => x.EnqueueTime, CheckTaskSearch);
@@ -117,7 +117,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         private void SimpleTestBase(IEnumerable<TaskInfo> taskInfos, DateTime? fromTime, DateTime? toTime, Func<TaskInfo, DateTime?> pathToTime, Action<string[], DateTime?, DateTime?> checkMethod)
         {
             Func<DateTime, DateTime> transform = x => RoundDateTimeSeconds(x).Subtract(TimeSpan.FromMilliseconds(50));
-            
+
             var lowerBound = transform(fromTime ?? new DateTime(2012, 11, 11));
             var upperBound = transform(toTime ?? maxTime);
             var expectedIds = taskInfos.Where(x => pathToTime(x) <= upperBound && pathToTime(x) >= lowerBound).Select(x => x.TaskId);

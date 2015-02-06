@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 
 using log4net;
 
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.AccessControl.AccessRules;
-using SKBKontur.Catalogue.AccessControl.Services;
 using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects;
 using SKBKontur.Catalogue.Core.CommonBusinessObjects.ScopedStorage.Extensions;
@@ -21,20 +20,20 @@ using SKBKontur.Catalogue.Objects.ValueExtracting;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskList;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList.SearchPanel;
 
+using ControllerBase = SKBKontur.Catalogue.Core.Web.Controllers.ControllerBase;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 {
-    [ResourseGroup(ResourseGroups.SupportResourse)]
-    public abstract class RemoteTaskQueueControllerBase : AuthenticatedControllerBase
+    public abstract class RemoteTaskQueueControllerBase : ControllerBase
     {
         protected RemoteTaskQueueControllerBase(RemoteTaskQueueControllerBaseParameters remoteTaskQueueControllerBaseParameters)
-            : base(remoteTaskQueueControllerBaseParameters.AuthenticatedControllerBaseParameters)
+            : base(remoteTaskQueueControllerBaseParameters.ControllerBaseParameters)
         {
             extender = remoteTaskQueueControllerBaseParameters.CatalogueExtender;
             taskDetailsModelBuilder = remoteTaskQueueControllerBaseParameters.TaskDetailsModelBuilder;
@@ -49,6 +48,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
+        [RequireReadAccessToRemoteTaskQueue]
         public ActionResult Run(string searchRequestId, int pageNumber = 0)
         {
             MonitoringSearchRequest searchRequest;
@@ -91,6 +91,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
+        [RequireReadAccessToRemoteTaskQueue]
         public ActionResult GetCount(string searchRequestId)
         {
             MonitoringSearchRequest searchRequest;
@@ -113,6 +114,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [HttpGet]
+        [RequireReadAccessToRemoteTaskQueue]
         public JsonResult GetProcessingTaskCount()
         {
             int count;
@@ -141,6 +143,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [HttpPost]
+        [RequireReadAccessToRemoteTaskQueue]
         public int RestartCounter(TaskListModelData pageModelData)
         {
             remoteTaskQueueMonitoringServiceStorage.RestartProcessgingTaskCounter(DateAndTime.ToDateTime(pageModelData.RestartTime));
@@ -148,18 +151,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
+        [RequireReadAccessToRemoteTaskQueue]
         public ActionResult FullScreenTaskCount(string id)
         {
             return View("FullScreenTaskCount", (object)id);
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
+        [RequireReadAccessToRemoteTaskQueue]
         public ActionResult FullScreenTaskCountFast()
         {
             return View("FullScreenTaskCountFast");
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [RequireReadAccessToRemoteTaskQueue]
         public ActionResult Search(TaskListModelData pageModelData)
         {
             var requestId = Guid.NewGuid().ToString();
@@ -201,13 +207,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
+        [RequireReadAccessToRemoteTaskQueue]
         public ActionResult Show(string id, int pageNumber = 0, string searchRequestId = null)
         {
             var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
             var modelData = taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId);
-            var hasAccessToTaskData = HasAccessToTaskData();
-            if(!hasAccessToTaskData)
-                modelData.TaskData = new SimpleTaskData();
             var pageModel = new TaskDetailsPageModel(PageModelBaseParameters, modelData)
                 {
                     Title = string.Format("Task: {0}", id),
@@ -220,7 +224,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        [ResourseGroup(ResourseGroups.AdminResourse)]
+        [RequireWriteAccessToRemoteTaskQueue]
         public ActionResult Cancel(string id)
         {
             if(!remoteTaskQueue.CancelTask(id))
@@ -234,7 +238,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        [ResourseGroup(ResourseGroups.AdminResourse)]
+        [RequireWriteAccessToRemoteTaskQueue]
         public ActionResult Rerun(string id)
         {
             if(!remoteTaskQueue.RerunTask(id, TimeSpan.FromTicks(0)))
@@ -248,6 +252,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
+        [RequireReadAccessToRemoteTaskQueue]
         public ActionResult GetBytes(string id, string path)
         {
             var taskData = remoteTaskQueue.GetTaskInfo(id).TaskData;
@@ -258,10 +263,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return File((byte[])value, "application/octet-stream", fileDownloadName);
         }
 
-        protected virtual bool HasAccessToTaskData()
-        {
-            return CheckAccess(ResourseGroups.SupervisorResourse);
-        }
+        protected abstract bool CurrentUserHasAccessToReadAction();
+
+        protected abstract bool CurrentUserHasAccessToWriteAction();
 
         private static long ConvertToJsTicksUtc(DateTime time)
         {
@@ -282,6 +286,29 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly IWebMutatorsTreeCollection<TaskListModelData> webMutatorsTreeCollection;
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueControllerBase));
+
+        private class RequireReadAccessToRemoteTaskQueueAttribute : ActionFilterAttribute
+        {
+            public override void OnActionExecuting(ActionExecutingContext filterContext)
+            {
+                base.OnActionExecuting(filterContext);
+                var remoteTaskQueueController = (RemoteTaskQueueControllerBase)filterContext.Controller;
+                if(!remoteTaskQueueController.CurrentUserHasAccessToReadAction())
+                    filterContext.Result = new HttpStatusCodeResult((int)HttpStatusCode.Forbidden, "Текущий пользователь не имеет прав на чтение состояния очереди");
+            }
+        }
+
+        private class RequireWriteAccessToRemoteTaskQueueAttribute : ActionFilterAttribute
+        {
+            public override void OnActionExecuting(ActionExecutingContext filterContext)
+            {
+                base.OnActionExecuting(filterContext);
+                var remoteTaskQueueController = (RemoteTaskQueueControllerBase)filterContext.Controller;
+                if(!remoteTaskQueueController.CurrentUserHasAccessToWriteAction())
+                    filterContext.Result = new HttpStatusCodeResult((int)HttpStatusCode.Forbidden, "Текущий пользователь не имеет прав на изменение состояния очереди");
+            }
+        }
+
         private const int tasksPerPageCount = 100;
     }
 }

@@ -40,26 +40,15 @@
     <Reference Include="Catalogue.CassandraPrimitives.Storages">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Core.CommonBusinessObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.IndexServiceClient, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.IndexServiceClient.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.Core.Configuration.Settings">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.TestCore">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
@@ -80,10 +69,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -104,38 +89,30 @@
     <Compile Include="FunctionalTestBase.cs" />
     <Compile Include="RepositoriesTests\HandleTaskMetaStorageTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="Settings\indexServiceTopology">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Settings\remoteTaskQueueMonitoringServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="TestBaseExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common %28Solution.RemoteTaskQueue\Common%29</Name>
+      <Project>{27afc62a-6f6b-443e-a83b-20d6714d8faf}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
       <Project>{c86636e6-89c3-4930-a6bd-ccdf61b5d8f1}</Project>
       <Name>MonitoringDataTypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\ExchangeService\ExchangeService.csproj">
-      <Project>{B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1}</Project>
-      <Name>ExchangeService %28Solution.RemoteTaskQueue\ExchangeService%29</Name>
+      <Project>{b505aee0-0cd1-4c54-af2a-c7d1ee3d4ef1}</Project>
+      <Name>ExchangeService</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
       <Project>{b0aad20d-160a-4d99-877b-b464c295e36f}</Project>
-      <Name>MonitoringServiceClient %28Solution.RemoteTaskQueue\MonitoringServiceClient%29</Name>
+      <Name>MonitoringServiceClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Storage\Storage.csproj">
-      <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
-      <Name>Storage %28Solution.RemoteTaskQueue\Storage%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
       <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>

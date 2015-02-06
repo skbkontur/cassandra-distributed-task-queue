@@ -35,18 +35,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cassandra.CassandraClient">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.CassandraPrimitives.Storages">
-      <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.ClientLib">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
@@ -66,17 +56,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
-    <Reference Include="log4net">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntryPoint.cs" />
@@ -102,8 +83,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common %28Solution.RemoteTaskQueue\Common%29</Name>
+      <Project>{27afc62a-6f6b-443e-a83b-20d6714d8faf}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>

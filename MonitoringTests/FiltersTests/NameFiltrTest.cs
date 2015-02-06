@@ -22,13 +22,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                     {"DeltaTaskData", deltaTasksInfo["DeltaTaskData"]}
                 };
 
-            CreateUser("pasan", "psn");
-            var tasksListPage = Login("pasan", "psn");
+            var tasksListPage = LoadTasksListPage();
 
             var taskNames = new[] {"AlphaTaskData", "BetaTaskData", "DeltaTaskData"};
 
             tasksListPage.ShowPanel.ClickAndWaitAnimation();
-            for(var i=0; i <3; i++)
+            for(var i = 0; i < 3; i++)
             {
                 tasksListPage.TaskNames[i].WaitVisibleWithRetries();
                 tasksListPage.TaskNames[i].CheckAndWait();

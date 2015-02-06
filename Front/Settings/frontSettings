@@ -22,28 +22,5 @@ MaximalColumnsCount = 1000
 MaximalRowsCount = 1000
 CheckConnectionsInterval = 00:01:00
 
-#Настройки портала
-KonturPortalKey = D3VxmqWAqAEdkBXxJ0smXm9H8VP+DkcO|nj5jzenFiQg=
-KonturPortalDomain = kepref.kontur
-
-#Топология портала
-PortalServiceName = iCat
-AuthUrls = https://portal-services-test.kontur.ru/auth/
-AuthLogin = edi 
-AuthPassword = MiertEgderb7
-PropertiesUrls = https://portal-services-test.kontur.ru/UsersProps/
-PropertiesLogin = edi 
-PropertiesPassword = MiertEgderb7
-PropertiesSearchUrls = https://portal-services-test.kontur.ru/UsersPropsSearch/
-PropertiesSearchLogin = edi 
-PropertiesSearchPassword = MiertEgderb7
-CertificatesUrls = https://portal-services-test.kontur.ru/certs/
-CertificatesLogin = edi 
-CertificatesPassword = MiertEgderb7
-
-#Настройки для интеграции с Диадоком
-DiadocApiClientId = ecrCat-ad1a1c9f5ce84af197f0f8c7f4f215d5
-DiadocUrl = http://dd1:27183
-
 #Для формирование правильного префикса для ссылок в письме
 UrlPrefix = http://

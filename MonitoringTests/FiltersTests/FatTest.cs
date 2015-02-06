@@ -23,23 +23,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                 };
         }
 
-        private IRemoteTaskQueue remoteTaskQueue;
-        private Func<ITaskData>[] createTaskData;
-
         [Ignore]
         [Test]
         public void Test()
         {
             var ids = new List<string>();
-            for (int i = 0; i < 6000; i++)
+            for(var i = 0; i < 6000; i++)
             {
                 ids.Add(remoteTaskQueue.CreateTask(createTaskData[i % 3]()).Queue());
                 if(i % 5000 == 0)
                     Console.WriteLine("Complete: {0}", i);
             }
-            CreateUser("user", "psw");
-            var taskListPage = Login("user", "psw");
+            var taskListPage = LoadTasksListPage();
             DoCheck(ref taskListPage, ids.ToArray());
         }
+
+        private IRemoteTaskQueue remoteTaskQueue;
+        private Func<ITaskData>[] createTaskData;
     }
 }

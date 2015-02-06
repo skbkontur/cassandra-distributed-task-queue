@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cassandra.CassandraClient">
-      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Core.CommonBusinessObjects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
     </Reference>
@@ -71,11 +68,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\MonitoringServiceHttpHandler.cs" />

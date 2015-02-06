@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using NUnit.Framework;
@@ -14,12 +13,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         public void SearchOnTaskIdTest()
         {
             var tasksIds = AddTasks(2,
-                     new Creater("AlphaTaskData", 0, () => new AlphaTaskData()),
-                     new Creater("BetaTaskData", 0, () => new BetaTaskData()),
-                     new Creater("DeltaTaskData", 0, () => new DeltaTaskData())
-                 ).Select(x => x.Value.Ids).Aggregate((x, y) => new List<string>(x.Concat(y)));
-            CreateUser("user", "psw");
-            var tasksListPage = Login("user", "psw");
+                                    new Creater("AlphaTaskData", 0, () => new AlphaTaskData()),
+                                    new Creater("BetaTaskData", 0, () => new BetaTaskData()),
+                                    new Creater("DeltaTaskData", 0, () => new DeltaTaskData())
+                ).Select(x => x.Value.Ids).Aggregate((x, y) => new List<string>(x.Concat(y)));
+            var tasksListPage = LoadTasksListPage();
             foreach(var taskId in tasksIds)
             {
                 tasksListPage.ShowPanel.ClickAndWaitAnimation();

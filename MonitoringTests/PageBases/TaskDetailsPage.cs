@@ -1,7 +1,4 @@
-﻿using OpenQA.Selenium;
-
-using SKBKontur.Catalogue.WebTestCore.SystemControls;
-using SKBKontur.Catalogue.WebTestCore.TestSystem;
+﻿using SKBKontur.Catalogue.WebTestCore.SystemControls;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 {

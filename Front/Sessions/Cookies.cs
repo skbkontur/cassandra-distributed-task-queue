@@ -12,6 +12,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Sessions
         {
         }
 
-        private const string cookiesPrefix = "rosAlko";
+        private const string cookiesPrefix = "remoteTaskQueue";
     }
 }

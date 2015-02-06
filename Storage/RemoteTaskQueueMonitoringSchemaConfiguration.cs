@@ -2,8 +2,6 @@
 
 using RemoteQueue.Cassandra.Primitives;
 
-using SKBKontur.Catalogue.AccessControl;
-using SKBKontur.Catalogue.AccessControl.LocalImplementation;
 using SKBKontur.Catalogue.CassandraStorageCore;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.Persistent.Cassandra.Schema;
@@ -20,12 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 
         protected override void ConfigureBusinessObjectSchema(BusinessObjectStoringSchema schema)
         {
-            schema.DefineType<UserStorageElement>(c => c.TypeIdentifier("UserStorageElement"));
-            schema.DefineType<AccessRuleStorageElement>(c => c.TypeIdentifier("AccessRuleStorageElement"));
             schema.DefineType<MonitoringSearchRequest>(c => c.TypeIdentifier("MonitoringSearchRequest"));
-
-            schema.DefineType<UserLoginRecord>(c => c.TypeIdentifier("UserLoginRecord"));
-            schema.DefineType<ActualUserId>(c => c.TypeIdentifier("ActualUserId"));
         }
 
         protected override void DoConfigureCassandraBasicSchema(CassandraStoringSchema schema)

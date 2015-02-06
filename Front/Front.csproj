@@ -47,18 +47,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catalogue.AccessControl">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.AccessControl.LocalImplementation">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.LocalImplementation.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.CommonBusinessObjects">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.Core.FileDataWebViewer">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.FileDataWebViewer.dll</HintPath>
@@ -69,13 +60,6 @@
     </Reference>
     <Reference Include="Catalogue.Core.Web">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Expressions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Expressions.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Mutators">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Mutators.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ReferencesCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ReferencesCore.dll</HintPath>
@@ -92,72 +76,36 @@
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
-    <Reference Include="GroboSerializer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\GroboSerializer.dll</HintPath>
-    </Reference>
     <Reference Include="GroboTrace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
     <Reference Include="RazorGenerator.Mvc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\RazorGenerator\RazorGenerator.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="System.Data.Entity" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.Helpers">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\MVC3\System.Web.Helpers.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\MVC3\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Razor">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\MVC3\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\MVC3\System.Web.WebPages.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages.Deployment">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\MVC3\System.Web.WebPages.Deployment.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web.WebPages.Razor">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\MVC3\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Areas\AdminToolsArea\AdminToolsAreaRegistration.cs" />
     <Compile Include="Areas\AdminToolsArea\Controllers\FileDataController.cs" />
     <Compile Include="Areas\AdminToolsArea\Controllers\RemoteTaskQueueController.cs" />
-    <Compile Include="Areas\LoginArea\Controllers\EnterController.cs" />
-    <Compile Include="Areas\LoginArea\Controllers\LogoutController.cs" />
-    <Compile Include="Areas\LoginArea\LoginAreaRegistration.cs" />
-    <Compile Include="Areas\LoginArea\Models\Enter\EnterModelData.cs" />
-    <Compile Include="Areas\LoginArea\Models\Enter\EnterPageModel.cs" />
-    <Compile Include="Areas\LoginArea\Models\Enter\IEnterPageText.cs" />
-    <Compile Include="Areas\LoginArea\Models\Enter\RuEnterPageText.cs" />
     <Compile Include="Configuration\Configurator.cs" />
-    <Compile Include="Configuration\EmptyAuthorizationStrategy.cs" />
     <Compile Include="Configuration\PluginRegistry.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Global.asax.cs">
@@ -176,13 +124,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AdminToolsIcon.ico" />
-    <Content Include="Areas\LoginArea\Views\Enter\EnterView.cshtml" />
     <Content Include="Blocks\StartPage\StartPage.css" />
     <Content Include="Blocks\StartPage\StartPage.png" />
     <Content Include="Blocks\StartPage\StartPage.cshtml" />
     <EmbeddedResource Include="Settings\front.log4net.config" />
     <None Include="Settings\frontSettings" />
-    <None Include="Settings\indexServiceTopology" />
     <None Include="Settings\remoteTaskQueueMonitoringServiceTopology" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -199,17 +145,15 @@
     <Content Include="Statics\Design\Common\Images\Logo.png" />
     <Content Include="Statics\Design\Common\Styles\Header.css" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Statics\Scripts\Controllers\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common %28Solution.RemoteTaskQueue\Common%29</Name>
+      <Project>{27afc62a-6f6b-443e-a83b-20d6714d8faf}</Project>
+      <Name>Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Storage\Storage.csproj">
-      <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
-      <Name>Storage %28Solution.RemoteTaskQueue\Storage%29</Name>
+      <Project>{07f04a01-2ea7-4cd0-9ed5-d0c6d6e98e6b}</Project>
+      <Name>Storage</Name>
     </ProjectReference>
     <ProjectReference Include="..\TaskMonitoringViewer\TaskMonitoringViewer.csproj">
       <Project>{8ba574ca-6c25-414f-9e99-1e7f032bb962}</Project>

@@ -31,13 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catalogue.AccessControl">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.AccessControl.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.ClientLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
@@ -45,9 +38,6 @@
     <Reference Include="Catalogue.Core.CommonBusinessObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.FileDataWebViewer">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.FileDataWebViewer.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.Core.ObjectTreeWebViewer">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ObjectTreeWebViewer.dll</HintPath>
@@ -79,9 +69,6 @@
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
-    <Reference Include="GroBuf">
-      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
-    </Reference>
     <Reference Include="log4net">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
@@ -100,11 +87,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\MVC3\System.Web.WebPages.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\IMonitoringCriterionBuilder.cs" />
@@ -180,16 +162,12 @@
       <Name>MonitoringDataTypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
-      <Project>{B0AAD20D-160A-4D99-877B-B464C295E36F}</Project>
-      <Name>MonitoringServiceClient %28Solution.RemoteTaskQueue\MonitoringServiceClient%29</Name>
+      <Project>{b0aad20d-160a-4d99-877b-b464c295e36f}</Project>
+      <Name>MonitoringServiceClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
-      <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
-      <Name>TaskDatas</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

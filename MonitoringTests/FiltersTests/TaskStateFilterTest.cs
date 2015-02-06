@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 
 using NUnit.Framework;
 
@@ -22,17 +20,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
                                     new Creater("BetaTaskData", 4, () => new BetaTaskData {IsProcess = true}),
                                     new Creater("DeltaTaskData", 1, () => new DeltaTaskData())
                 );
-            foreach (var deltaTaskId in addTasksInfo["DeltaTaskData"].Ids)
+            foreach(var deltaTaskId in addTasksInfo["DeltaTaskData"].Ids)
                 WaitTaskState(deltaTaskId, TaskState.Finished);
-            foreach (var betaTaskId in addTasksInfo["BetaTaskData"].Ids)
+            foreach(var betaTaskId in addTasksInfo["BetaTaskData"].Ids)
                 WaitTaskState(betaTaskId, TaskState.InProcess);
-            CreateUser("user", "psw");
-            tasksListPage = Login("user", "psw");
+            tasksListPage = LoadTasksListPage();
         }
 
         public override void TearDown()
         {
-            foreach (var betaId in addTasksInfo["BetaTaskData"].Ids)
+            foreach(var betaId in addTasksInfo["BetaTaskData"].Ids)
             {
                 var task = handleTaskCollection.GetTask(betaId);
                 var data = serializer.Deserialize<BetaTaskData>(task.Data);
@@ -52,17 +49,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         [Test]
         public void SearchByStateTest()
         {
-            CheckTaskSearch(new []{ tasksListPage.New }, addTasksInfo["AlphaTaskData"]);
-            CheckTaskSearch(new []{ tasksListPage.InProcess }, addTasksInfo["BetaTaskData"]);
-            CheckTaskSearch(new []{ tasksListPage.Finished }, addTasksInfo["DeltaTaskData"]);
-            CheckTaskSearch(new[] { tasksListPage.New, tasksListPage.InProcess }, addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]));
-            CheckTaskSearch(new[] { tasksListPage.New, tasksListPage.Finished }, addTasksInfo["AlphaTaskData"].Add(addTasksInfo["DeltaTaskData"]));
-            CheckTaskSearch(new[] { tasksListPage.InProcess, tasksListPage.Finished }, addTasksInfo["BetaTaskData"].Add(addTasksInfo["DeltaTaskData"]));
-            CheckTaskSearch(new []{ tasksListPage.New, tasksListPage.InProcess, tasksListPage.Finished},
-                addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]).Add(addTasksInfo["DeltaTaskData"]));
+            CheckTaskSearch(new[] {tasksListPage.New}, addTasksInfo["AlphaTaskData"]);
+            CheckTaskSearch(new[] {tasksListPage.InProcess}, addTasksInfo["BetaTaskData"]);
+            CheckTaskSearch(new[] {tasksListPage.Finished}, addTasksInfo["DeltaTaskData"]);
+            CheckTaskSearch(new[] {tasksListPage.New, tasksListPage.InProcess}, addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]));
+            CheckTaskSearch(new[] {tasksListPage.New, tasksListPage.Finished}, addTasksInfo["AlphaTaskData"].Add(addTasksInfo["DeltaTaskData"]));
+            CheckTaskSearch(new[] {tasksListPage.InProcess, tasksListPage.Finished}, addTasksInfo["BetaTaskData"].Add(addTasksInfo["DeltaTaskData"]));
+            CheckTaskSearch(new[] {tasksListPage.New, tasksListPage.InProcess, tasksListPage.Finished},
+                            addTasksInfo["AlphaTaskData"].Add(addTasksInfo["BetaTaskData"]).Add(addTasksInfo["DeltaTaskData"]));
         }
 
-        private void CheckTaskSearch(CheckBox [] checkBoxes, AddTaskInfo addTaskInfo)
+        private void CheckTaskSearch(CheckBox[] checkBoxes, AddTaskInfo addTaskInfo)
         {
             tasksListPage.ShowPanel.ClickAndWaitAnimation();
             foreach(var checkBox in checkBoxes)

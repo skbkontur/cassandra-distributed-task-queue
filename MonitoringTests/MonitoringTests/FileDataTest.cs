@@ -23,7 +23,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         [Test, Ignore]
         public void TestByteArray()
         {
-            CreateUser("user", "psw");
             AddTask(new ByteArrayTaskData
                 {
                     Bytes = Encoding.UTF8.GetBytes("Test")
@@ -33,7 +32,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         [Test, Ignore]
         public void TestFileId()
         {
-            CreateUser("user", "psw");
             var id = Guid.NewGuid().ToString();
             fileDataStorage.Write(id, new FileData
                 {

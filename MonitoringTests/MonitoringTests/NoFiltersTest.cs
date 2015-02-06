@@ -20,16 +20,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         [Test]
         public void Test()
         {
-            CreateUser("user", "psw");
             var ids = new string[10];
-            for(int i = 0; i < 10; i++)
+            for(var i = 0; i < 10; i++)
                 ids[i] = AddTask(new SimpleTaskData());
             foreach(var id in ids)
                 Console.WriteLine(id);
-            var tasksListPage = Login("user", "psw");
+            var tasksListPage = LoadTasksListPage();
             tasksListPage = tasksListPage.RefreshUntilTaskRowIsPresent(10);
             Console.WriteLine();
-            for(int i = 0; i < 10; i++)
+            for(var i = 0; i < 10; i++)
             {
                 var item = tasksListPage.GetTaskListItem(i);
                 item.TaskId.WaitText(ids[9 - i]);
@@ -48,8 +47,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         [Test]
         public void EmptyListTest()
         {
-            CreateUser("user", "psw");
-            var tasksListPage = Login("user", "psw");
+            var tasksListPage = LoadTasksListPage();
             tasksListPage.GetTaskListItem(0).WaitAbsence();
         }
 
