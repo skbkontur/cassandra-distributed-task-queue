@@ -109,9 +109,6 @@
     <None Include="Settings\exchangeServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Settings\indexServiceTopology">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Settings\monitoringTestsSettings">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
