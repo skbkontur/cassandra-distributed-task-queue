@@ -39,7 +39,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             WebMutatorsTreeCollection = webMutatorsTreeCollection;
         }
 
-        public ControllerBaseParameters ControllerBaseParameters { get; set; }
+        public ControllerBaseParameters ControllerBaseParameters { get; private set; }
         public ITaskListModelBuilder TaskListModelBuilder { get; private set; }
         public IRemoteTaskQueue RemoteTaskQueue { get; private set; }
         public IBusinessObjectStorage BusinessObjectsStorage { get; private set; }
