@@ -103,7 +103,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Areas\AdminToolsArea\AdminToolsAreaRegistration.cs" />
-    <Compile Include="Areas\AdminToolsArea\Controllers\FileDataController.cs" />
     <Compile Include="Areas\AdminToolsArea\Controllers\RemoteTaskQueueController.cs" />
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Configuration\PluginRegistry.cs" />
