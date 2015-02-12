@@ -18,6 +18,7 @@ using SKBKontur.Catalogue.Objects.ValueExtracting;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskList;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
@@ -181,11 +182,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return searchRequestId;
         }
 
-        public TaskDetailsPageModel GetTaskDetailsPageModel(PageModelBaseParameters pageModelBaseParameters, string id, int pageNumber, string searchRequestId, bool currentUserHasAccessToTaskData)
+        public TaskDetailsPageModel GetTaskDetailsPageModel(PageModelBaseParameters pageModelBaseParameters, string id, int pageNumber, string searchRequestId, bool showTaskData)
         {
             var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
             var modelData = taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId);
-            if(!currentUserHasAccessToTaskData)
+            if(!showTaskData)
                 modelData.TaskData = new SimpleTaskData();
             var taskDetailsPageModel = new TaskDetailsPageModel(pageModelBaseParameters, modelData)
                 {

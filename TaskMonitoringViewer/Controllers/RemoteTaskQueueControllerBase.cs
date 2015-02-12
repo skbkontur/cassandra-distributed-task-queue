@@ -95,6 +95,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         protected abstract bool CurrentUserHasAccessToTaskData();
 
         protected abstract bool CurrentUserHasAccessToWriteAction();
+
         private readonly RemoteTaskQueueControllerImpl controllerImpl;
 
         private class RequireReadAccessToRemoteTaskQueueAttribute : ActionFilterAttribute
