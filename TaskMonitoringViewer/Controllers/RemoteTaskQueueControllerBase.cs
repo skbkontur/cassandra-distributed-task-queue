@@ -20,6 +20,7 @@ using SKBKontur.Catalogue.Objects.ValueExtracting;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders.TaskList;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
@@ -212,6 +213,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         {
             var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
             var modelData = taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId);
+            if(!CurrentUserHasAccessToTaskData())
+                modelData.TaskData = new SimpleTaskData();
             var pageModel = new TaskDetailsPageModel(PageModelBaseParameters, modelData)
                 {
                     Title = string.Format("Task: {0}", id),
@@ -264,6 +267,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         protected abstract bool CurrentUserHasAccessToReadAction();
+
+        protected abstract bool CurrentUserHasAccessToTaskData();
 
         protected abstract bool CurrentUserHasAccessToWriteAction();
 

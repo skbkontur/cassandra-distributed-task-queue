@@ -14,6 +14,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.AdminToolsArea.Control
             return true;
         }
 
+        protected override sealed bool CurrentUserHasAccessToTaskData()
+        {
+            return true;
+        }
+
         protected override sealed bool CurrentUserHasAccessToWriteAction()
         {
             return true;
