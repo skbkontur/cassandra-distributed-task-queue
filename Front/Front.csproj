@@ -120,13 +120,9 @@
     <Compile Include="RenderingHelpers\JSFunctionBuilder.cs" />
     <Compile Include="RenderingHelpers\UrlExtensions.cs" />
     <Compile Include="Sessions\Cookies.cs" />
-    <Compile Include="Views\Shared\Primitives\RemoteTaskQueueHtmlPrimitives.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AdminToolsIcon.ico" />
-    <Content Include="Blocks\StartPage\StartPage.css" />
-    <Content Include="Blocks\StartPage\StartPage.png" />
-    <Content Include="Blocks\StartPage\StartPage.cshtml" />
     <EmbeddedResource Include="Settings\front.log4net.config" />
     <None Include="Settings\frontSettings" />
     <None Include="Settings\remoteTaskQueueMonitoringServiceTopology" />
@@ -142,10 +138,10 @@
   <ItemGroup>
     <Content Include="blank.html" />
     <Content Include="Global.asax" />
-    <Content Include="Statics\Design\Common\Images\Logo.png" />
-    <Content Include="Statics\Design\Common\Styles\Header.css" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Views\Statics\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{27afc62a-6f6b-443e-a83b-20d6714d8faf}</Project>

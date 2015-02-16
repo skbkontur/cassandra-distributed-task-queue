@@ -16,7 +16,7 @@
     <UseSharedResources>true</UseSharedResources>
     <OutputDirName>Front</OutputDirName>
     <CombineScripts>true</CombineScripts>
-    <ScriptsHostPage>Blocks\StartPage\StartPage.cshtml</ScriptsHostPage>
+    <ScriptsHostPage>Views\Default\DebugView.cshtml</ScriptsHostPage>
     <ScriptsHostPagesRoot>.\</ScriptsHostPagesRoot>
   </PropertyGroup>
 

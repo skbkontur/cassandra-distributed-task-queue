@@ -22,7 +22,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
                     return page;
                 Thread.Sleep(waitTimeout);
             } while(w.ElapsedMilliseconds < timeout);
-            Assert.Fail(string.Format("Не смогли дождаться страницу за {0} мс", timeout));
+            Assert.Fail("Не смогли дождаться страницу за {0} мс", timeout);
             return default(TPage);
         }
     }

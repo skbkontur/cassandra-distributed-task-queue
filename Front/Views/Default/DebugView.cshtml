@@ -1,21 +1,30 @@
-﻿@using SKBKontur.Catalogue.RemoteTaskQueue.Front.Models.Default
-@model DefaultModel
-@{
-    Layout = "~/Blocks/StartPage/StartPage.cshtml";
-}
-@section Title{
-    Debug
-}
-@section Statics {}
-@section Layers {}
+﻿@model SKBKontur.Catalogue.RemoteTaskQueue.Front.Models.Default.DefaultModel
+<!doctype html>
+<html>
+    <head>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-type" />
+        <title>Debug</title>
+        <style type="text/css">
+            #content {
+                padding: 20px;
+                text-align: center;
+                font-family: Consolas;
+            }
 
+            #content h1 { font-size: 20px; }
 
-<div style="padding: 50px 0 0; color: #333; text-align: center; font-size: 16px;">
-    <h1 style="margin-bottom: 20px; font-size: 22px;">RemoteTaskQueue.TestingFront</h1>
-    <div>
-        <a href="/AdminTools/RemoteTaskQueue">Main page</a>
-    </div>
-    <div>
-        <a href="/AdminTools/RemoteTaskQueue/FullScreenTaskCountFast">Fullscreen count new</a>
-    </div>
-</div>
+            #content .link { margin: 10px; }
+        </style>
+    </head>
+    <body>
+        <div id="content">
+            <h1>RemoteTaskQueue.TestingFront</h1>
+            <div class="link">
+                @Html.ActionLink("Main page", "Run", "RemoteTaskQueue")
+            </div>
+            <div class="link">
+                @Html.ActionLink("Fullscreen count", "FullScreenTaskCountFast", "RemoteTaskQueue")
+            </div>
+        </div>
+    </body>
+</html>
