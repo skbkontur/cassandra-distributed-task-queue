@@ -17,5 +17,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
         object[] GetDistinctValues(MonitoringGetDistinctValuesQuery getDistinctValuesQuery);
         MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId);
         void RestartProcessgingTaskCounter(DateTime? fromTime);
+
+        TimeSpan GetActualizationLag();
     }
 }

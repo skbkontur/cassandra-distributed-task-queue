@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using log4net;
+
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
@@ -12,8 +14,6 @@ using SKBKontur.Catalogue.Core.SynchronizationStorage.EventDevourers;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler;
-
-using log4net;
 
 using MTaskState = SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives.TaskState;
 
@@ -72,6 +72,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 foreach(var batch in new SeparateOnBatchesEnumerable<MonitoringTaskMetadata>(list, 100))
                     localStorage.Write(batch, false);
             }
+        }
+
+        public long GetLastUpdateTime()
+        {
+            return localStorage.GetLastUpdateTime<MonitoringTaskMetadata>();
         }
 
         private void UpdateLocalStorage(IEnumerable<TaskMetaUpdatedEvent> events)
@@ -158,7 +163,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
 
         private long GetStartTime()
         {
-            return localStorage.GetLastUpdateTime<MonitoringTaskMetadata>() - eventLogRepository.UnstableZoneLength.Ticks;
+            return GetLastUpdateTime() - eventLogRepository.UnstableZoneLength.Ticks;
         }
 
         private bool TryConvertTaskMetaInformationToMonitoringTaskMetadata(TaskMetaInformation info, out MonitoringTaskMetadata taskMetadata)

@@ -101,6 +101,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 counterService.Restart(null);
         }
 
+        public TimeSpan GetActualizationLag()
+        {
+            return TimeSpan.FromTicks(DateTime.UtcNow.Ticks - localStorageUpdater.GetLastUpdateTime());
+        }
+
         private void GetTaskWithAllDescendants(MonitoringTaskMetadata task, List<MonitoringTaskMetadata> list)
         {
             if(list.Count < maxCount) list.Add(task);

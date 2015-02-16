@@ -3,7 +3,6 @@
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.Queries;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation.Counters;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
@@ -71,9 +70,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
         }
 
         [HttpMethod]
+        [JsonHttpMethod]
+        public ActualizationStateInfo ActualizationState()
+        {
+            return new ActualizationStateInfo
+                {
+                    Lag = monitoringServiceImpl.GetActualizationLag()
+                };
+        }
+
+        [HttpMethod]
         public string State()
         {
             return "Started";
+        }
+
+        public class ActualizationStateInfo
+        {
+            public TimeSpan Lag { get; set; }
         }
 
         private readonly IMonitoringServiceImpl monitoringServiceImpl;

@@ -1,3 +1,5 @@
+using System;
+
 using log4net;
 
 using RemoteQueue.LocalTasks.Scheduling;
@@ -12,13 +14,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
         public MonitoringServiceSchedulableRunner(IMonitoringServiceSettings settings,
                                                   IMonitoringTask monitoringTask, IPeriodicTaskRunner periodicTaskRunner,
                                                   CounterUpdaterTask counterUpdaterTask,
-                                                  SaveSnapshotTask saveSnapshotTask)
+                                                  SaveSnapshotTask saveSnapshotTask, 
+            PostActualizationLagToGraphiteTask postActualizationLagToGraphiteTask
+            )
         {
             this.settings = settings;
             this.monitoringTask = monitoringTask;
             this.periodicTaskRunner = periodicTaskRunner;
             this.counterUpdaterTask = counterUpdaterTask;
             this.saveSnapshotTask = saveSnapshotTask;
+            this.postActualizationLagToGraphiteTask = postActualizationLagToGraphiteTask;
         }
 
         public void Stop()
@@ -32,6 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
                         periodicTaskRunner.Unregister(monitoringTask.Id, 15000);
                         periodicTaskRunner.Unregister(counterUpdaterTask.Id, 15000);
                         periodicTaskRunner.Unregister(saveSnapshotTask.Id, 15000);
+                        periodicTaskRunner.Unregister(postActualizationLagToGraphiteTask.Id, 15000);
                         worked = false;
                         logger.Info("Stop MonitoringService");
                     }
@@ -50,6 +56,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
                         periodicTaskRunner.Register(monitoringTask, settings.PeriodicInterval);
                         periodicTaskRunner.Register(counterUpdaterTask, CounterSettings.CounterUpdateInterval);
                         periodicTaskRunner.Register(saveSnapshotTask, CounterSettings.CounterSaveSnapshotInterval);
+                        periodicTaskRunner.Register(postActualizationLagToGraphiteTask, TimeSpan.FromMinutes(1));
                         worked = true;
                         logger.InfoFormat("Start MonitoringShedulableRunner: schedule monitoringTask with period {0}", settings.PeriodicInterval);
                     }
@@ -63,6 +70,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
         private readonly IPeriodicTaskRunner periodicTaskRunner;
         private readonly CounterUpdaterTask counterUpdaterTask;
         private readonly SaveSnapshotTask saveSnapshotTask;
+        private readonly PostActualizationLagToGraphiteTask postActualizationLagToGraphiteTask;
 
         private volatile bool worked;
 

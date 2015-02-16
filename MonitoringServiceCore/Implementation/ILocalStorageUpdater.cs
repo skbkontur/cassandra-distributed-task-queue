@@ -5,5 +5,6 @@
         void RecalculateInProcess();
         void Update();
         void ClearProcessedEvents();
+        long GetLastUpdateTime();
     }
 }
