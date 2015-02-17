@@ -34,6 +34,10 @@
     <Reference Include="Catalogue.TestCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
+    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>
     </Reference>
@@ -46,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TasksCacheTest.cs" />
+    <Compile Include="MonitoringServiceCore\SnapshotConverterTest.cs" />
     <Compile Include="MonitoringServiceCore\MetaProviderTest.cs" />
     <Compile Include="MonitoringServiceCore\ProcessedTasksCounterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

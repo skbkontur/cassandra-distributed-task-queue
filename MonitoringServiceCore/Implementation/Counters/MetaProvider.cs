@@ -231,7 +231,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 maxTicks = Math.Max(maxTicks, @event.Ticks);
                 UpdateMaxTicks(notReadEventsCopy, taskId, @event.Ticks);
             }
-            if(elapesed > CounterSettings.SlowCalculationIntervalMs)
+            if(elapesed > CounterSettings.SlowCalculationInterval)
             {
                 logger.InfoFormat("Update is slow. Time elapsed={0}. Read Events before {1}. Now={2}",
                                   DateTimeFormatter.FormatTimeSpan(elapesed),
