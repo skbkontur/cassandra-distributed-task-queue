@@ -294,6 +294,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
         private class RequireReadAccessToRemoteTaskQueueAttribute : ActionFilterAttribute
         {
+            public RequireReadAccessToRemoteTaskQueueAttribute()
+            {
+                Order = 100;
+            }
+
             public override void OnActionExecuting(ActionExecutingContext filterContext)
             {
                 base.OnActionExecuting(filterContext);
@@ -305,6 +310,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
         private class RequireWriteAccessToRemoteTaskQueueAttribute : ActionFilterAttribute
         {
+            public RequireWriteAccessToRemoteTaskQueueAttribute()
+            {
+                Order = 100;
+            }
+
             public override void OnActionExecuting(ActionExecutingContext filterContext)
             {
                 base.OnActionExecuting(filterContext);
