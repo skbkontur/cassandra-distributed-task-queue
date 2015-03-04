@@ -6,47 +6,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer
     {
          public static string GetTaskDetailsUrl(this UrlHelper urlHelper, string taskId, int pageNumber = 0, string searchRequestId = null)
          {
-// ReSharper disable Mvc.AreaNotResolved
-// ReSharper disable Asp.NotResolved
-             return urlHelper.Action("Show", "RemoteTaskQueue", new {area = "AdminTools", id = taskId, pageNumber, searchRequestId});
-// ReSharper restore Asp.NotResolved
-// ReSharper restore Mvc.AreaNotResolved
+             return urlHelper.Action("Show", "RemoteTaskQueue", new {id = taskId, pageNumber, searchRequestId});
          }
 
          public static string GetCancelTaskUrl(this UrlHelper urlHelper, string taskId)
          {
-// ReSharper disable Mvc.AreaNotResolved
-// ReSharper disable Asp.NotResolved
-             return urlHelper.Action("Cancel", "RemoteTaskQueue", new {area = "AdminTools", id = taskId});
-// ReSharper restore Asp.NotResolved
-// ReSharper restore Mvc.AreaNotResolved
+             return urlHelper.Action("Cancel", "RemoteTaskQueue", new {id = taskId});
          }
 
          public static string GetRerunTaskUrl(this UrlHelper urlHelper, string taskId)
          {
-// ReSharper disable Mvc.AreaNotResolved
-// ReSharper disable Asp.NotResolved
-             return urlHelper.Action("Rerun", "RemoteTaskQueue", new {area = "AdminTools", id = taskId});
-// ReSharper restore Asp.NotResolved
-// ReSharper restore Mvc.AreaNotResolved
+             return urlHelper.Action("Rerun", "RemoteTaskQueue", new {id = taskId});
          }
 
          public static string GetTaskDataBytesUrl(this UrlHelper urlHelper, string taskId, string path)
          {
-// ReSharper disable Mvc.AreaNotResolved
-// ReSharper disable Asp.NotResolved
-             return urlHelper.Action("GetBytes", "RemoteTaskQueue", new {area = "AdminTools", id = taskId, path});
-// ReSharper restore Asp.NotResolved
-// ReSharper restore Mvc.AreaNotResolved
+             return urlHelper.Action("GetBytes", "RemoteTaskQueue", new {id = taskId, path});
          }
 
          public static string GetSearchUrl(this UrlHelper urlHelper)
          {
-// ReSharper disable Mvc.AreaNotResolved
-// ReSharper disable Asp.NotResolved
-             return urlHelper.Action("Search", "RemoteTaskQueue", new {area = "AdminTools"});
-// ReSharper restore Asp.NotResolved
-// ReSharper restore Mvc.AreaNotResolved
+             return urlHelper.Action("Search", "RemoteTaskQueue");
          }
     }
 }
