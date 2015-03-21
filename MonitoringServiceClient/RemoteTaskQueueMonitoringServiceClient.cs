@@ -58,16 +58,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             return Method("GetCount").InvokeOnRandomReplica(query).ThanReturn<int>();
         }
 
-        public TaskCount GetProcessingTaskCount()
-        {
-            return Method("GetProcessingTaskCount").InvokeOnRandomReplica().ThanReturn<TaskCount>();
-        }
-
-        public void RestartProcessgingTaskCounter(DateTime? fromTime)
-        {
-            Method("RestartProcessgingTaskCounter").SendToEachReplica(DomainConsistencyLevel.All, fromTime);
-        }
-
         public MonitoringTaskMetadata[] GetTaskWithAllDescendants(string taskId)
         {
             return Method("GetTaskWithAllDescendants").InvokeOnRandomReplica(taskId).ThanReturn<MonitoringTaskMetadata[]>();

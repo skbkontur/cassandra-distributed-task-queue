@@ -114,55 +114,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return Json(totalCount, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
-        [RequireReadAccessToRemoteTaskQueue]
-        public JsonResult GetProcessingTaskCount()
-        {
-            int count;
-            DateTime time;
-            DateTime startTime;
-            try
-            {
-                var c = remoteTaskQueueMonitoringServiceStorage.GetProcessingTaskCount();
-                time = new DateTime(c.UpdateTicks, DateTimeKind.Utc);
-                startTime = new DateTime(c.StartTicks, DateTimeKind.Utc);
-                count = c.Count;
-            }
-            catch(DomainIsDisabledException e)
-            {
-                logger.Error("Can not get TaskCount", e);
-                time = jsMinTime;
-                startTime = jsMinTime;
-                count = 0;
-            }
-            return Json(new
-                {
-                    Count = count,
-                    UpdateTimeJsTicks = ConvertToJsTicksUtc(time),
-                    StartTimeJsTicks = ConvertToJsTicksUtc(startTime),
-                }, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        [RequireReadAccessToRemoteTaskQueue]
-        public int RestartCounter(TaskListModelData pageModelData)
-        {
-            remoteTaskQueueMonitoringServiceStorage.RestartProcessgingTaskCounter(DateAndTime.ToDateTime(pageModelData.RestartTime));
-            return 1;
-        }
-
         [AcceptVerbs(HttpVerbs.Get)]
         [RequireReadAccessToRemoteTaskQueue]
         public ActionResult FullScreenTaskCount(string id)
         {
             return View("FullScreenTaskCount", (object)id);
-        }
-
-        [AcceptVerbs(HttpVerbs.Get)]
-        [RequireReadAccessToRemoteTaskQueue]
-        public ActionResult FullScreenTaskCountFast()
-        {
-            return View("FullScreenTaskCountFast");
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -271,13 +227,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         protected abstract bool CurrentUserHasAccessToTaskData();
 
         protected abstract bool CurrentUserHasAccessToWriteAction();
-
-        private static long ConvertToJsTicksUtc(DateTime time)
-        {
-            return (long)time.Subtract(jsMinTime).TotalMilliseconds;
-        }
-
-        private static readonly DateTime jsMinTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         private readonly ITaskDetailsModelBuilder taskDetailsModelBuilder;
         private readonly IRemoteTaskQueue remoteTaskQueue;

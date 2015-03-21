@@ -21,16 +21,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
             return remoteTaskQueueMonitoringServiceClient.GetCount(converter.ToExpressionTree(criterion));
         }
 
-        public TaskCount GetProcessingTaskCount()
-        {
-            return remoteTaskQueueMonitoringServiceClient.GetProcessingTaskCount();
-        }
-
-        public void RestartProcessgingTaskCounter(DateTime? fromTime)
-        {
-            remoteTaskQueueMonitoringServiceClient.RestartProcessgingTaskCounter(fromTime);
-        }
-
         public IEnumerable<MonitoringTaskMetadata> RangeSearch(Expression<Func<MonitoringTaskMetadata, bool>> criterion, int rangeFrom, int count, Expression<Func<MonitoringTaskMetadata, bool>> sortRules = null)
         {
             return remoteTaskQueueMonitoringServiceClient.Search(converter.ToExpressionTree(criterion), converter.ToExpressionTree(sortRules), count, rangeFrom);

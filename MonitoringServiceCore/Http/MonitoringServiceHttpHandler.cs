@@ -33,18 +33,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Http
         }
 
         [HttpMethod]
-        public TaskCount GetProcessingTaskCount()
-        {
-            return monitoringServiceImpl.GetProcessingTaskCount();
-        }
-
-        [HttpMethod]
-        public void RestartProcessgingTaskCounter(DateTime? fromTime)
-        {
-            monitoringServiceImpl.RestartProcessgingTaskCounter(fromTime);
-        }
-
-        [HttpMethod]
         public MonitoringTaskMetadata[] Search(MonitoringSearchQuery searchQuery)
         {
             return monitoringServiceImpl.Search(searchQuery);

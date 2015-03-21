@@ -75,17 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\MonitoringServiceHttpHandler.cs" />
-    <Compile Include="Implementation\Counters\CounterService.cs" />
-    <Compile Include="Implementation\Counters\CounterSettings.cs" />
-    <Compile Include="Implementation\Counters\IMetaConsumer.cs" />
-    <Compile Include="Implementation\Counters\InternalSnapshot.cs" />
-    <Compile Include="Implementation\Counters\IProcessedTasksCounter.cs" />
-    <Compile Include="Implementation\Counters\MetaProvider.cs" />
-    <Compile Include="Implementation\Counters\ProcessedTasksCounter.cs" />
-    <Compile Include="Implementation\Counters\SnapshotConverter.cs" />
-    <Compile Include="Implementation\Counters\SnapshotsManager.cs" />
-    <Compile Include="Implementation\Counters\Utils\DateTimeFormatter.cs" />
-    <Compile Include="Implementation\Counters\Utils\ThreadSafeInitializer.cs" />
     <Compile Include="Implementation\ProcessedEvents.cs" />
     <Compile Include="Implementation\IProcessedEvents.cs" />
     <Compile Include="Implementation\ILocalStorageUpdater.cs" />

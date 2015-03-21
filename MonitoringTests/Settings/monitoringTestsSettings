@@ -1,6 +1,6 @@
 ﻿# Конфигурирование Кассандры
 ClusterName = CatalogueCluster
-KeyspaceName = RosAlkoKeyspace
+KeyspaceName = QueueKeyspace
 ConnectionIdleTimeout = 00:10:00
 Endpoints =  127.0.0.1:9160
 EndpointForFierceCommands = 127.0.0.1:9160

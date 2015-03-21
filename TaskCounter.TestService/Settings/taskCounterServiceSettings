@@ -1,0 +1,10 @@
+﻿SchedulerInterval = 00:00:00.5
+ServiceName = TaskCounterService
+LogDirectory = logs
+
+ListeningPort = 4410
+
+# Sql
+SqlConnectionString = server=127.0.0.1;uid=root;pwd=tc_123456;database=RemoteTaskQueueMonitoringService;
+SqlKeyBufferSize = 4294967296
+SqlMaxRowsPerTable = 1000000

@@ -29,6 +29,7 @@
   <ItemGroup>
     <NUnitAssemblies Include="$(TestSolutionDir)\MonitoringTests\bin\$(BuildConfiguration)\Catalogue.RemoteTaskQueue.MonitoringTests.dll"></NUnitAssemblies>
     <NUnitAssemblies Include="$(TestSolutionDir)\FunctionalTests\bin\$(BuildConfiguration)\RemoteTaskQueue.FunctionalTests.dll"></NUnitAssemblies>
+    <NUnitAssemblies Include="$(TestSolutionDir)\TaskCounter.FunctionalTests\bin\$(BuildConfiguration)\Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests.dll"></NUnitAssemblies>
   </ItemGroup>
 
   <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Test_New.targets" />

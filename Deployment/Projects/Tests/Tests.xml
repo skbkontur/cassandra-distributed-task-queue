@@ -27,6 +27,7 @@
   
   <ItemGroup>
     <NUnitAssemblies Include="$(TestSolutionDir)\Tests\bin\$(BuildConfiguration)\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
+    <NUnitAssemblies Include="$(TestSolutionDir)\TaskCounter.UnitTests\bin\$(BuildConfiguration)\Catalogue.RemoteTaskQueue.TaskCounter.UnitTests.dll"></NUnitAssemblies>
   </ItemGroup>
 
   <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Test_New.targets" />

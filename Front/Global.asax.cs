@@ -8,6 +8,7 @@ using SKBKontur.Catalogue.Core.ObjectTreeWebViewer.Globals;
 using SKBKontur.Catalogue.Core.Web.Globals;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Controllers;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Registration;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Globals;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
@@ -25,6 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
             engineCollection.RegisterEngine(new WebWormsCommonPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new WebWormsPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new TaskMonitoringPrecompiledMvcEngine());
+            engineCollection.RegisterEngine(new RemoteTaskQueueCounterPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new ObjectTreeViewerPrecompiledMvcEngine());
         }
 

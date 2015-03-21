@@ -34,7 +34,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 {
                     TaskCount = htmlModelsCreator.TextFor(pageModel, x => x.TaskCount),
                     SearchPanel = BuildSearchPanel(pageModel),
-                    Counter = BuildCounterModel(pageModel),
                     Tasks = pageModel.Data.TaskModels.Select(
                         (model, i) => htmlModelsCreator.TaskInfoFor(
                             pageModel,
@@ -42,23 +41,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                             true,
                             () => new TaskIdHtmlModel(pageModel.PaginatorModelData.PageNumber, pageModel.PaginatorModelData.SearchRequestId))
                         ).ToArray()
-                };
-        }
-
-        private CounterHtmlModel BuildCounterModel(TaskListPageModel pageModel)
-        {
-            return new CounterHtmlModel()
-                {
-                    OpenCounter = htmlModelsCreator.GetActionButtonFor(helper => "/AdminTools/RemoteTaskQueue/FullScreenTaskCountFast",
-                                                                       new GetActionButtonOptions() {IsBlank = true, Title = "Open Task Counter"}),
-                    RestartCounter = htmlModelsCreator.PostActionButtonFor(new PostUrl<TaskListModelData>(url => "/AdminTools/RemoteTaskQueue/RestartCounter"),
-                                                                           new PostActionButtonOptions
-                                                                               {
-                                                                                   Title = "Restart",
-                                                                                   ValidationType = ActionValidationType.All
-
-                                                                               }),
-                    RestartDate = htmlModelsCreator.DateAndTimeFor(pageModel, x => x.RestartTime, new DateAndTimeOptions() {TimeFormat = TimeFormat.Short})
                 };
         }
 
