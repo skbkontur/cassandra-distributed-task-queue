@@ -1,0 +1,116 @@
+﻿@using SKBKontur.Catalogue.Objects
+@model SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models.TaskSearchConditionsModel
+
+@using(Html.BeginForm(null, null, FormMethod.Get, new {@class = "form-inline"}))
+{
+    <div class="form-group">
+        <input type="text" name="q" class="form-control" placeholder="Введите произвольную строку или поисковое выражение" value="@Model.SearchString" style="width: 600px;" />
+    </div>
+    <div class="form-group">
+        <input type="hidden" id="range-start" name="start" value="@(Model.RangeStart.HasValue ? @Model.RangeStart.Value.ToString("dd.MM.yyyy") : string.Empty)"/>
+        <input type="hidden" id="range-end" name="end" value="@(Model.RangeEnd.HasValue ? @Model.RangeEnd.Value.ToString("dd.MM.yyyy") : string.Empty)"/>
+        <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+            <span></span> <b class="caret"></b>
+        </div>
+    </div>
+    <div class="form-group">
+        <select class="select-picker" multiple name="name">
+            @foreach (var taskName in Model.AvailableTaskDataNames)
+            {
+                if (Model.TaskNames.ReturnArray().Contains(taskName))
+                {
+                    <option selected="selected">@taskName</option>
+                }
+                else
+                {
+                    <option>@taskName</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="form-group">
+        <select class="select-picker" multiple name="state">
+            @foreach (var taskState in Model.AvailableTaskStates)
+            {
+                if (Model.TaskStates.ReturnArray().Contains(taskState.Key))
+                {
+                    <option selected="selected" value="@taskState.Key">@taskState.Value</option>
+                }
+                else
+                {
+                    <option value="@taskState.Key">@taskState.Value</option>
+                }
+            }
+        </select>
+    </div>
+    <button class="btn btn-default" type="submit">Найти</button>
+}
+
+        <script>
+            $(function() {
+                $('.select-picker').selectpicker({
+                    style: 'btn-default',
+                });
+            });
+
+            $(function() {
+
+                var start = moment().subtract(29, 'days');
+                var end = moment();
+                if (!$('#range-start').val()) {
+                    $('#range-start').val(start.format('DD.MM.YYYY'));
+                }
+                start = moment($('#range-start').val(), 'DD.MM.YYYY');
+
+                if (!$('#range-end').val()) {
+                    $('#range-end').val(end.format('DD.MM.YYYY'));
+                }
+                end = moment($('#range-end').val(), 'DD.MM.YYYY');
+
+
+                $('#reportrange span').html(start.format('DD.MM.YYYY') + ' - ' + end.format('DD.MM.YYYY'));
+
+                $('#reportrange').daterangepicker({
+                    format: 'DD.MM.YYYY',
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment(),
+                    minDate: '01.01.2008',
+                    maxDate: '31.12.2030',
+                    showDropdowns: true,
+                    showWeekNumbers: true,
+                    timePicker: false,
+                    timePickerIncrement: 1,
+                    timePicker12Hour: true,
+                    ranges: {
+                        'Сегодня': [moment(), moment()],
+                        'Вчера': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
+                        'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
+                        'Этот месяц': [moment().startOf('month'), moment().endOf('month')],
+                        'Последний месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    opens: 'left',
+                    buttonClasses: ['btn', 'btn-sm'],
+                    applyClass: 'btn-info',
+                    cancelClass: 'btn-default',
+                    separator: ' до ',
+                    locale: {
+                        applyLabel: 'OK',
+                        cancelLabel: 'Отмена',
+                        fromLabel: 'От',
+                        toLabel: 'До',
+                        customRangeLabel: 'Задать явно',
+                        daysOfWeek: ['Вс', 'Пн', 'Вт', 'Вр', 'Чт', 'Пт', 'Сб'],
+                        monthNames: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+                        firstDay: 1
+                    }
+                }, function(start, end, label) {
+                    console.log(start.toISOString(), end.toISOString(), label);
+                    $('#reportrange span').html(start.format('DD.MM.YYYY') + ' - ' + end.format('DD.MM.YYYY'));
+                    $('#range-start').val(start.format('DD.MM.YYYY'));
+                    $('#range-end').val(end.format('DD.MM.YYYY'));
+                });
+
+            });
+        </script>

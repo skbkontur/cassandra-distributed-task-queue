@@ -1,0 +1,104 @@
+﻿@using RemoteQueue.Cassandra.Entities
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models
+@model SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models.TasksResultModel
+
+@functions {
+
+    private string GetTaskRowColor(TaskModel task)
+    {
+        if(task.State == TaskState.New)
+            return "";
+        if (task.State == TaskState.Finished)
+            return "success";
+        if(task.State == TaskState.WaitingForRerun || task.State == TaskState.InProcess || task.State == TaskState.WaitingForRerunAfterError)
+            return "active";
+        if (task.State == TaskState.Unknown || task.State == TaskState.Fatal || task.State == TaskState.Canceled)
+            return "danger";
+        return "danger";
+    }
+
+}
+@{
+    Layout = "../_TasksLayout.cshtml";
+}
+@section Title { Задачи }
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h1>Список задач</h1>
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            @Html.Partial("SearchPanel", Model.SearchConditions)            
+        </div>
+    </div>
+    
+    <div class="row" style="margin-top: 40px;">
+        <div class="col-md-12">
+            Всего найдено: @Model.Results.TotalResultCount
+        </div>
+    </div>
+    
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered table-hover" style="margin-top: 40px;">
+                <thead>
+                    <tr>
+                        <th>Task Id</th>
+                        <th>Task State</th>
+                        <th>Task Name</th>
+                        <th>Enqueue time</th>
+                        <th>StartExecutingTime time</th>
+                        <th>FinishExecutingTime time</th>
+                        <th>MinimalStartTime time</th>
+                        <th>Attempts</th>
+                        <th>ParentTaskId</th>
+                    </tr>
+                </thead>
+                <tbody id="result-container">
+                    @foreach(var task in Model.Results.Tasks)
+                    {
+                        <tr class="@GetTaskRowColor(task)">
+                            <td>
+                                @Html.ActionLink(@task.Id, "Details", new {id = task.Id}) 
+                                <div class="btn-group pull-right" role="group">
+                                    @if (task.State.CanCancelTask())
+                                    {
+                                        <button data-url="@Url.Action("Cancel", new {id = task.Id})" class="btn btn-xs btn-danger cancel-task-button">Cancel</button>
+                                    }
+                                    @if (task.State.CanRerunTask())
+                                    {
+                                        <button data-url="@Url.Action("Rerun", new { id = task.Id })" class="btn btn-xs btn-success rerun-task-button">Rerun</button>
+                                    }                                    
+                                </div>
+                            </td>                        
+                            <td>@task.State</td>            
+                            <td>@task.Name</td>            
+                            <td>@task.EnqueueTime</td>            
+                            <td>@task.StartExecutionTime</td>                        
+                            <td>@task.FinishExecutionTime</td>            
+                            <td>@task.MinimalStartTime</td>            
+                            <td>@task.AttemptCount</td>            
+                            <td>@task.ParentTaskId</td>            
+                        </tr>
+                    }
+                </tbody>
+            </table>        
+            <button class="btn btn-default btn-lg btn-block" id="load-more">Ещё</button>
+
+            <script>
+                var lastIteratorContext = "@Model.Results.IteratorContext";
+            </script>
+        </div>
+    </div>
+    
+
+</div>

@@ -1,0 +1,78 @@
+﻿@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models
+@model SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models.TaskDetailsModel
+@{
+    Layout = "../_TasksLayout.cshtml";
+}
+@section Title { Таска }
+
+
+@helper DrawObjectTreeNode(ObjectTreeModel objectModel, ObjectTreeModelRenderContext context, int? parentIndex) 
+{
+    context.IncrementGlobalIndex();
+    var currentIndex = context.GlobalIndex;
+    <tr class="treegrid-@currentIndex @(parentIndex.HasValue ? ("treegrid-parent-" + parentIndex) : "")">
+        <td>@objectModel.Name</td>
+        <td>@objectModel.Value</td>
+    </tr>
+    foreach (var child in objectModel.Children)
+    {
+        @DrawObjectTreeNode(child, context, currentIndex)
+    }
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="page-header">
+                <h1>Задача @Model.TaskName</h1>
+                <p class="lead">ID: @Model.TaskId                
+                    <div class="btn-group" role="group">
+                        @if(Model.State.CanCancelTask())
+                        {
+                            <button data-url="@Url.Action("Cancel", new {id = Model.TaskId})" class="btn btn-danger cancel-task-button">Cancel</button>
+                        }
+                        @if(Model.State.CanRerunTask())
+                        {
+                            <button data-url="@Url.Action("Rerun", new {id = Model.TaskId})" class="btn btn-success rerun-task-button">Rerun</button>
+                        }                                    
+                    </div>
+                </p>
+            </div>            
+        </div>
+    </div>
+    
+
+    <div class="row spa">
+        <div class="col-md-8">
+            <table class="table table-bordered table-hover tree">
+                @{
+                    var context = new ObjectTreeModelRenderContext();
+                }
+                @foreach(var property in Model.DetailsTree.Children)
+                {
+                    @DrawObjectTreeNode(property, context, null)
+                }
+            </table>            
+        </div>
+    </div>
+    <div class="row spa">
+        <div class="col-md-8">
+            <pre>@Model.ExceptionInfo</pre>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.tree').treegrid();
+    });
+</script>
+
+@section Scripts
+{
+    @Html.MagicStyle("~/Views/Statics/Styles/jquery.treegrid.css")
+    @Html.MagicScript("~/Views/Statics/Scripts/jquery.treegrid.js")
+    @Html.MagicScript("~/Views/Statics/Scripts/jquery.treegrid.bootstrap3.js")
+}

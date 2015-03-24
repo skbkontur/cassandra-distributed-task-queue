@@ -1,0 +1,22 @@
+﻿@model SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models.TaskSearchConditionsModel
+@{
+    Layout = "../_TasksLayout.cshtml";
+}
+@section Title { Список задач }
+
+<div class="container" style="width: 1470px; padding-top: 200px;">
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div class="page-header">
+                <h1>Поиск по задачам</h1>
+            </div>        
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            @Html.Partial("SearchPanel", Model)
+        </div>
+    </div>
+</div>

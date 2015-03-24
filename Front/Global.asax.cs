@@ -6,6 +6,7 @@ using GroboTrace;
 using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.Core.ObjectTreeWebViewer.Globals;
 using SKBKontur.Catalogue.Core.Web.Globals;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Globals;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Controllers;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Registration;
@@ -28,6 +29,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
             engineCollection.RegisterEngine(new TaskMonitoringPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new RemoteTaskQueueCounterPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new ObjectTreeViewerPrecompiledMvcEngine());
+            engineCollection.RegisterEngine(new ElasticTaskMonitoringPrecompiledMvcEngine());
         }
 
         protected override void OnBeginRequest()
