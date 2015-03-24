@@ -1,5 +1,9 @@
 C:\Windows\Microsoft.NET\Framework64\v4.0.30319\aspnet_regiis.exe -i
 
+pushd ..\Assemblies\ElasticSearch\Server\bin\
+start elasticsearch.bat
+popd
+
 cd ..\Assemblies\Cassandra\Server\bin\
 start cassandra.bat
 

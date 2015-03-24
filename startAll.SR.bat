@@ -1,5 +1,9 @@
 cd /d %~dp0
 
+pushd ..\Assemblies\ElasticSearch\Server\bin\
+start elasticsearch.bat
+popd
+
 pushd ..\Assemblies\Cassandra\Server\bin\
 start cassandra.bat
 popd
