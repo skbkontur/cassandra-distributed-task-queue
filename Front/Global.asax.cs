@@ -6,6 +6,7 @@ using GroboTrace;
 using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.Core.ObjectTreeWebViewer.Globals;
 using SKBKontur.Catalogue.Core.Web.Globals;
+using SKBKontur.Catalogue.Core.Web.Globals.ViewPrecompilation;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Globals;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Controllers;
