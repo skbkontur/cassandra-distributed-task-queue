@@ -114,38 +114,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return totalCount;
         }
 
-        public ProcessingTaskCountModel GetProcessingTaskCount()
-        {
-            int count;
-            DateTime time;
-            DateTime startTime;
-            try
-            {
-                var c = remoteTaskQueueMonitoringServiceStorage.GetProcessingTaskCount();
-                time = new DateTime(c.UpdateTicks, DateTimeKind.Utc);
-                startTime = new DateTime(c.StartTicks, DateTimeKind.Utc);
-                count = c.Count;
-            }
-            catch(DomainIsDisabledException e)
-            {
-                logger.Error("Can not get TaskCount", e);
-                time = jsMinTime;
-                startTime = jsMinTime;
-                count = 0;
-            }
-            return new ProcessingTaskCountModel
-                {
-                    Count = count,
-                    UpdateTimeJsTicks = ConvertToJsTicksUtc(time),
-                    StartTimeJsTicks = ConvertToJsTicksUtc(startTime),
-                };
-        }
-
-        public void RestartCounter(TaskListModelData pageModelData)
-        {
-            remoteTaskQueueMonitoringServiceStorage.RestartProcessgingTaskCounter(DateAndTime.ToDateTime(pageModelData.RestartTime));
-        }
-
         public string Search(TaskListModelData pageModelData)
         {
             var searchRequestId = Guid.NewGuid().ToString();
@@ -230,13 +198,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return (byte[])value;
         }
 
-        private static long ConvertToJsTicksUtc(DateTime time)
-        {
-            return (long)time.Subtract(jsMinTime).TotalMilliseconds;
-        }
-
+        private const int tasksPerPageCount = 100;
         private static readonly DateTime jsMinTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         private readonly ITaskDetailsModelBuilder taskDetailsModelBuilder;
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ITaskListModelBuilder taskListModelBuilder;
@@ -247,9 +210,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         private readonly ITaskListHtmlModelBuilder taskListHtmlModelBuilder;
         private readonly ITaskDetailsHtmlModelBuilder taskDetailsHtmlModelBuilder;
         private readonly IWebMutatorsTreeCollection<TaskListModelData> webMutatorsTreeCollection;
-
         private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueControllerImpl));
-
-        private const int tasksPerPageCount = 100;
     }
 }
