@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DB958D74-D952-4E22-B9CB-6118D8D80EA0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage</RootNamespace>
+    <AssemblyName>Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Catalogue.Core.Configuration.Settings">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Core.ElasticsearchClientExtensions">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Elasticsearch.Net">
+      <HintPath>..\..\Assemblies\ElasticSearch\Client\Elasticsearch.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Assemblies\json.net\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Actualizer\TaskSearchDynamicSettings.cs" />
+    <Compile Include="Actualizer\TaskSearchIndexSchema.cs" />
+    <Compile Include="IndexNameFactory.cs" />
+    <Compile Include="LastReadTicksStorage.cs" />
+    <Compile Include="MetaIndexedInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskSearchIndex.cs" />
+    <Compile Include="TaskSearchSettings.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
+      <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(ProjectDir)..\..\Assemblies\Temp\
+copy $(TargetDir)$(TargetName).pdb $(ProjectDir)..\..\Assemblies\Temp\</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

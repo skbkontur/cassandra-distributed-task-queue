@@ -22,5 +22,6 @@ start "ServiceRunner" "..\Tools\ServiceRunner\ServiceRunner.exe"^
 	"ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe"^
 	"MonitoringService\bin\Debug\Catalogue.RemoteTaskQueue.MonitoringService.exe"^
 	"TaskCounter.TestService\bin\Debug\Catalogue.RemoteTaskQueue.TaskCounter.TestService.exe"^
+	"ElasticMonitoring.TestService\bin\Debug\Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService.exe"^
 
 

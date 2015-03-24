@@ -21,6 +21,7 @@ if exist ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe
 
 start cmd /c MonitoringService\bin\Debug\Catalogue.RemoteTaskQueue.MonitoringService.exe
 start cmd /c TaskCounter.TestService\bin\Debug\Catalogue.RemoteTaskQueue.TaskCounter.TestService.exe
+start cmd /c ElasticMonitoring.TestService\bin\Debug\Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService.exe
 
 %WinDir%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe Deployment\LocalFire.xml /t:Fire /p:ServiceSuite=None;FrontEndSuite=DEFAULT
 
