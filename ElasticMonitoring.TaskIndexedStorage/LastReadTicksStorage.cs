@@ -24,8 +24,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         public void SetLastReadTicks(long ticks)
         {
-            elasticsearchClient.Index(TaskSearchIndexSchema.LastUpdateTicksIndex, TaskSearchIndexSchema.LastUpdateTicksType, "LastUpdateTicks", new LastUpdateTicks() {Ticks = ticks},
-                                      parameters => parameters.Version(ticks).VersionType(VersionType.ExternalGte)).ProcessResponse();
+            elasticsearchClient.Index(TaskSearchIndexSchema.LastUpdateTicksIndex, TaskSearchIndexSchema.LastUpdateTicksType, "LastUpdateTicks", new LastUpdateTicks() {Ticks = ticks}).ProcessResponse();
         }
 
         private readonly IElasticsearchClient elasticsearchClient;
