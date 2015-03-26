@@ -32,14 +32,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 var taskData = taskDatas[i];
                 var taskCreatedTime = meta.Ticks; //NOTE these time newer changed (for concrete task)
                 var indexName = IndexNameFactory.GetIndexForTime(taskCreatedTime);
-                //NOTE external_gte version type to prevent stupid errors - indexing same document many times
                 body[2 * i] = new
                     {
                         index = new
                             {
-                                //version_type = "external",
-                                version_type = "external_gte",
-                                _version = meta.LastModificationTicks.Value,
                                 _index = indexName,
                                 _type = GetTaskDataObjectTypeForIndex(taskData),
                                 _id = meta.Id
