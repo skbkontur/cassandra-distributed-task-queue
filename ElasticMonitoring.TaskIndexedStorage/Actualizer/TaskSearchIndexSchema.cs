@@ -38,7 +38,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             if(response.HttpStatusCode == 404)
             {
                 elasticsearchClient.
-                    IndicesPutMapping(LastUpdateTicksIndex, LastUpdateTicksType, new
+                    IndicesCreate(LastUpdateTicksIndex, new
                         {
                             settings = new
                                 {
@@ -47,13 +47,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                 },
                             mappings = new
                                 {
-                                    _all = new {enabled = true},
-                                    properties = new
+                                    LastUpdateTicks = new
                                         {
-                                            Ticks = new
+                                             _all = new {enabled = false},
+                                            properties = new
                                                 {
-                                                    type = "long",
-                                                    index = "no"
+                                                    Ticks = new
+                                                        {
+                                                            type = "long",
+                                                            index = "no"
+                                                        }
                                                 }
                                         }
                                 }
