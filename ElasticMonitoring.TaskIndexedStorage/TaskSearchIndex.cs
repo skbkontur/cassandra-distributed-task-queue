@@ -2,6 +2,8 @@
 
 using log4net;
 
+using Newtonsoft.Json;
+
 using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
@@ -14,7 +16,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         public TaskSearchIndex(
             IElasticsearchClientFactory elasticsearchClientFactory)
         {
-            elasticsearchClient = elasticsearchClientFactory.GetClient();
+            elasticsearchClient = elasticsearchClientFactory.GetClient(new JsonSerializerSettings
+                {
+                    ContractResolver = new ContractResolverWithOmitedByteArrays()
+                });
         }
 
         public void IndexBatch(TaskMetaInformation[] metas, object[] taskDatas)

@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Actualizer\TaskSearchDynamicSettings.cs" />
     <Compile Include="Actualizer\TaskSearchIndexSchema.cs" />
+    <Compile Include="ContractResolverWithOmitedByteArrays.cs" />
     <Compile Include="IndexNameFactory.cs" />
     <Compile Include="LastReadTicksStorage.cs" />
     <Compile Include="MetaIndexedInfo.cs" />
