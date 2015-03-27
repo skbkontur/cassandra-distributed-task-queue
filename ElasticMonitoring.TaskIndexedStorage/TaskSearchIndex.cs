@@ -47,12 +47,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                             }
                     };
 
-                body[2 * i + 1] = BuildSavedData(meta, taskDatas);
+                body[2 * i + 1] = BuildSavedData(meta, taskData);
             }
             elasticsearchClient.Bulk<BulkResponse>(body).DieIfErros();
         }
 
-        private static object BuildSavedData(TaskMetaInformation meta, object taskDatas)
+        private static object BuildSavedData(TaskMetaInformation meta, object taskData)
         {
             var metaIndexedInfo = new MetaIndexedInfo
                 {
@@ -68,7 +68,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     MinimalStartTime = meta.MinimalStartTicks,
                     StartExecutingTime = meta.StartExecutingTicks
                 };
-            return new {Meta = metaIndexedInfo, Data = taskDatas};
+            return new {Meta = metaIndexedInfo, Data = taskData};
         }
 
         private static string GetTaskDataObjectTypeForIndex(object taskData)
