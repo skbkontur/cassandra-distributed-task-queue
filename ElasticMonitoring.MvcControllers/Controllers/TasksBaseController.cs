@@ -111,21 +111,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 
         private void AddPropertyRecursively(ObjectTreeModel result, object context)
         {
-            var plainTypes = new Type[]
+            var plainTypes = new[]
                 {
                     typeof(int),
                     typeof(string)
                 };
             if(context == null)
             {
-
-                
                 result.Value = "NULL";
                 return;
             }
             foreach(var property in context.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
-                Type type = property.GetType();
+                Type type = property.PropertyType;
                 if(type.IsEnum || plainTypes.Contains(type))
                 {
                     result.AddChild(new ObjectTreeModel
@@ -134,19 +132,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                             Value = property.GetValue(context, null).With(x => x.ToString()).Return(x => x, "NULL")
                         });
                 }
-                else
+                else if(type.IsClass)
                 {
                     var subChild = new ObjectTreeModel
                         {
                             Name = property.Name
                         };
-                    object value = property.GetValue(context, null);
+                    var value = property.GetValue(context, null);
                     if(value == null)
                     {
                         subChild.Value = "NULL";
                     }
                     else
                         AddPropertyRecursively(subChild, value);
+                }
+                else
+                {
+                    result.AddChild(new ObjectTreeModel
+                        {
+                            Name = property.Name,
+                            Value = property.GetValue(context, null).With(x => x.ToString()).Return(x => x, "NULL")
+                        });                    
                 }
             }
         }
