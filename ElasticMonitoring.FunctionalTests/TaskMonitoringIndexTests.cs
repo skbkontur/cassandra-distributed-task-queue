@@ -10,6 +10,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Cassandra;
 using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Container;
 using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.PropertyInjection;
