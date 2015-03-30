@@ -42,7 +42,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                         index = new
                             {
                                 _index = indexName,
-                                _type = GetTaskDataObjectTypeForIndex(taskData),
+                                _type = meta.Name,
                                 _id = meta.Id
                             }
                     };
@@ -69,12 +69,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     StartExecutingTime = meta.StartExecutingTicks
                 };
             return new {Meta = metaIndexedInfo, Data = taskData};
-        }
-
-        private static string GetTaskDataObjectTypeForIndex(object taskData)
-        {
-            //note taskData cannot be Null
-            return taskData.GetType().Name;
         }
 
         private readonly IElasticsearchClient elasticsearchClient;
