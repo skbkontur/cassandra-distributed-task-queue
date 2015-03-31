@@ -44,7 +44,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Scheduler
                 {
                     if(!worked)
                     {
-                        periodicTaskRunner.Register(new ActionPeriodicTask(() => counterController.ProcessNewEvents(), counterGraphiteTaskId), CounterSettings.CounterUpdateInterval);
+                        periodicTaskRunner.Register(new ActionPeriodicTask(() => counterController.ProcessNewEvents(), counterTaskId), CounterSettings.CounterUpdateInterval);
                         periodicTaskRunner.Register(new ActionPeriodicTask(() => graphitePoster.PostData(), counterGraphiteTaskId), CounterSettings.GraphitePostInterval);
                         worked = true;
                         logger.LogInfoFormat("Start TaskCounterServiceSchedulableRunner");
