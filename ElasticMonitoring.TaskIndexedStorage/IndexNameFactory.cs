@@ -2,6 +2,7 @@
 using System.Text;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage
 {
@@ -35,12 +36,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             return dateTime.ToString(dateFormat);
         }
 
-        private static DateTime DateFromTicks(long fromTicksUtc)
+        private static DateTime DateFromTicks(long ticks)
         {
-            return new DateTime(fromTicksUtc, DateTimeKind.Utc);
+            return new DateTime(DateTimeFormatter.TicksToDateTimeRange(ticks), DateTimeKind.Utc);
         }
 
         private const string dateFormat = "yyyy.MM.dd";
+
         private static readonly TimeSpan newIndexCreationInterval = TimeSpan.FromDays(1);
     }
 }
