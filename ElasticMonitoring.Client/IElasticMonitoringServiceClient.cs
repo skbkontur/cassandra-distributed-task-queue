@@ -3,5 +3,6 @@
     public interface IElasticMonitoringServiceClient
     {
         void UpdateAndFlush();
+        void DeleteAll();
     }
 }

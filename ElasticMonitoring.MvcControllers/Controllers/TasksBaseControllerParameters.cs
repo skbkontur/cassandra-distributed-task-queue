@@ -1,8 +1,8 @@
 using RemoteQueue.Handling;
 using RemoteQueue.UserClasses;
 
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.Web.Controllers;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers
 {
@@ -10,19 +10,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
     {
         public TasksBaseControllerParameters(
             ControllerBaseParameters baseParameters,
-            IElasticsearchClientFactory elasticsearchClientFactory,
+            ITaskSearchClient taskSearchClient,
             TaskDataRegistryBase taskDataRegistryBase,
             IRemoteTaskQueue remoteTaskQueue)
         {
             BaseParameters = baseParameters;
-            ElasticsearchClientFactory = elasticsearchClientFactory;
+            TaskSearchClient = taskSearchClient;
             TaskDataRegistryBase = taskDataRegistryBase;
             RemoteTaskQueue = remoteTaskQueue;
         }
 
         public ControllerBaseParameters BaseParameters { get; private set; }
-        public IElasticsearchClientFactory ElasticsearchClientFactory { get; private set; }
+        public ITaskSearchClient TaskSearchClient { get; private set; }
         public TaskDataRegistryBase TaskDataRegistryBase { get; private set; }
-        public IRemoteTaskQueue RemoteTaskQueue { get; set; }
+        public IRemoteTaskQueue RemoteTaskQueue { get; private set; }
     }
 }

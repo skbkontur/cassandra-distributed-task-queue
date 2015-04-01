@@ -19,6 +19,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Client
             Method("UpdateAndFlush").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
+        public void DeleteAll()
+        {
+            Method("DeleteAll").SendToEachReplica(DomainConsistencyLevel.All);
+        }
+
         protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
         {
             return defaultConfiguration.WithTimeout(TimeSpan.FromMinutes(1));

@@ -193,6 +193,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                                      DateTimeFormatter.FormatWithMsAndTicks(nowTicks));
             }
             RemoveAlreadyReadEvents(notReadEventsCopy, readEventsCopy);
+            
+            foreach (var readEvent in notReadEventsCopy)
+            {
+                LogManager.GetLogger("ZZZ").LogInfoFormat("ZZZ", "Process id={0} ticks={1}", readEvent.Key, readEvent.Value);
+            }
+
             //todo cancel read metas
             var metas = handleTasksMetaStorage.GetMetas(notReadEventsCopy.Keys.ToArray());
             var newMetas = new List<TaskMetaInformation>();

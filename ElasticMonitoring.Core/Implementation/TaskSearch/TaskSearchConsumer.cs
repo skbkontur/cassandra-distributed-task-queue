@@ -52,12 +52,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         public void ProcessMetas(TaskMetaInformation[] metas, long readTicks)
         {
-            IndexMetas(metas);
-            var estimatedLastUpdateReadTicks = GetEstimatedLastUpdateReadTicks(metas);
-            if(estimatedLastUpdateReadTicks.HasValue)
-                lastReadTicksStorage.SetLastReadTicks(estimatedLastUpdateReadTicks.Value);
-            else
-                lastReadTicksStorage.SetLastReadTicks(readTicks);
+            lock(lockObject)
+            {
+                IndexMetas(metas);
+                var estimatedLastUpdateReadTicks = GetEstimatedLastUpdateReadTicks(metas);
+                if(estimatedLastUpdateReadTicks.HasValue)
+                    lastReadTicksStorage.SetLastReadTicks(estimatedLastUpdateReadTicks.Value);
+                else
+                    lastReadTicksStorage.SetLastReadTicks(readTicks);
+            }
+        }
+
+        public bool IsWorking()
+        {
+            return metaLoadController.IsProcessingQueue;
         }
 
         public void ProcessQueue()
@@ -104,6 +112,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             var taskDataObjects = new object[taskDatas.Length];
             for(var i = 0; i < batch.Length; i++)
             {
+                LogManager.GetLogger("ZZZ").LogInfoFormat("ZZZ", "Meta id={0} ticks={1}", batch[i].Id, batch[i].LastModificationTicks);
                 var taskData = taskDatas[i];
                 Type taskType;
                 object taskDataObj = null;
@@ -116,6 +125,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         }
 
         private const string lockId = "TaskSearch_Loading_Lock";
+        private readonly object lockObject = new object();
 
         private static readonly ILog logger = LogManager.GetLogger("TaskSearchConsumer");
 
