@@ -46,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
                 if(existingEvent.Ticks >= e.Ticks)
                     return;
             }
-            map.Add(e.TaskId, e);
+            map[e.TaskId] = e;
         }
 
         public void RemoveEvent(TaskMetaUpdatedEvent e)

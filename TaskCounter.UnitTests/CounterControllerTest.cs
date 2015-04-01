@@ -96,6 +96,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
             DoTest(310, 320, new[] {GetEvent("b", 302)}, new[] {GetEvent("c", 311)}, new[] {new[] {GetMeta("b", 303), GetMeta("c", 311)}});
         }
 
+        [Test]
+        public void TestUnprocessedBug()
+        {
+            snapshotStorage.Expect(s => s.ReadSnapshotOrNull()).Return(null);
+            compositeCounter.Expect(c => c.Reset());
+            compositeCounter.Expect(m => m.GetSnapshotOrNull(maxSnapshotLength)).Return(null);
+            DoTest(310 - maxHistoryDepthTicks, 310, null, new[] {GetEvent("a", 301), GetEvent("b", 302), GetEvent("b", 303)}, new[] {new[] {GetMeta("a", 301), null, null}});
+
+            compositeCounter.Expect(m => m.GetSnapshotOrNull(maxSnapshotLength)).Return(null);
+            DoTest(310, 320, new[] {GetEvent("b", 303)}, new[] {GetEvent("c", 311)}, new[] {new[] {GetMeta("b", 303), GetMeta("c", 311)}});
+        }
+
         private static TaskMetaUpdatedEvent GetEvent(string taskId, long ticks)
         {
             return new TaskMetaUpdatedEvent() {TaskId = taskId, Ticks = ticks};
