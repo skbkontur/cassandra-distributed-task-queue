@@ -1,10 +1,10 @@
-﻿using System;
+﻿using JetBrains.Annotations;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
 {
     public interface IGraphiteRemoteTaskQueueProfilerSettings
     {
-        TimeSpan AggregationPeriod { get; }
+        [CanBeNull]
         string KeyNamePrefix { get; }
     }
 }

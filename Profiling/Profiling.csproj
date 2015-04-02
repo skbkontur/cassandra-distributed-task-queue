@@ -30,18 +30,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catalogue.Core.DistributedEventsProfilingClient">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.DistributedEventsProfilingClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.GraphitePeriodicSender">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.GraphitePeriodicSender.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.StatisticsAggregator">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.StatisticsAggregator.dll</HintPath>
+    <Reference Include="Catalogue.Core.Graphite.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Graphite.Client.dll</HintPath>
     </Reference>
     <Reference Include="GroboContainer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=7.1.1000.900, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Concurrent;
 
 using GroboContainer.Infection;
+
+using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.Profiling;
 
-using SKBKontur.Catalogue.Core.DistributedEventsProfilingClient;
-using SKBKontur.Catalogue.Core.DistributedEventsProfilingClient.DataTypes;
-using SKBKontur.Catalogue.Core.GraphitePeriodicSender.PeriodicSender;
-using SKBKontur.Catalogue.Core.GraphitePeriodicSender.StatisticsSources;
-using SKBKontur.Catalogue.StatisticsAggregator;
+using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
+using SKBKontur.Catalogue.Core.Graphite.Client.StatsTimer;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
 {
@@ -19,91 +17,62 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
     public class GraphiteRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
         public GraphiteRemoteTaskQueueProfiler(
-            IGraphiteRemoteTaskQueueProfilerSettings settings, 
-            IGraphitePeriodicSender graphitePeriodicSender, 
-            IDistributedEventsProfiler distributedEventsProfiler)
+            [NotNull] IGraphiteRemoteTaskQueueProfilerSettings settings,
+            [NotNull] IStatsDClient statsDClient,
+            [NotNull] IStatsTimerClient statsTimerClient)
         {
-            this.settings = settings;
-            this.graphitePeriodicSender = graphitePeriodicSender;
-            this.distributedEventsProfiler = distributedEventsProfiler;
-            statisticsAggregators = new ConcurrentDictionary<string, IStatisticsAggregator>();
-            aggregationPeriod = settings.AggregationPeriod;
-        }
-
-        public void ProcessTaskCreation(TaskMetaInformation meta)
-        {
-            var statisticsKey = FormatKeyName("{0}.TasksCreated.{1}", Environment.MachineName, meta.Name);
-            distributedEventsProfiler.LogEvent(meta.Id, statisticsKey, DistributedEventType.Atomic);
-        }
-
-        public void ProcessTaskEnqueueing(TaskMetaInformation meta)
-        {
-            distributedEventsProfiler.LogEvent(string.Format("{0}_{1}", meta.Id, meta.Attempts + 1), GetStatisticsKey(meta), DistributedEventType.Start);
-        }
-
-        public void ProcessTaskDequeueing(TaskMetaInformation meta)
-        {
-            distributedEventsProfiler.LogEvent(string.Format("{0}_{1}", meta.Id, meta.Attempts), GetStatisticsKey(meta), DistributedEventType.Finish);
-        }
-
-        public void RecordTaskExecutionTime(TaskMetaInformation meta, TimeSpan taskExecutionTime)
-        {
-            IStatisticsAggregator aggregator;
-            if(!statisticsAggregators.TryGetValue(meta.Name, out aggregator))
+            if(string.IsNullOrWhiteSpace(settings.KeyNamePrefix))
             {
-                lock(lockObject)
-                {
-                    if(!statisticsAggregators.TryGetValue(meta.Name, out aggregator))
-                    {
-                        aggregator = new StatisticsAggregator.StatisticsAggregator(aggregationPeriod, TimeSpan.FromTicks(aggregationPeriod.Ticks * 5));
-                        var avgStatisticsName = FormatKeyName("{0}.TaskExecutionTime.{1}.Average", Environment.MachineName, meta.Name);
-                        graphitePeriodicSender.AddSource(new AverageStatisticsSource(aggregator, avgStatisticsName, aggregationPeriod), aggregationPeriod);
-                        var quantileStatisticsName = FormatKeyName("{0}.TaskExecutionTime.{1}.Quantile95", Environment.MachineName, meta.Name);
-                        graphitePeriodicSender.AddSource(new QuantileStatisticsSource(aggregator, quantileStatisticsName, aggregationPeriod, 95), aggregationPeriod);
-                        if(!statisticsAggregators.TryAdd(meta.Name, aggregator))
-                            throw new Exception("Some strange concurrent behaviour. Should never happen");
-                    }
-                }
+                keyNamePrefix = "";
+                this.statsDClient = EmplyStatsDClient.Instance;
+                this.statsTimerClient = EmptyStatsTimerClient.Instance;
             }
-            aggregator.AddEvent((int)taskExecutionTime.TotalMilliseconds);
-        }
-
-        public void RecordTaskExecutionResult(TaskMetaInformation meta, HandleResult handleResult)
-        {
-            IStatisticsAggregator aggregator;
-            var dictionaryKey = string.Format("{0}_{1}", meta.Name, handleResult.FinishAction);
-            if(!statisticsAggregators.TryGetValue(dictionaryKey, out aggregator))
+            else
             {
-                lock(lockObject)
-                {
-                    if(!statisticsAggregators.TryGetValue(dictionaryKey, out aggregator))
-                    {
-                        aggregator = new StatisticsAggregator.StatisticsAggregator(aggregationPeriod, TimeSpan.FromTicks(aggregationPeriod.Ticks * 5));
-                        var statisticsName = FormatKeyName("{0}.NumberOfExecutedTasks.{1}.{2}", Environment.MachineName, meta.Name, handleResult.FinishAction);
-                        graphitePeriodicSender.AddSource(new AmountStatisticsSource(aggregator, statisticsName, aggregationPeriod), aggregationPeriod);
-                        if(!statisticsAggregators.TryAdd(dictionaryKey, aggregator))
-                            throw new Exception("Some strange concurrent behaviour. Should never happen");
-                    }
-                }
+                keyNamePrefix = settings.KeyNamePrefix;
+                this.statsDClient = statsDClient
+                    .WithScopes(new[]
+                        {
+                            string.Format("{0}.{1}", settings.KeyNamePrefix, Environment.MachineName),
+                            string.Format("{0}.{1}", settings.KeyNamePrefix, "Total")
+                        });
+                this.statsTimerClient = statsTimerClient;
             }
-            aggregator.AddEvent(0);
         }
 
-        private string FormatKeyName(string format, params object[] args)
+        public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)
         {
-            return settings.KeyNamePrefix + "." + string.Format(format, args);
+            statsDClient.Increment("TasksQueued." + meta.Name);
         }
 
-        private string GetStatisticsKey(TaskMetaInformation meta)
+        public void RecordTaskExecutionTime([NotNull] TaskMetaInformation meta, TimeSpan taskExecutionTime)
         {
-            return FormatKeyName("TaskWaitingForStartTime.{0}", meta.Name);
+            statsDClient.Timing("ExecutionTime." + meta.Name, (long)taskExecutionTime.TotalMilliseconds);
         }
 
-        private readonly ConcurrentDictionary<string, IStatisticsAggregator> statisticsAggregators;
-        private readonly IGraphiteRemoteTaskQueueProfilerSettings settings;
-        private readonly IGraphitePeriodicSender graphitePeriodicSender;
-        private readonly IDistributedEventsProfiler distributedEventsProfiler;
-        private TimeSpan aggregationPeriod;
-        private readonly object lockObject = new object();
+        public void RecordTaskExecutionResult([NotNull] TaskMetaInformation meta, [NotNull] HandleResult handleResult)
+        {
+            statsDClient.Increment("TasksExecuted." + meta.Name + "." + handleResult.FinishAction);
+        }
+
+        public void ProcessTaskEnqueueing([NotNull] TaskMetaInformation meta)
+        {
+            statsTimerClient.TimingBegin(string.Format("{0}_{1}", meta.Id, meta.Attempts + 1), GetStatisticsKey(meta));
+        }
+
+        public void ProcessTaskDequeueing([NotNull] TaskMetaInformation meta)
+        {
+            statsTimerClient.TimingEnd(string.Format("{0}_{1}", meta.Id, meta.Attempts), GetStatisticsKey(meta));
+        }
+
+        [NotNull]
+        private string GetStatisticsKey([NotNull] TaskMetaInformation meta)
+        {
+            return string.Format("{0}.Total.WaitingInQueue.{1}", keyNamePrefix, meta.Name);
+        }
+
+        private readonly IStatsDClient statsDClient;
+        private readonly IStatsTimerClient statsTimerClient;
+        private readonly string keyNamePrefix;
     }
 }
