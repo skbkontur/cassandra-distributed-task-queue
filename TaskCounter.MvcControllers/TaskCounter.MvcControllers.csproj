@@ -60,6 +60,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\RemoteTaskQueueTaskCounterControllerImpl.cs" />
     <Compile Include="Controllers\RemoteTaskQueueTaskCounterControllerParameters.cs" />
     <Compile Include="Controllers\RemoteTaskQueueTaskCounterControllerBase.cs" />
     <Compile Include="Models\TaskCounterModel.cs" />
@@ -74,6 +75,10 @@
     <ProjectReference Include="..\TaskCounter.DataTypes\TaskCounter.DataTypes.csproj">
       <Project>{B4D49A81-6047-480C-93BF-0B1AAA5ECB52}</Project>
       <Name>TaskCounter.DataTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TaskMonitoringViewer\TaskMonitoringViewer.csproj">
+      <Project>{8BA574CA-6C25-414F-9E99-1E7F032BB962}</Project>
+      <Name>TaskMonitoringViewer</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

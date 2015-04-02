@@ -4,8 +4,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.AdminToolsArea.Control
 {
     public class TaskCounterController : RemoteTaskQueueTaskCounterControllerBase
     {
-        public TaskCounterController(RemoteTaskQueueTaskCounterControllerParameters parameters)
-            : base(parameters)
+        public TaskCounterController(RemoteTaskQueueTaskCounterControllerParameters parameters, RemoteTaskQueueTaskCounterControllerImpl controllerImpl)
+            : base(parameters, controllerImpl)
         {
         }
 
