@@ -218,7 +218,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         private TaskSearchResultsModel BuildResultsByIteratorContext(string iteratorContext)
         {
             var scrollId = iteratorContext;
-            var result = elasticsearchClient.Scroll<SearchResponseNoData>(scrollId, null, x => x.AddQueryString("scroll", "10m")).ProcessResponse();
+            var result = elasticsearchClient.Scroll<SearchResponseNoData>(scrollId, x => x.AddQueryString("scroll", "10m")).ProcessResponse();
             var tasksIds = result.Response.Hits.Hits.Select(x => x.Id).ToArray();
             var nextScrollId = result.Response.ScrollId;
             return new TaskSearchResultsModel
