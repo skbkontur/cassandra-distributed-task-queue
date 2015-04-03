@@ -75,7 +75,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
                 Console.WriteLine("InProgress={0} Counter={1}", processedCountFromCounter, processingTaskCount.Count);
             } while(w.ElapsedMilliseconds < 10 * 1000);
             WaitForTasks(taskIds, TimeSpan.FromMinutes(15));
-            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
+            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(100));
         }
 
         protected void WaitFor(Func<bool> func, TimeSpan timeout, int checkTimeout = 99)
@@ -170,7 +170,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
             //WaitFor(() => taskQueue.GetTaskInfo<SlowTaskData>(lastTaskId).Context.State == TaskState.Finished, TimeSpan.FromSeconds(3));
             WaitForTasks(taskIds, waitTasksTime);
             Console.WriteLine("Waiting for Counter");
-            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromMinutes(1));
+            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, waitTasksTime);
         }
 
         private void WaitForTasks(List<string> taskIds, TimeSpan timeSpan)
