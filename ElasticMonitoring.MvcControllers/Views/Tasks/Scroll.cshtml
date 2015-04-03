@@ -1,28 +1,50 @@
 ﻿@using RemoteQueue.Cassandra.Entities
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
 @using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models
 @model SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models.TaskSearchResultsModel
 @functions {
 
     private string GetTaskRowColor(TaskModel task)
     {
-        if (task.State == TaskState.New)
+        if(task.State == TaskState.New)
             return "";
-        if (task.State == TaskState.Finished)
+        if(task.State == TaskState.Finished)
             return "success";
-        if (task.State == TaskState.WaitingForRerun || task.State == TaskState.InProcess || task.State == TaskState.WaitingForRerunAfterError)
+        if(task.State == TaskState.WaitingForRerun || task.State == TaskState.InProcess || task.State == TaskState.WaitingForRerunAfterError)
             return "active";
-        if (task.State == TaskState.Unknown || task.State == TaskState.Fatal || task.State == TaskState.Canceled)
+        if(task.State == TaskState.Unknown || task.State == TaskState.Fatal || task.State == TaskState.Canceled)
             return "danger";
         return "danger";
     }
 
 }
 <table data-next-iterator-context="@Model.IteratorContext">
-    @foreach (var task in Model.Tasks)
+    @foreach(var task in Model.Tasks)
     {
         <tr class="@GetTaskRowColor(task)">
-            <td>@task.Id</td>
-
+            <td>
+                @if(Model.AllowViewTaskData)
+                {
+                    @Html.ActionLink(@task.Id, "Details", new {id = task.Id})
+                }
+                else
+                {
+                    @task.Id
+                }                
+                @if(Model.AllowControlTaskExecution)
+                {
+                    <div class="btn-group pull-right" role="group">
+                        @if(task.State.CanCancelTask())
+                        {
+                            <button data-url="@Url.Action("Cancel", new {id = task.Id})" class="btn btn-xs btn-danger cancel-task-button">Cancel</button>
+                        }
+                        @if(task.State.CanRerunTask())
+                        {
+                            <button data-url="@Url.Action("Rerun", new {id = task.Id})" class="btn btn-xs btn-success rerun-task-button">Rerun</button>
+                        }
+                    </div>
+                }
+            </td>
             <td>@task.State</td>
             <td>@task.Name</td>
             <td>@task.EnqueueTime</td>

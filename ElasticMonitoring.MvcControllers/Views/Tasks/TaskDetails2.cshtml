@@ -1,4 +1,5 @@
-﻿@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
+﻿@using SKBKontur.Catalogue.Objects
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
 @using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models
 @model SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models.TaskDetailsModel
 @{
@@ -6,8 +7,22 @@
 }
 @section Title { Таска }
 
+@helper PrintTime(DateTime? dateTime)
+{
+    if(dateTime.HasValue)
+    {
+        @dateTime.Value.ToString("dd.MM.yyyy HH:mm:ss")
+        @(" (UTC) ")
+        @("(")@dateTime.Value.Ticks@(")")
+    }
+    else
+    {
+        @("-")
+    }
+}
 
-@helper DrawObjectTreeNode(ObjectTreeModel objectModel, ObjectTreeModelRenderContext context, int? parentIndex) 
+
+@helper DrawObjectTreeNode(ObjectTreeModel objectModel, ObjectTreeModelRenderContext context, int? parentIndex)
 {
     context.IncrementGlobalIndex();
     var currentIndex = context.GlobalIndex;
@@ -15,7 +30,7 @@
         <td>@objectModel.Name</td>
         <td>@objectModel.Value</td>
     </tr>
-    foreach (var child in objectModel.Children)
+    foreach(var child in objectModel.Children)
     {
         @DrawObjectTreeNode(child, context, currentIndex)
     }
@@ -26,28 +41,81 @@
         <div class="col-md-12">
             <div class="page-header">
                 <h1>Задача @Model.TaskName</h1>
-                <p class="lead">ID: @Model.TaskId                
-                    <div class="btn-group" role="group">
-                        @if(Model.State.CanCancelTask())
-                        {
-                            <button data-url="@Url.Action("Cancel", new {id = Model.TaskId})" class="btn btn-danger cancel-task-button">Cancel</button>
-                        }
-                        @if(Model.State.CanRerunTask())
-                        {
-                            <button data-url="@Url.Action("Rerun", new {id = Model.TaskId})" class="btn btn-success rerun-task-button">Rerun</button>
-                        }                                    
-                    </div>
+                <p class="lead">
+                    ID: @Model.TaskId
+                    @if(Model.AllowControlTaskExecution)
+                    {
+                        <div class="btn-group" role="group">
+                            @if(Model.State.CanCancelTask())
+                            {
+                                <button data-url="@Url.Action("Cancel", new {id = Model.TaskId})" class="btn btn-danger cancel-task-button">Cancel</button>
+                            }
+                            @if(Model.State.CanRerunTask())
+                            {
+                                <button data-url="@Url.Action("Rerun", new {id = Model.TaskId})" class="btn btn-success rerun-task-button">Rerun</button>
+                            }
+                        </div>
+                    }
                 </p>
-            </div>            
+            </div>
         </div>
     </div>
     
-
     <div class="row spa">
         <div class="col-md-8">
             <table class="table table-bordered table-hover tree">
+                <tr class="treegrid-1">
+                    <td>TaskId</td>
+                    <td>@Model.TaskId</td>
+                </tr>
+                <tr class="treegrid-2">
+                    <td>TaskState</td>
+                    <td>@Model.State</td>
+                </tr>
+                <tr class="treegrid-3">
+                    <td>Name</td>
+                    <td>@Model.TaskName</td>
+                </tr>
+                <tr class="treegrid-4">
+                    <td>EnqueueTime</td>
+                    <td>@PrintTime(Model.EnqueueTime)</td>
+                </tr>
+                <tr class="treegrid-5">
+                    <td>StartExecutedTime</td>
+                    <td>@PrintTime(Model.StartExecutedTime)</td>
+                </tr>
+                <tr class="treegrid-6">
+                    <td>FinishExecutedTime</td>
+                    <td>@PrintTime(Model.FinishExecutedTime)</td>
+                </tr>
+                <tr class="treegrid-7">
+                    <td>MinimalStartTime</td>
+                    <td>@PrintTime(Model.MinimalStartTime)</td>
+                </tr>
+                <tr class="treegrid-8">
+                    <td>Attempts</td>
+                    <td>@Model.AttemptCount</td>
+                </tr>
+                <tr class="treegrid-9">
+                    <td>ParentTaskId</td>
+                    <td>
+                        @if(!string.IsNullOrWhiteSpace(Model.ParentTaskId))
+                        {
+                            @Html.ActionLink(Model.ParentTaskId, "Details", new {id = Model.ParentTaskId})
+                        }                        
+                    </td>
+                </tr>
+                <tr class="treegrid-1">
+                    <td>ChildTaskIds</td>
+                    <td>
+                        @foreach(var childTaskId in Model.ChildTaskIds.ReturnArray())
+                        {
+                            @Html.ActionLink(childTaskId, "Details", new {id = childTaskId})
+                        }                        
+                    </td>
+                </tr>
                 @{
-                    var context = new ObjectTreeModelRenderContext();
+                    var context = new ObjectTreeModelRenderContext(100);
                 }
                 @foreach(var property in Model.DetailsTree.Children)
                 {
@@ -56,11 +124,14 @@
             </table>            
         </div>
     </div>
-    <div class="row spa">
-        <div class="col-md-8">
-            <pre>@Model.ExceptionInfo</pre>
+    @if(!string.IsNullOrWhiteSpace(Model.ExceptionInfo))
+    {
+        <div class="row spa">
+            <div class="col-md-8">
+                <pre>@Model.ExceptionInfo</pre>
+            </div>
         </div>
-    </div>
+    }
 </div>
 
 

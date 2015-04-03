@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="form-group">
-        <select class="select-picker" multiple name="name">
+        <select class="select-picker" data-live-search="true" multiple name="name"  title="Любой тип задачи" data-selected-text-format="count>2">
             @foreach (var taskName in Model.AvailableTaskDataNames)
             {
                 if (Model.TaskNames.ReturnArray().Contains(taskName))
@@ -30,7 +30,7 @@
         </select>
     </div>
     <div class="form-group">
-        <select class="select-picker" multiple name="state">
+        <select class="select-picker" multiple name="state" title="Любое состояние" data-selected-text-format="count>2">
             @foreach (var taskState in Model.AvailableTaskStates)
             {
                 if (Model.TaskStates.ReturnArray().Contains(taskState.Key))
@@ -44,7 +44,7 @@
             }
         </select>
     </div>
-    <button class="btn btn-default" type="submit">Найти</button>
+    <button class="btn btn-primary" type="submit">Найти</button>
 }
 
         <script>
@@ -73,8 +73,8 @@
 
                 $('#reportrange').daterangepicker({
                     format: 'DD.MM.YYYY',
-                    startDate: moment().subtract(29, 'days'),
-                    endDate: moment(),
+                    startDate: start,
+                    endDate: end,
                     minDate: '01.01.2008',
                     maxDate: '31.12.2030',
                     showDropdowns: true,

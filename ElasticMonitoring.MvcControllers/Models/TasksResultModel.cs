@@ -27,6 +27,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.M
         public TaskModel[] Tasks { get; set; }
         public string IteratorContext { get; set; }
         public int TotalResultCount { get; set; }
+        public bool AllowControlTaskExecution { get; set; }
+        public bool AllowViewTaskData { get; set; }
     }
 
     public class TaskModel
