@@ -21,6 +21,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.M
         public string ParentTaskId { get; set; }
         public string[] ChildTaskIds { get; set; }
         public int TaskGroupLock { get; set; }
+        public bool AllowControlTaskExecution { get; set; }
     }
 
     public class ObjectTreeModel

@@ -8,5 +8,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.AdminToolsArea.Control
             : base(baseParameters)
         {
         }
+
+        protected override bool CurrentUserHasAccessToReadAction()
+        {
+            return true;
+        }
+
+        protected override bool CurrentUserHasAccessToTaskData()
+        {
+            return true;
+        }
+
+        protected override bool CurrentUserHasAccessToWriteAction()
+        {
+            return true;
+        }
     }
 }

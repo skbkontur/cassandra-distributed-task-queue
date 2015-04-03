@@ -14,7 +14,7 @@
         @dateTime.Value.ToString("dd.MM.yyyy HH:mm:ss")
         @(" (UTC) ")
         @("(")@dateTime.Value.Ticks@(")")
-        }
+    }
     else
     {
         @("-")
@@ -22,7 +22,7 @@
 }
 
 
-@helper DrawObjectTreeNode(ObjectTreeModel objectModel, ObjectTreeModelRenderContext context, int? parentIndex) 
+@helper DrawObjectTreeNode(ObjectTreeModel objectModel, ObjectTreeModelRenderContext context, int? parentIndex)
 {
     context.IncrementGlobalIndex();
     var currentIndex = context.GlobalIndex;
@@ -30,7 +30,7 @@
         <td>@objectModel.Name</td>
         <td>@objectModel.Value</td>
     </tr>
-    foreach (var child in objectModel.Children)
+    foreach(var child in objectModel.Children)
     {
         @DrawObjectTreeNode(child, context, currentIndex)
     }
@@ -41,23 +41,26 @@
         <div class="col-md-12">
             <div class="page-header">
                 <h1>Задача @Model.TaskName</h1>
-                <p class="lead">ID: @Model.TaskId                
-                    <div class="btn-group" role="group">
-                        @if(Model.State.CanCancelTask())
-                        {
-                            <button data-url="@Url.Action("Cancel", new {id = Model.TaskId})" class="btn btn-danger cancel-task-button">Cancel</button>
-                        }
-                        @if(Model.State.CanRerunTask())
-                        {
-                            <button data-url="@Url.Action("Rerun", new {id = Model.TaskId})" class="btn btn-success rerun-task-button">Rerun</button>
-                        }                                    
-                    </div>
+                <p class="lead">
+                    ID: @Model.TaskId
+                    @if(Model.AllowControlTaskExecution)
+                    {
+                        <div class="btn-group" role="group">
+                            @if(Model.State.CanCancelTask())
+                            {
+                                <button data-url="@Url.Action("Cancel", new {id = Model.TaskId})" class="btn btn-danger cancel-task-button">Cancel</button>
+                            }
+                            @if(Model.State.CanRerunTask())
+                            {
+                                <button data-url="@Url.Action("Rerun", new {id = Model.TaskId})" class="btn btn-success rerun-task-button">Rerun</button>
+                            }
+                        </div>
+                    }
                 </p>
-            </div>            
+            </div>
         </div>
     </div>
     
-
     <div class="row spa">
         <div class="col-md-8">
             <table class="table table-bordered table-hover tree">
@@ -98,7 +101,7 @@
                     <td>
                         @if(!string.IsNullOrWhiteSpace(Model.ParentTaskId))
                         {
-                            @Html.ActionLink(Model.ParentTaskId, "Details", new { id = Model.ParentTaskId })
+                            @Html.ActionLink(Model.ParentTaskId, "Details", new {id = Model.ParentTaskId})
                         }                        
                     </td>
                 </tr>
@@ -107,7 +110,7 @@
                     <td>
                         @foreach(var childTaskId in Model.ChildTaskIds.ReturnArray())
                         {
-                            @Html.ActionLink(childTaskId, "Details", new { id = childTaskId })
+                            @Html.ActionLink(childTaskId, "Details", new {id = childTaskId})
                         }                        
                     </td>
                 </tr>
@@ -121,7 +124,7 @@
             </table>            
         </div>
     </div>
-    @if (!string.IsNullOrWhiteSpace(Model.ExceptionInfo))
+    @if(!string.IsNullOrWhiteSpace(Model.ExceptionInfo))
     {
         <div class="row spa">
             <div class="col-md-8">

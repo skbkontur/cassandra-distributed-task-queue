@@ -14,6 +14,7 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Search;
+using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
@@ -22,7 +23,7 @@ using ControllerBase = SKBKontur.Catalogue.Core.Web.Controllers.ControllerBase;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers
 {
-    public class TasksBaseController : ControllerBase
+    public abstract class TasksBaseController : ControllerBase
     {
         public TasksBaseController(
             TasksBaseControllerParameters parameters)
@@ -37,6 +38,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         [AcceptVerbs(HttpVerbs.Get)]
         public ViewResult Run(string q, string[] name, string[] state, string start, string end)
         {
+            CheckReadAccess();
             var rangeStart = ParseDateTime(start);
             var rangeEnd = ParseDateTime(end);
             var taskSearchConditions = new TaskSearchConditionsModel
@@ -64,6 +66,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         [AcceptVerbs(HttpVerbs.Post)]
         public ViewResult Scroll(string iteratorContext)
         {
+            CheckReadAccess();
             var taskSearchResultsModel = BuildResultsByIteratorContext(iteratorContext);
             return View("Scroll", taskSearchResultsModel);
         }
@@ -71,9 +74,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         [AcceptVerbs(HttpVerbs.Get)]
         public ViewResult Details(string id)
         {
+            CheckTaskDataAccess();
             var taskData = remoteTaskQueue.GetTaskInfo(id);
             return View("TaskDetails2", new TaskDetailsModel
                 {
+                    AllowControlTaskExecution = CurrentUserHasAccessToWriteAction(),
                     TaskName = taskData.Context.Name,
                     TaskId = taskData.Context.Id,
                     State = taskData.Context.State,
@@ -99,6 +104,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Cancel(string id)
         {
+            CheckWriteAccess();
             remoteTaskQueue.CancelTask(id);
             return Json(new {Success = true});
         }
@@ -106,9 +112,34 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Rerun(string id)
         {
+            CheckWriteAccess();
             remoteTaskQueue.RerunTask(id, TimeSpan.FromTicks(0));
             return Json(new {Success = true});
         }
+
+        private void CheckWriteAccess()
+        {
+            if (!CurrentUserHasAccessToWriteAction())
+                throw new ForbiddenException(Request.RawUrl, null);
+        }
+
+        private void CheckReadAccess()
+        {
+            if (!CurrentUserHasAccessToReadAction())
+                throw new ForbiddenException(Request.RawUrl, null);
+        }
+
+        private void CheckTaskDataAccess()
+        {
+            if (!CurrentUserHasAccessToTaskData())
+                throw new ForbiddenException(Request.RawUrl, null);
+        }
+
+        protected abstract bool CurrentUserHasAccessToReadAction();
+
+        protected abstract bool CurrentUserHasAccessToTaskData();
+
+        protected abstract bool CurrentUserHasAccessToWriteAction();
 
         private ObjectTreeModel BuildDetailsTree(RemoteTaskInfo taskData)
         {
@@ -275,6 +306,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             var nextScrollId = metaResponse.Response.ScrollId;
             var taskSearchResultsModel = new TaskSearchResultsModel
                 {
+                    AllowControlTaskExecution = CurrentUserHasAccessToWriteAction(),
+                    AllowViewTaskData = CurrentUserHasAccessToTaskData(),
                     Tasks = remoteTaskQueue.GetTaskInfos(tasksIds).Select(x => new TaskModel
                         {
                             Id = x.Context.Id,

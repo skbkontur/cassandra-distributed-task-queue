@@ -68,17 +68,27 @@
                     {
                         <tr class="@GetTaskRowColor(task)">
                             <td>
-                                @Html.ActionLink(@task.Id, "Details", new {id = task.Id}) 
-                                <div class="btn-group pull-right" role="group">
-                                    @if (task.State.CanCancelTask())
-                                    {
-                                        <button data-url="@Url.Action("Cancel", new {id = task.Id})" class="btn btn-xs btn-danger cancel-task-button">Cancel</button>
-                                    }
-                                    @if (task.State.CanRerunTask())
-                                    {
-                                        <button data-url="@Url.Action("Rerun", new { id = task.Id })" class="btn btn-xs btn-success rerun-task-button">Rerun</button>
-                                    }                                    
-                                </div>
+                                @if(Model.Results.AllowViewTaskData)
+                                {
+                                    @Html.ActionLink(@task.Id, "Details", new { id = task.Id })
+                                }
+                                else
+                                {
+                                    @task.Id
+                                }                                
+                                @if (Model.Results.AllowControlTaskExecution)
+                                {
+                                    <div class="btn-group pull-right" role="group">
+                                        @if (task.State.CanCancelTask())
+                                        {
+                                            <button data-url="@Url.Action("Cancel", new {id = task.Id})" class="btn btn-xs btn-danger cancel-task-button">Cancel</button>
+                                        }
+                                        @if (task.State.CanRerunTask())
+                                        {
+                                            <button data-url="@Url.Action("Rerun", new { id = task.Id })" class="btn btn-xs btn-success rerun-task-button">Rerun</button>
+                                        }
+                                    </div>
+                                }
                             </td>                        
                             <td>@task.State</td>            
                             <td>@task.Name</td>            
