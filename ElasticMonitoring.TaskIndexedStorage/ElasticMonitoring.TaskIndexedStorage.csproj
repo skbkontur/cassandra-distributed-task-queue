@@ -58,6 +58,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskSearchIndex.cs" />
     <Compile Include="TaskSearchSettings.cs" />
+    <Compile Include="Utils\DateTimeFormatter.cs" />
+    <Compile Include="Utils\NamedLoggerExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">

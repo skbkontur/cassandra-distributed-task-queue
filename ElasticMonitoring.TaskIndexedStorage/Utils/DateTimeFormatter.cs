@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.Utils
+namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils
 {
     internal class DateTimeFormatter
     {

@@ -92,7 +92,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
                 var w = Stopwatch.StartNew();
                 var notEmpty = false;
-                events.Batch(maxBatch).ForEach(enumerable =>
+                events.Where(IsEventOk).Batch(maxBatch).ForEach(enumerable =>
                     {
                         if(cancel)
                         {
@@ -109,6 +109,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 lock(dataLock)
                     lastUpdateTicks = toTicks;
             }
+        }
+
+        private static bool IsEventOk(TaskMetaUpdatedEvent @event)
+        {
+            return @event.TaskId != null;
         }
 
         private void InternalRestart(long fromTicksUtc)

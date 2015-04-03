@@ -12,8 +12,8 @@ namespace RemoteQueue.Handling
         {
             foreach(var taskDataInfo in taskDataRegistry.GetAllTaskDataInfos())
             {
-                Type type = taskDataInfo.Key;
-                string taskName = taskDataInfo.Value;
+                var type = taskDataInfo.Key;
+                var taskName = taskDataInfo.Value;
                 typeToName.Add(type, taskName);
                 if(nameToType.ContainsKey(taskName))
                     throw new TaskNameDuplicateException(taskName);
@@ -23,16 +23,28 @@ namespace RemoteQueue.Handling
 
         public string GetTaskName(Type type)
         {
-            if(typeToName.ContainsKey(type))
-                return typeToName[type];
-            throw new TaskDataNotFoundException(type);
+            string name;
+            if(!TryGetTaskName(type, out name))
+                throw new TaskDataNotFoundException(type);
+            return name;
         }
 
         public Type GetTaskType(string name)
         {
-            if(nameToType.ContainsKey(name))
-                return nameToType[name];
-            throw new TaskDataNotFoundException(name);
+            Type type;
+            if(!TryGetTaskType(name, out type))
+                throw new TaskDataNotFoundException(name);
+            return type;
+        }
+
+        public bool TryGetTaskType(string name, out Type taskType)
+        {
+            return nameToType.TryGetValue(name, out taskType);
+        }
+
+        public bool TryGetTaskName(Type type, out string name)
+        {
+            return typeToName.TryGetValue(type, out name);
         }
 
         private readonly Dictionary<Type, string> typeToName = new Dictionary<Type, string>();
