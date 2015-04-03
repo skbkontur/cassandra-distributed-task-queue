@@ -30,17 +30,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [ContainerSetUp]
         public void SetUp()
         {
-            //Console.WriteLine("SetUp");
-            //todo научится удалять. сейчас индекс разрушается
+            WaitFor(() =>
+                {
+                    var status = ElasticMonitoringServiceClient.GetStatus();
+                    return status.DistributedLockAcquired && status.IsProcessingQueue;
+                }, TimeSpan.FromMinutes(1));
             ElasticMonitoringServiceClient.DeleteAll();
 
             TaskSearchIndexSchema.ActualizeTemplate();
-        }
-
-        [Test, Ignore]
-        public void TestDeleteRemoteLock()
-        {
-            CassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", "remoteLock").Truncate();
         }
 
         [Test]

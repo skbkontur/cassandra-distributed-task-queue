@@ -22,11 +22,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 });
         }
 
-        public void Refresh()
-        {
-            elasticsearchClient.IndicesRefresh("_all");
-        }
-
         public void IndexBatch(TaskMetaInformation[] metas, object[] taskDatas)
         {
             logger.InfoFormat("IndexBatch: {0} tasks", metas.Length);

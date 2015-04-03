@@ -21,10 +21,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         public void DeleteAll()
         {
-            //elasticsearchClient.IndicesDelete("_all").ProcessResponse(200, 404);
             elasticsearchClient.IndicesDelete(LastUpdateTicksIndex).ProcessResponse(200, 404);
+            //todo bug разрушает индексы
             //elasticsearchClient.IndicesDelete(AllIndexWildcard).ProcessResponse(200, 404);
-            //elasticsearchClient.IndicesDeleteTemplateForAll(IndexTemplateName).ProcessResponse(200, 404);
+
             var searchIndices = FindIndices(AllIndexWildcard);
 
             foreach(var searchIndex in searchIndices)
@@ -35,6 +35,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     elasticsearchClient.DeleteByQuery(searchIndex, type, new {query = new {match_all = new {}}}).ProcessResponse();
             }
 
+            elasticsearchClient.IndicesDeleteTemplateForAll(IndexTemplateName).ProcessResponse(200, 404);
+
             Refresh();
         }
 
@@ -44,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             return Parse(indices.Response);
         }
 
-        public string[] Parse(string s)
+        private static string[] Parse(string s)
         {
             var strings = s.Split(new[] {"\n"}, StringSplitOptions.None);
             var lst = new List<string>();
@@ -120,20 +122,25 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                 },
                                                         },
                                                 },
-                                            //todo переписать на properties = {Meta= {properties= {Name={}}}}
-                                            properties = new Dictionary<string, object>
+                                            properties = new
                                                 {
-                                                    {"Meta.Name", StringTemplate()},
-                                                    {"Meta.Id", StringTemplate()},
-                                                    {"Meta.State", StringTemplate()},
-                                                    {"Meta.ParentTaskId", StringTemplate()},
-                                                    {"Meta.TaskGroupLock", StringTemplate()},
-                                                    {"Meta.Attempts", new {type = "integer"}},
-                                                    {"Meta.EnqueueTime", DateTemplate()},
-                                                    {"Meta.MinimalStartTime", DateTemplate()},
-                                                    {"Meta.StartExecutingTime", DateTemplate()},
-                                                    {"Meta.FinishExecutingTime", DateTemplate()},
-                                                    {"Meta.LastModificationTime", DateTemplate()},
+                                                    Meta = new
+                                                        {
+                                                            properties = new
+                                                                {
+                                                                    Name = StringTemplate(),
+                                                                    Id = StringTemplate(),
+                                                                    State = StringTemplate(),
+                                                                    ParentTaskId = StringTemplate(),
+                                                                    TaskGroupLock = StringTemplate(),
+                                                                    Attempts = new {type = "integer"},
+                                                                    EnqueueTime = DateTemplate(),
+                                                                    MinimalStartTime = DateTemplate(),
+                                                                    StartExecutingTime = DateTemplate(),
+                                                                    FinishExecutingTime = DateTemplate(),
+                                                                    LastModificationTime = DateTemplate(),
+                                                                }
+                                                        }
                                                 }
                                         }
                                 },
@@ -193,11 +200,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         private readonly IElasticsearchClient elasticsearchClient;
 
         private static readonly ILog logger = LogManager.GetLogger("TaskSearchIndexSchema");
-
-        private class MappingResponse
-        {
-            //Dictionary<string, >  
-        }
 
         private class MapingItem
         {

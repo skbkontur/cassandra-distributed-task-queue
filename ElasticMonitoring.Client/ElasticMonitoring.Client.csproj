@@ -41,6 +41,12 @@
     <Compile Include="IElasticMonitoringServiceClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ElasticMonitoring.TaskIndexedStorage\ElasticMonitoring.TaskIndexedStorage.csproj">
+      <Project>{DB958D74-D952-4E22-B9CB-6118D8D80EA0}</Project>
+      <Name>ElasticMonitoring.TaskIndexedStorage</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(ProjectDir)..\..\Assemblies\Temp\

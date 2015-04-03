@@ -21,3 +21,4 @@ CheckConnectionsInterval = 00:01:00
 
 ElasticSearchSchema.MonitoringSearch.NumberOfShards = 1
 ElasticSearchSchema.MonitoringSearch.NumberOfReplicas = 0
+ElasticSearchSchema.MonitoringSearch.EnableDestructveActions = true

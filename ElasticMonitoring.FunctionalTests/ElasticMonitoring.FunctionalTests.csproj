@@ -51,6 +51,7 @@
     <Compile Include="Environment\RemoteTaskQueueRemoteLockAttribute.cs" />
     <Compile Include="TaskSearchTests.cs" />
     <Compile Include="Environment\TestExchangeServicesAttribute.cs" />
+    <Compile Include="TaskSearchTestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
