@@ -77,9 +77,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     TaskName = taskData.Context.Name,
                     TaskId = taskData.Context.Id,
                     State = taskData.Context.State,
+                    EnqueueTime = new DateTime(taskData.Context.Ticks, DateTimeKind.Utc),
+                    StartExecutedTime = TickToDateTime(taskData.Context.StartExecutingTicks),
+                    FinishExecutedTime = TickToDateTime(taskData.Context.FinishExecutingTicks),
+                    MinimalStartTime = TickToDateTime(taskData.Context.MinimalStartTicks),
+                    ParentTaskId = taskData.Context.ParentTaskId,
+                    ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskData.Context.Id),
                     ExceptionInfo = taskData.With(x => x.ExceptionInfo).Return(x => x.ExceptionMessageInfo, ""),
+                    AttemptCount = taskData.Context.Attempts,
                     DetailsTree = BuildDetailsTree(taskData)
                 });
+        }
+
+        private static DateTime? TickToDateTime(long? startExecutingTicks)
+        {
+            if(!startExecutingTicks.HasValue)
+                return null;
+            return new DateTime(startExecutingTicks.Value, DateTimeKind.Utc);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -99,7 +113,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         private ObjectTreeModel BuildDetailsTree(RemoteTaskInfo taskData)
         {
             var result = new ObjectTreeModel();
-            AddPropertyValues(result, taskData.Context);
             var taskDataModel = new ObjectTreeModel
                 {
                     Name = "TaskData"
@@ -123,7 +136,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             }
             foreach(var property in context.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
             {
-                Type type = property.PropertyType;
+                var type = property.PropertyType;
                 if(type.IsEnum || plainTypes.Contains(type))
                 {
                     result.AddChild(new ObjectTreeModel
@@ -131,6 +144,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                             Name = property.Name,
                             Value = property.GetValue(context, null).With(x => x.ToString()).Return(x => x, "NULL")
                         });
+                }
+                else if (type == typeof(byte[]))
+                {
+                    result.AddChild(new ObjectTreeModel
+                        {
+                            Name = property.Name,
+                            Value = "byte[]"
+                        });                    
+                }
+                else if (type.IsArray)
+                {
+                    result.AddChild(new ObjectTreeModel
+                        {
+                            Name = property.Name,
+                            Value = type.GetElementType().Name + "[]"
+                        });                    
                 }
                 else if(type.IsClass)
                 {
@@ -140,9 +169,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                         };
                     var value = property.GetValue(context, null);
                     if(value == null)
-                    {
                         subChild.Value = "NULL";
-                    }
                     else
                         AddPropertyRecursively(subChild, value);
                 }
@@ -152,20 +179,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                         {
                             Name = property.Name,
                             Value = property.GetValue(context, null).With(x => x.ToString()).Return(x => x, "NULL")
-                        });                    
+                        });
                 }
-            }
-        }
-
-        private void AddPropertyValues(ObjectTreeModel result, object context)
-        {
-            foreach(var property in context.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
-            {
-                result.AddChild(new ObjectTreeModel
-                    {
-                        Name = property.Name,
-                        Value = property.GetValue(context, null).With(x => x.ToString()).Return(x => x, "NULL")
-                    });
             }
         }
 

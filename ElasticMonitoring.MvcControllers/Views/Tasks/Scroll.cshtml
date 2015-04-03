@@ -1,4 +1,5 @@
 ﻿@using RemoteQueue.Cassandra.Entities
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
 @using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models
 @model SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models.TaskSearchResultsModel
 @functions {
@@ -21,8 +22,19 @@
     @foreach (var task in Model.Tasks)
     {
         <tr class="@GetTaskRowColor(task)">
-            <td>@task.Id</td>
-
+            <td>
+                @Html.ActionLink(@task.Id, "Details", new { id = task.Id })
+                <div class="btn-group pull-right" role="group">
+                    @if (task.State.CanCancelTask())
+                    {
+                        <button data-url="@Url.Action("Cancel", new {id = task.Id})" class="btn btn-xs btn-danger cancel-task-button">Cancel</button>
+                    }
+                    @if (task.State.CanRerunTask())
+                    {
+                        <button data-url="@Url.Action("Rerun", new { id = task.Id })" class="btn btn-xs btn-success rerun-task-button">Rerun</button>
+                    }
+                </div>
+            </td>
             <td>@task.State</td>
             <td>@task.Name</td>
             <td>@task.EnqueueTime</td>
