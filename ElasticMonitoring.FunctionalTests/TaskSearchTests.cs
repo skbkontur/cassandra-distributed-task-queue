@@ -30,16 +30,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [ContainerSetUp]
         public void SetUp()
         {
+            //Console.WriteLine("SetUp");
+            //todo научится удалять. сейчас индекс разрушается
             ElasticMonitoringServiceClient.DeleteAll();
-            TaskSearchIndexSchema.ActualizeTemplate();
-            
-        }
-        [Test]
-        public void Test2()
-        {
-            
-        }
 
+            TaskSearchIndexSchema.ActualizeTemplate();
+        }
 
         [Test, Ignore]
         public void TestDeleteRemoteLock()
@@ -51,6 +47,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         public void TestStupid()
         {
             var t0 = DateTime.Now;
+
             var taskId = QueueTask(new SlowTaskData());
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
@@ -58,7 +55,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             var t1 = DateTime.Now;
             CheckSearch("*", t0, t1, taskId);
-            CheckSearch(string.Format("Meta.Id:{0}", taskId), t0, t1, taskId);
+            CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
+            CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId), t0, t1, taskId);
             CheckSearch(string.Format("Meta.Name:{0}", typeof(SlowTaskData).Name), t0, t1, taskId);
             CheckSearch(string.Format("Meta.Name:Zzz", typeof(SlowTaskData).Name), t0, t1, new string[0]);
         }
@@ -67,14 +65,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         public void TestUpdateAndFlush()
         {
             var t0 = DateTime.Now;
-            for(var i = 0; i < 500; i++)
+            for(var i = 0; i < 100; i++)
             {
                 Console.WriteLine("Iteration: {0}", i);
                 var taskId0 = QueueTask(new SlowTaskData());
                 WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
                 ElasticMonitoringServiceClient.UpdateAndFlush();
-                //Thread.Sleep(2000);
-                CheckSearch(string.Format("Meta.Id:{0}", taskId0), t0, DateTime.Now, taskId0);
+                CheckSearch(string.Format("\"{0}\"", taskId0), t0, DateTime.Now, taskId0);
             }
         }
 
@@ -88,9 +85,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 var taskId0 = QueueTask(new SlowTaskData());
                 var taskId1 = QueueTask(new SlowTaskData());
                 var taskId2 = QueueTask(new SlowTaskData());
+                //Console.WriteLine("ids: {0} {1} {2}", taskId0, taskId1, taskId2);
                 WaitForTasks(new[] {taskId0, taskId1, taskId2}, TimeSpan.FromSeconds(5));
                 ElasticMonitoringServiceClient.UpdateAndFlush();
-                CheckSearch(string.Format("{0}", taskId0), t0, DateTime.Now, taskId0);
+                CheckSearch(string.Format("\"{0}\"", taskId0), t0, DateTime.Now, taskId0);
             }
         }
 
@@ -112,7 +110,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             CheckSearch("*", t0, t2, taskId0, taskId1);
 
-            CheckSearch(string.Format("Meta.Id:{0} OR Meta.Id:{1}", taskId0, taskId1), t0, t1, taskId0, taskId1);
+            CheckSearch(string.Format("Meta.Id:\"{0}\" OR Meta.Id:\"{1}\"", taskId0, taskId1), t0, t1, taskId0, taskId1);
             CheckSearch(string.Format("Meta.State:Finished"), t0, t1, taskId0, taskId1);
 
             CheckSearch(string.Format("_missing_:Meta.ParentTaskId"), t0, t1, taskId0, taskId1);
@@ -144,6 +142,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         private string[] Search(string q, DateTime from, DateTime to)
         {
+            //todo kill q2 and delete all ES data
+            //var q2 = string.Format("({0}) AND (Meta.EnqueueTime:[\"{1}\" TO \"{2}\"])", q, ToIsoTime(@from), ToIsoTime(to));
             var taskSearchResponse = TaskSearchClient.SearchFirst(new TaskSearchRequest()
                 {
                     FromTicksUtc = @from.ToUniversalTime().Ticks,
@@ -161,6 +161,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 } while(taskSearchResponse.Ids != null && taskSearchResponse.Ids.Length > 0);
             }
             return result.ToArray();
+        }
+
+        private static string ToIsoTime(DateTime dt)
+        {
+            return dt.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK");
         }
 
         private string QueueTask<T>(T taskData) where T : ITaskData

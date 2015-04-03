@@ -112,7 +112,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             var taskDataObjects = new object[taskDatas.Length];
             for(var i = 0; i < batch.Length; i++)
             {
-                LogManager.GetLogger("ZZZ").LogInfoFormat("ZZZ", "Meta id={0} ticks={1}", batch[i].Id, batch[i].LastModificationTicks);
                 var taskData = taskDatas[i];
                 Type taskType;
                 object taskDataObj = null;

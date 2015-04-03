@@ -5,19 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
 
-using Elasticsearch.Net;
-
 using Humanizer;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Search;
-using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 
 using ControllerBase = SKBKontur.Catalogue.Core.Web.Controllers.ControllerBase;
 
@@ -29,7 +24,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             TasksBaseControllerParameters parameters)
             : base(parameters.BaseParameters)
         {
-            elasticsearchClient = parameters.ElasticsearchClientFactory.GetClient();
+            taskSearchClient = parameters.TaskSearchClient;
             taskDataNames = parameters.TaskDataRegistryBase.GetAllTaskDataInfos().Select(x => x.Value).Distinct().ToArray();
             taskStates = Enum.GetValues(typeof(TaskState)).Cast<TaskState>().Select(x => new KeyValuePair<string, string>(x.ToString(), x.Humanize())).ToArray();
             remoteTaskQueue = parameters.RemoteTaskQueue;
@@ -217,10 +212,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 
         private TaskSearchResultsModel BuildResultsByIteratorContext(string iteratorContext)
         {
-            var scrollId = iteratorContext;
-            var result = elasticsearchClient.Scroll<SearchResponseNoData>(scrollId, null, x => x.AddQueryString("scroll", "10m")).ProcessResponse();
-            var tasksIds = result.Response.Hits.Hits.Select(x => x.Id).ToArray();
-            var nextScrollId = result.Response.ScrollId;
+            var taskSearchResponse = taskSearchClient.SearchNext(iteratorContext);
+
+            var tasksIds = taskSearchResponse.Ids;
+            var nextScrollId = taskSearchResponse.NextScrollId;
             return new TaskSearchResultsModel
                 {
                     Tasks = remoteTaskQueue.GetTaskInfos(tasksIds).Select(x => new TaskModel
@@ -245,65 +240,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                 throw new Exception("Range start should be specified");
             var start = taskSearchConditions.RangeStart.Value.Ticks;
             var end = (taskSearchConditions.RangeEnd ?? DateTime.UtcNow).Ticks;
-            var searchString = taskSearchConditions.SearchString;
-            var filters = new List<object>
+            var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest
                 {
-                    new
-                        {
-                            query_string = new
-                                {
-                                    query = searchString
-                                },
-                        }
-                };
-            if(taskSearchConditions.TaskNames.ReturnArray().Length > 0)
-            {
-                filters.Add(new
-                    {
-                        terms = new Dictionary<string, object>()
-                            {
-                                {"Meta.Name", taskSearchConditions.TaskNames},
-                                {"minimum_should_match", 1}
-                            }
-                    });
-            }
-            if(taskSearchConditions.TaskStates.ReturnArray().Length > 0)
-            {
-                filters.Add(new
-                    {
-                        terms = new Dictionary<string, object>()
-                            {
-                                {"Meta.State", taskSearchConditions.TaskStates},
-                                {"minimum_should_match", 1}
-                            }
-                    });
-            }
-            var metaResponse =
-                elasticsearchClient
-                    .Search<SearchResponseNoData>(IndexNameFactory.GetIndexForTimeRange(start, end), new
-                        {
-                            size = 100,
-                            version = true,
-                            _source = false,
-                            query = new
-                                {
-                                    @bool = new
-                                        {
-                                            must = filters
-                                        }
-                                },
-                            sort = new[]
-                                {
-                                    new Dictionary<string, object>
-                                        {
-                                            {"Meta.MinimalStartTime", new {order = "desc"}}
-                                        }
-                                }
-                        }, x => x.IgnoreUnavailable(true).Scroll("10m").SearchType(SearchType.QueryThenFetch))
-                    .ProcessResponse();
-            var tasksIds = metaResponse.Response.Hits.Hits.Select(x => x.Id).ToArray();
-            var total = metaResponse.Response.Hits.Total;
-            var nextScrollId = metaResponse.Response.ScrollId;
+                    FromTicksUtc = start,
+                    ToTicksUtc = end,
+                    QueryString = taskSearchConditions.SearchString,
+                    TaskNames = taskSearchConditions.TaskNames,
+                    TaskStates = taskSearchConditions.TaskStates
+                });
+
+            var tasksIds = taskSearchResponse.Ids;
+            var total = taskSearchResponse.TotalCount;
+            var nextScrollId = taskSearchResponse.NextScrollId;
+
             var taskSearchResultsModel = new TaskSearchResultsModel
                 {
                     AllowControlTaskExecution = CurrentUserHasAccessToWriteAction(),
@@ -348,7 +297,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             return null;
         }
 
-        private readonly IElasticsearchClient elasticsearchClient;
+        private readonly ITaskSearchClient taskSearchClient;
         private readonly string[] taskDataNames;
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly KeyValuePair<string, string>[] taskStates;

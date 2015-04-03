@@ -29,12 +29,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Http
         {
             if (!taskSearchConsumer.IsWorking())
                 throw new Exception("Not working");
-            LogManager.GetLogger("ZZZ").LogInfoFormat("ZZZ", "_UpdateAndFlush start");
             //note method for tests
             currentMetaProvider.FetchMetas();
             taskSearchConsumer.ProcessQueue();
             taskSearchIndex.Refresh();
-            LogManager.GetLogger("ZZZ").LogInfoFormat("ZZZ", "__UpdateAndFlush end");
         }
 
         [HttpMethod]
