@@ -24,7 +24,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
             if(string.IsNullOrWhiteSpace(settings.KeyNamePrefix))
             {
                 keyNamePrefix = "";
-                this.statsDClient = EmplyStatsDClient.Instance;
+                this.statsDClient = EmptyStatsDClient.Instance;
                 this.statsTimerClient = EmptyStatsTimerClient.Instance;
             }
             else
