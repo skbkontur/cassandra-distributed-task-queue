@@ -18,7 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
     {
         public GraphiteRemoteTaskQueueProfiler(
             [NotNull] IGraphiteRemoteTaskQueueProfilerSettings settings,
-            [NotNull] IStatsDClient statsDClient,
+            [NotNull] ICatalogueStatsDClient statsDClient,
             [NotNull] IStatsTimerClient statsTimerClient)
         {
             if(string.IsNullOrWhiteSpace(settings.KeyNamePrefix))
@@ -71,7 +71,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
             return string.Format("{0}.Total.WaitingInQueue.{1}", keyNamePrefix, meta.Name);
         }
 
-        private readonly IStatsDClient statsDClient;
+        private readonly ICatalogueStatsDClient statsDClient;
         private readonly IStatsTimerClient statsTimerClient;
         private readonly string keyNamePrefix;
     }

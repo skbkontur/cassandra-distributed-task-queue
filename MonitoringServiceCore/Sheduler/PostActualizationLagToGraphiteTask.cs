@@ -31,6 +31,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
         public string Id { get { return "PostActualizationLagToGraphite"; } }
         private readonly IApplicationSettings applicationSettings;
         private readonly IMonitoringServiceImpl monitoringServiceImpl;
-        private readonly IGraphiteRelayClient graphiteClient;
+        private readonly ICatalogueGraphiteClient graphiteClient;
     }
 }

@@ -28,7 +28,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
         }
 
         private readonly ICompositeCounter counter;
-        private readonly IGraphiteRelayClient graphiteRelayClient;
+        private readonly ICatalogueGraphiteClient graphiteRelayClient;
         private readonly string graphitePrefix;
     }
 }
