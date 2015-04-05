@@ -124,7 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AdminToolsIcon.ico" />
-    <EmbeddedResource Include="Settings\front.log4net.config" />
     <Content Include="Settings\elasticsearchTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
