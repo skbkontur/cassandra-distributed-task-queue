@@ -10,6 +10,7 @@ using Humanizer;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;

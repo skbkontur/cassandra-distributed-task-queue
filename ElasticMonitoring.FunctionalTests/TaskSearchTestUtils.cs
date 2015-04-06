@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Cassandra;
 using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Container;
 using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.PropertyInjection;
