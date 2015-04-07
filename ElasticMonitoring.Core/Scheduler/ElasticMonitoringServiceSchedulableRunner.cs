@@ -2,8 +2,7 @@ using log4net;
 
 using RemoteQueue.LocalTasks.Scheduling;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.MetaProviding;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.TaskSearch;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
@@ -12,12 +11,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
     {
         public ElasticMonitoringServiceSchedulableRunner(
             IPeriodicTaskRunner periodicTaskRunner,
-            CurrentMetaProvider currentMetaProvider,
-            TaskSearchConsumer taskSearchConsumer)
+            ITaskIndexController taskIndexController
+            )
         {
             this.periodicTaskRunner = periodicTaskRunner;
-            this.currentMetaProvider = currentMetaProvider;
-            this.taskSearchConsumer = taskSearchConsumer;
+            this.taskIndexController = taskIndexController;
         }
 
         public void Stop()
@@ -45,8 +43,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
                 {
                     if(!worked)
                     {
-                        periodicTaskRunner.Register(new ActionPeriodicTask(() => currentMetaProvider.FetchMetas(), fetchMetasTaskId), MetaProviderSettings.FetchMetasInterval);
-                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskSearchConsumer.ProcessQueue(), taskSearchUpdateTaskId), TaskSearchSettings.IndexInterval);
+                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.ProcessNewEvents(), taskSearchUpdateTaskId), TaskSearchSettings.IndexInterval);
                         worked = true;
                         logger.InfoFormat("Start MonitoringServiceSchedulableRunner");
                     }
@@ -59,8 +56,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
 
         private readonly object lockObject = new object();
         private readonly IPeriodicTaskRunner periodicTaskRunner;
-        private readonly CurrentMetaProvider currentMetaProvider;
-        private readonly TaskSearchConsumer taskSearchConsumer;
+        private readonly ITaskIndexController taskIndexController;
 
         private volatile bool worked;
 
