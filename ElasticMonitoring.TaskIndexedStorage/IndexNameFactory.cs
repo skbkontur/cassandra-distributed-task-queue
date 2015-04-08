@@ -6,12 +6,24 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.U
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage
 {
-    public class IndexNameFactory
+    public static class IndexNameFactory
     {
         public static string GetIndexForTime(long ticksUtc)
         {
             //NOTE CANNOT rename already created indices
-            return TaskSearchIndexSchema.IndexPrefix + FormatTimeToIndexName(DateFromTicks(ticksUtc));
+            return BuildIndexNameForTime(TaskSearchIndexSchema.IndexPrefix, ticksUtc);
+        }
+
+        public static void GetDateRange(long ticksUtc, out DateTime beginDateInc, out DateTime endDateExc)
+        {
+            var dateTime = DateFromTicks(ticksUtc);
+            beginDateInc = DateToBeginDate(dateTime);
+            endDateExc = DateToEndDate(dateTime);
+        }
+
+        public static string BuildIndexNameForTime(string prefix, long ticksUtc)
+        {
+            return prefix + ticksUtc.DateFromTicks().DateToBeginDate().DateToString();
         }
 
         public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc)
@@ -25,20 +37,30 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 if(stringBuilder.Length > 0)
                     stringBuilder.Append(',');
                 stringBuilder.Append(TaskSearchIndexSchema.IndexPrefix);
-                stringBuilder.Append(FormatTimeToIndexName(time));
+                stringBuilder.Append(time.DateToBeginDate().DateToString());
                 time = time.Add(newIndexCreationInterval);
             }
             return stringBuilder.ToString();
         }
 
-        private static string FormatTimeToIndexName(DateTime dateTime)
+        private static DateTime DateToEndDate(this DateTime dateTime)
         {
-            return dateTime.ToString(dateFormat);
+            return dateTime.Add(newIndexCreationInterval).Date;
         }
 
-        private static DateTime DateFromTicks(long ticks)
+        private static DateTime DateToBeginDate(this DateTime dateTime)
+        {
+            return dateTime.Date;
+        }
+
+        private static DateTime DateFromTicks(this long ticks)
         {
             return new DateTime(DateTimeFormatter.TicksToDateTimeRange(ticks), DateTimeKind.Utc);
+        }
+
+        private static string DateToString(this DateTime dateTime)
+        {
+            return dateTime.ToString(dateFormat);
         }
 
         private const string dateFormat = "yyyy.MM.dd";

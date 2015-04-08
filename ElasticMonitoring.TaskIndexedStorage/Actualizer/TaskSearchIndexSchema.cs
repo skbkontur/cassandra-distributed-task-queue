@@ -9,6 +9,14 @@ using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer
 {
+    class IndexManager
+    {
+        private TaskSearchIndexSchema taskSearchIndexSchema;
+        public void EnsureIndexCreated(long ticks)
+        {
+            taskSearchIndexSchema.CreateCurrentAliases(ticks);
+        }
+    }
     public class TaskSearchIndexSchema
     {
         public TaskSearchIndexSchema(
@@ -19,13 +27,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient = elasticsearchClientFactory.GetClient();
         }
 
+        public const string LastUpdateTicksIndex = "lastupdate-monitoringsearch";
+        public const string LastUpdateTicksType = "LastUpdateTicks";
+        public const string IndexPrefix = "monitoringsearch-";
+        public const string SearchPrefix = "msearch-";
+        public const string PutPrefix = "mput-";
+        public const string OldDataIndex = IndexPrefix + "OldData";
+        public const string AllDataIndicesWildcard = IndexPrefix + "*";
+        public const string IndexTemplateName = "monitoringsearch-template";
+
         public void DeleteAll()
         {
             elasticsearchClient.IndicesDelete(LastUpdateTicksIndex).ProcessResponse(200, 404);
             //todo bug разрушает индексы
             //elasticsearchClient.IndicesDelete(AllIndexWildcard).ProcessResponse(200, 404);
 
-            var searchIndices = FindIndices(AllIndexWildcard);
+            var searchIndices = FindIndices(AllDataIndicesWildcard);
 
             foreach(var searchIndex in searchIndices)
             {
@@ -64,11 +81,63 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient.IndicesRefresh("_all");
         }
 
-        public const string LastUpdateTicksIndex = "lastupdate-monitoringsearch";
-        public const string LastUpdateTicksType = "LastUpdateTicks";
-        public const string IndexPrefix = "monitoringsearch-";
-        public const string AllIndexWildcard = IndexPrefix + "*";
-        public const string IndexTemplateName = "monitoringsearch-template";
+        private static string ToIsoTime(DateTime dt)
+        {
+            return dt.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK");
+        }
+
+        public void CreateCurrentAliases(long ticks)
+        {
+            var indexName = IndexNameFactory.BuildIndexNameForTime(IndexPrefix, ticks);
+            var searchIndexAlias = IndexNameFactory.BuildIndexNameForTime(SearchPrefix, ticks);
+            var putIndexAlias = IndexNameFactory.BuildIndexNameForTime(PutPrefix, ticks);
+
+            elasticsearchClient.IndicesUpdateAliasesForAll(new
+                {
+                    actions = new object[]
+                        {
+                            new {add = new {index = indexName, alias = putIndexAlias}},
+                            new {add = new {index = indexName, alias = searchIndexAlias}},
+                        }
+                }).ProcessResponse();
+        }
+
+        public void RetireIndex(long ticks)
+        {
+            var indexName = IndexNameFactory.BuildIndexNameForTime(IndexPrefix, ticks);
+            var searchIndexAlias = IndexNameFactory.BuildIndexNameForTime(SearchPrefix, ticks);
+            var putIndexAlias = IndexNameFactory.BuildIndexNameForTime(PutPrefix, ticks);
+            DateTime beginDateInc;
+            DateTime endDateExc;
+            IndexNameFactory.GetDateRange(ticks, out beginDateInc, out endDateExc);
+            elasticsearchClient.IndicesUpdateAliasesForAll(new
+                {
+                    actions = new object[]
+                        {
+                            new {add = new {index = OldDataIndex, alias = putIndexAlias}},
+                            new
+                                {
+                                    add = new
+                                        {
+                                            index = OldDataIndex, alias = searchIndexAlias, filter = new
+                                                {
+                                                    range = new
+                                                        {
+                                                            EnqueueTime = new
+                                                                {
+                                                                    gte = ToIsoTime(beginDateInc),
+                                                                    lt = ToIsoTime(endDateExc),
+                                                                    format = dateFormat
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                },
+                            new {remove = new {index = indexName, alias = putIndexAlias}},
+                            new {remove = new {index = indexName, alias = searchIndexAlias}},
+                        }
+                }).ProcessResponse();
+        }
 
         public void ActualizeTemplate()
         {
@@ -79,7 +148,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 elasticsearchClient
                     .IndicesPutTemplateForAll(IndexTemplateName, new
                         {
-                            template = AllIndexWildcard,
+                            template = AllDataIndicesWildcard,
                             settings = new
                                 {
                                     number_of_shards = dynamicSettings.NumberOfShards,
@@ -144,14 +213,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                 }
                                         }
                                 },
-                            TaskSearchContext = new
-                                {
-                                    _ttl = new Dictionary<string, object>()
-                                        {
-                                            {"enabled", true},
-                                            {"default", TaskSearchSettings.SearchRequestExpirationTime},
-                                        }
-                                }
                         }
                     ).ProcessResponse();
                 if(elasticsearchClient.IndicesExists(LastUpdateTicksIndex).ProcessResponse(200, 404).HttpStatusCode == 404)
@@ -188,13 +249,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         private static object DateTemplate()
         {
-            return new {type = "date", format = "dateOptionalTime", store = "no"};
+            return new {type = "date", format = dateFormat, store = "no"};
         }
 
         private static object StringTemplate()
         {
             return new {type = "string", store = "no", index = "not_analyzed"};
         }
+
+        private const string dateFormat = "dateOptionalTime";
 
         private readonly TaskSearchDynamicSettings dynamicSettings;
         private readonly IElasticsearchClient elasticsearchClient;
