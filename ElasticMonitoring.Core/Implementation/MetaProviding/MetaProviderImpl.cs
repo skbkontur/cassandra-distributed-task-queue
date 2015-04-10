@@ -122,7 +122,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             {
                 cancel = false;
                 logger.LogInfoFormat(loggerName, "Restarting to time={0}", DateTimeFormatter.FormatWithMsAndTicks(fromTicksUtc));
-                //startTicks = fromTicksUtc;
                 lastUpdateTicks = fromTicksUtc;
                 notReadEvents = new Dictionary<string, long>();
                 readEvents = new Dictionary<string, long>();
@@ -193,6 +192,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                                      DateTimeFormatter.FormatWithMsAndTicks(nowTicks));
             }
             RemoveAlreadyReadEvents(notReadEventsCopy, readEventsCopy);
+            
             //todo cancel read metas
             var metas = handleTasksMetaStorage.GetMetas(notReadEventsCopy.Keys.ToArray());
             var newMetas = new List<TaskMetaInformation>();

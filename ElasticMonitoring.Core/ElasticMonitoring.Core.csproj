@@ -69,7 +69,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Http\MonitoringServiceHttpHandler.cs" />
+    <Compile Include="Http\ElasticMonitoringHttpHandler.cs" />
     <Compile Include="Implementation\MetaProviding\CurrentMetaProvider.cs" />
     <Compile Include="Implementation\MetaProviding\ICurrentMetaProvider.cs" />
     <Compile Include="Implementation\MetaProviding\IMetaConsumer.cs" />
@@ -90,7 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ElasticMonitoring.TaskIndexedStorage\ElasticMonitoring.TaskIndexedStorage.csproj">
-      <Project>{DB958D74-D952-4E22-B9CB-6118D8D80EA0}</Project>
+      <Project>{db958d74-d952-4e22-b9cb-6118d8d80ea0}</Project>
       <Name>ElasticMonitoring.TaskIndexedStorage</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">

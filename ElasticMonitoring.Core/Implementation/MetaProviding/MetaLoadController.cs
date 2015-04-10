@@ -33,9 +33,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     break;
                 case State.LoadingLast:
                     {
+                        logger.LogInfoFormat(loggerName, "Sync Load begin");
                         var metas = GetMetas();
                         var toTicks = metas.Count > 0 ? metas[0].readTicks : currentMetaProvider.NowTicks;
-                        logger.LogInfoFormat(loggerName, "Sync Load begin");
                         Load(loadStartTicks, toTicks);
                         loadStartTicks = toTicks;
                         state = State.ProcessingQueue;
@@ -59,6 +59,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             var ticks = currentMetaProvider.NowTicks;
             if(ticks - loadStartTicks > syncLoadInterval)
             {
+                if (state == State.Reset)
+                    logger.LogInfoFormat(loggerName, "Begin loading");
                 Load(loadStartTicks, ticks);
                 loadStartTicks = ticks;
                 state = State.Loading;

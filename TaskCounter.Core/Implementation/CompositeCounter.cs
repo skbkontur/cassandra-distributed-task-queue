@@ -17,9 +17,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             var processedNames = new HashSet<string>();
             foreach(var taskMetaInformation in metas)
             {
-                totalCounter.Process(taskMetaInformation);
-                processedNames.Add(taskMetaInformation.Name);
-                GetCounter(taskMetaInformation.Name).Process(taskMetaInformation);
+                if(!string.IsNullOrEmpty(taskMetaInformation.Name))
+                {
+                    totalCounter.Process(taskMetaInformation);
+                    processedNames.Add(taskMetaInformation.Name);
+                    GetCounter(taskMetaInformation.Name).Process(taskMetaInformation);
+                }
             }
             foreach(var kvp in counters)
             {
@@ -108,7 +111,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             }
             if(snapshot.TotalSnapshot != null)
                 totalCounter.LoadSnapshot(snapshot.TotalSnapshot);
-            logger.LogInfoFormat("Snapshot loaded");
+
+            logger.LogInfoFormat("Snapshot loaded. Counter start value = {0}", totalCounter.GetCount().Count);
         }
 
         private static readonly ILog logger = LogManager.GetLogger("CompositeCounter");

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -50,14 +51,44 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             }
         }
 
+        public long MinTicksHack { get { return Interlocked.Read(ref minTicksHack); } }
+
+        public void SetMinTicksHack(long minTicks)
+        {
+            Interlocked.Exchange(ref minTicksHack, minTicks);
+        }
+
         public void ProcessMetas(TaskMetaInformation[] metas, long readTicks)
         {
-            IndexMetas(metas);
-            var estimatedLastUpdateReadTicks = GetEstimatedLastUpdateReadTicks(metas);
-            if(estimatedLastUpdateReadTicks.HasValue)
-                lastReadTicksStorage.SetLastReadTicks(estimatedLastUpdateReadTicks.Value);
-            else
-                lastReadTicksStorage.SetLastReadTicks(readTicks);
+            lock(lockObject)
+            {
+                metas = CutMetas(metas);
+                IndexMetas(metas);
+                var estimatedLastUpdateReadTicks = GetEstimatedLastUpdateReadTicks(metas);
+                if(estimatedLastUpdateReadTicks.HasValue)
+                    lastReadTicksStorage.SetLastReadTicks(estimatedLastUpdateReadTicks.Value);
+                else
+                    lastReadTicksStorage.SetLastReadTicks(readTicks);
+            }
+        }
+
+        private TaskMetaInformation[] CutMetas(TaskMetaInformation[] metas)
+        {
+            var ticks = MinTicksHack;
+            if(ticks <= 0)
+                return metas;
+            var list = new List<TaskMetaInformation>();
+            foreach(var taskMetaInformation in metas)
+            {
+                if(taskMetaInformation.Ticks > ticks)
+                    list.Add(taskMetaInformation);
+            }
+            return list.ToArray();
+        }
+
+        public bool IsWorking()
+        {
+            return metaLoadController.IsProcessingQueue;
         }
 
         public void ProcessQueue()
@@ -76,9 +107,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return minTicks;
         }
 
+        public bool IsDistributedLockAcquired()
+        {
+            return distributedLock != null;
+        }
+
         private bool DistributedLockAcquired()
         {
-            if(distributedLock != null)
+            if(IsDistributedLockAcquired())
                 return true;
             IRemoteLock @lock;
             if(remoteLockCreator.TryGetLock(lockId, out @lock))
@@ -116,6 +152,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         }
 
         private const string lockId = "TaskSearch_Loading_Lock";
+        private long minTicksHack = 0;
+        private readonly object lockObject = new object();
 
         private static readonly ILog logger = LogManager.GetLogger("TaskSearchConsumer");
 

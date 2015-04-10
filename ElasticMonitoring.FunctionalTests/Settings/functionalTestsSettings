@@ -15,3 +15,6 @@ MaximalRowsCount = 1000
 #Инициализация для Кассандры
 RowCacheSize = 10000
 ReplicationFactor = 1
+
+ElasticSearchSchema.MonitoringSearch.NumberOfShards = 1
+ElasticSearchSchema.MonitoringSearch.NumberOfReplicas = 0

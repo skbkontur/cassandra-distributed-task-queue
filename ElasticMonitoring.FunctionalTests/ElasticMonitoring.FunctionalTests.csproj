@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cassandra.CassandraClient, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.NUnit.Extensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.NUnit.Extensions.dll</HintPath>
     </Reference>
@@ -45,8 +49,9 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Environment\RemoteTaskQueueRemoteLockAttribute.cs" />
-    <Compile Include="TaskMonitoringIndexTests.cs" />
+    <Compile Include="TaskSearchTests.cs" />
     <Compile Include="Environment\TestExchangeServicesAttribute.cs" />
+    <Compile Include="TaskSearchTestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
@@ -56,6 +61,10 @@
     <ProjectReference Include="..\ElasticMonitoring.Client\ElasticMonitoring.Client.csproj">
       <Project>{543C6F5F-591B-41DE-B05F-E4E950888502}</Project>
       <Name>ElasticMonitoring.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ElasticMonitoring.TaskIndexedStorage\ElasticMonitoring.TaskIndexedStorage.csproj">
+      <Project>{DB958D74-D952-4E22-B9CB-6118D8D80EA0}</Project>
+      <Name>ElasticMonitoring.TaskIndexedStorage</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
@@ -67,7 +76,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Settings\elasticRemoteTaskQueueMonitoringTopology" />
+    <Content Include="Settings\elasticRemoteTaskQueueMonitoringTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Settings\elasticsearchTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Settings\exchangeServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
