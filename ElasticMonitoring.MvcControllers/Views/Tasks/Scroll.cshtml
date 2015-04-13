@@ -47,11 +47,10 @@
             </td>
             <td>@task.State</td>
             <td>@task.Name</td>
-            <td>@task.EnqueueTime</td>
-            <td>@task.StartExecutionTime</td>
-
-            <td>@task.FinishExecutionTime</td>
-            <td>@task.MinimalStartTime</td>
+            <td>@task.EnqueueTime.ToFullMoscowTimeString()</td>
+            <td>@task.StartExecutionTime.ToFullMoscowTimeString()</td>
+            <td>@task.FinishExecutionTime.ToFullMoscowTimeString()</td>
+            <td>@task.MinimalStartTime.ToFullMoscowTimeString()</td>
             <td>@task.AttemptCount</td>
             <td>@task.ParentTaskId</td>
         </tr>

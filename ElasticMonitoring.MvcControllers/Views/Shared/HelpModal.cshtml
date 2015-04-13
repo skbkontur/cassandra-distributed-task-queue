@@ -1,0 +1,48 @@
+﻿<div class="modal fade" id="search-help-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Справка</h4>
+            </div>
+            <div class="modal-body">
+                <p>Короче, можно искать просто вводя значение: value, тогда найдутся все таски, в полях которых будет это значение</p>
+                <p>Можно поискать через операторы AND OR NOT: value AND value2 AND NOT value3. Скобки есть, ага.</p>
+                <p>Можно искать в полях. Поля есть двух типов: Meta и Data. В мете лежит общая инфа по таске, в дате конкретная информация по типу задачи.</p>
+                <p>Например: Meta.TaskId:value</p>
+                <p>Например: Data.ScopeId:value</p>
+                <p>Например: Data.Value:(value1 OR value2)</p>
+                <p>В самой задаче есть лупы, которые поволяет найти все таски с таким значением</p>
+                <p>Ещё можно так Data.\*Id:value - во всех поля даты, которые заканчиваются на id найдётся value</p>
+                <p>Ещё можно проверять на NULL  и NOT NULL вот так
+                <p>_missing_:Data.Value
+                <p>_exists_:Data.Value
+                
+                <p>Звездочки, вопросики:
+                <p>Data.ScopeId:val*
+                <p>Data.ScopeId:val?e
+                <p>Data.ScopeId:*lue - нельзя, не пробуйте, работать не будет
+                
+                    
+                <p>Даты
+                <p>date:[2012-01-01 TO 2012-12-31]
+                <p>date:{* TO 2012-01-01}
+                <p>{ или } Значит не включая.
+                <p>Числа
+                <p>count:[1 TO 5]
+                <p>count:[10 TO *]
+                <p>count:[1 TO 5}
+                    
+                <p>Больше, меньше
+<p>age:>10
+<p>age:>=10
+<p>age:< 10
+<p>age:<=10
+<p>age:(>=10 AND < 20)
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

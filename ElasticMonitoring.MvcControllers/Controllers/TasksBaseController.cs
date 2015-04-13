@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 using Humanizer;
 
@@ -12,6 +14,9 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.ValueExtracting;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.TaskDetailsTreeView;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 
@@ -21,20 +26,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 {
     public abstract class TasksBaseController : ControllerBase
     {
-        public TasksBaseController(
+        protected TasksBaseController(
             TasksBaseControllerParameters parameters)
             : base(parameters.BaseParameters)
         {
             taskSearchClient = parameters.TaskSearchClient;
-            taskDataNames = parameters.TaskDataRegistryBase.GetAllTaskDataInfos().Select(x => x.Value).Distinct().ToArray();
+            taskDataNames = parameters.TaskDataRegistryBase.GetAllTaskDataInfos().OrderBy(x => x.Value).Select(x => x.Value).Distinct().ToArray();
             taskStates = Enum.GetValues(typeof(TaskState)).Cast<TaskState>().Select(x => new KeyValuePair<string, string>(x.ToString(), x.Humanize())).ToArray();
             remoteTaskQueue = parameters.RemoteTaskQueue;
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
-        public ViewResult Run(string q, string[] name, string[] state, string start, string end)
+        public ActionResult Run(string q, string[] name, string[] state, string start, string end)
         {
             CheckReadAccess();
+
             var rangeStart = ParseDateTime(start);
             var rangeEnd = ParseDateTime(end);
             var taskSearchConditions = new TaskSearchConditionsModel
@@ -44,12 +50,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     TaskStates = state,
                     RangeStart = rangeStart,
                     RangeEnd = rangeEnd,
+                    AdminToolAction = GetAdminToolsActions(),
                     AvailableTaskDataNames = taskDataNames,
                     AvailableTaskStates = taskStates
                 };
-
-            if(!SearchConditionSuitableForSearch(taskSearchConditions))
+            if(!taskSearchConditions.RangeStart.HasValue || !taskSearchConditions.RangeEnd.HasValue)
                 return View("SearchPage", taskSearchConditions);
+
+            if(string.IsNullOrWhiteSpace(q))
+                return RedirectToAction("Run", new RouteValueDictionary(new {q = "*", start, end}).AppendArray(name, "name").AppendArray(state, "state"));
 
             var taskSearchResultsModel = BuildResultsBySearchConditions(taskSearchConditions);
             return View("SearchResultsPage", new TasksResultModel
@@ -57,6 +66,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     SearchConditions = taskSearchConditions,
                     Results = taskSearchResultsModel
                 });
+        }
+
+        public static byte[] Compress(byte[] raw)
+        {
+            using(var memory = new MemoryStream())
+            {
+                using(var gzip = new GZipStream(memory, CompressionMode.Compress, true))
+                    gzip.Write(raw, 0, raw.Length);
+
+                return memory.ToArray();
+            }
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -70,7 +90,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         [AcceptVerbs(HttpVerbs.Get)]
         public ViewResult Details(string id)
         {
-            CheckTaskDataAccess();
+            CheckReadAccess();
             var taskData = remoteTaskQueue.GetTaskInfo(id);
             return View("TaskDetails2", new TaskDetailsModel
                 {
@@ -86,8 +106,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskData.Context.Id),
                     ExceptionInfo = taskData.With(x => x.ExceptionInfo).Return(x => x.ExceptionMessageInfo, ""),
                     AttemptCount = taskData.Context.Attempts,
-                    DetailsTree = BuildDetailsTree(taskData)
+                    DetailsTree = BuildDetailsTree(taskData, id)
                 });
+        }
+
+        [AcceptVerbs(HttpVerbs.Get)]
+        public ActionResult GetBytes(string id, string path)
+        {
+            CheckReadAccess();
+            var taskData = remoteTaskQueue.GetTaskInfo(id).TaskData;
+            var value = ObjectValueExtractor.Extract(taskData.GetType(), taskData, path);
+            if(value.GetType() != typeof(byte[]))
+                throw new Exception(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
+            var fileDownloadName = string.Format("{0}_{1}_{2}.data", DateTime.UtcNow.ToString("yyyy.MM.dd hh:mm:ss"), path, id);
+            return File((byte[])value, "application/octet-stream", fileDownloadName);
         }
 
         private static DateTime? TickToDateTime(long? startExecutingTicks)
@@ -125,11 +157,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                 throw new ForbiddenException(Request.RawUrl, null);
         }
 
-        private void CheckTaskDataAccess()
-        {
-            if (!CurrentUserHasAccessToTaskData())
-                throw new ForbiddenException(Request.RawUrl, null);
-        }
+        protected abstract string GetAdminToolsActions();
 
         protected abstract bool CurrentUserHasAccessToReadAction();
 
@@ -137,78 +165,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 
         protected abstract bool CurrentUserHasAccessToWriteAction();
 
-        private ObjectTreeModel BuildDetailsTree(RemoteTaskInfo taskData)
+        private ObjectTreeModel BuildDetailsTree(RemoteTaskInfo taskData, string taskId)
         {
-            var result = new ObjectTreeModel();
-            var taskDataModel = new ObjectTreeModel
-                {
-                    Name = "TaskData"
-                };
-            AddPropertyRecursively(taskDataModel, taskData.TaskData);
-            result.AddChild(taskDataModel);
+            if(!CurrentUserHasAccessToTaskData())
+                return null;
+            var builder = new ObjectTreeViewBuilder(new TaskDataBuildersProvider());
+            var result = builder.Build(taskData.TaskData, new TaskDataBuildingContext {TaskId = taskId, UrlHelper = Url});
+            if(result != null)
+                result.Name = "TaskData";
             return result;
-        }
-
-        private void AddPropertyRecursively(ObjectTreeModel result, object context)
-        {
-            var plainTypes = new[]
-                {
-                    typeof(int),
-                    typeof(string)
-                };
-            if(context == null)
-            {
-                result.Value = "NULL";
-                return;
-            }
-            foreach(var property in context.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
-            {
-                var type = property.PropertyType;
-                if(type.IsEnum || plainTypes.Contains(type))
-                {
-                    result.AddChild(new ObjectTreeModel
-                        {
-                            Name = property.Name,
-                            Value = property.GetValue(context, null).With(x => x.ToString()).Return(x => x, "NULL")
-                        });
-                }
-                else if (type == typeof(byte[]))
-                {
-                    result.AddChild(new ObjectTreeModel
-                        {
-                            Name = property.Name,
-                            Value = "byte[]"
-                        });                    
-                }
-                else if (type.IsArray)
-                {
-                    result.AddChild(new ObjectTreeModel
-                        {
-                            Name = property.Name,
-                            Value = type.GetElementType().Name + "[]"
-                        });                    
-                }
-                else if(type.IsClass)
-                {
-                    var subChild = new ObjectTreeModel
-                        {
-                            Name = property.Name
-                        };
-                    var value = property.GetValue(context, null);
-                    if(value == null)
-                        subChild.Value = "NULL";
-                    else
-                        AddPropertyRecursively(subChild, value);
-                }
-                else
-                {
-                    result.AddChild(new ObjectTreeModel
-                        {
-                            Name = property.Name,
-                            Value = property.GetValue(context, null).With(x => x.ToString()).Return(x => x, "NULL")
-                        });
-                }
-            }
         }
 
         private TaskSearchResultsModel BuildResultsByIteratorContext(string iteratorContext)
@@ -219,6 +184,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             var nextScrollId = taskSearchResponse.NextScrollId;
             return new TaskSearchResultsModel
                 {
+                    AllowControlTaskExecution = CurrentUserHasAccessToWriteAction(),
+                    AllowViewTaskData = CurrentUserHasAccessToTaskData(),
                     Tasks = remoteTaskQueue.GetTaskInfos(tasksIds).Select(x => new TaskModel
                         {
                             Id = x.Context.Id,
@@ -227,7 +194,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                             EnqueueTime = FromTicks(x.Context.Ticks),
                             StartExecutionTime = FromTicks(x.Context.StartExecutingTicks),
                             FinishExecutionTime = FromTicks(x.Context.FinishExecutingTicks),
-                            MinimalStartTime = FromTicks(x.Context.FinishExecutingTicks),
+                            MinimalStartTime = FromTicks(x.Context.MinimalStartTicks),
                             AttemptCount = x.Context.Attempts,
                             ParentTaskId = x.Context.ParentTaskId,
                         }).ToArray(),
@@ -266,7 +233,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                             EnqueueTime = FromTicks(x.Context.Ticks),
                             StartExecutionTime = FromTicks(x.Context.StartExecutingTicks),
                             FinishExecutionTime = FromTicks(x.Context.FinishExecutingTicks),
-                            MinimalStartTime = FromTicks(x.Context.FinishExecutingTicks),
+                            MinimalStartTime = FromTicks(x.Context.MinimalStartTicks),
                             AttemptCount = x.Context.Attempts,
                             ParentTaskId = x.Context.ParentTaskId,
                         }).ToArray(),
@@ -274,11 +241,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     TotalResultCount = total
                 };
             return taskSearchResultsModel;
-        }
-
-        private static bool SearchConditionSuitableForSearch(TaskSearchConditionsModel taskSearchConditions)
-        {
-            return !(string.IsNullOrEmpty(taskSearchConditions.SearchString) && taskSearchConditions.TaskNames.ReturnArray().Length == 0 && taskSearchConditions.TaskStates.ReturnArray().Length == 0);
         }
 
         private static DateTime? ParseDateTime(string start)

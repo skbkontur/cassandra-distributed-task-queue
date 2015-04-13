@@ -13,6 +13,7 @@ namespace ExchangeService.Configuration
                                    Func<FakePeriodicTaskHandler> createFakePeriodicTaskHandler,
                                    Func<SimpleTaskHandler> createSimpleTaskHandler,
                                    Func<ByteArrayTaskDataHandler> createByteArrayTaskDataHandler,
+                                   Func<ByteArrayAndNestedTaskHandler> createByteArrayAndNestedTaskHandler,
                                    Func<FileIdTaskDataHandler> createFileIdTaskDataHandler,
                                    Func<AlphaTaskHandler> createAlphaTaskHandler,
                                    Func<BetaTaskHandler> createBetaTaskHandler,
@@ -28,6 +29,7 @@ namespace ExchangeService.Configuration
             Register(createBetaTaskHandler);
             Register(createDeltaTaskHandler);
             Register(createSlowTaskHandler);
+            Register(createByteArrayAndNestedTaskHandler);
         }
     }
 }

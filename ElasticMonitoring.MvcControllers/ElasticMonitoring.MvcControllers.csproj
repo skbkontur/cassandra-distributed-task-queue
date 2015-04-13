@@ -64,8 +64,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\ArraysTypesBuilder.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\DateTimesBuilder.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\NestedClassTypeBuilder.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\NullValuesBuilder.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\SubObject.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\SubObjectsResults.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\ObjectTreeModelValue.cs" />
+    <Compile Include="Controllers\TaskDetailsTreeView\TaskDataBuildersProvider.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\Base\BuilderBase.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Context\BuildingContext.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\Providers\DefaultBuildersProvider.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\Providers\IBuildersProvider.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Context\MemberBuildingContext.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Results\BuildingResult.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\Base\IBuilder.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Results\IBuildingResult.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Results\NoResult.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\ObjectTreeViewBuilder.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\PrimitiveTypesBuilder.cs" />
+    <Compile Include="Controllers\TaskDetailsTreeView\PrimitiveTypesBuilderWithSpecialValue.cs" />
+    <Compile Include="Controllers\TaskDetailsTreeView\TaskDataBuildingContext.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\ObjectTreeModel.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Rendering\ObjectTreeModelRenderContext.cs" />
+    <Compile Include="RouteValueDictionaryExtensions.cs" />
     <Compile Include="Controllers\TasksBaseController.cs" />
     <Compile Include="Controllers\TasksBaseControllerParameters.cs" />
+    <Compile Include="DateTimeByTimeZoneExtensions.cs" />
     <Compile Include="Globals\ElasticTaskMonitoringPrecompiledMvcEngine.cs" />
     <Compile Include="Models\TaskDetailsModel.cs" />
     <Compile Include="Models\TasksResultModel.cs" />
@@ -75,6 +100,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <None Include="Views\Shared\HelpModal.cshtml" />
     <None Include="Views\Tasks\Scroll.cshtml" />
     <None Include="Views\Tasks\SearchResultsPage.cshtml" />
     <None Include="Views\Tasks\SearchPage.cshtml" />

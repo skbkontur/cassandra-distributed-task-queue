@@ -25,4 +25,15 @@
             @Html.Partial("SearchPanel", Model)
         </div>
     </div>
+    <div class="col-md-12" style="padding-top: 5px;">
+        <a data-target="#search-help-modal" data-toggle="modal"  href="#">Что можно ввести в строку поиска...</a>
+        @Html.Partial("HelpModal")
+    </div>
+    
+
+    <div class="row">
+        <div class="col-md-12 text-center" style="padding-top: 50px;">
+            <a href="@Model.AdminToolAction">вернуться к инструментам администратора</a>
+        </div>
+    </div>
 </div>

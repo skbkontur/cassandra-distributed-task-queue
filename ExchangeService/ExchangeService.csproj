@@ -67,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\ExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="Configuration\TaskHandlerRegistry.cs" />
+    <Compile Include="UserClasses\ByteArrayAndNestedTaskHandler.cs" />
     <Compile Include="UserClasses\ByteArrayTaskDataHandler.cs" />
     <Compile Include="UserClasses\FakeFailTaskHandler.cs" />
     <Compile Include="UserClasses\FakePeriodicTaskHandler.cs" />

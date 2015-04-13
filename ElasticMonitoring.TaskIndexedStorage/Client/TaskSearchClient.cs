@@ -39,7 +39,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                         {
                             query_string = new
                                 {
-                                    query = taskSearchRequest.QueryString
+                                    query = taskSearchRequest.QueryString,
+                                    lenient = true,
+                                    allow_leading_wildcard = false
                                 },
                         }
                 };

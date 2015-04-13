@@ -13,6 +13,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
             Register<FakePeriodicTaskData>("FakePeriodicTaskData");
             Register<SimpleTaskData>("SimpleTaskData");
             Register<ByteArrayTaskData>("ByteArrayTaskData");
+            Register<ByteArrayAndNestedTaskData>("ByteArrayAndNestedTaskData");
             Register<FileIdTaskData>("FileIdTaskData");
 
             Register<SlowTaskData>("SlowTaskData");

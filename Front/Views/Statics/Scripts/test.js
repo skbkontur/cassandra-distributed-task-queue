@@ -1,14 +1,25 @@
 ﻿(function(global, $) {
     $(function() {
         $('#load-more')
-            .click(function() {
+            .click(function () {
+                var button = $(this);
+
+                button.addClass("m-progress");
                 var lastIteratorContext = global.lastIteratorContext;
                 $.post("/Tasks/Scroll", { iteratorContext: lastIteratorContext },
                     function(data) {
                         var nextResult = $(data);
-                        console.log(nextResult.find("tr"));
-                        $('#result-container').append(nextResult.find("tr"));
-                        global.lastIteratorContext = nextResult.data('next-iterator-context');
+                        var results = nextResult.find("tr");
+                        if (results.length == 0) {
+                            setTimeout(function() {
+                                button.remove();
+                                global.lastIteratorContext = null;
+                            }, 1000);
+                        } else {
+                            $('#result-container').append(results);
+                            button.removeClass("m-progress");
+                            global.lastIteratorContext = nextResult.data('next-iterator-context');
+                        }
                     });
             });
     });

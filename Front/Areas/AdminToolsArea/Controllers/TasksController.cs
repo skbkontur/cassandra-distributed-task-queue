@@ -9,6 +9,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.AdminToolsArea.Control
         {
         }
 
+        protected override string GetAdminToolsActions()
+        {
+            return Url.Action("Debug", "Default");
+        }
+
         protected override bool CurrentUserHasAccessToReadAction()
         {
             return true;

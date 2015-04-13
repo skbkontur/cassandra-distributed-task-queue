@@ -1,5 +1,8 @@
 ﻿@using SKBKontur.Catalogue.Objects
 @using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding.Context
+@using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding.Rendering
 @using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models
 @model SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models.TaskDetailsModel
 @{
@@ -11,8 +14,8 @@
 {
     if(dateTime.HasValue)
     {
-        @dateTime.Value.ToString("dd.MM.yyyy HH:mm:ss")
-        @(" (UTC) ")
+        @dateTime.ToFullMoscowTimeString()
+        @(" (МСК) ")
         @("(")@dateTime.Value.Ticks@(")")
     }
     else
@@ -28,7 +31,20 @@
     var currentIndex = context.GlobalIndex;
     <tr class="treegrid-@currentIndex @(parentIndex.HasValue ? ("treegrid-parent-" + parentIndex) : "")">
         <td>@objectModel.Name</td>
-        <td>@objectModel.Value</td>
+        <td>
+            @if (objectModel.Value != null)
+            {
+                if (@objectModel.Value.IsHtml)
+                {
+                    @Html.Raw(objectModel.Value.Value)
+                }
+                else
+                {
+                    @objectModel.Value.Value
+                }
+
+            }
+        </td>
     </tr>
     foreach(var child in objectModel.Children)
     {
@@ -40,7 +56,21 @@
     <div class="row">
         <div class="col-md-12">
             <div class="page-header">
-                <h1>Задача @Model.TaskName</h1>
+                <h1>
+                    Задача @Model.TaskName
+                    <small style="font-size: 14px;">
+                        <a id="backLink" href="#">вернуться к поиску</a>
+                         <script>
+                             document.getElementById("backLink").addEventListener("mousedown", function() {
+                                if(history.length === 1){
+                                    window.location = @Html.Raw(HttpUtility.JavaScriptStringEncode(@Html.ViewContext.HttpContext.Request.UrlReferrer.Return(x => x.ToString(), Url.Action("Run")), true));
+                                } else {
+                                    window.history.back();
+                                }                                
+                            }, false);
+                        </script>
+                    </small>
+                </h1>
                 <p class="lead">
                     ID: @Model.TaskId
                     @if(Model.AllowControlTaskExecution)
@@ -117,9 +147,9 @@
                 @{
                     var context = new ObjectTreeModelRenderContext(100);
                 }
-                @foreach(var property in Model.DetailsTree.Children)
+                @if (Model.DetailsTree != null)
                 {
-                    @DrawObjectTreeNode(property, context, null)
+                    @DrawObjectTreeNode(Model.DetailsTree, context, null)
                 }
             </table>            
         </div>
@@ -138,6 +168,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('.tree').treegrid();
+        $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
 

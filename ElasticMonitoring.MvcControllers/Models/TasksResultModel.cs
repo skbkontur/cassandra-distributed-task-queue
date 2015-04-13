@@ -7,6 +7,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.M
 {
     public class TaskSearchConditionsModel
     {
+        public string AdminToolAction { get; set; }
         public string[] AvailableTaskDataNames { get; set; }
         public KeyValuePair<string, string>[] AvailableTaskStates { get; set; }
         public string SearchString { get; set; }
