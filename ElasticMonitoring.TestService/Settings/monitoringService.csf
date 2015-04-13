@@ -19,6 +19,9 @@ MaximalColumnsCount = 1000
 MaximalRowsCount = 1000
 CheckConnectionsInterval = 00:01:00
 
-ElasticSearchSchema.MonitoringSearch.NumberOfShards = 1
-ElasticSearchSchema.MonitoringSearch.NumberOfReplicas = 0
+
+ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat = \m\o\n\i\t\o\r\i\n\g\-\i\n\d\e\x\-yyyy.MM.dd
+ElasticSearchSchema.MonitoringSearch.OldIndexNameFormat = \m\o\n\i\t\o\r\i\n\g\-\i\n\d\e\x\-yyyy.MM.dd\-\o\l\d
+ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearch
+
 ElasticSearchSchema.MonitoringSearch.EnableDestructveActions = true

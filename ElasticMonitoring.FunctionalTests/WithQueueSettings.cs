@@ -1,27 +1,19 @@
 using System.Reflection;
 
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers.ForSuite;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
-using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
     [WithContainerPerSuite]
-    [WithDefaultSerializer]
-    [WithCassandra("CatalogueCluster", "QueueKeyspace")]
-    public class WithRemoteLock : EdiTestSuiteWrapperAttribute
+    public class WithQueueSettings : EdiTestSuiteWrapperAttribute
     {
-        private readonly string remoteLockColumnFamly;
-
-        public WithRemoteLock(string remoteLockColumnFamly)
-        {
-            this.remoteLockColumnFamly = remoteLockColumnFamly;
-        }
-
         public override sealed void SetUp(string suiteName, Assembly testAssembly, IEdiTestContextData suiteContext)
         {
-            suiteContext.GetContainer().ConfigureLockRepository(remoteLockColumnFamly);
+            suiteContext.GetContainer().Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(new RemoteQueueTestsCassandraSettings());
         }
     }
 }

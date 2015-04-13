@@ -60,6 +60,7 @@
     <Compile Include="TaskSearchTests.cs" />
     <Compile Include="Environment\TestExchangeServicesAttribute.cs" />
     <Compile Include="TaskSearchTestUtils.cs" />
+    <Compile Include="WithQueueSettings.cs" />
     <Compile Include="WithRemoteLock.cs" />
   </ItemGroup>
   <ItemGroup>

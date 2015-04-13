@@ -49,22 +49,30 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actualizer\TaskSearchDynamicSettings.cs" />
+    <Compile Include="Actualizer\TaskSchemaDynamicSettings.cs" />
+    <Compile Include="Actualizer\TaskSearchIndexDataTestService.cs" />
     <Compile Include="Actualizer\TaskSearchIndexSchema.cs" />
     <Compile Include="Client\ITaskSearchClient.cs" />
     <Compile Include="Client\TaskSearchClient.cs" />
     <Compile Include="Client\TaskSearchRequest.cs" />
     <Compile Include="Client\TaskSearchResponse.cs" />
-    <Compile Include="ContractResolverWithOmitedByteArrays.cs" />
-    <Compile Include="IndexNameFactory.cs" />
-    <Compile Include="LastReadTicksStorage.cs" />
-    <Compile Include="MetaIndexedInfo.cs" />
+    <Compile Include="Writing\IndexChecker.cs" />
+    <Compile Include="Writing\ContractResolverWithOmitedByteArrays.cs" />
+    <Compile Include="Writing\Contracts\TaskIndexedInfo.cs" />
+    <Compile Include="Writing\ITaskWriteDynamicSettings.cs" />
+    <Compile Include="Writing\IWriteIndexNameFactory.cs" />
+    <Compile Include="Search\SearchIndexNameFactory.cs" />
+    <Compile Include="Writing\LastReadTicksStorage.cs" />
+    <Compile Include="Writing\Contracts\MetaIndexedInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskSearchIndex.cs" />
-    <Compile Include="TaskSearchSettings.cs" />
+    <Compile Include="Writing\Contracts\LastUpdateTicks.cs" />
+    <Compile Include="Writing\TaskWriter.cs" />
+    <Compile Include="Search\TaskSearchDynamicSettings.cs" />
+    <Compile Include="Search\TaskSearchSettings.cs" />
     <Compile Include="Types\ElasticMonitoringStatus.cs" />
     <Compile Include="Utils\DateTimeFormatter.cs" />
     <Compile Include="Utils\NamedLoggerExtension.cs" />
+    <Compile Include="Writing\WriteIndexNameFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
@@ -72,6 +80,7 @@
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(ProjectDir)..\..\Assemblies\Temp\

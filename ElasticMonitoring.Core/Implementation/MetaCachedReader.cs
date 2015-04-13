@@ -20,7 +20,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         [ContainerConstructor]
         public MetaCachedReader(IHandleTasksMetaStorage handleTasksMetaStorage)
-            : this(handleTasksMetaStorage, TaskIndexSettings.CacheInterval.Ticks)
+            : this(handleTasksMetaStorage, TaskIndexSettings.MetaCacheInterval.Ticks)
         {
         }
 

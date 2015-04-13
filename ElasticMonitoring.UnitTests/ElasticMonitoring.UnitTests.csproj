@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestFormat.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ElasticMonitoring.Core\ElasticMonitoring.Core.csproj">

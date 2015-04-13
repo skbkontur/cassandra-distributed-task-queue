@@ -7,17 +7,17 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
 {
     public class TaskMetaProcessor : ITaskMetaProcessor
     {
-        public TaskMetaProcessor(ITaskDataTypeToNameMapper taskDataTypeToNameMapper, ITaskDataBlobStorage taskDataStorage, TaskSearchIndex searchIndex, ISerializer serializer)
+        public TaskMetaProcessor(ITaskDataTypeToNameMapper taskDataTypeToNameMapper, ITaskDataBlobStorage taskDataStorage, TaskWriter writer, ISerializer serializer)
         {
             this.taskDataTypeToNameMapper = taskDataTypeToNameMapper;
             this.taskDataStorage = taskDataStorage;
-            this.searchIndex = searchIndex;
+            this.writer = writer;
             this.serializer = serializer;
         }
 
@@ -35,13 +35,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 taskDataObjects[i] = taskDataObj;
             }
             if(batch.Length > 0)
-                searchIndex.IndexBatch(batch, taskDataObjects);
+                writer.IndexBatch(batch, taskDataObjects);
         }
 
         private readonly ITaskDataTypeToNameMapper taskDataTypeToNameMapper;
 
         private readonly ITaskDataBlobStorage taskDataStorage;
-        private readonly TaskSearchIndex searchIndex;
+        private readonly TaskWriter writer;
         private readonly ISerializer serializer;
     }
 }

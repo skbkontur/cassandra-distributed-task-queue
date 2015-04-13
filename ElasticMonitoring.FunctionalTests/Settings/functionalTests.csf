@@ -18,3 +18,12 @@ ReplicationFactor = 1
 
 ElasticSearchSchema.MonitoringSearch.NumberOfShards = 1
 ElasticSearchSchema.MonitoringSearch.NumberOfReplicas = 0
+
+ElasticSearchSchema.MonitoringSearch.SearchIndexNameFormat = \m\o\n\i\t\o\r\i\n\g\-\i\n\d\e\x\-yyyy.MM.dd\-\s\e\a\r\c\h
+
+ElasticSearchSchema.MonitoringSearch.IndexPrefix = monitoring-index-
+ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearch
+ElasticSearchSchema.MonitoringSearch.TemplateNamePrefix = monitoring-
+ElasticSearchSchema.MonitoringSearch.SearchAliasFormat = {index}-search
+ElasticSearchSchema.MonitoringSearch.OldDataAliasFormat = {index}-old
+ElasticSearchSchema.MonitoringSearch.OldDataIndex = old-data

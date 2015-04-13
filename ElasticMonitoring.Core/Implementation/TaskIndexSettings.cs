@@ -4,7 +4,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 {
     public class TaskIndexSettings
     {
-        public static readonly TimeSpan CacheInterval = TimeSpan.FromMinutes(10);
-        public static readonly int MaxBatch = 200;
+        public const int MaxBatch = 500;
+        public static readonly TimeSpan MetaCacheInterval = TimeSpan.FromMinutes(10);
+        public static readonly TimeSpan IndexInterval = TimeSpan.FromSeconds(5);
     }
 }

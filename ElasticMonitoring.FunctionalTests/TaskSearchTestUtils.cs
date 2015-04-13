@@ -2,8 +2,6 @@
 
 using GroboContainer.Core;
 
-using JetBrains.Annotations;
-
 using NUnit.Framework;
 
 using RemoteQueue.Configuration;
@@ -11,13 +9,16 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers.ForSuite;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [EdiTestSuite, WithCassandra("CatalogueCluster", "QueueKeyspace"), WithDefaultSerializer, WithRemoteLock("remoteLock")]
+    [EdiTestSuite, WithApplicationSettings(FileName = "functionalTestsSettings"),
+     WithDefaultSerializer,
+     WithCassandra("CatalogueCluster", "QueueKeyspace"),
+     WithRemoteLock("remoteLock")]
     public class TaskSearchTestUtils
     {
         [Test, Ignore]
@@ -25,12 +26,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             cassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", "remoteLock").Truncate();
         }
-        //private void ConfigureRemoteLock(IContainer container)
-        //{
-        //    var keyspaceName = container.Get<IApplicationSettings>().GetString("KeyspaceName");
-        //    const string columnFamilyName = "remoteLock";
-        //    container.Configurator.ForAbstraction<IRemoteLockImplementation>().UseInstances(container.Create<ColumnFamilyFullName, CassandraRemoteLockImplementation>(new ColumnFamilyFullName(keyspaceName, columnFamilyName)));
-        //}
+
+        [Test, Ignore]
+        public void TestCreateTaskSearchSchema()
+        {
+            hackService.DeleteAll();
+            taskSearchIndexSchema.ActualizeTemplate();
+        }
+
         [Test, Ignore]
         public void TestCreateCassandraSchema()
         {
@@ -88,6 +91,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         [Injected]
         private readonly ICassandraCluster cassandraCluster;
+
+        [Injected]
+        private readonly TaskSearchIndexSchema taskSearchIndexSchema;
+
+        [Injected]
+        private readonly TaskSearchIndexDataTestService hackService;
 
         // ReSharper restore UnassignedReadonlyField.Compiler
     }
