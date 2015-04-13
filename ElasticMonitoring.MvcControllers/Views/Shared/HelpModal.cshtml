@@ -1,44 +1,27 @@
 ﻿<div class="modal fade" id="search-help-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">Справка</h4>
             </div>
             <div class="modal-body">
-                <p>Короче, можно искать просто вводя значение: value, тогда найдутся все таски, в полях которых будет это значение</p>
-                <p>Можно поискать через операторы AND OR NOT: value AND value2 AND NOT value3. Скобки есть, ага.</p>
-                <p>Можно искать в полях. Поля есть двух типов: Meta и Data. В мете лежит общая инфа по таске, в дате конкретная информация по типу задачи.</p>
-                <p>Например: Meta.TaskId:value</p>
-                <p>Например: Data.ScopeId:value</p>
-                <p>Например: Data.Value:(value1 OR value2)</p>
-                <p>В самой задаче есть лупы, которые поволяет найти все таски с таким значением</p>
-                <p>Ещё можно так Data.\*Id:value - во всех поля даты, которые заканчиваются на id найдётся value</p>
-                <p>Ещё можно проверять на NULL  и NOT NULL вот так
-                <p>_missing_:Data.Value
-                <p>_exists_:Data.Value
-                
-                <p>Звездочки, вопросики:
-                <p>Data.ScopeId:val*
-                <p>Data.ScopeId:val?e
-                <p>Data.ScopeId:*lue - нельзя, не пробуйте, работать не будет
-                
-                    
-                <p>Даты
-                <p>date:[2012-01-01 TO 2012-12-31]
-                <p>date:{* TO 2012-01-01}
-                <p>{ или } Значит не включая.
-                <p>Числа
-                <p>count:[1 TO 5]
-                <p>count:[10 TO *]
-                <p>count:[1 TO 5}
-                    
-                <p>Больше, меньше
-<p>age:>10
-<p>age:>=10
-<p>age:< 10
-<p>age:<=10
-<p>age:(>=10 AND < 20)
+                При поиске задач можно пользоваться следующими инструментами поиска:
+                <ol>
+                    <li>Ввод значения без дополнительных указаний. В этом случае найдутся все задачи, в полях которых встречается это значение.</li>
+                    <li>Операторы AND, OR, NOT, скобки между ними. Например: <code>(value1 OR value2) AND NOT value3</code>.</li>
+                    <li>Ввод значения с указанием конкретного поля, в котором его нужно искать. Поля есть двух типов: Meta и Data, в полях Meta лежит общая информация по задаче, в полях Data - информация по типу задачи.<br>
+                        Например: <code>Meta.TaskId:value</code>, <code>Data.ScopeId:value</code>, <code>Data.Value:(value1 OR value2)</code>.</li>
+                    <li>Знаки * и ?. Например, <code>Data.ScopeId:val*</code> или <code>Data.ScopeId:val?e</code>. Звездочка не может быть в начале искомого значения (<code>Data.ScopeId:*lue</code> не работает).<br>
+                        Знаки можно использовать не только в значениях, но и при указании полей. По запросу <code>Data.\*Id:value</code> во всех поля даты, которые заканчиваются на id найдётся value.</li> 
+                    <li>Задание интервалов для дат. Квадратные скобки при задании интервала означают, что концы включены, фигурные - что исключены. Звездочка показывает, что интервал в эту сторону бесконечен.<br>
+                        Например: <code>date:[2012-01-01 TO 2012-12-31]</code>, <code>date:{* TO 2012-01-01}.</code></li>
+                    <li>Задание интервалов для чисел аналогично заданию интервалов для дат. Например: <code>count:[1 TO 5}</code>.</li>
+                    <li>Сравнение чисел. Например: <code>age:&gt;=10</code>, <code>age:&lt;=10</code>, <code>age:(&gt;=10 AND &lt; 20)</code>.</li>
+                    <li>Проверка полей на заполненность. Например: <code>_missing_:Data.Value</code> - поле пусто, <code>_exists_:Data.Value</code> - поле заполнено.</li>
+                    <li>Поиск значения, равного значению поля в конкретной задаче. Для поиска используется значок в лупе на карточку задачи.</li>
+                </ol>                
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
