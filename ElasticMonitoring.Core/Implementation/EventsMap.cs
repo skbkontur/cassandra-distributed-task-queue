@@ -7,9 +7,9 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
 {
-    public class UnprocessedEventsMap
+    public class EventsMap
     {
-        public UnprocessedEventsMap(long cacheEventTicks)
+        public EventsMap(long cacheEventTicks)
         {
             this.cacheEventTicks = cacheEventTicks;
         }
@@ -22,14 +22,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return min;
         }
 
-        private void CollectOldEventsGarbage(long nowTicks)
+        public bool NotContains(TaskMetaUpdatedEvent e)
+        {
+            TaskMetaUpdatedEvent existingEvent;
+            if(map.TryGetValue(e.TaskId, out existingEvent))
+            {
+                if(existingEvent.Ticks >= e.Ticks)
+                    return false;
+            }
+            return true;
+        }
+
+        public void CollectGarbage(long nowTicks)
         {
             map.DeleteWhere(pair => pair.Value.Ticks + cacheEventTicks < nowTicks);
         }
 
-        public IEnumerable<TaskMetaUpdatedEvent> GetUnprocessedEvents(long nowTicks)
+        public IEnumerable<TaskMetaUpdatedEvent> GetEvents()
         {
-            CollectOldEventsGarbage(nowTicks);
             return map.Values.ToArray();
         }
 

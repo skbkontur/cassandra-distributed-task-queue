@@ -78,7 +78,7 @@
     <Compile Include="Implementation\TaskIndexController.cs" />
     <Compile Include="Implementation\TaskMetaProcessor.cs" />
     <Compile Include="Implementation\TaskWriteDynamicSettings.cs" />
-    <Compile Include="Implementation\UnprocessedEventsMap.cs" />
+    <Compile Include="Implementation\EventsMap.cs" />
     <Compile Include="Implementation\Utils\DateTimeFormatter.cs" />
     <Compile Include="Implementation\Utils\DictionaryHelpers.cs" />
     <Compile Include="Implementation\Utils\NamedLoggerExtension.cs" />

@@ -37,7 +37,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             this.lastReadTicksStorage = lastReadTicksStorage;
             this.maxBatch = maxBatch;
             unstableZoneTicks = eventLogRepository.UnstableZoneLength.Ticks;
-            unprocessedEventsMap = new UnprocessedEventsMap(unstableZoneTicks * 2);
+            unprocessedEventsMap = new EventsMap(unstableZoneTicks * 2);
+            processedEventsMap = new EventsMap(unstableZoneTicks * 2);
             lastTicks = long.MinValue;
         }
 
@@ -76,6 +77,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private TaskMetaInformation[] CutMetas(TaskMetaInformation[] metas)
         {
+            //NOTE hack code for tests
             var ticks = MinTicksHack;
             if(ticks <= 0)
                 return metas;
@@ -101,7 +103,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
                 var hasEvents = false;
 
-                var unprocessedEvents = unprocessedEventsMap.GetUnprocessedEvents(now);
+                var unprocessedEvents = unprocessedEventsMap.GetEvents();
+                unprocessedEventsMap.CollectGarbage(now);
+                processedEventsMap.CollectGarbage(now);
                 var newEvents = GetEvents(lastTicks);
 
                 unprocessedEvents.Concat(newEvents)
@@ -146,13 +150,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             for(var i = 0; i < taskMetaInformations.Length; i++)
             {
                 var taskMetaInformation = taskMetaInformations[i];
+                var taskMetaUpdatedEvent = taskMetaUpdatedEvents[i];
                 if(taskMetaInformation != null)
                 {
                     actualMetas.Add(taskMetaInformation);
-                    unprocessedEventsMap.RemoveEvent(taskMetaUpdatedEvents[i]);
+                    processedEventsMap.AddEvent(taskMetaUpdatedEvent);
+                    unprocessedEventsMap.RemoveEvent(taskMetaUpdatedEvent);
                 }
                 else
-                    unprocessedEventsMap.AddEvent(taskMetaUpdatedEvents[i]);
+                    unprocessedEventsMap.AddEvent(taskMetaUpdatedEvent);
             }
 
             var actualMetasArray = actualMetas.ToArray();
@@ -190,8 +196,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks)
         {
-            //todo do not read event twice
-            return eventLogRepository.GetEvents(fromTicks - unstableZoneTicks, maxBatch);
+            return eventLogRepository.GetEvents(fromTicks - unstableZoneTicks, maxBatch).Where(processedEventsMap.NotContains);
         }
 
         public bool IsDistributedLockAcquired()
@@ -227,7 +232,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         private readonly IGlobalTime globalTime;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IMetaCachedReader reader;
-        private readonly UnprocessedEventsMap unprocessedEventsMap;
+        private readonly EventsMap unprocessedEventsMap;
+        private readonly EventsMap processedEventsMap;
 
         private readonly object lockObject = new object();
 
