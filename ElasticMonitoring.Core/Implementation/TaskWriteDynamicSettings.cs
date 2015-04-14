@@ -1,4 +1,5 @@
 ﻿using SKBKontur.Catalogue.Core.Configuration.Settings;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
@@ -9,8 +10,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         {
             if(!applicationSettings.TryGetBool("ElasticSearchSchema.MonitoringSearch.EnableDestructveActions", out enableDestructiveActions))
                 enableDestructiveActions = false;
-            CurrentIndexNameFormat = applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat");
-            OldIndexNameFormat = applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.OldIndexNameFormat");
+            CurrentIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat"));
+            OldIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.OldIndexNameFormat"));
             LastTicksIndex = applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.LastTicksIndex");
         }
 

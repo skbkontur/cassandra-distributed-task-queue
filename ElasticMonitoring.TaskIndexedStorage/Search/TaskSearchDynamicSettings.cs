@@ -1,4 +1,5 @@
 ﻿using SKBKontur.Catalogue.Core.Configuration.Settings;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search
 {
@@ -6,7 +7,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
     {
         public TaskSearchDynamicSettings(IApplicationSettings applicationSettings)
         {
-            SearchIndexNameFormat = applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.SearchIndexNameFormat");
+            SearchIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.SearchIndexNameFormat"));
         }
 
         public string SearchIndexNameFormat { get; private set; }

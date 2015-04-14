@@ -56,6 +56,7 @@
     <Compile Include="Client\TaskSearchClient.cs" />
     <Compile Include="Client\TaskSearchRequest.cs" />
     <Compile Include="Client\TaskSearchResponse.cs" />
+    <Compile Include="Utils\IndexNameConverter.cs" />
     <Compile Include="Writing\IndexChecker.cs" />
     <Compile Include="Writing\ContractResolverWithOmitedByteArrays.cs" />
     <Compile Include="Writing\Contracts\TaskIndexedInfo.cs" />

@@ -20,8 +20,8 @@ MaximalRowsCount = 1000
 CheckConnectionsInterval = 00:01:00
 
 
-ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat = \m\o\n\i\t\o\r\i\n\g\-\i\n\d\e\x\-yyyy.MM.dd
-ElasticSearchSchema.MonitoringSearch.OldIndexNameFormat = \m\o\n\i\t\o\r\i\n\g\-\i\n\d\e\x\-yyyy.MM.dd\-\o\l\d
+ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat = monitoring-index-{yyyy.MM.dd}
+ElasticSearchSchema.MonitoringSearch.OldIndexNameFormat = monitoring-index-{yyyy.MM.dd}-old
 ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearch
 
 ElasticSearchSchema.MonitoringSearch.EnableDestructveActions = true
