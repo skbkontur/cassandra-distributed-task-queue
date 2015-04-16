@@ -47,6 +47,10 @@ namespace FunctionalTests
                     new ColumnFamily
                         {
                             Name = TestCassandraCounterBlobRepository.columnFamilyName,
+                        },
+                    new ColumnFamily
+                        {
+                            Name = CassandraTestTaskLogger.columnFamilyName
                         }
                 }).ToArray();
             var client = Container.Get<IRemoteTaskQueueMonitoringServiceClient>();

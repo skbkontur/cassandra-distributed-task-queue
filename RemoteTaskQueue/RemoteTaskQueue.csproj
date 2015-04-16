@@ -110,6 +110,9 @@
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\GlobalTime.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\IGlobalTime.cs" />
     <Compile Include="Handling\CreateTaskOptions.cs" />
+    <Compile Include="Handling\ExecutionContext\ITaskExecutionContext.cs" />
+    <Compile Include="Handling\ExecutionContext\ReadOnlyTaskExecutionContext.cs" />
+    <Compile Include="Handling\ExecutionContext\TaskExecutionContextExtensions.cs" />
     <Compile Include="Handling\FinishAction.cs" />
     <Compile Include="Handling\HandlerManager.cs" />
     <Compile Include="Handling\HandlerResults\HandleResult.cs" />
@@ -130,6 +133,7 @@
     <Compile Include="Handling\ShardingManager.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
+    <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
     <Compile Include="Handling\TaskHandler.cs" />
     <Compile Include="Handling\TaskHandlerCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTaskExceptionInfoStorage.cs" />

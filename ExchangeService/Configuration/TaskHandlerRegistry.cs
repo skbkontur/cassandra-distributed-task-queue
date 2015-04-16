@@ -18,7 +18,8 @@ namespace ExchangeService.Configuration
                                    Func<AlphaTaskHandler> createAlphaTaskHandler,
                                    Func<BetaTaskHandler> createBetaTaskHandler,
                                    Func<DeltaTaskHandler> createDeltaTaskHandler,
-                                   Func<SlowTaskHandler> createSlowTaskHandler)
+                                   Func<SlowTaskHandler> createSlowTaskHandler,
+                                   Func<ChainTaskHandler> createChainTaskHandler)
         {
             Register(createFakeFailTaskHandler);
             Register(createFakePeriodicTaskHandler);
@@ -30,6 +31,7 @@ namespace ExchangeService.Configuration
             Register(createDeltaTaskHandler);
             Register(createSlowTaskHandler);
             Register(createByteArrayAndNestedTaskHandler);
+            Register(createChainTaskHandler);
         }
     }
 }

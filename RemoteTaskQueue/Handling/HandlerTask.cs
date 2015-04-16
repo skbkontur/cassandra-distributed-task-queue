@@ -17,6 +17,8 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
 using log4net;
 
+using RemoteQueue.Handling.ExecutionContext;
+
 namespace RemoteQueue.Handling
 {
     public class HandlerTask : SimpleTask
@@ -197,20 +199,22 @@ namespace RemoteQueue.Handling
                 return;
             }
 
-            try
+            using(TaskExecutionContext.ForTask(task))
             {
-                task.Meta = task.Meta;
-                var sw = Stopwatch.StartNew();
-                remoteTaskQueueProfiler.ProcessTaskDequeueing(task.Meta);
-                var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
-                remoteTaskQueueProfiler.RecordTaskExecutionTime(task.Meta, sw.Elapsed);
-                remoteTaskQueueProfiler.RecordTaskExecutionResult(task.Meta, handleResult);
-                UpdateTaskMetaByHandleResult(task, handleResult);
-            }
-            catch(Exception e)
-            {
-                LogError(e, task.Meta);
-                TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, DateTime.UtcNow.Ticks, task.Meta.Attempts, TaskState.Fatal);
+                try
+                {
+                    var sw = Stopwatch.StartNew();
+                    remoteTaskQueueProfiler.ProcessTaskDequeueing(task.Meta);
+                    var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
+                    remoteTaskQueueProfiler.RecordTaskExecutionTime(task.Meta, sw.Elapsed);
+                    remoteTaskQueueProfiler.RecordTaskExecutionResult(task.Meta, handleResult);
+                    UpdateTaskMetaByHandleResult(task, handleResult);
+                }
+                catch(Exception e)
+                {
+                    LogError(e, task.Meta);
+                    TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, DateTime.UtcNow.Ticks, task.Meta.Attempts, TaskState.Fatal);
+                }
             }
         }
 

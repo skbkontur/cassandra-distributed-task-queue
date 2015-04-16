@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 
 using GroBuf;
 
@@ -10,6 +11,7 @@ using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using RemoteQueue.Handling.ExecutionContext;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 using RemoteQueue.UserClasses;
@@ -133,12 +135,20 @@ namespace RemoteQueue.Handling
                             Id = taskId,
                             Ticks = nowTicks,
                             Name = typeToNameMapper.GetTaskName(type),
-                            ParentTaskId = createTaskOptions.ParentTaskId,
+                            ParentTaskId = string.IsNullOrEmpty(createTaskOptions.ParentTaskId) ? GetCurrentExecutingTaskId() : createTaskOptions.ParentTaskId,
                             TaskGroupLock = createTaskOptions.TaskGroupLock,
                             State = TaskState.New,
                         }
                 };
             return new RemoteTask(handleTaskCollection, task, globalTime);
+        }
+
+        private string GetCurrentExecutingTaskId()
+        {
+            var context = TaskExecutionContext.Current;
+            if(context == null)
+                return null;
+            return context.CurrentTask.Meta.Id;
         }
 
         public string[] GetChildrenTaskIds(string taskId)

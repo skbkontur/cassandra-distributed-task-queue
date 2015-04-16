@@ -35,6 +35,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cassandra.CassandraClient, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Cassandra.CassandraClient.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
     </Reference>
@@ -69,9 +73,11 @@
     <Compile Include="Configuration\TaskHandlerRegistry.cs" />
     <Compile Include="UserClasses\ByteArrayAndNestedTaskHandler.cs" />
     <Compile Include="UserClasses\ByteArrayTaskDataHandler.cs" />
+    <Compile Include="UserClasses\ChainTaskHandler.cs" />
     <Compile Include="UserClasses\FakeFailTaskHandler.cs" />
     <Compile Include="UserClasses\FakePeriodicTaskHandler.cs" />
     <Compile Include="UserClasses\FileIdTaskDataHandler.cs" />
+    <Compile Include="UserClasses\ITestTaskLogger.cs" />
     <Compile Include="UserClasses\ITestCassandraCounterBlobRepository.cs" />
     <Compile Include="UserClasses\ITestCounterRepository.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\AlphaTaskHandler.cs" />

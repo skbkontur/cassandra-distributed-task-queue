@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExchangeTests\AutoParentTaskIdTest.cs" />
     <Compile Include="ExchangeTests\ChildIndexTest.cs" />
     <Compile Include="ExchangeTests\SimpleTaskTest.cs" />
     <Compile Include="ExchangeTests\TaskTestsExtensions.cs" />

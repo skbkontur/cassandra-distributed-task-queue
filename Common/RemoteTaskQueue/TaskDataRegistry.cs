@@ -20,6 +20,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
             Register<AlphaTaskData>("AlphaTaskData");
             Register<BetaTaskData>("BetaTaskData");
             Register<DeltaTaskData>("DeltaTaskData");
+
+            Register<ChainTaskData>("ChainTaskData");
         }
     }
 }

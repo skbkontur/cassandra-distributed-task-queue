@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ByteArrayAndNestedTaskData.cs" />
+    <Compile Include="ChainTaskData.cs" />
     <Compile Include="MonitoringTestTaskData\AlphaTaskData.cs" />
     <Compile Include="MonitoringTestTaskData\BetaTaskData.cs" />
     <Compile Include="ByteArrayTaskData.cs" />
