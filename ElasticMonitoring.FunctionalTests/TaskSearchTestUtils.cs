@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 using GroboContainer.Core;
 
@@ -9,9 +10,12 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers.ForSuite;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
@@ -32,6 +36,31 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             hackService.DeleteAll();
             taskSearchIndexSchema.ActualizeTemplate();
+        }
+
+        [Test, Ignore]
+        public void TestDeleteAllIndices()
+        {
+            //note some indices crashed after delete and rectreate. restart ES
+            var client = elasticsearchClientFactory.GetClient();
+            client.IndicesDelete("_all").ProcessResponse();
+        }
+
+        [Test, Ignore]
+        public void TestCreateSomeOldIndices()
+        {
+            taskSearchIndexSchema.ActualizeTemplate();
+            var client = elasticsearchClientFactory.GetClient();
+            for(int i = 0; i < 10; i++)
+            {
+                var dt = DateTime.UtcNow.Subtract(TimeSpan.FromDays(i));
+                var indexName = WriteIndexNameFactory.BuildIndexNameForTime(dt.Ticks, IndexNameConverter.ConvertToDateTimeFormat("monitoring-index-{yyyy.MM.dd}")); //todo get from settings??
+                if(client.IndicesExists(indexName).ProcessResponse(200, 404).HttpStatusCode == 404)
+                {
+                    Console.WriteLine("CREATING: " + indexName);
+                    client.IndicesCreate(indexName, new {});
+                }
+            }
         }
 
         [Test, Ignore]
@@ -97,6 +126,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         [Injected]
         private readonly TaskSearchIndexDataTestService hackService;
+
+        [Injected]
+        private readonly IElasticsearchClientFactory elasticsearchClientFactory;
 
         // ReSharper restore UnassignedReadonlyField.Compiler
     }

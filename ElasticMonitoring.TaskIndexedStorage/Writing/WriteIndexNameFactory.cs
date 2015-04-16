@@ -32,7 +32,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             return taskMetaInformation.LastModificationTicks.Value > oldIntervalTicks + taskMetaInformation.Ticks;
         }
 
-        private static string BuildIndexNameForTime(long ticksUtc, string format)
+        public static string BuildIndexNameForTime(long ticksUtc, string format)
         {
             return DateToBeginDate(DateFromTicks(ticksUtc)).ToString(format);
         }
