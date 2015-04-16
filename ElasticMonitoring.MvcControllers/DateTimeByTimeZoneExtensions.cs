@@ -25,7 +25,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
             {
                 return TimeZoneInfo.FindSystemTimeZoneById("Russian Standard Time");
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return TimeZoneInfo.Local;
             }
