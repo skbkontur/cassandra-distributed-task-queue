@@ -16,7 +16,7 @@ namespace RemoteQueue.Handling.ExecutionContext
             return TaskStarted(task);
         }
 
-        public static ITaskExecutionContext Current { get { return current.ToReadOnly(); } }
+        public static ITaskExecutionContext Current { get { return current; } }
         public Task CurrentTask { get; private set; }
 
         public void Dispose()

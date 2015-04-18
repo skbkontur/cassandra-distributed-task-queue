@@ -111,8 +111,6 @@
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\IGlobalTime.cs" />
     <Compile Include="Handling\CreateTaskOptions.cs" />
     <Compile Include="Handling\ExecutionContext\ITaskExecutionContext.cs" />
-    <Compile Include="Handling\ExecutionContext\ReadOnlyTaskExecutionContext.cs" />
-    <Compile Include="Handling\ExecutionContext\TaskExecutionContextExtensions.cs" />
     <Compile Include="Handling\FinishAction.cs" />
     <Compile Include="Handling\HandlerManager.cs" />
     <Compile Include="Handling\HandlerResults\HandleResult.cs" />
