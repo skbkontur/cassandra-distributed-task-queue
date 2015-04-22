@@ -37,7 +37,7 @@
   <ItemGroup>
     <Reference Include="Cassandra.CassandraClient, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Cassandra.CassandraClient.dll</HintPath>
+      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
