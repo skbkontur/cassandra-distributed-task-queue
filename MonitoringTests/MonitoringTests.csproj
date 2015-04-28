@@ -108,7 +108,7 @@
     <None Include="Settings\exchangeServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Settings\monitoringTestsSettings">
+    <None Include="Settings\monitoringTests.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Settings\remoteTaskQueueMonitoringServiceTopology">

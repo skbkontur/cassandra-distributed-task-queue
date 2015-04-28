@@ -87,7 +87,7 @@
     <None Include="Settings\exchangeServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Settings\functionalTestsSettings">
+    <None Include="Settings\functionalTests.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Settings\remoteTaskQueueTaskCounterServiceTopology">

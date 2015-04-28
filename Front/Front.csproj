@@ -127,7 +127,7 @@
     <Content Include="Settings\elasticsearchTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Settings\frontSettings" />
+    <None Include="Settings\front.csf" />
     <None Include="Settings\remoteTaskQueueMonitoringServiceTopology" />
     <Content Include="Views\Statics\Fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Views\Statics\Scripts\bootstrap-select.js" />

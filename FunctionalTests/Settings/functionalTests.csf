@@ -1,13 +1,4 @@
-п»ї# РќР°С‡Р°Р»СЊРЅР°СЏ СЃС‚СЂР°РЅРёС†Р° СЃР°Р№С‚Р°
-defaultPage = Default/Debug
-
-# РќР°Р·РІР°РЅРёРµ СЃРµСЂРІРёСЃР°
-ServiceName = front
-
-# РљР°С‚Р°Р»РѕРі РґР»СЏ Р»РѕРіРѕРІ
-LogDirectory = ..\FrontLogs
-
-# РљРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РљР°СЃСЃР°РЅРґСЂС‹
+# Конфигурирование Кассандры
 ClusterName = CatalogueCluster
 KeyspaceName = QueueKeyspace
 ConnectionIdleTimeout = 00:10:00
@@ -20,4 +11,7 @@ FierceTimeout = 6000
 Attempts = 20
 MaximalColumnsCount = 1000
 MaximalRowsCount = 1000
-CheckConnectionsInterval = 00:01:00
+
+#Инициализация для Кассандры
+RowCacheSize = 10000
+ReplicationFactor = 1

@@ -1,8 +1,8 @@
-﻿SchedulerInterval = 00:00:00.5
-ServiceName = MonitoringService
+SchedulerInterval = 00:00:00.5
+ServiceName = TaskCounterService
 LogDirectory = logs
 
-ListeningPort = 4409
+ListeningPort = 4410
 
 # Sql
 SqlConnectionString = server=127.0.0.1;uid=root;pwd=tc_123456;database=RemoteTaskQueueMonitoringService;

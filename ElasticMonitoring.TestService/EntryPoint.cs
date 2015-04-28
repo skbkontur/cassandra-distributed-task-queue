@@ -19,7 +19,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
         }
 
-        protected override string ConfigFileName { get { return "monitoringServiceSettings"; } }
+        protected override string ConfigFileName { get { return "monitoringService.csf"; } }
 
         private static void Main()
         {

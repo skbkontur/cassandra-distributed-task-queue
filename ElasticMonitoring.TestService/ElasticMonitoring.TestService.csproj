@@ -66,7 +66,7 @@
     <None Include="Settings\elasticsearchTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Settings\monitoringServiceSettings">
+    <None Include="Settings\monitoringService.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
