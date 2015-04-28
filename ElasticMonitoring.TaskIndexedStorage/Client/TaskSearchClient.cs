@@ -24,7 +24,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         public TaskSearchResponse SearchNext(string scrollId)
         {
-            var result = elasticsearchClient.Scroll<SearchResponseNoData>(scrollId, null, x => x.AddQueryString("scroll", scrollLiveTime)).ProcessResponse();
+            var result = elasticsearchClient.Scroll<SearchResponseNoData>(scrollId, x => x.AddQueryString("scroll", scrollLiveTime)).ProcessResponse();
             return new TaskSearchResponse
                 {
                     Ids = result.Response.Hits.Hits.Select(x => x.Id).ToArray(),
