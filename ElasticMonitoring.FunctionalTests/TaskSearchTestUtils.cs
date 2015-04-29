@@ -11,7 +11,7 @@ using RemoteQueue.Settings;
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
-using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers.ForSuite;
+using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
@@ -19,7 +19,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.W
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [EdiTestSuite, WithApplicationSettings(FileName = "functionalTestsSettings"),
+    [EdiTestSuite, WithApplicationSettings(FileName = "functionalTests.csf"),
      WithDefaultSerializer,
      WithCassandra("CatalogueCluster", "QueueKeyspace"),
      WithRemoteLock("remoteLock")]

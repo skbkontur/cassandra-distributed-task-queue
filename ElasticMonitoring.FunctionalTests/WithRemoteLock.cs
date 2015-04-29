@@ -1,13 +1,12 @@
 using System.Reflection;
 
-using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers.ForSuite;
+using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [WithContainerPerSuite]
     [WithDefaultSerializer]
     [WithCassandra("CatalogueCluster", "QueueKeyspace")]
     public class WithRemoteLock : EdiTestSuiteWrapperAttribute
@@ -19,9 +18,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             this.remoteLockColumnFamly = remoteLockColumnFamly;
         }
 
-        public override sealed void SetUp(string suiteName, Assembly testAssembly, IEdiTestContextData suiteContext)
+        public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableEdiTestContext suiteContext)
         {
-            suiteContext.GetContainer().ConfigureLockRepository(remoteLockColumnFamly);
+            suiteContext.Container.ConfigureLockRepository(remoteLockColumnFamly);
         }
     }
 }
