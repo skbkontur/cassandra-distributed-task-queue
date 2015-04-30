@@ -19,6 +19,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient = elasticsearchClientFactory.GetClient();
         }
 
+        public void RemoveOldVersionTemplates()
+        {
+            //NOTE first version template. used in RosAlko
+            elasticsearchClient.IndicesDeleteTemplateForAll("monitoringsearch-template").ProcessResponse(200, 404);
+        }
+
         public void ActualizeTemplate()
         {
             PutDataTemplate(settings.TemplateNamePrefix + DataTemplateSuffix, settings.IndexPrefix + "*");
@@ -60,7 +66,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
             if(elasticsearchClient.IndicesExists(indexName).ProcessResponse(200, 404).HttpStatusCode == 404)
             {
-                logger.LogInfoFormat("Index not exists - createing {0}", indexName);
+                logger.LogInfoFormat("Index not exists - creating {0}", indexName);
                 elasticsearchClient.IndicesCreate(indexName, body).ProcessResponse();
             }
             else
