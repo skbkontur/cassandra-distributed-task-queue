@@ -1,7 +1,10 @@
 using Elasticsearch.Net;
 
+using log4net;
+
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Get;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing
@@ -13,13 +16,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         {
             elasticsearchClient = elasticsearchClientFactory.GetClient();
             index = settings.LastTicksIndex;
+            calculatedIndexStartTimeTicks = settings.CalculatedIndexStartTimeTicks;
+            logger.LogInfoFormat("CalculatedIndexStartTimeTicks = {0}", DateTimeFormatter.FormatWithMsAndTicks(calculatedIndexStartTimeTicks));
         }
 
         public long GetLastReadTicks()
         {
             var response = elasticsearchClient.Get<GetResponse<LastUpdateTicks>>(index, lastUpdateTicksType, id).ProcessResponse();
             if(!response.Response.Found || response.Response.Source == null)
-                return 0;
+                return calculatedIndexStartTimeTicks;
             return response.Response.Source.Ticks;
         }
 
@@ -30,7 +35,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         private const string lastUpdateTicksType = "LastUpdateTicks";
         private const string id = "LastUpdateTicks";
+        private static readonly ILog logger = LogManager.GetLogger("LastReadTicksStorage");
         private readonly IElasticsearchClient elasticsearchClient;
         private readonly string index;
+        private readonly long calculatedIndexStartTimeTicks;
     }
 }

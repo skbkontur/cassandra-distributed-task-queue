@@ -23,5 +23,6 @@ CheckConnectionsInterval = 00:01:00
 ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat = monitoring-index-{yyyy.MM.dd}
 ElasticSearchSchema.MonitoringSearch.OldIndexNameFormat = monitoring-index-{yyyy.MM.dd}-old
 ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearch
+ElasticSearchSchema.MonitoringSearch.IndexStartTime = {now}-1.00:00:00
 
 ElasticSearchSchema.MonitoringSearch.EnableDestructveActions = true

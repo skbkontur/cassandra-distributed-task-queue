@@ -6,5 +6,6 @@
         string CurrentIndexNameFormat { get; }
         string OldIndexNameFormat { get; }
         string LastTicksIndex { get; }
+        long CalculatedIndexStartTimeTicks { get; }
     }
 }
