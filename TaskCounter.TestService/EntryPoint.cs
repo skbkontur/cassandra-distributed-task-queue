@@ -16,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.TestService
         {
         }
 
-        protected override string ConfigFileName { get { return "taskCounterServiceSettings"; } }
+        protected override string ConfigFileName { get { return "taskCounterService.csf"; } }
 
         private static void Main()
         {

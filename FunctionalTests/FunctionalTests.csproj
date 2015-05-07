@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FunctionalTests</RootNamespace>
     <AssemblyName>RemoteTaskQueue.FunctionalTests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -124,7 +124,7 @@
     <None Include="Settings\exchangeServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Settings\functionalTestsSettings">
+    <None Include="Settings\functionalTests.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -52,7 +52,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
         {
         }
 
-        protected override string ConfigFileName { get { return "frontSettings"; } }
+        protected override string ConfigFileName { get { return "front.csf"; } }
 
         private static string GetControllersNamespace()
         {

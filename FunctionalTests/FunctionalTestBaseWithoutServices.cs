@@ -35,7 +35,7 @@ namespace FunctionalTests
         public virtual void SetUp()
         {
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
-            var applicationSettings = ApplicationSettings.LoadDefault("functionalTestsSettings");
+            var applicationSettings = ApplicationSettings.LoadDefault("functionalTests.csf");
             Container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(applicationSettings);
             Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
             Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());

@@ -12,7 +12,7 @@ namespace ExchangeService
         {
         }
 
-        protected override string ConfigFileName { get { return "exchangeServiceSettings"; } }
+        protected override string ConfigFileName { get { return "exchangeService.csf"; } }
 
         private static void Main()
         {

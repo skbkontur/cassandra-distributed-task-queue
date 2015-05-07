@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <MSBuildExtensionsPath>..\..\Assemblies\MSBuild\</MSBuildExtensionsPath>
+    <MSBuildExtensionsPath>..\..\Build\MsBuild.VisualStudio\</MSBuildExtensionsPath>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -20,7 +20,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.Front</RootNamespace>
     <AssemblyName>Catalogue.RemoteTaskQueue.Front</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>false</UseIISExpress>
     <FileUpgradeFlags>
@@ -127,7 +127,7 @@
     <Content Include="Settings\elasticsearchTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Settings\frontSettings" />
+    <None Include="Settings\front.csf" />
     <None Include="Settings\remoteTaskQueueMonitoringServiceTopology" />
     <Content Include="Views\Statics\Fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Views\Statics\Scripts\bootstrap-select.js" />

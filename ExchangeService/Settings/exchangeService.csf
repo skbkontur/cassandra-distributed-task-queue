@@ -1,9 +1,9 @@
-п»ї#РћР±С‰РёРµ РЅР°СЃС‚СЂРѕР№РєРё СЃРµСЂРІРёСЃРѕРІ
+#Общие настройки сервисов
 ListeningPort = 4403,4404,4405,4406,4407
 ServiceName = ExchangeService
 LogDirectory = logs
 
-#РќР°СЃС‚СЂРѕР№РєРё РѕС‡РµСЂРµРґРё
+#Настройки очереди
 SchedulerInterval = 00:00:00.1
 MaxRunningTasksCount = 20
 MaxRunningContinuationsCount = 20

@@ -25,7 +25,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [ContainerEnvironment, Cassandra, DefaultSettings, DefaultSerializer, InjectProperties, RemoteTaskQueueRemoteLock, TestExchangeServices]
+    [ContainerEnvironment, Cassandra, DefaultSettings(FileName = "functionalTests.csf"), DefaultSerializer, InjectProperties, RemoteTaskQueueRemoteLock, TestExchangeServices]
     public class TaskSearchTests
     {
         [ContainerSetUp]

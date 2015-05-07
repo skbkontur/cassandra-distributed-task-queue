@@ -15,7 +15,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringService
         {
         }
 
-        protected override string ConfigFileName { get { return "monitoringServiceSettings"; } }
+        protected override string ConfigFileName { get { return "monitoringService.csf"; } }
 
         private static void Main()
         {

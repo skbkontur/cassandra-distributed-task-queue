@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests</RootNamespace>
     <AssemblyName>Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -85,7 +85,7 @@
     <None Include="Settings\exchangeServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Settings\functionalTestsSettings">
+    <None Include="Settings\functionalTests.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

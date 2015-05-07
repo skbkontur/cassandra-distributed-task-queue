@@ -25,7 +25,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
         public override void SetUp()
         {
             base.SetUp();
-            container = ContainerCache.GetContainer(ContainerCacheKey, "monitoringTestsSettings", ConfigureContainer);
+            container = ContainerCache.GetContainer(ContainerCacheKey, "monitoringTests.csf", ConfigureContainer);
             ClearAllBeforeTest(container);
             DropAndCreateDatabase(container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
                 {
