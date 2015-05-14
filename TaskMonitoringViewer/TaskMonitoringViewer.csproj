@@ -91,7 +91,6 @@
   <ItemGroup>
     <Compile Include="Controllers\IMonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\MonitoringCriterionBuilder.cs" />
-    <Compile Include="Controllers\ProcessingTaskCountModel.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerImpl.cs" />
     <Compile Include="Globals\TaskMonitoringPrecompiledMvcEngine.cs" />
