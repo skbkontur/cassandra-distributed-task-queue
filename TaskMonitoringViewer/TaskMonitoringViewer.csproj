@@ -92,7 +92,7 @@
     <Compile Include="Controllers\IMonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\MonitoringCriterionBuilder.cs" />
     <Compile Include="Controllers\RemoteTaskQueueControllerBase.cs" />
-    <Compile Include="Controllers\RemoteTaskQueueControllerBaseParameters.cs" />
+    <Compile Include="Controllers\RemoteTaskQueueControllerImpl.cs" />
     <Compile Include="Globals\TaskMonitoringPrecompiledMvcEngine.cs" />
     <Compile Include="Globals\TaskMonitoringResourceVirtualPathProvider.cs" />
     <Compile Include="ModelBuilders\IRemoteTaskQueueHtmlModelsCreator.cs" />
