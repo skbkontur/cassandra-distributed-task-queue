@@ -1,11 +1,12 @@
-﻿using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Controllers;
+﻿using SKBKontur.Catalogue.Core.Web.Controllers;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Controllers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.AdminToolsArea.Controllers
 {
     public class TaskCounterController : RemoteTaskQueueTaskCounterControllerBase
     {
-        public TaskCounterController(RemoteTaskQueueTaskCounterControllerParameters parameters, RemoteTaskQueueTaskCounterControllerImpl controllerImpl)
-            : base(parameters, controllerImpl)
+        public TaskCounterController(ControllerBaseParameters baseParameters, RemoteTaskQueueTaskCounterControllerImpl controllerImpl)
+            : base(baseParameters, controllerImpl)
         {
         }
 

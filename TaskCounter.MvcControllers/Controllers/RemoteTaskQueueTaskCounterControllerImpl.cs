@@ -4,7 +4,7 @@ using log4net;
 
 using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Client;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Models;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Controllers
 {
@@ -48,7 +48,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Control
         }
 
         private readonly IRemoteTaskQueueTaskCounterClient remoteTaskQueueTaskCounterClient;
-        private readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueTaskCounterControllerImpl));
+        private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueueTaskCounterControllerImpl));
         private static readonly DateTime jsMinTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     }
 }

@@ -61,8 +61,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\RemoteTaskQueueTaskCounterControllerImpl.cs" />
-    <Compile Include="Controllers\RemoteTaskQueueTaskCounterControllerParameters.cs" />
     <Compile Include="Controllers\RemoteTaskQueueTaskCounterControllerBase.cs" />
+    <Compile Include="Models\ProcessingTaskCountModel.cs" />
     <Compile Include="Models\TaskCounterModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Registration\TaskMonitoringPrecompiledMvcEngine.cs" />

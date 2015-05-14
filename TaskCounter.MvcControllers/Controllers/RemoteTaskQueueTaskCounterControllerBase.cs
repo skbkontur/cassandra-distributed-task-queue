@@ -1,5 +1,6 @@
 ﻿using System.Web.Mvc;
 
+using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Models;
 
 using ControllerBase = SKBKontur.Catalogue.Core.Web.Controllers.ControllerBase;
@@ -8,8 +9,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Control
 {
     public abstract class RemoteTaskQueueTaskCounterControllerBase : ControllerBase
     {
-        protected RemoteTaskQueueTaskCounterControllerBase(RemoteTaskQueueTaskCounterControllerParameters parameters, RemoteTaskQueueTaskCounterControllerImpl controllerImpl)
-            : base(parameters.BaseParameters)
+        protected RemoteTaskQueueTaskCounterControllerBase(ControllerBaseParameters baseParameters, RemoteTaskQueueTaskCounterControllerImpl controllerImpl)
+            : base(baseParameters)
         {
             this.controllerImpl = controllerImpl;
         }
@@ -30,6 +31,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Control
         }
 
         protected abstract void CheckAccess();
+
         private readonly RemoteTaskQueueTaskCounterControllerImpl controllerImpl;
     }
 }

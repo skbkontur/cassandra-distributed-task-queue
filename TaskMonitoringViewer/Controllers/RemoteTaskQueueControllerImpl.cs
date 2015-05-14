@@ -67,8 +67,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             try
             {
                 totalCount = remoteTaskQueueMonitoringServiceStorage.GetCount(criterion);
-                fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount,
-                                                                                        x => x.MinimalStartTicks.Descending() && x.Id.Descending()).ToArray();
+                fullTaskMetaInfos = remoteTaskQueueMonitoringServiceStorage.RangeSearch(criterion, rangeFrom, tasksPerPageCount, x => x.MinimalStartTicks.Descending() && x.Id.Descending()).ToArray();
             }
             catch(DomainIsDisabledException e)
             {
@@ -199,7 +198,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         }
 
         private const int tasksPerPageCount = 100;
-        private static readonly DateTime jsMinTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private readonly ITaskDetailsModelBuilder taskDetailsModelBuilder;
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ITaskListModelBuilder taskListModelBuilder;
