@@ -70,19 +70,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\ElasticMonitoringHttpHandler.cs" />
-    <Compile Include="Implementation\MetaProviding\CurrentMetaProvider.cs" />
-    <Compile Include="Implementation\MetaProviding\ICurrentMetaProvider.cs" />
-    <Compile Include="Implementation\MetaProviding\IMetaConsumer.cs" />
-    <Compile Include="Implementation\MetaProviding\IMetaLoaderFactory.cs" />
-    <Compile Include="Implementation\MetaProviding\IMetasLoader.cs" />
-    <Compile Include="Implementation\MetaProviding\MetaLoadController.cs" />
-    <Compile Include="Implementation\MetaProviding\MetaLoader.cs" />
-    <Compile Include="Implementation\MetaProviding\MetaLoaderFactory.cs" />
-    <Compile Include="Implementation\MetaProviding\MetaProviderImpl.cs" />
-    <Compile Include="Implementation\MetaProviding\MetaProviderSettings.cs" />
-    <Compile Include="Implementation\MetaProviding\MetaProviderSnapshot.cs" />
-    <Compile Include="Implementation\TaskSearch\TaskSearchConsumer.cs" />
+    <Compile Include="Implementation\IMetaCachedReader.cs" />
+    <Compile Include="Implementation\ITaskIndexController.cs" />
+    <Compile Include="Implementation\ITaskMetaProcessor.cs" />
+    <Compile Include="Implementation\MetaCachedReader.cs" />
+    <Compile Include="Implementation\TaskIndexSettings.cs" />
+    <Compile Include="Implementation\TaskIndexController.cs" />
+    <Compile Include="Implementation\TaskMetaProcessor.cs" />
+    <Compile Include="Implementation\TaskWriteDynamicSettings.cs" />
+    <Compile Include="Implementation\EventsMap.cs" />
     <Compile Include="Implementation\Utils\DateTimeFormatter.cs" />
+    <Compile Include="Implementation\Utils\DictionaryHelpers.cs" />
     <Compile Include="Implementation\Utils\NamedLoggerExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler\IElasticMonitoringServiceSchedulableRunner.cs" />

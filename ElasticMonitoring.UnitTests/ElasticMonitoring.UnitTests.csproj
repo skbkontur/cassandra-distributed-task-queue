@@ -47,14 +47,17 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MetaLoadControllerTest.cs" />
-    <Compile Include="MetaProviderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestFormat.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ElasticMonitoring.Core\ElasticMonitoring.Core.csproj">
       <Project>{2BF2C396-FE77-4D1C-9A1D-17F767FFC508}</Project>
       <Name>ElasticMonitoring.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ElasticMonitoring.TaskIndexedStorage\ElasticMonitoring.TaskIndexedStorage.csproj">
+      <Project>{DB958D74-D952-4E22-B9CB-6118D8D80EA0}</Project>
+      <Name>ElasticMonitoring.TaskIndexedStorage</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>

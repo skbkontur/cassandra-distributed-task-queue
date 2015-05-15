@@ -21,3 +21,5 @@ Attempts = 20
 MaximalColumnsCount = 1000
 MaximalRowsCount = 1000
 CheckConnectionsInterval = 00:01:00
+
+ElasticSearchSchema.MonitoringSearch.SearchIndexNameFormat = monitoring-index-{yyyy.MM.dd}-search

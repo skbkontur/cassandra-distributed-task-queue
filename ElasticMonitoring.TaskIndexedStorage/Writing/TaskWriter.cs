@@ -8,14 +8,17 @@ using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Bulk;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage
+namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing
 {
-    public class TaskSearchIndex
+    public class TaskWriter
     {
-        public TaskSearchIndex(
-            IElasticsearchClientFactory elasticsearchClientFactory)
+        public TaskWriter(
+            IElasticsearchClientFactory elasticsearchClientFactory, IWriteIndexNameFactory indexNameFactory)
         {
+            this.indexNameFactory = indexNameFactory;
             elasticsearchClient = elasticsearchClientFactory.GetClient(new JsonSerializerSettings
                 {
                     ContractResolver = new ContractResolverWithOmitedByteArrays()
@@ -24,7 +27,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         public void IndexBatch(TaskMetaInformation[] metas, object[] taskDatas)
         {
-            logger.InfoFormat("IndexBatch: {0} tasks", metas.Length);
+            logger.LogInfoFormat("IndexBatch: {0} tasks", metas.Length);
             IndexTasks(metas, taskDatas);
         }
 
@@ -35,8 +38,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             {
                 var meta = metas[i];
                 var taskData = taskDatas[i];
-                var taskCreatedTime = meta.Ticks; //NOTE these time newer changed (for concrete task)
-                var indexName = IndexNameFactory.GetIndexForTime(taskCreatedTime);
+                var indexName = indexNameFactory.GetIndexForTask(meta);
                 body[2 * i] = new
                     {
                         index = new
@@ -68,11 +70,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     MinimalStartTime = meta.MinimalStartTicks,
                     StartExecutingTime = meta.StartExecutingTicks
                 };
-            return new {Meta = metaIndexedInfo, Data = taskData};
+            return new TaskIndexedInfo {Meta = metaIndexedInfo, Data = taskData};
         }
+
+        private readonly IWriteIndexNameFactory indexNameFactory;
 
         private readonly IElasticsearchClient elasticsearchClient;
 
-        private static readonly ILog logger = LogManager.GetLogger("TaskSearchIndex");
+        private static readonly ILog logger = LogManager.GetLogger("TaskWriter");
     }
 }

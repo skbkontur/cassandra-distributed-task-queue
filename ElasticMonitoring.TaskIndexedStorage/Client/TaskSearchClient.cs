@@ -5,13 +5,15 @@ using Elasticsearch.Net;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Search;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client
 {
     public class TaskSearchClient : ITaskSearchClient
     {
-        public TaskSearchClient(IElasticsearchClientFactory elasticsearchClientFactory)
+        public TaskSearchClient(IElasticsearchClientFactory elasticsearchClientFactory, SearchIndexNameFactory searchIndexNameFactory)
         {
+            this.searchIndexNameFactory = searchIndexNameFactory;
             elasticsearchClient = elasticsearchClientFactory.GetClient();
         }
 
@@ -70,7 +72,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
             var metaResponse =
                 elasticsearchClient
-                    .Search<SearchResponseNoData>(IndexNameFactory.GetIndexForTimeRange(taskSearchRequest.FromTicksUtc, taskSearchRequest.ToTicksUtc), new
+                    .Search<SearchResponseNoData>(searchIndexNameFactory.GetIndexForTimeRange(taskSearchRequest.FromTicksUtc, taskSearchRequest.ToTicksUtc), new
                         {
                             size = pageSize,
                             version = true,
@@ -101,6 +103,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         private const string scrollLiveTime = "10m";
         private const int pageSize = 100;
+        private readonly SearchIndexNameFactory searchIndexNameFactory;
         private readonly IElasticsearchClient elasticsearchClient;
     }
 }

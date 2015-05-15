@@ -4,14 +4,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 {
     internal static class NamedLoggerExtension
     {
-        public static void LogInfoFormat(this ILog logger, string name, string format, params object[] args)
+        public static void LogInfoFormat(this ILog logger, string format, params object[] args)
         {
-            logger.InfoFormat(name + ": " + format, args);
+            logger.InfoFormat(logger.Logger.Name + ": " + format, args);
         }
 
-        public static void LogWarnFormat(this ILog logger, string name, string format, params object[] args)
+        public static void LogWarnFormat(this ILog logger, string format, params object[] args)
         {
-            logger.WarnFormat(name + ": " + format, args);
+            logger.WarnFormat(logger.Logger.Name + ": " + format, args);
         }
     }
 }

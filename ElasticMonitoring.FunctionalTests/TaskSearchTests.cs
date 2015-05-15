@@ -34,7 +34,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             WaitFor(() =>
                 {
                     var status = ElasticMonitoringServiceClient.GetStatus();
-                    return status.DistributedLockAcquired && status.IsProcessingQueue;
+                    return status.DistributedLockAcquired;
                 }, TimeSpan.FromMinutes(1));
             ElasticMonitoringServiceClient.DeleteAll();
 

@@ -12,7 +12,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
 {
     public static class LockRepositoryContainerConfigurator
     {
-        public static void ConfigureLockRepository(this IContainer container)
+        public static void ConfigureLockRepository(this IContainer container, string remoteLockColumnFamily = null)
         {
             var serializer = container.Get<ISerializer>();
             var columnFamilyRepositoryParameters = container.Get<IColumnFamilyRepositoryParameters>();
@@ -21,7 +21,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
                     columnFamilyRepositoryParameters.CassandraCluster,
                     serializer,
                     new ColumnFamilyFullName(columnFamilyRepositoryParameters.Settings.QueueKeyspace,
-                    columnFamilyRepositoryParameters.LockColumnFamilyName)));
+                    remoteLockColumnFamily ?? columnFamilyRepositoryParameters.LockColumnFamilyName)));
         }
     }
 }

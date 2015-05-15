@@ -2,26 +2,21 @@
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.MetaProviding;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.TaskSearch;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Types;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Http
 {
     public class ElasticMonitoringHttpHandler : IHttpHandler
     {
-        public ElasticMonitoringHttpHandler(TaskSearchConsumer taskSearchConsumer,
-                                            CurrentMetaProvider currentMetaProvider,
-                                            TaskSearchIndexSchema taskSearchIndexSchema,
-                                            TaskSearchDynamicSettings taskSearchDynamicSettings,
+        public ElasticMonitoringHttpHandler(ITaskIndexController taskIndexController,
+                                            ITaskWriteDynamicSettings settings,
                                             IGlobalTime globalTime)
         {
-            this.taskSearchConsumer = taskSearchConsumer;
-            this.currentMetaProvider = currentMetaProvider;
-            this.taskSearchIndexSchema = taskSearchIndexSchema;
-            this.taskSearchDynamicSettings = taskSearchDynamicSettings;
+            this.taskIndexController = taskIndexController;
+            this.settings = settings;
             this.globalTime = globalTime;
         }
 
@@ -30,44 +25,35 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Http
         {
             return new ElasticMonitoringStatus()
                 {
-                    IsProcessingQueue = taskSearchConsumer.IsWorking(),
-                    DistributedLockAcquired = taskSearchConsumer.IsDistributedLockAcquired(),
-                    MinTicksHack = taskSearchConsumer.MinTicksHack
+                    DistributedLockAcquired = taskIndexController.IsDistributedLockAcquired(),
+                    MinTicksHack = taskIndexController.MinTicksHack
                 };
         }
 
         [HttpMethod]
-        public void UpdateAndFlush()
+        public void Update()
         {
             ThrowIfDisabled();
-            if(!taskSearchConsumer.IsWorking())
-                throw new Exception("Not working");
             //note method for tests
-            currentMetaProvider.FetchMetas();
-            taskSearchConsumer.ProcessQueue();
-            taskSearchIndexSchema.Refresh();
+            taskIndexController.ProcessNewEvents();
         }
 
         private void ThrowIfDisabled()
         {
-            if(!taskSearchDynamicSettings.EnableDestructiveActions)
+            if(!settings.EnableDestructiveActions)
                 throw new InvalidOperationException("Destructive actions disabled");
         }
 
         [HttpMethod]
-        public void DeleteAll()
+        public void ForgetOldTasks()
         {
             ThrowIfDisabled();
             var ticks = globalTime.GetNowTicks();
-            taskSearchConsumer.SetMinTicksHack(ticks);
-            //note method for tests only
-            taskSearchIndexSchema.DeleteAll();
+            taskIndexController.SetMinTicksHack(ticks);
         }
 
-        private readonly TaskSearchConsumer taskSearchConsumer;
-        private readonly CurrentMetaProvider currentMetaProvider;
-        private readonly TaskSearchIndexSchema taskSearchIndexSchema;
-        private readonly TaskSearchDynamicSettings taskSearchDynamicSettings;
+        private readonly ITaskIndexController taskIndexController;
+        private readonly ITaskWriteDynamicSettings settings;
         private readonly IGlobalTime globalTime;
     }
 }

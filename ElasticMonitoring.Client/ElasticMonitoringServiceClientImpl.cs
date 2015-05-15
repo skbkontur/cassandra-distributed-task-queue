@@ -4,25 +4,32 @@ using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.ClientLib.HttpClientBases;
 using SKBKontur.Catalogue.ClientLib.HttpClientBases.Configuration;
 using SKBKontur.Catalogue.ClientLib.Topology;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Types;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Client
 {
     public class ElasticMonitoringServiceClientImpl : HttpClientBase, IElasticMonitoringServiceClient
     {
-        public ElasticMonitoringServiceClientImpl(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration)
+        private readonly TaskSearchIndexDataTestService testService;
+
+        public ElasticMonitoringServiceClientImpl(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration,
+            TaskSearchIndexDataTestService testService)
             : base(domainTopologyFactory, methodDomainFactory, configuration)
         {
+            this.testService = testService;
         }
 
         public void UpdateAndFlush()
         {
-            Method("UpdateAndFlush").SendToEachReplica(DomainConsistencyLevel.All);
+            Method("Update").SendToEachReplica(DomainConsistencyLevel.All);
+            testService.Refresh();
         }
 
         public void DeleteAll()
         {
-            Method("DeleteAll").SendToEachReplica(DomainConsistencyLevel.All);
+            Method("ForgetOldTasks").SendToEachReplica(DomainConsistencyLevel.All);
+            testService.DeleteAll();
         }
 
         public ElasticMonitoringStatus GetStatus()
