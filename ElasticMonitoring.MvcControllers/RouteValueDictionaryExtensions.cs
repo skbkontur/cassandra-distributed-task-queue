@@ -2,7 +2,7 @@ using System.Web.Routing;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers
 {
-    internal static class RouteValueDictionaryExtensions
+    public static class RouteValueDictionaryExtensions
     {
         public static RouteValueDictionary AppendArray(this RouteValueDictionary routeValueDictionary, string[] array, string name)
         {
