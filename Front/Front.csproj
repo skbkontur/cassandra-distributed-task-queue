@@ -175,6 +175,10 @@
       <Project>{72BDA3C5-2E09-4531-9230-86C7F019E55A}</Project>
       <Name>ElasticMonitoring.MvcControllers</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
+      <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Storage\Storage.csproj">
       <Project>{07f04a01-2ea7-4cd0-9ed5-d0c6d6e98e6b}</Project>
       <Name>Storage</Name>

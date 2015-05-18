@@ -87,9 +87,9 @@
     <Compile Include="Controllers\TaskDetailsTreeView\TaskDataBuildingContext.cs" />
     <Compile Include="Controllers\ObjectTreeViewBuilding\ObjectTreeModel.cs" />
     <Compile Include="Controllers\ObjectTreeViewBuilding\Rendering\ObjectTreeModelRenderContext.cs" />
+    <Compile Include="Controllers\TasksControllerImpl.cs" />
     <Compile Include="RouteValueDictionaryExtensions.cs" />
     <Compile Include="Controllers\TasksBaseController.cs" />
-    <Compile Include="Controllers\TasksBaseControllerParameters.cs" />
     <Compile Include="DateTimeByTimeZoneExtensions.cs" />
     <Compile Include="Globals\ElasticTaskMonitoringPrecompiledMvcEngine.cs" />
     <Compile Include="Models\TaskDetailsModel.cs" />
