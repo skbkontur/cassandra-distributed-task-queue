@@ -102,7 +102,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                 {
                                                                     path_match = "Data.*",
                                                                     match_mapping_type = "string",
-                                                                    mapping = StringTemplate()
+                                                                    mapping = StringTemplate(),
+                                                                    fields = new Dictionary<string, object>
+                                                                        {
+                                                                            {"{name}", new {type = "{dynamic_type}", store = "no", index = "not_analyzed"}}
+                                                                        }
                                                                 },
                                                         },
                                                     new
@@ -111,7 +115,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                 {
                                                                     path_match = "Data.*",
                                                                     match_mapping_type = "date",
-                                                                    mapping = DateTemplate()
+                                                                    mapping = DateTemplate(),
+                                                                    fields = new Dictionary<string, object>
+                                                                        {
+                                                                            {"{name}", new {type = "{dynamic_type}", format = dateFormat, store = "no"}}
+                                                                        }
                                                                 }
                                                         },
                                                     new
