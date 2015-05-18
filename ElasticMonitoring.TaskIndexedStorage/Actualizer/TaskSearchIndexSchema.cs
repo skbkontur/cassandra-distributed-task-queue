@@ -102,11 +102,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                 {
                                                                     path_match = "Data.*",
                                                                     match_mapping_type = "string",
-                                                                    mapping = StringTemplate(),
-                                                                    fields = new Dictionary<string, object>
+                                                                    mapping = new
                                                                         {
-                                                                            {"{name}", new {type = "{dynamic_type}", store = "no", index = "not_analyzed"}}
+                                                                            type = "string",
+                                                                            store = "no",
+                                                                            index = "not_analyzed",
+                                                                            fields = new Dictionary<string, object>
+                                                                                {
+                                                                                    {"{name}", new {type = "{dynamic_type}", store = "no", index = "not_analyzed"}}
+                                                                                }
                                                                         }
+                                                                    
                                                                 },
                                                         },
                                                     new
@@ -115,10 +121,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                 {
                                                                     path_match = "Data.*",
                                                                     match_mapping_type = "date",
-                                                                    mapping = DateTemplate(),
-                                                                    fields = new Dictionary<string, object>
+                                                                    mapping = new
                                                                         {
-                                                                            {"{name}", new {type = "{dynamic_type}", format = dateFormat, store = "no"}}
+                                                                            type = "date",
+                                                                            format = dateFormat,
+                                                                            store = "no",
+                                                                            fields = new Dictionary<string, object>
+                                                                                {
+                                                                                    {"{name}", new {type = "{dynamic_type}", format = dateFormat, store = "no"}}
+                                                                                }
                                                                         }
                                                                 }
                                                         },
