@@ -106,11 +106,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                         {
                                                                             type = "string",
                                                                             store = "no",
-                                                                            index = "not_analyzed",
-                                                                            fields = new Dictionary<string, object>
-                                                                                {
-                                                                                    {"{name}", new {type = "{dynamic_type}", store = "no", index = "not_analyzed"}}
-                                                                                }
+                                                                            index = "not_analyzed"
                                                                         }
                                                                     
                                                                 },
@@ -125,28 +121,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                         {
                                                                             type = "date",
                                                                             format = dateFormat,
-                                                                            store = "no",
-                                                                            fields = new Dictionary<string, object>
-                                                                                {
-                                                                                    {"{name}", new {type = "{dynamic_type}", format = dateFormat, store = "no"}}
-                                                                                }
-                                                                        }
-                                                                }
-                                                        },
-                                                    new
-                                                        {
-                                                            no_store = new
-                                                                {
-                                                                    path_match = "Data.*",
-                                                                    mapping = new
-                                                                        {
                                                                             store = "no"
                                                                         }
-                                                                },
-                                                        },
+                                                                }
+                                                        }
                                                 },
                                             properties = new
                                                 {
+                                                    Data = new
+                                                        {
+                                                            type = "object",
+                                                            store = "no",
+                                                        },
                                                     Meta = new
                                                         {
                                                             properties = new
