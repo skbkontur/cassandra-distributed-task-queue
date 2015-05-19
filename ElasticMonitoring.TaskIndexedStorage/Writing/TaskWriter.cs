@@ -21,7 +21,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             this.indexNameFactory = indexNameFactory;
             elasticsearchClient = elasticsearchClientFactory.GetClient(new JsonSerializerSettings
                 {
-                    ContractResolver = new ContractResolverWithOmitedByteArrays()
+                    ContractResolver = new ContractResolverWithOmitedByteArrays(),
+                    Converters = new JsonConverter[]
+                        {
+                            new LongStringsToNullConverter(500)
+                        }
                 });
         }
 
