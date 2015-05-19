@@ -177,7 +177,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             var lastTicksEstimation = GetMinTicks(taskMetaInformations, now);
             var oldestEventTime = unprocessedEventsMap.GetOldestEventTime();
             if(oldestEventTime != null)
-                lastTicksEstimation = Math.Min(lastTicksEstimation, oldestEventTime.Value);
+                lastTicksEstimation = Math.Min(lastTicksEstimation, Math.Max(oldestEventTime.Value, (DateTime.UtcNow - TimeSpan.FromMinutes(15)).Ticks));
             return lastTicksEstimation;
         }
 
