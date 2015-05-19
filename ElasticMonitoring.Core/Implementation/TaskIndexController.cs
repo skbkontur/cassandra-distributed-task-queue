@@ -153,6 +153,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             taskMetaProcessor.IndexMetas(actualMetas);
 
             var ticks = GetSafeTimeForSnapshot(now, actualMetas);
+            Interlocked.Exchange(ref lastTicks, ticks);
             SaveSnapshot(ticks);
         }
 
