@@ -184,7 +184,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         {
             var ticks = Interlocked.Read(ref lastTicks);
             if (ticks != long.MinValue)
-                graphiteClient.Send("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization.Lag", ticks, DateTime.UtcNow);
+                graphiteClient.Send("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization.Lag", (long)TimeSpan.FromTicks(ticks).TotalMilliseconds, DateTime.UtcNow);
         }
 
         public void SetMinTicksHack(long minTicks)
