@@ -77,9 +77,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         {
             logger.LogInfoFormat("Attempt to put data template name '{0}' pattern '{1}'", templateName, indicesPattern);
             var response = elasticsearchClient.IndicesGetTemplateForAll(templateName).ProcessResponse(200, 404);
-            if(response.HttpStatusCode == 404)
+            //if(response.HttpStatusCode == 404)
             {
-                logger.LogInfoFormat("Template not exists - creating");
+                //logger.LogInfoFormat("Template not exists - creating");
                 elasticsearchClient
                     .IndicesPutTemplateForAll(templateName, new
                         {
@@ -102,7 +102,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                 {
                                                                     path_match = "Data.*",
                                                                     match_mapping_type = "string",
-                                                                    mapping = StringTemplate()
+                                                                    mapping = new
+                                                                        {
+                                                                            type = "string",
+                                                                            store = "no",
+                                                                            index = "not_analyzed"
+                                                                        }
+                                                                    
                                                                 },
                                                         },
                                                     new
@@ -111,23 +117,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                 {
                                                                     path_match = "Data.*",
                                                                     match_mapping_type = "date",
-                                                                    mapping = DateTemplate()
-                                                                }
-                                                        },
-                                                    new
-                                                        {
-                                                            no_store = new
-                                                                {
-                                                                    path_match = "Data.*",
                                                                     mapping = new
                                                                         {
+                                                                            type = "date",
+                                                                            format = dateFormat,
                                                                             store = "no"
                                                                         }
-                                                                },
-                                                        },
+                                                                }
+                                                        }
                                                 },
                                             properties = new
                                                 {
+                                                    Data = new
+                                                        {
+                                                            type = "object",
+                                                            store = "no",
+                                                        },
                                                     Meta = new
                                                         {
                                                             properties = new

@@ -67,6 +67,7 @@
     <Compile Include="Writing\Contracts\MetaIndexedInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Writing\Contracts\LastUpdateTicks.cs" />
+    <Compile Include="Writing\LongStringsToNullConverter.cs" />
     <Compile Include="Writing\TaskWriter.cs" />
     <Compile Include="Search\TaskSearchDynamicSettings.cs" />
     <Compile Include="Search\TaskSearchSettings.cs" />

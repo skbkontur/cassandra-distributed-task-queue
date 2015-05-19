@@ -14,6 +14,8 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
+using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 
@@ -21,19 +23,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 {
     public class TaskIndexController : ITaskIndexController
     {
-        public TaskIndexController(IEventLogRepository eventLogRepository,
-                                   IMetaCachedReader reader,
-                                   ITaskMetaProcessor taskMetaProcessor,
-                                   LastReadTicksStorage lastReadTicksStorage,
-                                   IGlobalTime globalTime,
-                                   IRemoteLockCreator remoteLockCreator,
-                                   int maxBatch)
+        public TaskIndexController(
+            IEventLogRepository eventLogRepository,
+            IMetaCachedReader reader,
+            ITaskMetaProcessor taskMetaProcessor,
+            LastReadTicksStorage lastReadTicksStorage,
+            IGlobalTime globalTime,
+            IRemoteLockCreator remoteLockCreator,
+            ICatalogueStatsDClient statsDClient,
+            ICatalogueGraphiteClient graphiteClient,
+            int maxBatch)
         {
             this.eventLogRepository = eventLogRepository;
             this.reader = reader;
             this.taskMetaProcessor = taskMetaProcessor;
             this.globalTime = globalTime;
             this.remoteLockCreator = remoteLockCreator;
+            this.graphiteClient = graphiteClient;
+            this.statsDClient = statsDClient.WithScope("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization");
             this.lastReadTicksStorage = lastReadTicksStorage;
             this.maxBatch = maxBatch;
             unstableZoneTicks = eventLogRepository.UnstableZoneLength.Ticks;
@@ -43,11 +50,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         }
 
         [ContainerConstructor]
-        public TaskIndexController(IEventLogRepository eventLogRepository,
-                                   IMetaCachedReader reader,
-                                   ITaskMetaProcessor taskMetaProcessor,
-                                   LastReadTicksStorage lastReadTicksStorage,
-                                   IGlobalTime globalTime, IRemoteLockCreator remoteLockCreator
+        public TaskIndexController(
+            IEventLogRepository eventLogRepository,
+            IMetaCachedReader reader,
+            ITaskMetaProcessor taskMetaProcessor,
+            LastReadTicksStorage lastReadTicksStorage,
+            IGlobalTime globalTime, 
+            IRemoteLockCreator remoteLockCreator, 
+            ICatalogueStatsDClient statsDClient,
+            ICatalogueGraphiteClient graphiteClient
             )
             : this(eventLogRepository,
                    reader,
@@ -55,6 +66,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                    lastReadTicksStorage,
                    globalTime,
                    remoteLockCreator,
+                   statsDClient,
+                   graphiteClient,
                    TaskIndexSettings.MaxBatch)
         {
         }
@@ -133,13 +146,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private void ProcessEventsBatch(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
         {
-            var actualMetas = ReadActualMetas(taskMetaUpdatedEvents, now);
+            var actualMetas = statsDClient.Timing("ReadMetas", () => ReadActualMetas(taskMetaUpdatedEvents, now));
 
             actualMetas = CutMetas(actualMetas);
 
             taskMetaProcessor.IndexMetas(actualMetas);
 
             var ticks = GetSafeTimeForSnapshot(now, actualMetas);
+            Interlocked.Exchange(ref lastTicks, ticks);
             SaveSnapshot(ticks);
         }
 
@@ -166,6 +180,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         }
 
         public long MinTicksHack { get { return Interlocked.Read(ref minTicksHack); } }
+        
+        public void SendActualizationLagToGraphite()
+        {
+            var ticks = Interlocked.Read(ref lastTicks);
+            if (ticks != long.MinValue)
+                graphiteClient.Send("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization.Lag", (long)TimeSpan.FromTicks(DateTime.UtcNow.Ticks - ticks).TotalMilliseconds, DateTime.UtcNow);
+        }
 
         public void SetMinTicksHack(long minTicks)
         {
@@ -177,7 +198,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             var lastTicksEstimation = GetMinTicks(taskMetaInformations, now);
             var oldestEventTime = unprocessedEventsMap.GetOldestEventTime();
             if(oldestEventTime != null)
-                lastTicksEstimation = Math.Min(lastTicksEstimation, oldestEventTime.Value);
+                lastTicksEstimation = Math.Min(lastTicksEstimation, Math.Max(oldestEventTime.Value, (DateTime.UtcNow - TimeSpan.FromMinutes(15)).Ticks));
             return lastTicksEstimation;
         }
 
@@ -229,6 +250,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         private readonly ITaskMetaProcessor taskMetaProcessor;
         private readonly LastReadTicksStorage lastReadTicksStorage;
         private readonly IRemoteLockCreator remoteLockCreator;
+        private readonly ICatalogueGraphiteClient graphiteClient;
+        private readonly ICatalogueStatsDClient statsDClient;
         private readonly IGlobalTime globalTime;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IMetaCachedReader reader;
