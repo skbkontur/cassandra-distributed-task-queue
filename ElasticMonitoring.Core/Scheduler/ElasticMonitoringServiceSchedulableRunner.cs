@@ -1,3 +1,5 @@
+using System;
+
 using log4net;
 
 using RemoteQueue.LocalTasks.Scheduling;
@@ -25,7 +27,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
                 {
                     if(worked)
                     {
-                        periodicTaskRunner.Unregister(fetchMetasTaskId, 15000);
+                        periodicTaskRunner.Unregister(sendactualizationlagtographiteTaskId, 15000);
                         periodicTaskRunner.Unregister(taskSearchUpdateTaskId, 15000);
                         worked = false;
                         logger.Info("Stop MonitoringServiceSchedulableRunner");
@@ -43,6 +45,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
                     if(!worked)
                     {
                         periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.ProcessNewEvents(), taskSearchUpdateTaskId), TaskIndexSettings.IndexInterval);
+                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.SendActualizationLagToGraphite(), sendactualizationlagtographiteTaskId), TimeSpan.FromMinutes(1));
                         worked = true;
                         logger.InfoFormat("Start MonitoringServiceSchedulableRunner");
                     }
@@ -51,7 +54,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
         }
 
         private const string taskSearchUpdateTaskId = "UpdateTaskSearchIndex";
-        private const string fetchMetasTaskId = "fetchMetasTaskId";
+        private const string sendactualizationlagtographiteTaskId = "SendActualizationLagToGraphite";
 
         private readonly object lockObject = new object();
         private readonly IPeriodicTaskRunner periodicTaskRunner;
