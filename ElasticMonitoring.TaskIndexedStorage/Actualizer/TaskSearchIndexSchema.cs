@@ -93,6 +93,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                 {
                                     _default_ = new
                                         {
+                                            date_detection = false,
                                             _all = new {enabled = true},
                                             dynamic_templates = new object[]
                                                 {
@@ -101,6 +102,43 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                             template_strings = new
                                                                 {
                                                                     path_match = "Data.*",
+                                                                    match_mapping_type = "string",
+                                                                    mapping = new
+                                                                        {
+                                                                            type = "string",
+                                                                            store = "no",
+                                                                            index = "not_analyzed"
+                                                                        }
+                                                                    
+                                                                },
+                                                            template_integer = new
+                                                                {
+                                                                    path_match = "Data.*",
+                                                                    match_mapping_type = "integer",
+                                                                    mapping = new
+                                                                        {
+                                                                            type = "string",
+                                                                            store = "no",
+                                                                            index = "not_analyzed"
+                                                                        }
+                                                                    
+                                                                },
+                                                            template_double = new
+                                                                {
+                                                                    path_match = "Data.*",
+                                                                    match_mapping_type = "double",
+                                                                    mapping = new
+                                                                        {
+                                                                            type = "string",
+                                                                            store = "no",
+                                                                            index = "not_analyzed"
+                                                                        }
+                                                                    
+                                                                },
+                                                            template_boolean = new
+                                                                {
+                                                                    path_match = "Data.*",
+                                                                    match_mapping_type = "boolean",
                                                                     mapping = new
                                                                         {
                                                                             type = "string",
