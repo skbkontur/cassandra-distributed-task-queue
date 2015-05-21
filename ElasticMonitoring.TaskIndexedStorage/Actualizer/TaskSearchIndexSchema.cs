@@ -101,7 +101,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                             template_strings = new
                                                                 {
                                                                     path_match = "Data.*",
-                                                                    match_mapping_type = "string",
                                                                     mapping = new
                                                                         {
                                                                             type = "string",
@@ -110,20 +109,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                         }
                                                                     
                                                                 },
-                                                        },
-                                                    new
-                                                        {
-                                                            template_dates = new
-                                                                {
-                                                                    path_match = "Data.*",
-                                                                    match_mapping_type = "date",
-                                                                    mapping = new
-                                                                        {
-                                                                            type = "date",
-                                                                            format = dateFormat,
-                                                                            store = "no"
-                                                                        }
-                                                                }
                                                         }
                                                 },
                                             properties = new
