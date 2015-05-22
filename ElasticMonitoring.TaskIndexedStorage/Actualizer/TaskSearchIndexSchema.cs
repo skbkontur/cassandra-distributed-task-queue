@@ -93,6 +93,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                 {
                                     _default_ = new
                                         {
+                                            date_detection = false,
                                             _all = new {enabled = true},
                                             dynamic_templates = new object[]
                                                 {
@@ -110,20 +111,42 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                         }
                                                                     
                                                                 },
-                                                        },
-                                                    new
-                                                        {
-                                                            template_dates = new
+                                                            template_integer = new
                                                                 {
                                                                     path_match = "Data.*",
-                                                                    match_mapping_type = "date",
+                                                                    match_mapping_type = "integer",
                                                                     mapping = new
                                                                         {
-                                                                            type = "date",
-                                                                            format = dateFormat,
-                                                                            store = "no"
+                                                                            type = "string",
+                                                                            store = "no",
+                                                                            index = "not_analyzed"
                                                                         }
-                                                                }
+                                                                    
+                                                                },
+                                                            template_double = new
+                                                                {
+                                                                    path_match = "Data.*",
+                                                                    match_mapping_type = "double",
+                                                                    mapping = new
+                                                                        {
+                                                                            type = "string",
+                                                                            store = "no",
+                                                                            index = "not_analyzed"
+                                                                        }
+                                                                    
+                                                                },
+                                                            template_boolean = new
+                                                                {
+                                                                    path_match = "Data.*",
+                                                                    match_mapping_type = "boolean",
+                                                                    mapping = new
+                                                                        {
+                                                                            type = "string",
+                                                                            store = "no",
+                                                                            index = "not_analyzed"
+                                                                        }
+                                                                    
+                                                                },
                                                         }
                                                 },
                                             properties = new
