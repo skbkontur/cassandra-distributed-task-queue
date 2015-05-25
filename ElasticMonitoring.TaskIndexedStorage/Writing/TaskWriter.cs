@@ -1,4 +1,6 @@
-﻿using Elasticsearch.Net;
+﻿using System;
+
+using Elasticsearch.Net;
 
 using log4net;
 
@@ -21,7 +23,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             this.indexNameFactory = indexNameFactory;
             elasticsearchClient = elasticsearchClientFactory.GetClient(new JsonSerializerSettings
                 {
-                    ContractResolver = new ContractResolverWithOmitedByteArrays(),
+                    ContractResolver = new OmitNonIndexablePropertiesContractResolver(),
                     Converters = new JsonConverter[]
                         {
                             new LongStringsToNullConverter(500)
@@ -74,7 +76,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     MinimalStartTime = meta.MinimalStartTicks,
                     StartExecutingTime = meta.StartExecutingTicks
                 };
-            return new TaskIndexedInfo {Meta = metaIndexedInfo, Data = taskData};
+            return Activator.CreateInstance(typeof(TaskIndexedInfo<>).MakeGenericType(taskData.GetType()), new[] {metaIndexedInfo, taskData});
         }
 
         private readonly IWriteIndexNameFactory indexNameFactory;
