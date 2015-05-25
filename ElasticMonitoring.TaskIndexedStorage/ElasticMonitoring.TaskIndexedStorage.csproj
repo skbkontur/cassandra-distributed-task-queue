@@ -58,7 +58,7 @@
     <Compile Include="Client\TaskSearchResponse.cs" />
     <Compile Include="Utils\IndexNameConverter.cs" />
     <Compile Include="Writing\IndexChecker.cs" />
-    <Compile Include="Writing\ContractResolverWithOmitedByteArrays.cs" />
+    <Compile Include="Writing\OmitNonIndexablePropertiesContractResolver.cs" />
     <Compile Include="Writing\Contracts\TaskIndexedInfo.cs" />
     <Compile Include="Writing\ITaskWriteDynamicSettings.cs" />
     <Compile Include="Writing\IWriteIndexNameFactory.cs" />

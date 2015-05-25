@@ -109,8 +109,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                             store = "no",
                                                                             index = "not_analyzed"
                                                                         }
-                                                                    
                                                                 },
+                                                        },
+                                                    new
+                                                        {
                                                             template_integer = new
                                                                 {
                                                                     path_match = "Data.*",
@@ -121,8 +123,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                             store = "no",
                                                                             index = "not_analyzed"
                                                                         }
-                                                                    
                                                                 },
+                                                        },
+                                                    new
+                                                        {
                                                             template_double = new
                                                                 {
                                                                     path_match = "Data.*",
@@ -133,8 +137,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                             store = "no",
                                                                             index = "not_analyzed"
                                                                         }
-                                                                    
                                                                 },
+                                                        },
+                                                    new
+                                                        {
                                                             template_boolean = new
                                                                 {
                                                                     path_match = "Data.*",
@@ -145,7 +151,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                             store = "no",
                                                                             index = "not_analyzed"
                                                                         }
-                                                                    
                                                                 },
                                                         }
                                                 },
