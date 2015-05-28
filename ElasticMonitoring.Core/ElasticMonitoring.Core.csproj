@@ -71,7 +71,7 @@
     </Reference>
     <Reference Include="SKBKontur.Graphite.Client, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\SKBKontur.Graphite.Client.dll</HintPath>
+      <HintPath>..\..\Assemblies\GraphiteClient\SKBKontur.Graphite.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
