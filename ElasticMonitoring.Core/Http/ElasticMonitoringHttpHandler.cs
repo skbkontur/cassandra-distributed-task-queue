@@ -1,5 +1,9 @@
 ﻿using System;
 
+using log4net;
+
+using Newtonsoft.Json;
+
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
@@ -23,11 +27,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Http
         [HttpMethod]
         public ElasticMonitoringStatus GetStatus()
         {
-            return new ElasticMonitoringStatus()
-                {
-                    DistributedLockAcquired = taskIndexController.IsDistributedLockAcquired(),
-                    MinTicksHack = taskIndexController.MinTicksHack
-                };
+            return taskIndexController.GetStatus();
+        }
+
+        [HttpMethod]
+        [JsonHttpMethod]
+        public string GetStatusJson()
+        {
+            return JsonConvert.SerializeObject(taskIndexController.GetStatus());
         }
 
         [HttpMethod]
