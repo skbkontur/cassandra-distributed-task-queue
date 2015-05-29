@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 using RemoteQueue.Cassandra.Entities;
 
@@ -36,6 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         public void CollectGarbage(long nowTicks)
         {
             map.DeleteWhere(pair => pair.Value.Ticks + cacheEventTicks < nowTicks);
+            UpdateCount();
         }
 
         public IEnumerable<TaskMetaUpdatedEvent> GetEvents()
@@ -46,6 +48,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         public void Clear()
         {
             map.Clear();
+            UpdateCount();
         }
 
         public void AddEvent(TaskMetaUpdatedEvent e)
@@ -57,6 +60,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     return;
             }
             map[e.TaskId] = e;
+            UpdateCount();
         }
 
         public void RemoveEvent(TaskMetaUpdatedEvent e)
@@ -68,8 +72,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     return;
             }
             map.Remove(e.TaskId);
+            UpdateCount();
         }
 
+        private void UpdateCount()
+        {
+            Interlocked.Exchange(ref count, map.Count);
+        }
+
+        public long GetUnsafeCount()
+        {
+            return Interlocked.Read(ref count);
+        }
+
+        private long count;
         private readonly Dictionary<string, TaskMetaUpdatedEvent> map = new Dictionary<string, TaskMetaUpdatedEvent>();
         private readonly long cacheEventTicks;
     }
