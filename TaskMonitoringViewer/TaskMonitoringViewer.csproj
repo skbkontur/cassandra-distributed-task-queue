@@ -74,18 +74,22 @@
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
     <Reference Include="RazorGenerator.Mvc">
-      <HintPath>..\..\Assemblies\RazorGenerator\RazorGenerator.Mvc.dll</HintPath>
+      <HintPath>..\..\Assemblies\Mvc5\RazorGenerator.Mvc.2.3.4\RazorGenerator.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\MVC3\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\..\Assemblies\Mvc5\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages">
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\MVC3\System.Web.WebPages.dll</HintPath>
+      <HintPath>..\..\Assemblies\Mvc5\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Mvc5\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -152,7 +156,9 @@
     <EmbeddedResource Include="Views\_TaskDateTime.cshtml" />
     <EmbeddedResource Include="Views\_ExceptionInfo.cshtml" />
     <EmbeddedResource Include="Views\FullScreenTaskCount.cshtml" />
-    <None Include="Web.config" />
+    <None Include="Web.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
@@ -174,7 +180,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\Assemblies\RazorGenerator.MSBuild\RazorGenerator.MsBuild.targets" />
+  <Import Project="..\..\Build\RazorGenerator.MsBuild.2.2.6\tools\RazorGenerator.MsBuild.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(SolutionDir)..\Assemblies\Temp\
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)..\Assemblies\Temp\</PostBuildEvent>
