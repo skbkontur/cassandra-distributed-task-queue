@@ -17,6 +17,7 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
 using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.Utils;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Types;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
@@ -55,8 +56,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             IMetaCachedReader reader,
             ITaskMetaProcessor taskMetaProcessor,
             LastReadTicksStorage lastReadTicksStorage,
-            IGlobalTime globalTime, 
-            IRemoteLockCreator remoteLockCreator, 
+            IGlobalTime globalTime,
+            IRemoteLockCreator remoteLockCreator,
             ICatalogueStatsDClient statsDClient,
             ICatalogueGraphiteClient graphiteClient
             )
@@ -110,16 +111,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 if(!DistributedLockAcquired())
                     return;
                 var now = GetNow();
+                var lastTicksCopy = Interlocked.Read(ref lastTicks);
+                logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(lastTicksCopy), DateTimeFormatter.FormatWithMsAndTicks(now));
 
-                if(lastTicks == long.MinValue)
+                if (lastTicksCopy == long.MinValue)
                     LoadLastState();
 
                 var hasEvents = false;
 
                 var unprocessedEvents = unprocessedEventsMap.GetEvents();
+                //todo собирать мусор чаще
                 unprocessedEventsMap.CollectGarbage(now);
                 processedEventsMap.CollectGarbage(now);
-                var newEvents = GetEvents(lastTicks);
+                var newEvents = GetEvents(lastTicksCopy);
 
                 unprocessedEvents.Concat(newEvents)
                                  .Batch(maxBatch, Enumerable.ToArray)
@@ -132,7 +136,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 if(!hasEvents)
                     ProcessEventsBatch(new TaskMetaUpdatedEvent[0], now);
 
-                lastTicks = now;
+                Interlocked.Exchange(ref lastTicks, now);
             }
         }
 
@@ -180,12 +184,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         }
 
         public long MinTicksHack { get { return Interlocked.Read(ref minTicksHack); } }
-        
+
         public void SendActualizationLagToGraphite()
         {
+            var lag = GetActualizationLag();
+            if(lag != null)
+                graphiteClient.Send("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization.Lag", lag.Value, DateTime.UtcNow);
+        }
+
+        private long? GetActualizationLag()
+        {
             var ticks = Interlocked.Read(ref lastTicks);
-            if (ticks != long.MinValue)
-                graphiteClient.Send("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization.Lag", (long)TimeSpan.FromTicks(DateTime.UtcNow.Ticks - ticks).TotalMilliseconds, DateTime.UtcNow);
+            if(ticks != long.MinValue)
+                return (long)TimeSpan.FromTicks(DateTime.UtcNow.Ticks - ticks).TotalMilliseconds;
+            return null;
         }
 
         public void SetMinTicksHack(long minTicks)
@@ -218,6 +230,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         private IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks)
         {
             return eventLogRepository.GetEvents(fromTicks - unstableZoneTicks, maxBatch).Where(processedEventsMap.NotContains);
+        }
+
+        public ElasticMonitoringStatus GetStatus()
+        {
+            return new ElasticMonitoringStatus()
+                {
+                    DistributedLockAcquired = IsDistributedLockAcquired(),
+                    MinTicksHack = MinTicksHack,
+                    UnprocessedMapLength = unprocessedEventsMap.GetUnsafeCount(),
+                    ProcessedMapLength = processedEventsMap.GetUnsafeCount(),
+                    ActualizationLagMs = GetActualizationLag(),
+                    LastTicks = Interlocked.Read(ref lastTicks)
+                };
         }
 
         public bool IsDistributedLockAcquired()
