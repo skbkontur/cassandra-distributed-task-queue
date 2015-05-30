@@ -180,7 +180,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\Build\RazorGenerator.MsBuild.2.2.6\build\RazorGenerator.MsBuild.targets" />
+  <Import Project="..\..\Build\RazorGenerator.MsBuild.2.2.6\tools\RazorGenerator.MsBuild.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetDir)$(TargetName).dll $(SolutionDir)..\Assemblies\Temp\
 copy $(TargetDir)$(TargetName).pdb $(SolutionDir)..\Assemblies\Temp\</PostBuildEvent>
