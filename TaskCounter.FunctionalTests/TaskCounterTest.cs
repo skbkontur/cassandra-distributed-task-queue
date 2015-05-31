@@ -55,7 +55,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
         }
     }
 
-    [ContainerEnvironment, Cassandra, DefaultSettings, DefaultSerializer, InjectProperties, RemoteTaskQueueRemoteLock, TestExchangeServices]
+    [ContainerEnvironment, Cassandra, DefaultSettings(FileName = "functionalTests.csf"), DefaultSerializer, InjectProperties, RemoteTaskQueueRemoteLock, TestExchangeServices]
     public class TaskCounterTest
     {
         [ContainerSetUp]
