@@ -112,10 +112,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     return;
                 var now = GetNow();
                 var lastTicksCopy = Interlocked.Read(ref lastTicks);
-                logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(lastTicksCopy), DateTimeFormatter.FormatWithMsAndTicks(now));
 
-                if (lastTicksCopy == long.MinValue)
-                    LoadLastState();
+                if(lastTicksCopy == long.MinValue)
+                {
+                    lastTicksCopy = GetLastTicks();
+                    Interlocked.Exchange(ref lastTicks, lastTicksCopy);
+                }
+
+                logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(lastTicksCopy), DateTimeFormatter.FormatWithMsAndTicks(now));
 
                 var hasEvents = false;
 
@@ -140,12 +144,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             }
         }
 
-        private void LoadLastState()
+        private long GetLastTicks()
         {
-            logger.LogInfoFormat("Loading saved state");
+            logger.LogInfoFormat("Loading Last ticks");
             var lastReadTicks = lastReadTicksStorage.GetLastReadTicks();
-            Interlocked.Exchange(ref lastTicks, lastReadTicks);
-            logger.InfoFormat("Last state loaded. LastTicks={0}", DateTimeFormatter.FormatWithMsAndTicks(lastReadTicks));
+            logger.InfoFormat("Last ticks loaded. Value={0}", DateTimeFormatter.FormatWithMsAndTicks(lastReadTicks));
+            return lastReadTicks;
         }
 
         private void ProcessEventsBatch(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
