@@ -19,6 +19,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
             string timeStr;
             CalculatedIndexStartTimeTicks = !applicationSettings.TryGetString("ElasticSearchSchema.MonitoringSearch.IndexStartTime", out timeStr) ? 0 : ConvertToUtcTicks(timeStr);
+            string value;
+            GraphitePrefixOrNull = !applicationSettings.TryGetString("ElasticMonitoring.GraphitePrefix", out value) ? null : value;
         }
 
         private static long ConvertToUtcTicks(string timeStr)
@@ -35,7 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 return (DateTime.UtcNow + timeSpan).ToUniversalTime().Ticks;
             }
             DateTime time;
-            if (!DateTime.TryParse(timeStr, CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out time))
+            if(!DateTime.TryParse(timeStr, CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out time))
                 throw new NotSupportedException(string.Format("'{0}' has incorrect DateTime format", timeStr));
             return time.ToUniversalTime().Ticks;
         }
@@ -46,6 +48,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         public string OldIndexNameFormat { get; private set; }
         public string LastTicksIndex { get; private set; }
         public long CalculatedIndexStartTimeTicks { get; private set; }
+
+        public string GraphitePrefixOrNull { get; private set; }
 
         private readonly bool enableDestructiveActions;
     }

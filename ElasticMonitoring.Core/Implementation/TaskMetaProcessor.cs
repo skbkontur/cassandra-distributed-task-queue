@@ -19,13 +19,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             ITaskDataBlobStorage taskDataStorage,
             TaskWriter writer,
             ISerializer serializer,
-            ICatalogueStatsDClient statsDClient)
+            ICatalogueStatsDClient statsDClient, ITaskWriteDynamicSettings taskWriteDynamicSettings)
         {
             this.taskDataTypeToNameMapper = taskDataTypeToNameMapper;
             this.taskDataStorage = taskDataStorage;
             this.writer = writer;
             this.serializer = serializer;
-            this.statsDClient = statsDClient.WithScope("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization");
+            this.statsDClient = taskWriteDynamicSettings.GraphitePrefixOrNull != null ?
+                                    statsDClient.WithScope(string.Format("{0}.Actualization", taskWriteDynamicSettings.GraphitePrefixOrNull)) :
+                                    EmptyStatsDClient.Instance;
         }
 
         public void IndexMetas(TaskMetaInformation[] batch)
