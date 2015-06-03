@@ -7,5 +7,6 @@
         string OldIndexNameFormat { get; }
         string LastTicksIndex { get; }
         long CalculatedIndexStartTimeTicks { get; }
+        string GraphitePrefixOrNull { get; }
     }
 }

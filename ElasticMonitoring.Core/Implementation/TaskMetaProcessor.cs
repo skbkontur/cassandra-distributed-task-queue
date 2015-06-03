@@ -3,12 +3,15 @@ using System.Linq;
 
 using GroBuf;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
 {
@@ -19,13 +22,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             ITaskDataBlobStorage taskDataStorage,
             TaskWriter writer,
             ISerializer serializer,
-            ICatalogueStatsDClient statsDClient)
+            ICatalogueStatsDClient statsDClient, ITaskWriteDynamicSettings taskWriteDynamicSettings)
         {
             this.taskDataTypeToNameMapper = taskDataTypeToNameMapper;
             this.taskDataStorage = taskDataStorage;
             this.writer = writer;
             this.serializer = serializer;
-            this.statsDClient = statsDClient.WithScope("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization");
+            this.statsDClient = taskWriteDynamicSettings.GraphitePrefixOrNull != null ?
+                                    statsDClient.WithScope(string.Format("{0}.Actualization", taskWriteDynamicSettings.GraphitePrefixOrNull)) :
+                                    EmptyStatsDClient.Instance;
         }
 
         public void IndexMetas(TaskMetaInformation[] batch)

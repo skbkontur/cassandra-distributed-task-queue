@@ -39,6 +39,18 @@
     <Reference Include="Elasticsearch.Net">
       <HintPath>..\..\Assemblies\ElasticSearch\Client\Elasticsearch.Net.dll</HintPath>
     </Reference>
+    <Reference Include="GrEmit, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\GrEmit.dll</HintPath>
+    </Reference>
+    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\GroBuf.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=7.1.1000.900, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
@@ -68,6 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Writing\Contracts\LastUpdateTicks.cs" />
     <Compile Include="Writing\LongStringsToNullConverter.cs" />
+    <Compile Include="Writing\TaskDataService.cs" />
     <Compile Include="Writing\TaskWriter.cs" />
     <Compile Include="Search\TaskSearchDynamicSettings.cs" />
     <Compile Include="Search\TaskSearchSettings.cs" />
