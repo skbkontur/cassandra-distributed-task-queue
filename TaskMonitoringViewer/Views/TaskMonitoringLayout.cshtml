@@ -8,9 +8,7 @@
         <title>@RenderSection("Title")</title>
         @{
             Html.RenderMetaAttributes();
-            Html.RenderSharedStyles();
-            Html.RenderAdminStyles();
-            Html.RenderSharedScripts();
+            Html.RenderAdminToolsStylesAndScripts();
         }
         <script type="text/javascript">
             $(document).ready(function () {
