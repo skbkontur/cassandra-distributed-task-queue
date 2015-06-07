@@ -33,6 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             IRemoteLockCreator remoteLockCreator,
             ICatalogueStatsDClient statsDClient,
             ICatalogueGraphiteClient graphiteClient,
+            ITaskWriteDynamicSettings dynamicSettings,
             int maxBatch)
         {
             this.eventLogRepository = eventLogRepository;
@@ -40,14 +41,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             this.taskMetaProcessor = taskMetaProcessor;
             this.globalTime = globalTime;
             this.remoteLockCreator = remoteLockCreator;
-            this.graphiteClient = graphiteClient;
-            this.statsDClient = statsDClient.WithScope("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization");
             this.lastReadTicksStorage = lastReadTicksStorage;
             this.maxBatch = maxBatch;
             unstableZoneTicks = eventLogRepository.UnstableZoneLength.Ticks;
             unprocessedEventsMap = new EventsMap(unstableZoneTicks * 2);
             processedEventsMap = new EventsMap(unstableZoneTicks * 2);
             lastTicks = long.MinValue;
+
+            graphitePrefix = dynamicSettings.GraphitePrefixOrNull;
+            if(graphitePrefix != null)
+            {
+                logger.LogInfoFormat("Graphite is ON. Prefix={0}", graphitePrefix);
+                this.graphiteClient = graphiteClient;
+                this.statsDClient = statsDClient.WithScope(string.Format("{0}.Actualization", graphitePrefix));
+            }
+            else
+                this.statsDClient = EmptyStatsDClient.Instance;
         }
 
         [ContainerConstructor]
@@ -59,7 +68,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             IGlobalTime globalTime,
             IRemoteLockCreator remoteLockCreator,
             ICatalogueStatsDClient statsDClient,
-            ICatalogueGraphiteClient graphiteClient
+            ICatalogueGraphiteClient graphiteClient,
+            ITaskWriteDynamicSettings dynamicSettings
             )
             : this(eventLogRepository,
                    reader,
@@ -69,6 +79,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                    remoteLockCreator,
                    statsDClient,
                    graphiteClient,
+                   dynamicSettings,
                    TaskIndexSettings.MaxBatch)
         {
         }
@@ -191,9 +202,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         public void SendActualizationLagToGraphite()
         {
+            if(graphitePrefix == null)
+                return;
             var lag = GetActualizationLag();
             if(lag != null)
-                graphiteClient.Send("EDI.SubSystem.RemoteTaskQueueMonitoring2.Actualization.Lag", lag.Value, DateTime.UtcNow);
+                graphiteClient.Send(string.Format("{0}.Actualization.Lag", graphitePrefix), lag.Value, DateTime.UtcNow);
         }
 
         private long? GetActualizationLag()
@@ -291,5 +304,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private readonly long unstableZoneTicks;
         private readonly int maxBatch;
+        private readonly string graphitePrefix;
     }
 }

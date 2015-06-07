@@ -1,6 +1,4 @@
-﻿using System;
-
-using Elasticsearch.Net;
+﻿using Elasticsearch.Net;
 
 using log4net;
 
@@ -18,9 +16,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
     public class TaskWriter
     {
         public TaskWriter(
-            IElasticsearchClientFactory elasticsearchClientFactory, IWriteIndexNameFactory indexNameFactory)
+            IElasticsearchClientFactory elasticsearchClientFactory,
+            IWriteIndexNameFactory indexNameFactory,
+            TaskDataService taskDataService)
         {
             this.indexNameFactory = indexNameFactory;
+            this.taskDataService = taskDataService;
             elasticsearchClient = elasticsearchClientFactory.GetClient(new JsonSerializerSettings
                 {
                     ContractResolver = new OmitNonIndexablePropertiesContractResolver(),
@@ -60,7 +61,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient.Bulk<BulkResponse>(body).DieIfErros();
         }
 
-        private static object BuildSavedData(TaskMetaInformation meta, object taskData)
+        private object BuildSavedData(TaskMetaInformation meta, object taskData)
         {
             var metaIndexedInfo = new MetaIndexedInfo
                 {
@@ -76,10 +77,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     MinimalStartTime = meta.MinimalStartTicks,
                     StartExecutingTime = meta.StartExecutingTicks
                 };
-            return Activator.CreateInstance(typeof(TaskIndexedInfo<>).MakeGenericType(taskData.GetType()), new[] {metaIndexedInfo, taskData});
+            return taskDataService.CreateTaskIndexedInfo(metaIndexedInfo, taskData);
         }
 
         private readonly IWriteIndexNameFactory indexNameFactory;
+        private readonly TaskDataService taskDataService;
 
         private readonly IElasticsearchClient elasticsearchClient;
 
