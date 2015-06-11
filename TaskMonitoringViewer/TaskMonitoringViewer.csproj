@@ -151,7 +151,6 @@
     <EmbeddedResource Include="Views\TaskMonitoringLayout.cshtml" />
     <EmbeddedResource Include="Views\_TaskDateTime.cshtml" />
     <EmbeddedResource Include="Views\_ExceptionInfo.cshtml" />
-    <EmbeddedResource Include="Views\FullScreenTaskCount.cshtml" />
     <None Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
