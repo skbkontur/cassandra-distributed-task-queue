@@ -23,3 +23,14 @@ MaximalRowsCount = 1000
 CheckConnectionsInterval = 00:01:00
 
 ElasticSearchSchema.MonitoringSearch.SearchIndexNameFormat = monitoring-index-{yyyy.MM.dd}-search
+
+# WEBPACK CONFIGURATION
+Webpack.EntryAssetsFileNames = webpack-assets.json
+Webpack.DevelopmentServerUri = http://127.0.0.1:8080/dist/
+Webpack.CompiledAssetsPrefix = /dist/
+
+# PossibleValues:
+#   DebugMode
+#   DevelopmentServer
+#   CompiledAssets
+Webpack.PathProviderMode = DebugMode

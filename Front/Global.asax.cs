@@ -7,10 +7,11 @@ using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.Core.ObjectTreeWebViewer.Globals;
 using SKBKontur.Catalogue.Core.Web.Globals;
 using SKBKontur.Catalogue.Core.Web.Globals.ViewPrecompilation;
+using SKBKontur.Catalogue.Core.Web.RenderingHelpers;
+using SKBKontur.Catalogue.Core.Web.RenderingHelpers.Webpack;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Globals;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Controllers;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.MvcControllers.Registration;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Globals;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
@@ -28,7 +29,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
             engineCollection.RegisterEngine(new WebWormsCommonPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new WebWormsPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new TaskMonitoringPrecompiledMvcEngine());
-            engineCollection.RegisterEngine(new RemoteTaskQueueCounterPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new ObjectTreeViewerPrecompiledMvcEngine());
             engineCollection.RegisterEngine(new ElasticTaskMonitoringPrecompiledMvcEngine());
         }
@@ -38,6 +38,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
             BeginRequestHandler.BeginRequest(Context);
         }
 
+        private static void OverrideRenderAdminToolsStylesAndScriptsHandler(HtmlHelper html)
+        {
+            html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryScript("webworms-initializer").ToString());
+            html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryStyle("webworms-bundle").ToString());
+            html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryStyle("webworms-admintools-bundle").ToString());
+            html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryScript("webworms-bundle").ToString());
+        }
+
         protected override void RegisterRoutes(RouteCollection routes)
         {
             routes.MapRoute("Default", "{controller}/{action}", new {action = "Run"}, new[] {GetControllersNamespace()});
@@ -45,7 +53,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
 
         protected override void DoConfigure()
         {
+            HtmlHelpers.OverrideRenderAdminToolsStylesAndScripts = OverrideRenderAdminToolsStylesAndScriptsHandler;
             Configurator.Configure(Container);
+            Container.ConfigureWebpackPathProvider();
         }
 
         protected override void ConfigureTracingWrapper(TracingWrapperConfigurator configurator)

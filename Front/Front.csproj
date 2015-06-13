@@ -105,7 +105,6 @@
   <ItemGroup>
     <Compile Include="Areas\AdminToolsArea\AdminToolsAreaRegistration.cs" />
     <Compile Include="Areas\AdminToolsArea\Controllers\TasksController.cs" />
-    <Compile Include="Areas\AdminToolsArea\Controllers\TaskCounterController.cs" />
     <Compile Include="Areas\AdminToolsArea\Controllers\RemoteTaskQueueController.cs" />
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Configuration\PluginRegistry.cs" />
@@ -125,9 +124,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AdminToolsIcon.ico" />
-    <Content Include="Settings\elasticsearchTopology">
+    <Content Include="Settings\dependencies.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="webpack.config.js" />
+    <Content Include="package.json" />
     <None Include="Settings\front.csf" />
     <None Include="Settings\remoteTaskQueueMonitoringServiceTopology" />
     <Content Include="Views\Statics\Fonts\glyphicons-halflings-regular.svg" />
@@ -185,10 +186,6 @@
     <ProjectReference Include="..\Storage\Storage.csproj">
       <Project>{07f04a01-2ea7-4cd0-9ed5-d0c6d6e98e6b}</Project>
       <Name>Storage</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskCounter.MvcControllers\TaskCounter.MvcControllers.csproj">
-      <Project>{64679D14-CEB3-4847-8A6B-B451E796AE34}</Project>
-      <Name>TaskCounter.MvcControllers</Name>
     </ProjectReference>
     <ProjectReference Include="..\TaskMonitoringViewer\TaskMonitoringViewer.csproj">
       <Project>{8ba574ca-6c25-414f-9e99-1e7f032bb962}</Project>

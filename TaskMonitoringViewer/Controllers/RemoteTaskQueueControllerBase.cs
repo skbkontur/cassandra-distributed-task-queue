@@ -33,13 +33,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return Json(totalCount, JsonRequestBehavior.AllowGet);
         }
 
-        [AcceptVerbs(HttpVerbs.Get)]
-        [RequireReadAccessToRemoteTaskQueue]
-        public ActionResult FullScreenTaskCount(string id)
-        {
-            return View("FullScreenTaskCount", (object)id);
-        }
-
         [AcceptVerbs(HttpVerbs.Post)]
         [RequireReadAccessToRemoteTaskQueue]
         public ActionResult Search(TaskListModelData pageModelData)

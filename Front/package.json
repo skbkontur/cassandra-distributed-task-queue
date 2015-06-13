@@ -1,0 +1,22 @@
+{
+  "name": "Catalogue.RemoteTaskQueue.Front",
+  "version": "0.0.1",
+  "description": "Test Front for RemoteTaskQueue",
+  "private": true,
+  "scripts": {
+    "start": "webpack-dev-server -w -d",
+    "preparescripts": "webpack -p"
+  },
+  "dependencies": {
+    "script-loader": "~0.6.1",
+    "css-loader": "^0.12.1",
+    "extract-text-webpack-plugin": "^0.8.0",
+    "file-loader": "^0.8.1",
+    "less-loader": "^2.2.0",
+    "style-loader": "^0.12.2",
+    "webpack": "^1.9.7"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^1.8.2"
+  }
+}
