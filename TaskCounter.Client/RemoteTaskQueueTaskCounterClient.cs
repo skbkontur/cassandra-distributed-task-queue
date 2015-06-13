@@ -39,7 +39,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Client
         [NotNull]
         protected override string GetDefaultTopologyFileName()
         {
-            return "remoteTaskQueueTaskCounterServiceTopology";
+            return "remoteTaskQueueTaskCounterService";
         }
     }
 }

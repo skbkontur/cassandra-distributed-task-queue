@@ -123,9 +123,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AdminToolsIcon.ico" />
-    <Content Include="Settings\elasticsearchTopology">
+    <Content Include="Settings\dependencies.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="webpack.config.js" />
+    <Content Include="package.json" />
     <None Include="Settings\front.csf" />
     <None Include="Settings\remoteTaskQueueMonitoringServiceTopology" />
     <Content Include="Views\Statics\Fonts\glyphicons-halflings-regular.svg" />
