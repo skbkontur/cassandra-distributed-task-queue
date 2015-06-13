@@ -7,6 +7,11 @@ popd
 cd ..\Assemblies\Cassandra\Server\bin\
 start cassandra.bat
 
+pushd Front
+call npm install
+start npm start
+popd
+
 cd ..\..\..\..\RemoteTaskQueue\
 
 if exist ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe (start cmd /c ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe)

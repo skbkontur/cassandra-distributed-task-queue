@@ -12,6 +12,11 @@ pushd Assemblies\Selenium\
 start cmd /c chromedriver.exe 
 popd
 
+pushd Front
+call npm install
+start npm start
+popd
+
 %WinDir%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe Deployment\LocalFire.xml /t:Fire /p:ServiceSuite=None;FrontEndSuite=DEFAULT
 
 start "ServiceRunner" "..\Tools\ServiceRunner\ServiceRunner.exe"^
