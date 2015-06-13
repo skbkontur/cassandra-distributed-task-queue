@@ -70,7 +70,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient
 
         protected override string GetDefaultTopologyFileName()
         {
-            return "remoteTaskQueueMonitoringServiceTopology";
+            return "remoteTaskQueueMonitoringService";
         }
     }
 }

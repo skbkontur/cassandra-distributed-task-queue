@@ -45,7 +45,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Client
 
         protected override string GetDefaultTopologyFileName()
         {
-            return "elasticRemoteTaskQueueMonitoringTopology";
+            return "elasticRemoteTaskQueueMonitoring";
         }
     }
 }
