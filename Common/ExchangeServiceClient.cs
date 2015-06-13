@@ -31,7 +31,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
 
         protected override string GetDefaultTopologyFileName()
         {
-            return "exchangeServiceTopology";
+            return "exchangeService";
         }
     }
 }
