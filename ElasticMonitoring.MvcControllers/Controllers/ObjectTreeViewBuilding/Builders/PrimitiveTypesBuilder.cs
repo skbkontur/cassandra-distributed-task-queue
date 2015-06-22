@@ -18,13 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 
         private bool IsPrimitiveType(Type propertyType)
         {
-            return new[]
-                {
-                    typeof(string),
-                    typeof(int),
-                    typeof(double),
-                    typeof(long),
-                }.Contains(propertyType);
+            return propertyType.IsValueType || propertyType == typeof(string);
         }
     }
 }

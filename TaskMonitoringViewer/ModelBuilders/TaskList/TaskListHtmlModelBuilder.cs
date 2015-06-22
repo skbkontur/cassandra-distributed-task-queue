@@ -7,7 +7,7 @@ using GrobExp.Mutators;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton.Get;
 using SKBKontur.Catalogue.Core.Web.Blocks.ActionButton.Post;
-using SKBKontur.Catalogue.Core.Web.Blocks.PostUrl;
+using SKBKontur.Catalogue.Core.Web.Blocks.PostUrls;
 using SKBKontur.Catalogue.Core.Web.Models.DateAndTimeModels;
 using SKBKontur.Catalogue.Core.Web.Models.HtmlModels;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;

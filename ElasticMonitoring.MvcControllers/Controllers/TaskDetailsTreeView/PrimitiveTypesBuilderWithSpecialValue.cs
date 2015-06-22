@@ -12,7 +12,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         public override IBuildingResult Build(object targetObject, BuildingContext buildingContext)
         {
             var propertyType = buildingContext.MemberBuildingContext.DeclaredType;
-            if(propertyType == typeof(string))
+            if(propertyType == typeof(string) || propertyType == typeof(Guid))
             {
                 return RawHtml(targetObject +
                                string.Format(@"<a target=""_blank"" href=""{0}"" class=""pull-right"" data-toggle=""tooltip"" data-placement=""left"" title=""Найти все задачи, у которых это поле равно данному значению"" ><span class=""glyphicon glyphicon-search""></span><span>", BuildSearchLink(targetObject, buildingContext)));
