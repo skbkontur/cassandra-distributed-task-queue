@@ -39,6 +39,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         }
 
         [Test, Ignore]
+        public void TestDeleteElasticDataAndSchema()
+        {
+            hackService.DeleteAll();
+        }
+
+        [Test, Ignore]
         public void TestDeleteAllIndices()
         {
             //note some indices crashed after delete and rectreate. restart ES
@@ -51,7 +57,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             taskSearchIndexSchema.ActualizeTemplate();
             var client = elasticsearchClientFactory.GetClient();
-            for(int i = 0; i < 10; i++)
+            for(var i = 0; i < 10; i++)
             {
                 var dt = DateTime.UtcNow.Subtract(TimeSpan.FromDays(i));
                 var indexName = WriteIndexNameFactory.BuildIndexNameForTime(dt.Ticks, IndexNameConverter.ConvertToDateTimeFormat("monitoring-index-{yyyy.MM.dd}")); //todo get from settings??

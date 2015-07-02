@@ -26,3 +26,15 @@ ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearc
 ElasticSearchSchema.MonitoringSearch.IndexStartTime = {now}-1.00:00:00
 
 ElasticSearchSchema.MonitoringSearch.EnableDestructveActions = true
+
+# schema settings
+ElasticSearchSchema.MonitoringSearch.NumberOfShards = 1
+ElasticSearchSchema.MonitoringSearch.NumberOfReplicas = 0
+
+ElasticSearchSchema.MonitoringSearch.IndexPrefix = monitoring-index-
+ElasticSearchSchema.MonitoringSearch.TemplateNamePrefix = monitoring-
+ElasticSearchSchema.MonitoringSearch.SearchAliasFormat = {index}-search
+ElasticSearchSchema.MonitoringSearch.OldDataAliasFormat = {index}-old
+ElasticSearchSchema.MonitoringSearch.OldDataIndex = old-data
+
+ActualizeElasticSchemaOnStart = true

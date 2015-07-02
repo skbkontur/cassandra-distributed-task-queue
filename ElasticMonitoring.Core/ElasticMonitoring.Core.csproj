@@ -85,6 +85,7 @@
     <Compile Include="Implementation\IMetaCachedReader.cs" />
     <Compile Include="Implementation\ITaskIndexController.cs" />
     <Compile Include="Implementation\ITaskMetaProcessor.cs" />
+    <Compile Include="Implementation\LazySchemaActualizer.cs" />
     <Compile Include="Implementation\MetaCachedReader.cs" />
     <Compile Include="Implementation\TaskIndexSettings.cs" />
     <Compile Include="Implementation\TaskIndexController.cs" />
