@@ -31,6 +31,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
             Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
             ConfigureRemoteLock(Container);
+            Container.Get<ElasticAvailabilityChecker>().WaitAlive(); 
             Container.Get<LazySchemaActualizer>().ActualizeSchema(); //NOTE hack for local usage
             Container.Get<IElasticMonitoringServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();

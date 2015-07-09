@@ -66,6 +66,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="MoreLinq">
       <HintPath>..\..\Assemblies\MoreLinq\MoreLinq.dll</HintPath>
     </Reference>
@@ -82,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Http\ElasticMonitoringHttpHandler.cs" />
+    <Compile Include="Implementation\ElasticAvailabilityChecker.cs" />
     <Compile Include="Implementation\IMetaCachedReader.cs" />
     <Compile Include="Implementation\ITaskIndexController.cs" />
     <Compile Include="Implementation\ITaskMetaProcessor.cs" />
