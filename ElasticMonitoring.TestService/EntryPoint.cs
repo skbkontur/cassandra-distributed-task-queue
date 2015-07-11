@@ -41,7 +41,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
             var keyspaceName = container.Get<IApplicationSettings>().GetString("KeyspaceName");
             const string columnFamilyName = "remoteLock";
-            container.Configurator.ForAbstraction<IRemoteLockImplementation>().UseInstances(container.Create<ColumnFamilyFullName, CassandraRemoteLockImplementation>(new ColumnFamilyFullName(keyspaceName, columnFamilyName)));
+            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(keyspaceName, columnFamilyName));
+            var remoteLockImplementation = container.Create<CassandraRemoteLockImplementationSettings, CassandraRemoteLockImplementation>(remoteLockImplementationSettings);
+            container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(new RemoteLockCreator(remoteLockImplementation));
         }
     }
 }

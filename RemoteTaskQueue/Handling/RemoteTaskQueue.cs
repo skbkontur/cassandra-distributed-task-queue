@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
 
 using GroBuf;
 
@@ -36,7 +35,8 @@ namespace RemoteQueue.Handling
             var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex);
             var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime), remoteTaskQueueProfiler);
-            var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName)));
+            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
+            var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings));
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
             InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
             // ReSharper restore LocalVariableHidesMember
@@ -117,7 +117,7 @@ namespace RemoteQueue.Handling
 
         public RemoteTaskInfo<T>[] GetTaskInfos<T>(string[] taskIds) where T : ITaskData
         {
-            return GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>).ToArray();
+            return Enumerable.ToArray(GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>));
         }
 
         public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
@@ -170,7 +170,6 @@ namespace RemoteQueue.Handling
         }
 
         // ReSharper restore ParameterHidesMember
-
         private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>(RemoteTaskInfo task) where T : ITaskData
         {
             var taskType = task.TaskData.GetType();

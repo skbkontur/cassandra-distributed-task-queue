@@ -46,8 +46,9 @@ namespace FunctionalTests.ExchangeTests
             var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex);
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage, new EmptyRemoteTaskQueueProfiler());
-            testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime),
-                                                              new RemoteLockCreator(new CassandraRemoteLockImplementation(parameters.CassandraCluster, serializer, new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName))));
+            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
+            var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(parameters.CassandraCluster, serializer, remoteLockImplementationSettings));
+            testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime), remoteLockCreator);
             taskQueue = Container.Get<IRemoteTaskQueue>();
         }
 
