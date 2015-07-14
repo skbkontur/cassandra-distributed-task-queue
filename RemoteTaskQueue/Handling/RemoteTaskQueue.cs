@@ -17,26 +17,28 @@ using RemoteQueue.UserClasses;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 
 namespace RemoteQueue.Handling
 {
     public class RemoteTaskQueue : IRemoteTaskQueue
     {
-        public RemoteTaskQueue(ICassandraCluster cassandraCluster, ICassandraSettings settings, TaskDataRegistryBase taskDataRegistry, ISerializer serializer, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+        public RemoteTaskQueue(ICassandraCluster cassandraCluster, ICassandraSettings settings, IRemoteTaskQueueSettings taskQueueSettings, TaskDataRegistryBase taskDataRegistry, ISerializer serializer, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             // ReSharper disable LocalVariableHidesMember
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, settings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, settings);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex);
             var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime), remoteTaskQueueProfiler);
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
-            var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings));
+            var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
+            var remoteLockCreator = taskQueueSettings.UseRemoteLocker ? (IRemoteLockCreator)new RemoteLocker(remoteLockImplementation) : new RemoteLockCreator(remoteLockImplementation);
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
             InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
             // ReSharper restore LocalVariableHidesMember
@@ -117,7 +119,7 @@ namespace RemoteQueue.Handling
 
         public RemoteTaskInfo<T>[] GetTaskInfos<T>(string[] taskIds) where T : ITaskData
         {
-            return Enumerable.ToArray(GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>));
+            return GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>).ToArray();
         }
 
         public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData

@@ -7,7 +7,6 @@ using GroBuf;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 
@@ -19,11 +18,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             IColumnFamilyRepositoryParameters parameters,
             ITicksHolder ticksHolder,
             ISerializer serializer,
-            IGlobalTime globalTime,
-            ICassandraSettings cassandraSettings)
+            IGlobalTime globalTime)
             : base(parameters, columnFamilyName)
         {
-            this.cassandraSettings = cassandraSettings;
             this.ticksHolder = ticksHolder;
             this.serializer = serializer;
             this.globalTime = globalTime;
@@ -95,7 +92,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         }
 
         private readonly ConcurrentDictionary<TaskState, DateTime> lastBigDiffTimes = new ConcurrentDictionary<TaskState, DateTime>();
-        private readonly ICassandraSettings cassandraSettings;
         private readonly ITicksHolder ticksHolder;
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;

@@ -2,6 +2,8 @@
 
 using GroBuf;
 
+using log4net;
+
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
@@ -17,22 +19,21 @@ using RemoteQueue.UserClasses;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
-
-using log4net;
 
 namespace RemoteQueue.Configuration
 {
     public class ExchangeSchedulableRunner : IExchangeSchedulableRunner
     {
-        public ExchangeSchedulableRunner(ICassandraCluster cassandraCluster, ICassandraSettings cassandraSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry, ISerializer serializer, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+        public ExchangeSchedulableRunner(ICassandraCluster cassandraCluster, ICassandraSettings cassandraSettings, IRemoteTaskQueueSettings taskQueueSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry, ISerializer serializer, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             this.runnerSettings = runnerSettings;
             periodicTaskRunner = new PeriodicTaskRunner();
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, cassandraSettings);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
@@ -40,7 +41,8 @@ namespace RemoteQueue.Configuration
             var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime), remoteTaskQueueProfiler);
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
-            var remoteLockCreator = new RemoteLockCreator(new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings));
+            var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
+            var remoteLockCreator = taskQueueSettings.UseRemoteLocker ? (IRemoteLockCreator)new RemoteLocker(remoteLockImplementation) : new RemoteLockCreator(remoteLockImplementation);
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
             var remoteTaskQueue = new RemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
             var taskCounter = new TaskCounter(runnerSettings);
@@ -90,13 +92,10 @@ namespace RemoteQueue.Configuration
         }
 
         public IRemoteTaskQueue RemoteTaskQueue { get; private set; }
-
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
-
         private readonly IHandlerManager handlerManager;
         private readonly object lockObject = new object();
         private readonly ILog logger = LogManager.GetLogger(typeof(ExchangeSchedulableRunner));
-
         private readonly IPeriodicTaskRunner periodicTaskRunner;
         private volatile bool worked;
     }

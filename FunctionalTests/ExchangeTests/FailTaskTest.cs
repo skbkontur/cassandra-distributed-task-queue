@@ -40,7 +40,7 @@ namespace FunctionalTests.ExchangeTests
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime, cassandraSettings);
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime);
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
