@@ -46,7 +46,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             unstableZoneTicks = eventLogRepository.UnstableZoneLength.Ticks;
             unprocessedEventsMap = new EventsMap(unstableZoneTicks * 2);
             processedEventsMap = new EventsMap(unstableZoneTicks * 2);
-            lastTicks = long.MinValue;
+            Interlocked.Exchange(ref lastTicks, unknownTicks);
+            Interlocked.Exchange(ref snapshotTicks, unknownTicks);
 
             graphitePrefix = dynamicSettings.GraphitePrefixOrNull;
             if(graphitePrefix != null)
@@ -83,6 +84,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                    TaskIndexSettings.MaxBatch)
         {
         }
+
+        private const long unknownTicks = long.MinValue;
 
         private long GetNow()
         {
@@ -124,19 +127,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 var now = GetNow();
                 var lastTicksCopy = Interlocked.Read(ref lastTicks);
 
-                if(lastTicksCopy == long.MinValue)
+                if(lastTicksCopy == unknownTicks)
                 {
                     lastTicksCopy = GetLastTicks();
                     Interlocked.Exchange(ref lastTicks, lastTicksCopy);
+                    Interlocked.Exchange(ref snapshotTicks, lastTicksCopy);
                 }
 
                 logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(lastTicksCopy), DateTimeFormatter.FormatWithMsAndTicks(now));
 
                 var hasEvents = false;
 
-                var unprocessedEvents = unprocessedEventsMap.GetEvents();
-                //todo собирать мусор чаще
                 unprocessedEventsMap.CollectGarbage(now);
+                //NOTE collectGarbage before unprocessedEventsMap.GetEvents() to kill trash events that has no meta
+                var unprocessedEvents = unprocessedEventsMap.GetEvents();
+
                 processedEventsMap.CollectGarbage(now);
                 var newEvents = GetEvents(lastTicksCopy);
 
@@ -172,8 +177,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             taskMetaProcessor.IndexMetas(actualMetas);
 
             var ticks = GetSafeTimeForSnapshot(now, actualMetas);
-            Interlocked.Exchange(ref lastTicks, ticks);
+            Interlocked.Exchange(ref snapshotTicks, ticks);
             SaveSnapshot(ticks);
+            unprocessedEventsMap.CollectGarbage(now);
         }
 
         private TaskMetaInformation[] ReadActualMetas(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
@@ -211,8 +217,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private long? GetActualizationLag()
         {
-            var ticks = Interlocked.Read(ref lastTicks);
-            if(ticks != long.MinValue)
+            var ticks = Interlocked.Read(ref snapshotTicks);
+            if(ticks != unknownTicks)
                 return (long)TimeSpan.FromTicks(DateTime.UtcNow.Ticks - ticks).TotalMilliseconds;
             return null;
         }
@@ -233,7 +239,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private void SaveSnapshot(long ticks)
         {
-            lastReadTicksStorage.SetLastReadTicks(ticks);
+            if(ticks != unknownTicks)
+            {
+                logger.LogInfoFormat("Snapshot moved to {0}", DateTimeFormatter.FormatWithMsAndTicks(ticks));
+                lastReadTicksStorage.SetLastReadTicks(ticks);
+            }
         }
 
         private static long GetMinTicks(TaskMetaInformation[] taskMetaInformations, long now)
@@ -258,7 +268,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     UnprocessedMapLength = unprocessedEventsMap.GetUnsafeCount(),
                     ProcessedMapLength = processedEventsMap.GetUnsafeCount(),
                     ActualizationLagMs = GetActualizationLag(),
-                    LastTicks = Interlocked.Read(ref lastTicks)
+                    LastTicks = Interlocked.Read(ref lastTicks),
+                    SnapshotTicks = Interlocked.Read(ref snapshotTicks),
+                    NowTicks = DateTime.UtcNow.Ticks,
                 };
         }
 
@@ -287,6 +299,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private long minTicksHack;
         private long lastTicks;
+        private long snapshotTicks;
         private volatile IRemoteLock distributedLock;
 
         private readonly ITaskMetaProcessor taskMetaProcessor;
