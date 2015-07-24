@@ -9,3 +9,5 @@ MaxRunningTasksCount = 20
 MaxRunningContinuationsCount = 20
 ShardsCount = 1
 ShardIndex = 1
+
+DisableMetrics = true
