@@ -176,6 +176,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                     StartExecutingTime = DateTemplate(),
                                                                     FinishExecutingTime = DateTemplate(),
                                                                     LastModificationTime = DateTemplate(),
+                                                                    Exception = StringTemplate(analyzed : true),
                                                                 }
                                                         }
                                                 }
@@ -196,18 +197,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             return new {type = "date", format = dateFormat, store = "no"};
         }
 
-        private static object StringTemplate()
+        private static object StringTemplate(bool analyzed = false)
         {
-            return new {type = "string", store = "no", index = "not_analyzed"};
+            return new {type = "string", store = "no", index = analyzed ? "analyzed" : "not_analyzed"};
         }
 
         private const string dateFormat = "dateOptionalTime";
         public const string DataTemplateSuffix = "data";
         public const string OldDataTemplateSuffix = "old-data";
-
         private readonly TaskSchemaDynamicSettings settings;
         private readonly IElasticsearchClient elasticsearchClient;
-
         private static readonly ILog logger = LogManager.GetLogger("TaskSearchIndexSchema");
     }
 }

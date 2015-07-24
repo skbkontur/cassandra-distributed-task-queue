@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 
 using GroBuf;
 using GroBuf.DataMembersExtracters;
 
+using log4net;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using RemoteQueue.Handling.ExecutionContext;
 using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-
-using log4net;
-
-using RemoteQueue.Handling.ExecutionContext;
 
 namespace RemoteQueue.Handling
 {
@@ -67,7 +65,7 @@ namespace RemoteQueue.Handling
                 }
                 return;
             }
-            if (meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+            if(meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
             {
                 logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
@@ -164,7 +162,7 @@ namespace RemoteQueue.Handling
             }
 
             var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
-            if (task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > startTicks))
+            if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > startTicks))
             {
                 logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
                                   task.Meta.MinimalStartTicks, task.Meta.Id, startTicks);
@@ -254,7 +252,6 @@ namespace RemoteQueue.Handling
         }
 
         private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
-
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IRemoteLockCreator remoteLockCreator;

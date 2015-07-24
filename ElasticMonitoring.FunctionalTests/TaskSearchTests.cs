@@ -60,6 +60,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         }
 
         [Test]
+        public void SearchByExceptionSubstring()
+        {
+            var t0 = DateTime.Now;
+
+            var uniqueData = Guid.NewGuid();
+            var taskId = QueueTask(new FailingTaskData {UniqueData = uniqueData});
+            WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
+
+            ElasticMonitoringServiceClient.UpdateAndFlush();
+
+            var t1 = DateTime.Now;
+            CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
+            CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
+            CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1, new string[0]);
+        }
+
+        [Test]
         public void TestUpdateAndFlush()
         {
             var t0 = DateTime.Now;
@@ -187,7 +204,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         private void WaitForTasks(IEnumerable<string> taskIds, TimeSpan timeSpan)
         {
-            WaitFor(() => taskIds.All(taskId => RemoteTaskQueue.GetTaskInfo(taskId).Context.State == TaskState.Finished), timeSpan);
+            WaitFor(() => taskIds.All(taskId =>
+                {
+                    var taskState = RemoteTaskQueue.GetTaskInfo(taskId).Context.State;
+                    return taskState == TaskState.Finished || taskState == TaskState.Fatal;
+                }), timeSpan);
         }
 
         [Injected]
