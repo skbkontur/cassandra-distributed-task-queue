@@ -24,6 +24,10 @@
         public string ParentTaskId { get; set; }
         public string TaskGroupLock { get; set; }
 
+        public string TraceId { get; set; }
+        public string ContextId { get; set; }
+        public bool IsActive { get; set; }
+
         internal void MakeSnapshot()
         {
             snapshot = StaticGrobuf.GetSerializer().Serialize(this);

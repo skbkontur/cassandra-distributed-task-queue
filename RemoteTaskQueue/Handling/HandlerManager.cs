@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Linq;
 
+using Kontur.Tracing;
+using Kontur.Tracing.EdiVersion;
+using Trace = Kontur.Tracing.EdiVersion.Trace;
+
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
@@ -9,6 +13,8 @@ using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 
 using log4net;
+
+using RemoteQueue.Tracing;
 
 namespace RemoteQueue.Handling
 {
@@ -28,6 +34,9 @@ namespace RemoteQueue.Handling
             this.createHandlerTask = createHandlerTask;
             this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
+
+            if(!Trace.IsInitialized)
+                Trace.Initialize(new TracingConfigurationProvider());
         }
 
         public void Run()
@@ -94,9 +103,13 @@ namespace RemoteQueue.Handling
                 return;
             if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;
+
             var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
+
+            //Trace.ContinueContext(meta.TraceId, meta.ContextId, meta.IsActive);
             taskQueue.QueueTask(handlerTask);
+            //Trace.FinishCurrentContext();
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));

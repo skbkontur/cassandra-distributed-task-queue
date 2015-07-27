@@ -16,14 +16,16 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         public void Run()
         {
             var result = new TaskResult();
+
             try
             {
                 result = task.RunTask();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.Error(string.Format("Ошибка во время обработки асинхронной задачи."), e);
             }
+
             try
             {
                 finished = true;
@@ -31,10 +33,12 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 if (result == TaskResult.Rerun)
                     taskQueue.QueueTask(task);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.Warn(string.Format("Ошибка во время окончания задачи."), e);
             }
+
+            // todo конец 
         }
 
         public bool Finished { get { return finished; } }
