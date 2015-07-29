@@ -76,7 +76,7 @@ namespace RemoteQueue.Handling
             {
                 using (var handlerContext = Trace.CreateChildContext("HandlerTask"))
                 {
-                    handlerContext.RecordTimepoint(Timepoint.ServerReceive);
+                    handlerContext.RecordTimepoint(Timepoint.Start);
 
                     if (meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
                     {
@@ -87,12 +87,12 @@ namespace RemoteQueue.Handling
                     {
                         logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", Id, meta.State);
                         taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
-                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.Finish);
                         return;
                     }
                     if (!taskHandlerCollection.ContainsHandlerFor(meta.Name))
                     {
-                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.Finish);
                         return;
                     }
                     var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
@@ -100,14 +100,14 @@ namespace RemoteQueue.Handling
                     {
                         logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
                                           meta.MinimalStartTicks, meta.Id, startTicks);
-                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.Finish);
                         return;
                     }
                     IRemoteLock taskGroupRemoteLock = null;
                     if (!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
                     {
                         logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", Id, meta.TaskGroupLock);
-                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.Finish);
                         return;
                     }
                     try
@@ -132,11 +132,11 @@ namespace RemoteQueue.Handling
                     finally
                     {
                         if (taskGroupRemoteLock != null) taskGroupRemoteLock.Dispose();
-                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.Finish);
                     }
                 }
                 if (IsTaskFinshOrFatal)
-                    taskTraceContext.RecordTimepoint(Timepoint.ServerSend);
+                    taskTraceContext.RecordTimepoint(Timepoint.Finish);
             }
         }
 

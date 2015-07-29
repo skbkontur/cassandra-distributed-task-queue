@@ -22,9 +22,9 @@ namespace RemoteQueue.Handling
             HandleResult handleResult;
             using(var traceContext = Trace.CreateChildContext("Handling"))
             {
-                traceContext.RecordTimepoint(Timepoint.ServerReceive);
+                traceContext.RecordTimepoint(Timepoint.Start);
                 handleResult = HandleTask(taskData);
-                traceContext.RecordTimepoint(Timepoint.ServerSend);
+                traceContext.RecordTimepoint(Timepoint.Finish);
             }
             return handleResult;
         }

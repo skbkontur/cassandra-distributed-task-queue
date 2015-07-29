@@ -29,12 +29,12 @@ namespace RemoteQueue.Handling
                 task.Meta.ContextId = traceContext.ContextId;
                 task.Meta.TraceId = traceContext.TraceId;
                 task.Meta.IsActive = traceContext.IsActive;
-                traceContext.RecordTimepoint(Timepoint.ServerReceive);
+                traceContext.RecordTimepoint(Timepoint.Start);
                 using(var publishContext = Trace.CreateChildContext("Publish"))
                 {
-                    publishContext.RecordTimepoint(Timepoint.ServerReceive);
+                    publishContext.RecordTimepoint(Timepoint.Start);
                     Publish(delay);
-                    publishContext.RecordTimepoint(Timepoint.ServerSend);
+                    publishContext.RecordTimepoint(Timepoint.Finish);
                 }
                 return Id;
             }
