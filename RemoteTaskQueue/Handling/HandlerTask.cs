@@ -4,10 +4,7 @@ using System.Diagnostics;
 using GroBuf;
 using GroBuf.DataMembersExtracters;
 
-using Kontur.Tracing;
-using Kontur.Tracing.EdiVersion;
-using Trace = Kontur.Tracing.EdiVersion.Trace;
-using TraceContext = Kontur.Tracing.EdiVersion.TraceContext;
+using Kontur.Tracing.Core;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
@@ -23,7 +20,9 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using log4net;
 
 using RemoteQueue.Handling.ExecutionContext;
-using RemoteQueue.Tracing;
+
+using Kontur.Tracing.Core;
+using Trace = Kontur.Tracing.Core.Trace;
 
 namespace RemoteQueue.Handling
 {
@@ -58,9 +57,6 @@ namespace RemoteQueue.Handling
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskMinimalStartTicksIndex = taskMinimalStartTicksIndex;
             this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
-
-            if (!Trace.IsInitialized)
-                Trace.Initialize(new TracingConfigurationProvider());
         }
 
         public override void Run()
@@ -76,56 +72,56 @@ namespace RemoteQueue.Handling
                 }
                 return;
             }
-            using(var taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.ContextId, meta.IsActive))
+            using (var taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.ContextId, meta.IsActive))
             {
-                using(var infraContext = Trace.CreateChildContext("HandlerTask"))
+                using (var handlerContext = Trace.CreateChildContext("HandlerTask"))
                 {
-                    infraContext.RecordTimepoint(Timepoint.ServerReceive);
+                    handlerContext.RecordTimepoint(Timepoint.ServerReceive);
 
-                    if(meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+                    if (meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
                     {
                         logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
                         taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
                     }
-                    if(meta.State == TaskState.Finished || meta.State == TaskState.Fatal || meta.State == TaskState.Canceled)
+                    if (meta.State == TaskState.Finished || meta.State == TaskState.Fatal || meta.State == TaskState.Canceled)
                     {
                         logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", Id, meta.State);
                         taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
-                        infraContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
                         return;
                     }
-                    if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
+                    if (!taskHandlerCollection.ContainsHandlerFor(meta.Name))
                     {
-                        infraContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
                         return;
                     }
                     var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
-                    if(meta.MinimalStartTicks != 0 && (meta.MinimalStartTicks > startTicks))
+                    if (meta.MinimalStartTicks != 0 && (meta.MinimalStartTicks > startTicks))
                     {
                         logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
                                           meta.MinimalStartTicks, meta.Id, startTicks);
-                        infraContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
                         return;
                     }
                     IRemoteLock taskGroupRemoteLock = null;
-                    if(!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
+                    if (!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
                     {
                         logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", Id, meta.TaskGroupLock);
-                        infraContext.RecordTimepoint(Timepoint.ServerSend);
+                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
                         return;
                     }
                     try
                     {
-                        if(!taskCounter.TryIncrement(Reason)) return;
+                        if (!taskCounter.TryIncrement(Reason)) return;
                         try
                         {
                             IRemoteLock remoteLock;
-                            if(!remoteLockCreator.TryGetLock(Id, out remoteLock))
+                            if (!remoteLockCreator.TryGetLock(Id, out remoteLock))
                             {
                                 logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", Id);
                                 return;
                             }
-                            using(remoteLock)
+                            using (remoteLock)
                                 ProcessTask();
                         }
                         finally
@@ -135,12 +131,12 @@ namespace RemoteQueue.Handling
                     }
                     finally
                     {
-                        if(taskGroupRemoteLock != null) taskGroupRemoteLock.Dispose();
-                        infraContext.RecordTimepoint(Timepoint.ServerSend);
+                        if (taskGroupRemoteLock != null) taskGroupRemoteLock.Dispose();
+                        handlerContext.RecordTimepoint(Timepoint.ServerSend);
                     }
                 }
-                if(IsTaskFinshOrFatal)
-                    taskTraceContext.RecordTimepoint(Timepoint.ClientReceive);
+                if (IsTaskFinshOrFatal)
+                    taskTraceContext.RecordTimepoint(Timepoint.ServerSend);
             }
         }
 

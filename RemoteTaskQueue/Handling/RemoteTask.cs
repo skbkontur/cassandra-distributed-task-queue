@@ -1,17 +1,10 @@
 ﻿using System;
 
-using Kontur.Tracing;
+using Kontur.Tracing.Core;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-
-using Kontur.Tracing.EdiVersion;
-using Trace = Kontur.Tracing.EdiVersion.Trace;
-using TraceContext = Kontur.Tracing.EdiVersion.TraceContext;
-
-using RemoteQueue.Tracing;
-
 
 namespace RemoteQueue.Handling
 {
@@ -22,8 +15,6 @@ namespace RemoteQueue.Handling
             this.handleTaskCollection = handleTaskCollection;
             this.task = task;
             this.globalTime = globalTime;
-            if (!Trace.IsInitialized)
-                Trace.Initialize(new TracingConfigurationProvider());
         }
 
         public string Queue()
@@ -33,19 +24,20 @@ namespace RemoteQueue.Handling
 
         public string Queue(TimeSpan delay)
         {
-            var traceContext = TraceContext.Current.IsActive ? Trace.CreateChildContext(task.Meta.Name) : Trace.CreateRootContext(task.Meta.Name);
-            task.Meta.ContextId = traceContext.ContextId;
-            task.Meta.TraceId = traceContext.TraceId;
-            task.Meta.IsActive = traceContext.IsActive;
-            traceContext.RecordTimepoint(Timepoint.ClientSend);
-            using (var publishContext = Trace.CreateChildContext("Publish"))
+            using(var traceContext = Trace.CreateChildContext(task.Meta.Name))
             {
-                publishContext.RecordTimepoint(Timepoint.ServerReceive);
-                Publish(delay);
-                publishContext.RecordTimepoint(Timepoint.ServerSend);
+                task.Meta.ContextId = traceContext.ContextId;
+                task.Meta.TraceId = traceContext.TraceId;
+                task.Meta.IsActive = traceContext.IsActive;
+                traceContext.RecordTimepoint(Timepoint.ServerReceive);
+                using(var publishContext = Trace.CreateChildContext("Publish"))
+                {
+                    publishContext.RecordTimepoint(Timepoint.ServerReceive);
+                    Publish(delay);
+                    publishContext.RecordTimepoint(Timepoint.ServerSend);
+                }
+                return Id;
             }
-            Trace.FinishCurrentContext();
-            return Id;
         }
 
         private void Publish(TimeSpan delay)

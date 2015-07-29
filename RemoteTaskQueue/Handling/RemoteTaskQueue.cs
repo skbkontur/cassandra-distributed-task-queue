@@ -22,12 +22,6 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 
-using Kontur.Tracing.EdiVersion;
-using Trace = Kontur.Tracing.EdiVersion.Trace;
-using TraceContext = Kontur.Tracing.EdiVersion.TraceContext;
-
-using RemoteQueue.Tracing;
-
 namespace RemoteQueue.Handling
 {
     public class RemoteTaskQueue : IRemoteTaskQueue
@@ -50,9 +44,6 @@ namespace RemoteQueue.Handling
             var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
             InitRemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
             // ReSharper restore LocalVariableHidesMember
-
-            if (!Trace.IsInitialized)
-                Trace.Initialize(new TracingConfigurationProvider());
         }
 
         internal RemoteTaskQueue(

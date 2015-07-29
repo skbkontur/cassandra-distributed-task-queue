@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
 
-using Kontur.Tracing;
-using Kontur.Tracing.EdiVersion;
-using Trace = Kontur.Tracing.EdiVersion.Trace;
+using Kontur.Tracing.Core;
+using Kontur.Tracing.Core.Config;
 
 using MoreLinq;
 
@@ -14,7 +13,6 @@ using RemoteQueue.LocalTasks.TaskQueue;
 
 using log4net;
 
-using RemoteQueue.Tracing;
 
 namespace RemoteQueue.Handling
 {
@@ -36,7 +34,7 @@ namespace RemoteQueue.Handling
             this.handleTasksMetaStorage = handleTasksMetaStorage;
 
             if(!Trace.IsInitialized)
-                Trace.Initialize(new TracingConfigurationProvider());
+                Trace.Initialize(new StaticConfigurationProvider(new TracingConfig(true, "edi-test", "http://vm-elastic:9003/spans")));
         }
 
         public void Run()

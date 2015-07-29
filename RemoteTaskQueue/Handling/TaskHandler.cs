@@ -7,10 +7,8 @@ using RemoteQueue.Handling.HandlerResults;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
-using Kontur.Tracing;
-using Trace = Kontur.Tracing.EdiVersion.Trace;
+using Kontur.Tracing.Core;
 
-using RemoteQueue.Tracing;
 
 namespace RemoteQueue.Handling
 {
@@ -18,9 +16,6 @@ namespace RemoteQueue.Handling
     {
         public virtual HandleResult HandleTask(IRemoteTaskQueue queue, ISerializer serializer, IRemoteLockCreator remoteLockCreator, Task task)
         {
-            if(!Trace.IsInitialized)
-                Trace.Initialize(new TracingConfigurationProvider());
-
             taskQueue = queue;
             Context = task.Meta;
             var taskData = serializer.Deserialize<T>(task.Data);

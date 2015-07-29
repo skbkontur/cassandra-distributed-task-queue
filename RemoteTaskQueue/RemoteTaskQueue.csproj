@@ -43,8 +43,8 @@
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
-    <Reference Include="Kontur.Tracing">
-      <HintPath>..\..\Assemblies\Kontur\Kontur.Tracing\Kontur.Tracing.dll</HintPath>
+    <Reference Include="Kontur.Tracing.Core">
+      <HintPath>..\..\Assemblies\Kontur\Kontur.Tracing\Kontur.Tracing.Core.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
@@ -164,7 +164,6 @@
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="Settings\IRemoteTaskQueueSettings.cs" />
     <Compile Include="StaticGrobuf.cs" />
-    <Compile Include="Tracing\TracingConfigurationProvider.cs" />
     <Compile Include="UserClasses\TaskDataRegistryBase.cs" />
     <Compile Include="UserClasses\TaskHandlerRegistryBase.cs" />
   </ItemGroup>

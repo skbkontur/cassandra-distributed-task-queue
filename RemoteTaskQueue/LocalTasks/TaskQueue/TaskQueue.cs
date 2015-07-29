@@ -3,13 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Kontur.Tracing;
-using Kontur.Tracing.EdiVersion;
-using Trace = Kontur.Tracing.EdiVersion.Trace;
 
-using RemoteQueue.Tracing;
-
-using TraceContext = Kontur.Tracing.TraceContext;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
@@ -19,9 +13,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         {
             lock (lockObject)
                 stopped = false;
-
-            if(!Trace.IsInitialized)
-                Trace.Initialize(new TracingConfigurationProvider());
         }
 
         public void StopAndWait(int timeout = 10000)
