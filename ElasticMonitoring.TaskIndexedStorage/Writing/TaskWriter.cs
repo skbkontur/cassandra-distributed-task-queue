@@ -1,5 +1,7 @@
 ﻿using Elasticsearch.Net;
 
+using JetBrains.Annotations;
+
 using log4net;
 
 using Newtonsoft.Json;
@@ -32,13 +34,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 });
         }
 
-        public void IndexBatch(TaskMetaInformation[] metas, object[] taskDatas)
+        public void IndexBatch(TaskMetaInformation[] metas, TaskExceptionInfo[] exceptionInfos, object[] taskDatas)
         {
             logger.LogInfoFormat("IndexBatch: {0} tasks", metas.Length);
-            IndexTasks(metas, taskDatas);
+            IndexTasks(metas, exceptionInfos, taskDatas);
         }
 
-        private void IndexTasks(TaskMetaInformation[] metas, object[] taskDatas)
+        private void IndexTasks(TaskMetaInformation[] metas, TaskExceptionInfo[] exceptionInfos, object[] taskDatas)
         {
             var body = new object[metas.Length * 2];
             for(var i = 0; i < metas.Length; i++)
@@ -56,12 +58,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                             }
                     };
 
-                body[2 * i + 1] = BuildSavedData(meta, taskData);
+                body[2 * i + 1] = BuildSavedData(meta, exceptionInfos[i], taskData);
             }
             elasticsearchClient.Bulk<BulkResponse>(body).DieIfErros();
         }
 
-        private object BuildSavedData(TaskMetaInformation meta, object taskData)
+        private object BuildSavedData([NotNull] TaskMetaInformation meta, [CanBeNull] TaskExceptionInfo exceptionInfo, object taskData)
         {
             var metaIndexedInfo = new MetaIndexedInfo
                 {
@@ -75,7 +77,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     FinishExecutingTime = meta.FinishExecutingTicks,
                     LastModificationTime = meta.LastModificationTicks.Value, //todo hack
                     MinimalStartTime = meta.MinimalStartTicks,
-                    StartExecutingTime = meta.StartExecutingTicks
+                    StartExecutingTime = meta.StartExecutingTicks,
+                    Exception = exceptionInfo == null ? null : exceptionInfo.ExceptionMessageInfo,
                 };
             return taskDataService.CreateTaskIndexedInfo(metaIndexedInfo, taskData);
         }

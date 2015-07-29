@@ -83,6 +83,7 @@
     <Compile Include="UserClasses\ITestCounterRepository.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\AlphaTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\BetaTaskHandler.cs" />
+    <Compile Include="UserClasses\MonitoringTestTaskData\FailingTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\SlowTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\DeltaTaskHandler.cs" />
     <Compile Include="UserClasses\SimpleTaskHandler.cs" />

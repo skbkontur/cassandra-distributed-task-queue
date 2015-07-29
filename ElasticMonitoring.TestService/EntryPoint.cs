@@ -7,6 +7,7 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
@@ -30,6 +31,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
             Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
             ConfigureRemoteLock(Container);
+            Container.Get<ElasticAvailabilityChecker>().WaitAlive(); 
+            Container.Get<LazySchemaActualizer>().ActualizeSchema(); //NOTE hack for local usage
             Container.Get<IElasticMonitoringServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();
         }
@@ -38,7 +41,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
             var keyspaceName = container.Get<IApplicationSettings>().GetString("KeyspaceName");
             const string columnFamilyName = "remoteLock";
-            container.Configurator.ForAbstraction<IRemoteLockImplementation>().UseInstances(container.Create<ColumnFamilyFullName, CassandraRemoteLockImplementation>(new ColumnFamilyFullName(keyspaceName, columnFamilyName)));
+            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(keyspaceName, columnFamilyName));
+            var remoteLockImplementation = container.Create<CassandraRemoteLockImplementationSettings, CassandraRemoteLockImplementation>(remoteLockImplementationSettings);
+            container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(new RemoteLockCreator(remoteLockImplementation));
         }
     }
 }

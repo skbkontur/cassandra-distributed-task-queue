@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 
 using GroBuf;
@@ -14,6 +13,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using RemoteQueue.Handling.ExecutionContext;
 using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
@@ -282,7 +282,6 @@ namespace RemoteQueue.Handling
         }
 
         private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
-
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IRemoteLockCreator remoteLockCreator;

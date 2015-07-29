@@ -8,7 +8,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 {
-    public class RemoteQueueTestsCassandraSettings : ICassandraSettings, ICassandraClusterSettings
+    public class RemoteQueueTestsCassandraSettings : ICassandraSettings, ICassandraClusterSettings, IRemoteTaskQueueSettings
     {
         public IPEndPoint[] Endpoints
         {
@@ -31,5 +31,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
         public ConsistencyLevel WriteConsistencyLevel { get { return ConsistencyLevel.QUORUM; } }
         public string ClusterName { get { return "CoreCluster"; } }
         public string QueueKeyspace { get { return "QueueKeyspace"; } }
+        public bool UseRemoteLocker { get { return false; } }
     }
 }

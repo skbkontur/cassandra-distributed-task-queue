@@ -8,5 +8,7 @@
         public long ProcessedMapLength { get; set; }
         public long? ActualizationLagMs { get; set; }
         public long LastTicks { get; set; }
+        public long NowTicks { get; set; }
+        public long SnapshotTicks { get; set; }
     }
 }

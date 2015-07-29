@@ -162,6 +162,7 @@
     <Compile Include="Settings\ICassandraSettings.cs" />
     <Compile Include="Exceptions\NotTypedTaskHandlerException.cs" />
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
+    <Compile Include="Settings\IRemoteTaskQueueSettings.cs" />
     <Compile Include="StaticGrobuf.cs" />
     <Compile Include="Tracing\TracingConfigurationProvider.cs" />
     <Compile Include="UserClasses\TaskDataRegistryBase.cs" />

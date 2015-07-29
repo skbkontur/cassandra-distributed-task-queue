@@ -3,15 +3,12 @@ using System.Linq;
 
 using GroBuf;
 
-using JetBrains.Annotations;
-
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
 {
@@ -20,12 +17,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         public TaskMetaProcessor(
             ITaskDataTypeToNameMapper taskDataTypeToNameMapper,
             ITaskDataBlobStorage taskDataStorage,
+            ITaskExceptionInfoBlobStorage taskExceptionInfoStorage,
             TaskWriter writer,
             ISerializer serializer,
             ICatalogueStatsDClient statsDClient, ITaskWriteDynamicSettings taskWriteDynamicSettings)
         {
             this.taskDataTypeToNameMapper = taskDataTypeToNameMapper;
             this.taskDataStorage = taskDataStorage;
+            this.taskExceptionInfoStorage = taskExceptionInfoStorage;
             this.writer = writer;
             this.serializer = serializer;
             this.statsDClient = taskWriteDynamicSettings.GraphitePrefixOrNull != null ?
@@ -36,6 +35,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         public void IndexMetas(TaskMetaInformation[] batch)
         {
             var taskDatas = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.ReadQuiet(batch.Select(m => m.Id).ToArray()));
+            var taskExceptionInfos = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.ReadQuiet(batch.Select(m => m.Id).ToArray()));
             var taskDataObjects = new object[taskDatas.Length];
             for(var i = 0; i < batch.Length; i++)
             {
@@ -47,12 +47,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 taskDataObjects[i] = taskDataObj;
             }
             if(batch.Length > 0)
-                statsDClient.Timing("Index", () => writer.IndexBatch(batch, taskDataObjects));
+                statsDClient.Timing("Index", () => writer.IndexBatch(batch, taskExceptionInfos, taskDataObjects));
         }
 
         private readonly ITaskDataTypeToNameMapper taskDataTypeToNameMapper;
-
         private readonly ITaskDataBlobStorage taskDataStorage;
+        private readonly ITaskExceptionInfoBlobStorage taskExceptionInfoStorage;
         private readonly TaskWriter writer;
         private readonly ISerializer serializer;
         private readonly ICatalogueStatsDClient statsDClient;
