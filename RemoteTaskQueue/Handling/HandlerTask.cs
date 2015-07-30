@@ -4,7 +4,7 @@ using System.Diagnostics;
 using GroBuf;
 using GroBuf.DataMembersExtracters;
 
-using Kontur.Tracing.Core;
+using log4net;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
@@ -16,13 +16,6 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-
-using log4net;
-
-using RemoteQueue.Handling.ExecutionContext;
-
-using Kontur.Tracing.Core;
-using Trace = Kontur.Tracing.Core.Trace;
 
 namespace RemoteQueue.Handling
 {
@@ -72,71 +65,57 @@ namespace RemoteQueue.Handling
                 }
                 return;
             }
-            using (var taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.ContextId, meta.IsActive))
-            {
-                using (var handlerContext = Trace.CreateChildContext("HandlerTask"))
-                {
-                    handlerContext.RecordTimepoint(Timepoint.Start);
 
-                    if (meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+            if (meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+            {
+                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
+            }
+            if (meta.State == TaskState.Finished || meta.State == TaskState.Fatal || meta.State == TaskState.Canceled)
+            {
+                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", Id, meta.State);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
+                return;
+            }
+            if (!taskHandlerCollection.ContainsHandlerFor(meta.Name))
+            {
+                return;
+            }
+            var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
+            if (meta.MinimalStartTicks != 0 && (meta.MinimalStartTicks > startTicks))
+            {
+                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
+                                  meta.MinimalStartTicks, meta.Id, startTicks);
+                return;
+            }
+            IRemoteLock taskGroupRemoteLock = null;
+            if (!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
+            {
+                logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", Id, meta.TaskGroupLock);
+                return;
+            }
+            try
+            {
+                if (!taskCounter.TryIncrement(Reason)) return;
+                try
+                {
+                    IRemoteLock remoteLock;
+                    if (!remoteLockCreator.TryGetLock(Id, out remoteLock))
                     {
-                        logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
-                        taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
-                    }
-                    if (meta.State == TaskState.Finished || meta.State == TaskState.Fatal || meta.State == TaskState.Canceled)
-                    {
-                        logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", Id, meta.State);
-                        taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
-                        handlerContext.RecordTimepoint(Timepoint.Finish);
+                        logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", Id);
                         return;
                     }
-                    if (!taskHandlerCollection.ContainsHandlerFor(meta.Name))
-                    {
-                        handlerContext.RecordTimepoint(Timepoint.Finish);
-                        return;
-                    }
-                    var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
-                    if (meta.MinimalStartTicks != 0 && (meta.MinimalStartTicks > startTicks))
-                    {
-                        logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
-                                          meta.MinimalStartTicks, meta.Id, startTicks);
-                        handlerContext.RecordTimepoint(Timepoint.Finish);
-                        return;
-                    }
-                    IRemoteLock taskGroupRemoteLock = null;
-                    if (!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
-                    {
-                        logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", Id, meta.TaskGroupLock);
-                        handlerContext.RecordTimepoint(Timepoint.Finish);
-                        return;
-                    }
-                    try
-                    {
-                        if (!taskCounter.TryIncrement(Reason)) return;
-                        try
-                        {
-                            IRemoteLock remoteLock;
-                            if (!remoteLockCreator.TryGetLock(Id, out remoteLock))
-                            {
-                                logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", Id);
-                                return;
-                            }
-                            using (remoteLock)
-                                ProcessTask();
-                        }
-                        finally
-                        {
-                            taskCounter.Decrement(Reason);
-                        }
-                    }
-                    finally
-                    {
-                        if (taskGroupRemoteLock != null) taskGroupRemoteLock.Dispose();
-                        handlerContext.RecordTimepoint(Timepoint.Finish);
-                    }
+                    using (remoteLock)
+                        ProcessTask();
                 }
-                if (IsTaskFinshOrFatal)
-                    taskTraceContext.RecordTimepoint(Timepoint.Finish);
+                finally
+                {
+                    taskCounter.Decrement(Reason);
+                }
+            }
+            finally
+            {
+                if (taskGroupRemoteLock != null) taskGroupRemoteLock.Dispose();
             }
         }
 
@@ -246,11 +225,9 @@ namespace RemoteQueue.Handling
             switch (handleResult.FinishAction)
             {
                 case FinishAction.Finish:
-                    IsTaskFinshOrFatal = true;
                     TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Finished);
                     break;
                 case FinishAction.Fatal:
-                    IsTaskFinshOrFatal = true;
                     TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
                     LogError(handleResult.Error, task.Meta);
                     break;
@@ -292,7 +269,5 @@ namespace RemoteQueue.Handling
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
-
-        private bool IsTaskFinshOrFatal = false;
     }
 }

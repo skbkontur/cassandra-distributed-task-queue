@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 
-
+using Kontur.Tracing.Core;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
@@ -41,11 +41,16 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         {
             lock (lockObject)
             {
-                if (stopped)
+                if(stopped)
+                {
+                    TraceContext.Current.RecordTimepoint(Timepoint.Finish);
                     throw new TaskQueueException(string.Format("Невозможно добавить асинхронную задачу - очередь остановлена"));
-                //traceContext = Trace.CreateChildContext("Infrastructure");
-                //traceContext.RecordTimepoint(Timepoint.ServerReceive);
-                if (hashtable.ContainsKey(task.Id)) return false;
+                }
+                if(hashtable.ContainsKey(task.Id))
+                {
+                    TraceContext.Current.RecordTimepoint(Timepoint.Finish);
+                    return false;
+                }
                 var taskWrapper = new TaskWrapper(task, this);
                 var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
                 if (!taskWrapper.Finished)
@@ -62,15 +67,14 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             {
                 if (hashtable.ContainsKey(task.Id))
                     hashtable.Remove(task.Id);
-                //traceContext.RecordTimepoint(Timepoint.ServerSend);
-                
-                //Trace.FinishCurrentContext();
+
+                TraceContext.Current.RecordTimepoint(Timepoint.Finish); // Finish HandlerTraceContext
+                Trace.FinishCurrentContext();
             }
         }
 
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();
         private volatile bool stopped;
-        //private ITraceContext traceContext;
     }
 }

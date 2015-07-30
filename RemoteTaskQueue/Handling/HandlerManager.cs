@@ -55,7 +55,15 @@ namespace RemoteQueue.Handling
                         var meta = metas[i];
                         var taskInfo = taskInfoBatch[i];
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue)) return;
+
+                        ITraceContext taskTraceContext = null;
+                        if (meta != null)
+                            taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.ContextId, meta.IsActive);
+
                         QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
+
+                        if (taskTraceContext != null)
+                            Trace.FinishCurrentContext();
                     }
                 }
             }
@@ -98,16 +106,24 @@ namespace RemoteQueue.Handling
         internal void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason reason)
         {
             if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
-                return;
+                TraceContext.Current.RecordTimepoint(Timepoint.Finish);
             if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;
 
             var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
 
-            //Trace.ContinueContext(meta.TraceId, meta.ContextId, meta.IsActive);
+            ITraceContext handlerTraceContext = null;
+            if(meta != null)
+            {
+                handlerTraceContext = Trace.CreateChildContext("Handler");
+                handlerTraceContext.RecordTimepoint(Timepoint.Start);
+            }
+
             taskQueue.QueueTask(handlerTask);
-            //Trace.FinishCurrentContext();
+
+            if(handlerTraceContext!=null)
+                Trace.FinishCurrentContext();
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));

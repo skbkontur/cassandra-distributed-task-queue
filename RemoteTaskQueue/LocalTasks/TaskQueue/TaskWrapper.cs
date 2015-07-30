@@ -1,5 +1,7 @@
 using System;
 
+using Kontur.Tracing.Core;
+
 using log4net;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
@@ -32,6 +34,9 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 taskQueue.TaskFinished(task);
                 if (result == TaskResult.Rerun)
                     taskQueue.QueueTask(task);
+                else
+                    TraceContext.Current.RecordTimepoint(Timepoint.Finish); // Finish TaskTraceContext
+                Trace.FinishCurrentContext();
             }
             catch (Exception e)
             {
