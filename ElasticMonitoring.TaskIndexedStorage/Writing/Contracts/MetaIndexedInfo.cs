@@ -31,8 +31,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         public string ParentTaskId { get; set; }
         public string TaskGroupLock { get; set; }
 
-        public string Exception { get; set; }
-
         //TODO разобраться с форматом дат. сейчас "2015-02-12T12:48:14.5995995Z"
         //NOTE в этом формате ticks не портятся (dateOptionalTime in mapping)
     }

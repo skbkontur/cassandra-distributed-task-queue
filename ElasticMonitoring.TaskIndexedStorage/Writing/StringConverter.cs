@@ -4,22 +4,16 @@ using Newtonsoft.Json;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing
 {
-    internal class LongStringsToNullConverter : JsonConverter
+    internal class StringConverter : JsonConverter
     {
-        public LongStringsToNullConverter(int stringToNullThreshold)
-        {
-            this.stringToNullThreshold = stringToNullThreshold;
-        }
-
         public override bool CanRead { get { return false; } }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var str = value as string;
-            if(str == null || str.Length <= stringToNullThreshold)
-                writer.WriteValue(str);
+            if(value is string)
+                writer.WriteValue(value as string);
             else
-                writer.WriteNull();
+                serializer.Serialize(writer, value);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -31,7 +25,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         {
             return objectType == typeof(string);
         }
-
-        private readonly int stringToNullThreshold;
     }
 }

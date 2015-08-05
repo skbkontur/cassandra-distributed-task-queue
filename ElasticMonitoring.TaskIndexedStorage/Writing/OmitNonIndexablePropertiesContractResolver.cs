@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 using Newtonsoft.Json;
@@ -15,13 +16,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 if(propertyInfo.PropertyType.IsArray)
                 {
                     var elementType = propertyInfo.PropertyType.GetElementType();
-                    if(elementType.IsAbstract || elementType.IsInterface || elementType == typeof(object) || elementType == typeof(byte[]))
+                    if(IsBadType(elementType))
                         return null;
                 }
-                if(propertyInfo.PropertyType.IsAbstract || propertyInfo.PropertyType.IsInterface || propertyInfo.PropertyType == typeof(object) || propertyInfo.PropertyType == typeof(byte[]))
+                if(IsBadType(propertyInfo.PropertyType))
                     return null;
             }
             return base.CreateProperty(member, memberSerialization);
+        }
+
+        private static bool IsBadType(Type elementType)
+        {
+            return elementType.IsAbstract || elementType.IsInterface || elementType == typeof(object) || elementType == typeof(byte[]);
         }
     }
 }
