@@ -65,6 +65,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var t0 = DateTime.Now;
 
             var uniqueData = Guid.NewGuid();
+            Console.WriteLine("ud={0}", uniqueData);
             var taskId = QueueTask(new FailingTaskData {UniqueData = uniqueData});
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
@@ -73,6 +74,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var t1 = DateTime.Now;
             CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
+            CheckSearch(string.Format("ExceptionInfo:\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1, new string[0]);
         }
 
