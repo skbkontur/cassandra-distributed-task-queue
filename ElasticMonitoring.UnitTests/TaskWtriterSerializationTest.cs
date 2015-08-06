@@ -16,8 +16,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
         public override void SetUp()
         {
             base.SetUp();
-            serializer = JsonSerializer.Create(TaskWriterJsonSettings.GetSerializerSettings());
-            deserializer = JsonSerializer.Create();
+            jsonSerializer = JsonSerializer.Create(TaskWriterJsonSettings.GetSerializerSettings());
+            jsonDeserializer = JsonSerializer.Create();
         }
 
         [Test]
@@ -64,9 +64,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
         private void Check<T>(T source, T expected)
         {
             var stringBuilder = new StringBuilder();
-            serializer.Serialize(new StringWriter(stringBuilder), source);
+            jsonSerializer.Serialize(new StringWriter(stringBuilder), source);
 
-            var deserialize = deserializer.Deserialize<T>(new JsonTextReader(new StringReader(stringBuilder.ToString())));
+            var deserialize = jsonDeserializer.Deserialize<T>(new JsonTextReader(new StringReader(stringBuilder.ToString())));
             deserialize.AssertEqualsTo(expected);
         }
 
@@ -76,8 +76,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
         {
         }
 
-        private JsonSerializer serializer;
-        private JsonSerializer deserializer;
+        private JsonSerializer jsonSerializer;
+        private JsonSerializer jsonDeserializer;
 
         private class Data
         {
