@@ -3,8 +3,6 @@ using System.Linq;
 
 using GroBuf;
 
-using Kontur.Tracing;
-
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
@@ -62,12 +60,12 @@ namespace RemoteQueue.Handling
         public bool CancelTask(string taskId)
         {
             IRemoteLock remoteLock;
-            if (!remoteLockCreator.TryGetLock(taskId, out remoteLock))
+            if(!remoteLockCreator.TryGetLock(taskId, out remoteLock))
                 return false;
-            using (remoteLock)
+            using(remoteLock)
             {
                 var meta = handleTasksMetaStorage.GetMeta(taskId);
-                if (meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError || meta.State == TaskState.InProcess)
+                if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError || meta.State == TaskState.InProcess)
                 {
                     meta.State = TaskState.Canceled;
                     meta.FinishExecutingTicks = DateTime.UtcNow.Ticks;
@@ -81,9 +79,9 @@ namespace RemoteQueue.Handling
         public bool RerunTask(string taskId, TimeSpan delay)
         {
             IRemoteLock remoteLock;
-            if (!remoteLockCreator.TryGetLock(taskId, out remoteLock))
+            if(!remoteLockCreator.TryGetLock(taskId, out remoteLock))
                 return false;
-            using (remoteLock)
+            using(remoteLock)
             {
                 var meta = handleTasksMetaStorage.GetMeta(taskId);
                 meta.State = TaskState.WaitingForRerun;
@@ -95,13 +93,13 @@ namespace RemoteQueue.Handling
 
         public RemoteTaskInfo GetTaskInfo(string taskId)
         {
-            return GetTaskInfos(new[] { taskId }).First();
+            return GetTaskInfos(new[] {taskId}).First();
         }
 
         public RemoteTaskInfo<T> GetTaskInfo<T>(string taskId)
             where T : ITaskData
         {
-            return GetTaskInfos<T>(new[] { taskId }).First();
+            return GetTaskInfos<T>(new[] {taskId}).First();
         }
 
         public RemoteTaskInfo[] GetTaskInfos(string[] taskIds)
@@ -145,13 +143,12 @@ namespace RemoteQueue.Handling
                         }
                 };
             return new RemoteTask(handleTaskCollection, task, globalTime);
-
         }
 
         private string GetCurrentExecutingTaskId()
         {
             var context = TaskExecutionContext.Current;
-            if (context == null)
+            if(context == null)
                 return null;
             return context.CurrentTask.Meta.Id;
         }
@@ -178,7 +175,7 @@ namespace RemoteQueue.Handling
         private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>(RemoteTaskInfo task) where T : ITaskData
         {
             var taskType = task.TaskData.GetType();
-            if (!typeof(T).IsAssignableFrom(taskType))
+            if(!typeof(T).IsAssignableFrom(taskType))
                 throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
             return new RemoteTaskInfo<T>
                 {
