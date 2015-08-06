@@ -4,8 +4,6 @@ using JetBrains.Annotations;
 
 using log4net;
 
-using Newtonsoft.Json;
-
 using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
@@ -24,14 +22,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         {
             this.indexNameFactory = indexNameFactory;
             this.taskDataService = taskDataService;
-            elasticsearchClient = elasticsearchClientFactory.GetClient(new JsonSerializerSettings
-                {
-                    ContractResolver = new OmitNonIndexablePropertiesContractResolver(),
-                    Converters = new JsonConverter[]
-                        {
-                            new LongStringsToNullConverter(500)
-                        }
-                });
+            elasticsearchClient = elasticsearchClientFactory.GetClient(TaskWriterJsonSettings.GetSerializerSettings());
         }
 
         public void IndexBatch(TaskMetaInformation[] metas, TaskExceptionInfo[] exceptionInfos, object[] taskDatas)
@@ -78,9 +69,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     LastModificationTime = meta.LastModificationTicks.Value, //todo hack
                     MinimalStartTime = meta.MinimalStartTicks,
                     StartExecutingTime = meta.StartExecutingTicks,
-                    Exception = exceptionInfo == null ? null : exceptionInfo.ExceptionMessageInfo,
                 };
-            return taskDataService.CreateTaskIndexedInfo(metaIndexedInfo, taskData);
+            var info = exceptionInfo == null ? null : exceptionInfo.ExceptionMessageInfo;
+            return taskDataService.CreateTaskIndexedInfo(metaIndexedInfo, info, taskData);
         }
 
         private readonly IWriteIndexNameFactory indexNameFactory;

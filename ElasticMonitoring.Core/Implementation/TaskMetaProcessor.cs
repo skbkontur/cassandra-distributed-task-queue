@@ -34,8 +34,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         public void IndexMetas(TaskMetaInformation[] batch)
         {
-            var taskDatas = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.ReadQuiet(batch.Select(m => m.Id).ToArray()));
-            var taskExceptionInfos = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.ReadQuiet(batch.Select(m => m.Id).ToArray()));
+            string[] taskIds = batch.Select(m => m.Id).ToArray();
+            var taskDatas = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.ReadQuiet(taskIds));
+            var taskExceptionInfos = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.ReadQuiet(taskIds));
             var taskDataObjects = new object[taskDatas.Length];
             for(var i = 0; i < batch.Length; i++)
             {

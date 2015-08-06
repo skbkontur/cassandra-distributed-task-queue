@@ -19,7 +19,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             this.taskDataTypeToNameMapper = taskDataTypeToNameMapper;
         }
 
-        public object CreateTaskIndexedInfo([NotNull] MetaIndexedInfo metaIndexedInfo, [CanBeNull] object taskData)
+        public object CreateTaskIndexedInfo([NotNull] MetaIndexedInfo metaIndexedInfo, [CanBeNull] string exceptionInfo, [CanBeNull] object taskData)
         {
             var typeName = metaIndexedInfo.Name;
             var data = (Data)map[typeName];
@@ -27,13 +27,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             {
                 Type taskType;
                 if(!taskDataTypeToNameMapper.TryGetTaskType(typeName, out taskType))
-                    return new TaskIndexedInfo<UnknownData>(metaIndexedInfo, null); //NOTE hack. Type can be unknown
+                    return new TaskIndexedInfo<UnknownData>(metaIndexedInfo, exceptionInfo, null); //NOTE hack. Type can be unknown
 
                 lock(lockObject)
                 {
                     if((data = (Data)map[typeName]) == null)
                     {
-                        var constructorFunc = EmitHelpers.EmitDynamicMethod<Func<MetaIndexedInfo, object, object>>(string.Format("EmitConstruction_{0}_{1}", typeName, Guid.NewGuid()), GetType().Module, il => EmitCode(il, taskType));
+                        var constructorFunc = EmitHelpers.EmitDynamicMethod<ConstructorDelegate>(string.Format("EmitConstruction_{0}_{1}", typeName, Guid.NewGuid()), GetType().Module, il => EmitCode(il, taskType));
                         data = new Data(constructorFunc);
                         map[typeName] = data;
                     }
@@ -42,19 +42,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
             //NOTE TaskIndexedInfo<T> нужно для OmitNonIndexablePropertiesContractResolver. !!! не переделывать в object
             //BUG taskData can be null
-            return data.constructorFunc(metaIndexedInfo, taskData);
+            return data.constructorFunc(metaIndexedInfo, exceptionInfo, taskData);
             //return Activator.CreateInstance(typeof(TaskIndexedInfo<>).MakeGenericType(taskData.GetType()), new[] { metaIndexedInfo, taskData });
         }
 
         private static void EmitCode(GroboIL il, Type taskType)
         {
-            var constructor = HackHelpers.GetObjectConstruction(() => new TaskIndexedInfo<int>(null, 0), taskType);
+            var constructor = HackHelpers.GetObjectConstruction(() => new TaskIndexedInfo<int>(null, null, 0), taskType);
             il.Ldarg(0);
             il.Ldarg(1);
+            il.Ldarg(2);
             il.Castclass(taskType);
             il.Newobj(constructor);
             il.Ret();
         }
+
+        private delegate object ConstructorDelegate(MetaIndexedInfo info, string exceptionInfo, object data);
 
         private readonly Hashtable map = new Hashtable();
         private readonly object lockObject = new object();
@@ -71,12 +74,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         private class Data
         {
-            public Data(Func<MetaIndexedInfo, object, object> constructorFunc)
+            public Data(ConstructorDelegate constructorFunc)
             {
                 this.constructorFunc = constructorFunc;
             }
 
-            public readonly Func<MetaIndexedInfo, object, object> constructorFunc;
+            public readonly ConstructorDelegate constructorFunc;
         }
     }
 }
