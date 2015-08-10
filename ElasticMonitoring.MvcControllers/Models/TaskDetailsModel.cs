@@ -23,6 +23,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.M
         public string[] ChildTaskIds { get; set; }
         public int TaskGroupLock { get; set; }
         public bool AllowControlTaskExecution { get; set; }
-        public string HelloImage { get; set; }
     }
 }
