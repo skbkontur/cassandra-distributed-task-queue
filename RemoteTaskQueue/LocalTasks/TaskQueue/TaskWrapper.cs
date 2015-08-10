@@ -32,11 +32,15 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             {
                 finished = true;
                 taskQueue.TaskFinished(task);
-                if (result == TaskResult.Rerun)
+                if(result == TaskResult.Rerun)
+                {
                     taskQueue.QueueTask(task);
+                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "500");
+                }
                 else
-                    TraceContext.Current.RecordTimepoint(Timepoint.Finish); // Finish TaskTraceContext
-                Trace.FinishCurrentContext();
+                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "200");
+                TraceContext.Current.RecordTimepoint(Timepoint.Finish);
+                Trace.FinishCurrentContext(); // Finish TaskTraceContext
             }
             catch (Exception e)
             {

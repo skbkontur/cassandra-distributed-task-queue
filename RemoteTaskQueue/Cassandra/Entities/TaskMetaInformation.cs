@@ -1,4 +1,6 @@
-﻿namespace RemoteQueue.Cassandra.Entities
+﻿using System;
+
+namespace RemoteQueue.Cassandra.Entities
 {
     public class TaskMetaInformation
     {
@@ -25,8 +27,8 @@
         public string TaskGroupLock { get; set; }
 
         public string TraceId { get; set; }
-        public string ContextId { get; set; }
         public bool IsActive { get; set; }
+        public DateTime CreationTime { get; set; }
 
         internal void MakeSnapshot()
         {

@@ -57,13 +57,19 @@ namespace RemoteQueue.Handling
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue)) return;
 
                         ITraceContext taskTraceContext = null;
-                        if (meta != null)
-                            taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.ContextId, meta.IsActive);
+                        if(meta != null)
+                        {
+                            taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.Id, meta.IsActive, true);
+                            taskTraceContext.RecordTimepoint(Timepoint.Start, meta.CreationTime);
+                        }
 
                         QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
 
-                        if (taskTraceContext != null)
+                        if(taskTraceContext != null)
+                        {
+                            taskTraceContext.RecordTimepoint(Timepoint.Finish);
                             Trace.FinishCurrentContext();
+                        }
                     }
                 }
             }
@@ -106,7 +112,7 @@ namespace RemoteQueue.Handling
         internal void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason reason)
         {
             if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
-                TraceContext.Current.RecordTimepoint(Timepoint.Finish);
+                return;
             if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;
 
@@ -114,7 +120,7 @@ namespace RemoteQueue.Handling
             handlerTask.Reason = reason;
 
             ITraceContext handlerTraceContext = null;
-            if(meta != null)
+            if(meta != null && reason==TaskQueueReason.PullFromQueue)
             {
                 handlerTraceContext = Trace.CreateChildContext("Handler");
                 handlerTraceContext.RecordTimepoint(Timepoint.Start);

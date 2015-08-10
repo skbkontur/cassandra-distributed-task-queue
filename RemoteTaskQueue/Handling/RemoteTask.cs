@@ -24,12 +24,11 @@ namespace RemoteQueue.Handling
 
         public string Queue(TimeSpan delay)
         {
-            using(var traceContext = Trace.CreateChildContext(task.Meta.Name))
+            using(var traceContext = Trace.CreateChildContext(task.Meta.Name, task.Meta.Id))
             {
-                task.Meta.ContextId = traceContext.ContextId;
                 task.Meta.TraceId = traceContext.TraceId;
                 task.Meta.IsActive = traceContext.IsActive;
-                traceContext.RecordTimepoint(Timepoint.Start);
+                task.Meta.CreationTime = DateTime.Now;
                 using(var publishContext = Trace.CreateChildContext("Publish"))
                 {
                     publishContext.RecordTimepoint(Timepoint.Start);
