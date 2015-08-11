@@ -2,7 +2,8 @@
 using System.Linq;
 
 using Kontur.Tracing.Core;
-using Kontur.Tracing.Core.Config;
+
+using log4net;
 
 using MoreLinq;
 
@@ -10,9 +11,6 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.LocalTasks.TaskQueue;
-
-using log4net;
-
 
 namespace RemoteQueue.Handling
 {
@@ -32,9 +30,6 @@ namespace RemoteQueue.Handling
             this.createHandlerTask = createHandlerTask;
             this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
-
-            if(!Trace.IsInitialized)
-                Trace.Initialize(new StaticConfigurationProvider(new TracingConfig(true, "edi-test", "http://vm-elastic:9003/spans")));
         }
 
         public void Run()
@@ -120,7 +115,7 @@ namespace RemoteQueue.Handling
             handlerTask.Reason = reason;
 
             ITraceContext handlerTraceContext = null;
-            if(meta != null && reason==TaskQueueReason.PullFromQueue)
+            if(meta != null && reason == TaskQueueReason.PullFromQueue)
             {
                 handlerTraceContext = Trace.CreateChildContext("Handler");
                 handlerTraceContext.RecordTimepoint(Timepoint.Start);
@@ -128,12 +123,11 @@ namespace RemoteQueue.Handling
 
             taskQueue.QueueTask(handlerTask);
 
-            if(handlerTraceContext!=null)
+            if(handlerTraceContext != null)
                 Trace.FinishCurrentContext();
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
-
         private readonly Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask;
         private readonly TaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
