@@ -115,7 +115,8 @@ namespace RemoteQueue.Handling
             handlerTask.Reason = reason;
 
             ITraceContext handlerTraceContext = null;
-            if(meta != null && reason == TaskQueueReason.PullFromQueue)
+
+            if(meta != null)
             {
                 handlerTraceContext = Trace.CreateChildContext("Handler");
                 handlerTraceContext.RecordTimepoint(Timepoint.Start);
