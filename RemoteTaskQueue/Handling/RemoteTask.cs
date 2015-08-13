@@ -30,12 +30,15 @@ namespace RemoteQueue.Handling
                 task.Meta.IsActive = traceContext.IsActive;
                 task.Meta.CreationTime = DateTime.UtcNow;
                 traceContext.RecordTimepoint(Timepoint.Start, task.Meta.CreationTime);
+                string publishContextId;
                 using(var publishContext = Trace.CreateChildContext("Publish"))
                 {
+                    publishContextId = publishContext.ContextId;
                     publishContext.RecordTimepoint(Timepoint.Start);
-                    Publish(delay);
-                    publishContext.RecordTimepoint(Timepoint.Finish);
                 }
+                    Publish(delay);
+                using(var publishContext = Trace.CreateChildContext("Publish", publishContextId))
+                    publishContext.RecordTimepoint(Timepoint.Finish);
                 return Id;
             }
         }

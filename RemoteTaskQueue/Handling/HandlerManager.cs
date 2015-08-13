@@ -116,7 +116,7 @@ namespace RemoteQueue.Handling
 
             ITraceContext handlerTraceContext = null;
 
-            if(meta != null)
+            if(meta != null && meta.State != TaskState.InProcess)
             {
                 handlerTraceContext = Trace.CreateChildContext("Handler");
                 handlerTraceContext.RecordTimepoint(Timepoint.Start);
