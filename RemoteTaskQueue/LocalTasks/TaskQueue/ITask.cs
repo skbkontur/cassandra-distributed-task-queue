@@ -3,6 +3,6 @@
     public interface ITask
     {
         string Id { get; }
-        TaskResult RunTask();
+        LocalTaskProcessingResult RunTask();
     }
 }

@@ -49,22 +49,20 @@ namespace RemoteQueue.Handling
                     {
                         var meta = metas[i];
                         var taskInfo = taskInfoBatch[i];
-                        if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue)) return;
+                        if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
+                            return;
 
                         ITraceContext taskTraceContext = null;
                         if(meta != null)
                         {
-                            taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.Id, meta.IsActive, true);
-                            taskTraceContext.RecordTimepoint(Timepoint.Start, meta.CreationTime);
+                            taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.Id, meta.TraceIsActive, true);
+                            taskTraceContext.RecordTimepoint(Timepoint.Start, new DateTime(meta.Ticks, DateTimeKind.Utc));
                         }
 
                         QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
 
                         if(taskTraceContext != null)
-                        {
-                            taskTraceContext.RecordTimepoint(Timepoint.Finish);
-                            Trace.FinishCurrentContext();
-                        }
+                            taskTraceContext.Dispose(); // Pop taskTraceContext
                     }
                 }
             }
@@ -114,18 +112,18 @@ namespace RemoteQueue.Handling
             var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
 
-            ITraceContext handlerTraceContext = null;
-
-            if(meta != null && meta.State != TaskState.InProcess)
+            if(meta != null && (reason == TaskQueueReason.PullFromQueue || (reason == TaskQueueReason.TaskContinuation && meta.State == TaskState.New)))
             {
-                handlerTraceContext = Trace.CreateChildContext("Handler");
-                handlerTraceContext.RecordTimepoint(Timepoint.Start);
+                var infrastructureTraceContext = Trace.CreateChildContext("Handle.Infrastructure");
+                infrastructureTraceContext.RecordTimepoint(Timepoint.Start);
+                if(taskQueue.QueueTask(handlerTask))
+                    infrastructureTraceContext.Dispose(); // Pop infrastructureTraceContext
+                else
+                {
+                    infrastructureTraceContext.RecordTimepoint(Timepoint.Finish);
+                    infrastructureTraceContext.Dispose();
+                }
             }
-
-            taskQueue.QueueTask(handlerTask);
-
-            if(handlerTraceContext != null)
-                Trace.FinishCurrentContext();
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));

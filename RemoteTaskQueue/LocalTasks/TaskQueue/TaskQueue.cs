@@ -42,15 +42,9 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             lock (lockObject)
             {
                 if(stopped)
-                {
-                    TraceContext.Current.RecordTimepoint(Timepoint.Finish);
-                    throw new TaskQueueException(string.Format("Невозможно добавить асинхронную задачу - очередь остановлена"));
-                }
+                    throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
                 if(hashtable.ContainsKey(task.Id))
-                {
-                    TraceContext.Current.RecordTimepoint(Timepoint.Finish);
                     return false;
-                }
                 var taskWrapper = new TaskWrapper(task, this);
                 var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
                 if (!taskWrapper.Finished)
@@ -67,9 +61,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             {
                 if (hashtable.ContainsKey(task.Id))
                     hashtable.Remove(task.Id);
-
-                TraceContext.Current.RecordTimepoint(Timepoint.Finish); // Finish HandlerTraceContext
-                Trace.FinishCurrentContext();
             }
         }
 

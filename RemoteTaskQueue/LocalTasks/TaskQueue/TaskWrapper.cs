@@ -4,6 +4,8 @@ using Kontur.Tracing.Core;
 
 using log4net;
 
+using SKBKontur.Catalogue.Objects;
+
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class TaskWrapper
@@ -17,41 +19,51 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public void Run()
         {
-            var result = new TaskResult();
-
+            LocalTaskProcessingResult result;
             try
             {
                 result = task.RunTask();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                logger.Error(string.Format("Ошибка во время обработки асинхронной задачи."), e);
+                result = LocalTaskProcessingResult.Undefined;
+                logger.Error("Ошибка во время обработки асинхронной задачи.", e);
             }
 
             try
             {
                 finished = true;
                 taskQueue.TaskFinished(task);
-                if(result == TaskResult.Rerun)
-                {
-                    taskQueue.QueueTask(task);
-                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "500");
-                }
-                else
-                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "200");
-                TraceContext.Current.RecordTimepoint(Timepoint.Finish);
-                Trace.FinishCurrentContext(); // Finish TaskTraceContext
-            }
-            catch (Exception e)
-            {
-                logger.Warn(string.Format("Ошибка во время окончания задачи."), e);
-            }
 
-            // todo конец 
+                TraceContext.Current.RecordTimepoint(Timepoint.Finish);
+                Trace.FinishCurrentContext(); // Finish infrastructureTraceContext
+
+                switch(result)
+                {
+                case LocalTaskProcessingResult.Success:
+                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "200");
+                    break;
+                case LocalTaskProcessingResult.Error:
+                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "500");
+                    break;
+                case LocalTaskProcessingResult.Rerun:
+                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "400");
+                    break;
+                case LocalTaskProcessingResult.Undefined:
+                    break;
+                default:
+                    throw new InvalidProgramStateException(string.Format("Invalid LocalTaskProcessingResult: {0}", result));
+                }
+                TraceContext.Current.RecordTimepoint(Timepoint.Finish);
+                Trace.FinishCurrentContext(); // Finish RemoteTaskTraceContext
+            }
+            catch(Exception e)
+            {
+                logger.Warn("Ошибка во время окончания задачи.", e);
+            }
         }
 
         public bool Finished { get { return finished; } }
-
         private readonly ITask task;
         private readonly TaskQueue taskQueue;
         private volatile bool finished;

@@ -5,6 +5,7 @@ using Kontur.Tracing.Core;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Tracing;
 
 namespace RemoteQueue.Handling
 {
@@ -24,21 +25,20 @@ namespace RemoteQueue.Handling
 
         public string Queue(TimeSpan delay)
         {
-            using(var traceContext = Trace.CreateChildContext(task.Meta.Name, task.Meta.Id))
+            using(new RemoteTaskTraceContext(task.Meta))
             {
-                task.Meta.TraceId = traceContext.TraceId;
-                task.Meta.IsActive = traceContext.IsActive;
-                task.Meta.CreationTime = DateTime.UtcNow;
-                traceContext.RecordTimepoint(Timepoint.Start, task.Meta.CreationTime);
                 string publishContextId;
                 using(var publishContext = Trace.CreateChildContext("Publish"))
                 {
                     publishContextId = publishContext.ContextId;
                     publishContext.RecordTimepoint(Timepoint.Start);
                 }
-                    Publish(delay);
+
+                Publish(delay);
+
                 using(var publishContext = Trace.CreateChildContext("Publish", publishContextId))
                     publishContext.RecordTimepoint(Timepoint.Finish);
+
                 return Id;
             }
         }
@@ -52,7 +52,6 @@ namespace RemoteQueue.Handling
         }
 
         public string Id { get { return task.Meta.Id; } }
-
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly Task task;
         private readonly IGlobalTime globalTime;

@@ -4,11 +4,9 @@ using GroBuf;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling.HandlerResults;
+using RemoteQueue.Tracing;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-
-using Kontur.Tracing.Core;
-
 
 namespace RemoteQueue.Handling
 {
@@ -19,14 +17,8 @@ namespace RemoteQueue.Handling
             taskQueue = queue;
             Context = task.Meta;
             var taskData = serializer.Deserialize<T>(task.Data);
-            HandleResult handleResult;
-            using(var traceContext = Trace.CreateChildContext("Handling"))
-            {
-                traceContext.RecordTimepoint(Timepoint.Start);
-                handleResult = HandleTask(taskData);
-                traceContext.RecordTimepoint(Timepoint.Finish);
-            }
-            return handleResult;
+            using(new BusinessLogicTaskTraceContext())
+                return HandleTask(taskData);
         }
 
         protected IRemoteTask CreateNextTask(ITaskData data)

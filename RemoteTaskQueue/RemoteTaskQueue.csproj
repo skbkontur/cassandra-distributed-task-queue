@@ -40,6 +40,9 @@
     <Reference Include="Catalogue.CassandraPrimitives.Storages">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Objects">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
+    </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
@@ -131,6 +134,10 @@
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
+    <Compile Include="Tracing\BusinessLogicTaskTraceContext.cs" />
+    <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />
+    <Compile Include="Tracing\PublishTaskTraceContext.cs" />
+    <Compile Include="Tracing\RemoteTaskTraceContext.cs" />
     <Compile Include="Handling\ShardingManager.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
@@ -141,11 +148,8 @@
     <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
     <Compile Include="Handling\TaskQueueReason.cs" />
-    <Compile Include="LocalTasks\TaskQueue\ActionTask.cs" />
     <Compile Include="LocalTasks\TaskQueue\ITask.cs" />
     <Compile Include="LocalTasks\TaskQueue\ITaskQueue.cs" />
-    <Compile Include="LocalTasks\TaskQueue\SimpleTask.cs" />
-    <Compile Include="LocalTasks\TaskQueue\TaskBase.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskQueue.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskQueueException.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskResult.cs" />
