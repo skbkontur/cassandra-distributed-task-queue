@@ -3,7 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Kontur.Tracing.Core;
+using RemoteQueue.Handling;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
@@ -11,18 +11,18 @@ namespace RemoteQueue.LocalTasks.TaskQueue
     {
         public void Start()
         {
-            lock (lockObject)
+            lock(lockObject)
                 stopped = false;
         }
 
         public void StopAndWait(int timeout = 10000)
         {
-            if (stopped)
+            if(stopped)
                 return;
             Task[] tasks;
-            lock (lockObject)
+            lock(lockObject)
             {
-                if (stopped)
+                if(stopped)
                     return;
                 stopped = true;
                 tasks = hashtable.Values.Cast<Task>().ToArray();
@@ -33,35 +33,32 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public long GetQueueLength()
         {
-            lock (lockObject)
+            lock(lockObject)
                 return hashtable.Count;
         }
 
-        public bool QueueTask(ITask task)
+        public bool QueueTask(HandlerTask handlerTask)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 if(stopped)
                     throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
-                if(hashtable.ContainsKey(task.Id))
+                if(hashtable.ContainsKey(handlerTask.TaskId))
                     return false;
-                var taskWrapper = new TaskWrapper(task, this);
+                var taskWrapper = new TaskWrapper(handlerTask, this);
                 var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
-                if (!taskWrapper.Finished)
-                    hashtable.Add(task.Id, asyncTask);
+                if(!taskWrapper.Finished)
+                    hashtable.Add(handlerTask.TaskId, asyncTask);
             }
             return true;
         }
 
         public bool Stopped { get { return stopped; } }
 
-        public void TaskFinished(ITask task)
+        public void TaskFinished(string taskId)
         {
-            lock (lockObject)
-            {
-                if (hashtable.ContainsKey(task.Id))
-                    hashtable.Remove(task.Id);
-            }
+            lock(lockObject)
+                hashtable.Remove(taskId);
         }
 
         private readonly Hashtable hashtable = new Hashtable();

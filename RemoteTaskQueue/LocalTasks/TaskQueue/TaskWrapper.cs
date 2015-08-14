@@ -4,15 +4,17 @@ using Kontur.Tracing.Core;
 
 using log4net;
 
+using RemoteQueue.Handling;
+
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class TaskWrapper
     {
-        public TaskWrapper(ITask task, TaskQueue taskQueue)
+        public TaskWrapper(HandlerTask handlerTask, TaskQueue taskQueue)
         {
-            this.task = task;
+            this.handlerTask = handlerTask;
             this.taskQueue = taskQueue;
             finished = false;
         }
@@ -22,7 +24,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             LocalTaskProcessingResult result;
             try
             {
-                result = task.RunTask();
+                result = handlerTask.RunTask();
             }
             catch(Exception e)
             {
@@ -33,7 +35,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             try
             {
                 finished = true;
-                taskQueue.TaskFinished(task);
+                taskQueue.TaskFinished(handlerTask.TaskId);
 
                 TraceContext.Current.RecordTimepoint(Timepoint.Finish);
                 Trace.FinishCurrentContext(); // Finish infrastructureTraceContext
@@ -64,7 +66,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         }
 
         public bool Finished { get { return finished; } }
-        private readonly ITask task;
+        private readonly HandlerTask handlerTask;
         private readonly TaskQueue taskQueue;
         private volatile bool finished;
         private readonly ILog logger = LogManager.GetLogger(typeof(TaskQueue));

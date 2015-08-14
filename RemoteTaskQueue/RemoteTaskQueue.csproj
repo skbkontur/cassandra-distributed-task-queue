@@ -148,7 +148,6 @@
     <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
     <Compile Include="Handling\TaskQueueReason.cs" />
-    <Compile Include="LocalTasks\TaskQueue\ITask.cs" />
     <Compile Include="LocalTasks\TaskQueue\ITaskQueue.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskQueue.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskQueueException.cs" />
