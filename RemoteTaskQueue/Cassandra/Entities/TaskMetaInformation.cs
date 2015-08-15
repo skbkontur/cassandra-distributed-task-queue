@@ -10,20 +10,15 @@
 
         public string Name { get; set; }
         public string Id { get; set; }
-
         public long Ticks { get; set; }
         public long MinimalStartTicks { get; set; }
         public long? StartExecutingTicks { get; set; }
         public long? FinishExecutingTicks { get; set; }
-
         public long? LastModificationTicks { get; set; }
-
         public TaskState State { get; set; }
         public int Attempts { get; set; }
-
         public string ParentTaskId { get; set; }
         public string TaskGroupLock { get; set; }
-
         internal void MakeSnapshot()
         {
             snapshot = StaticGrobuf.GetSerializer().Serialize(this);
@@ -31,7 +26,8 @@
 
         internal TaskMetaInformation GetSnapshot()
         {
-            if(snapshot == null) return null;
+            if(snapshot == null)
+                return null;
             return StaticGrobuf.GetSerializer().Deserialize<TaskMetaInformation>(snapshot);
         }
 

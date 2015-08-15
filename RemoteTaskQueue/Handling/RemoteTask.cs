@@ -30,7 +30,6 @@ namespace RemoteQueue.Handling
         }
 
         public string Id { get { return task.Meta.Id; } }
-
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly Task task;
         private readonly IGlobalTime globalTime;

@@ -18,7 +18,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public void AddTask(Task task)
         {
-            if (task.Meta.Attempts == 0)
+            if(task.Meta.Attempts == 0)
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
 
             if(task.Meta.MinimalStartTicks <= DateTime.UtcNow.Ticks + 1)
@@ -46,8 +46,8 @@ namespace RemoteQueue.Cassandra.Repositories
                         Meta = m
                     }
                 )
-                .Where(x => x.Meta != null && x.Data != null)
-                .ToArray();
+                            .Where(x => x.Meta != null && x.Data != null)
+                            .ToArray();
         }
 
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;

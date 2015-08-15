@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 
+using log4net;
+
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.LocalTasks.TaskQueue;
-
-using log4net;
 
 namespace RemoteQueue.Handling
 {
@@ -47,7 +47,8 @@ namespace RemoteQueue.Handling
                     {
                         var meta = metas[i];
                         var taskInfo = taskInfoBatch[i];
-                        if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue)) return;
+                        if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
+                            return;
                         QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
                     }
                 }
@@ -96,11 +97,12 @@ namespace RemoteQueue.Handling
                 return;
             var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
-            taskQueue.QueueTask(handlerTask);
+
+            if(meta != null && (reason == TaskQueueReason.PullFromQueue || (reason == TaskQueueReason.TaskContinuation && meta.State == TaskState.New)))
+                taskQueue.QueueTask(handlerTask);
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
-
         private readonly Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask;
         private readonly TaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;

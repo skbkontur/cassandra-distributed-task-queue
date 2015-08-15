@@ -1,8 +1,10 @@
 ﻿namespace RemoteQueue.LocalTasks.TaskQueue
 {
-    public enum TaskResult
+    public enum LocalTaskProcessingResult
     {
-        Finish,
-        Rerun
+        Success,
+        Error,
+        Rerun,
+        Undefined,
     }
 }

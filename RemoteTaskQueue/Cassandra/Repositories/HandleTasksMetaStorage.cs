@@ -20,7 +20,7 @@ namespace RemoteQueue.Cassandra.Repositories
             ITaskMetaInformationBlobStorage storage,
             ITaskMinimalStartTicksIndex minimalStartTicksIndex,
             IEventLogRepository eventLogRepository,
-            IGlobalTime globalTime, 
+            IGlobalTime globalTime,
             IChildTaskIndex childTaskIndex)
         {
             this.storage = storage;
@@ -86,7 +86,6 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         internal OnIndexMeta OnIndexMeta { get; set; }
-
         private readonly ITaskMetaInformationBlobStorage storage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
         private readonly IEventLogRepository eventLogRepository;
