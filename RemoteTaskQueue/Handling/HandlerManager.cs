@@ -108,10 +108,8 @@ namespace RemoteQueue.Handling
                 return;
             if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;
-
             var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
-
             if(meta != null && (reason == TaskQueueReason.PullFromQueue || (reason == TaskQueueReason.TaskContinuation && meta.State == TaskState.New)))
             {
                 var infrastructureTraceContext = Trace.CreateChildContext("Handle.Infrastructure");
