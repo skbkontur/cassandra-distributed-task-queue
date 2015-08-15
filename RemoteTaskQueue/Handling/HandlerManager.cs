@@ -119,7 +119,7 @@ namespace RemoteQueue.Handling
                 else
                 {
                     infrastructureTraceContext.RecordTimepoint(Timepoint.Finish);
-                    infrastructureTraceContext.Dispose();
+                    infrastructureTraceContext.Dispose(); // Finish infrastructureTraceContext
                 }
             }
         }
