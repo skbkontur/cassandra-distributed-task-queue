@@ -43,6 +43,9 @@
     <Reference Include="Catalogue.Objects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
     </Reference>
+    <Reference Include="GroboContainer">
+      <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
+    </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>

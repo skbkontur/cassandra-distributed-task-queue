@@ -1,4 +1,6 @@
-﻿using GroBuf;
+﻿using GroboContainer.Infection;
+
+using GroBuf;
 
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
@@ -9,6 +11,7 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
 namespace RemoteQueue.Handling
 {
+    [IgnoredImplementation]
     internal class RemoteTaskQueueWithContinuationOptimization : RemoteTaskQueueImpl, IRemoteTaskQueue
     {
         public RemoteTaskQueueWithContinuationOptimization(
