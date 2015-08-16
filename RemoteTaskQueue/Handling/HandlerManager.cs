@@ -7,7 +7,6 @@ using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 
 namespace RemoteQueue.Handling
@@ -15,15 +14,13 @@ namespace RemoteQueue.Handling
     public class HandlerManager : IHandlerManager
     {
         public HandlerManager(
-            ITaskQueue taskQueue,
+            ILocalTaskQueue localTaskQueue,
             ITaskCounter taskCounter,
-            Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask,
             TaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage)
         {
-            this.taskQueue = taskQueue;
+            this.localTaskQueue = localTaskQueue;
             this.taskCounter = taskCounter;
-            this.createHandlerTask = createHandlerTask;
             this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
         }
@@ -45,9 +42,11 @@ namespace RemoteQueue.Handling
                     {
                         var meta = metas[i];
                         var taskInfo = taskInfoBatch[i];
+                        if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
+                            return;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
                             return;
-                        QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
+                        localTaskQueue.QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
                     }
                 }
             }
@@ -57,7 +56,7 @@ namespace RemoteQueue.Handling
 
         public void Start()
         {
-            taskQueue.Start();
+            localTaskQueue.Start();
         }
 
         public void Stop()
@@ -65,12 +64,12 @@ namespace RemoteQueue.Handling
             if(!started)
                 return;
             started = false;
-            taskQueue.StopAndWait(100 * 1000);
+            localTaskQueue.StopAndWait(100 * 1000);
         }
 
         public long GetQueueLength()
         {
-            return taskQueue.GetQueueLength();
+            return localTaskQueue.GetQueueLength();
         }
 
         public Tuple<long, long> GetCassandraQueueLength()
@@ -80,22 +79,11 @@ namespace RemoteQueue.Handling
             return new Tuple<long, long>(all, all);
         }
 
-        private void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason reason)
-        {
-            if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
-                return;
-            var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
-            handlerTask.Reason = reason;
-            if(meta == null || reason == TaskQueueReason.PullFromQueue || (reason == TaskQueueReason.TaskContinuation && meta.State == TaskState.New))
-                taskQueue.QueueTask(handlerTask);
-        }
-
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
-        private readonly Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask;
         private readonly TaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly object lockObject = new object();
-        private readonly ITaskQueue taskQueue;
+        private readonly ILocalTaskQueue localTaskQueue;
         private readonly ITaskCounter taskCounter;
         private volatile bool started;
     }

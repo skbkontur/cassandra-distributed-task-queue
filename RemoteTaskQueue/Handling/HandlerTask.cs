@@ -23,6 +23,8 @@ namespace RemoteQueue.Handling
     public class HandlerTask
     {
         public HandlerTask(
+            string taskId,
+            TaskQueueReason reason,
             Tuple<string, ColumnInfo> taskInfo,
             TaskMetaInformation meta,
             long startProcessingTicks,
@@ -37,6 +39,8 @@ namespace RemoteQueue.Handling
             ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
+            this.taskId = taskId;
+            this.reason = reason;
             this.taskInfo = taskInfo;
             taskMetaInformation = meta;
             this.startProcessingTicks = startProcessingTicks;
@@ -52,14 +56,12 @@ namespace RemoteQueue.Handling
             this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 
-        public string TaskId { get { return taskInfo.Item1; } }
-
         public LocalTaskProcessingResult RunTask()
         {
             var meta = taskMetaInformation;
             if(meta == null)
             {
-                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", TaskId);
+                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskId);
                 if(TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName) < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
                 {
                     logger.InfoFormat("Удаляем запись индекса, для которой не записалась мета (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
@@ -74,7 +76,7 @@ namespace RemoteQueue.Handling
             }
             if(meta.State == TaskState.Finished || meta.State == TaskState.Fatal || meta.State == TaskState.Canceled)
             {
-                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", TaskId, meta.State);
+                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskId, meta.State);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
                 return LocalTaskProcessingResult.Undefined;
             }
@@ -90,19 +92,19 @@ namespace RemoteQueue.Handling
             IRemoteLock taskGroupRemoteLock = null;
             if(!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
             {
-                logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", TaskId, meta.TaskGroupLock);
+                logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", taskId, meta.TaskGroupLock);
                 return LocalTaskProcessingResult.Undefined;
             }
             try
             {
-                if(!taskCounter.TryIncrement(Reason))
+                if(!taskCounter.TryIncrement(reason))
                     return LocalTaskProcessingResult.Undefined;
                 try
                 {
                     IRemoteLock remoteLock;
-                    if(!remoteLockCreator.TryGetLock(TaskId, out remoteLock))
+                    if(!remoteLockCreator.TryGetLock(taskId, out remoteLock))
                     {
-                        logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", TaskId);
+                        logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", taskId);
                         return LocalTaskProcessingResult.Undefined;
                     }
                     using(remoteLock)
@@ -110,7 +112,7 @@ namespace RemoteQueue.Handling
                 }
                 finally
                 {
-                    taskCounter.Decrement(Reason);
+                    taskCounter.Decrement(reason);
                 }
             }
             finally
@@ -119,8 +121,6 @@ namespace RemoteQueue.Handling
                     taskGroupRemoteLock.Dispose();
             }
         }
-
-        internal TaskQueueReason Reason { get; set; }
 
         private bool TryUpdateTaskState(Task task, long? minimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
         {
@@ -152,16 +152,16 @@ namespace RemoteQueue.Handling
             try
             {
                 //note тут обязательно надо перечитывать мету
-                task = handleTaskCollection.GetTask(TaskId);
+                task = handleTaskCollection.GetTask(taskId);
                 if(task.Meta == null)
                 {
-                    logger.Warn(string.Format("Ошибка во время чтения задачи '{0}'. Отсутствует метаинформация.", TaskId));
+                    logger.Warn(string.Format("Ошибка во время чтения задачи '{0}'. Отсутствует метаинформация.", taskId));
                     return LocalTaskProcessingResult.Undefined;
                 }
             }
             catch(Exception e)
             {
-                logger.Error(string.Format("Ошибка во время чтения задачи '{0}'", TaskId), e);
+                logger.Error(string.Format("Ошибка во время чтения задачи '{0}'", taskId), e);
                 return LocalTaskProcessingResult.Undefined;
             }
 
@@ -175,12 +175,12 @@ namespace RemoteQueue.Handling
 
             if(task.Meta.State == TaskState.Finished || task.Meta.State == TaskState.Fatal || task.Meta.State == TaskState.Canceled)
             {
-                logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", TaskId);
+                logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", taskId);
                 taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
                 return LocalTaskProcessingResult.Undefined;
             }
 
-            logger.InfoFormat("Начинаем обрабатывать задачу [{0}]. Reason = {1}", task.Meta, Reason);
+            logger.InfoFormat("Начинаем обрабатывать задачу [{0}]. Reason = {1}", task.Meta, reason);
 
             if(!TryUpdateTaskState(task, null, DateTime.UtcNow.Ticks, null, task.Meta.Attempts + 1, TaskState.InProcess))
             {
@@ -252,11 +252,11 @@ namespace RemoteQueue.Handling
         private void LogError(Exception e, TaskMetaInformation meta)
         {
             TaskExceptionInfo previousExceptionInfo;
-            if(!handleTaskExceptionInfoStorage.TryGetExceptionInfo(TaskId, out previousExceptionInfo))
+            if(!handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskId, out previousExceptionInfo))
                 previousExceptionInfo = new TaskExceptionInfo();
             if(!previousExceptionInfo.EqualsToException(e))
                 logger.Error(string.Format("Ошибка во время обработки задачи '{0}'.", meta), e);
-            handleTaskExceptionInfoStorage.TryAddExceptionInfo(TaskId, e);
+            handleTaskExceptionInfoStorage.TryAddExceptionInfo(taskId, e);
         }
 
         private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
@@ -264,6 +264,8 @@ namespace RemoteQueue.Handling
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IRemoteLockCreator remoteLockCreator;
         private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
+        private readonly string taskId;
+        private readonly TaskQueueReason reason;
         private readonly Tuple<string, ColumnInfo> taskInfo;
         private readonly TaskMetaInformation taskMetaInformation;
         private readonly long startProcessingTicks;
