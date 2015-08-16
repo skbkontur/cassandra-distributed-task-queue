@@ -17,14 +17,12 @@ namespace RemoteQueue.Handling
         public HandlerManager(
             ITaskQueue taskQueue,
             ITaskCounter taskCounter,
-            IShardingManager shardingManager,
             Func<Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask,
             TaskHandlerCollection taskHandlerCollection,
             IHandleTasksMetaStorage handleTasksMetaStorage)
         {
             this.taskQueue = taskQueue;
             this.taskCounter = taskCounter;
-            this.shardingManager = shardingManager;
             this.createHandlerTask = createHandlerTask;
             this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
@@ -78,22 +76,13 @@ namespace RemoteQueue.Handling
         public Tuple<long, long> GetCassandraQueueLength()
         {
             var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
-            long all = 0;
-            long forMe = 0;
-            foreach(var allTasksInState in allTasksInStates)
-            {
-                all++;
-                if(shardingManager.IsSituableTask(allTasksInState.Item1))
-                    forMe++;
-            }
-            return new Tuple<long, long>(all, forMe);
+            long all = allTasksInStates.Count();
+            return new Tuple<long, long>(all, all);
         }
 
         private void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason reason)
         {
             if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
-                return;
-            if(!shardingManager.IsSituableTask(taskInfo.Item1))
                 return;
             var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
@@ -108,7 +97,6 @@ namespace RemoteQueue.Handling
         private readonly object lockObject = new object();
         private readonly ITaskQueue taskQueue;
         private readonly ITaskCounter taskCounter;
-        private readonly IShardingManager shardingManager;
         private volatile bool started;
     }
 }

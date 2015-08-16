@@ -122,7 +122,6 @@
     <Compile Include="Handling\IHandlerManager.cs" />
     <Compile Include="Handling\IRemoteTask.cs" />
     <Compile Include="Handling\IRemoteTaskQueue.cs" />
-    <Compile Include="Handling\IShardingManager.cs" />
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />
     <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
@@ -131,7 +130,6 @@
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
-    <Compile Include="Handling\ShardingManager.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />

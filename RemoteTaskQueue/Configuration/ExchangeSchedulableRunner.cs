@@ -46,7 +46,7 @@ namespace RemoteQueue.Configuration
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
             var remoteTaskQueue = new RemoteTaskQueue(serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
             var taskCounter = new TaskCounter(runnerSettings);
-            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), (taskInfo, meta, startProcessingTicks) =>
+            handlerManager = new HandlerManager(new TaskQueue(), taskCounter, (taskInfo, meta, startProcessingTicks) =>
                 new HandlerTask(taskInfo, meta, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex, remoteTaskQueueProfiler), taskHandlerCollection, handleTasksMetaStorage);
         }
 
