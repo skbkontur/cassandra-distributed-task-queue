@@ -89,7 +89,7 @@ namespace RemoteQueue.Handling
             return new Tuple<long, long>(all, forMe);
         }
 
-        internal void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason reason)
+        private void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason reason)
         {
             if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
                 return;

@@ -44,12 +44,10 @@ namespace RemoteQueue.Configuration
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
             var remoteLockCreator = taskQueueSettings.UseRemoteLocker ? (IRemoteLockCreator)new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(parameters.Settings.QueueKeyspace)) : new RemoteLockCreator(remoteLockImplementation);
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
-            var remoteTaskQueue = new RemoteTaskQueue(globalTime, serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
+            var remoteTaskQueue = new RemoteTaskQueue(serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
             var taskCounter = new TaskCounter(runnerSettings);
             handlerManager = new HandlerManager(new TaskQueue(), taskCounter, new ShardingManager(runnerSettings), (taskInfo, meta, startProcessingTicks) =>
                 new HandlerTask(taskInfo, meta, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex, remoteTaskQueueProfiler), taskHandlerCollection, handleTasksMetaStorage);
-            handleTasksMetaStorage.OnIndexMeta = (info, meta) => ((HandlerManager)handlerManager).QueueTask(info, meta, DateTime.UtcNow.Ticks, TaskQueueReason.TaskContinuation);
-            RemoteTaskQueue = remoteTaskQueue;
         }
 
         public void Stop()
@@ -91,7 +89,6 @@ namespace RemoteQueue.Configuration
             return handlerManager.GetCassandraQueueLength();
         }
 
-        public IRemoteTaskQueue RemoteTaskQueue { get; private set; }
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
         private readonly IHandlerManager handlerManager;
         private readonly object lockObject = new object();
