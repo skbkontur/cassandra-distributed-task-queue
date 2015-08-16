@@ -97,8 +97,7 @@ namespace RemoteQueue.Handling
                 return;
             var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
             handlerTask.Reason = reason;
-
-            if(meta != null && (reason == TaskQueueReason.PullFromQueue || (reason == TaskQueueReason.TaskContinuation && meta.State == TaskState.New)))
+            if(meta == null || reason == TaskQueueReason.PullFromQueue || (reason == TaskQueueReason.TaskContinuation && meta.State == TaskState.New))
                 taskQueue.QueueTask(handlerTask);
         }
 
