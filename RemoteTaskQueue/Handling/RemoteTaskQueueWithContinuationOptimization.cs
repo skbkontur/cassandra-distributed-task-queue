@@ -19,18 +19,23 @@ namespace RemoteQueue.Handling
             IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
             TaskDataRegistryBase taskDataRegistry,
             IChildTaskIndex childTaskIndex,
-            ILocalTaskQueue localTaskQueue)
+            ILocalTaskQueue localTaskQueue,
+            bool enableContinuationOptimization)
             : base(serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex)
         {
             this.localTaskQueue = localTaskQueue;
+            this.enableContinuationOptimization = enableContinuationOptimization;
         }
 
         public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
         {
             var task = CreateTaskImpl(taskData, createTaskOptions);
-            return new RemoteTaskWithContinuationOptimization(task, handleTaskCollection, localTaskQueue);
+            return enableContinuationOptimization
+                       ? new RemoteTaskWithContinuationOptimization(task, handleTaskCollection, localTaskQueue)
+                       : new RemoteTask(task, handleTaskCollection);
         }
 
         private readonly ILocalTaskQueue localTaskQueue;
+        private readonly bool enableContinuationOptimization;
     }
 }

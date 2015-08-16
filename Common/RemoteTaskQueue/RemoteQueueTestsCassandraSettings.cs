@@ -32,5 +32,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
         public string ClusterName { get { return "CoreCluster"; } }
         public string QueueKeyspace { get { return "QueueKeyspace"; } }
         public bool UseRemoteLocker { get { return false; } }
+        public bool EnableContinuationOptimization { get { return true; } }
     }
 }
