@@ -44,10 +44,11 @@ namespace RemoteQueue.Configuration
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
             var remoteLockCreator = taskQueueSettings.UseRemoteLocker ? (IRemoteLockCreator)new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(parameters.Settings.QueueKeyspace)) : new RemoteLockCreator(remoteLockImplementation);
             var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
-            var remoteTaskQueue = new RemoteTaskQueue(serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex);
             var taskCounter = new TaskCounter(runnerSettings);
-            var localTaskQueue = new LocalTaskQueue((taskId, reason, taskInfo, meta, startProcessingTicks) =>
-                                          new HandlerTask(taskId, reason, taskInfo, meta, startProcessingTicks, taskCounter, serializer, remoteTaskQueue, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex, remoteTaskQueueProfiler));
+            LocalTaskQueue localTaskQueue = null;
+            var lazyRemoteTaskQueue = new Lazy<IRemoteTaskQueue>(() => new RemoteTaskQueueWithContinuationOptimization(serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex, localTaskQueue));
+            localTaskQueue = new LocalTaskQueue((taskId, reason, taskInfo, meta, startProcessingTicks) =>
+                                                new HandlerTask(taskId, reason, taskInfo, meta, startProcessingTicks, taskCounter, serializer, lazyRemoteTaskQueue.Value, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex, remoteTaskQueueProfiler));
             handlerManager = new HandlerManager(localTaskQueue, taskCounter, taskHandlerCollection, handleTasksMetaStorage);
         }
 

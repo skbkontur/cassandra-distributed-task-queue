@@ -6,15 +6,13 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.Objects;
-
 using Task = System.Threading.Tasks.Task;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class LocalTaskQueue : ILocalTaskQueue
     {
-        public LocalTaskQueue(Func<string, TaskQueueReason, Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask)
+        public LocalTaskQueue(Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, long, HandlerTask> createHandlerTask)
         {
             this.createHandlerTask = createHandlerTask;
         }
@@ -47,13 +45,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return hashtable.Count;
         }
 
-        public void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason taskQueueReason)
+        public void QueueTask(ColumnInfo taskInfo, TaskMetaInformation taskMeta, long nowTicks, TaskQueueReason taskQueueReason)
         {
-            var taskId = taskInfo.Item1;
-            if (taskId != meta.Id)
-                throw new InvalidProgramStateException(string.Format("taskInfo.Item1 ({0}) != meta.Id ({1})", taskInfo.Item1, meta.Id));
-
-            var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, meta, nowTicks);
+            var taskId = taskMeta.Id;
+            var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, nowTicks);
             lock(lockObject)
             {
                 if(stopped)
@@ -73,7 +68,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 hashtable.Remove(taskId);
         }
 
-        private readonly Func<string, TaskQueueReason, Tuple<string, ColumnInfo>, TaskMetaInformation, long, HandlerTask> createHandlerTask;
+        private readonly Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, long, HandlerTask> createHandlerTask;
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();
         private volatile bool stopped;

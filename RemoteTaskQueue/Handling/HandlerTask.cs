@@ -25,8 +25,8 @@ namespace RemoteQueue.Handling
         public HandlerTask(
             string taskId,
             TaskQueueReason reason,
-            Tuple<string, ColumnInfo> taskInfo,
-            TaskMetaInformation meta,
+            ColumnInfo taskInfo,
+            TaskMetaInformation taskMeta,
             long startProcessingTicks,
             ITaskCounter taskCounter,
             ISerializer serializer,
@@ -42,7 +42,7 @@ namespace RemoteQueue.Handling
             this.taskId = taskId;
             this.reason = reason;
             this.taskInfo = taskInfo;
-            taskMetaInformation = meta;
+            this.taskMeta = taskMeta;
             this.startProcessingTicks = startProcessingTicks;
             this.taskCounter = taskCounter;
             this.serializer = serializer;
@@ -58,41 +58,40 @@ namespace RemoteQueue.Handling
 
         public LocalTaskProcessingResult RunTask()
         {
-            var meta = taskMetaInformation;
-            if(meta == null)
+            if(taskMeta == null)
             {
                 logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskId);
-                if(TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName) < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
+                if(TicksNameHelper.GetTicksFromColumnName(taskInfo.ColumnName) < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
                 {
-                    logger.InfoFormat("Удаляем запись индекса, для которой не записалась мета (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
-                    taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
+                    logger.InfoFormat("Удаляем запись индекса, для которой не записалась мета (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskInfo.ColumnName, taskInfo.RowKey);
+                    taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
                 }
                 return LocalTaskProcessingResult.Undefined;
             }
-            if(meta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.Item2.ColumnName))
+            if(taskMeta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.ColumnName))
             {
-                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskInfo.Item1, taskInfo.Item2.ColumnName, taskInfo.Item2.RowKey);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
+                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskInfo.ColumnName, taskInfo.RowKey);
+                taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
             }
-            if(meta.State == TaskState.Finished || meta.State == TaskState.Fatal || meta.State == TaskState.Canceled)
+            if(taskMeta.State == TaskState.Finished || taskMeta.State == TaskState.Fatal || taskMeta.State == TaskState.Canceled)
             {
-                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskId, meta.State);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
+                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskId, taskMeta.State);
+                taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
-            if(!taskHandlerCollection.ContainsHandlerFor(meta.Name))
+            if(!taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                 return LocalTaskProcessingResult.Undefined;
             var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
-            if(meta.MinimalStartTicks != 0 && (meta.MinimalStartTicks > startTicks))
+            if(taskMeta.MinimalStartTicks != 0 && (taskMeta.MinimalStartTicks > startTicks))
             {
                 logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
-                                  meta.MinimalStartTicks, meta.Id, startTicks);
+                                  taskMeta.MinimalStartTicks, taskMeta.Id, startTicks);
                 return LocalTaskProcessingResult.Undefined;
             }
             IRemoteLock taskGroupRemoteLock = null;
-            if(!string.IsNullOrEmpty(meta.TaskGroupLock) && !remoteLockCreator.TryGetLock(meta.TaskGroupLock, out taskGroupRemoteLock))
+            if(!string.IsNullOrEmpty(taskMeta.TaskGroupLock) && !remoteLockCreator.TryGetLock(taskMeta.TaskGroupLock, out taskGroupRemoteLock))
             {
-                logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", taskId, meta.TaskGroupLock);
+                logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', так как выполняется другая задача из группы {1}.", taskId, taskMeta.TaskGroupLock);
                 return LocalTaskProcessingResult.Undefined;
             }
             try
@@ -176,7 +175,7 @@ namespace RemoteQueue.Handling
             if(task.Meta.State == TaskState.Finished || task.Meta.State == TaskState.Fatal || task.Meta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", taskId);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo.Item1, taskInfo.Item2);
+                taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
 
@@ -266,8 +265,8 @@ namespace RemoteQueue.Handling
         private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
         private readonly string taskId;
         private readonly TaskQueueReason reason;
-        private readonly Tuple<string, ColumnInfo> taskInfo;
-        private readonly TaskMetaInformation taskMetaInformation;
+        private readonly ColumnInfo taskInfo;
+        private readonly TaskMetaInformation taskMeta;
         private readonly long startProcessingTicks;
         private readonly ITaskCounter taskCounter;
         private readonly ISerializer serializer;

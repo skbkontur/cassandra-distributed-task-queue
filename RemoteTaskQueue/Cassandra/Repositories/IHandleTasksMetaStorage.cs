@@ -9,7 +9,7 @@ namespace RemoteQueue.Cassandra.Repositories
     public interface IHandleTasksMetaStorage
     {
         IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long ticks, params TaskState[] states);
-        void AddMeta(TaskMetaInformation meta);
+        ColumnInfo AddMeta(TaskMetaInformation meta);
         TaskMetaInformation GetMeta(string taskId);
         TaskMetaInformation[] GetMetas(string[] taskIds);
         TaskMetaInformation[] GetMetasQuiet(string[] taskIds);

@@ -2,6 +2,7 @@
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 
 namespace RemoteQueue.Handling
 {
@@ -20,15 +21,20 @@ namespace RemoteQueue.Handling
             return Queue(TimeSpan.FromTicks(0));
         }
 
-        public string Queue(TimeSpan delay)
+        public virtual string Queue(TimeSpan delay)
         {
-            var delayTicks = Math.Max(delay.Ticks, 0);
-            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, DateTime.UtcNow.Ticks + delayTicks) + 1;
-            handleTaskCollection.AddTask(task);
+            WriteTaskMeta(delay, DateTime.UtcNow.Ticks);
             return Id;
         }
 
-        private readonly Task task;
+        protected ColumnInfo WriteTaskMeta(TimeSpan delay, long nowTicks)
+        {
+            var delayTicks = Math.Max(delay.Ticks, 0);
+            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, nowTicks + delayTicks) + 1;
+            return handleTaskCollection.AddTask(task);
+        }
+
+        protected readonly Task task;
         private readonly IHandleTaskCollection handleTaskCollection;
     }
 }

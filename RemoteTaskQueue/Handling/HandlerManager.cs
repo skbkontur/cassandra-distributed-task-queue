@@ -37,16 +37,16 @@ namespace RemoteQueue.Handling
                     logger.DebugFormat("Начали обработку очереди.");
                 foreach(var taskInfoBatch in taskInfoBatches)
                 {
-                    var metas = handleTasksMetaStorage.GetMetasQuiet(taskInfoBatch.Select(x => x.Item1).ToArray());
+                    var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskInfoBatch.Select(x => x.Item1).ToArray());
                     for(var i = 0; i < taskInfoBatch.Length; i++)
                     {
-                        var meta = metas[i];
+                        var taskMeta = taskMetas[i];
                         var taskInfo = taskInfoBatch[i];
-                        if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
+                        if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                             return;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
                             return;
-                        localTaskQueue.QueueTask(taskInfo, meta, nowTicks, TaskQueueReason.PullFromQueue);
+                        localTaskQueue.QueueTask(taskInfo.Item2, taskMeta, nowTicks, TaskQueueReason.PullFromQueue);
                     }
                 }
             }

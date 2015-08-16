@@ -39,7 +39,7 @@ namespace RemoteQueue.Cassandra.Repositories
                     });
         }
 
-        public void AddMeta(TaskMetaInformation meta)
+        public ColumnInfo AddMeta(TaskMetaInformation meta)
         {
             var nowTicks = Math.Max((meta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
             meta.LastModificationTicks = nowTicks;
@@ -58,6 +58,7 @@ namespace RemoteQueue.Cassandra.Repositories
             }
 
             meta.MakeSnapshot();
+            return columnInfo;
         }
 
         public TaskMetaInformation GetMeta(string taskId)

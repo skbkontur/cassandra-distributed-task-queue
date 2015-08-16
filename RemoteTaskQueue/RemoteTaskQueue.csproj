@@ -130,6 +130,9 @@
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
+    <Compile Include="Handling\RemoteTaskQueueImpl.cs" />
+    <Compile Include="Handling\RemoteTaskQueueWithContinuationOptimization.cs" />
+    <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
