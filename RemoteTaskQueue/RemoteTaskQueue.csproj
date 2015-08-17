@@ -147,7 +147,7 @@
     <Compile Include="Tracing\RemoteTaskHandlingTraceContext.cs" />
     <Compile Include="Tracing\RemoteTaskInitialTraceContext.cs" />
     <Compile Include="Handling\RemoteTaskQueueImpl.cs" />
-    <Compile Include="Handling\RemoteTaskQueueWithContinuationOptimization.cs" />
+    <Compile Include="Handling\RemoteTaskQueueRunningInsideHandler.cs" />
     <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
