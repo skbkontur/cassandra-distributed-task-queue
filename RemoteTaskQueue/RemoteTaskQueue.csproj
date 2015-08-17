@@ -49,6 +49,10 @@
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
+    <Reference Include="JetBrains.Annotations, Version=7.1.1000.900, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="Kontur.Tracing.Core">
       <HintPath>..\..\Assemblies\Kontur\Kontur.Tracing\Kontur.Tracing.Core.dll</HintPath>
     </Reference>

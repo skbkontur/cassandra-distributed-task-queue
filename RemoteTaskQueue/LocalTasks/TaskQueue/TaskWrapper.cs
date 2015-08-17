@@ -1,5 +1,7 @@
 using System;
 
+using JetBrains.Annotations;
+
 using log4net;
 
 using RemoteQueue.Handling;
@@ -8,7 +10,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class TaskWrapper
     {
-        public TaskWrapper(string taskId, HandlerTask handlerTask, LocalTaskQueue localTaskQueue)
+        public TaskWrapper([NotNull] string taskId, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
         {
             this.taskId = taskId;
             this.handlerTask = handlerTask;

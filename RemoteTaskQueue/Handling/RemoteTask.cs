@@ -1,5 +1,7 @@
 ﻿using System;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
@@ -9,19 +11,22 @@ namespace RemoteQueue.Handling
 {
     internal class RemoteTask : IRemoteTask
     {
-        public RemoteTask(Task task, IHandleTaskCollection handleTaskCollection)
+        public RemoteTask([NotNull] Task task, IHandleTaskCollection handleTaskCollection)
         {
             this.task = task;
             this.handleTaskCollection = handleTaskCollection;
         }
 
+        [NotNull]
         public string Id { get { return task.Meta.Id; } }
 
+        [NotNull]
         public string Queue()
         {
             return Queue(TimeSpan.FromTicks(0));
         }
 
+        [NotNull]
         public virtual string Queue(TimeSpan delay)
         {
             using(new RemoteTaskInitialTraceContext(task.Meta))
@@ -31,6 +36,7 @@ namespace RemoteQueue.Handling
             }
         }
 
+        [NotNull]
         protected ColumnInfo Publish(TimeSpan delay)
         {
             using(new PublishTaskTraceContext())
