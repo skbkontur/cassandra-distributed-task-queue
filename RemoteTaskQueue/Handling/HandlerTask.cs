@@ -27,7 +27,6 @@ namespace RemoteQueue.Handling
             TaskQueueReason reason,
             ColumnInfo taskInfo,
             TaskMetaInformation taskMeta,
-            long startProcessingTicks,
             ITaskCounter taskCounter,
             ISerializer serializer,
             IRemoteTaskQueue remoteTaskQueue,
@@ -43,7 +42,6 @@ namespace RemoteQueue.Handling
             this.reason = reason;
             this.taskInfo = taskInfo;
             this.taskMeta = taskMeta;
-            this.startProcessingTicks = startProcessingTicks;
             this.taskCounter = taskCounter;
             this.serializer = serializer;
             this.remoteTaskQueue = remoteTaskQueue;
@@ -81,11 +79,11 @@ namespace RemoteQueue.Handling
             }
             if(!taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                 return LocalTaskProcessingResult.Undefined;
-            var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
-            if(taskMeta.MinimalStartTicks != 0 && (taskMeta.MinimalStartTicks > startTicks))
+            var nowTicks = DateTime.UtcNow.Ticks;
+            if(taskMeta.MinimalStartTicks != 0 && (taskMeta.MinimalStartTicks > nowTicks))
             {
                 logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
-                                  taskMeta.MinimalStartTicks, taskMeta.Id, startTicks);
+                                  taskMeta.MinimalStartTicks, taskMeta.Id, nowTicks);
                 return LocalTaskProcessingResult.Undefined;
             }
             IRemoteLock taskGroupRemoteLock = null;
@@ -164,11 +162,11 @@ namespace RemoteQueue.Handling
                 return LocalTaskProcessingResult.Undefined;
             }
 
-            var startTicks = Math.Max(startProcessingTicks, DateTime.UtcNow.Ticks);
-            if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > startTicks))
+            var nowTicks = DateTime.UtcNow.Ticks;
+            if(task.Meta.MinimalStartTicks != 0 && (task.Meta.MinimalStartTicks > nowTicks))
             {
                 logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.",
-                                  task.Meta.MinimalStartTicks, task.Meta.Id, startTicks);
+                                  task.Meta.MinimalStartTicks, task.Meta.Id, nowTicks);
                 return LocalTaskProcessingResult.Undefined;
             }
 
@@ -267,7 +265,6 @@ namespace RemoteQueue.Handling
         private readonly TaskQueueReason reason;
         private readonly ColumnInfo taskInfo;
         private readonly TaskMetaInformation taskMeta;
-        private readonly long startProcessingTicks;
         private readonly ITaskCounter taskCounter;
         private readonly ISerializer serializer;
         private readonly IRemoteTaskQueue remoteTaskQueue;

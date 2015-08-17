@@ -16,9 +16,8 @@ namespace RemoteQueue.Handling
 
         public override sealed string Queue(TimeSpan delay)
         {
-            var nowTicks = DateTime.UtcNow.Ticks;
-            var taskInfo = WriteTaskMeta(delay, nowTicks);
-            localTaskQueue.QueueTask(taskInfo, task.Meta, nowTicks, TaskQueueReason.TaskContinuation);
+            var taskInfo = WriteTaskMeta(delay);
+            localTaskQueue.QueueTask(taskInfo, task.Meta, TaskQueueReason.TaskContinuation);
             return Id;
         }
 

@@ -47,8 +47,8 @@ namespace RemoteQueue.Configuration
             var taskCounter = new TaskCounter(runnerSettings);
             LocalTaskQueue localTaskQueue = null;
             var lazyRemoteTaskQueue = new Lazy<IRemoteTaskQueue>(() => new RemoteTaskQueueWithContinuationOptimization(serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex, localTaskQueue, taskQueueSettings.EnableContinuationOptimization));
-            localTaskQueue = new LocalTaskQueue((taskId, reason, taskInfo, meta, startProcessingTicks) =>
-                                                new HandlerTask(taskId, reason, taskInfo, meta, startProcessingTicks, taskCounter, serializer, lazyRemoteTaskQueue.Value, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex, remoteTaskQueueProfiler));
+            localTaskQueue = new LocalTaskQueue((taskId, reason, taskInfo, taskMeta) =>
+                                                new HandlerTask(taskId, reason, taskInfo, taskMeta, taskCounter, serializer, lazyRemoteTaskQueue.Value, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex, remoteTaskQueueProfiler));
             handlerManager = new HandlerManager(localTaskQueue, taskCounter, taskHandlerCollection, handleTasksMetaStorage);
         }
 

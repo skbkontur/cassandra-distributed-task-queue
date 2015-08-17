@@ -46,7 +46,7 @@ namespace RemoteQueue.Handling
                             return;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
                             return;
-                        localTaskQueue.QueueTask(taskInfo.Item2, taskMeta, nowTicks, TaskQueueReason.PullFromQueue);
+                        localTaskQueue.QueueTask(taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
                     }
                 }
             }

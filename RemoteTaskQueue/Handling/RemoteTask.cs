@@ -23,12 +23,13 @@ namespace RemoteQueue.Handling
 
         public virtual string Queue(TimeSpan delay)
         {
-            WriteTaskMeta(delay, DateTime.UtcNow.Ticks);
+            WriteTaskMeta(delay);
             return Id;
         }
 
-        protected ColumnInfo WriteTaskMeta(TimeSpan delay, long nowTicks)
+        protected ColumnInfo WriteTaskMeta(TimeSpan delay)
         {
+            var nowTicks = DateTime.UtcNow.Ticks;
             var delayTicks = Math.Max(delay.Ticks, 0);
             task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, nowTicks + delayTicks) + 1;
             return handleTaskCollection.AddTask(task);

@@ -12,7 +12,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class LocalTaskQueue : ILocalTaskQueue
     {
-        public LocalTaskQueue(Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, long, HandlerTask> createHandlerTask)
+        public LocalTaskQueue(Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask)
         {
             this.createHandlerTask = createHandlerTask;
         }
@@ -45,10 +45,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return hashtable.Count;
         }
 
-        public void QueueTask(ColumnInfo taskInfo, TaskMetaInformation taskMeta, long nowTicks, TaskQueueReason taskQueueReason)
+        public void QueueTask(ColumnInfo taskInfo, TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
         {
             var taskId = taskMeta.Id;
-            var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, nowTicks);
+            var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta);
             lock(lockObject)
             {
                 if(stopped)
@@ -68,7 +68,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 hashtable.Remove(taskId);
         }
 
-        private readonly Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, long, HandlerTask> createHandlerTask;
+        private readonly Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask;
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();
         private volatile bool stopped;

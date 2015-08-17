@@ -9,6 +9,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         void Start();
         void StopAndWait(int timeout = 10000);
         long GetQueueLength();
-        void QueueTask(ColumnInfo taskInfo, TaskMetaInformation taskMeta, long nowTicks, TaskQueueReason taskQueueReason);
+        void QueueTask(ColumnInfo taskInfo, TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason);
     }
 }
