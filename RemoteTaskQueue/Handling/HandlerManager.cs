@@ -50,7 +50,7 @@ namespace RemoteQueue.Handling
                         if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                             continue;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
-                            continue;
+                            return;
                         localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
                     }
                 }
