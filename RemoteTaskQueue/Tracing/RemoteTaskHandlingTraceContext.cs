@@ -1,5 +1,7 @@
 using System;
 
+using JetBrains.Annotations;
+
 using Kontur.Tracing.Core;
 
 using RemoteQueue.Cassandra.Entities;
@@ -11,7 +13,7 @@ namespace RemoteQueue.Tracing
 {
     public class RemoteTaskHandlingTraceContext : IDisposable
     {
-        public RemoteTaskHandlingTraceContext(TaskMetaInformation taskMeta)
+        public RemoteTaskHandlingTraceContext([CanBeNull] TaskMetaInformation taskMeta)
         {
             if(taskMeta != null)
             {
