@@ -22,7 +22,8 @@ namespace RemoteQueue.Tracing
 
         public void Dispose()
         {
-            traceContext.Dispose(); // pop Task trace context
+            if(traceContext != null)
+                traceContext.Dispose(); // pop Task trace context
         }
 
         public static void Finish(LocalTaskProcessingResult result)
