@@ -3,6 +3,7 @@ using System.Linq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Profiling;
 
 namespace RemoteQueue.Cassandra.Repositories
@@ -16,7 +17,7 @@ namespace RemoteQueue.Cassandra.Repositories
             this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 
-        public void AddTask(Task task)
+        public ColumnInfo AddTask(Task task)
         {
             if(task.Meta.Attempts == 0)
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
@@ -25,7 +26,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 remoteTaskQueueProfiler.ProcessTaskEnqueueing(task.Meta);
 
             taskDataStorage.Write(task.Meta.Id, task.Data);
-            handleTasksMetaStorage.AddMeta(task.Meta);
+            return handleTasksMetaStorage.AddMeta(task.Meta);
         }
 
         public Task GetTask(string taskId)

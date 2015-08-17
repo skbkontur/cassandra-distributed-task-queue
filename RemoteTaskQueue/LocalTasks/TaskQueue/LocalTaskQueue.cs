@@ -1,14 +1,22 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
 
+using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Handling;
+
+using Task = System.Threading.Tasks.Task;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
-    public class TaskQueue : ITaskQueue
+    public class LocalTaskQueue : ILocalTaskQueue
     {
+        public LocalTaskQueue(Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask)
+        {
+            this.createHandlerTask = createHandlerTask;
+        }
+
         public void Start()
         {
             lock(lockObject)
@@ -37,23 +45,22 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return hashtable.Count;
         }
 
-        public bool QueueTask(HandlerTask handlerTask)
+        public void QueueTask(ColumnInfo taskInfo, TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
         {
+            var taskId = taskMeta.Id;
+            var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta);
             lock(lockObject)
             {
                 if(stopped)
                     throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
-                if(hashtable.ContainsKey(handlerTask.TaskId))
-                    return false;
-                var taskWrapper = new TaskWrapper(handlerTask, this);
+                if(hashtable.ContainsKey(taskId))
+                    return;
+                var taskWrapper = new TaskWrapper(taskId, handlerTask, this);
                 var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
                 if(!taskWrapper.Finished)
-                    hashtable.Add(handlerTask.TaskId, asyncTask);
+                    hashtable.Add(taskId, asyncTask);
             }
-            return true;
         }
-
-        public bool Stopped { get { return stopped; } }
 
         public void TaskFinished(string taskId)
         {
@@ -61,6 +68,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 hashtable.Remove(taskId);
         }
 
+        private readonly Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask;
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();
         private volatile bool stopped;

@@ -10,7 +10,6 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Handling;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -40,7 +39,7 @@ namespace RemoteQueue.Cassandra.Repositories
                     });
         }
 
-        public void AddMeta(TaskMetaInformation meta)
+        public ColumnInfo AddMeta(TaskMetaInformation meta)
         {
             var nowTicks = Math.Max((meta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
             meta.LastModificationTicks = nowTicks;
@@ -49,8 +48,6 @@ namespace RemoteQueue.Cassandra.Repositories
             if(meta.State == TaskState.New)
                 childTaskIndex.AddMeta(meta);
             storage.Write(meta.Id, meta);
-            if(OnIndexMeta != null)
-                OnIndexMeta(new Tuple<string, ColumnInfo>(meta.Id, columnInfo), meta);
 
             var oldMeta = meta.GetSnapshot();
             if(oldMeta != null)
@@ -61,6 +58,7 @@ namespace RemoteQueue.Cassandra.Repositories
             }
 
             meta.MakeSnapshot();
+            return columnInfo;
         }
 
         public TaskMetaInformation GetMeta(string taskId)
@@ -85,7 +83,6 @@ namespace RemoteQueue.Cassandra.Repositories
             return metas;
         }
 
-        internal OnIndexMeta OnIndexMeta { get; set; }
         private readonly ITaskMetaInformationBlobStorage storage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
         private readonly IEventLogRepository eventLogRepository;

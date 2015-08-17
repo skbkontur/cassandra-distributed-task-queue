@@ -4,26 +4,27 @@ using Kontur.Tracing.Core;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Tracing;
 
 namespace RemoteQueue.Handling
 {
     internal class RemoteTask : IRemoteTask
     {
-        public RemoteTask(IHandleTaskCollection handleTaskCollection, Task task, IGlobalTime globalTime)
+        public RemoteTask(Task task, IHandleTaskCollection handleTaskCollection)
         {
-            this.handleTaskCollection = handleTaskCollection;
             this.task = task;
-            this.globalTime = globalTime;
+            this.handleTaskCollection = handleTaskCollection;
         }
+
+        public string Id { get { return task.Meta.Id; } }
 
         public string Queue()
         {
             return Queue(TimeSpan.FromTicks(0));
         }
 
-        public string Queue(TimeSpan delay)
+        public virtual string Queue(TimeSpan delay)
         {
             using(new RemoteTaskTraceContext(task.Meta))
             {
@@ -34,7 +35,7 @@ namespace RemoteQueue.Handling
                     publishContext.RecordTimepoint(Timepoint.Start);
                 }
 
-                Publish(delay);
+                WriteTaskMeta(delay);
 
                 using(var publishContext = Trace.CreateChildContext("Publish", publishContextId))
                     publishContext.RecordTimepoint(Timepoint.Finish);
@@ -43,17 +44,15 @@ namespace RemoteQueue.Handling
             }
         }
 
-        private void Publish(TimeSpan delay)
+        protected ColumnInfo WriteTaskMeta(TimeSpan delay)
         {
+            var nowTicks = DateTime.UtcNow.Ticks;
             var delayTicks = Math.Max(delay.Ticks, 0);
-            //task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, globalTime.UpdateNowTicks() + delayTicks) + 1;
-            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, DateTime.UtcNow.Ticks + delayTicks) + 1;
-            handleTaskCollection.AddTask(task);
+            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, nowTicks + delayTicks) + 1;
+            return handleTaskCollection.AddTask(task);
         }
 
-        public string Id { get { return task.Meta.Id; } }
+        protected readonly Task task;
         private readonly IHandleTaskCollection handleTaskCollection;
-        private readonly Task task;
-        private readonly IGlobalTime globalTime;
     }
 }

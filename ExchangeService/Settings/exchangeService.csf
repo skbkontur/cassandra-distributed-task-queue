@@ -7,7 +7,5 @@ LogDirectory = logs
 SchedulerInterval = 00:00:00.1
 MaxRunningTasksCount = 20
 MaxRunningContinuationsCount = 20
-ShardsCount = 1
-ShardIndex = 1
 
 DisableMetrics = true

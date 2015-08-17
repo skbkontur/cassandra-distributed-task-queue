@@ -43,6 +43,9 @@
     <Reference Include="Catalogue.Objects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
     </Reference>
+    <Reference Include="GroboContainer">
+      <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
+    </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
@@ -125,13 +128,11 @@
     <Compile Include="Handling\IHandlerManager.cs" />
     <Compile Include="Handling\IRemoteTask.cs" />
     <Compile Include="Handling\IRemoteTaskQueue.cs" />
-    <Compile Include="Handling\IShardingManager.cs" />
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />
     <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ITaskHandler.cs" />
     <Compile Include="Handling\ITaskHandlerCollection.cs" />
-    <Compile Include="Handling\OnIndexMeta.cs" />
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
@@ -139,7 +140,9 @@
     <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />
     <Compile Include="Tracing\PublishTaskTraceContext.cs" />
     <Compile Include="Tracing\RemoteTaskTraceContext.cs" />
-    <Compile Include="Handling\ShardingManager.cs" />
+    <Compile Include="Handling\RemoteTaskQueueImpl.cs" />
+    <Compile Include="Handling\RemoteTaskQueueWithContinuationOptimization.cs" />
+    <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
@@ -149,8 +152,8 @@
     <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
     <Compile Include="Handling\TaskQueueReason.cs" />
-    <Compile Include="LocalTasks\TaskQueue\ITaskQueue.cs" />
-    <Compile Include="LocalTasks\TaskQueue\TaskQueue.cs" />
+    <Compile Include="LocalTasks\TaskQueue\ILocalTaskQueue.cs" />
+    <Compile Include="LocalTasks\TaskQueue\LocalTaskQueue.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskQueueException.cs" />
     <Compile Include="LocalTasks\TaskQueue\LocalTaskProcessingResult.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskWrapper.cs" />

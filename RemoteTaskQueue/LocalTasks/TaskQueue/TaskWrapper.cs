@@ -12,12 +12,15 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class TaskWrapper
     {
-        public TaskWrapper(HandlerTask handlerTask, TaskQueue taskQueue)
+        public TaskWrapper(string taskId, HandlerTask handlerTask, LocalTaskQueue localTaskQueue)
         {
+            this.taskId = taskId;
             this.handlerTask = handlerTask;
-            this.taskQueue = taskQueue;
+            this.localTaskQueue = localTaskQueue;
             finished = false;
         }
+
+        public bool Finished { get { return finished; } }
 
         public void Run()
         {
@@ -35,7 +38,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             try
             {
                 finished = true;
-                taskQueue.TaskFinished(handlerTask.TaskId);
+                localTaskQueue.TaskFinished(taskId);
 
                 TraceContext.Current.RecordTimepoint(Timepoint.Finish);
                 Trace.FinishCurrentContext(); // Finish infrastructureTraceContext
@@ -65,10 +68,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
         }
 
-        public bool Finished { get { return finished; } }
+        private readonly string taskId;
         private readonly HandlerTask handlerTask;
-        private readonly TaskQueue taskQueue;
+        private readonly LocalTaskQueue localTaskQueue;
         private volatile bool finished;
-        private readonly ILog logger = LogManager.GetLogger(typeof(TaskQueue));
+        private readonly ILog logger = LogManager.GetLogger(typeof(LocalTaskQueue));
     }
 }
