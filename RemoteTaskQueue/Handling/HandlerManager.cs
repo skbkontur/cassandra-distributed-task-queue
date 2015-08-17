@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 
-using Kontur.Tracing.Core;
-
 using log4net;
 
 using MoreLinq;
@@ -10,6 +8,7 @@ using MoreLinq;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.LocalTasks.TaskQueue;
+using RemoteQueue.Tracing;
 
 namespace RemoteQueue.Handling
 {
@@ -48,18 +47,8 @@ namespace RemoteQueue.Handling
                             return;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
                             return;
-
-                        ITraceContext taskTraceContext = null;
-                        if(meta != null)
-                        {
-                            taskTraceContext = Trace.ContinueContext(meta.TraceId, meta.Id, meta.TraceIsActive, true);
-                            taskTraceContext.RecordTimepoint(Timepoint.Start, new DateTime(meta.Ticks, DateTimeKind.Utc));
-                        }
-
-                        localTaskQueue.QueueTask(taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
-
-                        if(taskTraceContext != null)
-                            taskTraceContext.Dispose(); // Pop taskTraceContext
+                        using(new RemoteTaskHandlingTraceContext(taskMeta))
+                            localTaskQueue.QueueTask(taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
                     }
                 }
             }
@@ -90,28 +79,6 @@ namespace RemoteQueue.Handling
             var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
             long all = allTasksInStates.Count();
             return new Tuple<long, long>(all, all);
-            }
-
-        internal void QueueTask(Tuple<string, ColumnInfo> taskInfo, TaskMetaInformation meta, long nowTicks, TaskQueueReason reason)
-        {
-            if(meta != null && !taskHandlerCollection.ContainsHandlerFor(meta.Name))
-                return;
-            if(!shardingManager.IsSituableTask(taskInfo.Item1))
-                return;
-            var handlerTask = createHandlerTask(taskInfo, meta, nowTicks);
-            handlerTask.Reason = reason;
-            if(meta != null && (reason == TaskQueueReason.PullFromQueue || (reason == TaskQueueReason.TaskContinuation && meta.State == TaskState.New)))
-            {
-                var infrastructureTraceContext = Trace.CreateChildContext("Handle.Infrastructure");
-                infrastructureTraceContext.RecordTimepoint(Timepoint.Start);
-                if(taskQueue.QueueTask(handlerTask))
-                    infrastructureTraceContext.Dispose(); // Pop infrastructureTraceContext
-                else
-                {
-                    infrastructureTraceContext.RecordTimepoint(Timepoint.Finish);
-                    infrastructureTraceContext.Dispose(); // Finish infrastructureTraceContext
-                }
-            }
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));

@@ -137,9 +137,11 @@
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
     <Compile Include="Tracing\BusinessLogicTaskTraceContext.cs" />
+    <Compile Include="Tracing\InfrastructureTaskTraceContext.cs" />
     <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />
     <Compile Include="Tracing\PublishTaskTraceContext.cs" />
-    <Compile Include="Tracing\RemoteTaskTraceContext.cs" />
+    <Compile Include="Tracing\RemoteTaskHandlingTraceContext.cs" />
+    <Compile Include="Tracing\RemoteTaskInitialTraceContext.cs" />
     <Compile Include="Handling\RemoteTaskQueueImpl.cs" />
     <Compile Include="Handling\RemoteTaskQueueWithContinuationOptimization.cs" />
     <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />

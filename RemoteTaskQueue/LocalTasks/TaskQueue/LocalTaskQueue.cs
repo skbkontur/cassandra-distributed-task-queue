@@ -5,6 +5,7 @@ using System.Linq;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Handling;
+using RemoteQueue.Tracing;
 
 using Task = System.Threading.Tasks.Task;
 
@@ -47,25 +48,36 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public void QueueTask(ColumnInfo taskInfo, TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
         {
-            var taskId = taskMeta.Id;
-            var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta);
-            lock(lockObject)
+            using(var infrastructureTraceContext = new InfrastructureTaskTraceContext())
             {
-                if(stopped)
-                    throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
-                if(hashtable.ContainsKey(taskId))
-                    return;
-                var taskWrapper = new TaskWrapper(taskId, handlerTask, this);
-                var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
-                if(!taskWrapper.Finished)
-                    hashtable.Add(taskId, asyncTask);
+                var alreadyInQueue = false;
+                var taskId = taskMeta.Id;
+                var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta);
+                lock(lockObject)
+                {
+                    if(stopped)
+                        throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
+                    if(hashtable.ContainsKey(taskId))
+                        alreadyInQueue = true;
+                    else
+                    {
+                        var taskWrapper = new TaskWrapper(taskId, handlerTask, this);
+                        var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
+                        if(!taskWrapper.Finished)
+                            hashtable.Add(taskId, asyncTask);
+                    }
+                }
+                if(alreadyInQueue)
+                    infrastructureTraceContext.RecordFinish();
             }
         }
 
-        public void TaskFinished(string taskId)
+        public void TaskFinished(string taskId, LocalTaskProcessingResult result)
         {
             lock(lockObject)
                 hashtable.Remove(taskId);
+            InfrastructureTaskTraceContext.Finish();
+            RemoteTaskHandlingTraceContext.Finish(result);
         }
 
         private readonly Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask;

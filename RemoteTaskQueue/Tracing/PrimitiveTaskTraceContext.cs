@@ -15,7 +15,7 @@ namespace RemoteQueue.Tracing
         public void Dispose()
         {
             traceContext.RecordTimepoint(Timepoint.Finish);
-            traceContext.Dispose();
+            traceContext.Dispose(); // finish primitive trace context
         }
 
         private readonly ITraceContext traceContext;

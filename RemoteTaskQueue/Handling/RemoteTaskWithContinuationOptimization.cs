@@ -3,6 +3,7 @@
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.LocalTasks.TaskQueue;
+using RemoteQueue.Tracing;
 
 namespace RemoteQueue.Handling
 {
@@ -16,9 +17,12 @@ namespace RemoteQueue.Handling
 
         public override sealed string Queue(TimeSpan delay)
         {
-            var taskInfo = WriteTaskMeta(delay);
-            localTaskQueue.QueueTask(taskInfo, task.Meta, TaskQueueReason.TaskContinuation);
-            return Id;
+            using(new RemoteTaskInitialTraceContext(task.Meta))
+            {
+                var taskInfo = Publish(delay);
+                localTaskQueue.QueueTask(taskInfo, task.Meta, TaskQueueReason.TaskContinuation);
+                return Id;
+            }
         }
 
         private readonly ILocalTaskQueue localTaskQueue;

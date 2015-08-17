@@ -1,12 +1,8 @@
 using System;
 
-using Kontur.Tracing.Core;
-
 using log4net;
 
 using RemoteQueue.Handling;
-
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
@@ -34,33 +30,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 result = LocalTaskProcessingResult.Undefined;
                 logger.Error("Ошибка во время обработки асинхронной задачи.", e);
             }
-
             try
             {
                 finished = true;
-                localTaskQueue.TaskFinished(taskId);
-
-                TraceContext.Current.RecordTimepoint(Timepoint.Finish);
-                Trace.FinishCurrentContext(); // Finish infrastructureTraceContext
-
-                switch(result)
-                {
-                case LocalTaskProcessingResult.Success:
-                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "200");
-                    break;
-                case LocalTaskProcessingResult.Error:
-                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "500");
-                    break;
-                case LocalTaskProcessingResult.Rerun:
-                    TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "400");
-                    break;
-                case LocalTaskProcessingResult.Undefined:
-                    break;
-                default:
-                    throw new InvalidProgramStateException(string.Format("Invalid LocalTaskProcessingResult: {0}", result));
-                }
-                TraceContext.Current.RecordTimepoint(Timepoint.Finish);
-                Trace.FinishCurrentContext(); // Finish RemoteTaskTraceContext
+                localTaskQueue.TaskFinished(taskId, result);
             }
             catch(Exception e)
             {

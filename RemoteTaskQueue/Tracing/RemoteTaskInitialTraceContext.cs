@@ -6,9 +6,9 @@ using RemoteQueue.Cassandra.Entities;
 
 namespace RemoteQueue.Tracing
 {
-    public class RemoteTaskTraceContext : IDisposable
+    public class RemoteTaskInitialTraceContext : IDisposable
     {
-        public RemoteTaskTraceContext(TaskMetaInformation taskMeta)
+        public RemoteTaskInitialTraceContext(TaskMetaInformation taskMeta)
         {
             traceContext = Trace.CreateChildContext(taskMeta.Name, taskMeta.Id);
             taskMeta.TraceId = traceContext.TraceId;
@@ -18,7 +18,7 @@ namespace RemoteQueue.Tracing
 
         public void Dispose()
         {
-            traceContext.Dispose();
+            traceContext.Dispose(); // finish Task trace context
         }
 
         private readonly ITraceContext traceContext;

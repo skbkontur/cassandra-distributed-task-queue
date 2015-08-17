@@ -4,8 +4,8 @@
     {
         public override string ToString()
         {
-            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}]",
-                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State);
+            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, TraceId: {6}]",
+                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId);
         }
 
         public string Name { get; set; }
