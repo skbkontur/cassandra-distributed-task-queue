@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.Indexes;
@@ -17,7 +19,8 @@ namespace RemoteQueue.Cassandra.Repositories
             this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 
-        public ColumnInfo AddTask(Task task)
+        [NotNull]
+        public ColumnInfo AddTask([NotNull] Task task)
         {
             if(task.Meta.Attempts == 0)
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
@@ -29,12 +32,14 @@ namespace RemoteQueue.Cassandra.Repositories
             return handleTasksMetaStorage.AddMeta(task.Meta);
         }
 
-        public Task GetTask(string taskId)
+        [NotNull]
+        public Task GetTask([NotNull] string taskId)
         {
             return GetTasks(new[] {taskId}).First();
         }
 
-        public Task[] GetTasks(string[] taskIds)
+        [NotNull]
+        public Task[] GetTasks([NotNull] string[] taskIds)
         {
             var taskDatas = taskDataStorage.ReadQuiet(taskIds);
             var metas = handleTasksMetaStorage.GetMetasQuiet(taskIds);

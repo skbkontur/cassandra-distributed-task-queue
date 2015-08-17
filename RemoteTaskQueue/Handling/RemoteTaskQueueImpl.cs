@@ -3,6 +3,8 @@ using System.Linq;
 
 using GroBuf;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
@@ -98,6 +100,7 @@ namespace RemoteQueue.Handling
             return GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>).ToArray();
         }
 
+        [NotNull]
         public Task CreateTaskImpl<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
         {
             createTaskOptions = createTaskOptions ?? new CreateTaskOptions();

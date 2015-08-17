@@ -9,6 +9,8 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.LocalTasks.TaskQueue;
 
+using SKBKontur.Catalogue.Objects;
+
 namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
@@ -42,11 +44,14 @@ namespace RemoteQueue.Handling
                     {
                         var taskMeta = taskMetas[i];
                         var taskInfo = taskInfoBatch[i];
+                        var taskId = taskInfo.Item1;
+                        if(taskMeta != null && taskMeta.Id != taskId)
+                            throw new InvalidProgramStateException(string.Format("taskInfo.TaskId ({0}) != taskMeta.TaskId ({1})", taskId, taskMeta.Id));
                         if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
-                            return;
+                            continue;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
-                            return;
-                        localTaskQueue.QueueTask(taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
+                            continue;
+                        localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
                     }
                 }
             }

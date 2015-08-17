@@ -4,6 +4,8 @@ using System.Diagnostics;
 using GroBuf;
 using GroBuf.DataMembersExtracters;
 
+using JetBrains.Annotations;
+
 using log4net;
 
 using RemoteQueue.Cassandra.Entities;
@@ -23,10 +25,10 @@ namespace RemoteQueue.Handling
     public class HandlerTask
     {
         public HandlerTask(
-            string taskId,
+            [NotNull] string taskId,
             TaskQueueReason reason,
-            ColumnInfo taskInfo,
-            TaskMetaInformation taskMeta,
+            [NotNull] ColumnInfo taskInfo,
+            [CanBeNull] TaskMetaInformation taskMeta,
             ITaskCounter taskCounter,
             ISerializer serializer,
             IRemoteTaskQueue remoteTaskQueue,

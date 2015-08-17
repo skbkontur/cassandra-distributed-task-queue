@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
@@ -39,7 +41,8 @@ namespace RemoteQueue.Cassandra.Repositories
                     });
         }
 
-        public ColumnInfo AddMeta(TaskMetaInformation meta)
+        [NotNull]
+        public ColumnInfo AddMeta([NotNull] TaskMetaInformation meta)
         {
             var nowTicks = Math.Max((meta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
             meta.LastModificationTicks = nowTicks;

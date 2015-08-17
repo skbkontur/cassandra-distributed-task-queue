@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Handling;
@@ -45,9 +47,8 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return hashtable.Count;
         }
 
-        public void QueueTask(ColumnInfo taskInfo, TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
+        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
         {
-            var taskId = taskMeta.Id;
             var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta);
             lock(lockObject)
             {
@@ -62,7 +63,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
         }
 
-        public void TaskFinished(string taskId)
+        public void TaskFinished([NotNull] string taskId)
         {
             lock(lockObject)
                 hashtable.Remove(taskId);
