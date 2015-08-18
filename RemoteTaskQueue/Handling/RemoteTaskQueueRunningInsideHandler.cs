@@ -12,9 +12,9 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 namespace RemoteQueue.Handling
 {
     [IgnoredImplementation]
-    internal class RemoteTaskQueueWithContinuationOptimization : RemoteTaskQueueImpl, IRemoteTaskQueue
+    internal class RemoteTaskQueueRunningInsideHandler : RemoteTaskQueueImpl, IRemoteTaskQueue
     {
-        public RemoteTaskQueueWithContinuationOptimization(
+        public RemoteTaskQueueRunningInsideHandler(
             ISerializer serializer,
             IHandleTasksMetaStorage handleTasksMetaStorage,
             IHandleTaskCollection handleTaskCollection,
