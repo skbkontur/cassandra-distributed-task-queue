@@ -15,12 +15,15 @@ namespace RemoteQueue.Tracing
     {
         public RemoteTaskHandlingTraceContext([CanBeNull] TaskMetaInformation taskMeta)
         {
+            TaskIsBeingTraced = taskMeta != null;
             if(taskMeta != null)
             {
                 traceContext = Trace.ContinueContext(taskMeta.TraceId, taskMeta.Id, taskMeta.TraceIsActive, isRoot : true);
                 traceContext.RecordTimepoint(Timepoint.Start, new DateTime(taskMeta.Ticks, DateTimeKind.Utc));
             }
         }
+
+        public bool TaskIsBeingTraced { get; private set; }
 
         public void Dispose()
         {

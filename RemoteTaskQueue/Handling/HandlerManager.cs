@@ -28,6 +28,8 @@ namespace RemoteQueue.Handling
             this.handleTasksMetaStorage = handleTasksMetaStorage;
         }
 
+        public string Id { get { return "HandlerManager"; } }
+
         public void Run()
         {
             lock(lockObject)
@@ -52,14 +54,12 @@ namespace RemoteQueue.Handling
                             continue;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
                             return;
-                        using(new RemoteTaskHandlingTraceContext(taskMeta))
-                            localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue, taskMeta != null);
+                        using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
+                            localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue, taskTraceContext.TaskIsBeingTraced);
                     }
                 }
             }
         }
-
-        public string Id { get { return "HandlerManager"; } }
 
         public void Start()
         {
