@@ -48,9 +48,9 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return hashtable.Count;
         }
 
-        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
+        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, bool taskIsBeingTraced)
         {
-            using(var infrastructureTraceContext = new InfrastructureTaskTraceContext())
+            using(var infrastructureTraceContext = new InfrastructureTaskTraceContext(taskIsBeingTraced))
             {
                 var alreadyInQueue = false;
                 var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta);
@@ -62,7 +62,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                         alreadyInQueue = true;
                     else
                     {
-                        var taskWrapper = new TaskWrapper(taskId, handlerTask, this);
+                        var taskWrapper = new TaskWrapper(taskId, taskIsBeingTraced, handlerTask, this);
                         var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
                         if(!taskWrapper.Finished)
                             hashtable.Add(taskId, asyncTask);
@@ -73,12 +73,15 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
         }
 
-        public void TaskFinished([NotNull] string taskId, LocalTaskProcessingResult result)
+        public void TaskFinished([NotNull] string taskId, LocalTaskProcessingResult result, bool taskIsBeingTraced)
         {
             lock(lockObject)
                 hashtable.Remove(taskId);
-            InfrastructureTaskTraceContext.Finish();
-            RemoteTaskHandlingTraceContext.Finish(result);
+            if(taskIsBeingTraced)
+            {
+                InfrastructureTaskTraceContext.Finish();
+                RemoteTaskHandlingTraceContext.Finish(result);
+            }
         }
 
         private readonly Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask;

@@ -10,9 +10,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class TaskWrapper
     {
-        public TaskWrapper([NotNull] string taskId, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
+        public TaskWrapper([NotNull] string taskId, bool taskIsBeingTraced, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
         {
             this.taskId = taskId;
+            this.taskIsBeingTraced = taskIsBeingTraced;
             this.handlerTask = handlerTask;
             this.localTaskQueue = localTaskQueue;
             finished = false;
@@ -35,7 +36,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             try
             {
                 finished = true;
-                localTaskQueue.TaskFinished(taskId, result);
+                localTaskQueue.TaskFinished(taskId, result, taskIsBeingTraced);
             }
             catch(Exception e)
             {
@@ -44,6 +45,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         }
 
         private readonly string taskId;
+        private readonly bool taskIsBeingTraced;
         private readonly HandlerTask handlerTask;
         private readonly LocalTaskQueue localTaskQueue;
         private volatile bool finished;

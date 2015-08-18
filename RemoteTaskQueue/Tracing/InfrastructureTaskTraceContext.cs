@@ -6,20 +6,25 @@ namespace RemoteQueue.Tracing
 {
     public class InfrastructureTaskTraceContext : IDisposable
     {
-        public InfrastructureTaskTraceContext()
+        public InfrastructureTaskTraceContext(bool taskIsBeingTraced)
         {
-            traceContext = Trace.CreateChildContext("Handle.Infrastructure");
-            traceContext.RecordTimepoint(Timepoint.Start);
+            if(taskIsBeingTraced)
+            {
+                traceContext = Trace.CreateChildContext("Handle.Infrastructure");
+                traceContext.RecordTimepoint(Timepoint.Start);
+            }
         }
 
         public void RecordFinish()
         {
-            traceContext.RecordTimepoint(Timepoint.Finish);
+            if(traceContext != null)
+                traceContext.RecordTimepoint(Timepoint.Finish);
         }
 
         public void Dispose()
         {
-            traceContext.Dispose(); // pop / finish Handle.Infrastructure trace context
+            if(traceContext != null)
+                traceContext.Dispose(); // pop / finish Handle.Infrastructure trace context
         }
 
         public static void Finish()

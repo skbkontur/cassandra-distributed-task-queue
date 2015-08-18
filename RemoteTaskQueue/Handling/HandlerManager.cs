@@ -53,7 +53,7 @@ namespace RemoteQueue.Handling
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
                             return;
                         using(new RemoteTaskHandlingTraceContext(taskMeta))
-                            localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
+                            localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue, taskMeta != null);
                     }
                 }
             }
