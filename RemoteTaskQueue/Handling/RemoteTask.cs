@@ -28,12 +28,12 @@ namespace RemoteQueue.Handling
         [NotNull]
         public virtual string Queue(TimeSpan delay)
         {
-            WriteTaskMeta(delay);
+            Publish(delay);
             return Id;
         }
 
         [NotNull]
-        protected ColumnInfo WriteTaskMeta(TimeSpan delay)
+        protected ColumnInfo Publish(TimeSpan delay)
         {
             var nowTicks = DateTime.UtcNow.Ticks;
             var delayTicks = Math.Max(delay.Ticks, 0);

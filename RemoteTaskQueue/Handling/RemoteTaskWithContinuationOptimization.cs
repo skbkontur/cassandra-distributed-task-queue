@@ -19,7 +19,7 @@ namespace RemoteQueue.Handling
         [NotNull]
         public override sealed string Queue(TimeSpan delay)
         {
-            var taskInfo = WriteTaskMeta(delay);
+            var taskInfo = Publish(delay);
             localTaskQueue.QueueTask(task.Meta.Id, taskInfo, task.Meta, TaskQueueReason.TaskContinuation);
             return Id;
         }
