@@ -11,7 +11,7 @@ namespace RemoteQueue.Handling
 {
     internal class RemoteTaskWithContinuationOptimization : RemoteTask
     {
-        public RemoteTaskWithContinuationOptimization([NotNull] Task task, IHandleTaskCollection handleTaskCollection, ILocalTaskQueue localTaskQueue)
+        public RemoteTaskWithContinuationOptimization([NotNull] Task task, [NotNull] IHandleTaskCollection handleTaskCollection, [NotNull] ILocalTaskQueue localTaskQueue)
             : base(task, handleTaskCollection)
         {
             this.localTaskQueue = localTaskQueue;
@@ -23,7 +23,8 @@ namespace RemoteQueue.Handling
             using(new RemoteTaskInitialTraceContext(task.Meta))
             {
                 var taskInfo = Publish(delay);
-                localTaskQueue.QueueTask(task.Meta.Id, taskInfo, task.Meta, TaskQueueReason.TaskContinuation, taskIsBeingTraced : true);
+                bool queueIsFull;
+                localTaskQueue.QueueTask(task.Meta.Id, taskInfo, task.Meta, TaskQueueReason.TaskContinuation, out queueIsFull, taskIsBeingTraced : true);
                 return Id;
             }
         }

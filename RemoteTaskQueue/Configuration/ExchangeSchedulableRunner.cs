@@ -4,12 +4,6 @@ using GroBuf;
 
 using log4net;
 
-using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling;
 using RemoteQueue.LocalTasks.Scheduling;
 using RemoteQueue.LocalTasks.TaskQueue;
@@ -18,38 +12,27 @@ using RemoteQueue.Settings;
 using RemoteQueue.UserClasses;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
-using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 
 namespace RemoteQueue.Configuration
 {
     public class ExchangeSchedulableRunner : IExchangeSchedulableRunner
     {
-        public ExchangeSchedulableRunner(ICassandraCluster cassandraCluster, ICassandraSettings cassandraSettings, IRemoteTaskQueueSettings taskQueueSettings, IExchangeSchedulableRunnerSettings runnerSettings, TaskDataRegistryBase taskDataRegistry, TaskHandlerRegistryBase taskHandlerRegistry, ISerializer serializer, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+        public ExchangeSchedulableRunner(
+            IExchangeSchedulableRunnerSettings runnerSettings,
+            TaskHandlerRegistryBase taskHandlerRegistry,
+            ISerializer serializer,
+            ICassandraCluster cassandraCluster,
+            ICassandraSettings cassandraSettings,
+            IRemoteTaskQueueSettings taskQueueSettings,
+            ITaskDataTypeToNameMapper taskDataTypeToNameMapper,
+            IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             this.runnerSettings = runnerSettings;
-            periodicTaskRunner = new PeriodicTaskRunner();
-            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
-            var ticksHolder = new TicksHolder(serializer, parameters);
-            var globalTime = new GlobalTime(ticksHolder);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, ticksHolder, serializer, globalTime);
-            var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
-            var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
-            var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
-            var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex);
-            var handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, globalTime), remoteTaskQueueProfiler);
-            var handleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, globalTime));
-            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
-            var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
-            var remoteLockCreator = taskQueueSettings.UseRemoteLocker ? (IRemoteLockCreator)new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(parameters.Settings.QueueKeyspace)) : new RemoteLockCreator(remoteLockImplementation);
-            var taskHandlerCollection = new TaskHandlerCollection(new TaskDataTypeToNameMapper(taskDataRegistry), taskHandlerRegistry);
             var taskCounter = new TaskCounter(runnerSettings);
-            LocalTaskQueue localTaskQueue = null;
-            var lazyRemoteTaskQueue = new Lazy<IRemoteTaskQueue>(() => new RemoteTaskQueueRunningInsideHandler(serializer, handleTasksMetaStorage, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskDataRegistry, childTaskIndex, localTaskQueue, taskQueueSettings.EnableContinuationOptimization));
-            localTaskQueue = new LocalTaskQueue((taskId, reason, taskInfo, taskMeta) =>
-                                                new HandlerTask(taskId, reason, taskInfo, taskMeta, taskCounter, serializer, lazyRemoteTaskQueue.Value, handleTaskCollection, remoteLockCreator, handleTaskExceptionInfoStorage, taskHandlerCollection, handleTasksMetaStorage, taskMinimalStartTicksIndex, remoteTaskQueueProfiler));
-            handlerManager = new HandlerManager(localTaskQueue, taskCounter, taskHandlerCollection, handleTasksMetaStorage);
+            var taskHandlerCollection = new TaskHandlerCollection(taskDataTypeToNameMapper, taskHandlerRegistry);
+            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataTypeToNameMapper, remoteTaskQueueProfiler);
+            var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerCollection, remoteTaskQueue);
+            handlerManager = new HandlerManager(localTaskQueue, taskCounter, remoteTaskQueue.HandleTasksMetaStorage);
         }
 
         public void Stop()
@@ -91,11 +74,11 @@ namespace RemoteQueue.Configuration
             return handlerManager.GetCassandraQueueLength();
         }
 
+        private volatile bool worked;
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
         private readonly IHandlerManager handlerManager;
         private readonly object lockObject = new object();
-        private readonly ILog logger = LogManager.GetLogger(typeof(ExchangeSchedulableRunner));
-        private readonly IPeriodicTaskRunner periodicTaskRunner;
-        private volatile bool worked;
+        private readonly IPeriodicTaskRunner periodicTaskRunner = new PeriodicTaskRunner();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(ExchangeSchedulableRunner));
     }
 }

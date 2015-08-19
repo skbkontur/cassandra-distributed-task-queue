@@ -15,10 +15,17 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class LocalTaskQueue : ILocalTaskQueue
     {
-        public LocalTaskQueue(Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask)
+        public LocalTaskQueue(ITaskCounter taskCounter, ITaskHandlerCollection taskHandlerCollection, IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {
-            this.createHandlerTask = createHandlerTask;
+            this.taskCounter = taskCounter;
+            this.taskHandlerCollection = taskHandlerCollection;
+            this.remoteTaskQueueInternals = remoteTaskQueueInternals;
+            Instance = this;
         }
+
+        // NB! адская статика, чтобы внутри процессов consumer'ов continuation-оптимизация работала неявно
+        [CanBeNull]
+        public static ILocalTaskQueue Instance { get; private set; }
 
         public void Start()
         {
@@ -48,35 +55,56 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return hashtable.Count;
         }
 
-        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, bool taskIsBeingTraced)
+        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, bool taskIsBeingTraced)
         {
             using(var infrastructureTraceContext = new InfrastructureTaskTraceContext(taskIsBeingTraced))
             {
-                var alreadyInQueue = false;
-                var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta);
+                bool taskIsSentToThreadPool;
+                DoQueueTask(taskId, taskInfo, taskMeta, taskQueueReason, out queueIsFull, taskIsBeingTraced, out taskIsSentToThreadPool);
+                if(!taskIsSentToThreadPool)
+                    infrastructureTraceContext.RecordFinish();
+            }
+        }
+
+        private void DoQueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, bool taskIsBeingTraced, out bool taskIsSentToThreadPool)
+        {
+            queueIsFull = false;
+            taskIsSentToThreadPool = false;
+            if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
+                return;
+            if(!taskCounter.TryIncrement(taskQueueReason))
+            {
+                queueIsFull = true;
+                return;
+            }
+            try
+            {
+                var handlerTask = new HandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, taskHandlerCollection, remoteTaskQueueInternals);
                 lock(lockObject)
                 {
                     if(stopped)
                         throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
                     if(hashtable.ContainsKey(taskId))
-                        alreadyInQueue = true;
-                    else
-                    {
-                        var taskWrapper = new TaskWrapper(taskId, taskIsBeingTraced, handlerTask, this);
-                        var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
-                        if(!taskWrapper.Finished)
-                            hashtable.Add(taskId, asyncTask);
-                    }
+                        return;
+                    var taskWrapper = new TaskWrapper(taskId, taskQueueReason, taskIsBeingTraced, handlerTask, this);
+                    var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
+                    taskIsSentToThreadPool = true;
+                    if(!taskWrapper.Finished)
+                        hashtable.Add(taskId, asyncTask);
                 }
-                if(alreadyInQueue)
-                    infrastructureTraceContext.RecordFinish();
+            }
+            finally
+            {
+                if(!taskIsSentToThreadPool)
+                    taskCounter.Decrement(taskQueueReason);
             }
         }
 
-        public void TaskFinished([NotNull] string taskId, LocalTaskProcessingResult result, bool taskIsBeingTraced)
+        public void TaskFinished([NotNull] string taskId, TaskQueueReason taskQueueReason, bool taskIsBeingTraced, LocalTaskProcessingResult result)
         {
             lock(lockObject)
                 hashtable.Remove(taskId);
+            taskCounter.Decrement(taskQueueReason);
             if(taskIsBeingTraced)
             {
                 InfrastructureTaskTraceContext.Finish();
@@ -84,7 +112,9 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
         }
 
-        private readonly Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask;
+        private readonly ITaskCounter taskCounter;
+        private readonly ITaskHandlerCollection taskHandlerCollection;
+        private readonly IRemoteTaskQueueInternals remoteTaskQueueInternals;
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();
         private volatile bool stopped;
