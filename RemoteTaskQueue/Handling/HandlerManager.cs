@@ -15,15 +15,10 @@ namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager(
-            ILocalTaskQueue localTaskQueue,
-            ITaskCounter taskCounter,
-            TaskHandlerCollection taskHandlerCollection,
-            IHandleTasksMetaStorage handleTasksMetaStorage)
+        public HandlerManager(ILocalTaskQueue localTaskQueue, ITaskCounter taskCounter, IHandleTasksMetaStorage handleTasksMetaStorage)
         {
             this.localTaskQueue = localTaskQueue;
             this.taskCounter = taskCounter;
-            this.taskHandlerCollection = taskHandlerCollection;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
         }
 
@@ -47,8 +42,6 @@ namespace RemoteQueue.Handling
                         var taskId = taskInfo.Item1;
                         if(taskMeta != null && taskMeta.Id != taskId)
                             throw new InvalidProgramStateException(string.Format("taskInfo.TaskId ({0}) != taskMeta.TaskId ({1})", taskId, taskMeta.Id));
-                        if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
-                            continue;
                         if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
                             return;
                         localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
@@ -85,7 +78,6 @@ namespace RemoteQueue.Handling
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
-        private readonly TaskHandlerCollection taskHandlerCollection;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly object lockObject = new object();
         private readonly ILocalTaskQueue localTaskQueue;

@@ -56,6 +56,9 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
         {
+            if (taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
+                return;
+
             var handlerTask = new HandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, taskCounter, taskHandlerCollection, remoteTaskQueueInternals);
             lock(lockObject)
             {

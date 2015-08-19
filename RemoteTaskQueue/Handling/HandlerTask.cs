@@ -72,8 +72,6 @@ namespace RemoteQueue.Handling
                 taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
-            if(!taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
-                return LocalTaskProcessingResult.Undefined;
             var nowTicks = DateTime.UtcNow.Ticks;
             if(taskMeta.MinimalStartTicks != 0 && (taskMeta.MinimalStartTicks > nowTicks))
             {
