@@ -14,9 +14,16 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class LocalTaskQueue : ILocalTaskQueue
     {
-        public LocalTaskQueue(Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask)
+        // NB! адская статика, чтобы внутри процессов consumer'ов continuation-оптимизация работала неявно
+        [CanBeNull]
+        public static ILocalTaskQueue Instance { get; private set; }
+
+        public LocalTaskQueue(ITaskCounter taskCounter, ITaskHandlerCollection taskHandlerCollection, IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {
-            this.createHandlerTask = createHandlerTask;
+            this.taskCounter = taskCounter;
+            this.taskHandlerCollection = taskHandlerCollection;
+            this.remoteTaskQueueInternals = remoteTaskQueueInternals;
+            Instance = this;
         }
 
         public void Start()
@@ -49,7 +56,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
         {
-            var handlerTask = createHandlerTask(taskId, taskQueueReason, taskInfo, taskMeta);
+            var handlerTask = new HandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, taskCounter, taskHandlerCollection, remoteTaskQueueInternals);
             lock(lockObject)
             {
                 if(stopped)
@@ -69,7 +76,9 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 hashtable.Remove(taskId);
         }
 
-        private readonly Func<string, TaskQueueReason, ColumnInfo, TaskMetaInformation, HandlerTask> createHandlerTask;
+        private readonly ITaskCounter taskCounter;
+        private readonly ITaskHandlerCollection taskHandlerCollection;
+        private readonly IRemoteTaskQueueInternals remoteTaskQueueInternals;
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();
         private volatile bool stopped;

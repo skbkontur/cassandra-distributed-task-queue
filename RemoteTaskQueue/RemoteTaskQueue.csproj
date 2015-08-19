@@ -43,9 +43,6 @@
     <Reference Include="Catalogue.Objects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
     </Reference>
-    <Reference Include="GroboContainer">
-      <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
-    </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
@@ -129,6 +126,7 @@
     <Compile Include="Handling\IHandlerManager.cs" />
     <Compile Include="Handling\IRemoteTask.cs" />
     <Compile Include="Handling\IRemoteTaskQueue.cs" />
+    <Compile Include="Handling\IRemoteTaskQueueInternals.cs" />
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />
     <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
@@ -137,8 +135,6 @@
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
-    <Compile Include="Handling\RemoteTaskQueueImpl.cs" />
-    <Compile Include="Handling\RemoteTaskQueueRunningInsideHandler.cs" />
     <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />

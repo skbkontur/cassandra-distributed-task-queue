@@ -30,30 +30,23 @@ namespace RemoteQueue.Handling
             [NotNull] ColumnInfo taskInfo,
             [CanBeNull] TaskMetaInformation taskMeta,
             ITaskCounter taskCounter,
-            ISerializer serializer,
-            IRemoteTaskQueue remoteTaskQueue,
-            IHandleTaskCollection handleTaskCollection,
-            IRemoteLockCreator remoteLockCreator,
-            IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage,
             ITaskHandlerCollection taskHandlerCollection,
-            IHandleTasksMetaStorage handleTasksMetaStorage,
-            ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex,
-            IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+            IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {
             this.taskId = taskId;
             this.reason = reason;
             this.taskInfo = taskInfo;
             this.taskMeta = taskMeta;
             this.taskCounter = taskCounter;
-            this.serializer = serializer;
-            this.remoteTaskQueue = remoteTaskQueue;
-            this.handleTaskCollection = handleTaskCollection;
-            this.remoteLockCreator = remoteLockCreator;
-            this.handleTaskExceptionInfoStorage = handleTaskExceptionInfoStorage;
             this.taskHandlerCollection = taskHandlerCollection;
-            this.handleTasksMetaStorage = handleTasksMetaStorage;
-            this.taskMinimalStartTicksIndex = taskMinimalStartTicksIndex;
-            this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
+            serializer = remoteTaskQueueInternals.Serializer;
+            remoteTaskQueue = remoteTaskQueueInternals.RemoteTaskQueue;
+            handleTaskCollection = remoteTaskQueueInternals.HandleTaskCollection;
+            remoteLockCreator = remoteTaskQueueInternals.RemoteLockCreator;
+            handleTaskExceptionInfoStorage = remoteTaskQueueInternals.HandleTaskExceptionInfoStorage;
+            handleTasksMetaStorage = remoteTaskQueueInternals.HandleTasksMetaStorage;
+            taskMinimalStartTicksIndex = remoteTaskQueueInternals.TaskMinimalStartTicksIndex;
+            remoteTaskQueueProfiler = remoteTaskQueueInternals.RemoteTaskQueueProfiler;
         }
 
         public LocalTaskProcessingResult RunTask()
@@ -258,21 +251,21 @@ namespace RemoteQueue.Handling
             handleTaskExceptionInfoStorage.TryAddExceptionInfo(taskId, e);
         }
 
-        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
-        private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
-        private readonly IHandleTaskCollection handleTaskCollection;
-        private readonly IRemoteLockCreator remoteLockCreator;
-        private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
         private readonly string taskId;
         private readonly TaskQueueReason reason;
         private readonly ColumnInfo taskInfo;
         private readonly TaskMetaInformation taskMeta;
         private readonly ITaskCounter taskCounter;
+        private readonly ITaskHandlerCollection taskHandlerCollection;
         private readonly ISerializer serializer;
         private readonly IRemoteTaskQueue remoteTaskQueue;
-        private readonly ITaskHandlerCollection taskHandlerCollection;
+        private readonly IHandleTaskCollection handleTaskCollection;
+        private readonly IRemoteLockCreator remoteLockCreator;
+        private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
+        private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
+        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
     }
 }
