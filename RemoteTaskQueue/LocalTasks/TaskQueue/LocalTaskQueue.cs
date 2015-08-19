@@ -59,29 +59,40 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             queueIsFull = false;
             if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                 return;
-            if(!taskCounter.CanQueueTask(taskQueueReason))
+            if(!taskCounter.TryIncrement(taskQueueReason))
             {
                 queueIsFull = true;
                 return;
             }
-            var handlerTask = new HandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, taskCounter, taskHandlerCollection, remoteTaskQueueInternals);
-            lock(lockObject)
+            var taskIsSentToThreadPool = false;
+            try
             {
-                if(stopped)
-                    throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
-                if(hashtable.ContainsKey(taskId))
-                    return;
-                var taskWrapper = new TaskWrapper(taskId, handlerTask, this);
-                var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
-                if(!taskWrapper.Finished)
-                    hashtable.Add(taskId, asyncTask);
+                var handlerTask = new HandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, taskHandlerCollection, remoteTaskQueueInternals);
+                lock(lockObject)
+                {
+                    if(stopped)
+                        throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
+                    if(hashtable.ContainsKey(taskId))
+                        return;
+                    var taskWrapper = new TaskWrapper(taskId, taskQueueReason, handlerTask, this);
+                    var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
+                    taskIsSentToThreadPool = true;
+                    if(!taskWrapper.Finished)
+                        hashtable.Add(taskId, asyncTask);
+                }
+            }
+            finally
+            {
+                if(!taskIsSentToThreadPool)
+                    taskCounter.Decrement(taskQueueReason);
             }
         }
 
-        public void TaskFinished([NotNull] string taskId)
+        public void TaskFinished([NotNull] string taskId, TaskQueueReason taskQueueReason)
         {
             lock(lockObject)
                 hashtable.Remove(taskId);
+            taskCounter.Decrement(taskQueueReason);
         }
 
         private readonly ITaskCounter taskCounter;

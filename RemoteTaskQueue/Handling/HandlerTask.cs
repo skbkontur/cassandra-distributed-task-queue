@@ -29,7 +29,6 @@ namespace RemoteQueue.Handling
             TaskQueueReason reason,
             [NotNull] ColumnInfo taskInfo,
             [CanBeNull] TaskMetaInformation taskMeta,
-            ITaskCounter taskCounter,
             ITaskHandlerCollection taskHandlerCollection,
             IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {
@@ -37,7 +36,6 @@ namespace RemoteQueue.Handling
             this.reason = reason;
             this.taskInfo = taskInfo;
             this.taskMeta = taskMeta;
-            this.taskCounter = taskCounter;
             this.taskHandlerCollection = taskHandlerCollection;
             serializer = remoteTaskQueueInternals.Serializer;
             remoteTaskQueue = remoteTaskQueueInternals.RemoteTaskQueue;
@@ -87,23 +85,14 @@ namespace RemoteQueue.Handling
             }
             try
             {
-                if(!taskCounter.TryIncrement(reason))
+                IRemoteLock remoteLock;
+                if(!remoteLockCreator.TryGetLock(taskId, out remoteLock))
+                {
+                    logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", taskId);
                     return LocalTaskProcessingResult.Undefined;
-                try
-                {
-                    IRemoteLock remoteLock;
-                    if(!remoteLockCreator.TryGetLock(taskId, out remoteLock))
-                    {
-                        logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", taskId);
-                        return LocalTaskProcessingResult.Undefined;
-                    }
-                    using(remoteLock)
-                        return ProcessTask();
                 }
-                finally
-                {
-                    taskCounter.Decrement(reason);
-                }
+                using(remoteLock)
+                    return ProcessTask();
             }
             finally
             {
@@ -253,7 +242,6 @@ namespace RemoteQueue.Handling
         private readonly TaskQueueReason reason;
         private readonly ColumnInfo taskInfo;
         private readonly TaskMetaInformation taskMeta;
-        private readonly ITaskCounter taskCounter;
         private readonly ITaskHandlerCollection taskHandlerCollection;
         private readonly ISerializer serializer;
         private readonly IRemoteTaskQueue remoteTaskQueue;
