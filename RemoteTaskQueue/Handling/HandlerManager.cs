@@ -42,9 +42,10 @@ namespace RemoteQueue.Handling
                         var taskId = taskInfo.Item1;
                         if(taskMeta != null && taskMeta.Id != taskId)
                             throw new InvalidProgramStateException(string.Format("taskInfo.TaskId ({0}) != taskMeta.TaskId ({1})", taskId, taskMeta.Id));
-                        if(!taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue))
+                        bool queueIsFull;
+                        localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull);
+                        if(queueIsFull)
                             return;
-                        localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue);
                     }
                 }
             }

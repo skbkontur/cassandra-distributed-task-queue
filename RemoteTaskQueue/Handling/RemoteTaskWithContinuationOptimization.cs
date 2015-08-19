@@ -20,7 +20,8 @@ namespace RemoteQueue.Handling
         public override sealed string Queue(TimeSpan delay)
         {
             var taskInfo = Publish(delay);
-            localTaskQueue.QueueTask(task.Meta.Id, taskInfo, task.Meta, TaskQueueReason.TaskContinuation);
+            bool queueIsFull;
+            localTaskQueue.QueueTask(task.Meta.Id, taskInfo, task.Meta, TaskQueueReason.TaskContinuation, out queueIsFull);
             return Id;
         }
 

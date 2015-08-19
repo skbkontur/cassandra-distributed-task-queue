@@ -14,10 +14,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class LocalTaskQueue : ILocalTaskQueue
     {
-        // NB! адская статика, чтобы внутри процессов consumer'ов continuation-оптимизация работала неявно
-        [CanBeNull]
-        public static ILocalTaskQueue Instance { get; private set; }
-
         public LocalTaskQueue(ITaskCounter taskCounter, ITaskHandlerCollection taskHandlerCollection, IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {
             this.taskCounter = taskCounter;
@@ -25,6 +21,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             this.remoteTaskQueueInternals = remoteTaskQueueInternals;
             Instance = this;
         }
+
+        // NB! адская статика, чтобы внутри процессов consumer'ов continuation-оптимизация работала неявно
+        [CanBeNull]
+        public static ILocalTaskQueue Instance { get; private set; }
 
         public void Start()
         {
@@ -54,11 +54,16 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return hashtable.Count;
         }
 
-        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason)
+        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull)
         {
-            if (taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
+            queueIsFull = false;
+            if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                 return;
-
+            if(!taskCounter.CanQueueTask(taskQueueReason))
+            {
+                queueIsFull = true;
+                return;
+            }
             var handlerTask = new HandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, taskCounter, taskHandlerCollection, remoteTaskQueueInternals);
             lock(lockObject)
             {
