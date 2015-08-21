@@ -30,7 +30,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return handleTasksMetaStorage.GetMetas(ids);
         }
 
-        private void CollectGarbage(long nowTicks)
+        public void CollectGarbage(long nowTicks)
         {
             lock(stateLock)
             {
@@ -45,8 +45,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             var notCached = ReadFromCache(events, result);
 
             ReadFromStorage(notCached, events, result);
-
-            CollectGarbage(nowTicks);
             return result.ToArray();
         }
 

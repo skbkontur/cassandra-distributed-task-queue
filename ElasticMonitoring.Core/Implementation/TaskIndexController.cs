@@ -145,6 +145,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 var unprocessedEvents = unprocessedEventsMap.GetEvents();
 
                 processedEventsMap.CollectGarbage(now);
+                reader.CollectGarbage(now);
                 var newEvents = GetEvents(lastTicksCopy);
 
                 unprocessedEvents.Concat(newEvents)
@@ -183,6 +184,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             SaveSnapshot(ticks);
             unprocessedEventsMap.CollectGarbage(now);
             processedEventsMap.CollectGarbage(now);
+            reader.CollectGarbage(now);
         }
 
         private TaskMetaInformation[] ReadActualMetas(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
