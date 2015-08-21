@@ -180,6 +180,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             Interlocked.Exchange(ref snapshotTicks, ticks);
             SaveSnapshot(ticks);
             unprocessedEventsMap.CollectGarbage(now);
+            processedEventsMap.CollectGarbage(now);
         }
 
         private TaskMetaInformation[] ReadActualMetas(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
