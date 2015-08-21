@@ -9,6 +9,8 @@ using log4net;
 
 using MoreLinq;
 
+using Newtonsoft.Json;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -260,6 +262,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return eventLogRepository.GetEvents(fromTicks - unstableZoneTicks, maxBatch).Where(processedEventsMap.NotContains);
         }
 
+        public void LogStatus()
+        {
+            logger.InfoFormat("Status: {0}", JsonConvert.SerializeObject(GetStatus(), Formatting.Indented));
+        }
+
         public ElasticMonitoringStatus GetStatus()
         {
             return new ElasticMonitoringStatus()
@@ -272,6 +279,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     LastTicks = Interlocked.Read(ref lastTicks),
                     SnapshotTicks = Interlocked.Read(ref snapshotTicks),
                     NowTicks = DateTime.UtcNow.Ticks,
+                    MetaCacheSize = reader.UnsafeGetCount()
                 };
         }
 

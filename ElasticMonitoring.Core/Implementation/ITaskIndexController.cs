@@ -10,6 +10,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         void SetMinTicksHack(long minTicks);
         bool IsDistributedLockAcquired();
         ElasticMonitoringStatus GetStatus();
+        void LogStatus();
         long MinTicksHack { get; }
         void SendActualizationLagToGraphite();
     }

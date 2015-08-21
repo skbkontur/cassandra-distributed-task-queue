@@ -5,5 +5,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
     public interface IMetaCachedReader
     {
         TaskMetaInformation[] ReadActualMetasQuiet(TaskMetaUpdatedEvent[] events, long nowTicks);
+        long UnsafeGetCount();
     }
 }
