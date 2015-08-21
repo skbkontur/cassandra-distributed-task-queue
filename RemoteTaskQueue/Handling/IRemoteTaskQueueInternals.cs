@@ -1,6 +1,7 @@
 ﻿using GroBuf;
 
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Profiling;
 
@@ -18,5 +19,6 @@ namespace RemoteQueue.Handling
         IRemoteLockCreator RemoteLockCreator { get; }
         IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; }
         IRemoteTaskQueue RemoteTaskQueue { get; }
+        IGlobalTime GlobalTime { get; }
     }
 }

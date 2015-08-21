@@ -108,7 +108,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             if(taskIsBeingTraced)
             {
                 InfrastructureTaskTraceContext.Finish();
-                RemoteTaskHandlingTraceContext.Finish(result);
+                RemoteTaskHandlingTraceContext.Finish(result, remoteTaskQueueInternals.GlobalTime.GetNowTicks());
             }
         }
 
