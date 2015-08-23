@@ -15,22 +15,27 @@ namespace RemoteQueue.Tracing
             }
         }
 
-        public void RecordFinish()
+        public void Finish(bool taskIsSentToThreadPool)
         {
             if(traceContext != null)
-                traceContext.RecordTimepoint(Timepoint.Finish);
+            {
+                var flush = !taskIsSentToThreadPool;
+                if(flush)
+                    traceContext.RecordTimepoint(Timepoint.Finish);
+                traceContext.Dispose(flush);
+            }
         }
 
         public void Dispose()
         {
             if(traceContext != null)
-                traceContext.Dispose(); // pop / finish Handle.Infrastructure trace context
+                traceContext.Dispose();
         }
 
         public static void Finish()
         {
             TraceContext.Current.RecordTimepoint(Timepoint.Finish);
-            Trace.FinishCurrentContext(); // finish Handle.Infrastructure trace context
+            Trace.FinishCurrentContext();
         }
 
         private readonly ITraceContext traceContext;

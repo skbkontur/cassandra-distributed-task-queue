@@ -55,18 +55,16 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return hashtable.Count;
         }
 
-        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, bool taskIsBeingTraced)
+        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
         {
             using(var infrastructureTraceContext = new InfrastructureTaskTraceContext(taskIsBeingTraced))
             {
-                bool taskIsSentToThreadPool;
-                DoQueueTask(taskId, taskInfo, taskMeta, taskQueueReason, out queueIsFull, taskIsBeingTraced, out taskIsSentToThreadPool);
-                if(!taskIsSentToThreadPool)
-                    infrastructureTraceContext.RecordFinish();
+                DoQueueTask(taskId, taskInfo, taskMeta, taskQueueReason, out queueIsFull, out taskIsSentToThreadPool, taskIsBeingTraced);
+                infrastructureTraceContext.Finish(taskIsSentToThreadPool);
             }
         }
 
-        private void DoQueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, bool taskIsBeingTraced, out bool taskIsSentToThreadPool)
+        private void DoQueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
         {
             queueIsFull = false;
             taskIsSentToThreadPool = false;

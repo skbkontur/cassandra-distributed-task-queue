@@ -7,6 +7,7 @@ using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Tracing;
 
@@ -16,11 +17,11 @@ namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager(ILocalTaskQueue localTaskQueue, ITaskCounter taskCounter, IHandleTasksMetaStorage handleTasksMetaStorage)
+        public HandlerManager(ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
         {
             this.localTaskQueue = localTaskQueue;
-            this.taskCounter = taskCounter;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
+            this.globalTime = globalTime;
         }
 
         public string Id { get { return "HandlerManager"; } }
@@ -47,8 +48,9 @@ namespace RemoteQueue.Handling
                             throw new InvalidProgramStateException(string.Format("taskInfo.TaskId ({0}) != taskMeta.TaskId ({1})", taskId, taskMeta.Id));
                         using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                         {
-                            bool queueIsFull;
-                            localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, taskTraceContext.TaskIsBeingTraced);
+                            bool queueIsFull, taskIsSentToThreadPool;
+                            localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
+                            taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
                             if(queueIsFull)
                                 return;
                         }
@@ -83,10 +85,10 @@ namespace RemoteQueue.Handling
         }
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
-        private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
-        private readonly object lockObject = new object();
         private readonly ILocalTaskQueue localTaskQueue;
-        private readonly ITaskCounter taskCounter;
+        private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
+        private readonly IGlobalTime globalTime;
+        private readonly object lockObject = new object();
         private volatile bool started;
     }
 }

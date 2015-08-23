@@ -25,10 +25,21 @@ namespace RemoteQueue.Tracing
 
         public bool TaskIsBeingTraced { get; private set; }
 
+        public void Finish(bool taskIsSentToThreadPool, Func<long> getGlobalNowTicks)
+        {
+            if(traceContext != null)
+            {
+                var flush = !taskIsSentToThreadPool;
+                if(flush)
+                    traceContext.RecordTimepoint(Timepoint.Finish, new DateTime(getGlobalNowTicks(), DateTimeKind.Utc));
+                traceContext.Dispose(flush);
+            }
+        }
+
         public void Dispose()
         {
             if(traceContext != null)
-                traceContext.Dispose(); // pop Task trace context
+                traceContext.Dispose();
         }
 
         public static void Finish(LocalTaskProcessingResult result, long finishTaskProcessingTicks)
@@ -53,7 +64,7 @@ namespace RemoteQueue.Tracing
                 throw new InvalidProgramStateException(string.Format("Invalid LocalTaskProcessingResult: {0}", result));
             }
             TraceContext.Current.RecordTimepoint(Timepoint.Finish, new DateTime(finishTaskProcessingTicks, DateTimeKind.Utc));
-            Trace.FinishCurrentContext(); // finish Task trace context
+            Trace.FinishCurrentContext();
         }
 
         private readonly ITraceContext traceContext;

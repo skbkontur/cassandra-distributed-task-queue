@@ -23,8 +23,8 @@ namespace RemoteQueue.Handling
             using(new RemoteTaskInitialTraceContext(task.Meta))
             {
                 var taskInfo = Publish(delay);
-                bool queueIsFull;
-                localTaskQueue.QueueTask(task.Meta.Id, taskInfo, task.Meta, TaskQueueReason.TaskContinuation, out queueIsFull, taskIsBeingTraced : true);
+                bool queueIsFull, taskIsSentToThreadPool;
+                localTaskQueue.QueueTask(task.Meta.Id, taskInfo, task.Meta, TaskQueueReason.TaskContinuation, out queueIsFull, out taskIsSentToThreadPool, taskIsBeingTraced : true);
                 return Id;
             }
         }

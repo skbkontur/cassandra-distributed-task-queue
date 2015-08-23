@@ -20,7 +20,7 @@ namespace RemoteQueue.Tracing
 
         public void Dispose()
         {
-            traceContext.Dispose(); // finish Task trace context
+            traceContext.Dispose();
         }
 
         private readonly ITraceContext traceContext;
