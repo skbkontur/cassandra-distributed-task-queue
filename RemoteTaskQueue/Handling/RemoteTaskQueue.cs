@@ -54,6 +54,7 @@ namespace RemoteQueue.Handling
         }
 
         public ISerializer Serializer { get; private set; }
+        public IGlobalTime GlobalTime { get; private set; }
         public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; private set; }
         public IHandleTasksMetaStorage HandleTasksMetaStorage { get; private set; }
         public IHandleTaskCollection HandleTaskCollection { get; private set; }
@@ -61,7 +62,6 @@ namespace RemoteQueue.Handling
         public IHandleTaskExceptionInfoStorage HandleTaskExceptionInfoStorage { get; private set; }
         public IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; private set; }
         IRemoteTaskQueue IRemoteTaskQueueInternals.RemoteTaskQueue { get { return this; } }
-        public IGlobalTime GlobalTime { get; private set; }
 
         public bool CancelTask(string taskId)
         {

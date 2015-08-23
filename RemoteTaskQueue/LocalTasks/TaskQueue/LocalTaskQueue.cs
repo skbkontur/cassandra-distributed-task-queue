@@ -13,7 +13,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
-    public class LocalTaskQueue : ILocalTaskQueue
+    internal class LocalTaskQueue : ILocalTaskQueue
     {
         public LocalTaskQueue(ITaskCounter taskCounter, ITaskHandlerCollection taskHandlerCollection, IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {

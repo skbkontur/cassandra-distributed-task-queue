@@ -22,7 +22,7 @@ using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Handling
 {
-    public class HandlerTask
+    internal class HandlerTask
     {
         public HandlerTask(
             [NotNull] string taskId,

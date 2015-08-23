@@ -8,7 +8,7 @@ using RemoteQueue.Handling;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
-    public class TaskWrapper
+    internal class TaskWrapper
     {
         public TaskWrapper([NotNull] string taskId, TaskQueueReason taskQueueReason, bool taskIsBeingTraced, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
         {
