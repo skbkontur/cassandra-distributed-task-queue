@@ -127,16 +127,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 if(!DistributedLockAcquired())
                     return;
                 var now = GetNow();
-                var lastTicksCopy = Interlocked.Read(ref lastTicks);
+                var fromTicks = Interlocked.Read(ref lastTicks);
 
-                if(lastTicksCopy == unknownTicks)
+                if(fromTicks == unknownTicks)
                 {
-                    lastTicksCopy = GetLastTicks();
-                    Interlocked.Exchange(ref lastTicks, lastTicksCopy);
-                    Interlocked.Exchange(ref snapshotTicks, lastTicksCopy);
+                    fromTicks = GetLastTicks();
+                    Interlocked.Exchange(ref lastTicks, fromTicks);
+                    Interlocked.Exchange(ref snapshotTicks, fromTicks);
                 }
 
-                logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(lastTicksCopy), DateTimeFormatter.FormatWithMsAndTicks(now));
+                logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(fromTicks), DateTimeFormatter.FormatWithMsAndTicks(now));
 
                 var hasEvents = false;
 
@@ -146,7 +146,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
                 processedEventsMap.CollectGarbage(now);
                 reader.CollectGarbage(now);
-                var newEvents = GetEvents(lastTicksCopy);
+                var newEvents = GetEvents(fromTicks);
 
                 unprocessedEvents.Concat(newEvents)
                                  .Batch(maxBatch, Enumerable.ToArray)
@@ -158,8 +158,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
                 if(!hasEvents)
                     ProcessEventsBatch(new TaskMetaUpdatedEvent[0], now);
-
-                Interlocked.Exchange(ref lastTicks, now);
+                //Interlocked.Exchange(ref lastTicks, now);
             }
         }
 
@@ -185,6 +184,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             unprocessedEventsMap.CollectGarbage(now);
             processedEventsMap.CollectGarbage(now);
             reader.CollectGarbage(now);
+
+            var lt = Interlocked.Read(ref lastTicks);
+            if(lt < ticks)
+                Interlocked.Exchange(ref lastTicks, ticks);
         }
 
         private TaskMetaInformation[] ReadActualMetas(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
