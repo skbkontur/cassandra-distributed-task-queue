@@ -1,47 +1,52 @@
 using System;
 
+using JetBrains.Annotations;
+
 using log4net;
+
+using RemoteQueue.Handling;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public class TaskWrapper
     {
-        public TaskWrapper(ITask task, TaskQueue taskQueue)
+        public TaskWrapper([NotNull] string taskId, TaskQueueReason taskQueueReason, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
         {
-            this.task = task;
-            this.taskQueue = taskQueue;
+            this.taskId = taskId;
+            this.taskQueueReason = taskQueueReason;
+            this.handlerTask = handlerTask;
+            this.localTaskQueue = localTaskQueue;
             finished = false;
-        }
-
-        public void Run()
-        {
-            var result = new TaskResult();
-            try
-            {
-                result = task.RunTask();
-            }
-            catch(Exception e)
-            {
-                logger.Error(string.Format("Ошибка во время обработки асинхронной задачи."), e);
-            }
-            try
-            {
-                finished = true;
-                taskQueue.TaskFinished(task);
-                if (result == TaskResult.Rerun)
-                    taskQueue.QueueTask(task);
-            }
-            catch(Exception e)
-            {
-                logger.Warn(string.Format("Ошибка во время окончания задачи."), e);
-            }
         }
 
         public bool Finished { get { return finished; } }
 
-        private readonly ITask task;
-        private readonly TaskQueue taskQueue;
+        public void Run()
+        {
+            try
+            {
+                handlerTask.RunTask();
+            }
+            catch(Exception e)
+            {
+                logger.Error("Ошибка во время обработки асинхронной задачи.", e);
+            }
+            try
+            {
+                finished = true;
+                localTaskQueue.TaskFinished(taskId, taskQueueReason);
+            }
+            catch(Exception e)
+            {
+                logger.Warn("Ошибка во время окончания задачи.", e);
+            }
+        }
+
+        private readonly string taskId;
+        private readonly TaskQueueReason taskQueueReason;
+        private readonly HandlerTask handlerTask;
+        private readonly LocalTaskQueue localTaskQueue;
         private volatile bool finished;
-        private readonly ILog logger = LogManager.GetLogger(typeof(TaskQueue));
+        private readonly ILog logger = LogManager.GetLogger(typeof(LocalTaskQueue));
     }
 }

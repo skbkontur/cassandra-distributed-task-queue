@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
@@ -10,7 +12,6 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Handling;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -20,7 +21,7 @@ namespace RemoteQueue.Cassandra.Repositories
             ITaskMetaInformationBlobStorage storage,
             ITaskMinimalStartTicksIndex minimalStartTicksIndex,
             IEventLogRepository eventLogRepository,
-            IGlobalTime globalTime, 
+            IGlobalTime globalTime,
             IChildTaskIndex childTaskIndex)
         {
             this.storage = storage;
@@ -40,7 +41,8 @@ namespace RemoteQueue.Cassandra.Repositories
                     });
         }
 
-        public void AddMeta(TaskMetaInformation meta)
+        [NotNull]
+        public ColumnInfo AddMeta([NotNull] TaskMetaInformation meta)
         {
             var nowTicks = Math.Max((meta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
             meta.LastModificationTicks = nowTicks;
@@ -49,8 +51,6 @@ namespace RemoteQueue.Cassandra.Repositories
             if(meta.State == TaskState.New)
                 childTaskIndex.AddMeta(meta);
             storage.Write(meta.Id, meta);
-            if(OnIndexMeta != null)
-                OnIndexMeta(new Tuple<string, ColumnInfo>(meta.Id, columnInfo), meta);
 
             var oldMeta = meta.GetSnapshot();
             if(oldMeta != null)
@@ -61,6 +61,7 @@ namespace RemoteQueue.Cassandra.Repositories
             }
 
             meta.MakeSnapshot();
+            return columnInfo;
         }
 
         public TaskMetaInformation GetMeta(string taskId)
@@ -84,8 +85,6 @@ namespace RemoteQueue.Cassandra.Repositories
             metas.Where(x => x != null).ForEach(x => x.MakeSnapshot());
             return metas;
         }
-
-        internal OnIndexMeta OnIndexMeta { get; set; }
 
         private readonly ITaskMetaInformationBlobStorage storage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;

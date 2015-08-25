@@ -1,38 +1,47 @@
 ﻿using System;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 
 namespace RemoteQueue.Handling
 {
     internal class RemoteTask : IRemoteTask
     {
-        public RemoteTask(IHandleTaskCollection handleTaskCollection, Task task, IGlobalTime globalTime)
+        public RemoteTask([NotNull] Task task, IHandleTaskCollection handleTaskCollection)
         {
-            this.handleTaskCollection = handleTaskCollection;
             this.task = task;
-            this.globalTime = globalTime;
+            this.handleTaskCollection = handleTaskCollection;
         }
 
+        [NotNull]
+        public string Id { get { return task.Meta.Id; } }
+
+        [NotNull]
         public string Queue()
         {
             return Queue(TimeSpan.FromTicks(0));
         }
 
-        public string Queue(TimeSpan delay)
+        [NotNull]
+        public virtual string Queue(TimeSpan delay)
         {
-            var delayTicks = Math.Max(delay.Ticks, 0);
-            //task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, globalTime.UpdateNowTicks() + delayTicks) + 1;
-            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, DateTime.UtcNow.Ticks + delayTicks) + 1;
-            handleTaskCollection.AddTask(task);
+            Publish(delay);
             return Id;
         }
 
-        public string Id { get { return task.Meta.Id; } }
+        [NotNull]
+        protected ColumnInfo Publish(TimeSpan delay)
+        {
+            var nowTicks = DateTime.UtcNow.Ticks;
+            var delayTicks = Math.Max(delay.Ticks, 0);
+            task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, nowTicks + delayTicks) + 1;
+            return handleTaskCollection.AddTask(task);
+        }
 
+        protected readonly Task task;
         private readonly IHandleTaskCollection handleTaskCollection;
-        private readonly Task task;
-        private readonly IGlobalTime globalTime;
     }
 }

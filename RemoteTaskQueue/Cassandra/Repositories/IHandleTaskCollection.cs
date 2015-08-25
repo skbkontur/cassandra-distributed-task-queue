@@ -1,11 +1,19 @@
-﻿using RemoteQueue.Cassandra.Entities;
+﻿using JetBrains.Annotations;
+
+using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
     public interface IHandleTaskCollection
     {
-        void AddTask(Task task);
-        Task GetTask(string taskId);
-        Task[] GetTasks(string[] taskIds);
+        [NotNull]
+        ColumnInfo AddTask([NotNull] Task task);
+
+        [NotNull]
+        Task GetTask([NotNull] string taskId);
+
+        [NotNull]
+        Task[] GetTasks([NotNull] string[] taskIds);
     }
 }

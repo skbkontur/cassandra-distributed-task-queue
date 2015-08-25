@@ -40,8 +40,15 @@
     <Reference Include="Catalogue.CassandraPrimitives.Storages">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Objects">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
+    </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=7.1.1000.900, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\Assemblies\log4net.dll</HintPath>
@@ -70,6 +77,7 @@
     <Compile Include="Cassandra\Repositories\BlobStorages\TaskMetaInformationBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerable.cs" />
+    <Compile Include="Cassandra\Repositories\GetEventLogEnumerator.cs" />
     <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\ChildTaskIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\IChildTaskIndex.cs" />
@@ -118,17 +126,16 @@
     <Compile Include="Handling\IHandlerManager.cs" />
     <Compile Include="Handling\IRemoteTask.cs" />
     <Compile Include="Handling\IRemoteTaskQueue.cs" />
-    <Compile Include="Handling\IShardingManager.cs" />
+    <Compile Include="Handling\IRemoteTaskQueueInternals.cs" />
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />
     <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ITaskHandler.cs" />
     <Compile Include="Handling\ITaskHandlerCollection.cs" />
-    <Compile Include="Handling\OnIndexMeta.cs" />
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
-    <Compile Include="Handling\ShardingManager.cs" />
+    <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
@@ -138,14 +145,10 @@
     <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
     <Compile Include="Handling\TaskQueueReason.cs" />
-    <Compile Include="LocalTasks\TaskQueue\ActionTask.cs" />
-    <Compile Include="LocalTasks\TaskQueue\ITask.cs" />
-    <Compile Include="LocalTasks\TaskQueue\ITaskQueue.cs" />
-    <Compile Include="LocalTasks\TaskQueue\SimpleTask.cs" />
-    <Compile Include="LocalTasks\TaskQueue\TaskBase.cs" />
-    <Compile Include="LocalTasks\TaskQueue\TaskQueue.cs" />
+    <Compile Include="LocalTasks\TaskQueue\ILocalTaskQueue.cs" />
+    <Compile Include="LocalTasks\TaskQueue\LocalTaskQueue.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskQueueException.cs" />
-    <Compile Include="LocalTasks\TaskQueue\TaskResult.cs" />
+    <Compile Include="LocalTasks\TaskQueue\LocalTaskProcessingResult.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskWrapper.cs" />
     <Compile Include="Profiling\EmptyRemoteTaskQueueProfiler.cs" />
     <Compile Include="Profiling\IRemoteTaskQueueProfiler.cs" />

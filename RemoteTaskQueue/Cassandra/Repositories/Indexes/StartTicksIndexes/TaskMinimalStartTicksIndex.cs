@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 using GroBuf;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -28,7 +30,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             inProcessTasksCache = new TasksCache();
         }
 
-        public ColumnInfo IndexMeta(TaskMetaInformation taskMetaInformation)
+        [NotNull]
+        public ColumnInfo IndexMeta([NotNull] TaskMetaInformation taskMetaInformation)
         {
             var connection = RetrieveColumnFamilyConnection();
             var state = taskMetaInformation.State.GetCassandraName();
