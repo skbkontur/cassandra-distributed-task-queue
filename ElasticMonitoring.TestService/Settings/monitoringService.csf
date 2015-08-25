@@ -38,3 +38,6 @@ ElasticSearchSchema.MonitoringSearch.OldDataAliasFormat = {index}-old
 ElasticSearchSchema.MonitoringSearch.OldDataIndex = old-data
 
 ActualizeElasticSchemaOnStart = true
+
+ElasticMonitoring.RemoteLockId = TaskSearch_Loading_Lock
+#ElasticSearchSchema.MonitoringSearch.MaxTicks = 0
