@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 using GroboContainer.Infection;
 
@@ -29,10 +30,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return handleTasksMetaStorage.GetMetas(ids);
         }
 
-        private void CollectGarbage(long nowTicks)
+        public void CollectGarbage(long nowTicks)
         {
             lock(stateLock)
+            {
                 cache.DeleteWhere(pair => nowTicks - pair.Value.LastModificationTicks.Value > cacheTimeoutTicks);
+                UpdateCount();
+            }
         }
 
         public TaskMetaInformation[] ReadActualMetasQuiet(TaskMetaUpdatedEvent[] events, long nowTicks)
@@ -41,8 +45,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             var notCached = ReadFromCache(events, result);
 
             ReadFromStorage(notCached, events, result);
-
-            CollectGarbage(nowTicks);
             return result.ToArray();
         }
 
@@ -65,6 +67,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             }
         }
 
+        private void UpdateCount()
+        {
+            Interlocked.Exchange(ref count, cache.Count);
+        }
+
+        public long UnsafeGetCount()
+        {
+            return Interlocked.Read(ref count);
+        }
+
         private TaskMetaInformation MergeWithCache(TaskMetaInformation metaFromStorage)
         {
             TaskMetaInformation cachedMeta;
@@ -76,6 +88,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 if(cachedMeta.LastModificationTicks.Value < metaFromStorage.LastModificationTicks.Value)
                     cache[id] = (cachedMeta = metaFromStorage); //note update in cache
             }
+            UpdateCount();
+
             return cachedMeta;
         }
 
@@ -101,10 +115,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     }
                     else
                         notCached.Add(id);
+                    UpdateCount();
                 }
                 return notCached;
             }
         }
+
+        private long count;
 
         private readonly object stateLock = new object();
 

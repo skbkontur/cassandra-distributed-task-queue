@@ -46,6 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
                     {
                         periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.ProcessNewEvents(), taskSearchUpdateTaskId), TaskIndexSettings.IndexInterval);
                         periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.SendActualizationLagToGraphite(), sendactualizationlagtographiteTaskId), TimeSpan.FromMinutes(1));
+                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.LogStatus(), dumpStatusTaskId), TimeSpan.FromMinutes(1));
                         worked = true;
                         logger.InfoFormat("Start MonitoringServiceSchedulableRunner");
                     }
@@ -54,6 +55,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
         }
 
         private const string taskSearchUpdateTaskId = "UpdateTaskSearchIndex";
+        private const string dumpStatusTaskId = "dumpStatusTask";
         private const string sendactualizationlagtographiteTaskId = "SendActualizationLagToGraphite";
 
         private readonly object lockObject = new object();

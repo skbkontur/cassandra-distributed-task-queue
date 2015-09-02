@@ -8,5 +8,7 @@
         string LastTicksIndex { get; }
         long CalculatedIndexStartTimeTicks { get; }
         string GraphitePrefixOrNull { get; }
+        string RemoteLockId { get; }
+        long? MaxTicks { get; }
     }
 }
