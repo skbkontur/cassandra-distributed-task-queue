@@ -1,0 +1,9 @@
+services:
+  - path: ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\Debug\Catalogue.RemoteTaskQueue.ExchangeService.exe
+  - path: MonitoringService\bin\Debug\Catalogue.RemoteTaskQueue.MonitoringService.exe
+  - path: TaskCounter.TestService\bin\Debug\Catalogue.RemoteTaskQueue.TaskCounter.TestService.exe
+  - path: ElasticMonitoring.TestService\bin\Debug\Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService.exe
