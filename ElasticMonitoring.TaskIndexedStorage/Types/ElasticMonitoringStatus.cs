@@ -10,5 +10,6 @@
         public long LastTicks { get; set; }
         public long NowTicks { get; set; }
         public long SnapshotTicks { get; set; }
+        public long MetaCacheSize { get; set; }
     }
 }

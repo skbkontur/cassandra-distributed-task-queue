@@ -21,6 +21,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             CalculatedIndexStartTimeTicks = !applicationSettings.TryGetString("ElasticSearchSchema.MonitoringSearch.IndexStartTime", out timeStr) ? 0 : ConvertToUtcTicks(timeStr);
             string value;
             GraphitePrefixOrNull = !applicationSettings.TryGetString("ElasticMonitoring.GraphitePrefix", out value) ? null : value;
+            RemoteLockId = applicationSettings.GetString("ElasticMonitoring.RemoteLockId");
+
+            long maxTicks;
+            MaxTicks = !applicationSettings.TryGetLong("ElasticSearchSchema.MonitoringSearch.MaxTicks", out maxTicks) ? null : (long?)maxTicks;
         }
 
         private static long ConvertToUtcTicks(string timeStr)
@@ -50,6 +54,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         public long CalculatedIndexStartTimeTicks { get; private set; }
 
         public string GraphitePrefixOrNull { get; private set; }
+        public string RemoteLockId { get; private set; }
+        public long? MaxTicks { get; private set; }
 
         private readonly bool enableDestructiveActions;
     }

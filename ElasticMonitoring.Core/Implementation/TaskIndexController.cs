@@ -9,6 +9,8 @@ using log4net;
 
 using MoreLinq;
 
+using Newtonsoft.Json;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -58,6 +60,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             }
             else
                 this.statsDClient = EmptyStatsDClient.Instance;
+
+            maxTicks = dynamicSettings.MaxTicks;
+            remoteLockId = dynamicSettings.RemoteLockId;
+
+            if(maxTicks.HasValue)
+                logger.LogInfoFormat("MaxTicks is {0}", DateTimeFormatter.FormatWithMsAndTicks(maxTicks.Value));
+            logger.LogInfoFormat("RemoteLockId: '{0}'", remoteLockId);
+
         }
 
         [ContainerConstructor]
@@ -125,16 +135,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 if(!DistributedLockAcquired())
                     return;
                 var now = GetNow();
-                var lastTicksCopy = Interlocked.Read(ref lastTicks);
+                var fromTicks = Interlocked.Read(ref lastTicks);
 
-                if(lastTicksCopy == unknownTicks)
+                if(maxTicks.HasValue && fromTicks > maxTicks) //NOTE hack
                 {
-                    lastTicksCopy = GetLastTicks();
-                    Interlocked.Exchange(ref lastTicks, lastTicksCopy);
-                    Interlocked.Exchange(ref snapshotTicks, lastTicksCopy);
+                    logger.LogInfoFormat("MaxTicks is reached.");
+                    return;
                 }
 
-                logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(lastTicksCopy), DateTimeFormatter.FormatWithMsAndTicks(now));
+                if(fromTicks == unknownTicks)
+                {
+                    fromTicks = GetLastTicks();
+                    Interlocked.Exchange(ref lastTicks, fromTicks);
+                    Interlocked.Exchange(ref snapshotTicks, fromTicks);
+                }
+
+                logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(fromTicks), DateTimeFormatter.FormatWithMsAndTicks(now));
 
                 var hasEvents = false;
 
@@ -143,7 +159,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 var unprocessedEvents = unprocessedEventsMap.GetEvents();
 
                 processedEventsMap.CollectGarbage(now);
-                var newEvents = GetEvents(lastTicksCopy);
+                reader.CollectGarbage(now);
+                var newEvents = GetEvents(fromTicks);
 
                 unprocessedEvents.Concat(newEvents)
                                  .Batch(maxBatch, Enumerable.ToArray)
@@ -155,8 +172,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
                 if(!hasEvents)
                     ProcessEventsBatch(new TaskMetaUpdatedEvent[0], now);
-
-                Interlocked.Exchange(ref lastTicks, now);
+                //Interlocked.Exchange(ref lastTicks, now);
             }
         }
 
@@ -170,6 +186,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private void ProcessEventsBatch(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
         {
+            if(maxTicks.HasValue && Interlocked.Read(ref lastTicks) > maxTicks) //NOTE hack
+                return;
             var actualMetas = statsDClient.Timing("ReadMetas", () => ReadActualMetas(taskMetaUpdatedEvents, now));
 
             actualMetas = CutMetas(actualMetas);
@@ -180,6 +198,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             Interlocked.Exchange(ref snapshotTicks, ticks);
             SaveSnapshot(ticks);
             unprocessedEventsMap.CollectGarbage(now);
+            processedEventsMap.CollectGarbage(now);
+            reader.CollectGarbage(now);
+
+            var lt = Interlocked.Read(ref lastTicks);
+            if(lt < ticks)
+                Interlocked.Exchange(ref lastTicks, ticks);
         }
 
         private TaskMetaInformation[] ReadActualMetas(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
@@ -259,6 +283,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return eventLogRepository.GetEvents(fromTicks - unstableZoneTicks, maxBatch).Where(processedEventsMap.NotContains);
         }
 
+        public void LogStatus()
+        {
+            logger.InfoFormat("Status: {0}", JsonConvert.SerializeObject(GetStatus(), Formatting.Indented));
+        }
+
         public ElasticMonitoringStatus GetStatus()
         {
             return new ElasticMonitoringStatus()
@@ -271,6 +300,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     LastTicks = Interlocked.Read(ref lastTicks),
                     SnapshotTicks = Interlocked.Read(ref snapshotTicks),
                     NowTicks = DateTime.UtcNow.Ticks,
+                    MetaCacheSize = reader.UnsafeGetCount(),
                 };
         }
 
@@ -279,14 +309,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return distributedLock != null;
         }
 
-        private const string lockId = "TaskSearch_Loading_Lock";
-
         private bool DistributedLockAcquired()
         {
             if(IsDistributedLockAcquired())
                 return true;
             IRemoteLock @lock;
-            if(remoteLockCreator.TryGetLock(lockId, out @lock))
+            if(remoteLockCreator.TryGetLock(remoteLockId, out @lock))
             {
                 distributedLock = @lock;
                 logger.InfoFormat("Distributed lock acquired.");
@@ -294,6 +322,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             }
             return false;
         }
+
+        private readonly long? maxTicks;
 
         private static readonly ILog logger = LogManager.GetLogger("TaskIndexController");
 
@@ -318,5 +348,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         private readonly long unstableZoneTicks;
         private readonly int maxBatch;
         private readonly string graphitePrefix;
+        private readonly string remoteLockId;
     }
 }
