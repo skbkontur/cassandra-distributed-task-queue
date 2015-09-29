@@ -52,7 +52,7 @@ namespace RemoteQueue.Handling
             if(taskMeta == null)
             {
                 logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskId);
-                if(TicksNameHelper.GetTicksFromColumnName(taskInfo.ColumnName) < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
+                if(TicksNameHelper.GetTicksFromColumnName(taskInfo.ColumnName) < (DateTime.UtcNow - TimeSpan.FromMinutes(20)).Ticks)
                 {
                     logger.InfoFormat("Удаляем запись индекса, для которой не записалась мета (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskInfo.ColumnName, taskInfo.RowKey);
                     taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
