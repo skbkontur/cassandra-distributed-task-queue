@@ -4,6 +4,8 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
+using log4net;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Handling;
@@ -70,6 +72,11 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             taskIsSentToThreadPool = false;
             if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                 return;
+            if(taskMeta == null && TicksNameHelper.GetTicksFromColumnName(taskInfo.ColumnName) >= (DateTime.UtcNow - TimeSpan.FromMinutes(20)).Ticks)
+            {
+                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskId);
+                return;
+            }
             if(!taskCounter.TryIncrement(taskQueueReason))
             {
                 queueIsFull = true;
@@ -116,5 +123,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();
         private volatile bool stopped;
+        private readonly ILog logger = LogManager.GetLogger(typeof(LocalTaskQueue));
     }
 }
