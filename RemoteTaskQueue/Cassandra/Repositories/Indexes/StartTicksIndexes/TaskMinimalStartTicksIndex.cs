@@ -58,8 +58,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             var connection = RetrieveColumnFamilyConnection();
             var diff = GetDiff(taskState).Ticks;
-            long firstTicks;
-            if(!TryGetFirstEventTicks(taskState, out firstTicks))
+            var firstTicks = minTicksCache.GetMinTicks(taskState);
+            if(firstTicks == 0)
                 return new Tuple<string, ColumnInfo>[0];
             var twoDaysEarlier = (DateTime.UtcNow - TimeSpan.FromDays(2)).Ticks;
             var firstTicksWithDiff = firstTicks - diff;
@@ -72,7 +72,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             var lastBigDiffTime = lastBigDiffTimes.GetOrAdd(taskState, t => DateTime.MinValue);
             var now = DateTime.UtcNow;
-            if((now - lastBigDiffTime) > TimeSpan.FromMinutes(1))
+            if(now - lastBigDiffTime > TimeSpan.FromMinutes(1))
             {
                 lastBigDiffTimes.AddOrUpdate(taskState, DateTime.MinValue, (t, p) => now);
                 //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
@@ -80,12 +80,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 return TimeSpan.FromMinutes(8);
             }
             return TimeSpan.FromMinutes(1);
-        }
-
-        private bool TryGetFirstEventTicks(TaskState taskState, out long ticks)
-        {
-            ticks = minTicksCache.GetMinTicks(taskState);
-            return ticks != 0;
         }
 
         public const string columnFamilyName = "TaskMinimalStartTicksIndex";
