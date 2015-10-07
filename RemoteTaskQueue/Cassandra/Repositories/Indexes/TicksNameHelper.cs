@@ -1,37 +1,29 @@
 using System;
 using System.Globalization;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes
 {
     public static class TicksNameHelper
     {
-        public static string GetRowName(TaskState taskState, long ticks)
+        [NotNull]
+        public static string GetRowKey(TaskState taskState, long ticks)
         {
             return (ticks / tickPartition) + "_" + taskState.GetCassandraName();
         }
 
-        public static string GetColumnName(long ticks, string suffix)
+        [NotNull]
+        private static string GetColumnName(long ticks, [NotNull] string suffix)
         {
             return ticks.ToString("D20", CultureInfo.InvariantCulture) + "_" + suffix;
         }
 
-        public static string GetRowName(TaskMetaInformation taskMetaInformation)
+        public static long GetTicksFromColumnName([NotNull] string columnName)
         {
-            if(taskMetaInformation == null) return null;
-            return GetRowName(taskMetaInformation.State, taskMetaInformation.MinimalStartTicks);
-        }
-
-        public static string GetColumnName(TaskMetaInformation taskMetaInformation)
-        {
-            if(taskMetaInformation == null) return null;
-            return GetColumnName(taskMetaInformation.MinimalStartTicks, taskMetaInformation.Id);
-        }
-
-        public static long GetTicksFromColumnName(string columnName)
-        {
-            string ticksString = columnName.Split('_')[0];
+            var ticksString = columnName.Split('_')[0];
             long res;
             if(!long.TryParse(ticksString, out res))
                 return 0;
@@ -48,25 +40,20 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
             return rowNumber * tickPartition;
         }
 
-        public static ColumnInfo GetColumnInfo(TaskMetaInformation taskMetaInformation)
+        [NotNull]
+        public static ColumnInfo GetColumnInfo([NotNull] TaskMetaInformation taskMeta)
         {
-            if(taskMetaInformation == null) return null;
-            return new ColumnInfo
-                {
-                    RowKey = GetRowName(taskMetaInformation),
-                    ColumnName = GetColumnName(taskMetaInformation)
-                };
+            var rowKey = GetRowKey(taskMeta.State, taskMeta.MinimalStartTicks);
+            var columnName = GetColumnName(taskMeta.MinimalStartTicks, taskMeta.Id);
+            return new ColumnInfo(rowKey, columnName);
         }
 
-        public static ColumnInfo GetColumnInfo(TaskState taskState, long ticks, string colSuffix)
+        [NotNull]
+        public static ColumnInfo GetColumnInfo(TaskState taskState, long ticks, [NotNull] string colSuffix)
         {
-            string rowKey = GetRowName(taskState, ticks);
-            string columnName = GetColumnName(ticks, colSuffix);
-            return new ColumnInfo
-                {
-                    RowKey = rowKey,
-                    ColumnName = columnName
-                };
+            var rowKey = GetRowKey(taskState, ticks);
+            var columnName = GetColumnName(ticks, colSuffix);
+            return new ColumnInfo(rowKey, columnName);
         }
 
         private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;

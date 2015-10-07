@@ -12,12 +12,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerable : IEnumerable<Tuple<string, ColumnInfo>>
     {
-        public GetEventsEnumerable(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IMinTicksCache minTicksCache, long fromTicks, long toTicks, int batchSize)
+        public GetEventsEnumerable(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IFromTicksProvider fromTicksProvider, long fromTicks, long toTicks, int batchSize)
         {
             this.taskState = taskState;
             this.serializer = serializer;
             this.connection = connection;
-            this.minTicksCache = minTicksCache;
+            this.fromTicksProvider = fromTicksProvider;
             this.fromTicks = fromTicks;
             this.toTicks = toTicks;
             this.batchSize = batchSize;
@@ -25,7 +25,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public IEnumerator<Tuple<string, ColumnInfo>> GetEnumerator()
         {
-            return new GetEventsEnumerator(taskState, serializer, connection, minTicksCache, fromTicks, toTicks, batchSize);
+            return new GetEventsEnumerator(taskState, serializer, connection, fromTicksProvider, fromTicks, toTicks, batchSize);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -36,7 +36,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly TaskState taskState;
         private readonly ISerializer serializer;
         private readonly IColumnFamilyConnection connection;
-        private readonly IMinTicksCache minTicksCache;
+        private readonly IFromTicksProvider fromTicksProvider;
         private readonly long fromTicks;
         private readonly long toTicks;
         private readonly int batchSize;

@@ -1,7 +1,21 @@
-﻿namespace RemoteQueue.Cassandra.Repositories.Indexes
+﻿using JetBrains.Annotations;
+
+namespace RemoteQueue.Cassandra.Repositories.Indexes
 {
     public class ColumnInfo
     {
+        public ColumnInfo([NotNull] string rowKey, [NotNull] string columnName)
+        {
+            RowKey = rowKey;
+            ColumnName = columnName;
+        }
+
+        [NotNull]
+        public string RowKey { get; private set; }
+
+        [NotNull]
+        public string ColumnName { get; private set; }
+
         public bool Equals(ColumnInfo other)
         {
             if(ReferenceEquals(null, other)) return false;
@@ -21,11 +35,8 @@
         {
             unchecked
             {
-                return ((RowKey != null ? RowKey.GetHashCode() : 0) * 397) ^ (ColumnName != null ? ColumnName.GetHashCode() : 0);
+                return (RowKey.GetHashCode() * 397) ^ ColumnName.GetHashCode();
             }
         }
-
-        public string RowKey { get; set; }
-        public string ColumnName { get; set; }
     }
 }

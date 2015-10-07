@@ -9,11 +9,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public interface ITaskMinimalStartTicksIndex
     {
-        IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize);
-
         [NotNull]
         ColumnInfo IndexMeta([NotNull] TaskMetaInformation taskMetaInformation);
 
-        void UnindexMeta(string taskId, ColumnInfo columnInfo);
+        void UnindexMeta([NotNull] ColumnInfo columnInfo);
+
+        [NotNull]
+        IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize);
     }
 }

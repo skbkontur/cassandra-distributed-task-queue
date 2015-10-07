@@ -52,18 +52,18 @@ namespace RemoteQueue.Handling
             if(taskMeta == null)
             {
                 logger.InfoFormat("Удаляем запись индекса, для которой не записалась мета (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskInfo.ColumnName, taskInfo.RowKey);
-                taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
             if(taskMeta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.ColumnName))
             {
                 logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskInfo.ColumnName, taskInfo.RowKey);
-                taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo);
             }
             if(taskMeta.State == TaskState.Finished || taskMeta.State == TaskState.Fatal || taskMeta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskId, taskMeta.State);
-                taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
             var nowTicks = DateTime.UtcNow.Ticks;
@@ -151,7 +151,7 @@ namespace RemoteQueue.Handling
             if(task.Meta.State == TaskState.Finished || task.Meta.State == TaskState.Fatal || task.Meta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", taskId);
-                taskMinimalStartTicksIndex.UnindexMeta(taskId, taskInfo);
+                taskMinimalStartTicksIndex.UnindexMeta(taskInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
 

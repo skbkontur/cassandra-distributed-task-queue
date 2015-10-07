@@ -52,7 +52,7 @@ namespace RemoteQueue.Cassandra.Repositories
             {
                 var oldColumnInfo = TicksNameHelper.GetColumnInfo(oldMeta);
                 if(!oldColumnInfo.Equals(columnInfo))
-                    minimalStartTicksIndex.UnindexMeta(meta.Id, oldColumnInfo);
+                    minimalStartTicksIndex.UnindexMeta(oldColumnInfo);
             }
 
             meta.MakeSnapshot();
