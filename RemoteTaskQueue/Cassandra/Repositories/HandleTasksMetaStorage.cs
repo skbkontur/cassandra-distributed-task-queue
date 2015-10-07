@@ -33,7 +33,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long toTicks, params TaskState[] states)
         {
-            return states.SelectMany(state => minimalStartTicksIndex.GetTaskIds(state, toTicks).ToArray());
+            return states.SelectMany(state => minimalStartTicksIndex.GetTaskIds(state, toTicks, batchSize : 2000).ToArray());
         }
 
         [NotNull]

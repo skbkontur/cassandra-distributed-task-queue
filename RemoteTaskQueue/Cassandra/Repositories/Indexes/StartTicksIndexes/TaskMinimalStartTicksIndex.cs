@@ -54,7 +54,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName}, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
         }
 
-        public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize = 2000)
+        public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize)
         {
             var connection = RetrieveColumnFamilyConnection();
             var diff = GetDiff(taskState).Ticks;
@@ -77,9 +77,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 lastBigDiffTimes.AddOrUpdate(taskState, DateTime.MinValue, (t, p) => now);
                 //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
                 //что потребует изменения этого отката. Поэтому берется, как кажется, с запасом
-                return TimeSpan.FromMinutes(8);
+                return TimeSpan.FromMinutes(8); // Против адских затупов кассандры
             }
-            return TimeSpan.FromMinutes(1);
+            return TimeSpan.FromMinutes(1); // Штатная зона нестабильности
         }
 
         public const string columnFamilyName = "TaskMinimalStartTicksIndex";
