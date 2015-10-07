@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 
-using log4net;
-
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
@@ -34,8 +32,6 @@ namespace RemoteQueue.Handling
                 var taskInfoBatches = handleTasksMetaStorage
                     .GetAllTasksInStates(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError)
                     .Batch(100, Enumerable.ToArray);
-                if(logger.IsDebugEnabled)
-                    logger.DebugFormat("Начали обработку очереди.");
                 foreach(var taskInfoBatch in taskInfoBatches)
                 {
                     var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskInfoBatch.Select(x => x.Item1).ToArray());
@@ -69,22 +65,9 @@ namespace RemoteQueue.Handling
             if(!started)
                 return;
             started = false;
-            localTaskQueue.StopAndWait(100 * 1000);
+            localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
         }
 
-        public long GetQueueLength()
-        {
-            return localTaskQueue.GetQueueLength();
-        }
-
-        public Tuple<long, long> GetCassandraQueueLength()
-        {
-            var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
-            long all = allTasksInStates.Count();
-            return new Tuple<long, long>(all, all);
-        }
-
-        private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
         private readonly ILocalTaskQueue localTaskQueue;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;

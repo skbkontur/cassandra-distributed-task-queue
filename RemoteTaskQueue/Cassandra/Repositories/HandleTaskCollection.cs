@@ -43,15 +43,7 @@ namespace RemoteQueue.Cassandra.Repositories
         {
             var taskDatas = taskDataStorage.ReadQuiet(taskIds);
             var metas = handleTasksMetaStorage.GetMetasQuiet(taskIds);
-            return taskDatas.Zip(
-                metas,
-                (t, m) =>
-                new Task
-                    {
-                        Data = t,
-                        Meta = m
-                    }
-                )
+            return taskDatas.Zip(metas, (t, m) => new Task {Data = t, Meta = m})
                             .Where(x => x.Meta != null && x.Data != null)
                             .ToArray();
         }

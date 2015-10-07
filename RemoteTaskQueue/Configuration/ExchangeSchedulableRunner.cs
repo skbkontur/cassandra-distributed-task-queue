@@ -1,6 +1,4 @@
-﻿using System;
-
-using GroBuf;
+﻿using GroBuf;
 
 using log4net;
 
@@ -67,11 +65,6 @@ namespace RemoteQueue.Configuration
                     }
                 }
             }
-        }
-
-        public Tuple<long, long> GetQueueLength()
-        {
-            return handlerManager.GetCassandraQueueLength();
         }
 
         private volatile bool worked;

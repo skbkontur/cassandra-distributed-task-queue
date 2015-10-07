@@ -35,7 +35,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 stopped = false;
         }
 
-        public void StopAndWait(int timeout = 10000)
+        public void StopAndWait(TimeSpan timeout)
         {
             if(stopped)
                 return;
@@ -48,13 +48,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 tasks = hashtable.Values.Cast<Task>().ToArray();
                 hashtable.Clear();
             }
-            Task.WaitAll(tasks, TimeSpan.FromMilliseconds(timeout));
-        }
-
-        public long GetQueueLength()
-        {
-            lock(lockObject)
-                return hashtable.Count;
+            Task.WaitAll(tasks, timeout);
         }
 
         public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)

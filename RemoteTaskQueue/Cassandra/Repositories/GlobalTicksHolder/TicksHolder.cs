@@ -1,12 +1,8 @@
-using System;
-
 using GroBuf;
 
 using RemoteQueue.Cassandra.Primitives;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-
-using log4net;
 
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
@@ -61,10 +57,8 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
         }
 
         public const string columnFamilyName = "ticksHolder";
-        private readonly ISerializer serializer;
         private const string maxTicksColumnName = "MaxTicks";
         private const string minTicksColumnName = "MinTicks";
-
-        private static readonly ILog logger = LogManager.GetLogger(typeof(TicksHolder));
+        private readonly ISerializer serializer;
     }
 }

@@ -18,13 +18,13 @@ namespace RemoteQueue.Cassandra.Repositories
     public class HandleTasksMetaStorage : IHandleTasksMetaStorage
     {
         public HandleTasksMetaStorage(
-            ITaskMetaInformationBlobStorage storage,
+            ITaskMetaInformationBlobStorage metaStorage,
             ITaskMinimalStartTicksIndex minimalStartTicksIndex,
             IEventLogRepository eventLogRepository,
             IGlobalTime globalTime,
             IChildTaskIndex childTaskIndex)
         {
-            this.storage = storage;
+            this.metaStorage = metaStorage;
             this.minimalStartTicksIndex = minimalStartTicksIndex;
             this.eventLogRepository = eventLogRepository;
             this.globalTime = globalTime;
@@ -33,12 +33,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long toTicks, params TaskState[] states)
         {
-            return states.SelectMany(
-                state =>
-                    {
-                        var ids = minimalStartTicksIndex.GetTaskIds(state, toTicks).ToArray();
-                        return ids;
-                    });
+            return states.SelectMany(state => minimalStartTicksIndex.GetTaskIds(state, toTicks).ToArray());
         }
 
         [NotNull]
@@ -50,7 +45,7 @@ namespace RemoteQueue.Cassandra.Repositories
             var columnInfo = minimalStartTicksIndex.IndexMeta(meta);
             if(meta.State == TaskState.New)
                 childTaskIndex.AddMeta(meta);
-            storage.Write(meta.Id, meta);
+            metaStorage.Write(meta.Id, meta);
 
             var oldMeta = meta.GetSnapshot();
             if(oldMeta != null)
@@ -66,7 +61,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public TaskMetaInformation GetMeta(string taskId)
         {
-            var meta = storage.Read(taskId);
+            var meta = metaStorage.Read(taskId);
             if(meta != null)
                 meta.MakeSnapshot();
             return meta;
@@ -74,19 +69,19 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public TaskMetaInformation[] GetMetas(string[] taskIds)
         {
-            var metas = storage.Read(taskIds);
+            var metas = metaStorage.Read(taskIds);
             metas.ForEach(x => x.MakeSnapshot());
             return metas;
         }
 
         public TaskMetaInformation[] GetMetasQuiet(string[] taskIds)
         {
-            var metas = storage.ReadQuiet(taskIds);
+            var metas = metaStorage.ReadQuiet(taskIds);
             metas.Where(x => x != null).ForEach(x => x.MakeSnapshot());
             return metas;
         }
 
-        private readonly ITaskMetaInformationBlobStorage storage;
+        private readonly ITaskMetaInformationBlobStorage metaStorage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IGlobalTime globalTime;
