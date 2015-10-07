@@ -13,12 +13,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public FromTicksProvider(ITicksHolder ticksHolder)
         {
             this.ticksHolder = ticksHolder;
-            minTicksCache = new MinTicksCache(this.ticksHolder);
         }
 
         public long? TryGetFromTicks(TaskState taskState)
         {
-            var firstTicks = minTicksCache.GetMinTicks(taskState);
+            var firstTicks = GetMinTicks(taskState);
             if(firstTicks == 0)
                 return null;
             var diff = GetDiff(taskState).Ticks;
@@ -51,11 +50,23 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void UpdateMinTicks(TaskState taskState, long ticks)
         {
-            minTicksCache.UpdateMinTicks(taskState, ticks);
+            ticksCache[taskState] = Math.Max(ticks - TimeSpan.FromMinutes(6).Ticks, 1);
+        }
+
+        private long GetMinTicks(TaskState taskState)
+        {
+            if(!ticksCache.ContainsKey(taskState))
+            {
+                long minTicks = ticksHolder.GetMinTicks(taskState.GetCassandraName());
+                if(minTicks == 0)
+                    return 0;
+                UpdateMinTicks(taskState, minTicks);
+            }
+            return ticksCache[taskState];
         }
 
         private readonly ITicksHolder ticksHolder;
-        private readonly MinTicksCache minTicksCache;
+        private readonly ConcurrentDictionary<TaskState, long> ticksCache = new ConcurrentDictionary<TaskState, long>();
         private readonly ConcurrentDictionary<TaskState, DateTime> lastBigDiffTimes = new ConcurrentDictionary<TaskState, DateTime>();
     }
 }
