@@ -15,7 +15,7 @@ using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
-    public class GetEventsEnumerator : IEnumerator<Tuple<string, ColumnInfo>>
+    public class GetEventsEnumerator : IEnumerator<Tuple<string, TaskColumnInfo>>
     {
         public GetEventsEnumerator(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IFromTicksProvider fromTicksProvider, long fromTicks, long toTicks, int batchSize)
         {
@@ -78,15 +78,15 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             eventEnumerator = (new List<Column>()).GetEnumerator();
         }
 
-        public Tuple<string, ColumnInfo> Current
+        public Tuple<string, TaskColumnInfo> Current
         {
             get
             {
                 var taskId = serializer.Deserialize<string>(eventEnumerator.Current.Value);
                 var columnName = eventEnumerator.Current.Name;
                 var rowKey = TicksNameHelper.GetRowKey(taskState, TicksNameHelper.GetTicksFromColumnName(columnName));
-                var columnInfo = new ColumnInfo(rowKey, columnName);
-                return new Tuple<string, ColumnInfo>(taskId, columnInfo);
+                var columnInfo = new TaskColumnInfo(rowKey, columnName);
+                return new Tuple<string, TaskColumnInfo>(taskId, columnInfo);
             }
         }
 

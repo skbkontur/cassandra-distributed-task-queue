@@ -24,32 +24,32 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         }
 
         [NotNull]
-        public ColumnInfo IndexMeta([NotNull] TaskMetaInformation taskMetaInformation)
+        public TaskColumnInfo IndexMeta([NotNull] TaskMetaInformation taskMeta)
         {
-            fromTicksProvider.HandleTaskStateChange(taskMetaInformation);
+            fromTicksProvider.HandleTaskStateChange(taskMeta);
             var connection = RetrieveColumnFamilyConnection();
-            var newColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation);
+            var newColumnInfo = TicksNameHelper.GetColumnInfo(taskMeta);
             connection.AddColumn(newColumnInfo.RowKey, new Column
                 {
                     Name = newColumnInfo.ColumnName,
                     Timestamp = globalTime.GetNowTicks(),
-                    Value = serializer.Serialize(taskMetaInformation.Id)
+                    Value = serializer.Serialize(taskMeta.Id)
                 });
             return newColumnInfo;
         }
 
-        public void UnindexMeta([NotNull] ColumnInfo columnInfo)
+        public void UnindexMeta([NotNull] TaskColumnInfo taskColumnInfo)
         {
             var connection = RetrieveColumnFamilyConnection();
-            connection.DeleteColumn(columnInfo.RowKey, columnInfo.ColumnName, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
+            connection.DeleteColumn(taskColumnInfo.RowKey, taskColumnInfo.ColumnName, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
         }
 
         [NotNull]
-        public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize)
+        public IEnumerable<Tuple<string, TaskColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize)
         {
             var fromTicks = fromTicksProvider.TryGetFromTicks(taskState);
             if(!fromTicks.HasValue)
-                return new Tuple<string, ColumnInfo>[0];
+                return new Tuple<string, TaskColumnInfo>[0];
             var connection = RetrieveColumnFamilyConnection();
             return new GetEventsEnumerable(taskState, serializer, connection, fromTicksProvider, fromTicks.Value, toTicks, batchSize);
         }

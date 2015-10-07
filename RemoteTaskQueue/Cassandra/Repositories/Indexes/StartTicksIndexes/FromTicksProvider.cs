@@ -57,7 +57,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             if(!ticksCache.ContainsKey(taskState))
             {
-                long minTicks = ticksHolder.GetMinTicks(taskState.GetCassandraName());
+                var minTicks = ticksHolder.GetMinTicks(taskState.GetCassandraName());
                 if(minTicks == 0)
                     return 0;
                 UpdateMinTicks(taskState, minTicks);

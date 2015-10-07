@@ -51,22 +51,22 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             Task.WaitAll(tasks, timeout);
         }
 
-        public void QueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
+        public void QueueTask([NotNull] string taskId, [NotNull] TaskColumnInfo taskColumnInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
         {
             using(var infrastructureTraceContext = new InfrastructureTaskTraceContext(taskIsBeingTraced))
             {
-                DoQueueTask(taskId, taskInfo, taskMeta, taskQueueReason, out queueIsFull, out taskIsSentToThreadPool, taskIsBeingTraced);
+                DoQueueTask(taskId, taskColumnInfo, taskMeta, taskQueueReason, out queueIsFull, out taskIsSentToThreadPool, taskIsBeingTraced);
                 infrastructureTraceContext.Finish(taskIsSentToThreadPool);
             }
         }
 
-        private void DoQueueTask([NotNull] string taskId, [NotNull] ColumnInfo taskInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
+        private void DoQueueTask([NotNull] string taskId, [NotNull] TaskColumnInfo taskColumnInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
         {
             queueIsFull = false;
             taskIsSentToThreadPool = false;
             if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                 return;
-            if(taskMeta == null && TicksNameHelper.GetTicksFromColumnName(taskInfo.ColumnName) >= (DateTime.UtcNow - TimeSpan.FromMinutes(20)).Ticks)
+            if(taskMeta == null && TicksNameHelper.GetTicksFromColumnName(taskColumnInfo.ColumnName) >= (DateTime.UtcNow - TimeSpan.FromMinutes(20)).Ticks)
             {
                 logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskId);
                 return;
@@ -78,7 +78,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
             try
             {
-                var handlerTask = new HandlerTask(taskId, taskQueueReason, taskInfo, taskMeta, taskHandlerCollection, remoteTaskQueueInternals);
+                var handlerTask = new HandlerTask(taskId, taskQueueReason, taskColumnInfo, taskMeta, taskHandlerCollection, remoteTaskQueueInternals);
                 lock(lockObject)
                 {
                     if(stopped)

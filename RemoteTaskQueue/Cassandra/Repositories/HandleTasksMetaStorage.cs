@@ -31,32 +31,32 @@ namespace RemoteQueue.Cassandra.Repositories
             this.childTaskIndex = childTaskIndex;
         }
 
-        public IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long toTicks, params TaskState[] states)
+        public IEnumerable<Tuple<string, TaskColumnInfo>> GetAllTasksInStates(long toTicks, params TaskState[] states)
         {
             return states.SelectMany(state => minimalStartTicksIndex.GetTaskIds(state, toTicks, batchSize : 2000).ToArray());
         }
 
         [NotNull]
-        public ColumnInfo AddMeta([NotNull] TaskMetaInformation meta)
+        public TaskColumnInfo AddMeta([NotNull] TaskMetaInformation taskMeta)
         {
-            var nowTicks = Math.Max((meta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
-            meta.LastModificationTicks = nowTicks;
-            eventLogRepository.AddEvent(meta.Id, nowTicks);
-            var columnInfo = minimalStartTicksIndex.IndexMeta(meta);
-            if(meta.State == TaskState.New)
-                childTaskIndex.AddMeta(meta);
-            metaStorage.Write(meta.Id, meta);
+            var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
+            taskMeta.LastModificationTicks = nowTicks;
+            eventLogRepository.AddEvent(taskMeta.Id, nowTicks);
+            var newColumnInfo = minimalStartTicksIndex.IndexMeta(taskMeta);
+            if(taskMeta.State == TaskState.New)
+                childTaskIndex.AddMeta(taskMeta);
+            metaStorage.Write(taskMeta.Id, taskMeta);
 
-            var oldMeta = meta.GetSnapshot();
+            var oldMeta = taskMeta.GetSnapshot();
             if(oldMeta != null)
             {
                 var oldColumnInfo = TicksNameHelper.GetColumnInfo(oldMeta);
-                if(!oldColumnInfo.Equals(columnInfo))
+                if(!oldColumnInfo.Equals(newColumnInfo))
                     minimalStartTicksIndex.UnindexMeta(oldColumnInfo);
             }
 
-            meta.MakeSnapshot();
-            return columnInfo;
+            taskMeta.MakeSnapshot();
+            return newColumnInfo;
         }
 
         public TaskMetaInformation GetMeta(string taskId)

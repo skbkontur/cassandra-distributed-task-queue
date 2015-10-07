@@ -37,7 +37,7 @@ namespace RemoteQueue.Handling
         }
 
         [NotNull]
-        protected ColumnInfo Publish(TimeSpan delay)
+        protected TaskColumnInfo Publish(TimeSpan delay)
         {
             using(new PublishTaskTraceContext())
             {

@@ -71,7 +71,7 @@ namespace FunctionalTests.RepositoriesTests
                     Id = id,
                     MinimalStartTicks = ticks
                 });
-            Tuple<string, ColumnInfo>[] tasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 1, TaskState.New).ToArray();
+            Tuple<string, TaskColumnInfo>[] tasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 1, TaskState.New).ToArray();
             Assert.AreEqual(1, tasks.Length);
             Assert.AreEqual(id, tasks[0].Item1);
             tasks = handleTasksMetaStorage.GetAllTasksInStates(ticks, TaskState.New).ToArray();
@@ -92,7 +92,7 @@ namespace FunctionalTests.RepositoriesTests
                     Id = id,
                     MinimalStartTicks = ticks
                 });
-            Tuple<string, ColumnInfo>[] tasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 1, TaskState.InProcess).ToArray();
+            Tuple<string, TaskColumnInfo>[] tasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 1, TaskState.InProcess).ToArray();
             Assert.AreEqual(0, tasks.Length);
         }
 
@@ -128,7 +128,7 @@ namespace FunctionalTests.RepositoriesTests
                     Id = id4,
                     MinimalStartTicks = ticks + 1
                 });
-            Tuple<string, ColumnInfo>[] tasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 9, TaskState.InProcess, TaskState.New).ToArray();
+            Tuple<string, TaskColumnInfo>[] tasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 9, TaskState.InProcess, TaskState.New).ToArray();
             Assert.AreEqual(2, tasks.Length);
             Assert.AreEqual(id2, tasks[0].Item1);
             Assert.AreEqual(id3, tasks[1].Item1);
@@ -151,10 +151,10 @@ namespace FunctionalTests.RepositoriesTests
                     Id = id,
                     MinimalStartTicks = ticks + 15
                 });
-            Tuple<string, ColumnInfo>[] newTasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 12, TaskState.New).ToArray();
+            Tuple<string, TaskColumnInfo>[] newTasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 12, TaskState.New).ToArray();
             Assert.AreEqual(1, newTasks.Length);
             Assert.AreEqual(id, newTasks[0].Item1);
-            Tuple<string, ColumnInfo>[] inProcessTasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 12, TaskState.InProcess).ToArray();
+            Tuple<string, TaskColumnInfo>[] inProcessTasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 12, TaskState.InProcess).ToArray();
             Assert.AreEqual(0, inProcessTasks.Length);
             inProcessTasks = handleTasksMetaStorage.GetAllTasksInStates(ticks + 16, TaskState.InProcess).ToArray();
             Assert.AreEqual(1, inProcessTasks.Length);

@@ -27,14 +27,14 @@ namespace RemoteQueue.Handling
         public HandlerTask(
             [NotNull] string taskId,
             TaskQueueReason reason,
-            [NotNull] ColumnInfo taskInfo,
+            [NotNull] TaskColumnInfo taskColumnInfo,
             [CanBeNull] TaskMetaInformation taskMeta,
             ITaskHandlerCollection taskHandlerCollection,
             IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {
             this.taskId = taskId;
             this.reason = reason;
-            this.taskInfo = taskInfo;
+            this.taskColumnInfo = taskColumnInfo;
             this.taskMeta = taskMeta;
             this.taskHandlerCollection = taskHandlerCollection;
             serializer = remoteTaskQueueInternals.Serializer;
@@ -51,19 +51,19 @@ namespace RemoteQueue.Handling
         {
             if(taskMeta == null)
             {
-                logger.InfoFormat("Удаляем запись индекса, для которой не записалась мета (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskInfo.ColumnName, taskInfo.RowKey);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo);
+                logger.InfoFormat("Удаляем запись индекса, для которой не записалась мета (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskColumnInfo.ColumnName, taskColumnInfo.RowKey);
+                taskMinimalStartTicksIndex.UnindexMeta(taskColumnInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
-            if(taskMeta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskInfo.ColumnName))
+            if(taskMeta.MinimalStartTicks > TicksNameHelper.GetTicksFromColumnName(taskColumnInfo.ColumnName))
             {
-                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskInfo.ColumnName, taskInfo.RowKey);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo);
+                logger.InfoFormat("Удаляем зависшую запись индекса (TaskId = {0}, ColumnName = {1}, RowKey = {2})", taskId, taskColumnInfo.ColumnName, taskColumnInfo.RowKey);
+                taskMinimalStartTicksIndex.UnindexMeta(taskColumnInfo);
             }
             if(taskMeta.State == TaskState.Finished || taskMeta.State == TaskState.Fatal || taskMeta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskId, taskMeta.State);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo);
+                taskMinimalStartTicksIndex.UnindexMeta(taskColumnInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
             var nowTicks = DateTime.UtcNow.Ticks;
@@ -151,7 +151,7 @@ namespace RemoteQueue.Handling
             if(task.Meta.State == TaskState.Finished || task.Meta.State == TaskState.Fatal || task.Meta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", taskId);
-                taskMinimalStartTicksIndex.UnindexMeta(taskInfo);
+                taskMinimalStartTicksIndex.UnindexMeta(taskColumnInfo);
                 return LocalTaskProcessingResult.Undefined;
             }
 
@@ -236,7 +236,7 @@ namespace RemoteQueue.Handling
 
         private readonly string taskId;
         private readonly TaskQueueReason reason;
-        private readonly ColumnInfo taskInfo;
+        private readonly TaskColumnInfo taskColumnInfo;
         private readonly TaskMetaInformation taskMeta;
         private readonly ITaskHandlerCollection taskHandlerCollection;
         private readonly ISerializer serializer;

@@ -2,9 +2,9 @@
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes
 {
-    public class ColumnInfo
+    public class TaskColumnInfo
     {
-        public ColumnInfo([NotNull] string rowKey, [NotNull] string columnName)
+        public TaskColumnInfo([NotNull] string rowKey, [NotNull] string columnName)
         {
             RowKey = rowKey;
             ColumnName = columnName;
