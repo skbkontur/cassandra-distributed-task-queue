@@ -147,6 +147,7 @@ namespace RemoteQueue.Handling
                             ParentTaskId = string.IsNullOrEmpty(createTaskOptions.ParentTaskId) ? GetCurrentExecutingTaskId() : createTaskOptions.ParentTaskId,
                             TaskGroupLock = createTaskOptions.TaskGroupLock,
                             State = TaskState.New,
+                            MinimalStartTicks = 0,
                         }
                 };
             return enableContinuationOptimization && LocalTaskQueue.Instance != null
