@@ -54,7 +54,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName}, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
         }
 
-        public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000)
+        public IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize = 2000)
         {
             var connection = RetrieveColumnFamilyConnection();
             var diff = GetDiff(taskState).Ticks;
@@ -63,8 +63,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 return new Tuple<string, ColumnInfo>[0];
             var twoDaysEarlier = (DateTime.UtcNow - TimeSpan.FromDays(2)).Ticks;
             var firstTicksWithDiff = firstTicks - diff;
-            var startTicks = Math.Max(twoDaysEarlier, firstTicksWithDiff);
-            var getEventsEnumerable = new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, startTicks, nowTicks, batchSize);
+            var fromTicks = Math.Max(twoDaysEarlier, firstTicksWithDiff);
+            var getEventsEnumerable = new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, fromTicks, toTicks, batchSize);
             return getEventsEnumerable;
         }
 
