@@ -4,7 +4,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
     {
         long UpdateMaxTicks(string name, long ticks);
         long GetMaxTicks(string name);
-        long UpdateMinTicks(string name, long ticks);
+        void UpdateMinTicks(string name, long ticks);
         long GetMinTicks(string name);
     }
 }

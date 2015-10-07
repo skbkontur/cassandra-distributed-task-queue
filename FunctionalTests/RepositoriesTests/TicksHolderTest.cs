@@ -17,7 +17,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void UpdateMaxTicks()
         {
-            long ticks = DateTime.UtcNow.Ticks;
+            var ticks = DateTime.UtcNow.Ticks;
             Assert.AreEqual(ticks, ticksHolder.UpdateMaxTicks("r", ticks));
             Assert.AreEqual(ticks + 2, ticksHolder.UpdateMaxTicks("r1", ticks + 2));
             Assert.AreEqual(ticks + 2, ticksHolder.UpdateMaxTicks("r1", ticks + 1));
@@ -29,13 +29,19 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void UpdateMinTicks()
         {
-            long ticks = DateTime.UtcNow.Ticks;
-            Assert.AreEqual(ticks, ticksHolder.UpdateMinTicks("r", ticks));
-            Assert.AreEqual(ticks - 2, ticksHolder.UpdateMinTicks("r1", ticks - 2));
-            Assert.AreEqual(ticks - 2, ticksHolder.UpdateMinTicks("r1", ticks - 1));
+            var ticks = DateTime.UtcNow.Ticks;
+            Assert.AreEqual(ticks, UpdateMinTicks("r", ticks));
+            Assert.AreEqual(ticks - 2, UpdateMinTicks("r1", ticks - 2));
+            Assert.AreEqual(ticks - 2, UpdateMinTicks("r1", ticks - 1));
             Assert.AreEqual(ticks, ticksHolder.GetMinTicks("r"));
-            Assert.AreEqual(ticks - 2, ticksHolder.UpdateMinTicks("r", ticks - 2));
+            Assert.AreEqual(ticks - 2, UpdateMinTicks("r", ticks - 2));
             Assert.AreEqual(ticks - 2, ticksHolder.GetMinTicks("r"));
+        }
+
+        private long UpdateMinTicks(string name, long ticks)
+        {
+            ticksHolder.UpdateMinTicks(name, ticks);
+            return ticksHolder.GetMinTicks(name);
         }
 
         private ITicksHolder ticksHolder;

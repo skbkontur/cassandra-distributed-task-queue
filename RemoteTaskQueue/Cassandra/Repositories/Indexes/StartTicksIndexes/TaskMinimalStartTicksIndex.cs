@@ -35,7 +35,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var connection = RetrieveColumnFamilyConnection();
             var state = taskMetaInformation.State.GetCassandraName();
             var ticks = taskMetaInformation.MinimalStartTicks;
-            ticksHolder.UpdateMaxTicks(state, ticks);
             ticksHolder.UpdateMinTicks(state, ticks);
 
             var newColumnInfo = TicksNameHelper.GetColumnInfo(taskMetaInformation);

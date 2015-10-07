@@ -35,7 +35,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
             return serializer.Deserialize<long>(column.Value);
         }
 
-        public long UpdateMinTicks(string name, long ticks)
+        public void UpdateMinTicks(string name, long ticks)
         {
             var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(name, new Column
@@ -44,7 +44,6 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
                     Timestamp = long.MaxValue - ticks,
                     Value = serializer.Serialize(long.MaxValue - ticks)
                 });
-            return GetMinTicks(name);
         }
 
         public long GetMinTicks(string name)
