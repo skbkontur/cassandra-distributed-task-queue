@@ -100,9 +100,7 @@
     <Compile Include="Cassandra\Primitives\IBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerator.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITasksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IMinTicksCache.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TasksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\MinTicksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TaskMinimalStartTicksIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITaskMinimalStartTicksIndex.cs" />

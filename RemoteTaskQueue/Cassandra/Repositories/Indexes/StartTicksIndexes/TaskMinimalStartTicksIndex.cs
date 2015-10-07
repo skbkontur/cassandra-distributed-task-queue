@@ -27,7 +27,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.serializer = serializer;
             this.globalTime = globalTime;
             minTicksCache = new MinTicksCache(this.ticksHolder);
-            inProcessTasksCache = new TasksCache();
         }
 
         [NotNull]
@@ -51,7 +50,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void UnindexMeta(string taskId, ColumnInfo columnInfo)
         {
-            inProcessTasksCache.Remove(taskId);
             var connection = RetrieveColumnFamilyConnection();
             connection.DeleteBatch(columnInfo.RowKey, new[] {columnInfo.ColumnName}, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
         }
@@ -67,12 +65,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var firstTicksWithDiff = firstTicks - diff;
             var startTicks = Math.Max(twoDaysEarlier, firstTicksWithDiff);
             var getEventsEnumerable = new GetEventsEnumerable(taskState, serializer, connection, minTicksCache, startTicks, nowTicks, batchSize);
-            //if(taskState == TaskState.InProcess)
-            //    return inProcessTasksCache.PassThroughtCache(getEventsEnumerable);
             return getEventsEnumerable;
         }
-
-        public const string columnFamilyName = "TaskMinimalStartTicksIndex";
 
         private TimeSpan GetDiff(TaskState taskState)
         {
@@ -94,11 +88,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return ticks != 0;
         }
 
+        public const string columnFamilyName = "TaskMinimalStartTicksIndex";
+
         private readonly ConcurrentDictionary<TaskState, DateTime> lastBigDiffTimes = new ConcurrentDictionary<TaskState, DateTime>();
         private readonly ITicksHolder ticksHolder;
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
         private readonly IMinTicksCache minTicksCache;
-        private readonly TasksCache inProcessTasksCache;
     }
 }
