@@ -23,11 +23,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
 
         public static long GetTicksFromColumnName([NotNull] string columnName)
         {
-            var ticksString = columnName.Split('_')[0];
-            long res;
-            if(!long.TryParse(ticksString, out res))
-                return 0;
-            return res;
+            return long.Parse(columnName.Split('_')[0]);
         }
 
         public static long GetTicksRowNumber(long ticks)
