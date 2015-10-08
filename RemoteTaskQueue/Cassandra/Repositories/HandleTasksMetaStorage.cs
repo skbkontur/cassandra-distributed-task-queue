@@ -47,7 +47,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 childTaskIndex.AddMeta(taskMeta);
             metaStorage.Write(taskMeta.Id, taskMeta);
 
-            var oldMeta = taskMeta.GetSnapshot();
+            var oldMeta = taskMeta.TryGetSnapshot();
             if(oldMeta != null)
             {
                 var oldColumnInfo = TicksNameHelper.GetColumnInfo(oldMeta);

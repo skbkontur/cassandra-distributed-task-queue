@@ -1,4 +1,6 @@
-﻿namespace RemoteQueue.Cassandra.Entities
+﻿using JetBrains.Annotations;
+
+namespace RemoteQueue.Cassandra.Entities
 {
     public class TaskMetaInformation
     {
@@ -27,7 +29,8 @@
             snapshot = StaticGrobuf.GetSerializer().Serialize(this);
         }
 
-        internal TaskMetaInformation GetSnapshot()
+        [CanBeNull]
+        internal TaskMetaInformation TryGetSnapshot()
         {
             if(snapshot == null)
                 return null;
