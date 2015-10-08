@@ -63,11 +63,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     return false;
                 }
                 iCur++;
+                var rowKey = TicksNameHelper.GetRowKey(taskState, TicksNameHelper.GetMinimalTicksForRow(iCur));
                 string exclusiveStartColumnName = null;
-                var columnInfo = TicksNameHelper.GetColumnInfo(taskState, TicksNameHelper.GetMinimalTicksForRow(iCur), string.Empty);
                 if(iCur == iFrom)
-                    exclusiveStartColumnName = TicksNameHelper.GetColumnInfo(taskState, fromTicks, string.Empty).ColumnName;
-                eventEnumerator = connection.GetRow(columnInfo.RowKey, exclusiveStartColumnName, batchSize).GetEnumerator();
+                    exclusiveStartColumnName = TicksNameHelper.GetColumnName(fromTicks, string.Empty);
+                eventEnumerator = connection.GetRow(rowKey, exclusiveStartColumnName, batchSize).GetEnumerator();
             }
         }
 

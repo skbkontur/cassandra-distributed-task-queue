@@ -12,13 +12,13 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
         [NotNull]
         public static string GetRowKey(TaskState taskState, long ticks)
         {
-            return (ticks / tickPartition) + "_" + taskState.GetCassandraName();
+            return string.Format("{0}_{1}", GetTicksRowNumber(ticks), taskState.GetCassandraName());
         }
 
         [NotNull]
-        private static string GetColumnName(long ticks, [NotNull] string suffix)
+        public static string GetColumnName(long ticks, [NotNull] string suffix)
         {
-            return ticks.ToString("D20", CultureInfo.InvariantCulture) + "_" + suffix;
+            return string.Format("{0}_{1}", ticks.ToString("D20", CultureInfo.InvariantCulture), suffix);
         }
 
         public static long GetTicksFromColumnName([NotNull] string columnName)
@@ -32,12 +32,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
 
         public static long GetTicksRowNumber(long ticks)
         {
-            return ticks / tickPartition;
+            return ticks / ticksPartition;
         }
 
         public static long GetMinimalTicksForRow(long rowNumber)
         {
-            return rowNumber * tickPartition;
+            return rowNumber * ticksPartition;
         }
 
         [NotNull]
@@ -48,14 +48,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
             return new TaskColumnInfo(rowKey, columnName);
         }
 
-        [NotNull]
-        public static TaskColumnInfo GetColumnInfo(TaskState taskState, long ticks, [NotNull] string colSuffix)
-        {
-            var rowKey = GetRowKey(taskState, ticks);
-            var columnName = GetColumnName(ticks, colSuffix);
-            return new TaskColumnInfo(rowKey, columnName);
-        }
-
-        private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;
+        private static readonly long ticksPartition = TimeSpan.FromMinutes(6).Ticks;
     }
 }
