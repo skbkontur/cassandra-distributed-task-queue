@@ -57,18 +57,18 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             }
         }
 
-        public void TryMoveForward(TaskState taskState, long newTicks)
+        public bool TryMoveForward(TaskState taskState, long newTicks)
         {
             lock(locker)
             {
                 OldestLiveRecordTicksItem item;
                 if(!ticksByTaskState.TryGetValue(taskState, out item))
                     throw new InvalidProgramStateException(string.Format("Not found OldestLiveRecordTicksItem for: {0}", taskState));
-                if(item.IsAllowedToMoveForward)
-                {
-                    item.Ticks = newTicks;
-                    item.IsAllowedToMoveForward = false;
-                }
+                if(!item.IsAllowedToMoveForward)
+                    return false;
+                item.Ticks = newTicks;
+                item.IsAllowedToMoveForward = false;
+                return true;
             }
         }
 

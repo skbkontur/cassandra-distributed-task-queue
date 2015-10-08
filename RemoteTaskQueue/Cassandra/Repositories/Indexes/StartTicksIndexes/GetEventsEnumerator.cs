@@ -45,26 +45,20 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     var currentLiveRecordTicks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
                     if(currentLiveRecordTicks > toTicks)
                     {
-                        if(startPosition)
-                            oldestLiveRecordTicksHolder.TryMoveForward(taskState, toTicks);
+                        oldestLiveRecordTicksHolder.TryMoveForward(taskState, toTicks);
                         return false;
                     }
-                    if(startPosition)
+                    var movedForward = oldestLiveRecordTicksHolder.TryMoveForward(taskState, currentLiveRecordTicks);
+                    if(movedForward && currentLiveRecordTicks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
                     {
-                        startPosition = false;
-                        oldestLiveRecordTicksHolder.TryMoveForward(taskState, currentLiveRecordTicks);
-                        if(currentLiveRecordTicks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
-                        {
-                            logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
-                                              Current.Item1, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
-                        }
+                        logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
+                                          Current.Item1, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
                     }
                     return true;
                 }
                 if(iCur >= iTo)
                 {
-                    if(startPosition)
-                        oldestLiveRecordTicksHolder.TryMoveForward(taskState, toTicks);
+                    oldestLiveRecordTicksHolder.TryMoveForward(taskState, toTicks);
                     return false;
                 }
                 iCur++;
@@ -78,7 +72,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void Reset()
         {
-            startPosition = true;
             iCur = iFrom - 1;
             eventEnumerator = (new List<Column>()).GetEnumerator();
         }
@@ -140,7 +133,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly long iFrom;
         private readonly long iTo;
         private long iCur;
-        private bool startPosition;
         private IEnumerator<Column> eventEnumerator;
 
         private class TaskStateStatistics
