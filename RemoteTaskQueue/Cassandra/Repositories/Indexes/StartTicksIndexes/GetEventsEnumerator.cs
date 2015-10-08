@@ -16,12 +16,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerator : IEnumerator<Tuple<string, TaskColumnInfo>>
     {
-        public GetEventsEnumerator(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IFromTicksProvider fromTicksProvider, long fromTicks, long toTicks, int batchSize)
+        public GetEventsEnumerator(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
         {
             this.taskState = taskState;
             this.serializer = serializer;
             this.connection = connection;
-            this.fromTicksProvider = fromTicksProvider;
+            this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
             this.fromTicks = fromTicks;
             this.toTicks = toTicks;
             this.batchSize = batchSize;
@@ -46,13 +46,13 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     if(currentLiveRecordTicks > toTicks)
                     {
                         if(startPosition)
-                            fromTicksProvider.TryUpdateOldestLiveRecordTicks(taskState, toTicks);
+                            oldestLiveRecordTicksHolder.TryMoveForward(taskState, toTicks);
                         return false;
                     }
                     if(startPosition)
                     {
                         startPosition = false;
-                        fromTicksProvider.TryUpdateOldestLiveRecordTicks(taskState, currentLiveRecordTicks);
+                        oldestLiveRecordTicksHolder.TryMoveForward(taskState, currentLiveRecordTicks);
                         if(currentLiveRecordTicks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
                         {
                             logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
@@ -64,7 +64,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 if(iCur >= iTo)
                 {
                     if(startPosition)
-                        fromTicksProvider.TryUpdateOldestLiveRecordTicks(taskState, toTicks);
+                        oldestLiveRecordTicksHolder.TryMoveForward(taskState, toTicks);
                     return false;
                 }
                 iCur++;
@@ -133,7 +133,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly TaskState taskState;
         private readonly ISerializer serializer;
         private readonly IColumnFamilyConnection connection;
-        private readonly IFromTicksProvider fromTicksProvider;
+        private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;
         private readonly long fromTicks;
         private readonly long toTicks;
         private readonly int batchSize;

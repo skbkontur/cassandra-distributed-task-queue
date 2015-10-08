@@ -40,7 +40,7 @@ namespace FunctionalTests.ExchangeTests
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
             var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, globalTime, new FromTicksProvider(new OldestLiveRecordTicksHolder(ticksHolder)));
+            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, globalTime, new OldestLiveRecordTicksHolder(ticksHolder));
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
             var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
@@ -73,7 +73,7 @@ namespace FunctionalTests.ExchangeTests
         {
             const int count = 5;
             var ids = new string[count];
-            for (var i = 0; i < count; i++)
+            for(var i = 0; i < count; i++)
                 ids[i] = AddTask(7);
             Wait(ids, 60000);
         }
@@ -163,9 +163,10 @@ namespace FunctionalTests.ExchangeTests
             return DateTime.UtcNow.ToString("dd.MM.yyyy mm:hh:ss.ffff");
         }
 
+        private const int sleepInterval = 200;
+
         private IHandleTaskCollection handleTaskCollection;
         private ITestCounterRepository testCounterRepository;
         private IRemoteTaskQueue taskQueue;
-        private const int sleepInterval = 200;
     }
 }
