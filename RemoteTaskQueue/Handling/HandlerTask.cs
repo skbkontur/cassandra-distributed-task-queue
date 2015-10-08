@@ -97,11 +97,11 @@ namespace RemoteQueue.Handling
             }
         }
 
-        private bool TryUpdateTaskState(Task task, long? minimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
+        private bool TryUpdateTaskState(Task task, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
         {
             var metaForWrite = allFieldsSerializer.Copy(task.Meta);
 
-            metaForWrite.MinimalStartTicks = Math.Max(metaForWrite.MinimalStartTicks, minimalStartTicks ?? 0) + 1;
+            metaForWrite.MinimalStartTicks = Math.Max(metaForWrite.MinimalStartTicks + 1, newMinimalStartTicks);
             metaForWrite.StartExecutingTicks = startExecutingTicks;
             metaForWrite.FinishExecutingTicks = finishExecutingTicks;
 
@@ -157,7 +157,8 @@ namespace RemoteQueue.Handling
 
             logger.InfoFormat("Начинаем обрабатывать задачу [{0}]. Reason = {1}", task.Meta, reason);
 
-            if(!TryUpdateTaskState(task, null, DateTime.UtcNow.Ticks, null, task.Meta.Attempts + 1, TaskState.InProcess))
+            nowTicks = DateTime.UtcNow.Ticks;
+            if(!TryUpdateTaskState(task, nowTicks, nowTicks, null, task.Meta.Attempts + 1, TaskState.InProcess))
             {
                 logger.ErrorFormat("Не удалось обновить метаинформацию у задачи '{0}'.", task.Meta);
                 return LocalTaskProcessingResult.Undefined;
@@ -171,7 +172,8 @@ namespace RemoteQueue.Handling
             catch(Exception e)
             {
                 LogError(e, task.Meta);
-                TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, DateTime.UtcNow.Ticks, task.Meta.Attempts, TaskState.Fatal);
+                nowTicks = DateTime.UtcNow.Ticks;
+                TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
                 return LocalTaskProcessingResult.Error;
             }
 
@@ -191,7 +193,8 @@ namespace RemoteQueue.Handling
                 {
                     localTaskProcessingResult = LocalTaskProcessingResult.Error;
                     LogError(e, task.Meta);
-                    TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, DateTime.UtcNow.Ticks, task.Meta.Attempts, TaskState.Fatal);
+                    nowTicks = DateTime.UtcNow.Ticks;
+                    TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
                 }
             }
             return localTaskProcessingResult;
@@ -203,21 +206,18 @@ namespace RemoteQueue.Handling
             switch(handleResult.FinishAction)
             {
             case FinishAction.Finish:
-                TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Finished);
+                TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Finished);
                 return LocalTaskProcessingResult.Success;
             case FinishAction.Fatal:
-                TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
+                TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
                 LogError(handleResult.Error, task.Meta);
                 return LocalTaskProcessingResult.Error;
             case FinishAction.RerunAfterError:
-                TryUpdateTaskState(task, handleResult.RerunDelay.Ticks + nowTicks,
-                                   task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts,
-                                   TaskState.WaitingForRerunAfterError);
+                TryUpdateTaskState(task, nowTicks + handleResult.RerunDelay.Ticks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.WaitingForRerunAfterError);
                 LogError(handleResult.Error, task.Meta);
                 return LocalTaskProcessingResult.Rerun;
             case FinishAction.Rerun:
-                TryUpdateTaskState(task, handleResult.RerunDelay.Ticks + nowTicks,
-                                   task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.WaitingForRerun);
+                TryUpdateTaskState(task, nowTicks + handleResult.RerunDelay.Ticks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.WaitingForRerun);
                 return LocalTaskProcessingResult.Rerun;
             default:
                 throw new InvalidProgramStateException(string.Format("Invalid FinishAction: {0}", handleResult.FinishAction));
