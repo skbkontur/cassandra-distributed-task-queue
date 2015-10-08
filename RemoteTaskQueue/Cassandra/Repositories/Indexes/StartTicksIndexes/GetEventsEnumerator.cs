@@ -46,13 +46,13 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     if(currentLiveRecordTicks > toTicks)
                     {
                         if(startPosition)
-                            fromTicksProvider.UpdateOldestLiveRecordTicks(taskState, toTicks);
+                            fromTicksProvider.TryUpdateOldestLiveRecordTicks(taskState, toTicks);
                         return false;
                     }
                     if(startPosition)
                     {
                         startPosition = false;
-                        fromTicksProvider.UpdateOldestLiveRecordTicks(taskState, currentLiveRecordTicks);
+                        fromTicksProvider.TryUpdateOldestLiveRecordTicks(taskState, currentLiveRecordTicks);
                         if(currentLiveRecordTicks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
                         {
                             logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
@@ -64,7 +64,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 if(iCur >= iTo)
                 {
                     if(startPosition)
-                        fromTicksProvider.UpdateOldestLiveRecordTicks(taskState, toTicks);
+                        fromTicksProvider.TryUpdateOldestLiveRecordTicks(taskState, toTicks);
                     return false;
                 }
                 iCur++;

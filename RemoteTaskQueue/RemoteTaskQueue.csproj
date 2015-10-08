@@ -84,6 +84,8 @@
     <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\ChildTaskIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\IChildTaskIndex.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IOldestLiveRecordTicksHolder.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\OldestLiveRecordTicksHolder.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\TaskColumnInfo.cs" />
     <Compile Include="Cassandra\Entities\Task.cs" />
     <Compile Include="Cassandra\Entities\TaskExceptionInfo.cs" />

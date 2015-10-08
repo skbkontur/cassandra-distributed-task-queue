@@ -8,6 +8,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
     {
         long? TryGetFromTicks(TaskState taskState);
         void HandleTaskStateChange([NotNull] TaskMetaInformation taskMeta);
-        void UpdateOldestLiveRecordTicks(TaskState taskState, long oldestLiveRecordTicks);
+        void TryUpdateOldestLiveRecordTicks(TaskState taskState, long newOldestLiveRecordTicks);
     }
 }
