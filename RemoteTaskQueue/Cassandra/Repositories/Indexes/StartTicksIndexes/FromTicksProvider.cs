@@ -50,7 +50,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void UpdateOldestLiveRecordTicks(TaskState taskState, long oldestLiveRecordTicks)
         {
-            oldestLiveRecordTicksByTaskState[taskState] = Math.Max(oldestLiveRecordTicks - TimeSpan.FromMinutes(6).Ticks, 1);
+            oldestLiveRecordTicksByTaskState[taskState] = oldestLiveRecordTicks;
         }
 
         private long? TryGetOldestLiveRecordTicks(TaskState taskState)
@@ -61,7 +61,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 oldestLiveRecordTicks = ticksHolder.GetMinTicks(taskState.GetCassandraName());
                 if(oldestLiveRecordTicks == 0)
                     return null;
-                UpdateOldestLiveRecordTicks(taskState, oldestLiveRecordTicks);
+                oldestLiveRecordTicksByTaskState[taskState] = oldestLiveRecordTicks;
             }
             return oldestLiveRecordTicks;
         }

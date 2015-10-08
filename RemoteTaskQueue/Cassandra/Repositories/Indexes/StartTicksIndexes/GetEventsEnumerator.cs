@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 
 using GroBuf;
@@ -24,8 +23,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.connection = connection;
             this.fromTicksProvider = fromTicksProvider;
             this.fromTicks = fromTicks;
+            this.toTicks = toTicks;
             this.batchSize = batchSize;
-            toTicksString = (toTicks + 1).ToString("D20", CultureInfo.InvariantCulture);
             iFrom = TicksNameHelper.GetTicksRowNumber(fromTicks);
             iTo = TicksNameHelper.GetTicksRowNumber(toTicks);
             Reset();
@@ -43,23 +42,29 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             {
                 if(eventEnumerator.MoveNext())
                 {
-                    if(eventEnumerator.Current.Name.CompareTo(toTicksString) >= 0)
+                    var currentLiveRecordTicks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
+                    if(currentLiveRecordTicks > toTicks)
                     {
                         if(startPosition)
-                            fromTicksProvider.UpdateMinTicks(taskState, DateTime.UtcNow.Ticks);
+                            fromTicksProvider.UpdateOldestLiveRecordTicks(taskState, toTicks);
                         return false;
                     }
                     if(startPosition)
                     {
-                        UpdateTicks();
                         startPosition = false;
+                        fromTicksProvider.UpdateOldestLiveRecordTicks(taskState, currentLiveRecordTicks);
+                        if(currentLiveRecordTicks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
+                        {
+                            logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
+                                              Current.Item1, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
+                        }
                     }
                     return true;
                 }
                 if(iCur >= iTo)
                 {
                     if(startPosition)
-                        fromTicksProvider.UpdateMinTicks(taskState, DateTime.UtcNow.Ticks);
+                        fromTicksProvider.UpdateOldestLiveRecordTicks(taskState, toTicks);
                     return false;
                 }
                 iCur++;
@@ -119,19 +124,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             logger.InfoFormat(result.ToString());
         }
 
-        private void UpdateTicks()
-        {
-            var ticks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name) - 1;
-            fromTicksProvider.UpdateMinTicks(taskState, ticks);
-
-            if(ticks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
-            {
-                var current = Current;
-                logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
-                                  current.Item1, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
-            }
-        }
-
         private static Dictionary<TaskState, TaskStateStatistics> statistics;
         private static readonly object statisticsLockObject = new object();
 
@@ -143,7 +135,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly IColumnFamilyConnection connection;
         private readonly IFromTicksProvider fromTicksProvider;
         private readonly long fromTicks;
-        private readonly string toTicksString;
+        private readonly long toTicks;
         private readonly int batchSize;
         private readonly long iFrom;
         private readonly long iTo;
