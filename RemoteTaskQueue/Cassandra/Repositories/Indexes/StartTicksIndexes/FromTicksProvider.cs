@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
@@ -17,22 +17,22 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public long? TryGetFromTicks(TaskState taskState)
         {
-            var firstTicks = GetMinTicks(taskState);
-            if(firstTicks == 0)
+            var oldestLiveRecordTicks = TryGetOldestLiveRecordTicks(taskState);
+            if(!oldestLiveRecordTicks.HasValue)
                 return null;
-            var diff = GetDiff(taskState).Ticks;
-            var firstTicksWithDiff = firstTicks - diff;
-            var twoDaysEarlier = (DateTime.UtcNow - TimeSpan.FromDays(2)).Ticks;
-            return Math.Max(twoDaysEarlier, firstTicksWithDiff);
+            var overlapDuration = GetOverlapDuration(taskState);
+            var fromTicks = oldestLiveRecordTicks.Value - overlapDuration.Ticks;
+            var twoDaysSafetyBelt = (DateTime.UtcNow - TimeSpan.FromDays(2)).Ticks;
+            return Math.Max(fromTicks, twoDaysSafetyBelt);
         }
 
-        private TimeSpan GetDiff(TaskState taskState)
+        private TimeSpan GetOverlapDuration(TaskState taskState)
         {
-            var lastBigDiffTime = lastBigDiffTimes.GetOrAdd(taskState, t => DateTime.MinValue);
-            var now = DateTime.UtcNow;
-            if(now - lastBigDiffTime > TimeSpan.FromMinutes(1))
+            var utcNow = DateTime.UtcNow;
+            DateTime lastBigOverlapMoment;
+            if(!lastBigOverlapMomentsByTaskState.TryGetValue(taskState, out lastBigOverlapMoment) || utcNow - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
             {
-                lastBigDiffTimes.AddOrUpdate(taskState, DateTime.MinValue, (t, p) => now);
+                lastBigOverlapMomentsByTaskState[taskState] = utcNow;
                 //—ложно рассчитать математически правильный размер отката, и код постановки таски может изменитьс€,
                 //что потребует изменени€ этого отката. ѕоэтому беретс€, как кажетс€, с запасом
                 return TimeSpan.FromMinutes(8); // ѕротив адских затупов кассандры
@@ -40,33 +40,34 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return TimeSpan.FromMinutes(1); // Ўтатна€ зона нестабильности
         }
 
+        // is called concurrently
         public void HandleTaskStateChange([NotNull] TaskMetaInformation taskMeta)
         {
             var taskState = taskMeta.State.GetCassandraName();
-            var ticks = taskMeta.MinimalStartTicks;
-            ticksHolder.UpdateMinTicks(taskState, ticks);
-            // todo: нужно также подвинуть влево маркер в MinTicksCache при необходимости
+            ticksHolder.UpdateMinTicks(taskState, taskMeta.MinimalStartTicks);
+            // todo: нужно также подвинуть влево маркер oldestLiveRecordTicks при необходимости
         }
 
-        public void UpdateMinTicks(TaskState taskState, long ticks)
+        public void UpdateOldestLiveRecordTicks(TaskState taskState, long oldestLiveRecordTicks)
         {
-            ticksCache[taskState] = Math.Max(ticks - TimeSpan.FromMinutes(6).Ticks, 1);
+            oldestLiveRecordTicksByTaskState[taskState] = Math.Max(oldestLiveRecordTicks - TimeSpan.FromMinutes(6).Ticks, 1);
         }
 
-        private long GetMinTicks(TaskState taskState)
+        private long? TryGetOldestLiveRecordTicks(TaskState taskState)
         {
-            if(!ticksCache.ContainsKey(taskState))
+            long oldestLiveRecordTicks;
+            if(!oldestLiveRecordTicksByTaskState.TryGetValue(taskState, out oldestLiveRecordTicks))
             {
-                var minTicks = ticksHolder.GetMinTicks(taskState.GetCassandraName());
-                if(minTicks == 0)
-                    return 0;
-                UpdateMinTicks(taskState, minTicks);
+                oldestLiveRecordTicks = ticksHolder.GetMinTicks(taskState.GetCassandraName());
+                if(oldestLiveRecordTicks == 0)
+                    return null;
+                UpdateOldestLiveRecordTicks(taskState, oldestLiveRecordTicks);
             }
-            return ticksCache[taskState];
+            return oldestLiveRecordTicks;
         }
 
         private readonly ITicksHolder ticksHolder;
-        private readonly ConcurrentDictionary<TaskState, long> ticksCache = new ConcurrentDictionary<TaskState, long>();
-        private readonly ConcurrentDictionary<TaskState, DateTime> lastBigDiffTimes = new ConcurrentDictionary<TaskState, DateTime>();
+        private readonly Dictionary<TaskState, long> oldestLiveRecordTicksByTaskState = new Dictionary<TaskState, long>();
+        private readonly Dictionary<TaskState, DateTime> lastBigOverlapMomentsByTaskState = new Dictionary<TaskState, DateTime>();
     }
 }

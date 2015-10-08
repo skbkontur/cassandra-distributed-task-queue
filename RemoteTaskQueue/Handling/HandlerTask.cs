@@ -101,7 +101,7 @@ namespace RemoteQueue.Handling
         {
             var metaForWrite = allFieldsSerializer.Copy(task.Meta);
 
-            metaForWrite.MinimalStartTicks = Math.Max(metaForWrite.MinimalStartTicks + 1, newMinimalStartTicks);
+            metaForWrite.MinimalStartTicks = Math.Max(newMinimalStartTicks, metaForWrite.MinimalStartTicks + 1);
             metaForWrite.StartExecutingTicks = startExecutingTicks;
             metaForWrite.FinishExecutingTicks = finishExecutingTicks;
 
