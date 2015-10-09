@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+
+using JetBrains.Annotations;
 
 using MoreLinq;
 
@@ -17,22 +18,19 @@ namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager(int maxRunningTasksCount, ITaskDataTypeToNameMapper taskDataTypeToNameMapper, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
+        public HandlerManager([CanBeNull] string taskName, int maxRunningTasksCount, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
         {
+            this.taskName = taskName;
             this.maxRunningTasksCount = maxRunningTasksCount;
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
-
-            var allTaskStatesToRead = new[] {TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError};
-            var allTaskNameAndStatesToReadList = new List<TaskNameAndState>();
-            allTaskNameAndStatesToReadList.AddRange(allTaskStatesToRead.Select(x => TaskNameAndState.AnyTaskName(x)));
-            foreach(var taskName in taskDataTypeToNameMapper.GetAllTaskNames())
-                allTaskNameAndStatesToReadList.AddRange(allTaskStatesToRead.Select(x => new TaskNameAndState(taskName, x)));
-            allTaskNameAndStatesToRead = allTaskNameAndStatesToReadList.ToArray();
+            allTaskNameAndStatesToRead = allTaskStatesToRead
+                .Select(x => string.IsNullOrEmpty(taskName) ? TaskNameAndState.AnyTaskName(x) : new TaskNameAndState(taskName, x))
+                .ToArray();
         }
 
-        public string Id { get { return "HandlerManager"; } }
+        public string Id { get { return string.Format("HandlerManager_{0}", taskName ?? "AnyTaskName"); } }
 
         public void Run()
         {
@@ -77,6 +75,7 @@ namespace RemoteQueue.Handling
             localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
         }
 
+        private readonly string taskName;
         private readonly int maxRunningTasksCount;
         private readonly ILocalTaskQueue localTaskQueue;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
@@ -84,5 +83,6 @@ namespace RemoteQueue.Handling
         private readonly object lockObject = new object();
         private volatile bool started;
         private readonly TaskNameAndState[] allTaskNameAndStatesToRead;
+        private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError};
     }
 }
