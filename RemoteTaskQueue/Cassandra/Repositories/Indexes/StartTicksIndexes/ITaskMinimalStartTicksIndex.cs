@@ -2,18 +2,15 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public interface ITaskMinimalStartTicksIndex
     {
-        [NotNull]
-        TaskIndexRecord AddRecord([NotNull] TaskMetaInformation taskMeta);
+        void AddRecord([NotNull] TaskIndexRecord taskIndexRecord);
 
         void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord);
 
         [NotNull]
-        IEnumerable<TaskIndexRecord> GetRecords(TaskState taskState, long toTicks, int batchSize);
+        IEnumerable<TaskIndexRecord> GetRecords([NotNull] TaskNameAndState taskNameAndState, long toTicks, int batchSize);
     }
 }

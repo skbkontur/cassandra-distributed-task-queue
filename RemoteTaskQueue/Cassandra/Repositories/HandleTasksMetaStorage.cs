@@ -34,7 +34,7 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskState[] states)
         {
-            return states.SelectMany(state => minimalStartTicksIndex.GetRecords(state, toTicks, batchSize : 2000).ToArray());
+            return states.SelectMany(x => minimalStartTicksIndex.GetRecords(TaskNameAndState.AnyTaskName(x), toTicks, batchSize : 2000).ToArray());
         }
 
         [NotNull]
@@ -43,7 +43,8 @@ namespace RemoteQueue.Cassandra.Repositories
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
             taskMeta.LastModificationTicks = nowTicks;
             eventLogRepository.AddEvent(taskMeta.Id, nowTicks);
-            var newIndexRecord = minimalStartTicksIndex.AddRecord(taskMeta);
+            var newIndexRecord = FormatIndexRecord(taskMeta);
+            minimalStartTicksIndex.AddRecord(newIndexRecord);
             if(taskMeta.State == TaskState.New)
                 childTaskIndex.AddMeta(taskMeta);
             metaStorage.Write(taskMeta.Id, taskMeta);
@@ -52,11 +53,17 @@ namespace RemoteQueue.Cassandra.Repositories
             if(oldMeta != null)
             {
                 if(oldMeta.State != taskMeta.State || oldMeta.MinimalStartTicks != taskMeta.MinimalStartTicks)
-                    minimalStartTicksIndex.RemoveRecord(oldMeta.FormatIndexRecord());
+                    minimalStartTicksIndex.RemoveRecord(FormatIndexRecord(oldMeta));
             }
 
             taskMeta.MakeSnapshot();
             return newIndexRecord;
+        }
+
+        [NotNull]
+        private TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta)
+        {
+            return new TaskIndexRecord(taskMeta.Id, taskMeta.MinimalStartTicks, TaskNameAndState.AnyTaskName(taskMeta.State));
         }
 
         public TaskMetaInformation GetMeta(string taskId)

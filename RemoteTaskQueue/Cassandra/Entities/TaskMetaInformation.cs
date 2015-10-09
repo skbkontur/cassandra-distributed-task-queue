@@ -1,7 +1,5 @@
 ﻿using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Repositories.Indexes;
-
 namespace RemoteQueue.Cassandra.Entities
 {
     public class TaskMetaInformation
@@ -41,12 +39,6 @@ namespace RemoteQueue.Cassandra.Entities
             if(snapshot == null)
                 return null;
             return StaticGrobuf.GetSerializer().Deserialize<TaskMetaInformation>(snapshot);
-        }
-
-        [NotNull]
-        internal TaskIndexRecord FormatIndexRecord()
-        {
-            return new TaskIndexRecord(Id, MinimalStartTicks, TaskNameAndState.AnyTaskName(State));
         }
 
         private byte[] snapshot;

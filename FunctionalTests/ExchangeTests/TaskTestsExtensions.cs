@@ -7,6 +7,7 @@ using GroboContainer.Core;
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
 namespace FunctionalTests.ExchangeTests
@@ -17,9 +18,10 @@ namespace FunctionalTests.ExchangeTests
         {
             var index = container.Get<ITaskMinimalStartTicksIndex>();
             var allStatesForTasks = new Dictionary<string, List<TaskState>>();
-            foreach (var state in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
+            foreach (var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
             {
-                var tasksInState = index.GetRecords(state, DateTime.UtcNow.Ticks, 2000).ToArray();
+                var taskNameAndState = TaskNameAndState.AnyTaskName(taskState);
+                var tasksInState = index.GetRecords(taskNameAndState, DateTime.UtcNow.Ticks, 2000).ToArray();
                 foreach (var task in tasksInState)
                 {
                     List<TaskState> states;
@@ -30,7 +32,7 @@ namespace FunctionalTests.ExchangeTests
                         states = new List<TaskState>();
                         allStatesForTasks[task.TaskId] = states;
                     }
-                    states.Add(state);
+                    states.Add(taskState);
                 }
             }
             foreach (var allStatesForTask in allStatesForTasks)
