@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using MoreLinq;
@@ -6,6 +7,7 @@ using MoreLinq;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Tracing;
 
@@ -15,11 +17,18 @@ namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager(ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
+        public HandlerManager(ITaskDataTypeToNameMapper taskDataTypeToNameMapper, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
         {
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
+
+            var allTaskStatesToRead = new[] {TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError};
+            var allTaskNameAndStatesToReadList = new List<TaskNameAndState>();
+            allTaskNameAndStatesToReadList.AddRange(allTaskStatesToRead.Select(x => TaskNameAndState.AnyTaskName(x)));
+            foreach(var taskName in taskDataTypeToNameMapper.GetAllTaskNames())
+                allTaskNameAndStatesToReadList.AddRange(allTaskStatesToRead.Select(x => new TaskNameAndState(taskName, x)));
+            allTaskNameAndStatesToRead = allTaskNameAndStatesToReadList.ToArray();
         }
 
         public string Id { get { return "HandlerManager"; } }
@@ -30,7 +39,7 @@ namespace RemoteQueue.Handling
             {
                 var nowTicks = DateTime.UtcNow.Ticks;
                 var taskIndexRecordsBatches = handleTasksMetaStorage
-                    .GetIndexRecords(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError)
+                    .GetIndexRecords(nowTicks, allTaskNameAndStatesToRead)
                     .Batch(100, Enumerable.ToArray);
                 foreach(var taskIndexRecordsBatch in taskIndexRecordsBatches)
                 {
@@ -72,5 +81,6 @@ namespace RemoteQueue.Handling
         private readonly IGlobalTime globalTime;
         private readonly object lockObject = new object();
         private volatile bool started;
+        private readonly TaskNameAndState[] allTaskNameAndStatesToRead;
     }
 }

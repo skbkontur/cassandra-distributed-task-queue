@@ -55,6 +55,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
         }
 
         [NotNull]
+        [Obsolete("Will be removed after migration to sharded queue")]
         public static TaskNameAndState AnyTaskName(TaskState taskState)
         {
             return new TaskNameAndState(anyTaskName, taskState);

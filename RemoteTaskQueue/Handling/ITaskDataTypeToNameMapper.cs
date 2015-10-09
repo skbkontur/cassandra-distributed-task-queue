@@ -7,6 +7,9 @@ namespace RemoteQueue.Handling
     public interface ITaskDataTypeToNameMapper
     {
         [NotNull]
+        string[] GetAllTaskNames();
+
+        [NotNull]
         string GetTaskName([NotNull] Type type);
 
         [NotNull]
