@@ -26,7 +26,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         [NotNull]
         public TaskColumnInfo IndexMeta([NotNull] TaskMetaInformation taskMeta)
         {
-            oldestLiveRecordTicksHolder.MoveBackwardIfNecessary(taskMeta.State, taskMeta.MinimalStartTicks);
+            oldestLiveRecordTicksHolder.MoveBackwardIfNecessary(TaskNameAndState.AnyTaskName(taskMeta.State), taskMeta.MinimalStartTicks);
             var connection = RetrieveColumnFamilyConnection();
             var newColumnInfo = TicksNameHelper.GetColumnInfo(taskMeta);
             connection.AddColumn(newColumnInfo.RowKey, new Column
@@ -51,12 +51,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             if(!fromTicks.HasValue)
                 return new Tuple<string, TaskColumnInfo>[0];
             var connection = RetrieveColumnFamilyConnection();
-            return new GetEventsEnumerable(taskState, serializer, connection, oldestLiveRecordTicksHolder, fromTicks.Value, toTicks, batchSize);
+            return new GetEventsEnumerable(TaskNameAndState.AnyTaskName(taskState), serializer, connection, oldestLiveRecordTicksHolder, fromTicks.Value, toTicks, batchSize);
         }
 
         private long? TryGetFromTicks(TaskState taskState)
         {
-            var oldestLiveRecordTicks = oldestLiveRecordTicksHolder.TryStartReadToEndSession(taskState);
+            var oldestLiveRecordTicks = oldestLiveRecordTicksHolder.TryStartReadToEndSession(TaskNameAndState.AnyTaskName(taskState));
             if(!oldestLiveRecordTicks.HasValue)
                 return null;
             var overlapDuration = GetOverlapDuration(taskState);

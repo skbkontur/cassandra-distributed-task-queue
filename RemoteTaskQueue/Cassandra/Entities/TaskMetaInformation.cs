@@ -10,8 +10,12 @@ namespace RemoteQueue.Cassandra.Entities
                                  Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId);
         }
 
+        [NotNull]
         public string Name { get; set; }
+
+        [NotNull]
         public string Id { get; set; }
+
         public long Ticks { get; set; }
         public long MinimalStartTicks { get; set; }
         public long? StartExecutingTicks { get; set; }

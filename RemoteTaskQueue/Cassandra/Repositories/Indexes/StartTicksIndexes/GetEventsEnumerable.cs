@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using GroBuf;
 
-using RemoteQueue.Cassandra.Entities;
+using JetBrains.Annotations;
 
 using SKBKontur.Cassandra.CassandraClient.Connections;
 
@@ -12,9 +12,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerable : IEnumerable<Tuple<string, TaskColumnInfo>>
     {
-        public GetEventsEnumerable(TaskState taskState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
+        public GetEventsEnumerable([NotNull] TaskNameAndState taskNameAndState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
         {
-            this.taskState = taskState;
+            this.taskNameAndState = taskNameAndState;
             this.serializer = serializer;
             this.connection = connection;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
@@ -25,7 +25,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public IEnumerator<Tuple<string, TaskColumnInfo>> GetEnumerator()
         {
-            return new GetEventsEnumerator(taskState, serializer, connection, oldestLiveRecordTicksHolder, fromTicks, toTicks, batchSize);
+            return new GetEventsEnumerator(taskNameAndState, serializer, connection, oldestLiveRecordTicksHolder, fromTicks, toTicks, batchSize);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -33,7 +33,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return GetEnumerator();
         }
 
-        private readonly TaskState taskState;
+        private readonly TaskNameAndState taskNameAndState;
         private readonly ISerializer serializer;
         private readonly IColumnFamilyConnection connection;
         private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;

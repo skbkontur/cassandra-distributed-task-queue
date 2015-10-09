@@ -1,12 +1,19 @@
 ﻿using System;
 
+using JetBrains.Annotations;
+
 namespace RemoteQueue.Handling
 {
     public interface ITaskDataTypeToNameMapper
     {
-        string GetTaskName(Type type);
-        Type GetTaskType(string name);
-        bool TryGetTaskType(string name, out Type taskType);
-        bool TryGetTaskName(Type type, out string name);
+        [NotNull]
+        string GetTaskName([NotNull] Type type);
+
+        [NotNull]
+        Type GetTaskType([NotNull] string name);
+
+        bool TryGetTaskType([NotNull] string name, out Type taskType);
+
+        bool TryGetTaskName([NotNull] Type type, out string name);
     }
 }

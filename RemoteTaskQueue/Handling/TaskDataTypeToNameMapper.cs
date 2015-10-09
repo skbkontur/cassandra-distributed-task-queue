@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Exceptions;
 using RemoteQueue.UserClasses;
 
@@ -21,7 +23,8 @@ namespace RemoteQueue.Handling
             }
         }
 
-        public string GetTaskName(Type type)
+        [NotNull]
+        public string GetTaskName([NotNull] Type type)
         {
             string name;
             if(!TryGetTaskName(type, out name))
@@ -29,7 +32,8 @@ namespace RemoteQueue.Handling
             return name;
         }
 
-        public Type GetTaskType(string name)
+        [NotNull]
+        public Type GetTaskType([NotNull] string name)
         {
             Type type;
             if(!TryGetTaskType(name, out type))
@@ -37,12 +41,12 @@ namespace RemoteQueue.Handling
             return type;
         }
 
-        public bool TryGetTaskType(string name, out Type taskType)
+        public bool TryGetTaskType([NotNull] string name, out Type taskType)
         {
             return nameToType.TryGetValue(name, out taskType);
         }
 
-        public bool TryGetTaskName(Type type, out string name)
+        public bool TryGetTaskName([NotNull] Type type, out string name)
         {
             return typeToName.TryGetValue(type, out name);
         }
