@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
@@ -10,11 +9,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
     public interface ITaskMinimalStartTicksIndex
     {
         [NotNull]
-        TaskColumnInfo IndexMeta([NotNull] TaskMetaInformation taskMeta);
+        TaskIndexRecord AddRecord([NotNull] TaskMetaInformation taskMeta);
 
-        void UnindexMeta([NotNull] TaskColumnInfo taskColumnInfo);
+        void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord);
 
         [NotNull]
-        IEnumerable<Tuple<string, TaskColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize);
+        IEnumerable<TaskIndexRecord> GetRecords(TaskState taskState, long toTicks, int batchSize);
     }
 }

@@ -42,6 +42,6 @@ namespace RemoteQueue.Handling
             return GetTaskDataType(handlerType.BaseType);
         }
 
-        private readonly Dictionary<string, Func<ITaskHandler>> taskNameToTaskHandlerCreator = new Dictionary<string, Func<ITaskHandler>>();
+        private readonly Dictionary<string, Func<ITaskHandler>> taskNameToTaskHandlerCreator;
     }
 }

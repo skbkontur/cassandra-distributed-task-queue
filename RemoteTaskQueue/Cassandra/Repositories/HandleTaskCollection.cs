@@ -20,7 +20,7 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         [NotNull]
-        public TaskColumnInfo AddTask([NotNull] Task task)
+        public TaskIndexRecord AddTask([NotNull] Task task)
         {
             if(task.Meta.Attempts == 0)
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);

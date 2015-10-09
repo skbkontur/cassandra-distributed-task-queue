@@ -51,24 +51,24 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             Task.WaitAll(tasks, timeout);
         }
 
-        public void QueueTask([NotNull] string taskId, [NotNull] TaskColumnInfo taskColumnInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
+        public void QueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
         {
             using(var infrastructureTraceContext = new InfrastructureTaskTraceContext(taskIsBeingTraced))
             {
-                DoQueueTask(taskId, taskColumnInfo, taskMeta, taskQueueReason, out queueIsFull, out taskIsSentToThreadPool, taskIsBeingTraced);
+                DoQueueTask(taskIndexRecord, taskMeta, taskQueueReason, out queueIsFull, out taskIsSentToThreadPool, taskIsBeingTraced);
                 infrastructureTraceContext.Finish(taskIsSentToThreadPool);
             }
         }
 
-        private void DoQueueTask([NotNull] string taskId, [NotNull] TaskColumnInfo taskColumnInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
+        private void DoQueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
         {
             queueIsFull = false;
             taskIsSentToThreadPool = false;
             if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
                 return;
-            if(taskMeta == null && TicksNameHelper.GetTicksFromColumnName(taskColumnInfo.ColumnName) >= (DateTime.UtcNow - TimeSpan.FromMinutes(20)).Ticks)
+            if(taskMeta == null && taskIndexRecord.MinimalStartTicks >= (DateTime.UtcNow - TimeSpan.FromMinutes(20)).Ticks)
             {
-                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskId);
+                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskIndexRecord.TaskId);
                 return;
             }
             if(!taskCounter.TryIncrement(taskQueueReason))
@@ -78,18 +78,18 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
             try
             {
-                var handlerTask = new HandlerTask(taskId, taskQueueReason, taskColumnInfo, taskMeta, taskHandlerCollection, remoteTaskQueueInternals);
+                var handlerTask = new HandlerTask(taskIndexRecord, taskQueueReason, taskMeta, taskHandlerCollection, remoteTaskQueueInternals);
                 lock(lockObject)
                 {
                     if(stopped)
                         throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
-                    if(hashtable.ContainsKey(taskId))
+                    if(hashtable.ContainsKey(taskIndexRecord.TaskId))
                         return;
-                    var taskWrapper = new TaskWrapper(taskId, taskQueueReason, taskIsBeingTraced, handlerTask, this);
+                    var taskWrapper = new TaskWrapper(taskIndexRecord.TaskId, taskQueueReason, taskIsBeingTraced, handlerTask, this);
                     var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
                     taskIsSentToThreadPool = true;
                     if(!taskWrapper.Finished)
-                        hashtable.Add(taskId, asyncTask);
+                        hashtable.Add(taskIndexRecord.TaskId, asyncTask);
                 }
             }
             finally

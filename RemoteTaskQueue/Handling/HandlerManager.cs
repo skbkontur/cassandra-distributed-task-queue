@@ -29,23 +29,22 @@ namespace RemoteQueue.Handling
             lock(lockObject)
             {
                 var nowTicks = DateTime.UtcNow.Ticks;
-                var taskInfoBatches = handleTasksMetaStorage
-                    .GetAllTasksInStates(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError)
+                var taskIndexRecordsBatches = handleTasksMetaStorage
+                    .GetIndexRecords(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError)
                     .Batch(100, Enumerable.ToArray);
-                foreach(var taskInfoBatch in taskInfoBatches)
+                foreach(var taskIndexRecordsBatch in taskIndexRecordsBatches)
                 {
-                    var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskInfoBatch.Select(x => x.Item1).ToArray());
-                    for(var i = 0; i < taskInfoBatch.Length; i++)
+                    var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
+                    for(var i = 0; i < taskIndexRecordsBatch.Length; i++)
                     {
                         var taskMeta = taskMetas[i];
-                        var taskInfo = taskInfoBatch[i];
-                        var taskId = taskInfo.Item1;
-                        if(taskMeta != null && taskMeta.Id != taskId)
-                            throw new InvalidProgramStateException(string.Format("taskInfo.TaskId ({0}) != taskMeta.TaskId ({1})", taskId, taskMeta.Id));
+                        var taskIndexRecord = taskIndexRecordsBatch[i];
+                        if(taskMeta != null && taskMeta.Id != taskIndexRecord.TaskId)
+                            throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));
                         using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                         {
                             bool queueIsFull, taskIsSentToThreadPool;
-                            localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
+                            localTaskQueue.QueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
                             taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
                             if(queueIsFull)
                                 return;

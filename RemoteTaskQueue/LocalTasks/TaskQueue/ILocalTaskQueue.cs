@@ -12,6 +12,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
     {
         void Start();
         void StopAndWait(TimeSpan timeout);
-        void QueueTask([NotNull] string taskId, [NotNull] TaskColumnInfo taskColumnInfo, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced);
+        void QueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced);
     }
 }

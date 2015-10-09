@@ -36,14 +36,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
             return rowNumber * ticksPartition;
         }
 
-        [NotNull]
-        public static TaskColumnInfo GetColumnInfo([NotNull] TaskMetaInformation taskMeta)
-        {
-            var rowKey = GetRowKey(taskMeta.State, taskMeta.MinimalStartTicks);
-            var columnName = GetColumnName(taskMeta.MinimalStartTicks, taskMeta.Id);
-            return new TaskColumnInfo(rowKey, columnName);
-        }
-
         private static readonly long ticksPartition = TimeSpan.FromMinutes(6).Ticks;
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,7 +9,7 @@ using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
-    public class GetEventsEnumerable : IEnumerable<Tuple<string, TaskColumnInfo>>
+    public class GetEventsEnumerable : IEnumerable<TaskIndexRecord>
     {
         public GetEventsEnumerable([NotNull] TaskNameAndState taskNameAndState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
         {
@@ -23,7 +22,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.batchSize = batchSize;
         }
 
-        public IEnumerator<Tuple<string, TaskColumnInfo>> GetEnumerator()
+        public IEnumerator<TaskIndexRecord> GetEnumerator()
         {
             return new GetEventsEnumerator(taskNameAndState, serializer, connection, oldestLiveRecordTicksHolder, fromTicks, toTicks, batchSize);
         }

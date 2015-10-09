@@ -31,18 +31,19 @@ namespace RemoteQueue.Cassandra.Repositories
             this.childTaskIndex = childTaskIndex;
         }
 
-        public IEnumerable<Tuple<string, TaskColumnInfo>> GetAllTasksInStates(long toTicks, params TaskState[] states)
+        [NotNull]
+        public IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskState[] states)
         {
-            return states.SelectMany(state => minimalStartTicksIndex.GetTaskIds(state, toTicks, batchSize : 2000).ToArray());
+            return states.SelectMany(state => minimalStartTicksIndex.GetRecords(state, toTicks, batchSize : 2000).ToArray());
         }
 
         [NotNull]
-        public TaskColumnInfo AddMeta([NotNull] TaskMetaInformation taskMeta)
+        public TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta)
         {
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
             taskMeta.LastModificationTicks = nowTicks;
             eventLogRepository.AddEvent(taskMeta.Id, nowTicks);
-            var newColumnInfo = minimalStartTicksIndex.IndexMeta(taskMeta);
+            var newIndexRecord = minimalStartTicksIndex.AddRecord(taskMeta);
             if(taskMeta.State == TaskState.New)
                 childTaskIndex.AddMeta(taskMeta);
             metaStorage.Write(taskMeta.Id, taskMeta);
@@ -50,13 +51,12 @@ namespace RemoteQueue.Cassandra.Repositories
             var oldMeta = taskMeta.TryGetSnapshot();
             if(oldMeta != null)
             {
-                var oldColumnInfo = TicksNameHelper.GetColumnInfo(oldMeta);
-                if(!oldColumnInfo.Equals(newColumnInfo))
-                    minimalStartTicksIndex.UnindexMeta(oldColumnInfo);
+                if(oldMeta.State != taskMeta.State || oldMeta.MinimalStartTicks != taskMeta.MinimalStartTicks)
+                    minimalStartTicksIndex.RemoveRecord(oldMeta.FormatIndexRecord());
             }
 
             taskMeta.MakeSnapshot();
-            return newColumnInfo;
+            return newIndexRecord;
         }
 
         public TaskMetaInformation GetMeta(string taskId)

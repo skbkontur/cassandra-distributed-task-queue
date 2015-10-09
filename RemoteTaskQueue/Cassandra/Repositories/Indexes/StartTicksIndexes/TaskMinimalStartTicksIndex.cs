@@ -24,32 +24,36 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         }
 
         [NotNull]
-        public TaskColumnInfo IndexMeta([NotNull] TaskMetaInformation taskMeta)
+        public TaskIndexRecord AddRecord([NotNull] TaskMetaInformation taskMeta)
         {
-            oldestLiveRecordTicksHolder.MoveBackwardIfNecessary(TaskNameAndState.AnyTaskName(taskMeta.State), taskMeta.MinimalStartTicks);
+            var taskNameAndState = TaskNameAndState.AnyTaskName(taskMeta.State);
+            oldestLiveRecordTicksHolder.MoveBackwardIfNecessary(taskNameAndState, taskMeta.MinimalStartTicks);
             var connection = RetrieveColumnFamilyConnection();
-            var newColumnInfo = TicksNameHelper.GetColumnInfo(taskMeta);
-            connection.AddColumn(newColumnInfo.RowKey, new Column
+            var rowKey = TicksNameHelper.GetRowKey(taskMeta.State, taskMeta.MinimalStartTicks);
+            var columnName = TicksNameHelper.GetColumnName(taskMeta.MinimalStartTicks, taskMeta.Id);
+            connection.AddColumn(rowKey, new Column
                 {
-                    Name = newColumnInfo.ColumnName,
+                    Name = columnName,
                     Timestamp = globalTime.GetNowTicks(),
                     Value = serializer.Serialize(taskMeta.Id)
                 });
-            return newColumnInfo;
+            return taskMeta.FormatIndexRecord();
         }
 
-        public void UnindexMeta([NotNull] TaskColumnInfo taskColumnInfo)
+        public void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord)
         {
             var connection = RetrieveColumnFamilyConnection();
-            connection.DeleteColumn(taskColumnInfo.RowKey, taskColumnInfo.ColumnName, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
+            var rowKey = TicksNameHelper.GetRowKey(taskIndexRecord.TaskNameAndState.TaskState, taskIndexRecord.MinimalStartTicks);
+            var columnName = TicksNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
+            connection.DeleteColumn(rowKey, columnName, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
         }
 
         [NotNull]
-        public IEnumerable<Tuple<string, TaskColumnInfo>> GetTaskIds(TaskState taskState, long toTicks, int batchSize)
+        public IEnumerable<TaskIndexRecord> GetRecords(TaskState taskState, long toTicks, int batchSize)
         {
             var fromTicks = TryGetFromTicks(taskState);
             if(!fromTicks.HasValue)
-                return new Tuple<string, TaskColumnInfo>[0];
+                return new TaskIndexRecord[0];
             var connection = RetrieveColumnFamilyConnection();
             return new GetEventsEnumerable(TaskNameAndState.AnyTaskName(taskState), serializer, connection, oldestLiveRecordTicksHolder, fromTicks.Value, toTicks, batchSize);
         }

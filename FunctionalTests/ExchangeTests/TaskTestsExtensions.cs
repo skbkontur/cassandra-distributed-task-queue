@@ -19,16 +19,16 @@ namespace FunctionalTests.ExchangeTests
             var allStatesForTasks = new Dictionary<string, List<TaskState>>();
             foreach (var state in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
             {
-                var tasksInState = index.GetTaskIds(state, DateTime.UtcNow.Ticks, 2000).ToArray();
+                var tasksInState = index.GetRecords(state, DateTime.UtcNow.Ticks, 2000).ToArray();
                 foreach (var task in tasksInState)
                 {
                     List<TaskState> states;
-                    if (allStatesForTasks.ContainsKey(task.Item1))
-                        states = allStatesForTasks[task.Item1];
+                    if (allStatesForTasks.ContainsKey(task.TaskId))
+                        states = allStatesForTasks[task.TaskId];
                     else
                     {
                         states = new List<TaskState>();
-                        allStatesForTasks[task.Item1] = states;
+                        allStatesForTasks[task.TaskId] = states;
                     }
                     states.Add(state);
                 }

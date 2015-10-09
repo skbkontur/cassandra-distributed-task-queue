@@ -14,7 +14,7 @@ using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
-    public class GetEventsEnumerator : IEnumerator<Tuple<string, TaskColumnInfo>>
+    public class GetEventsEnumerator : IEnumerator<TaskIndexRecord>
     {
         public GetEventsEnumerator([NotNull] TaskNameAndState taskNameAndState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
         {
@@ -52,7 +52,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     if(!loggedTooOldIndexRecord && currentLiveRecordTicks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
                     {
                         logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
-                                          Current.Item1, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
+                                          Current.TaskId, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
                         loggedTooOldIndexRecord = true;
                     }
                     return true;
@@ -77,15 +77,14 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             eventEnumerator = (new List<Column>()).GetEnumerator();
         }
 
-        public Tuple<string, TaskColumnInfo> Current
+        [NotNull]
+        public TaskIndexRecord Current
         {
             get
             {
                 var taskId = serializer.Deserialize<string>(eventEnumerator.Current.Value);
-                var columnName = eventEnumerator.Current.Name;
-                var rowKey = TicksNameHelper.GetRowKey(taskNameAndState.TaskState, TicksNameHelper.GetTicksFromColumnName(columnName));
-                var columnInfo = new TaskColumnInfo(rowKey, columnName);
-                return new Tuple<string, TaskColumnInfo>(taskId, columnInfo);
+                var minimalStartTicks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
+                return new TaskIndexRecord(taskId, minimalStartTicks, taskNameAndState);
             }
         }
 
