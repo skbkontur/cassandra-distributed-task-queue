@@ -30,7 +30,7 @@ namespace RemoteQueue.Configuration
             var taskHandlerCollection = new TaskHandlerCollection(taskDataTypeToNameMapper, taskHandlerRegistry);
             var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataTypeToNameMapper, remoteTaskQueueProfiler);
             var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerCollection, remoteTaskQueue);
-            handlerManager = new HandlerManager(taskDataTypeToNameMapper, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime);
+            handlerManager = new HandlerManager(runnerSettings.MaxRunningTasksCount, taskDataTypeToNameMapper, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime);
         }
 
         public void Stop()

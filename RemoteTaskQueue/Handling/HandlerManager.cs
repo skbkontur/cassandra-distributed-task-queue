@@ -17,8 +17,9 @@ namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager(ITaskDataTypeToNameMapper taskDataTypeToNameMapper, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
+        public HandlerManager(int maxRunningTasksCount, ITaskDataTypeToNameMapper taskDataTypeToNameMapper, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
         {
+            this.maxRunningTasksCount = maxRunningTasksCount;
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
@@ -40,7 +41,7 @@ namespace RemoteQueue.Handling
                 var nowTicks = DateTime.UtcNow.Ticks;
                 var taskIndexRecordsBatches = handleTasksMetaStorage
                     .GetIndexRecords(nowTicks, allTaskNameAndStatesToRead)
-                    .Batch(100, Enumerable.ToArray);
+                    .Batch(maxRunningTasksCount, Enumerable.ToArray);
                 foreach(var taskIndexRecordsBatch in taskIndexRecordsBatches)
                 {
                     var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
@@ -76,6 +77,7 @@ namespace RemoteQueue.Handling
             localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
         }
 
+        private readonly int maxRunningTasksCount;
         private readonly ILocalTaskQueue localTaskQueue;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;
