@@ -86,7 +86,7 @@ namespace FunctionalTests
             var keyspaceConnection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
 
             var keyspaces = clusterConnection.RetrieveKeyspaces();
-            if(!keyspaces.Any(x => x.Name == settings.QueueKeyspace))
+            if(keyspaces.All(x => x.Name != settings.QueueKeyspace))
             {
                 clusterConnection.AddKeyspace(
                     new Keyspace
@@ -100,7 +100,7 @@ namespace FunctionalTests
             var cassandraColumnFamilies = keyspaceConnection.DescribeKeyspace().ColumnFamilies;
             foreach(var columnFamily in columnFamilies)
             {
-                if(!cassandraColumnFamilies.Any(x => x.Key == columnFamily.Name))
+                if(cassandraColumnFamilies.All(x => x.Key != columnFamily.Name))
                     keyspaceConnection.AddColumnFamily(columnFamily);
             }
 

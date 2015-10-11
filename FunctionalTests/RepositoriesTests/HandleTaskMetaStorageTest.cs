@@ -17,37 +17,35 @@ namespace FunctionalTests.RepositoriesTests
             handleTasksMetaStorage = Container.Get<IHandleTasksMetaStorage>();
         }
 
-        [Test, Ignore("stress")]
+        [Test]
         public void StressTest()
         {
+            var nowTicks = DateTime.UtcNow.Ticks;
             var meta = new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = 1
+                    MinimalStartTicks = nowTicks + 1
                 };
             for(var i = 0; i <= 1000; i++)
             {
-                if(i % 10 == 0)
-                    Console.WriteLine(i);
                 meta.MinimalStartTicks++;
                 handleTasksMetaStorage.AddMeta(meta);
             }
-            Assert.AreEqual(1, handleTasksMetaStorage.GetIndexRecords(1020, new TaskNameAndState("TaskName", TaskState.New)).ToArray().Length);
+            Assert.AreEqual(1, handleTasksMetaStorage.GetIndexRecords(nowTicks + 1002, new TaskNameAndState("TaskName", TaskState.New)).ToArray().Length);
         }
 
-        [Test, Ignore("stress")]
+        [Test]
         public void StressTest2()
         {
-            var metas = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.Select(x => new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
+            var nowTicks = DateTime.UtcNow.Ticks;
+            var metas = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }.Select(x => new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = x
+                    MinimalStartTicks = nowTicks + x
                 }).ToArray();
 
             for(var i = 0; i <= 100; i++)
             {
-                if(i % 10 == 0)
-                    Console.WriteLine(i);
                 foreach(var t in metas)
                 {
                     t.MinimalStartTicks++;
@@ -55,7 +53,7 @@ namespace FunctionalTests.RepositoriesTests
                     handleTasksMetaStorage.AddMeta(t);
                 }
             }
-            Assert.AreEqual(10, handleTasksMetaStorage.GetIndexRecords(1020, new TaskNameAndState("TaskName", TaskState.Finished)).ToArray().Length);
+            Assert.AreEqual(10, handleTasksMetaStorage.GetIndexRecords(nowTicks + 1012, new TaskNameAndState("TaskName", TaskState.Finished)).ToArray().Length);
         }
 
         [Test]
