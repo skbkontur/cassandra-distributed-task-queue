@@ -138,12 +138,10 @@ namespace RemoteQueue.Handling
             var task = new Task
                 {
                     Data = Serializer.Serialize(type, taskData),
-                    Meta = new TaskMetaInformation
+                    Meta = new TaskMetaInformation(taskDataTypeToNameMapper.GetTaskName(type), taskId)
                         {
                             Attempts = 0,
-                            Id = taskId,
                             Ticks = nowTicks,
-                            Name = taskDataTypeToNameMapper.GetTaskName(type),
                             ParentTaskId = string.IsNullOrEmpty(createTaskOptions.ParentTaskId) ? GetCurrentExecutingTaskId() : createTaskOptions.ParentTaskId,
                             TaskGroupLock = createTaskOptions.TaskGroupLock,
                             State = TaskState.New,

@@ -110,12 +110,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
 
         private static TaskMetaUpdatedEvent GetEvent(string taskId, long ticks)
         {
-            return new TaskMetaUpdatedEvent() {TaskId = taskId, Ticks = ticks};
+            return new TaskMetaUpdatedEvent {TaskId = taskId, Ticks = ticks};
         }
 
         private static TaskMetaInformation GetMeta(string taskId, long lastModificationTicks)
         {
-            return new TaskMetaInformation() {Id = taskId, LastModificationTicks = lastModificationTicks};
+            return new TaskMetaInformation("TaskName", taskId) {LastModificationTicks = lastModificationTicks};
         }
 
         private void DoTest(long lastTicks, long nowTicks, TaskMetaUpdatedEvent[] unprocessed, TaskMetaUpdatedEvent[] events, TaskMetaInformation[][] metaBatches)

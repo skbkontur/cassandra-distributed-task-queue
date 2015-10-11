@@ -1,18 +1,21 @@
 using System;
 using System.Collections.Generic;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Handling;
 
 namespace RemoteQueue.UserClasses
 {
     public abstract class TaskDataRegistryBase
     {
+        [NotNull]
         public KeyValuePair<Type, string>[] GetAllTaskDataInfos()
         {
             return list.ToArray();
         }
 
-        protected void Register<T>(string taskName) where T : ITaskData
+        protected void Register<T>([NotNull] string taskName) where T : ITaskData
         {
             list.Add(new KeyValuePair<Type, string>(typeof(T), taskName));
         }

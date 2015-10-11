@@ -6,17 +6,17 @@ namespace RemoteQueue.Cassandra.Entities
 {
     public class TaskMetaInformation
     {
-        public override string ToString()
+        public TaskMetaInformation([NotNull] string name, [NotNull] string id)
         {
-            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, TraceId: {6}]",
-                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId);
+            Name = name;
+            Id = id;
         }
 
         [NotNull]
-        public string Name { get; set; }
+        public string Name { get; private set; }
 
         [NotNull]
-        public string Id { get; set; }
+        public string Id { get; private set; }
 
         public long Ticks { get; set; }
         public long MinimalStartTicks { get; set; }
@@ -47,6 +47,12 @@ namespace RemoteQueue.Cassandra.Entities
         internal TaskIndexRecord FormatIndexRecord()
         {
             return new TaskIndexRecord(Id, MinimalStartTicks, new TaskNameAndState(Name, State));
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, TraceId: {6}]",
+                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId);
         }
 
         private byte[] snapshot;
