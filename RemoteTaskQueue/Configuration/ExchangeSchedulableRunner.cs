@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 using GroBuf;
 
@@ -45,11 +47,11 @@ namespace RemoteQueue.Configuration
                 {
                     if(worked)
                     {
-                        foreach(var handlerManager in handlerManagers)
-                        {
-                            periodicTaskRunner.Unregister(handlerManager.Id, 15000);
-                            handlerManager.Stop();
-                        }
+                        Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() =>
+                            {
+                                periodicTaskRunner.Unregister(theHandlerManager.Id, 15000);
+                                theHandlerManager.Stop();
+                            })).ToArray());
                         worked = false;
                         logger.Info("Stop ExchangeSchedulableRunner.");
                     }
@@ -71,7 +73,7 @@ namespace RemoteQueue.Configuration
                             periodicTaskRunner.Register(handlerManager, runnerSettings.PeriodicInterval);
                         }
                         worked = true;
-                        logger.InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManagers[{0}] with period {1}", handlerManagers.Count, runnerSettings.PeriodicInterval);
+                        logger.InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManagers[{0}] with period {1}:\r\n{2}", handlerManagers.Count, runnerSettings.PeriodicInterval, string.Join("\r\n", handlerManagers.Select(x => x.Id)));
                     }
                 }
             }
