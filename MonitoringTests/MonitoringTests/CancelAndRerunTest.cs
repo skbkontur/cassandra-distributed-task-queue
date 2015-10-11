@@ -18,8 +18,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             remoteTaskQueue = container.Get<IRemoteTaskQueue>();
         }
 
-        [Repeat(3)]
         [Test]
+        [Repeat(3)]
         public void CancelAndRerunTaskTest()
         {
             var taskId = remoteTaskQueue.CreateTask(new AlphaTaskData()).Queue(TimeSpan.FromHours(3));
