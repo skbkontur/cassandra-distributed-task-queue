@@ -9,6 +9,7 @@ using ExchangeService.UserClasses;
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
@@ -33,9 +34,9 @@ namespace FunctionalTests.ExchangeTests
             Thread.Sleep(2000);
             Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskState>
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskNameAndState>
                 {
-                    {taskId, TaskState.Finished}
+                    {taskId, new TaskNameAndState("SimpleTaskData", TaskState.Finished)}
                 });
         }
 
@@ -62,7 +63,7 @@ namespace FunctionalTests.ExchangeTests
                             },
                         TimeSpan.FromSeconds(50));
                 });
-            Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskState.Finished));
+            Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => new TaskNameAndState("SimpleTaskData", TaskState.Finished)));
         }
 
         [Test]
@@ -74,9 +75,9 @@ namespace FunctionalTests.ExchangeTests
             Thread.Sleep(2000);
             Assert.AreEqual(0, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Canceled, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskState>
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskNameAndState>
                 {
-                    {taskId, TaskState.Canceled}
+                    {taskId, new TaskNameAndState("SimpleTaskData", TaskState.Canceled)}
                 });
         }
 
@@ -91,9 +92,9 @@ namespace FunctionalTests.ExchangeTests
             Assert.AreEqual(2, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
             Assert.AreEqual(2, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.Attempts);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskState>
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskNameAndState>
                 {
-                    {taskId, TaskState.Finished}
+                    {taskId, new TaskNameAndState("SimpleTaskData", TaskState.Finished)}
                 });
         }
 
@@ -119,8 +120,9 @@ namespace FunctionalTests.ExchangeTests
             return DateTime.UtcNow.ToString("dd.MM.yyyy mm:hh:ss.ffff");
         }
 
+        private const int sleepInterval = 200;
+
         private ITestCounterRepository testCounterRepository;
         private IRemoteTaskQueue taskQueue;
-        private const int sleepInterval = 200;
     }
 }
