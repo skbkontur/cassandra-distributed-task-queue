@@ -6,11 +6,10 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 
-using GroboSerializer;
 
 using NUnit.Framework;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.Common.Xml;
+using SKBKontur.Catalogue.XmlSerialization;
 
 namespace FunctionalTests
 {
@@ -25,7 +24,7 @@ namespace FunctionalTests
             Assert.AreNotEqual(ReformatXml(actualStr), badXml, "bug(actual)");
             if(expectedStr != actualStr)
             {
-                var xmlSerializer = new XmlSerializer(new XmlNamespaceFactory());
+                var xmlSerializer = new XmlSerializer();
                 Console.WriteLine("Expected: \n\r" + xmlSerializer.SerializeToUtfString(expected, true));
                 Console.WriteLine("Actual: \n\r" + xmlSerializer.SerializeToUtfString(actual, true));
             }

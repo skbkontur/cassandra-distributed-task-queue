@@ -107,7 +107,6 @@
     <Compile Include="Areas\AdminToolsArea\Controllers\TasksController.cs" />
     <Compile Include="Areas\AdminToolsArea\Controllers\RemoteTaskQueueController.cs" />
     <Compile Include="Configuration\Configurator.cs" />
-    <Compile Include="Configuration\PluginRegistry.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

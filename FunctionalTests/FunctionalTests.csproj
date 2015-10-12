@@ -50,11 +50,11 @@
     <Reference Include="Catalogue.Core.Configuration.Settings">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.XmlSerialization">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.XmlSerialization.dll</HintPath>
+    </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
-    </Reference>
-    <Reference Include="GroboSerializer">
-      <HintPath>..\..\Assemblies\Temp\GroboSerializer.dll</HintPath>
     </Reference>
     <Reference Include="GroBuf">
       <SpecificVersion>False</SpecificVersion>
