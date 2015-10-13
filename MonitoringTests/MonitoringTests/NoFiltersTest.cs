@@ -26,8 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
                 expectedIds.Add(AddTask(new SimpleTaskData()));
             foreach(var id in expectedIds)
                 Console.WriteLine(id);
-            var tasksListPage = LoadTasksListPage();
-            tasksListPage = tasksListPage.RefreshUntilTaskRowIsPresent(10);
+            var tasksListPage = LoadTasksListPage().RefreshUntilAllTasksInState(10, "Finished");
             Console.WriteLine();
             var actualIds = new List<string>();
             for(var i = 0; i < 10; i++)

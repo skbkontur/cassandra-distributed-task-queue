@@ -68,8 +68,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
         protected override FunctionTestsConfiguration Configuration { get { return configuration; } }
 
-        protected IContainer container;
-
         private void DropAndCreateDatabase(ColumnFamily[] columnFamilies)
         {
             var cassandraCluster = container.Get<ICassandraCluster>();
@@ -102,6 +100,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
                 columnFamilyConnection.Truncate();
             }
         }
+
+        protected IContainer container;
 
         private static readonly FunctionTestsConfiguration configuration = new FunctionTestsConfiguration(9876);
     }
