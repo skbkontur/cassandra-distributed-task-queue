@@ -40,6 +40,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     throw new NotSupportedException("IndexStartTime should have negative offset from {now}");
                 return (DateTime.UtcNow + timeSpan).ToUniversalTime().Ticks;
             }
+            if(timeStr.StartsWith("6") && timeStr.Length == 18)
+                return long.Parse(timeStr);
             DateTime time;
             if(!DateTime.TryParse(timeStr, CultureInfo.GetCultureInfo("ru-RU"), DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out time))
                 throw new NotSupportedException(string.Format("'{0}' has incorrect DateTime format", timeStr));
