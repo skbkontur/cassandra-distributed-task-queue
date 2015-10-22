@@ -92,6 +92,7 @@
     <Compile Include="Controllers\ObjectTreeViewBuilding\ObjectTreeModel.cs" />
     <Compile Include="Controllers\ObjectTreeViewBuilding\Rendering\ObjectTreeModelRenderContext.cs" />
     <Compile Include="Controllers\TasksControllerImpl.cs" />
+    <Compile Include="Models\TasksRerunModel.cs" />
     <Compile Include="RouteValueDictionaryExtensions.cs" />
     <Compile Include="Controllers\TasksBaseController.cs" />
     <Compile Include="DateTimeByTimeZoneExtensions.cs" />
@@ -110,6 +111,7 @@
     <None Include="Views\Tasks\SearchPage.cshtml" />
     <None Include="Views\Shared\SearchPanel.cshtml" />
     <None Include="Views\Tasks\TaskDetails2.cshtml" />
+    <None Include="Views\Tasks\_LongActionsBasicDialog.cshtml" />
     <None Include="Views\_TasksLayout.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>

@@ -21,6 +21,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.M
     {
         public TaskSearchConditionsModel SearchConditions { get; set; }        
         public TaskSearchResultsModel Results { get; set; }
+        public bool EnableBatchTasksActions { get; set; }
     }
 
     public class TaskSearchResultsModel

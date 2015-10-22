@@ -148,6 +148,103 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             return taskSearchResultsModel;
         }
 
+        public TasksRerunModel StartRerunTasks(TaskSearchConditionsModel taskSearchConditions)
+        {
+            if(taskSearchConditions.RangeStart == null)
+                throw new Exception("Range start should be specified");
+            if(taskSearchConditions.RangeEnd == null)
+                throw new Exception("Range start should be specified");
+            var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest
+                {
+                    FromTicksUtc = taskSearchConditions.RangeStart.Value.Ticks,
+                    ToTicksUtc = (taskSearchConditions.RangeEnd ?? DateTime.UtcNow).Ticks,
+                    QueryString = taskSearchConditions.SearchString,
+                    TaskNames = taskSearchConditions.TaskNames,
+                    TaskStates = taskSearchConditions.TaskStates
+                });
+            return DoRerunTasks(taskSearchResponse);
+        }
+
+        public TasksRerunModel ContinueRerunTasks(string iteratorContext)
+        {
+            return DoRerunTasks(taskSearchClient.SearchNext(iteratorContext));
+        }
+
+        public TasksCancelModel StartCancelTasks(TaskSearchConditionsModel taskSearchConditions)
+        {
+            if(taskSearchConditions.RangeStart == null)
+                throw new Exception("Range start should be specified");
+            if(taskSearchConditions.RangeEnd == null)
+                throw new Exception("Range start should be specified");
+            var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest
+                {
+                    FromTicksUtc = taskSearchConditions.RangeStart.Value.Ticks,
+                    ToTicksUtc = (taskSearchConditions.RangeEnd ?? DateTime.UtcNow).Ticks,
+                    QueryString = taskSearchConditions.SearchString,
+                    TaskNames = taskSearchConditions.TaskNames,
+                    TaskStates = taskSearchConditions.TaskStates
+                });
+            return DoCancelTasks(taskSearchResponse);
+        }
+
+        public TasksCancelModel ContinueCancelTasks(string iteratorContext)
+        {
+            return DoCancelTasks(taskSearchClient.SearchNext(iteratorContext));
+        }
+
+        private const int maxTasksToRerun = 10000;
+        private const int maxTasksToCancel = 10000;
+
+        private TasksRerunModel DoRerunTasks(TaskSearchResponse taskSearchResponse)
+        {
+            if(taskSearchResponse.TotalCount > maxTasksToRerun)
+                throw new Exception(string.Format("Found too many tasks. Max tasks to rerun = {0}. Please detalize search query", maxTasksToRerun));
+
+            var rerunned = 0;
+            var notRerunned = 0;
+
+            foreach(var id in taskSearchResponse.Ids)
+            {
+                if(remoteTaskQueue.RerunTask(id, TimeSpan.Zero))
+                    rerunned++;
+                else
+                    notRerunned++;
+            }
+
+            return new TasksRerunModel
+                {
+                    IteratorContext = taskSearchResponse.NextScrollId,
+                    Rerunned = rerunned,
+                    NotRerunned = notRerunned,
+                    TotalTasksToRerun = taskSearchResponse.TotalCount
+                };
+        }
+        
+        private TasksCancelModel DoCancelTasks(TaskSearchResponse taskSearchResponse)
+        {
+            if(taskSearchResponse.TotalCount > maxTasksToCancel)
+                throw new Exception(string.Format("Found too many tasks. Max tasks to cancel = {0}. Please detalize search query", maxTasksToCancel));
+
+            var canceled = 0;
+            var notCanceled = 0;
+
+            foreach(var id in taskSearchResponse.Ids)
+            {
+                if(remoteTaskQueue.CancelTask(id))
+                    canceled++;
+                else
+                    notCanceled++;
+            }
+
+            return new TasksCancelModel
+                {
+                    IteratorContext = taskSearchResponse.NextScrollId,
+                    Canceled = canceled,
+                    NotCanceled = notCanceled,
+                    TotalTasksToCancel = taskSearchResponse.TotalCount
+                };
+        }
+
         public DateTime? ParseDateTime(string start)
         {
             if(string.IsNullOrWhiteSpace(start))
