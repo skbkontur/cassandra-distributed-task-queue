@@ -5,7 +5,7 @@ using GroboContainer.Infection;
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Handling.HandlerResults;
+using RemoteQueue.Handling;
 using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;

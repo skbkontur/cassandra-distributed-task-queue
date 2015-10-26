@@ -13,7 +13,6 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling.ExecutionContext;
-using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 

@@ -5,7 +5,6 @@ using GroBuf;
 
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
-using RemoteQueue.Handling.HandlerResults;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 

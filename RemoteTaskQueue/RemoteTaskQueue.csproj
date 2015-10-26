@@ -126,7 +126,7 @@
     <Compile Include="Handling\ExecutionContext\ITaskExecutionContext.cs" />
     <Compile Include="Handling\FinishAction.cs" />
     <Compile Include="Handling\HandlerManager.cs" />
-    <Compile Include="Handling\HandlerResults\HandleResult.cs" />
+    <Compile Include="Handling\HandleResult.cs" />
     <Compile Include="Handling\HandlerTask.cs" />
     <Compile Include="Handling\IHandlerManager.cs" />
     <Compile Include="Handling\IRemoteTask.cs" />
