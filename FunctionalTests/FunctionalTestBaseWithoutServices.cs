@@ -20,7 +20,6 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
@@ -35,8 +34,6 @@ namespace FunctionalTests
         public virtual void SetUp()
         {
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
-            var applicationSettings = ApplicationSettings.LoadDefault("functionalTests.csf");
-            Container.Configurator.ForAbstraction<IApplicationSettings>().UseInstances(applicationSettings);
             Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
             Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
             Container.ConfigureLockRepository();
@@ -53,10 +50,15 @@ namespace FunctionalTests
                             Name = CassandraTestTaskLogger.columnFamilyName
                         }
                 }).ToArray();
+            ResetTaskQueueMonitoringState();
+            DropAndCreateDatabase(columnFamilies);
+        }
+
+        private void ResetTaskQueueMonitoringState()
+        {
             var client = Container.Get<IRemoteTaskQueueMonitoringServiceClient>();
             client.DropLocalStorage();
             client.ActualizeDatabaseScheme();
-            DropAndCreateDatabase(columnFamilies);
         }
 
         [TearDown]

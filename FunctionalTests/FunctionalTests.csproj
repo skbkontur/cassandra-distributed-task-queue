@@ -78,7 +78,6 @@
     <Compile Include="ExchangeTests\TaskTestsExtensions.cs" />
     <Compile Include="FunctionalTestBaseWithoutServices.cs" />
     <Compile Include="Logging\Log4netConfiguration.cs" />
-    <Compile Include="ObjectComparer.cs" />
     <Compile Include="RepositoriesTests\BlobStorageTest.cs" />
     <Compile Include="ExchangeTests\FailTaskTest.cs" />
     <Compile Include="ExchangeTests\PeriodicTaskTest.cs" />
@@ -122,9 +121,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Logging\log4net.config" />
     <None Include="Settings\exchangeServiceTopology">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Settings\functionalTests.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
