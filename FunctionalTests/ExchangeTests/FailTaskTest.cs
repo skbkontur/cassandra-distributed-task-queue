@@ -148,7 +148,7 @@ namespace FunctionalTests.ExchangeTests
                             Console.WriteLine(taskIds[i]);
                         Assert.AreEqual(0, attempt);
                     }
-                    Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => new TaskNameAndState("FakeFailTaskData", TaskState.Fatal)));
+                    Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => new TaskTopicAndState("FakeFailTaskData", TaskState.Fatal)));
                     break;
                 }
 

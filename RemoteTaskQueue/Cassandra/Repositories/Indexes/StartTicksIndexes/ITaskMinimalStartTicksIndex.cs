@@ -11,6 +11,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord);
 
         [NotNull]
-        IEnumerable<TaskIndexRecord> GetRecords([NotNull] TaskNameAndState taskNameAndState, long toTicks, int batchSize);
+        IEnumerable<TaskIndexRecord> GetRecords([NotNull] TaskTopicAndState taskTopicAndState, long toTicks, int batchSize);
     }
 }

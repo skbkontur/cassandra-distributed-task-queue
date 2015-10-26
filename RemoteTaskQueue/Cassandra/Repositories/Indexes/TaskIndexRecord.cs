@@ -4,11 +4,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
 {
     public class TaskIndexRecord
     {
-        public TaskIndexRecord([NotNull] string taskId, long minimalStartTicks, [NotNull] TaskNameAndState taskNameAndState)
+        public TaskIndexRecord([NotNull] string taskId, long minimalStartTicks, [NotNull] TaskTopicAndState taskTopicAndState)
         {
             TaskId = taskId;
             MinimalStartTicks = minimalStartTicks;
-            TaskNameAndState = taskNameAndState;
+            TaskTopicAndState = taskTopicAndState;
         }
 
         [NotNull]
@@ -17,11 +17,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
         public long MinimalStartTicks { get; private set; }
 
         [NotNull]
-        public TaskNameAndState TaskNameAndState { get; private set; }
+        public TaskTopicAndState TaskTopicAndState { get; private set; }
 
         public override string ToString()
         {
-            return string.Format("TaskId: {0}, MinimalStartTicks: {1}, TaskNameAndState: {2}", TaskId, MinimalStartTicks, TaskNameAndState);
+            return string.Format("TaskId: {0}, MinimalStartTicks: {1}, TaskTopicAndState: {2}", TaskId, MinimalStartTicks, TaskTopicAndState);
         }
     }
 }

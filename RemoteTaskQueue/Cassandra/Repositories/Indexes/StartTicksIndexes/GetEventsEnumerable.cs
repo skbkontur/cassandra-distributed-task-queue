@@ -11,9 +11,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerable : IEnumerable<TaskIndexRecord>
     {
-        public GetEventsEnumerable([NotNull] TaskNameAndState taskNameAndState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
+        public GetEventsEnumerable([NotNull] TaskTopicAndState taskTopicAndState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
         {
-            this.taskNameAndState = taskNameAndState;
+            this.taskTopicAndState = taskTopicAndState;
             this.serializer = serializer;
             this.connection = connection;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
@@ -24,7 +24,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public IEnumerator<TaskIndexRecord> GetEnumerator()
         {
-            return new GetEventsEnumerator(taskNameAndState, serializer, connection, oldestLiveRecordTicksHolder, fromTicks, toTicks, batchSize);
+            return new GetEventsEnumerator(taskTopicAndState, serializer, connection, oldestLiveRecordTicksHolder, fromTicks, toTicks, batchSize);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -32,7 +32,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return GetEnumerator();
         }
 
-        private readonly TaskNameAndState taskNameAndState;
+        private readonly TaskTopicAndState taskTopicAndState;
         private readonly ISerializer serializer;
         private readonly IColumnFamilyConnection connection;
         private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;

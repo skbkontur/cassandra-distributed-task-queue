@@ -15,26 +15,26 @@ namespace FunctionalTests.ExchangeTests
 {
     public static class TaskTestsExtensions
     {
-        public static void CheckTaskMinimalStartTicksIndexStates(this IContainer container, Dictionary<string, TaskNameAndState> expectedStates)
+        public static void CheckTaskMinimalStartTicksIndexStates(this IContainer container, Dictionary<string, TaskTopicAndState> expectedStates)
         {
             var index = container.Get<ITaskMinimalStartTicksIndex>();
-            var allStatesForTasks = new Dictionary<string, List<TaskNameAndState>>();
-            foreach(var taskName in container.Get<TaskDataTypeToNameMapper>().GetAllTaskNames())
+            var allStatesForTasks = new Dictionary<string, List<TaskTopicAndState>>();
+            foreach(var taskTopic in container.Get<TaskDataTypeToNameMapper>().GetAllTaskNames())
             {
                 foreach(var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
                 {
-                    var indexRecords = index.GetRecords(new TaskNameAndState(taskName, taskState), DateTime.UtcNow.Ticks, 2000).ToArray();
+                    var indexRecords = index.GetRecords(new TaskTopicAndState(taskTopic, taskState), DateTime.UtcNow.Ticks, 2000).ToArray();
                     foreach(var indexRecord in indexRecords)
                     {
-                        List<TaskNameAndState> states;
+                        List<TaskTopicAndState> states;
                         if(allStatesForTasks.ContainsKey(indexRecord.TaskId))
                             states = allStatesForTasks[indexRecord.TaskId];
                         else
                         {
-                            states = new List<TaskNameAndState>();
+                            states = new List<TaskTopicAndState>();
                             allStatesForTasks[indexRecord.TaskId] = states;
                         }
-                        states.Add(indexRecord.TaskNameAndState);
+                        states.Add(indexRecord.TaskTopicAndState);
                     }
                 }
             }

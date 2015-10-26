@@ -34,9 +34,9 @@ namespace FunctionalTests.ExchangeTests
             Thread.Sleep(2000);
             Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskNameAndState>
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskTopicAndState>
                 {
-                    {taskId, new TaskNameAndState("SimpleTaskData", TaskState.Finished)}
+                    {taskId, new TaskTopicAndState("SimpleTaskData", TaskState.Finished)}
                 });
         }
 
@@ -63,7 +63,7 @@ namespace FunctionalTests.ExchangeTests
                             },
                         TimeSpan.FromSeconds(50));
                 });
-            Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => new TaskNameAndState("SimpleTaskData", TaskState.Finished)));
+            Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => new TaskTopicAndState("SimpleTaskData", TaskState.Finished)));
         }
 
         [Test]
@@ -75,9 +75,9 @@ namespace FunctionalTests.ExchangeTests
             Thread.Sleep(2000);
             Assert.AreEqual(0, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Canceled, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskNameAndState>
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskTopicAndState>
                 {
-                    {taskId, new TaskNameAndState("SimpleTaskData", TaskState.Canceled)}
+                    {taskId, new TaskTopicAndState("SimpleTaskData", TaskState.Canceled)}
                 });
         }
 
@@ -92,9 +92,9 @@ namespace FunctionalTests.ExchangeTests
             Assert.AreEqual(2, testCounterRepository.GetCounter(taskId));
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
             Assert.AreEqual(2, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.Attempts);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskNameAndState>
+            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskTopicAndState>
                 {
-                    {taskId, new TaskNameAndState("SimpleTaskData", TaskState.Finished)}
+                    {taskId, new TaskTopicAndState("SimpleTaskData", TaskState.Finished)}
                 });
         }
 

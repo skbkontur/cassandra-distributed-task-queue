@@ -4,8 +4,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public interface IOldestLiveRecordTicksHolder
     {
-        long? TryStartReadToEndSession([NotNull] TaskNameAndState taskNameAndState);
-        bool TryMoveForward([NotNull] TaskNameAndState taskNameAndState, long newTicks);
-        void MoveBackwardIfNecessary([NotNull] TaskNameAndState taskNameAndState, long newTicks);
+        long? TryStartReadToEndSession([NotNull] TaskTopicAndState taskTopicAndState);
+        bool TryMoveForward([NotNull] TaskTopicAndState taskTopicAndState, long newTicks);
+        void MoveBackwardIfNecessary([NotNull] TaskTopicAndState taskTopicAndState, long newTicks);
     }
 }

@@ -32,9 +32,9 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         [NotNull]
-        public IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskNameAndState[] taskNameAndStates)
+        public IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskTopicAndState[] taskTopicAndStates)
         {
-            return taskNameAndStates.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000).ToArray());
+            return taskTopicAndStates.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000).ToArray());
         }
 
         [NotNull]
@@ -43,7 +43,7 @@ namespace RemoteQueue.Cassandra.Repositories
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
             taskMeta.LastModificationTicks = nowTicks;
             eventLogRepository.AddEvent(taskMeta.Id, nowTicks);
-            var newIndexRecord = taskMeta.FormatIndexRecord();
+            var newIndexRecord = FormatIndexRecord(taskMeta);
             minimalStartTicksIndex.AddRecord(newIndexRecord);
             if(taskMeta.State == TaskState.New)
                 childTaskIndex.AddMeta(taskMeta);
@@ -54,13 +54,19 @@ namespace RemoteQueue.Cassandra.Repositories
             {
                 if(oldMeta.State != taskMeta.State || oldMeta.MinimalStartTicks != taskMeta.MinimalStartTicks)
                 {
-                    minimalStartTicksIndex.RemoveRecord(oldMeta.FormatIndexRecord());
-                    minimalStartTicksIndex.RemoveRecord(new TaskIndexRecord(oldMeta.Id, oldMeta.MinimalStartTicks, TaskNameAndState.AnyTaskName(oldMeta.State)));
+                    minimalStartTicksIndex.RemoveRecord(FormatIndexRecord(oldMeta));
+                    minimalStartTicksIndex.RemoveRecord(new TaskIndexRecord(oldMeta.Id, oldMeta.MinimalStartTicks, TaskTopicAndState.AnyTaskTopic(oldMeta.State)));
                 }
             }
 
             taskMeta.MakeSnapshot();
             return newIndexRecord;
+        }
+
+        [NotNull]
+        private TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta)
+        {
+            return new TaskIndexRecord(taskMeta.Id, taskMeta.MinimalStartTicks, new TaskTopicAndState(taskMeta.Name, taskMeta.State));
         }
 
         public TaskMetaInformation GetMeta(string taskId)

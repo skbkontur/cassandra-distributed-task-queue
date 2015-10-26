@@ -18,19 +18,19 @@ namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager([CanBeNull] string taskName, int maxRunningTasksCount, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
+        public HandlerManager([CanBeNull] string taskTopic, int maxRunningTasksCount, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
         {
-            this.taskName = taskName;
+            this.taskTopic = taskTopic;
             this.maxRunningTasksCount = maxRunningTasksCount;
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
-            allTaskNameAndStatesToRead = allTaskStatesToRead
-                .Select(x => string.IsNullOrEmpty(taskName) ? TaskNameAndState.AnyTaskName(x) : new TaskNameAndState(taskName, x))
+            allTaskTopicAndStatesToRead = allTaskStatesToRead
+                .Select(x => string.IsNullOrEmpty(taskTopic) ? TaskTopicAndState.AnyTaskTopic(x) : new TaskTopicAndState(taskTopic, x))
                 .ToArray();
         }
 
-        public string Id { get { return string.Format("HandlerManager_{0}", taskName ?? "AnyTaskName"); } }
+        public string Id { get { return string.Format("HandlerManager_{0}", taskTopic ?? "AnyTaskTopic"); } }
 
         public void Run()
         {
@@ -38,7 +38,7 @@ namespace RemoteQueue.Handling
             {
                 var nowTicks = DateTime.UtcNow.Ticks;
                 var taskIndexRecordsBatches = handleTasksMetaStorage
-                    .GetIndexRecords(nowTicks, allTaskNameAndStatesToRead)
+                    .GetIndexRecords(nowTicks, allTaskTopicAndStatesToRead)
                     .Batch(maxRunningTasksCount, Enumerable.ToArray);
                 foreach(var taskIndexRecordsBatch in taskIndexRecordsBatches)
                 {
@@ -75,14 +75,14 @@ namespace RemoteQueue.Handling
             localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
         }
 
-        private readonly string taskName;
+        private readonly string taskTopic;
         private readonly int maxRunningTasksCount;
         private readonly ILocalTaskQueue localTaskQueue;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;
         private readonly object lockObject = new object();
         private volatile bool started;
-        private readonly TaskNameAndState[] allTaskNameAndStatesToRead;
+        private readonly TaskTopicAndState[] allTaskTopicAndStatesToRead;
         private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError};
     }
 }
