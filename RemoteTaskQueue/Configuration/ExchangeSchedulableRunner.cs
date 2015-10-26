@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 
 namespace RemoteQueue.Configuration
 {
-    public class ExchangeSchedulableRunner : IExchangeSchedulableRunner
+    public class ExchangeSchedulableRunner : IExchangeSchedulableRunner, IDisposable
     {
         public ExchangeSchedulableRunner(
             IExchangeSchedulableRunnerSettings runnerSettings,
@@ -38,6 +39,11 @@ namespace RemoteQueue.Configuration
             handlerManagers.Add(new HandlerManager(string.Empty, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             foreach(var taskTopic in taskTopicResolver.GetAllTaskTopics())
                 handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
+        }
+
+        public void Dispose()
+        {
+            Stop();
         }
 
         public void Stop()
