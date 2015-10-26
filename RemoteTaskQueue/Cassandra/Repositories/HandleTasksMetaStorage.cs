@@ -12,6 +12,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using RemoteQueue.Handling;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -22,13 +23,15 @@ namespace RemoteQueue.Cassandra.Repositories
             ITaskMinimalStartTicksIndex minimalStartTicksIndex,
             IEventLogRepository eventLogRepository,
             IGlobalTime globalTime,
-            IChildTaskIndex childTaskIndex)
+            IChildTaskIndex childTaskIndex,
+            ITaskTopicResolver taskTopicResolver)
         {
             this.metaStorage = metaStorage;
             this.minimalStartTicksIndex = minimalStartTicksIndex;
             this.eventLogRepository = eventLogRepository;
             this.globalTime = globalTime;
             this.childTaskIndex = childTaskIndex;
+            this.taskTopicResolver = taskTopicResolver;
         }
 
         [NotNull]
@@ -66,7 +69,9 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         private TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta)
         {
-            return new TaskIndexRecord(taskMeta.Id, taskMeta.MinimalStartTicks, new TaskTopicAndState(taskMeta.Name, taskMeta.State));
+            var taskTopic = taskTopicResolver.GetTaskTopic(taskMeta.Name);
+            var taskTopicAndState = new TaskTopicAndState(taskTopic, taskMeta.State);
+            return new TaskIndexRecord(taskMeta.Id, taskMeta.MinimalStartTicks, taskTopicAndState);
         }
 
         public TaskMetaInformation GetMeta(string taskId)
@@ -96,5 +101,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IEventLogRepository eventLogRepository;
         private readonly IGlobalTime globalTime;
         private readonly IChildTaskIndex childTaskIndex;
+        private readonly ITaskTopicResolver taskTopicResolver;
     }
 }

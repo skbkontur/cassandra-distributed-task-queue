@@ -2,7 +2,7 @@
 
 using RemoteQueue.Handling;
 
-namespace RemoteQueue.Tests.TaskCounterTests
+namespace RemoteQueue.Tests
 {
     [TestFixture]
     public class TaskCounterTest

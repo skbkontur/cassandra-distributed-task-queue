@@ -18,7 +18,7 @@ namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager([CanBeNull] string taskTopic, int maxRunningTasksCount, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
+        public HandlerManager([NotNull] string taskTopic, int maxRunningTasksCount, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
         {
             this.taskTopic = taskTopic;
             this.maxRunningTasksCount = maxRunningTasksCount;
@@ -30,7 +30,7 @@ namespace RemoteQueue.Handling
                 .ToArray();
         }
 
-        public string Id { get { return string.Format("HandlerManager_{0}", taskTopic ?? "AnyTaskTopic"); } }
+        public string Id { get { return string.Format("HandlerManager_{0}", taskTopic); } }
 
         public void Run()
         {

@@ -36,7 +36,7 @@ namespace FunctionalTests.ExchangeTests
             Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
             Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskTopicAndState>
                 {
-                    {taskId, new TaskTopicAndState("SimpleTaskData", TaskState.Finished)}
+                    {taskId, TaskTopicAndState("SimpleTaskData", TaskState.Finished)}
                 });
         }
 
@@ -63,7 +63,7 @@ namespace FunctionalTests.ExchangeTests
                             },
                         TimeSpan.FromSeconds(50));
                 });
-            Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => new TaskTopicAndState("SimpleTaskData", TaskState.Finished)));
+            Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskTopicAndState("SimpleTaskData", TaskState.Finished)));
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace FunctionalTests.ExchangeTests
             Assert.AreEqual(TaskState.Canceled, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
             Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskTopicAndState>
                 {
-                    {taskId, new TaskTopicAndState("SimpleTaskData", TaskState.Canceled)}
+                    {taskId, TaskTopicAndState("SimpleTaskData", TaskState.Canceled)}
                 });
         }
 
@@ -94,7 +94,7 @@ namespace FunctionalTests.ExchangeTests
             Assert.AreEqual(2, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.Attempts);
             Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskTopicAndState>
                 {
-                    {taskId, new TaskTopicAndState("SimpleTaskData", TaskState.Finished)}
+                    {taskId, TaskTopicAndState("SimpleTaskData", TaskState.Finished)}
                 });
         }
 

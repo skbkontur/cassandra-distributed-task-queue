@@ -19,7 +19,7 @@ namespace FunctionalTests.ExchangeTests
         {
             var index = container.Get<ITaskMinimalStartTicksIndex>();
             var allStatesForTasks = new Dictionary<string, List<TaskTopicAndState>>();
-            foreach(var taskTopic in container.Get<TaskDataTypeToNameMapper>().GetAllTaskNames())
+            foreach(var taskTopic in container.Get<ITaskTopicResolver>().GetAllTaskTopics())
             {
                 foreach(var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
                 {

@@ -32,6 +32,7 @@ namespace RemoteQueue.Handling
             ICassandraSettings cassandraSettings,
             IRemoteTaskQueueSettings taskQueueSettings,
             ITaskDataTypeToNameMapper taskDataTypeToNameMapper,
+            ITaskTopicResolver taskTopicResolver,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             Serializer = serializer;
@@ -44,7 +45,7 @@ namespace RemoteQueue.Handling
             var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, GlobalTime);
             var eventLongRepository = new EventLogRepository(serializer, GlobalTime, parameters, ticksHolder);
             childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
-            HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex);
+            HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskTopicResolver);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, GlobalTime), remoteTaskQueueProfiler);
             HandleTaskExceptionInfoStorage = new HandleTaskExceptionInfoStorage(new TaskExceptionInfoBlobStorage(parameters, serializer, GlobalTime));
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
