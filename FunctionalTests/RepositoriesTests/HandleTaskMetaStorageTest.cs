@@ -6,6 +6,7 @@ using NUnit.Framework;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
+using RemoteQueue.Handling;
 
 namespace FunctionalTests.RepositoriesTests
 {
@@ -14,7 +15,14 @@ namespace FunctionalTests.RepositoriesTests
         public override void SetUp()
         {
             base.SetUp();
+            taskTopicResolver = new DummyTaskTopicResolver();
+            Container.Configurator.ForAbstraction<ITaskTopicResolver>().UseInstances(taskTopicResolver);
             handleTasksMetaStorage = Container.Get<IHandleTasksMetaStorage>();
+        }
+
+        private TaskTopicAndState TaskTopicAndState(string taskName, TaskState taskState)
+        {
+            return new TaskTopicAndState(taskTopicResolver.GetTaskTopic(taskName), taskState);
         }
 
         [Test]
@@ -38,7 +46,7 @@ namespace FunctionalTests.RepositoriesTests
         public void StressTest2()
         {
             var nowTicks = DateTime.UtcNow.Ticks;
-            var metas = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }.Select(x => new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
+            var metas = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.Select(x => new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
                 {
                     State = TaskState.New,
                     MinimalStartTicks = nowTicks + x
@@ -99,15 +107,15 @@ namespace FunctionalTests.RepositoriesTests
         {
             var ticks = DateTime.UtcNow.Ticks;
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName1", Guid.NewGuid().ToString())
-            {
-                State = TaskState.New,
-                MinimalStartTicks = ticks
-            });
+                {
+                    State = TaskState.New,
+                    MinimalStartTicks = ticks
+                });
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName2", Guid.NewGuid().ToString())
-            {
-                State = TaskState.New,
-                MinimalStartTicks = ticks
-            });
+                {
+                    State = TaskState.New,
+                    MinimalStartTicks = ticks
+                });
             var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, TaskTopicAndState("TaskName1", TaskState.New)).ToArray();
             Assert.AreEqual(1, tasks.Length);
         }
@@ -140,7 +148,7 @@ namespace FunctionalTests.RepositoriesTests
                     State = TaskState.Unknown,
                     MinimalStartTicks = ticks + 1
                 });
-            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 9, TaskTopicAndState("TaskName", TaskState.InProcess), new TaskTopicAndState("TaskName", TaskState.New)).ToArray();
+            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 9, TaskTopicAndState("TaskName", TaskState.InProcess), TaskTopicAndState("TaskName", TaskState.New)).ToArray();
             Assert.AreEqual(2, tasks.Length);
             Assert.AreEqual(id2, tasks[0].TaskId);
             Assert.AreEqual(id3, tasks[1].TaskId);
@@ -171,6 +179,20 @@ namespace FunctionalTests.RepositoriesTests
             Assert.AreEqual(id, inProcessTasks[0].TaskId);
         }
 
+        private ITaskTopicResolver taskTopicResolver;
         private IHandleTasksMetaStorage handleTasksMetaStorage;
+
+        private class DummyTaskTopicResolver : ITaskTopicResolver
+        {
+            public string[] GetAllTaskTopics()
+            {
+                return new string[0];
+            }
+
+            public string GetTaskTopic(string taskName)
+            {
+                return taskName;
+            }
+        }
     }
 }

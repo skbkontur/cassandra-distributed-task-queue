@@ -15,10 +15,7 @@ using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -60,17 +57,11 @@ namespace FunctionalTests
             client.DropLocalStorage();
             client.ActualizeDatabaseScheme();
             DropAndCreateDatabase(columnFamilies);
-            taskTopicResolver = Container.Get<ITaskTopicResolver>();
         }
 
         [TearDown]
         public virtual void TearDown()
         {
-        }
-
-        protected TaskTopicAndState TaskTopicAndState(string taskName, TaskState taskState)
-        {
-            return new TaskTopicAndState(taskTopicResolver.GetTaskTopic(taskName), taskState);
         }
 
         protected void WaitFor(Func<bool> func, TimeSpan timeout, int checkTimeout = 99)
@@ -119,7 +110,5 @@ namespace FunctionalTests
                 columnFamilyConnection.Truncate();
             }
         }
-
-        private ITaskTopicResolver taskTopicResolver;
     }
 }
