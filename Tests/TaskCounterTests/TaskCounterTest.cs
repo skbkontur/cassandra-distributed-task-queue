@@ -1,9 +1,6 @@
-﻿using System;
-
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 using RemoteQueue.Handling;
-using RemoteQueue.Settings;
 
 namespace RemoteQueue.Tests.TaskCounterTests
 {
@@ -13,7 +10,7 @@ namespace RemoteQueue.Tests.TaskCounterTests
         [Test]
         public void TestUnlimitedAllTaskCount()
         {
-            var taskCounter = CreateTaskCounter(0, 0);
+            var taskCounter = new TaskCounter(0, 0);
             for(var i = 0; i < 100; i++)
             {
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.TaskContinuation));
@@ -26,7 +23,7 @@ namespace RemoteQueue.Tests.TaskCounterTests
         [Test]
         public void TestUnlimitedTaskCount()
         {
-            var taskCounter = CreateTaskCounter(0, 10);
+            var taskCounter = new TaskCounter(0, 10);
 
             for(var i = 0; i < 100; i++)
             {
@@ -57,7 +54,7 @@ namespace RemoteQueue.Tests.TaskCounterTests
         [Test]
         public void TestLimitedTaskCount()
         {
-            var taskCounter = CreateTaskCounter(2, 3);
+            var taskCounter = new TaskCounter(2, 3);
 
             Assert.That(taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue));
             Assert.That(taskCounter.TryIncrement(TaskQueueReason.PullFromQueue));
@@ -105,7 +102,7 @@ namespace RemoteQueue.Tests.TaskCounterTests
         [Test]
         public void TestUnlimitedTaskContinuationCount()
         {
-            var taskCounter = CreateTaskCounter(10, 0);
+            var taskCounter = new TaskCounter(10, 0);
 
             for(var i = 0; i < 10; i++)
             {
@@ -137,26 +134,6 @@ namespace RemoteQueue.Tests.TaskCounterTests
 
             Assert.That(taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue), Is.True);
             Assert.That(taskCounter.TryIncrement(TaskQueueReason.PullFromQueue), Is.True);
-        }
-
-        private TaskCounter CreateTaskCounter(int maxRunningTasksCount, int maxRunningContinuationsCount)
-        {
-            return new TaskCounter(new ExchangeSchedulableRunnerSettings(maxRunningTasksCount, maxRunningContinuationsCount));
-        }
-
-        private class ExchangeSchedulableRunnerSettings : IExchangeSchedulableRunnerSettings
-        {
-            public ExchangeSchedulableRunnerSettings(int maxRunningTasksCount, int maxRunningContinuationsCount)
-            {
-                MaxRunningContinuationsCount = maxRunningContinuationsCount;
-                MaxRunningTasksCount = maxRunningTasksCount;
-            }
-
-            public TimeSpan PeriodicInterval { get; private set; }
-            public int MaxRunningTasksCount { get; private set; }
-            public int MaxRunningContinuationsCount { get; private set; }
-            public int ShardsCount { get; private set; }
-            public int ShardIndex { get; private set; }
         }
     }
 }
