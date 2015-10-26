@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 
+using GroboContainer.Infection;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
@@ -182,6 +184,7 @@ namespace FunctionalTests.RepositoriesTests
         private ITaskTopicResolver taskTopicResolver;
         private IHandleTasksMetaStorage handleTasksMetaStorage;
 
+        [IgnoredImplementation]
         private class DummyTaskTopicResolver : ITaskTopicResolver
         {
             public string[] GetAllTaskTopics()
