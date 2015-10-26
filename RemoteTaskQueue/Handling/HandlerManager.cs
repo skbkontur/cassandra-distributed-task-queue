@@ -69,9 +69,6 @@ namespace RemoteQueue.Handling
 
         public void Stop()
         {
-            if(!started)
-                return;
-            started = false;
             localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
         }
 
@@ -81,7 +78,6 @@ namespace RemoteQueue.Handling
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;
         private readonly object lockObject = new object();
-        private volatile bool started;
         private readonly TaskTopicAndState[] allTaskTopicAndStatesToRead;
         private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError};
     }

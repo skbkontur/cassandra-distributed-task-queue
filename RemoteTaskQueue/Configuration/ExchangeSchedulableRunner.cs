@@ -42,18 +42,18 @@ namespace RemoteQueue.Configuration
 
         public void Stop()
         {
-            if(worked)
+            if(started)
             {
                 lock(lockObject)
                 {
-                    if(worked)
+                    if(started)
                     {
                         Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() =>
                             {
                                 periodicTaskRunner.Unregister(theHandlerManager.Id, 15000);
                                 theHandlerManager.Stop();
                             })).ToArray());
-                        worked = false;
+                        started = false;
                         logger.Info("Stop ExchangeSchedulableRunner.");
                     }
                 }
@@ -62,25 +62,25 @@ namespace RemoteQueue.Configuration
 
         public void Start()
         {
-            if(!worked)
+            if(!started)
             {
                 lock(lockObject)
                 {
-                    if(!worked)
+                    if(!started)
                     {
                         foreach(var handlerManager in handlerManagers)
                         {
                             handlerManager.Start();
                             periodicTaskRunner.Register(handlerManager, runnerSettings.PeriodicInterval);
                         }
-                        worked = true;
+                        started = true;
                         logger.InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManagers[{0}] with period {1}:\r\n{2}", handlerManagers.Count, runnerSettings.PeriodicInterval, string.Join("\r\n", handlerManagers.Select(x => x.Id)));
                     }
                 }
             }
         }
 
-        private volatile bool worked;
+        private volatile bool started;
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
         private readonly List<IHandlerManager> handlerManagers = new List<IHandlerManager>();
         private readonly object lockObject = new object();
