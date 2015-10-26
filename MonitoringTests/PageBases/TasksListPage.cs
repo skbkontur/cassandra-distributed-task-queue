@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -74,7 +74,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
                 if(expectedCount.ToString(CultureInfo.InvariantCulture) == TasksCount.GetText())
                     return page;
             }
-            Assert.Fail("Недождались ожидаесого кол-во задач в списке за {0}. Ожидалось: \"{1}\", но было \"{2}.\"", timeout, expectedCount, TasksCount.GetText());
+            Assert.Fail("РќРµРґРѕР¶РґР°Р»РёСЃСЊ РѕР¶РёРґР°РµСЃРѕРіРѕ РєРѕР»-РІРѕ Р·Р°РґР°С‡ РІ СЃРїРёСЃРєРµ Р·Р° {0}. РћР¶РёРґР°Р»РѕСЃСЊ: \"{1}\", РЅРѕ Р±С‹Р»Рѕ \"{2}.\"", timeout, expectedCount, TasksCount.GetText());
             return null;
         }
 

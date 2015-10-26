@@ -38,20 +38,8 @@ namespace FunctionalTests
             Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
             Container.ConfigureLockRepository();
             Log4NetConfiguration.InitializeOnce();
-            var columnFamilyRegistry = Container.Get<IColumnFamilyRegistry>();
-            var columnFamilies = columnFamilyRegistry.GetAllColumnFamilyNames().Concat(new[]
-                {
-                    new ColumnFamily
-                        {
-                            Name = TestCassandraCounterBlobRepository.columnFamilyName,
-                        },
-                    new ColumnFamily
-                        {
-                            Name = CassandraTestTaskLogger.columnFamilyName
-                        }
-                }).ToArray();
+            ResetTaskQueueCassandraState();
             ResetTaskQueueMonitoringState();
-            DropAndCreateDatabase(columnFamilies);
         }
 
         private void ResetTaskQueueMonitoringState()
@@ -80,8 +68,20 @@ namespace FunctionalTests
 
         protected Container Container { get; private set; }
 
-        private void DropAndCreateDatabase(ColumnFamily[] columnFamilies)
+        private void ResetTaskQueueCassandraState()
         {
+            var columnFamilies = Container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
+                {
+                    new ColumnFamily
+                        {
+                            Name = TestCassandraCounterBlobRepository.columnFamilyName,
+                        },
+                    new ColumnFamily
+                        {
+                            Name = CassandraTestTaskLogger.columnFamilyName
+                        }
+                }).ToArray();
+
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var settings = Container.Get<ICassandraSettings>();
             var clusterConnection = cassandraCluster.RetrieveClusterConnection();

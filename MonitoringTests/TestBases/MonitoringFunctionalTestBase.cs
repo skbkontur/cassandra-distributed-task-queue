@@ -25,33 +25,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
         public override void SetUp()
         {
             base.SetUp();
-            container = ContainerCache.GetContainer(ContainerCacheKey, "monitoringTests.csf", ConfigureContainer);
-            ClearAllBeforeTest(container);
-            DropAndCreateDatabase(container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
-                {
-                    new ColumnFamily
-                        {
-                            Name = TestCassandraCounterBlobRepository.columnFamilyName,
-                        }
-                }).ToArray());
-            container.Get<IRemoteTaskQueueMonitoringServiceClient>().DropLocalStorage();
-            container.Get<IRemoteTaskQueueMonitoringServiceClient>().ActualizeDatabaseScheme();
+            container = ContainerCache.GetContainer("RemoteTaskQueue.MonitoringTests", "monitoringTests.csf",
+                                                    c => c.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(c));
+            container.Get<IExchangeServiceClient>().Stop();
+            ResetTaskQueueCassandraState();
+            ResetBusinessObjectStorageState();
+            ResetTaskQueueMonitoringState();
             container.Get<IExchangeServiceClient>().Start();
         }
 
-        private static void ClearAllBeforeTest(IContainer container)
+        private void ResetBusinessObjectStorageState()
         {
             var cassandraSchemeActualizer = container.Get<ICassandraSchemeActualizer>();
             cassandraSchemeActualizer.AddNewColumnFamilies();
             cassandraSchemeActualizer.TruncateAllColumnFamilies();
-            container.Get<IExchangeServiceClient>().Stop();
-            container.Get<IExchangeServiceClient>().Start();
         }
 
-        public override void TearDown()
+        private void ResetTaskQueueMonitoringState()
         {
-            container.Get<IExchangeServiceClient>().Stop();
-            base.TearDown();
+            var client = container.Get<IRemoteTaskQueueMonitoringServiceClient>();
+            client.DropLocalStorage();
+            client.ActualizeDatabaseScheme();
         }
 
         protected TasksListPage LoadTasksListPage()
@@ -59,17 +53,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
             return LoadPage<TasksListPage>("/AdminTools/RemoteTaskQueue");
         }
 
-        protected virtual void ConfigureContainer(IContainer c)
-        {
-            c.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(c);
-        }
-
-        protected virtual string ContainerCacheKey { get { return "RemoteTaskQueue.MonitoringTests"; } }
-
         protected override FunctionTestsConfiguration Configuration { get { return configuration; } }
 
-        private void DropAndCreateDatabase(ColumnFamily[] columnFamilies)
+        private void ResetTaskQueueCassandraState()
         {
+            var columnFamilies = container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
+                {
+                    new ColumnFamily
+                        {
+                            Name = TestCassandraCounterBlobRepository.columnFamilyName,
+                        }
+                }).ToArray();
+
             var cassandraCluster = container.Get<ICassandraCluster>();
             var settings = container.Get<ICassandraSettings>();
             var clusterConnection = cassandraCluster.RetrieveClusterConnection();
