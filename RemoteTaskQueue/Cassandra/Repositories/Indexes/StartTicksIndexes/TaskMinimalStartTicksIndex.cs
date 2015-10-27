@@ -24,7 +24,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void AddRecord([NotNull] TaskIndexRecord taskIndexRecord)
         {
-            oldestLiveRecordTicksHolder.MoveBackwardIfNecessary(taskIndexRecord.TaskTopicAndState, taskIndexRecord.MinimalStartTicks);
+            oldestLiveRecordTicksHolder.MoveMarkerBackwardIfNecessary(taskIndexRecord.TaskTopicAndState, taskIndexRecord.MinimalStartTicks);
             var connection = RetrieveColumnFamilyConnection();
             var rowKey = TicksNameHelper.GetRowKey(taskIndexRecord.TaskTopicAndState, taskIndexRecord.MinimalStartTicks);
             var columnName = TicksNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
@@ -47,20 +47,21 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         [NotNull]
         public IEnumerable<TaskIndexRecord> GetRecords([NotNull] TaskTopicAndState taskTopicAndState, long toTicks, int batchSize)
         {
-            var fromTicks = TryGetFromTicks(taskTopicAndState);
+            ILiveRecordTicksMarker liveRecordTicksMarker;
+            var fromTicks = TryGetFromTicks(taskTopicAndState, out liveRecordTicksMarker);
             if(!fromTicks.HasValue)
                 return new TaskIndexRecord[0];
             var connection = RetrieveColumnFamilyConnection();
-            return new GetEventsEnumerable(taskTopicAndState, serializer, connection, oldestLiveRecordTicksHolder, fromTicks.Value, toTicks, batchSize);
+            return new GetEventsEnumerable(liveRecordTicksMarker, serializer, connection, fromTicks.Value, toTicks, batchSize);
         }
 
-        private long? TryGetFromTicks([NotNull] TaskTopicAndState taskTopicAndState)
+        private long? TryGetFromTicks([NotNull] TaskTopicAndState taskTopicAndState, out ILiveRecordTicksMarker liveRecordTicksMarker)
         {
-            var oldestLiveRecordTicks = oldestLiveRecordTicksHolder.TryStartReadToEndSession(taskTopicAndState);
-            if(!oldestLiveRecordTicks.HasValue)
+            liveRecordTicksMarker = oldestLiveRecordTicksHolder.TryGetCurrentMarkerValue(taskTopicAndState);
+            if(liveRecordTicksMarker == null)
                 return null;
             var overlapDuration = GetOverlapDuration(taskTopicAndState);
-            var fromTicks = oldestLiveRecordTicks.Value - overlapDuration.Ticks;
+            var fromTicks = liveRecordTicksMarker.CurrentTicks - overlapDuration.Ticks;
             var twoDaysSafetyBelt = (DateTime.UtcNow - TimeSpan.FromDays(2)).Ticks;
             return Math.Max(fromTicks, twoDaysSafetyBelt);
         }

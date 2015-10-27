@@ -16,12 +16,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerator : IEnumerator<TaskIndexRecord>
     {
-        public GetEventsEnumerator([NotNull] TaskTopicAndState taskTopicAndState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
+        public GetEventsEnumerator([NotNull] ILiveRecordTicksMarker liveRecordTicksMarker, ISerializer serializer, IColumnFamilyConnection connection, long fromTicks, long toTicks, int batchSize)
         {
-            this.taskTopicAndState = taskTopicAndState;
+            this.liveRecordTicksMarker = liveRecordTicksMarker;
             this.serializer = serializer;
             this.connection = connection;
-            this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
             this.fromTicks = fromTicks;
             this.toTicks = toTicks;
             this.batchSize = batchSize;
@@ -34,6 +33,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public void Dispose()
         {
             eventEnumerator.Dispose();
+            liveRecordTicksMarker.CommitChanges();
         }
 
         public bool MoveNext()
@@ -45,10 +45,10 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     var currentLiveRecordTicks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
                     if(currentLiveRecordTicks > toTicks)
                     {
-                        oldestLiveRecordTicksHolder.TryMoveForward(taskTopicAndState, toTicks);
+                        liveRecordTicksMarker.TryMoveForward(toTicks);
                         return false;
                     }
-                    oldestLiveRecordTicksHolder.TryMoveForward(taskTopicAndState, currentLiveRecordTicks);
+                    liveRecordTicksMarker.TryMoveForward(currentLiveRecordTicks);
                     if(!loggedTooOldIndexRecord && currentLiveRecordTicks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
                     {
                         logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
@@ -59,11 +59,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 }
                 if(iCur >= iTo)
                 {
-                    oldestLiveRecordTicksHolder.TryMoveForward(taskTopicAndState, toTicks);
+                    liveRecordTicksMarker.TryMoveForward(toTicks);
                     return false;
                 }
                 iCur++;
-                var rowKey = TicksNameHelper.GetRowKey(taskTopicAndState, TicksNameHelper.GetMinimalTicksForRow(iCur));
+                var rowKey = TicksNameHelper.GetRowKey(liveRecordTicksMarker.TaskTopicAndState, TicksNameHelper.GetMinimalTicksForRow(iCur));
                 string exclusiveStartColumnName = null;
                 if(iCur == iFrom)
                     exclusiveStartColumnName = TicksNameHelper.GetColumnName(fromTicks, string.Empty);
@@ -84,7 +84,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             {
                 var taskId = serializer.Deserialize<string>(eventEnumerator.Current.Value);
                 var minimalStartTicks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
-                return new TaskIndexRecord(taskId, minimalStartTicks, taskTopicAndState);
+                return new TaskIndexRecord(taskId, minimalStartTicks, liveRecordTicksMarker.TaskTopicAndState);
             }
         }
 
@@ -96,9 +96,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             {
                 if(statistics == null)
                     statistics = new Dictionary<TaskTopicAndState, TaskStateStatistics>();
-                if(!statistics.ContainsKey(taskTopicAndState))
-                    statistics[taskTopicAndState] = new TaskStateStatistics();
-                statistics[taskTopicAndState].Update(iTo - iFrom);
+                if(!statistics.ContainsKey(liveRecordTicksMarker.TaskTopicAndState))
+                    statistics[liveRecordTicksMarker.TaskTopicAndState] = new TaskStateStatistics();
+                statistics[liveRecordTicksMarker.TaskTopicAndState].Update(iTo - iFrom);
                 if(lastStatisticsLogDateTime <= DateTime.UtcNow - TimeSpan.FromMinutes(1))
                 {
                     PrintStatistics();
@@ -123,10 +123,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private static readonly ILog logger = LogManager.GetLogger(typeof(GetEventsEnumerator));
         private static DateTime lastStatisticsLogDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
-        private readonly TaskTopicAndState taskTopicAndState;
+        private readonly ILiveRecordTicksMarker liveRecordTicksMarker;
         private readonly ISerializer serializer;
         private readonly IColumnFamilyConnection connection;
-        private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;
         private readonly long fromTicks;
         private readonly long toTicks;
         private readonly int batchSize;

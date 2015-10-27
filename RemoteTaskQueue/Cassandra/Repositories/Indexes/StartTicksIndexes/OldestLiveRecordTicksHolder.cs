@@ -15,65 +15,68 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.ticksHolder = ticksHolder;
         }
 
-        public long? TryStartReadToEndSession([NotNull] TaskTopicAndState taskTopicAndState)
+        [CanBeNull]
+        public ILiveRecordTicksMarker TryGetCurrentMarkerValue([NotNull] TaskTopicAndState taskTopicAndState)
         {
-            var ticks = DoTryStartReadToEndSession(taskTopicAndState);
-            if(ticks.HasValue)
-                return ticks.Value;
+            var currentMarkerValue = DoTryGetCurrentMarkerValue(taskTopicAndState);
+            if(currentMarkerValue != null)
+                return currentMarkerValue;
             var persistedTicks = ticksHolder.GetMinTicks(taskTopicAndState.ToCassandraKey());
             if(persistedTicks == 0)
                 return null;
-            return DoStartReadToEndSession(taskTopicAndState, persistedTicks);
+            return DoGetCurrentMarkerValue(taskTopicAndState, persistedTicks);
         }
 
-        private long? DoTryStartReadToEndSession([NotNull] TaskTopicAndState taskTopicAndState)
+        [CanBeNull]
+        private ILiveRecordTicksMarker DoTryGetCurrentMarkerValue([NotNull] TaskTopicAndState taskTopicAndState)
         {
             lock(locker)
             {
-                OldestLiveRecordTicksItem item;
-                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out item))
+                long currentTicks;
+                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
                     return null;
-                item.IsAllowedToMoveForward = true;
-                return item.Ticks;
+                return new LiveRecordTicksMarker(taskTopicAndState, currentTicks, this);
             }
         }
 
-        private long DoStartReadToEndSession([NotNull] TaskTopicAndState taskTopicAndState, long persistedTicks)
+        [NotNull]
+        private ILiveRecordTicksMarker DoGetCurrentMarkerValue([NotNull] TaskTopicAndState taskTopicAndState, long persistedTicks)
         {
             lock(locker)
             {
-                OldestLiveRecordTicksItem item;
-                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out item))
+                long currentTicks;
+                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
                 {
-                    item = new OldestLiveRecordTicksItem {Ticks = persistedTicks};
-                    ticksByTaskState.Add(taskTopicAndState, item);
+                    currentTicks = persistedTicks;
+                    ticksByTaskState.Add(taskTopicAndState, currentTicks);
                 }
                 else
                 {
-                    if(persistedTicks < item.Ticks)
-                        item.Ticks = persistedTicks;
+                    if(persistedTicks < currentTicks)
+                    {
+                        currentTicks = persistedTicks;
+                        ticksByTaskState[taskTopicAndState] = currentTicks;
+                    }
                 }
-                item.IsAllowedToMoveForward = true;
-                return item.Ticks;
+                return new LiveRecordTicksMarker(taskTopicAndState, currentTicks, this);
             }
         }
 
-        public bool TryMoveForward([NotNull] TaskTopicAndState taskTopicAndState, long newTicks)
+        public bool TryMoveForward([NotNull] TaskTopicAndState taskTopicAndState, long oldTicks, long newTicks)
         {
             lock(locker)
             {
-                OldestLiveRecordTicksItem item;
-                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out item))
-                    throw new InvalidProgramStateException(string.Format("Not found OldestLiveRecordTicksItem for: {0}", taskTopicAndState));
-                if(!item.IsAllowedToMoveForward)
+                long currentTicks;
+                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
+                    throw new InvalidProgramStateException(string.Format("Not found CurrentTicks for: {0}", taskTopicAndState));
+                if(currentTicks < oldTicks)
                     return false;
-                item.Ticks = newTicks;
-                item.IsAllowedToMoveForward = false;
+                ticksByTaskState[taskTopicAndState] = newTicks;
                 return true;
             }
         }
 
-        public void MoveBackwardIfNecessary([NotNull] TaskTopicAndState taskTopicAndState, long newTicks)
+        public void MoveMarkerBackwardIfNecessary([NotNull] TaskTopicAndState taskTopicAndState, long newTicks)
         {
             ticksHolder.UpdateMinTicks(taskTopicAndState.ToCassandraKey(), newTicks);
             DoMoveBackwardIfNecessary(taskTopicAndState, newTicks);
@@ -83,35 +86,19 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             lock(locker)
             {
-                OldestLiveRecordTicksItem item;
-                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out item))
-                {
-                    item = new OldestLiveRecordTicksItem
-                        {
-                            Ticks = newTicks,
-                            IsAllowedToMoveForward = false,
-                        };
-                    ticksByTaskState.Add(taskTopicAndState, item);
-                }
+                long currentTicks;
+                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
+                    ticksByTaskState.Add(taskTopicAndState, newTicks);
                 else
                 {
-                    if(newTicks < item.Ticks)
-                    {
-                        item.Ticks = newTicks;
-                        item.IsAllowedToMoveForward = false;
-                    }
+                    if(newTicks < currentTicks)
+                        ticksByTaskState[taskTopicAndState] = newTicks;
                 }
             }
         }
 
         private readonly ITicksHolder ticksHolder;
         private readonly object locker = new object();
-        private readonly Dictionary<TaskTopicAndState, OldestLiveRecordTicksItem> ticksByTaskState = new Dictionary<TaskTopicAndState, OldestLiveRecordTicksItem>();
-
-        private class OldestLiveRecordTicksItem
-        {
-            public long Ticks { get; set; }
-            public bool IsAllowedToMoveForward { get; set; }
-        }
+        private readonly Dictionary<TaskTopicAndState, long> ticksByTaskState = new Dictionary<TaskTopicAndState, long>();
     }
 }

@@ -11,12 +11,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerable : IEnumerable<TaskIndexRecord>
     {
-        public GetEventsEnumerable([NotNull] TaskTopicAndState taskTopicAndState, ISerializer serializer, IColumnFamilyConnection connection, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder, long fromTicks, long toTicks, int batchSize)
+        public GetEventsEnumerable([NotNull] ILiveRecordTicksMarker liveRecordTicksMarker, ISerializer serializer, IColumnFamilyConnection connection, long fromTicks, long toTicks, int batchSize)
         {
-            this.taskTopicAndState = taskTopicAndState;
+            this.liveRecordTicksMarker = liveRecordTicksMarker;
             this.serializer = serializer;
             this.connection = connection;
-            this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
             this.fromTicks = fromTicks;
             this.toTicks = toTicks;
             this.batchSize = batchSize;
@@ -24,7 +23,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public IEnumerator<TaskIndexRecord> GetEnumerator()
         {
-            return new GetEventsEnumerator(taskTopicAndState, serializer, connection, oldestLiveRecordTicksHolder, fromTicks, toTicks, batchSize);
+            return new GetEventsEnumerator(liveRecordTicksMarker, serializer, connection, fromTicks, toTicks, batchSize);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -32,10 +31,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return GetEnumerator();
         }
 
-        private readonly TaskTopicAndState taskTopicAndState;
+        private readonly ILiveRecordTicksMarker liveRecordTicksMarker;
         private readonly ISerializer serializer;
         private readonly IColumnFamilyConnection connection;
-        private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;
         private readonly long fromTicks;
         private readonly long toTicks;
         private readonly int batchSize;
