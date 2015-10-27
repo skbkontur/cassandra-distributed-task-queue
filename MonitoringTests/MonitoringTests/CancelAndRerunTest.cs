@@ -19,7 +19,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         }
 
         [Test]
-        [Repeat(10)]
         public void CancelAndRerunTaskTest()
         {
             var taskId = remoteTaskQueue.CreateTask(new AlphaTaskData()).Queue(TimeSpan.FromHours(3));
