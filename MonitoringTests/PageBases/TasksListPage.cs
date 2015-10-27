@@ -96,11 +96,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 
         public TasksListPage RefreshUntilTaskRowIsPresent(int expectedCount)
         {
-            return RefreshUntil(this, page =>
-                {
-                    page.GetTaskListItem(expectedCount - 1).WaitPresenceWithRetries();
-                    return true;
-                });
+            return RefreshUntil(this, page => page.GetTaskListItem(expectedCount - 1).IsPresent);
         }
 
         public TasksListPage RefreshUntilAllTasksInState(int expectedTasksCount, string expectedState)
