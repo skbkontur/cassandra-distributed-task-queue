@@ -51,7 +51,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
 
         public override string ToString()
         {
-            return string.Format("taskTopic: {0}, TaskState: {1}", TaskTopic, TaskState);
+            return string.Format("TaskTopic: {0}, TaskState: {1}", TaskTopic, TaskState);
         }
 
         [NotNull]
