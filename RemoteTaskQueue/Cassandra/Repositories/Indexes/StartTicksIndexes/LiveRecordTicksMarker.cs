@@ -18,7 +18,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void TryMoveForward(long newTicks)
         {
-            if(newTicks > CurrentTicks && (!minimalNewTicks.HasValue || newTicks < minimalNewTicks.Value))
+            if(!minimalNewTicks.HasValue || newTicks < minimalNewTicks.Value)
                 minimalNewTicks = newTicks;
         }
 
