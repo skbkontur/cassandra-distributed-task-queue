@@ -88,6 +88,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                 {
                                     number_of_shards = settings.NumberOfShards,
                                     number_of_replicas = settings.ReplicaCount,
+                                    index = new Dictionary<string, string>
+                                            {
+                                                { "routing.allocation.exclude._name", "edi-elastic-*-i*" }
+                                            }
                                 },
                             mappings = new
                                 {

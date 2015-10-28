@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Solution Include="XmlSerializer\XmlSerializer.sln"></Solution>
     <Solution Include="Commons\Commons.sln"></Solution>
     <Solution Include="Core\Core.sln"></Solution>
     <Solution Include="WebWorms\WebWorms.sln"></Solution>  

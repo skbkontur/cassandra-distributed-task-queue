@@ -47,9 +47,6 @@
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
-    <Reference Include="GroboSerializer">
-      <HintPath>..\..\Assemblies\Temp\GroboSerializer.dll</HintPath>
-    </Reference>
     <Reference Include="GroBuf">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
@@ -65,8 +62,6 @@
     <Compile Include="RemoteTaskQueue\RemoteQueueTestsCassandraSettings.cs" />
     <Compile Include="RemoteTaskQueue\RemoteTaskQueuePlugin.cs" />
     <Compile Include="RemoteTaskQueue\TaskDataRegistry.cs" />
-    <Compile Include="Xml\XmlNamespaceFactory.cs" />
-    <Compile Include="Xml\XmlPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">

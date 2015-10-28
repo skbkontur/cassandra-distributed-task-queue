@@ -50,11 +50,21 @@
             @Html.Partial("HelpModal")
         </div>
     </div>
-    
+
     <div class="row" style="margin-top: 40px;">
         <div class="col-md-12">
             Всего найдено: @Model.Results.TotalResultCount
         </div>
+        @if (Model.EnableBatchTasksActions)
+        {
+            var queryString = Url.RequestContext.HttpContext.Request.QueryString.ToString();
+            <div class="col-md-12">
+                <button data-firsturl="@Url.Action("StartCancelTasks")?@queryString" data-nexturl="@Url.Action("ContinueCancelTasks")" class="btn btn-xs btn-danger cancel-all-tasks-button">Cancel All</button>
+            </div>
+            <div class="col-md-12">
+                <button data-firsturl="@Url.Action("StartRerunTasks")?@queryString" data-nexturl="@Url.Action("ContinueRerunTasks")" class="btn btn-xs btn-success rerun-all-tasks-button">Rerun All</button>
+            </div>
+        }
     </div>
     
 
@@ -121,6 +131,11 @@
             </script>
         </div>
     </div>
-    
 
+    @if(Model.EnableBatchTasksActions)
+    {
+        <div>
+            @Html.Partial("_LongActionsBasicDialog")
+        </div>
+    }
 </div>
