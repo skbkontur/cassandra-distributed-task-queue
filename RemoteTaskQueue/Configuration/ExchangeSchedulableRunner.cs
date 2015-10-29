@@ -51,27 +51,6 @@ namespace RemoteQueue.Configuration
             Stop();
         }
 
-        public void Stop()
-        {
-            if(started)
-            {
-                lock(lockObject)
-                {
-                    if(started)
-                    {
-                        periodicTaskRunner.Unregister(reportConsumerStateToGraphiteTask.Id, 15000);
-                        Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() =>
-                            {
-                                periodicTaskRunner.Unregister(theHandlerManager.Id, 15000);
-                                theHandlerManager.Stop();
-                            })).ToArray());
-                        started = false;
-                        logger.Info("Stop ExchangeSchedulableRunner.");
-                    }
-                }
-            }
-        }
-
         public void Start()
         {
             if(!started)
@@ -88,6 +67,27 @@ namespace RemoteQueue.Configuration
                         periodicTaskRunner.Register(reportConsumerStateToGraphiteTask, TimeSpan.FromMinutes(1));
                         started = true;
                         logger.InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManagers[{0}] with period {1}:\r\n{2}", handlerManagers.Count, runnerSettings.PeriodicInterval, string.Join("\r\n", handlerManagers.Select(x => x.Id)));
+                    }
+                }
+            }
+        }
+
+        public void Stop()
+        {
+            if(started)
+            {
+                lock(lockObject)
+                {
+                    if(started)
+                    {
+                        periodicTaskRunner.Unregister(reportConsumerStateToGraphiteTask.Id, 15000);
+                        Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() =>
+                            {
+                                periodicTaskRunner.Unregister(theHandlerManager.Id, 15000);
+                                theHandlerManager.Stop();
+                            })).ToArray());
+                        started = false;
+                        logger.Info("Stop ExchangeSchedulableRunner.");
                     }
                 }
             }
