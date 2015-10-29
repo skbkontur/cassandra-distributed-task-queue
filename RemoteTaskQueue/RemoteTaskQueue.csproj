@@ -46,6 +46,9 @@
     <Reference Include="Catalogue.Objects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.ServiceLib">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
+    </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
     </Reference>
@@ -168,12 +171,6 @@
     <Compile Include="Profiling\EmptyRemoteTaskQueueProfiler.cs" />
     <Compile Include="Profiling\IRemoteTaskQueueProfiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LocalTasks\Scheduling\ActionPeriodicTask.cs" />
-    <Compile Include="LocalTasks\Scheduling\IPeriodicTask.cs" />
-    <Compile Include="LocalTasks\Scheduling\IPeriodicTaskRunner.cs" />
-    <Compile Include="LocalTasks\Scheduling\ISmartTimer.cs" />
-    <Compile Include="LocalTasks\Scheduling\PeriodicTaskRunner.cs" />
-    <Compile Include="LocalTasks\Scheduling\SmartTimer.cs" />
     <Compile Include="Settings\ICassandraSettings.cs" />
     <Compile Include="Exceptions\NotTypedTaskHandlerException.cs" />
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />

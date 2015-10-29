@@ -2,9 +2,8 @@ using System;
 
 using log4net;
 
-using RemoteQueue.LocalTasks.Scheduling;
-
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
+using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
 {
@@ -45,9 +44,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
                 {
                     if(!started)
                     {
-                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.ProcessNewEvents(), taskSearchUpdateTaskId), TaskIndexSettings.IndexInterval);
-                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.SendActualizationLagToGraphite(), sendactualizationlagtographiteTaskId), TimeSpan.FromMinutes(1));
-                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.LogStatus(), dumpStatusTaskId), TimeSpan.FromMinutes(1));
+                        periodicTaskRunner.Register(new ActionPeriodicTask(taskSearchUpdateTaskId, () => taskIndexController.ProcessNewEvents()), TaskIndexSettings.IndexInterval);
+                        periodicTaskRunner.Register(new ActionPeriodicTask(sendactualizationlagtographiteTaskId, () => taskIndexController.SendActualizationLagToGraphite()), TimeSpan.FromMinutes(1));
+                        periodicTaskRunner.Register(new ActionPeriodicTask(dumpStatusTaskId, () => taskIndexController.LogStatus()), TimeSpan.FromMinutes(1));
                         started = true;
                         logger.InfoFormat("Start MonitoringServiceSchedulableRunner");
                     }

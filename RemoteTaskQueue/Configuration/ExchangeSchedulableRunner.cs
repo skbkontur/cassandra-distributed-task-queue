@@ -8,13 +8,13 @@ using GroBuf;
 using log4net;
 
 using RemoteQueue.Handling;
-using RemoteQueue.LocalTasks.Scheduling;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 using RemoteQueue.UserClasses;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Configuration
 {
@@ -22,6 +22,7 @@ namespace RemoteQueue.Configuration
     {
         public ExchangeSchedulableRunner(
             IExchangeSchedulableRunnerSettings runnerSettings,
+            IPeriodicTaskRunner periodicTaskRunner,
             TaskHandlerRegistryBase taskHandlerRegistry,
             ISerializer serializer,
             ICassandraCluster cassandraCluster,
@@ -32,6 +33,7 @@ namespace RemoteQueue.Configuration
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             this.runnerSettings = runnerSettings;
+            this.periodicTaskRunner = periodicTaskRunner;
             var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
             var taskHandlerCollection = new TaskHandlerCollection(taskDataTypeToNameMapper, taskHandlerRegistry);
             var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataTypeToNameMapper, taskTopicResolver, remoteTaskQueueProfiler);
@@ -88,9 +90,9 @@ namespace RemoteQueue.Configuration
 
         private volatile bool started;
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
-        private readonly List<IHandlerManager> handlerManagers = new List<IHandlerManager>();
+        private readonly IPeriodicTaskRunner periodicTaskRunner;
         private readonly object lockObject = new object();
-        private readonly IPeriodicTaskRunner periodicTaskRunner = new PeriodicTaskRunner();
+        private readonly List<IHandlerManager> handlerManagers = new List<IHandlerManager>();
         private static readonly ILog logger = LogManager.GetLogger(typeof(ExchangeSchedulableRunner));
     }
 }

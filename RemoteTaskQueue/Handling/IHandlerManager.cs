@@ -1,4 +1,4 @@
-﻿using RemoteQueue.LocalTasks.Scheduling;
+﻿using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Handling
 {

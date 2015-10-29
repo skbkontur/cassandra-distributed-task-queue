@@ -2,9 +2,8 @@ using System;
 
 using log4net;
 
-using RemoteQueue.LocalTasks.Scheduling;
-
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Settings;
+using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 {
