@@ -21,15 +21,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
 
         public void Stop()
         {
-            if(worked)
+            if(started)
             {
                 lock(lockObject)
                 {
-                    if(worked)
+                    if(started)
                     {
+                        periodicTaskRunner.Unregister(dumpStatusTaskId, 15000);
                         periodicTaskRunner.Unregister(sendactualizationlagtographiteTaskId, 15000);
                         periodicTaskRunner.Unregister(taskSearchUpdateTaskId, 15000);
-                        worked = false;
+                        started = false;
                         logger.Info("Stop MonitoringServiceSchedulableRunner");
                     }
                 }
@@ -38,16 +39,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
 
         public void Start()
         {
-            if(!worked)
+            if(!started)
             {
                 lock(lockObject)
                 {
-                    if(!worked)
+                    if(!started)
                     {
                         periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.ProcessNewEvents(), taskSearchUpdateTaskId), TaskIndexSettings.IndexInterval);
                         periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.SendActualizationLagToGraphite(), sendactualizationlagtographiteTaskId), TimeSpan.FromMinutes(1));
                         periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.LogStatus(), dumpStatusTaskId), TimeSpan.FromMinutes(1));
-                        worked = true;
+                        started = true;
                         logger.InfoFormat("Start MonitoringServiceSchedulableRunner");
                     }
                 }
@@ -62,7 +63,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
         private readonly IPeriodicTaskRunner periodicTaskRunner;
         private readonly ITaskIndexController taskIndexController;
 
-        private volatile bool worked;
+        private volatile bool started;
 
         private readonly ILog logger = LogManager.GetLogger(typeof(ElasticMonitoringServiceSchedulableRunner));
     }
