@@ -34,29 +34,26 @@ namespace RemoteQueue.Handling
 
         public void Run()
         {
-            lock(lockObject)
+            var nowTicks = DateTime.UtcNow.Ticks;
+            var taskIndexRecordsBatches = handleTasksMetaStorage
+                .GetIndexRecords(nowTicks, allTaskTopicAndStatesToRead)
+                .Batch(maxRunningTasksCount, Enumerable.ToArray);
+            foreach(var taskIndexRecordsBatch in taskIndexRecordsBatches)
             {
-                var nowTicks = DateTime.UtcNow.Ticks;
-                var taskIndexRecordsBatches = handleTasksMetaStorage
-                    .GetIndexRecords(nowTicks, allTaskTopicAndStatesToRead)
-                    .Batch(maxRunningTasksCount, Enumerable.ToArray);
-                foreach(var taskIndexRecordsBatch in taskIndexRecordsBatches)
+                var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
+                for(var i = 0; i < taskIndexRecordsBatch.Length; i++)
                 {
-                    var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
-                    for(var i = 0; i < taskIndexRecordsBatch.Length; i++)
+                    var taskMeta = taskMetas[i];
+                    var taskIndexRecord = taskIndexRecordsBatch[i];
+                    if(taskMeta != null && taskMeta.Id != taskIndexRecord.TaskId)
+                        throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));
+                    using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                     {
-                        var taskMeta = taskMetas[i];
-                        var taskIndexRecord = taskIndexRecordsBatch[i];
-                        if(taskMeta != null && taskMeta.Id != taskIndexRecord.TaskId)
-                            throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));
-                        using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
-                        {
-                            bool queueIsFull, taskIsSentToThreadPool;
-                            localTaskQueue.QueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
-                            taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
-                            if(queueIsFull)
-                                return;
-                        }
+                        bool queueIsFull, taskIsSentToThreadPool;
+                        localTaskQueue.QueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
+                        taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
+                        if(queueIsFull)
+                            return;
                     }
                 }
             }
@@ -77,7 +74,6 @@ namespace RemoteQueue.Handling
         private readonly ILocalTaskQueue localTaskQueue;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;
-        private readonly object lockObject = new object();
         private readonly TaskTopicAndState[] allTaskTopicAndStatesToRead;
         private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError};
     }
