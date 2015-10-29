@@ -9,6 +9,7 @@ using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
@@ -20,6 +21,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.serializer = serializer;
             this.globalTime = globalTime;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
+        }
+
+        [CanBeNull]
+        public LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskTopicAndState taskTopicAndState)
+        {
+            return oldestLiveRecordTicksHolder.TryGetCurrentMarkerValue(taskTopicAndState).With(x => x.State);
         }
 
         public void AddRecord([NotNull] TaskIndexRecord taskIndexRecord)
@@ -61,7 +68,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             if(liveRecordTicksMarker == null)
                 return null;
             var overlapDuration = GetOverlapDuration(taskTopicAndState);
-            var fromTicks = liveRecordTicksMarker.CurrentTicks - overlapDuration.Ticks;
+            var fromTicks = liveRecordTicksMarker.State.CurrentTicks - overlapDuration.Ticks;
             var twoDaysSafetyBelt = (DateTime.UtcNow - TimeSpan.FromDays(2)).Ticks;
             return Math.Max(fromTicks, twoDaysSafetyBelt);
         }

@@ -63,7 +63,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     return false;
                 }
                 iCur++;
-                var rowKey = TicksNameHelper.GetRowKey(liveRecordTicksMarker.TaskTopicAndState, TicksNameHelper.GetMinimalTicksForRow(iCur));
+                var rowKey = TicksNameHelper.GetRowKey(liveRecordTicksMarker.State.TaskTopicAndState, TicksNameHelper.GetMinimalTicksForRow(iCur));
                 string exclusiveStartColumnName = null;
                 if(iCur == iFrom)
                     exclusiveStartColumnName = TicksNameHelper.GetColumnName(fromTicks, string.Empty);
@@ -84,7 +84,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             {
                 var taskId = serializer.Deserialize<string>(eventEnumerator.Current.Value);
                 var minimalStartTicks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
-                return new TaskIndexRecord(taskId, minimalStartTicks, liveRecordTicksMarker.TaskTopicAndState);
+                return new TaskIndexRecord(taskId, minimalStartTicks, liveRecordTicksMarker.State.TaskTopicAndState);
             }
         }
 
@@ -96,9 +96,10 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             {
                 if(statistics == null)
                     statistics = new Dictionary<TaskTopicAndState, TaskStateStatistics>();
-                if(!statistics.ContainsKey(liveRecordTicksMarker.TaskTopicAndState))
-                    statistics[liveRecordTicksMarker.TaskTopicAndState] = new TaskStateStatistics();
-                statistics[liveRecordTicksMarker.TaskTopicAndState].Update(iTo - iFrom);
+                var taskTopicAndState = liveRecordTicksMarker.State.TaskTopicAndState;
+                if(!statistics.ContainsKey(taskTopicAndState))
+                    statistics[taskTopicAndState] = new TaskStateStatistics();
+                statistics[taskTopicAndState].Update(iTo - iFrom);
                 if(lastStatisticsLogDateTime <= DateTime.UtcNow - TimeSpan.FromMinutes(1))
                 {
                     PrintStatistics();

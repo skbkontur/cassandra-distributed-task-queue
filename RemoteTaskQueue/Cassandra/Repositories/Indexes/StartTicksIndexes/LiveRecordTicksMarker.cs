@@ -4,17 +4,14 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class LiveRecordTicksMarker : ILiveRecordTicksMarker
     {
-        public LiveRecordTicksMarker([NotNull] TaskTopicAndState taskTopicAndState, long currentTicks, [NotNull] OldestLiveRecordTicksHolder ticksHolder)
+        public LiveRecordTicksMarker([NotNull] LiveRecordTicksMarkerState state, [NotNull] OldestLiveRecordTicksHolder ticksHolder)
         {
+            State = state;
             this.ticksHolder = ticksHolder;
-            TaskTopicAndState = taskTopicAndState;
-            CurrentTicks = currentTicks;
         }
 
         [NotNull]
-        public TaskTopicAndState TaskTopicAndState { get; private set; }
-
-        public long CurrentTicks { get; private set; }
+        public LiveRecordTicksMarkerState State { get; private set; }
 
         public void TryMoveForward(long newTicks)
         {
@@ -25,7 +22,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public void CommitChanges()
         {
             if(minimalNewTicks.HasValue)
-                ticksHolder.TryMoveForward(TaskTopicAndState, CurrentTicks, minimalNewTicks.Value);
+                ticksHolder.TryMoveForward(State.TaskTopicAndState, State.CurrentTicks, minimalNewTicks.Value);
         }
 
         private long? minimalNewTicks;

@@ -34,6 +34,12 @@ namespace RemoteQueue.Cassandra.Repositories
             this.taskTopicResolver = taskTopicResolver;
         }
 
+        [CanBeNull]
+        public LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskTopicAndState taskTopicAndState)
+        {
+            return minimalStartTicksIndex.TryGetCurrentLiveRecordTicksMarker(taskTopicAndState);
+        }
+
         [NotNull]
         public IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskTopicAndState[] taskTopicAndStates)
         {

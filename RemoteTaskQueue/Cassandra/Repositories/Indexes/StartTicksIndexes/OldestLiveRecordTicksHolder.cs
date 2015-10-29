@@ -35,7 +35,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 long currentTicks;
                 if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
                     return null;
-                return new LiveRecordTicksMarker(taskTopicAndState, currentTicks, this);
+                return new LiveRecordTicksMarker(new LiveRecordTicksMarkerState(taskTopicAndState, currentTicks), this);
             }
         }
 
@@ -58,7 +58,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                         ticksByTaskState[taskTopicAndState] = currentTicks;
                     }
                 }
-                return new LiveRecordTicksMarker(taskTopicAndState, currentTicks, this);
+                return new LiveRecordTicksMarker(new LiveRecordTicksMarkerState(taskTopicAndState, currentTicks), this);
             }
         }
 

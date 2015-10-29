@@ -6,6 +6,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public interface ITaskMinimalStartTicksIndex
     {
+        [CanBeNull]
+        LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskTopicAndState taskTopicAndState);
+
         void AddRecord([NotNull] TaskIndexRecord taskIndexRecord);
 
         void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord);

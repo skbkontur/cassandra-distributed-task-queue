@@ -9,6 +9,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
+using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Tracing;
 
@@ -31,6 +32,12 @@ namespace RemoteQueue.Handling
         }
 
         public string Id { get { return string.Format("HandlerManager_{0}", taskTopic); } }
+
+        [NotNull]
+        public LiveRecordTicksMarkerState[] GetCurrentLiveRecordTicksMarkers()
+        {
+            return allTaskTopicAndStatesToRead.Select(x => handleTasksMetaStorage.TryGetCurrentLiveRecordTicksMarker(x) ?? new LiveRecordTicksMarkerState(x, Timestamp.Now.Ticks)).ToArray();
+        }
 
         public void Run()
         {
