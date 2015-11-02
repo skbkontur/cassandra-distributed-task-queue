@@ -22,6 +22,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Handling
 {
@@ -136,7 +137,7 @@ namespace RemoteQueue.Handling
         {
             createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
             var nowTicks = DateTime.UtcNow.Ticks;
-            var taskId = Guid.NewGuid().ToString();
+            var taskId = TimeGuid.NowGuid().ToGuid().ToString();
             var type = taskData.GetType();
             
             var task = new Task

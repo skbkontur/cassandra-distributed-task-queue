@@ -13,12 +13,15 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.Objects;
 
 namespace FunctionalTests.RepositoriesTests
 {
     public class OrderedBlobStorageTest : FunctionalTestBaseWithoutServices
     {
+        private const string columnFamilyName = "OrderedBlobStorageTest";
+
         public override void SetUp()
         {
             base.SetUp();
@@ -27,19 +30,30 @@ namespace FunctionalTests.RepositoriesTests
             var globalTime = Container.Get<IGlobalTime>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var settings = Container.Get<ICassandraSettings>();
-            const string columnFamilyName = "OrderedBlobStorageTest";
-            var connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
+            connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
+            AddColumnFamily();
+
+            orderedBlobStorage = new OrderedBlobStorage<int?>(repositoryParameters, serializer, globalTime, columnFamilyName);
+        }
+
+        public override void TearDown()
+        {
+            connection.RemoveColumnFamily(columnFamilyName);
+            base.TearDown();
+        }
+
+        private void AddColumnFamily()
+        {
             var keyspace = connection.DescribeKeyspace();
-            if(!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
+            if (!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
             {
                 connection.AddColumnFamily(new ColumnFamily
-                    {
-                        Name = columnFamilyName,
-                        GCGraceSeconds = 10,
-                        Caching = ColumnFamilyCaching.All
-                    });
+                {
+                    Name = columnFamilyName,
+                    GCGraceSeconds = 10,
+                    Caching = ColumnFamilyCaching.All
+                });
             }
-            orderedBlobStorage = new OrderedBlobStorage<int?>(repositoryParameters, serializer, globalTime, columnFamilyName);
         }
 
         [Test]
@@ -48,10 +62,10 @@ namespace FunctionalTests.RepositoriesTests
             const string id = "some-string";
             Assert.Throws<ArgumentException>(() => orderedBlobStorage.Write(id, 1));
             Assert.Throws<ArgumentException>(() => orderedBlobStorage.Read(id));
-            Assert.Throws<ArgumentException>(() => orderedBlobStorage.Write(new[] { new KeyValuePair<string, int?>(id, 1)}));
-            Assert.Throws<ArgumentException>(() => orderedBlobStorage.ReadQuiet(new[] { id }));
+            Assert.Throws<ArgumentException>(() => orderedBlobStorage.Write(new[] {new KeyValuePair<string, int?>(id, 1)}));
+            Assert.Throws<ArgumentException>(() => orderedBlobStorage.ReadQuiet(new[] {id}));
             Assert.Throws<ArgumentException>(() => orderedBlobStorage.Delete(id, 100));
-            Assert.Throws<ArgumentException>(() => orderedBlobStorage.Delete(new []{id}, 100));
+            Assert.Throws<ArgumentException>(() => orderedBlobStorage.Delete(new[] {id}, 100));
         }
 
         [Test]
@@ -73,26 +87,26 @@ namespace FunctionalTests.RepositoriesTests
             var id1 = TimeGuid.NowGuid().ToGuid().ToString();
             var id2 = TimeGuid.NowGuid().ToGuid().ToString();
 
-            orderedBlobStorage.Write(new []{new KeyValuePair<string, int?>(id1, 1), new KeyValuePair<string, int?>(id2, 2)});
+            orderedBlobStorage.Write(new[] {new KeyValuePair<string, int?>(id1, 1), new KeyValuePair<string, int?>(id2, 2)});
             Assert.That(orderedBlobStorage.Read(id1), Is.EqualTo(1));
             Assert.That(orderedBlobStorage.Read(id2), Is.EqualTo(2));
         }
-        
+
         [Test]
         public void TestReadQuiet()
         {
             var id1 = TimeGuid.NowGuid().ToGuid().ToString();
             var id2 = TimeGuid.NowGuid().ToGuid().ToString();
 
-            Assert.That(orderedBlobStorage.ReadQuiet(new []{id1, id2}), Is.EquivalentTo(new int?[]{null, null}));
+            Assert.That(orderedBlobStorage.ReadQuiet(new[] {id1, id2}), Is.EquivalentTo(new int?[] {null, null}));
 
             orderedBlobStorage.Write(id1, 1);
-            Assert.That(orderedBlobStorage.ReadQuiet(new[] { id1, id2 }), Is.EqualTo(new int?[] { 1, null }));
-            Assert.That(orderedBlobStorage.ReadQuiet(new[] { id2, id1 }), Is.EqualTo(new int?[] { null, 1 }));
+            Assert.That(orderedBlobStorage.ReadQuiet(new[] {id1, id2}), Is.EqualTo(new int?[] {1, null}));
+            Assert.That(orderedBlobStorage.ReadQuiet(new[] {id2, id1}), Is.EqualTo(new int?[] {null, 1}));
 
             orderedBlobStorage.Write(id2, 2);
-            Assert.That(orderedBlobStorage.ReadQuiet(new[] { id1, id2 }), Is.EqualTo(new int?[] { 1, 2 }));
-            Assert.That(orderedBlobStorage.ReadQuiet(new[] { id2, id1 }), Is.EqualTo(new int?[] { 2, 1 }));
+            Assert.That(orderedBlobStorage.ReadQuiet(new[] {id1, id2}), Is.EqualTo(new int?[] {1, 2}));
+            Assert.That(orderedBlobStorage.ReadQuiet(new[] {id2, id1}), Is.EqualTo(new int?[] {2, 1}));
         }
 
         [Test]
@@ -101,13 +115,13 @@ namespace FunctionalTests.RepositoriesTests
             var id1 = TimeGuid.NowGuid().ToGuid().ToString();
             var id2 = TimeGuid.NowGuid().ToGuid().ToString();
 
-            Assert.That(orderedBlobStorage.Read(new []{id1, id2}).Length, Is.EqualTo(0));
+            Assert.That(orderedBlobStorage.Read(new[] {id1, id2}).Length, Is.EqualTo(0));
 
             orderedBlobStorage.Write(id1, 1);
-            Assert.That(orderedBlobStorage.Read(new[] { id1, id2 }), Is.EqualTo(new int?[]{1}));
+            Assert.That(orderedBlobStorage.Read(new[] {id1, id2}), Is.EqualTo(new int?[] {1}));
 
             orderedBlobStorage.Write(id2, 2);
-            Assert.That(orderedBlobStorage.Read(new[] {id1, id2}), Is.EqualTo(new int?[] { 1, 2 }));
+            Assert.That(orderedBlobStorage.Read(new[] {id1, id2}), Is.EqualTo(new int?[] {1, 2}));
         }
 
         [Test]
@@ -130,10 +144,11 @@ namespace FunctionalTests.RepositoriesTests
             orderedBlobStorage.Write(id1, 1);
             orderedBlobStorage.Write(id2, 2);
 
-            orderedBlobStorage.Delete(new []{id1, id2}, DateTime.UtcNow.Ticks);
-            Assert.That(orderedBlobStorage.Read(new []{id1, id2}).Length, Is.EqualTo(0));
+            orderedBlobStorage.Delete(new[] {id1, id2}, DateTime.UtcNow.Ticks);
+            Assert.That(orderedBlobStorage.Read(new[] {id1, id2}).Length, Is.EqualTo(0));
         }
 
         private OrderedBlobStorage<int?> orderedBlobStorage;
+        private IKeyspaceConnection connection;
     }
 }

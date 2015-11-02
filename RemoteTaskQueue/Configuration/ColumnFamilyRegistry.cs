@@ -19,8 +19,11 @@ namespace RemoteQueue.Configuration
             Register(ColumnFamilyRepositoryParameters.LockColumnFamily);
 
             Register(TaskDataBlobStorage.columnFamilyName);
+            Register(TaskDataBlobStorage.orderedColumnFamilyName);
             Register(TaskExceptionInfoBlobStorage.columnFamilyName);
+            Register(TaskExceptionInfoBlobStorage.orderedColumnFamilyName);
             Register(TaskMetaInformationBlobStorage.columnFamilyName);
+            Register(TaskMetaInformationBlobStorage.orderedColumnFamilyName);
             Register(TicksHolder.columnFamilyName);
             Register(TaskMinimalStartTicksIndex.columnFamilyName);
             Register(EventLogRepository.columnFamilyName);

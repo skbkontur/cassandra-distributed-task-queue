@@ -31,16 +31,23 @@ namespace FunctionalTests.RepositoriesTests
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var settings = Container.Get<ICassandraSettings>();
 
-            var connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
-            AddColumnFamily(connection, blobStorageColumnFamilyName);
-            AddColumnFamily(connection, orderedBlobStorageColumnFamilyName);
+            connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
+            AddColumnFamily(blobStorageColumnFamilyName);
+            AddColumnFamily(orderedBlobStorageColumnFamilyName);
 
             blobStorageDecorator = new BlobStorageDecorator<int?>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName, orderedBlobStorageColumnFamilyName);
             blobStorage = new BlobStorage<int?>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName);
             orderedBlobStorage = new OrderedBlobStorage<int?>(repositoryParameters, serializer, globalTime, orderedBlobStorageColumnFamilyName);
         }
 
-        private void AddColumnFamily(IKeyspaceConnection connection, string columnFamilyName)
+        public override void TearDown()
+        {
+            connection.RemoveColumnFamily(blobStorageColumnFamilyName);
+            connection.RemoveColumnFamily(orderedBlobStorageColumnFamilyName);
+            base.TearDown();
+        }
+
+        private void AddColumnFamily(string columnFamilyName)
         {
             var keyspace = connection.DescribeKeyspace();
             if(!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
@@ -124,5 +131,6 @@ namespace FunctionalTests.RepositoriesTests
         private BlobStorage<int?> blobStorage;
         private OrderedBlobStorage<int?> orderedBlobStorage;
         private readonly string timeGuidId = TimeGuid.NowGuid().ToGuid().ToString();
+        private IKeyspaceConnection connection;
     }
 }
