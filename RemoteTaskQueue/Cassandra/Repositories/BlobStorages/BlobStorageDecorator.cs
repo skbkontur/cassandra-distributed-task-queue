@@ -13,11 +13,6 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class BlobStorageDecorator<T> : IBlobStorage<T>
     {
-        public BlobStorageDecorator(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, string columnFamilyName)
-            : this(parameters, serializer, globalTime, columnFamilyName, string.Format("ordered{0}", columnFamilyName))
-        {
-        }
-
         public BlobStorageDecorator(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, string columnFamilyName, string orderedColumnFamilyName)
         {
             blobStorage = new BlobStorage<T>(parameters, serializer, globalTime, columnFamilyName);
@@ -83,12 +78,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public IEnumerable<T> ReadAll(int batchSize = 1000)
         {
-            throw new NotSupportedException();
+            return blobStorage.ReadAll(batchSize).Union(orderedBlobStorage.ReadAll(batchSize));
         }
 
         public IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000)
         {
-            throw new NotSupportedException();
+            return blobStorage.ReadAllWithIds(batchSize).Union(orderedBlobStorage.ReadAllWithIds(batchSize));
         }
 
         public void Delete(string id, long timestamp)

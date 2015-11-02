@@ -76,18 +76,18 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         }
 
         //may be rename to Select?
-        public T[] Read([NotNull]string[] ids)
+        public T[] Read([NotNull] string[] ids)
         {
             return SelectColumns(ids).Select(column => serializer.Deserialize<T>(column.Value)).ToArray();
         }
 
-        public T[] ReadQuiet([NotNull]string[] ids)
+        public T[] ReadQuiet([NotNull] string[] ids)
         {
             var result = new T[ids.Length];
-            var objectsMap  = SelectColumns(ids).ToDictionary(x => x.Name);
+            var objectsMap = SelectColumns(ids).ToDictionary(x => x.Name);
             for(var i = 0; i < ids.Length; i++)
             {
-                if (objectsMap.ContainsKey(ids[i]))
+                if(objectsMap.ContainsKey(ids[i]))
                     result[i] = serializer.Deserialize<T>(objectsMap[ids[i]].Value);
             }
             return result;
@@ -95,12 +95,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public IEnumerable<T> ReadAll(int batchSize = 1000)
         {
-            throw new NotSupportedException();
+            return SelectAll(batchSize, column => serializer.Deserialize<T>(column.Value));
         }
 
         public IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000)
         {
-            throw new NotSupportedException();
+            return SelectAll(batchSize, column => new KeyValuePair<string, T>(column.Name, serializer.Deserialize<T>(column.Value)));
         }
 
         public void Delete([NotNull] string id, long timestamp)
@@ -141,6 +141,34 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 .Where(x => x.Value != null);
         }
 
+        private IEnumerable<TResult> SelectAll<TResult>(int batchSize, Func<Column, TResult> createResult)
+        {
+            string exclusiveStartKey = null;
+            while(true)
+            {
+                var keys = RetrieveColumnFamilyConnection().GetKeys(exclusiveStartKey, batchSize);
+                if(keys.Length == 0)
+                    yield break;
+
+                foreach(var key in keys)
+                {
+                    string exclusiveStartColumnName = null;
+                    while(true)
+                    {
+                        var columns = RetrieveColumnFamilyConnection().GetColumns(key, exclusiveStartColumnName, batchSize);
+                        if(columns.Length == 0)
+                            break;
+
+                        foreach(var column in columns)
+                            yield return createResult(column);
+
+                        exclusiveStartColumnName = columns.Last().Name;
+                    }
+                }
+                exclusiveStartKey = keys.Last();
+            }
+        }
+
         private void MakeInConnection(Action<IColumnFamilyConnection> action)
         {
             var connection = RetrieveColumnFamilyConnection();
@@ -156,22 +184,22 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         private static ColumnInfo GetColumnInfo(string id)
         {
             TimeGuid timeGuid;
-            if (!TryGetTimeGuid(id, out timeGuid))
+            if(!TryGetTimeGuid(id, out timeGuid))
                 throw new ArgumentException("Parameter should be TimeGuid.");
 
             var ticks = timeGuid.GetTimestamp().Ticks;
             var rowKey = (ticks / tickPartition).ToString();
 
-            return new ColumnInfo{RowKey = rowKey, ColumnName = id};
+            return new ColumnInfo {RowKey = rowKey, ColumnName = id};
         }
 
         private static bool TryGetTimeGuid(string input, out TimeGuid timeGuid)
         {
             timeGuid = null;
             Guid guid;
-            if (!Guid.TryParse(input, out guid))
+            if(!Guid.TryParse(input, out guid))
                 return false;
-            if (TimeGuidFormatter.GetVersion(guid) != GuidVersion.TimeBased)
+            if(TimeGuidFormatter.GetVersion(guid) != GuidVersion.TimeBased)
                 return false;
 
             timeGuid = new TimeGuid(guid);

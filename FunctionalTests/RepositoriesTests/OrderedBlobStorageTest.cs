@@ -148,6 +148,31 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(orderedBlobStorage.Read(new[] {id1, id2}).Length, Is.EqualTo(0));
         }
 
+        [Test]
+        public void TestReadAll()
+        {
+            var id11 = TimeGuid.NowGuid().ToGuid().ToString();
+            var id12 = TimeGuid.NowGuid().ToGuid().ToString();
+
+            var shift = new Timestamp(DateTime.UtcNow.AddDays(1));
+            var id21 = TimeGuid.NewGuid(shift).ToGuid().ToString();
+            var id22 = TimeGuid.NewGuid(shift).ToGuid().ToString();
+
+            orderedBlobStorage.Write(id11, 11);
+            orderedBlobStorage.Write(id12, 12);
+            orderedBlobStorage.Write(id21, 21);
+            orderedBlobStorage.Write(id22, 22);
+
+            Assert.That(orderedBlobStorage.ReadAll(1).ToArray(), Is.EquivalentTo(new int?[]{11, 12, 21, 22}));
+            Assert.That(orderedBlobStorage.ReadAllWithIds(1).ToArray(), Is.EquivalentTo(new []
+                {
+                    new KeyValuePair<string, int?>(id11, 11),
+                    new KeyValuePair<string, int?>(id12, 12),
+                    new KeyValuePair<string, int?>(id21, 21),
+                    new KeyValuePair<string, int?>(id22, 22),
+                }));
+        }
+
         private OrderedBlobStorage<int?> orderedBlobStorage;
         private IKeyspaceConnection connection;
     }

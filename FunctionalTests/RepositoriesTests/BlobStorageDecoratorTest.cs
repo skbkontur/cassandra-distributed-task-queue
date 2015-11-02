@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using GroBuf;
@@ -126,7 +127,29 @@ namespace FunctionalTests.RepositoriesTests
             Assert.IsNull(orderedBlobStorage.Read(timeGuidId));
         }
 
+        [Test]
+        public void TestReadAll()
+        {
+            blobStorage.Write(stringId, 11);
+            orderedBlobStorage.Write(timeGuidId, 12);
+
+            var anotherTimeGuidId = TimeGuid.NewGuid(new Timestamp(DateTime.UtcNow.AddDays(1))).ToGuid().ToString();
+
+            blobStorage.Write(anotherStringId, 21);
+            orderedBlobStorage.Write(anotherTimeGuidId, 22);
+
+            Assert.That(blobStorageDecorator.ReadAll(1).ToArray(), Is.EquivalentTo(new []{11, 12, 21, 22}));
+            Assert.That(blobStorageDecorator.ReadAllWithIds(1).ToArray(), Is.EquivalentTo(new[]
+                {
+                    new KeyValuePair<string, int?>(stringId, 11),
+                    new KeyValuePair<string, int?>(timeGuidId, 12),
+                    new KeyValuePair<string, int?>(anotherStringId, 21),
+                    new KeyValuePair<string, int?>(anotherTimeGuidId, 22),
+                }));
+        }
+
         private const string stringId = "stringId";
+        private const string anotherStringId = "anotherStringId";
         private BlobStorageDecorator<int?> blobStorageDecorator;
         private BlobStorage<int?> blobStorage;
         private OrderedBlobStorage<int?> orderedBlobStorage;
