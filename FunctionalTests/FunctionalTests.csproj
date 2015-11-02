@@ -44,6 +44,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Objects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
@@ -82,6 +86,7 @@
     <Compile Include="ExchangeTests\FailTaskTest.cs" />
     <Compile Include="ExchangeTests\PeriodicTaskTest.cs" />
     <Compile Include="RepositoriesTests\GlobalTimeTest.cs" />
+    <Compile Include="RepositoriesTests\OrderedBlobStorageTest.cs" />
     <Compile Include="RepositoriesTests\ReadWriteTest.cs" />
     <Compile Include="RepositoriesTests\HandleTaskExceptionInfoStorageTest.cs" />
     <Compile Include="RepositoriesTests\TicksHolderTest.cs" />

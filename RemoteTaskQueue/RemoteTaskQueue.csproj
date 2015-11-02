@@ -86,6 +86,7 @@
     <Compile Include="Cassandra\Primitives\IColumnFamilyRepositoryParameters.cs" />
     <Compile Include="Cassandra\Primitives\KeyspaceNotFoundException.cs" />
     <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\OrderedBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskDataBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskExceptionInfoBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskMetaInformationBlobStorage.cs" />
