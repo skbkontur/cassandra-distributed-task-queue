@@ -106,7 +106,7 @@
     <Compile Include="Cassandra\Entities\Task.cs" />
     <Compile Include="Cassandra\Entities\TaskExceptionInfo.cs" />
     <Compile Include="Cassandra\Entities\TaskMetaInformation.cs" />
-    <Compile Include="Cassandra\Entities\TaskMetaInformationExtension.cs" />
+    <Compile Include="Cassandra\Entities\EnumExtensions.cs" />
     <Compile Include="Cassandra\Entities\TaskState.cs" />
     <Compile Include="Cassandra\Entities\TimedObject.cs" />
     <Compile Include="Cassandra\Primitives\BlobStorage.cs" />
