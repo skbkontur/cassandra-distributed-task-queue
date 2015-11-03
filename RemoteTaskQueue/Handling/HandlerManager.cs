@@ -26,8 +26,8 @@ namespace RemoteQueue.Handling
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
-            allTaskTopicAndStatesToRead = allTaskStatesToRead
-                .Select(x => string.IsNullOrEmpty(taskTopic) ? TaskTopicAndState.AnyTaskTopic(x) : new TaskTopicAndState(taskTopic, x))
+            allTaskIndexShardKeysToRead = allTaskStatesToRead
+                .Select(x => string.IsNullOrEmpty(taskTopic) ? TaskIndexShardKey.AnyTaskTopic(x) : new TaskIndexShardKey(taskTopic, x))
                 .ToArray();
         }
 
@@ -36,14 +36,14 @@ namespace RemoteQueue.Handling
         [NotNull]
         public LiveRecordTicksMarkerState[] GetCurrentLiveRecordTicksMarkers()
         {
-            return allTaskTopicAndStatesToRead.Select(x => handleTasksMetaStorage.TryGetCurrentLiveRecordTicksMarker(x) ?? new LiveRecordTicksMarkerState(x, Timestamp.Now.Ticks)).ToArray();
+            return allTaskIndexShardKeysToRead.Select(x => handleTasksMetaStorage.TryGetCurrentLiveRecordTicksMarker(x) ?? new LiveRecordTicksMarkerState(x, Timestamp.Now.Ticks)).ToArray();
         }
 
         public void Run()
         {
             var nowTicks = DateTime.UtcNow.Ticks;
             var taskIndexRecordsBatches = handleTasksMetaStorage
-                .GetIndexRecords(nowTicks, allTaskTopicAndStatesToRead)
+                .GetIndexRecords(nowTicks, allTaskIndexShardKeysToRead)
                 .Batch(maxRunningTasksCount, Enumerable.ToArray);
             foreach(var taskIndexRecordsBatch in taskIndexRecordsBatches)
             {
@@ -81,7 +81,7 @@ namespace RemoteQueue.Handling
         private readonly ILocalTaskQueue localTaskQueue;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;
-        private readonly TaskTopicAndState[] allTaskTopicAndStatesToRead;
+        private readonly TaskIndexShardKey[] allTaskIndexShardKeysToRead;
         private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError};
     }
 }

@@ -35,15 +35,15 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         [CanBeNull]
-        public LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskTopicAndState taskTopicAndState)
+        public LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskIndexShardKey taskIndexShardKey)
         {
-            return minimalStartTicksIndex.TryGetCurrentLiveRecordTicksMarker(taskTopicAndState);
+            return minimalStartTicksIndex.TryGetCurrentLiveRecordTicksMarker(taskIndexShardKey);
         }
 
         [NotNull]
-        public IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskTopicAndState[] taskTopicAndStates)
+        public IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys)
         {
-            return taskTopicAndStates.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000).ToArray());
+            return taskIndexShardKeys.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000).ToArray());
         }
 
         [NotNull]
@@ -64,7 +64,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 if(oldMeta.State != taskMeta.State || oldMeta.MinimalStartTicks != taskMeta.MinimalStartTicks)
                 {
                     minimalStartTicksIndex.RemoveRecord(FormatIndexRecord(oldMeta));
-                    minimalStartTicksIndex.RemoveRecord(new TaskIndexRecord(oldMeta.Id, oldMeta.MinimalStartTicks, TaskTopicAndState.AnyTaskTopic(oldMeta.State)));
+                    minimalStartTicksIndex.RemoveRecord(new TaskIndexRecord(oldMeta.Id, oldMeta.MinimalStartTicks, TaskIndexShardKey.AnyTaskTopic(oldMeta.State)));
                 }
             }
 
@@ -76,8 +76,8 @@ namespace RemoteQueue.Cassandra.Repositories
         private TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta)
         {
             var taskTopic = taskTopicResolver.GetTaskTopic(taskMeta.Name);
-            var taskTopicAndState = new TaskTopicAndState(taskTopic, taskMeta.State);
-            return new TaskIndexRecord(taskMeta.Id, taskMeta.MinimalStartTicks, taskTopicAndState);
+            var taskIndexShardKey = new TaskIndexShardKey(taskTopic, taskMeta.State);
+            return new TaskIndexRecord(taskMeta.Id, taskMeta.MinimalStartTicks, taskIndexShardKey);
         }
 
         public TaskMetaInformation GetMeta(string taskId)

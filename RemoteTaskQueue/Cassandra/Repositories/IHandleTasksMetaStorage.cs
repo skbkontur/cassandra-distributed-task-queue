@@ -11,10 +11,10 @@ namespace RemoteQueue.Cassandra.Repositories
     public interface IHandleTasksMetaStorage
     {
         [CanBeNull]
-        LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskTopicAndState taskTopicAndState);
+        LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskIndexShardKey taskIndexShardKey);
 
         [NotNull]
-        IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskTopicAndState[] taskTopicAndStates);
+        IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys);
 
         [NotNull]
         TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta);

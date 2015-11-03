@@ -41,7 +41,7 @@ namespace RemoteQueue.Configuration
                 foreach(var marker in handlerManager.GetCurrentLiveRecordTicksMarkers())
                 {
                     var lag = TimeSpan.FromTicks(now.Ticks - marker.CurrentTicks);
-                    var graphitePath = string.Format("{0}.LiveRecordTicksMarkerLag.{1}.{2}", graphitePathPrefix, marker.TaskTopicAndState.TaskState, marker.TaskTopicAndState.TaskTopic);
+                    var graphitePath = string.Format("{0}.LiveRecordTicksMarkerLag.{1}.{2}", graphitePathPrefix, marker.TaskIndexShardKey.TaskState, marker.TaskIndexShardKey.TaskTopic);
                     graphiteClient.Send(graphitePath, (long)lag.TotalMilliseconds, now.ToDateTime());
                 }
             }

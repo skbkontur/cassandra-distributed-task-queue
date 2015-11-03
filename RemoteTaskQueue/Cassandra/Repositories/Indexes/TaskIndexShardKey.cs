@@ -6,9 +6,9 @@ using RemoteQueue.Cassandra.Entities;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes
 {
-    public class TaskTopicAndState : IEquatable<TaskTopicAndState>
+    public class TaskIndexShardKey : IEquatable<TaskIndexShardKey>
     {
-        public TaskTopicAndState([NotNull] string taskTopic, TaskState taskState)
+        public TaskIndexShardKey([NotNull] string taskTopic, TaskState taskState)
         {
             TaskTopic = taskTopic;
             TaskState = taskState;
@@ -26,7 +26,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
             return TaskTopic == anyTaskTopic ? taskStateCassandraName : string.Format("{0}_{1}", TaskTopic, taskStateCassandraName);
         }
 
-        public bool Equals(TaskTopicAndState other)
+        public bool Equals(TaskIndexShardKey other)
         {
             if(ReferenceEquals(null, other)) return false;
             if(ReferenceEquals(this, other)) return true;
@@ -38,7 +38,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
             if(ReferenceEquals(null, obj)) return false;
             if(ReferenceEquals(this, obj)) return true;
             if(obj.GetType() != this.GetType()) return false;
-            return Equals((TaskTopicAndState)obj);
+            return Equals((TaskIndexShardKey)obj);
         }
 
         public override int GetHashCode()
@@ -56,9 +56,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
 
         [NotNull]
         [Obsolete("Will be removed after migration to sharded queue")]
-        public static TaskTopicAndState AnyTaskTopic(TaskState taskState)
+        public static TaskIndexShardKey AnyTaskTopic(TaskState taskState)
         {
-            return new TaskTopicAndState(anyTaskTopic, taskState);
+            return new TaskIndexShardKey(anyTaskTopic, taskState);
         }
 
         private const string anyTaskTopic = "AnyTaskTopic";

@@ -22,7 +22,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public void CommitChanges()
         {
             if(minimalNewTicks.HasValue)
-                ticksHolder.TryMoveForward(State.TaskTopicAndState, State.CurrentTicks, minimalNewTicks.Value);
+                ticksHolder.TryMoveForward(State.TaskIndexShardKey, State.CurrentTicks, minimalNewTicks.Value);
         }
 
         private long? minimalNewTicks;

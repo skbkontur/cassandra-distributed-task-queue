@@ -16,89 +16,89 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         }
 
         [CanBeNull]
-        public ILiveRecordTicksMarker TryGetCurrentMarkerValue([NotNull] TaskTopicAndState taskTopicAndState)
+        public ILiveRecordTicksMarker TryGetCurrentMarkerValue([NotNull] TaskIndexShardKey taskIndexShardKey)
         {
-            var currentMarkerValue = DoTryGetCurrentMarkerValue(taskTopicAndState);
+            var currentMarkerValue = DoTryGetCurrentMarkerValue(taskIndexShardKey);
             if(currentMarkerValue != null)
                 return currentMarkerValue;
-            var persistedTicks = ticksHolder.GetMinTicks(taskTopicAndState.ToCassandraKey());
+            var persistedTicks = ticksHolder.GetMinTicks(taskIndexShardKey.ToCassandraKey());
             if(persistedTicks == 0)
                 return null;
-            return DoGetCurrentMarkerValue(taskTopicAndState, persistedTicks);
+            return DoGetCurrentMarkerValue(taskIndexShardKey, persistedTicks);
         }
 
         [CanBeNull]
-        private ILiveRecordTicksMarker DoTryGetCurrentMarkerValue([NotNull] TaskTopicAndState taskTopicAndState)
+        private ILiveRecordTicksMarker DoTryGetCurrentMarkerValue([NotNull] TaskIndexShardKey taskIndexShardKey)
         {
             lock(locker)
             {
                 long currentTicks;
-                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
+                if(!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
                     return null;
-                return new LiveRecordTicksMarker(new LiveRecordTicksMarkerState(taskTopicAndState, currentTicks), this);
+                return new LiveRecordTicksMarker(new LiveRecordTicksMarkerState(taskIndexShardKey, currentTicks), this);
             }
         }
 
         [NotNull]
-        private ILiveRecordTicksMarker DoGetCurrentMarkerValue([NotNull] TaskTopicAndState taskTopicAndState, long persistedTicks)
+        private ILiveRecordTicksMarker DoGetCurrentMarkerValue([NotNull] TaskIndexShardKey taskIndexShardKey, long persistedTicks)
         {
             lock(locker)
             {
                 long currentTicks;
-                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
+                if(!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
                 {
                     currentTicks = persistedTicks;
-                    ticksByTaskState.Add(taskTopicAndState, currentTicks);
+                    ticksByShardKey.Add(taskIndexShardKey, currentTicks);
                 }
                 else
                 {
                     if(persistedTicks < currentTicks)
                     {
                         currentTicks = persistedTicks;
-                        ticksByTaskState[taskTopicAndState] = currentTicks;
+                        ticksByShardKey[taskIndexShardKey] = currentTicks;
                     }
                 }
-                return new LiveRecordTicksMarker(new LiveRecordTicksMarkerState(taskTopicAndState, currentTicks), this);
+                return new LiveRecordTicksMarker(new LiveRecordTicksMarkerState(taskIndexShardKey, currentTicks), this);
             }
         }
 
-        public bool TryMoveForward([NotNull] TaskTopicAndState taskTopicAndState, long oldTicks, long newTicks)
+        public bool TryMoveForward([NotNull] TaskIndexShardKey taskIndexShardKey, long oldTicks, long newTicks)
         {
             lock(locker)
             {
                 long currentTicks;
-                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
-                    throw new InvalidProgramStateException(string.Format("Not found CurrentTicks for: {0}", taskTopicAndState));
+                if(!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
+                    throw new InvalidProgramStateException(string.Format("Not found CurrentTicks for: {0}", taskIndexShardKey));
                 if(currentTicks < oldTicks)
                     return false;
-                ticksByTaskState[taskTopicAndState] = newTicks;
+                ticksByShardKey[taskIndexShardKey] = newTicks;
                 return true;
             }
         }
 
-        public void MoveMarkerBackwardIfNecessary([NotNull] TaskTopicAndState taskTopicAndState, long newTicks)
+        public void MoveMarkerBackwardIfNecessary([NotNull] TaskIndexShardKey taskIndexShardKey, long newTicks)
         {
-            ticksHolder.UpdateMinTicks(taskTopicAndState.ToCassandraKey(), newTicks);
-            DoMoveBackwardIfNecessary(taskTopicAndState, newTicks);
+            ticksHolder.UpdateMinTicks(taskIndexShardKey.ToCassandraKey(), newTicks);
+            DoMoveBackwardIfNecessary(taskIndexShardKey, newTicks);
         }
 
-        private void DoMoveBackwardIfNecessary([NotNull] TaskTopicAndState taskTopicAndState, long newTicks)
+        private void DoMoveBackwardIfNecessary([NotNull] TaskIndexShardKey taskIndexShardKey, long newTicks)
         {
             lock(locker)
             {
                 long currentTicks;
-                if(!ticksByTaskState.TryGetValue(taskTopicAndState, out currentTicks))
-                    ticksByTaskState.Add(taskTopicAndState, newTicks);
+                if(!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
+                    ticksByShardKey.Add(taskIndexShardKey, newTicks);
                 else
                 {
                     if(newTicks < currentTicks)
-                        ticksByTaskState[taskTopicAndState] = newTicks;
+                        ticksByShardKey[taskIndexShardKey] = newTicks;
                 }
             }
         }
 
         private readonly ITicksHolder ticksHolder;
         private readonly object locker = new object();
-        private readonly Dictionary<TaskTopicAndState, long> ticksByTaskState = new Dictionary<TaskTopicAndState, long>();
+        private readonly Dictionary<TaskIndexShardKey, long> ticksByShardKey = new Dictionary<TaskIndexShardKey, long>();
     }
 }

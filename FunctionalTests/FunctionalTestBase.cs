@@ -23,9 +23,9 @@ namespace FunctionalTests
             base.TearDown();
         }
 
-        protected TaskTopicAndState TaskTopicAndState(string taskName, TaskState taskState)
+        protected TaskIndexShardKey TaskIndexShardKey(string taskName, TaskState taskState)
         {
-            return new TaskTopicAndState(taskTopicResolver.GetTaskTopic(taskName), taskState);
+            return new TaskIndexShardKey(taskTopicResolver.GetTaskTopic(taskName), taskState);
         }
 
         private ITaskTopicResolver taskTopicResolver;

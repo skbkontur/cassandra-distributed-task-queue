@@ -8,9 +8,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
     public static class TicksNameHelper
     {
         [NotNull]
-        public static string GetRowKey([NotNull] TaskTopicAndState taskTopicAndState, long ticks)
+        public static string GetRowKey([NotNull] TaskIndexShardKey taskIndexShardKey, long ticks)
         {
-            return string.Format("{0}_{1}", GetTicksRowNumber(ticks), taskTopicAndState.ToCassandraKey());
+            return string.Format("{0}_{1}", GetTicksRowNumber(ticks), taskIndexShardKey.ToCassandraKey());
         }
 
         [NotNull]

@@ -15,46 +15,44 @@ namespace FunctionalTests.ExchangeTests
 {
     public static class TaskTestsExtensions
     {
-        public static void CheckTaskMinimalStartTicksIndexStates(this IContainer container, Dictionary<string, TaskTopicAndState> expectedStates)
+        public static void CheckTaskMinimalStartTicksIndexStates(this IContainer container, Dictionary<string, TaskIndexShardKey> expectedShardKeys)
         {
             var index = container.Get<ITaskMinimalStartTicksIndex>();
-            var allStatesForTasks = new Dictionary<string, List<TaskTopicAndState>>();
+            var allShardKeysForTasks = new Dictionary<string, List<TaskIndexShardKey>>();
             foreach(var taskTopic in container.Get<ITaskTopicResolver>().GetAllTaskTopics())
             {
                 foreach(var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
                 {
-                    var indexRecords = index.GetRecords(new TaskTopicAndState(taskTopic, taskState), DateTime.UtcNow.Ticks, 2000).ToArray();
+                    var indexRecords = index.GetRecords(new TaskIndexShardKey(taskTopic, taskState), DateTime.UtcNow.Ticks, 2000).ToArray();
                     foreach(var indexRecord in indexRecords)
                     {
-                        List<TaskTopicAndState> states;
-                        if(allStatesForTasks.ContainsKey(indexRecord.TaskId))
-                            states = allStatesForTasks[indexRecord.TaskId];
-                        else
+                        List<TaskIndexShardKey> shardKeys;
+                        if(!allShardKeysForTasks.TryGetValue(indexRecord.TaskId, out shardKeys))
                         {
-                            states = new List<TaskTopicAndState>();
-                            allStatesForTasks[indexRecord.TaskId] = states;
+                            shardKeys = new List<TaskIndexShardKey>();
+                            allShardKeysForTasks.Add(indexRecord.TaskId, shardKeys);
                         }
-                        states.Add(indexRecord.TaskTopicAndState);
+                        shardKeys.Add(indexRecord.TaskIndexShardKey);
                     }
                 }
             }
-            foreach(var allStatesForTask in allStatesForTasks)
+            foreach(var allShardKeysForTask in allShardKeysForTasks)
             {
-                var taskId = allStatesForTask.Key;
-                var taskStates = allStatesForTask.Value;
-                if(taskStates.Count > 1)
-                    Assert.Fail("Task {0} found in several states in index: [{1}]", taskId, string.Join(",", taskStates));
-                if(expectedStates.ContainsKey(taskId))
-                    Assert.AreEqual(expectedStates[taskId], taskStates.Single(), "Ожидаемое и фактическое состояния таски {0} не совпали", taskId);
+                var taskId = allShardKeysForTask.Key;
+                var shardKeys = allShardKeysForTask.Value;
+                if(shardKeys.Count > 1)
+                    Assert.Fail("Task {0} found in several states in index: [{1}]", taskId, string.Join(",", shardKeys));
+                if(expectedShardKeys.ContainsKey(taskId))
+                    Assert.AreEqual(expectedShardKeys[taskId], shardKeys.Single(), "Ожидаемое и фактическое состояния таски {0} не совпали", taskId);
                 else
                     Assert.Fail("Found task {0} in index, but not found in expected tasks", taskId);
             }
-            foreach(var taskAndState in expectedStates)
+            foreach(var kvp in expectedShardKeys)
             {
-                var taskId = taskAndState.Key;
-                var expectedState = taskAndState.Value;
-                if(allStatesForTasks.ContainsKey(taskId))
-                    Assert.AreEqual(expectedState, allStatesForTasks[taskId].Single(), "Ожидаемое и фактическое состояния таски {0} не совпали", taskId);
+                var taskId = kvp.Key;
+                var expectedShardKey = kvp.Value;
+                if(allShardKeysForTasks.ContainsKey(taskId))
+                    Assert.AreEqual(expectedShardKey, allShardKeysForTasks[taskId].Single(), "Ожидаемое и фактическое состояния таски {0} не совпали", taskId);
                 else
                     Assert.Fail("Expected task {0} not found in index", taskId);
             }

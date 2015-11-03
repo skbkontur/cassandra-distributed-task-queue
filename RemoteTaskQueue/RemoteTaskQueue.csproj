@@ -121,7 +121,7 @@
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TaskMinimalStartTicksIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITaskMinimalStartTicksIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\TaskIndexRecord.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\TaskTopicAndState.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\TaskIndexShardKey.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\TicksNameHelper.cs" />
     <Compile Include="Cassandra\SeparateOnBatchesEnumerable.cs" />
     <Compile Include="Cassandra\SeparateOnBatchesEnumerator.cs" />

@@ -5,8 +5,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
     public interface IOldestLiveRecordTicksHolder
     {
         [CanBeNull]
-        ILiveRecordTicksMarker TryGetCurrentMarkerValue([NotNull] TaskTopicAndState taskTopicAndState);
+        ILiveRecordTicksMarker TryGetCurrentMarkerValue([NotNull] TaskIndexShardKey taskIndexShardKey);
 
-        void MoveMarkerBackwardIfNecessary([NotNull] TaskTopicAndState taskTopicAndState, long newTicks);
+        void MoveMarkerBackwardIfNecessary([NotNull] TaskIndexShardKey taskIndexShardKey, long newTicks);
     }
 }
