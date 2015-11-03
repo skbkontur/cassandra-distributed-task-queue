@@ -33,8 +33,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             oldestLiveRecordTicksHolder.MoveMarkerBackwardIfNecessary(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
             var connection = RetrieveColumnFamilyConnection();
-            var rowKey = TicksNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
-            var columnName = TicksNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
+            var rowKey = CassandraNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
+            var columnName = CassandraNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
             connection.AddColumn(rowKey, new Column
                 {
                     Name = columnName,
@@ -46,8 +46,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord)
         {
             var connection = RetrieveColumnFamilyConnection();
-            var rowKey = TicksNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
-            var columnName = TicksNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
+            var rowKey = CassandraNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
+            var columnName = CassandraNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
             connection.DeleteColumn(rowKey, columnName, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
         }
 

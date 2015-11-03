@@ -3,14 +3,23 @@ using System.Globalization;
 
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes
+using RemoteQueue.Cassandra.Entities;
+
+namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
-    public static class TicksNameHelper
+    public static class CassandraNameHelper
     {
         [NotNull]
         public static string GetRowKey([NotNull] TaskIndexShardKey taskIndexShardKey, long ticks)
         {
             return string.Format("{0}_{1}", GetTicksRowNumber(ticks), taskIndexShardKey.ToCassandraKey());
+        }
+
+        [NotNull]
+        public static string ToCassandraKey([NotNull] this TaskIndexShardKey taskIndexShardKey)
+        {
+            var taskStateCassandraName = taskIndexShardKey.TaskState.GetCassandraName();
+            return taskIndexShardKey.TaskTopic == TaskIndexShardKey.AnyTaskTopicName ? taskStateCassandraName : string.Format("{0}_{1}", taskIndexShardKey.TaskTopic, taskStateCassandraName);
         }
 
         [NotNull]

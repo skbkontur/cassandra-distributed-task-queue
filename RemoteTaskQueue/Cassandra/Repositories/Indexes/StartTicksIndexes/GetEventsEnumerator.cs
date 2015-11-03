@@ -24,8 +24,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.fromTicks = fromTicks;
             this.toTicks = toTicks;
             this.batchSize = batchSize;
-            iFrom = TicksNameHelper.GetTicksRowNumber(fromTicks);
-            iTo = TicksNameHelper.GetTicksRowNumber(toTicks);
+            iFrom = CassandraNameHelper.GetTicksRowNumber(fromTicks);
+            iTo = CassandraNameHelper.GetTicksRowNumber(toTicks);
             Reset();
             LogFromToCountStatistics();
         }
@@ -42,7 +42,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             {
                 if(eventEnumerator.MoveNext())
                 {
-                    var currentLiveRecordTicks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
+                    var currentLiveRecordTicks = CassandraNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
                     if(currentLiveRecordTicks > toTicks)
                     {
                         liveRecordTicksMarker.TryMoveForward(toTicks);
@@ -63,10 +63,10 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     return false;
                 }
                 iCur++;
-                var rowKey = TicksNameHelper.GetRowKey(liveRecordTicksMarker.State.TaskIndexShardKey, TicksNameHelper.GetMinimalTicksForRow(iCur));
+                var rowKey = CassandraNameHelper.GetRowKey(liveRecordTicksMarker.State.TaskIndexShardKey, CassandraNameHelper.GetMinimalTicksForRow(iCur));
                 string exclusiveStartColumnName = null;
                 if(iCur == iFrom)
-                    exclusiveStartColumnName = TicksNameHelper.GetColumnName(fromTicks, string.Empty);
+                    exclusiveStartColumnName = CassandraNameHelper.GetColumnName(fromTicks, string.Empty);
                 eventEnumerator = connection.GetRow(rowKey, exclusiveStartColumnName, batchSize).GetEnumerator();
             }
         }
@@ -83,7 +83,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             get
             {
                 var taskId = serializer.Deserialize<string>(eventEnumerator.Current.Value);
-                var minimalStartTicks = TicksNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
+                var minimalStartTicks = CassandraNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
                 return new TaskIndexRecord(taskId, minimalStartTicks, liveRecordTicksMarker.State.TaskIndexShardKey);
             }
         }
