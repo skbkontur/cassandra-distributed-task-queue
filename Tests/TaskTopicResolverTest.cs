@@ -14,8 +14,8 @@ namespace RemoteQueue.Tests
         [Test]
         public void GetAllTaskTopics()
         {
-            Assert.That(taskTopicResolver.GetAllTaskTopics().Length, Is.LessThanOrEqualTo(8));
-            Assert.That(taskTopicResolver.GetAllTaskTopics(), Is.EquivalentTo(new[] {"0", "1", "2", "3", "4", "5", "6"}));
+            Assert.That(taskTopicResolver.GetAllTaskTopics().Length, Is.LessThanOrEqualTo(2));
+            Assert.That(taskTopicResolver.GetAllTaskTopics(), Is.EquivalentTo(new[] {"0", "1"}));
         }
 
         [Test]
