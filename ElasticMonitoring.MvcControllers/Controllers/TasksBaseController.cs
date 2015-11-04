@@ -22,7 +22,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             : base(baseParameters)
         {
             this.controllerImpl = controllerImpl;
-            taskDataNames = taskDataRegistry.GetAllTaskDataInfos().OrderBy(x => x.Value).Select(x => x.Value).Distinct().ToArray();
+            taskDataNames = taskDataRegistry.GetAllTaskNames().OrderBy(x => x).ToArray();
             taskStates = Enum.GetValues(typeof(TaskState)).Cast<TaskState>().Select(x => new KeyValuePair<string, string>(x.ToString(), x.Humanize())).ToArray();
         }
 

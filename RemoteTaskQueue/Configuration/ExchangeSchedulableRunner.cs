@@ -24,20 +24,20 @@ namespace RemoteQueue.Configuration
             IExchangeSchedulableRunnerSettings runnerSettings,
             IPeriodicTaskRunner periodicTaskRunner,
             ICatalogueGraphiteClient graphiteClient,
+            ITaskDataRegistry taskDataRegistry,
             ITaskHandlerRegistry taskHandlerRegistry,
             ISerializer serializer,
             ICassandraCluster cassandraCluster,
             ICassandraSettings cassandraSettings,
             IRemoteTaskQueueSettings taskQueueSettings,
-            ITaskDataTypeToNameMapper taskDataTypeToNameMapper,
             ITaskTopicResolver taskTopicResolver,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             this.runnerSettings = runnerSettings;
             this.periodicTaskRunner = periodicTaskRunner;
             var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
-            var taskHandlerCollection = new TaskHandlerCollection(taskDataTypeToNameMapper, taskHandlerRegistry);
-            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataTypeToNameMapper, taskTopicResolver, remoteTaskQueueProfiler);
+            var taskHandlerCollection = new TaskHandlerCollection(taskDataRegistry, taskHandlerRegistry);
+            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataRegistry, taskTopicResolver, remoteTaskQueueProfiler);
             var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerCollection, remoteTaskQueue);
             handlerManagers.Add(new HandlerManager(string.Empty, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             foreach(var taskTopic in taskTopicResolver.GetAllTaskTopics())

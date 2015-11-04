@@ -3,21 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 
 using RemoteQueue.Configuration;
-using RemoteQueue.Exceptions;
+
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Handling
 {
     public class TaskHandlerCollection : ITaskHandlerCollection
     {
-        public TaskHandlerCollection(ITaskDataTypeToNameMapper typeToNameMapper, ITaskHandlerRegistry taskHandlerRegistry)
+        public TaskHandlerCollection(ITaskDataRegistry taskDataRegistry, ITaskHandlerRegistry taskHandlerRegistry)
         {
             var taskNameToTaskHandler = new Dictionary<string, KeyValuePair<Type, Func<ITaskHandler>>>();
             foreach(var creator in taskHandlerRegistry.GetAllTaskHandlerCreators())
             {
                 var taskDataType = GetTaskDataType(creator.Key);
-                var taskName = typeToNameMapper.GetTaskName(taskDataType);
+                var taskName = taskDataRegistry.GetTaskName(taskDataType);
                 if(taskNameToTaskHandler.ContainsKey(taskName))
-                    throw new TooManyTaskHandlersException(taskName, taskNameToTaskHandler[taskName].Key, creator.Key);
+                    throw new InvalidProgramStateException(string.Format("There are at least two handlers for task '{0}': '{1}' and '{2}'", taskName, taskNameToTaskHandler[taskName].Key, creator.Key));
                 taskNameToTaskHandler.Add(taskName, creator);
             }
             taskNameToTaskHandlerCreator = taskNameToTaskHandler.ToDictionary(x => x.Key, x => x.Value.Value);
@@ -26,7 +27,7 @@ namespace RemoteQueue.Handling
         public ITaskHandler CreateHandler(string taskName)
         {
             if(!ContainsHandlerFor(taskName))
-                throw new TaskHandlerNotFoundException(taskName);
+                throw new InvalidProgramStateException(string.Format("Handler not found for taskName: {0}", taskName));
             return taskNameToTaskHandlerCreator[taskName]();
         }
 

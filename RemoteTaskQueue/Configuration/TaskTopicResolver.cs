@@ -11,9 +11,9 @@ namespace RemoteQueue.Configuration
 {
     public class TaskTopicResolver : ITaskTopicResolver
     {
-        public TaskTopicResolver(ITaskDataTypeToNameMapper taskDataTypeToNameMapper)
+        public TaskTopicResolver(ITaskDataRegistry taskDataRegistry)
         {
-            foreach(var taskName in taskDataTypeToNameMapper.GetAllTaskNames())
+            foreach(var taskName in taskDataRegistry.GetAllTaskNames())
                 nameToTopic.Add(taskName, ResolveTopic(taskName));
         }
 

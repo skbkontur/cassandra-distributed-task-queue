@@ -130,17 +130,10 @@
     <Compile Include="Configuration\IColumnFamilyRegistry.cs" />
     <Compile Include="Configuration\IExchangeSchedulableRunner.cs" />
     <Compile Include="Configuration\ITaskDataRegistry.cs" />
-    <Compile Include="Configuration\ITaskDataTypeToNameMapper.cs" />
     <Compile Include="Configuration\ITaskHandlerRegistry.cs" />
     <Compile Include="Configuration\ITaskTopicResolver.cs" />
     <Compile Include="Configuration\ReportConsumerStateToGraphiteTask.cs" />
-    <Compile Include="Configuration\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Configuration\TaskTopicResolver.cs" />
-    <Compile Include="Exceptions\AmbigousMessageHandlerParametersException.cs" />
-    <Compile Include="Exceptions\TaskDataNotFoundException.cs" />
-    <Compile Include="Exceptions\TaskHandlerNotFoundException.cs" />
-    <Compile Include="Exceptions\TaskNameDuplicateException.cs" />
-    <Compile Include="Exceptions\TooManyTaskHandlersException.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\GlobalTime.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\IGlobalTime.cs" />
     <Compile Include="Handling\CreateTaskOptions.cs" />
@@ -184,7 +177,6 @@
     <Compile Include="Profiling\IRemoteTaskQueueProfiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\ICassandraSettings.cs" />
-    <Compile Include="Exceptions\NotTypedTaskHandlerException.cs" />
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="Settings\IRemoteTaskQueueSettings.cs" />
     <Compile Include="StaticGrobuf.cs" />

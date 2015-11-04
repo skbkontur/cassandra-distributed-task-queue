@@ -32,12 +32,12 @@ namespace RemoteQueue.Handling
             ICassandraCluster cassandraCluster,
             ICassandraSettings cassandraSettings,
             IRemoteTaskQueueSettings taskQueueSettings,
-            ITaskDataTypeToNameMapper taskDataTypeToNameMapper,
+            ITaskDataRegistry taskDataRegistry,
             ITaskTopicResolver taskTopicResolver,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
+            this.taskDataRegistry = taskDataRegistry;
             Serializer = serializer;
-            this.taskDataTypeToNameMapper = taskDataTypeToNameMapper;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
             var ticksHolder = new TicksHolder(serializer, parameters);
@@ -120,7 +120,7 @@ namespace RemoteQueue.Handling
                 new RemoteTaskInfo
                     {
                         Context = t.Meta,
-                        TaskData = (ITaskData)Serializer.Deserialize(taskDataTypeToNameMapper.GetTaskType(t.Meta.Name), t.Data),
+                        TaskData = (ITaskData)Serializer.Deserialize(taskDataRegistry.GetTaskType(t.Meta.Name), t.Data),
                         ExceptionInfo = e
                     }).ToArray();
         }
@@ -140,7 +140,7 @@ namespace RemoteQueue.Handling
             var task = new Task
                 {
                     Data = Serializer.Serialize(type, taskData),
-                    Meta = new TaskMetaInformation(taskDataTypeToNameMapper.GetTaskName(type), taskId)
+                    Meta = new TaskMetaInformation(taskDataRegistry.GetTaskName(type), taskId)
                         {
                             Attempts = 0,
                             Ticks = nowTicks,
@@ -177,11 +177,11 @@ namespace RemoteQueue.Handling
                 {
                     Context = task.Context,
                     TaskData = (T)task.TaskData,
-                    ExceptionInfo = task.ExceptionInfo
+                    ExceptionInfo = task.ExceptionInfo,
                 };
         }
 
-        private readonly ITaskDataTypeToNameMapper taskDataTypeToNameMapper;
+        private readonly ITaskDataRegistry taskDataRegistry;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly bool enableContinuationOptimization;
     }

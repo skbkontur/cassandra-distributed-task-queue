@@ -25,6 +25,6 @@ namespace RemoteQueue.Tests
             Assert.Throws<KeyNotFoundException>(() => taskTopicResolver.GetTaskTopic("UnregisteredTask"));
         }
 
-        private readonly TaskTopicResolver taskTopicResolver = new TaskTopicResolver(new TaskDataTypeToNameMapper(new TaskDataRegistry()));
+        private readonly TaskTopicResolver taskTopicResolver = new TaskTopicResolver(new TaskDataRegistry());
     }
 }

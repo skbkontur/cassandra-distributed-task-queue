@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
@@ -8,6 +7,14 @@ namespace RemoteQueue.Configuration
     public interface ITaskDataRegistry
     {
         [NotNull]
-        KeyValuePair<Type, string>[] GetAllTaskDataInfos();
+        string[] GetAllTaskNames();
+
+        [NotNull]
+        string GetTaskName([NotNull] Type type);
+
+        [NotNull]
+        Type GetTaskType([NotNull] string taskName);
+
+        bool TryGetTaskType([NotNull] string taskName, out Type taskType);
     }
 }

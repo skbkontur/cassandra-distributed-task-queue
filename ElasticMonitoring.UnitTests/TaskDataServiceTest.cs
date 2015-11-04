@@ -17,7 +17,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
         public override void SetUp()
         {
             base.SetUp();
-            mapper = GetMock<ITaskDataTypeToNameMapper>();
+            mapper = GetMock<ITaskDataRegistry>();
             taskDataService = new TaskDataService(mapper);
         }
 
@@ -46,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
             taskDataService.CreateTaskIndexedInfo(meta3, "zzz", data3).AssertEqualsTo(new TaskIndexedInfo<C2>(meta3, "zzz", data3));
         }
 
-        private ITaskDataTypeToNameMapper mapper;
+        private ITaskDataRegistry mapper;
         private TaskDataService taskDataService;
 
         // ReSharper disable NotAccessedField.Local

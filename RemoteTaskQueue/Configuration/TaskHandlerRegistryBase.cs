@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Exceptions;
 using RemoteQueue.Handling;
+
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Configuration
 {
@@ -19,7 +20,7 @@ namespace RemoteQueue.Configuration
         protected void Register(Type handlerType, Func<ITaskHandler> createTaskHandler)
         {
             if(!IsTypedTaskHandler(handlerType))
-                throw new NotTypedTaskHandlerException(handlerType);
+                throw new InvalidProgramStateException(string.Format("Type '{0}' doesn't implement 'TaskHander<>'", handlerType.FullName));
             list.Add(new KeyValuePair<Type, Func<ITaskHandler>>(handlerType, createTaskHandler));
         }
 
