@@ -11,7 +11,6 @@ using RemoteQueue.Handling;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
-using RemoteQueue.UserClasses;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
@@ -25,7 +24,7 @@ namespace RemoteQueue.Configuration
             IExchangeSchedulableRunnerSettings runnerSettings,
             IPeriodicTaskRunner periodicTaskRunner,
             ICatalogueGraphiteClient graphiteClient,
-            TaskHandlerRegistryBase taskHandlerRegistry,
+            ITaskHandlerRegistry taskHandlerRegistry,
             ISerializer serializer,
             ICassandraCluster cassandraCluster,
             ICassandraSettings cassandraSettings,
@@ -42,7 +41,10 @@ namespace RemoteQueue.Configuration
             var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerCollection, remoteTaskQueue);
             handlerManagers.Add(new HandlerManager(string.Empty, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             foreach(var taskTopic in taskTopicResolver.GetAllTaskTopics())
-                handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
+            {
+                if(runnerSettings.Topics == null || runnerSettings.Topics.Contains(taskTopic))
+                    handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
+            }
             reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, handlerManagers);
         }
 
