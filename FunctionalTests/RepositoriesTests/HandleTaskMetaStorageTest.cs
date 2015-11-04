@@ -17,14 +17,14 @@ namespace FunctionalTests.RepositoriesTests
         public override void SetUp()
         {
             base.SetUp();
-            taskTopicResolver = new DummyTaskTopicResolver();
-            Container.Configurator.ForAbstraction<ITaskTopicResolver>().UseInstances(taskTopicResolver);
+            taskDataRegistry = new DummyTaskDataRegistry();
+            Container.Configurator.ForAbstraction<ITaskDataRegistry>().UseInstances(taskDataRegistry);
             handleTasksMetaStorage = Container.Get<IHandleTasksMetaStorage>();
         }
 
         private TaskIndexShardKey TaskIndexShardKey(string taskName, TaskState taskState)
         {
-            return new TaskIndexShardKey(taskTopicResolver.GetTaskTopic(taskName), taskState);
+            return new TaskIndexShardKey(taskDataRegistry.GetTaskTopic(taskName), taskState);
         }
 
         [Test]
@@ -181,15 +181,35 @@ namespace FunctionalTests.RepositoriesTests
             Assert.AreEqual(id, inProcessTasks[0].TaskId);
         }
 
-        private ITaskTopicResolver taskTopicResolver;
+        private ITaskDataRegistry taskDataRegistry;
         private IHandleTasksMetaStorage handleTasksMetaStorage;
 
         [IgnoredImplementation]
-        private class DummyTaskTopicResolver : ITaskTopicResolver
+        private class DummyTaskDataRegistry : ITaskDataRegistry
         {
+            public string[] GetAllTaskNames()
+            {
+                throw new NotImplementedException();
+            }
+
+            public string GetTaskName(Type type)
+            {
+                throw new NotImplementedException();
+            }
+
+            public Type GetTaskType(string taskName)
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool TryGetTaskType(string taskName, out Type taskType)
+            {
+                throw new NotImplementedException();
+            }
+
             public string[] GetAllTaskTopics()
             {
-                return new string[0];
+                throw new NotImplementedException();
             }
 
             public string GetTaskTopic(string taskName)

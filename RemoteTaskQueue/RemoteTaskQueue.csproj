@@ -131,9 +131,7 @@
     <Compile Include="Configuration\IExchangeSchedulableRunner.cs" />
     <Compile Include="Configuration\ITaskDataRegistry.cs" />
     <Compile Include="Configuration\ITaskHandlerRegistry.cs" />
-    <Compile Include="Configuration\ITaskTopicResolver.cs" />
     <Compile Include="Configuration\ReportConsumerStateToGraphiteTask.cs" />
-    <Compile Include="Configuration\TaskTopicResolver.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\GlobalTime.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\IGlobalTime.cs" />
     <Compile Include="Handling\CreateTaskOptions.cs" />

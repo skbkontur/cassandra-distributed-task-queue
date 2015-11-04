@@ -24,14 +24,14 @@ namespace RemoteQueue.Cassandra.Repositories
             IEventLogRepository eventLogRepository,
             IGlobalTime globalTime,
             IChildTaskIndex childTaskIndex,
-            ITaskTopicResolver taskTopicResolver)
+            ITaskDataRegistry taskDataRegistry)
         {
             this.metaStorage = metaStorage;
             this.minimalStartTicksIndex = minimalStartTicksIndex;
             this.eventLogRepository = eventLogRepository;
             this.globalTime = globalTime;
             this.childTaskIndex = childTaskIndex;
-            this.taskTopicResolver = taskTopicResolver;
+            this.taskDataRegistry = taskDataRegistry;
         }
 
         [CanBeNull]
@@ -75,7 +75,7 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         private TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta)
         {
-            var taskTopic = taskTopicResolver.GetTaskTopic(taskMeta.Name);
+            var taskTopic = taskDataRegistry.GetTaskTopic(taskMeta.Name);
             var taskIndexShardKey = new TaskIndexShardKey(taskTopic, taskMeta.State);
             return new TaskIndexRecord(taskMeta.Id, taskMeta.MinimalStartTicks, taskIndexShardKey);
         }
@@ -107,6 +107,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IEventLogRepository eventLogRepository;
         private readonly IGlobalTime globalTime;
         private readonly IChildTaskIndex childTaskIndex;
-        private readonly ITaskTopicResolver taskTopicResolver;
+        private readonly ITaskDataRegistry taskDataRegistry;
     }
 }

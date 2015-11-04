@@ -13,7 +13,7 @@ namespace FunctionalTests
             base.SetUp();
             var exchangeServiceClient = Container.Get<IExchangeServiceClient>();
             exchangeServiceClient.Start();
-            taskTopicResolver = Container.Get<ITaskTopicResolver>();
+            taskDataRegistry = Container.Get<ITaskDataRegistry>();
         }
 
         public override void TearDown()
@@ -25,9 +25,9 @@ namespace FunctionalTests
 
         protected TaskIndexShardKey TaskIndexShardKey(string taskName, TaskState taskState)
         {
-            return new TaskIndexShardKey(taskTopicResolver.GetTaskTopic(taskName), taskState);
+            return new TaskIndexShardKey(taskDataRegistry.GetTaskTopic(taskName), taskState);
         }
 
-        private ITaskTopicResolver taskTopicResolver;
+        private ITaskDataRegistry taskDataRegistry;
     }
 }
