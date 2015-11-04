@@ -129,7 +129,13 @@
     <Compile Include="Configuration\ExchangeSchedulableRunner.cs" />
     <Compile Include="Configuration\IColumnFamilyRegistry.cs" />
     <Compile Include="Configuration\IExchangeSchedulableRunner.cs" />
+    <Compile Include="Configuration\ITaskDataRegistry.cs" />
+    <Compile Include="Configuration\ITaskDataTypeToNameMapper.cs" />
+    <Compile Include="Configuration\ITaskHandlerRegistry.cs" />
+    <Compile Include="Configuration\ITaskTopicResolver.cs" />
     <Compile Include="Configuration\ReportConsumerStateToGraphiteTask.cs" />
+    <Compile Include="Configuration\TaskDataTypeToNameMapper.cs" />
+    <Compile Include="Configuration\TaskTopicResolver.cs" />
     <Compile Include="Exceptions\AmbigousMessageHandlerParametersException.cs" />
     <Compile Include="Exceptions\TaskDataNotFoundException.cs" />
     <Compile Include="Exceptions\TaskHandlerNotFoundException.cs" />
@@ -149,14 +155,11 @@
     <Compile Include="Handling\IRemoteTaskQueueInternals.cs" />
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />
-    <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ITaskHandler.cs" />
     <Compile Include="Handling\ITaskHandlerCollection.cs" />
-    <Compile Include="Handling\ITaskTopicResolver.cs" />
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
-    <Compile Include="Handling\TaskTopicResolver.cs" />
     <Compile Include="Tracing\BusinessLogicTaskTraceContext.cs" />
     <Compile Include="Tracing\InfrastructureTaskTraceContext.cs" />
     <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />
@@ -165,7 +168,6 @@
     <Compile Include="Tracing\RemoteTaskInitialTraceContext.cs" />
     <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
-    <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
     <Compile Include="Handling\TaskHandler.cs" />
     <Compile Include="Handling\TaskHandlerCollection.cs" />
@@ -186,8 +188,8 @@
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="Settings\IRemoteTaskQueueSettings.cs" />
     <Compile Include="StaticGrobuf.cs" />
-    <Compile Include="UserClasses\TaskDataRegistryBase.cs" />
-    <Compile Include="UserClasses\TaskHandlerRegistryBase.cs" />
+    <Compile Include="Configuration\TaskDataRegistryBase.cs" />
+    <Compile Include="Configuration\TaskHandlerRegistryBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

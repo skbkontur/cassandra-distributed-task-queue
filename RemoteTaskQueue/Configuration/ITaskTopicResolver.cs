@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace RemoteQueue.Handling
+namespace RemoteQueue.Configuration
 {
     public interface ITaskTopicResolver
     {

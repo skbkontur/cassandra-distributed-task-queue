@@ -6,7 +6,7 @@ using GrEmit.Utils;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts;
 

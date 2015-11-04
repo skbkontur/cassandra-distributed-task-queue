@@ -5,9 +5,9 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Handling;
 
-namespace RemoteQueue.UserClasses
+namespace RemoteQueue.Configuration
 {
-    public abstract class TaskDataRegistryBase
+    public abstract class TaskDataRegistryBase : ITaskDataRegistry
     {
         [NotNull]
         public KeyValuePair<Type, string>[] GetAllTaskDataInfos()

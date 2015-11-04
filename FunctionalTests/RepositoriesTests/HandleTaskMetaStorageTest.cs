@@ -8,7 +8,7 @@ using NUnit.Framework;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 namespace FunctionalTests.RepositoriesTests
 {

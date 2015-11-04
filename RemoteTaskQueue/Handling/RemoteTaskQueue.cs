@@ -12,6 +12,7 @@ using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using RemoteQueue.Configuration;
 using RemoteQueue.Handling.ExecutionContext;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;

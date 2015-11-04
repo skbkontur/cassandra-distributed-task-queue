@@ -1,4 +1,4 @@
-﻿using RemoteQueue.UserClasses;
+﻿using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers;
@@ -7,8 +7,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.AdminToolsArea.Control
 {
     public class TasksController : TasksBaseController
     {
-        public TasksController(ControllerBaseParameters baseParameters, TasksControllerImpl controllerImpl, TaskDataRegistryBase taskDataRegistryBase)
-            : base(baseParameters, controllerImpl, taskDataRegistryBase)
+        public TasksController(ControllerBaseParameters baseParameters, TasksControllerImpl controllerImpl, ITaskDataRegistry taskDataRegistry)
+            : base(baseParameters, controllerImpl, taskDataRegistry)
         {
         }
 

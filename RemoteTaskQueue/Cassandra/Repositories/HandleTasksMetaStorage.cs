@@ -12,7 +12,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 namespace RemoteQueue.Cassandra.Repositories
 {

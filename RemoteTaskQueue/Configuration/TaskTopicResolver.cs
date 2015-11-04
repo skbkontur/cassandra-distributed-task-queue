@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 
 using SKBKontur.Catalogue.Core.Sharding.Hashes;
 
-namespace RemoteQueue.Handling
+namespace RemoteQueue.Configuration
 {
     public class TaskTopicResolver : ITaskTopicResolver
     {
@@ -35,7 +35,7 @@ namespace RemoteQueue.Handling
             return nameToTopic[taskName];
         }
 
-        private const int topicsCount = 8;
+        private const int topicsCount = 2;
         private readonly Dictionary<string, string> nameToTopic = new Dictionary<string, string>();
     }
 }

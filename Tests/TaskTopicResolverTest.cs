@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 

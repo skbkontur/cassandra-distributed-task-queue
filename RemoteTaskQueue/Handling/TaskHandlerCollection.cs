@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using RemoteQueue.Configuration;
 using RemoteQueue.Exceptions;
-using RemoteQueue.UserClasses;
 
 namespace RemoteQueue.Handling
 {
     public class TaskHandlerCollection : ITaskHandlerCollection
     {
-        public TaskHandlerCollection(ITaskDataTypeToNameMapper typeToNameMapper, TaskHandlerRegistryBase taskHandlerRegistry)
+        public TaskHandlerCollection(ITaskDataTypeToNameMapper typeToNameMapper, ITaskHandlerRegistry taskHandlerRegistry)
         {
             var taskNameToTaskHandler = new Dictionary<string, KeyValuePair<Type, Func<ITaskHandler>>>();
             foreach(var creator in taskHandlerRegistry.GetAllTaskHandlerCreators())

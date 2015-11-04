@@ -1,4 +1,4 @@
-﻿using RemoteQueue.UserClasses;
+﻿using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;

@@ -1,6 +1,6 @@
 ﻿using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 

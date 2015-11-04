@@ -5,13 +5,12 @@ using System.Linq;
 using JetBrains.Annotations;
 
 using RemoteQueue.Exceptions;
-using RemoteQueue.UserClasses;
 
-namespace RemoteQueue.Handling
+namespace RemoteQueue.Configuration
 {
     public class TaskDataTypeToNameMapper : ITaskDataTypeToNameMapper
     {
-        public TaskDataTypeToNameMapper(TaskDataRegistryBase taskDataRegistry)
+        public TaskDataTypeToNameMapper(ITaskDataRegistry taskDataRegistry)
         {
             foreach(var taskDataInfo in taskDataRegistry.GetAllTaskDataInfos())
             {

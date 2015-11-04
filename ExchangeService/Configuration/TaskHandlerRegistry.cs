@@ -3,7 +3,7 @@
 using ExchangeService.UserClasses;
 using ExchangeService.UserClasses.MonitoringTestTaskData;
 
-using RemoteQueue.UserClasses;
+using RemoteQueue.Configuration;
 
 namespace ExchangeService.Configuration
 {

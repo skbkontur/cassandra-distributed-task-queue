@@ -9,7 +9,7 @@ using NUnit.Framework;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 namespace FunctionalTests.ExchangeTests
 {

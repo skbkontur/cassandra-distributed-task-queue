@@ -2,7 +2,7 @@
 
 using NUnit.Framework;
 
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 using Rhino.Mocks;
 
