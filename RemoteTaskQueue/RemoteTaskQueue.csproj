@@ -147,7 +147,6 @@
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />
     <Compile Include="Handling\ITaskHandler.cs" />
-    <Compile Include="Handling\ITaskHandlerCollection.cs" />
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
@@ -161,7 +160,6 @@
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
     <Compile Include="Handling\TaskHandler.cs" />
-    <Compile Include="Handling\TaskHandlerCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTaskExceptionInfoStorage.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />

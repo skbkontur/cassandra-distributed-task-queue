@@ -12,6 +12,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using RemoteQueue.Configuration;
 using RemoteQueue.Handling.ExecutionContext;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
@@ -27,13 +28,13 @@ namespace RemoteQueue.Handling
             [NotNull] TaskIndexRecord taskIndexRecord,
             TaskQueueReason reason,
             [CanBeNull] TaskMetaInformation taskMeta,
-            ITaskHandlerCollection taskHandlerCollection,
+            ITaskHandlerRegistry taskHandlerRegistry,
             IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {
             this.taskIndexRecord = taskIndexRecord;
             this.reason = reason;
             this.taskMeta = taskMeta;
-            this.taskHandlerCollection = taskHandlerCollection;
+            this.taskHandlerRegistry = taskHandlerRegistry;
             serializer = remoteTaskQueueInternals.Serializer;
             remoteTaskQueue = remoteTaskQueueInternals.RemoteTaskQueue;
             handleTaskCollection = remoteTaskQueueInternals.HandleTaskCollection;
@@ -160,7 +161,7 @@ namespace RemoteQueue.Handling
             ITaskHandler taskHandler;
             try
             {
-                taskHandler = taskHandlerCollection.CreateHandler(task.Meta.Name);
+                taskHandler = taskHandlerRegistry.CreateHandlerFor(task.Meta.Name);
             }
             catch(Exception e)
             {
@@ -230,7 +231,7 @@ namespace RemoteQueue.Handling
         private readonly TaskIndexRecord taskIndexRecord;
         private readonly TaskQueueReason reason;
         private readonly TaskMetaInformation taskMeta;
-        private readonly ITaskHandlerCollection taskHandlerCollection;
+        private readonly ITaskHandlerRegistry taskHandlerRegistry;
         private readonly ISerializer serializer;
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly IHandleTaskCollection handleTaskCollection;

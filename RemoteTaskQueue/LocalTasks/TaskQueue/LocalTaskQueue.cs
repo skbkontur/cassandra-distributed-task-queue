@@ -8,6 +8,7 @@ using log4net;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
+using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
 using RemoteQueue.Tracing;
 
@@ -17,10 +18,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     internal class LocalTaskQueue : ILocalTaskQueue
     {
-        public LocalTaskQueue(ITaskCounter taskCounter, ITaskHandlerCollection taskHandlerCollection, IRemoteTaskQueueInternals remoteTaskQueueInternals)
+        public LocalTaskQueue(ITaskCounter taskCounter, ITaskHandlerRegistry taskHandlerRegistry, IRemoteTaskQueueInternals remoteTaskQueueInternals)
         {
             this.taskCounter = taskCounter;
-            this.taskHandlerCollection = taskHandlerCollection;
+            this.taskHandlerRegistry = taskHandlerRegistry;
             this.remoteTaskQueueInternals = remoteTaskQueueInternals;
             Instance = this;
         }
@@ -64,7 +65,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         {
             queueIsFull = false;
             taskIsSentToThreadPool = false;
-            if(taskMeta != null && !taskHandlerCollection.ContainsHandlerFor(taskMeta.Name))
+            if(taskMeta != null && !taskHandlerRegistry.ContainsHandlerFor(taskMeta.Name))
                 return;
             if(taskMeta == null && taskIndexRecord.MinimalStartTicks >= (DateTime.UtcNow - TimeSpan.FromMinutes(20)).Ticks)
             {
@@ -78,7 +79,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
             try
             {
-                var handlerTask = new HandlerTask(taskIndexRecord, taskQueueReason, taskMeta, taskHandlerCollection, remoteTaskQueueInternals);
+                var handlerTask = new HandlerTask(taskIndexRecord, taskQueueReason, taskMeta, taskHandlerRegistry, remoteTaskQueueInternals);
                 lock(lockObject)
                 {
                     if(stopped)
@@ -112,7 +113,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         }
 
         private readonly ITaskCounter taskCounter;
-        private readonly ITaskHandlerCollection taskHandlerCollection;
+        private readonly ITaskHandlerRegistry taskHandlerRegistry;
         private readonly IRemoteTaskQueueInternals remoteTaskQueueInternals;
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();

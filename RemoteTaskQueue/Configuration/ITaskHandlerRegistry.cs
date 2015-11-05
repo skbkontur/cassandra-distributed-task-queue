@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 using JetBrains.Annotations;
 
 using RemoteQueue.Handling;
@@ -9,7 +6,9 @@ namespace RemoteQueue.Configuration
 {
     public interface ITaskHandlerRegistry
     {
+        bool ContainsHandlerFor([NotNull] string taskName);
+
         [NotNull]
-        KeyValuePair<Type, Func<ITaskHandler>>[] GetAllTaskHandlerCreators();
+        ITaskHandler CreateHandlerFor([NotNull] string taskName);
     }
 }

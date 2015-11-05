@@ -35,9 +35,8 @@ namespace RemoteQueue.Configuration
             this.runnerSettings = runnerSettings;
             this.periodicTaskRunner = periodicTaskRunner;
             var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
-            var taskHandlerCollection = new TaskHandlerCollection(taskDataRegistry, taskHandlerRegistry);
             var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
-            var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerCollection, remoteTaskQueue);
+            var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
             handlerManagers.Add(new HandlerManager(string.Empty, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             foreach(var taskTopic in taskDataRegistry.GetAllTaskTopics())
             {
