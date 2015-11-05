@@ -2,7 +2,8 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
+using RemoteQueue.Configuration;
+using RemoteQueue.Handling;
 
 namespace RemoteQueue.Tests
 {
@@ -19,10 +20,34 @@ namespace RemoteQueue.Tests
         [Test]
         public void GetTaskTopic()
         {
-            Assert.That(taskDataRegistry.GetTaskTopic("SimpleTaskData"), Is.EqualTo("1"));
+            Assert.That(taskDataRegistry.GetTaskTopic("TaskData1"), Is.EqualTo("0"));
+            Assert.That(taskDataRegistry.GetTaskTopic("TaskData2"), Is.EqualTo("1"));
+            Assert.That(taskDataRegistry.GetTaskTopic("TaskData3"), Is.EqualTo("0"));
             Assert.Throws<KeyNotFoundException>(() => taskDataRegistry.GetTaskTopic("UnregisteredTask"));
         }
 
-        private readonly TaskDataRegistry taskDataRegistry = new TaskDataRegistry();
+        private readonly TestTaskDataRegistry taskDataRegistry = new TestTaskDataRegistry();
+
+        private class TestTaskDataRegistry : TaskDataRegistryBase
+        {
+            public TestTaskDataRegistry()
+            {
+                Register<TaskData1>("TaskData1");
+                Register<TaskData2>("TaskData2");
+                Register<TaskData3>("TaskData3");
+            }
+        }
+
+        private class TaskData1 : ITaskData
+        {
+        }
+
+        private class TaskData2 : ITaskData
+        {
+        }
+
+        private class TaskData3 : ITaskData
+        {
+        }
     }
 }

@@ -44,10 +44,6 @@
     <Compile Include="TaskDataRegistryTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{d8d12ac6-ec15-4ea9-92be-80ee41a1e152}</Project>
       <Name>RemoteTaskQueue</Name>
