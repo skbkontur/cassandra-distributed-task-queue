@@ -31,6 +31,12 @@ namespace RemoteQueue.Configuration
             taskHandlerCreatorsByTaskName.Add(taskName, taskHandlerCreator);
         }
 
+        [NotNull]
+        public string[] GetAllTaskTopicsToHandle()
+        {
+            return taskHandlerCreatorsByTaskName.Select(x => taskDataRegistry.GetTaskTopic(x.Key)).Distinct().ToArray();
+        }
+
         public bool ContainsHandlerFor([NotNull] string taskName)
         {
             return taskHandlerCreatorsByTaskName.ContainsKey(taskName);

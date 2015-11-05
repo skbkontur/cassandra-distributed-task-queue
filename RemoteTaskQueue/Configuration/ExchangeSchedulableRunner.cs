@@ -38,11 +38,8 @@ namespace RemoteQueue.Configuration
             var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
             var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
             handlerManagers.Add(new HandlerManager(string.Empty, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
-            foreach(var taskTopic in taskDataRegistry.GetAllTaskTopics())
-            {
-                if(runnerSettings.Topics == null || runnerSettings.Topics.Contains(taskTopic))
-                    handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
-            }
+            foreach(var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
+                handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, handlerManagers);
         }
 
