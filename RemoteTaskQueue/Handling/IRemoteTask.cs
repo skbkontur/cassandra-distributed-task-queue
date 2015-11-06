@@ -14,5 +14,7 @@ namespace RemoteQueue.Handling
 
         [NotNull]
         string Queue(TimeSpan delay);
+
+        string ParentTaskId { get; }
     }
 }

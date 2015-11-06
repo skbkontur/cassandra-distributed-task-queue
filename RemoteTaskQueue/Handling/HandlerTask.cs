@@ -183,12 +183,13 @@ namespace RemoteQueue.Handling
                     var sw = Stopwatch.StartNew();
                     remoteTaskQueueProfiler.ProcessTaskDequeueing(task.Meta);
                     var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
-                    remoteTaskQueueProfiler.RecordTaskExecutionTime(task.Meta, sw.Elapsed);
-                    remoteTaskQueueProfiler.RecordTaskExecutionResult(task.Meta, handleResult);
+                    TimeSpan taskExecutionTime = sw.Elapsed;
+                    remoteTaskQueueProfiler.ProcessTaskExecutionFinished(task.Meta, handleResult, taskExecutionTime);
                     localTaskProcessingResult = UpdateTaskMetaByHandleResult(task, handleResult);
                 }
                 catch(Exception e)
                 {
+                    remoteTaskQueueProfiler.ProcessTaskExecutionFailed(task.Meta, e);
                     localTaskProcessingResult = LocalTaskProcessingResult.Error;
                     LogError(e, task.Meta);
                     TryUpdateTaskState(task, null, task.Meta.StartExecutingTicks, DateTime.UtcNow.Ticks, task.Meta.Attempts, TaskState.Fatal);

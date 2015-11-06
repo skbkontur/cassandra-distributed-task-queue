@@ -20,6 +20,8 @@ namespace RemoteQueue.Handling
         [NotNull]
         public string Id { get { return task.Meta.Id; } }
 
+        public string ParentTaskId { get { return task.Meta.ParentTaskId; } }
+
         [NotNull]
         public string Queue()
         {
@@ -47,6 +49,7 @@ namespace RemoteQueue.Handling
                 return handleTaskCollection.AddTask(task);
             }
         }
+
 
         protected readonly Task task;
         private readonly IHandleTaskCollection handleTaskCollection;
