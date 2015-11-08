@@ -14,19 +14,23 @@ namespace RemoteQueue.Configuration
 {
     public abstract class TaskDataRegistryBase : ITaskDataRegistry
     {
-        protected void Register<T>([NotNull] string taskName) where T : ITaskData
+        protected void Register<T>() where T : ITaskData
         {
             var taskType = typeof(T);
-            typeToName.Add(taskType, taskName);
+            var taskName = taskType.GetTaskName();
             if(nameToType.ContainsKey(taskName))
                 throw new InvalidProgramStateException(string.Format("Duplicate taskName: {0}", taskName));
+            typeToName.Add(taskType, taskName);
             nameToType.Add(taskName, taskType);
-            nameToTopic.Add(taskName, ResolveTopic(taskName));
+            nameToTopic.Add(taskName, ResolveTopic(taskType, taskName));
         }
 
         [NotNull]
-        private static string ResolveTopic([NotNull] string taskName)
+        private static string ResolveTopic([NotNull] Type taskType, [NotNull] string taskName)
         {
+            var taskTopic = taskType.TryGetTaskTopic();
+            if(!string.IsNullOrWhiteSpace(taskTopic))
+                return taskTopic;
             return (Math.Abs(taskName.GetPersistentHashCode()) % topicsCount).ToString(CultureInfo.InvariantCulture);
         }
 
@@ -48,10 +52,10 @@ namespace RemoteQueue.Configuration
         [NotNull]
         public Type GetTaskType([NotNull] string taskName)
         {
-            Type type;
-            if(!TryGetTaskType(taskName, out type))
+            Type taskType;
+            if(!nameToType.TryGetValue(taskName, out taskType))
                 throw new InvalidProgramStateException(string.Format("TaskData with name '{0}' not registered", taskName));
-            return type;
+            return taskType;
         }
 
         public bool TryGetTaskType([NotNull] string taskName, out Type taskType)
@@ -68,7 +72,10 @@ namespace RemoteQueue.Configuration
         [NotNull]
         public string GetTaskTopic([NotNull] string taskName)
         {
-            return nameToTopic[taskName];
+            string taskTopic;
+            if(!nameToTopic.TryGetValue(taskName, out taskTopic))
+                throw new InvalidProgramStateException(string.Format("TaskData with name '{0}' not registered", taskName));
+            return taskTopic;
         }
 
         private const int topicsCount = 2;

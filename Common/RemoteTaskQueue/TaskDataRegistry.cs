@@ -9,20 +9,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
     {
         public TaskDataRegistry()
         {
-            Register<FakeFailTaskData>("FakeFailTaskData");
-            Register<FakePeriodicTaskData>("FakePeriodicTaskData");
-            Register<SimpleTaskData>("SimpleTaskData");
-            Register<ByteArrayTaskData>("ByteArrayTaskData");
-            Register<ByteArrayAndNestedTaskData>("ByteArrayAndNestedTaskData");
-            Register<FileIdTaskData>("FileIdTaskData");
+            Register<FakeFailTaskData>();
+            Register<FakePeriodicTaskData>();
+            Register<SimpleTaskData>();
+            Register<ByteArrayTaskData>();
+            Register<ByteArrayAndNestedTaskData>();
+            Register<FileIdTaskData>();
 
-            Register<SlowTaskData>("SlowTaskData");
-            Register<AlphaTaskData>("AlphaTaskData");
-            Register<BetaTaskData>("BetaTaskData");
-            Register<DeltaTaskData>("DeltaTaskData");
-            Register<FailingTaskData>("FailingTaskData");
+            Register<SlowTaskData>();
+            Register<AlphaTaskData>();
+            Register<BetaTaskData>();
+            Register<DeltaTaskData>();
+            Register<FailingTaskData>();
 
-            Register<ChainTaskData>("ChainTaskData");
+            Register<ChainTaskData>();
         }
     }
 }
