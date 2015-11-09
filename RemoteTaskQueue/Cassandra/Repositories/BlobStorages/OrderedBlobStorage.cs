@@ -185,10 +185,10 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             TimeGuid timeGuid;
             if(!TryGetTimeGuid(id, out timeGuid))
-                throw new ArgumentException("Parameter should be TimeGuid.");
+                throw new ArgumentException("Parameter id should be TimeGuid.");
 
             var ticks = timeGuid.GetTimestamp().Ticks;
-            var rowKey = (ticks / tickPartition).ToString();
+            var rowKey = ticks / tickPartition + "_" + timeGuid.GetHashCode() % splittingFactor;
 
             return new ColumnInfo {RowKey = rowKey, ColumnName = id};
         }
@@ -205,6 +205,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             timeGuid = new TimeGuid(guid);
             return true;
         }
+
+        /// <summary>
+        ///     пока сделали константой, в будущем можно будет сделать CF внутри которой хранить по тикам значение splittingFactor,
+        ///     при старте загружать все в cache и по таймеру обновлять вновь добавленные.
+        /// </summary>
+        private const int splittingFactor = 10;
 
         private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;
         private readonly ISerializer serializer;

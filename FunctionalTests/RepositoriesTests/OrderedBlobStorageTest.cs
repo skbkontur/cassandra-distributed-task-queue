@@ -45,14 +45,14 @@ namespace FunctionalTests.RepositoriesTests
         private void AddColumnFamily()
         {
             var keyspace = connection.DescribeKeyspace();
-            if (!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
+            if(!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
             {
                 connection.AddColumnFamily(new ColumnFamily
-                {
-                    Name = columnFamilyName,
-                    GCGraceSeconds = 10,
-                    Caching = ColumnFamilyCaching.All
-                });
+                    {
+                        Name = columnFamilyName,
+                        GCGraceSeconds = 10,
+                        Caching = ColumnFamilyCaching.All
+                    });
             }
         }
 
@@ -163,8 +163,8 @@ namespace FunctionalTests.RepositoriesTests
             orderedBlobStorage.Write(id21, 21);
             orderedBlobStorage.Write(id22, 22);
 
-            Assert.That(orderedBlobStorage.ReadAll(1).ToArray(), Is.EquivalentTo(new int?[]{11, 12, 21, 22}));
-            Assert.That(orderedBlobStorage.ReadAllWithIds(1).ToArray(), Is.EquivalentTo(new []
+            Assert.That(orderedBlobStorage.ReadAll(1).ToArray(), Is.EquivalentTo(new int?[] {11, 12, 21, 22}));
+            Assert.That(orderedBlobStorage.ReadAllWithIds(1).ToArray(), Is.EquivalentTo(new[]
                 {
                     new KeyValuePair<string, int?>(id11, 11),
                     new KeyValuePair<string, int?>(id12, 12),

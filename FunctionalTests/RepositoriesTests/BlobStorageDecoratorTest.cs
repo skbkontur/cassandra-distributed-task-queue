@@ -20,9 +20,6 @@ namespace FunctionalTests.RepositoriesTests
 {
     public class BlobStorageDecoratorTest : FunctionalTestBaseWithoutServices
     {
-        private const string blobStorageColumnFamilyName = "blobStorageTest";
-        private const string orderedBlobStorageColumnFamilyName = "orderedBlobStorageTest";
-
         public override void SetUp()
         {
             base.SetUp();
@@ -87,7 +84,7 @@ namespace FunctionalTests.RepositoriesTests
         public void TestMultiRead()
         {
             blobStorage.Write(stringId, 1);
-            Assert.That(blobStorageDecorator.Read(new[] { stringId, timeGuidId }), Is.EqualTo(new int?[] { 1 }));
+            Assert.That(blobStorageDecorator.Read(new[] {stringId, timeGuidId}), Is.EqualTo(new int?[] {1}));
 
             orderedBlobStorage.Write(timeGuidId, 2);
             Assert.That(blobStorageDecorator.Read(new[] {stringId, timeGuidId}), Is.EquivalentTo(new int?[] {1, 2}));
@@ -97,11 +94,11 @@ namespace FunctionalTests.RepositoriesTests
         public void TestReadQuiet()
         {
             blobStorage.Write(stringId, 1);
-            Assert.That(blobStorageDecorator.ReadQuiet(new[] { stringId, timeGuidId }), Is.EqualTo(new int?[] { 1, null }));
+            Assert.That(blobStorageDecorator.ReadQuiet(new[] {stringId, timeGuidId}), Is.EqualTo(new int?[] {1, null}));
 
             orderedBlobStorage.Write(timeGuidId, 2);
-            Assert.That(blobStorageDecorator.ReadQuiet(new[] { stringId, timeGuidId }), Is.EqualTo(new int?[] { 1, 2 }));
-            Assert.That(blobStorageDecorator.ReadQuiet(new[] { timeGuidId, stringId }), Is.EqualTo(new int?[] { 2, 1 }));
+            Assert.That(blobStorageDecorator.ReadQuiet(new[] {stringId, timeGuidId}), Is.EqualTo(new int?[] {1, 2}));
+            Assert.That(blobStorageDecorator.ReadQuiet(new[] {timeGuidId, stringId}), Is.EqualTo(new int?[] {2, 1}));
         }
 
         [Test]
@@ -121,7 +118,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             blobStorage.Write(stringId, 1);
             orderedBlobStorage.Write(timeGuidId, 2);
-            blobStorageDecorator.Delete(new []{stringId, timeGuidId}, DateTime.UtcNow.Ticks);
+            blobStorageDecorator.Delete(new[] {stringId, timeGuidId}, DateTime.UtcNow.Ticks);
 
             Assert.IsNull(blobStorage.Read(stringId));
             Assert.IsNull(orderedBlobStorage.Read(timeGuidId));
@@ -138,7 +135,7 @@ namespace FunctionalTests.RepositoriesTests
             blobStorage.Write(anotherStringId, 21);
             orderedBlobStorage.Write(anotherTimeGuidId, 22);
 
-            Assert.That(blobStorageDecorator.ReadAll(1).ToArray(), Is.EquivalentTo(new []{11, 12, 21, 22}));
+            Assert.That(blobStorageDecorator.ReadAll(1).ToArray(), Is.EquivalentTo(new[] {11, 12, 21, 22}));
             Assert.That(blobStorageDecorator.ReadAllWithIds(1).ToArray(), Is.EquivalentTo(new[]
                 {
                     new KeyValuePair<string, int?>(stringId, 11),
@@ -148,6 +145,8 @@ namespace FunctionalTests.RepositoriesTests
                 }));
         }
 
+        private const string blobStorageColumnFamilyName = "blobStorageTest";
+        private const string orderedBlobStorageColumnFamilyName = "orderedBlobStorageTest";
         private const string stringId = "stringId";
         private const string anotherStringId = "anotherStringId";
         private BlobStorageDecorator<int?> blobStorageDecorator;
