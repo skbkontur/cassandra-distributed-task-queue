@@ -14,6 +14,7 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
+using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Configuration
@@ -24,6 +25,7 @@ namespace RemoteQueue.Configuration
             IExchangeSchedulableRunnerSettings runnerSettings,
             IPeriodicTaskRunner periodicTaskRunner,
             ICatalogueGraphiteClient graphiteClient,
+            IProjectWideGraphitePathPrefixProvider graphitePathPrefixProvider,
             ITaskDataRegistry taskDataRegistry,
             ITaskHandlerRegistry taskHandlerRegistry,
             ISerializer serializer,
@@ -40,7 +42,7 @@ namespace RemoteQueue.Configuration
             handlerManagers.Add(new HandlerManager(string.Empty, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             foreach(var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
                 handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
-            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, handlerManagers);
+            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, graphitePathPrefixProvider, handlerManagers);
         }
 
         public void Dispose()

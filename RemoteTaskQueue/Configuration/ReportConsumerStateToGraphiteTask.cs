@@ -8,6 +8,7 @@ using JetBrains.Annotations;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
+using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
@@ -15,22 +16,22 @@ namespace RemoteQueue.Configuration
 {
     public class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
     {
-        public ReportConsumerStateToGraphiteTask(ICatalogueGraphiteClient graphiteClient, List<IHandlerManager> handlerManagers)
+        public ReportConsumerStateToGraphiteTask(ICatalogueGraphiteClient graphiteClient, IProjectWideGraphitePathPrefixProvider graphitePathPrefixProvider, List<IHandlerManager> handlerManagers)
         {
             this.graphiteClient = graphiteClient;
             this.handlerManagers = handlerManagers;
-            graphitePathPrefix = FormatGraphitePathPrefix();
+            graphitePathPrefix = FormatGraphitePathPrefix(graphitePathPrefixProvider.ProjectWideGraphitePathPrefix);
         }
 
         [NotNull]
-        private static string FormatGraphitePathPrefix()
+        private static string FormatGraphitePathPrefix([NotNull] string projectWideGraphitePathPrefix)
         {
             var processName = Process.GetCurrentProcess()
                                      .ProcessName
                                      .Replace(".exe", string.Empty)
                                      .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
                                      .Last();
-            return string.Format("EDI.SubSystem.RemoteTaskQueueMonitoring.{0}.{1}", Environment.MachineName, processName);
+            return string.Format("{0}.SubSystem.RemoteTaskQueueMonitoring.{1}.{2}", projectWideGraphitePathPrefix, Environment.MachineName, processName);
         }
 
         public override sealed void Run()
