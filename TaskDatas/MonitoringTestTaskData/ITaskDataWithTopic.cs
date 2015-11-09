@@ -1,10 +1,10 @@
 using RemoteQueue.Configuration;
+using RemoteQueue.Handling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData
 {
-    [TaskName("BetaTaskData")]
-    public class BetaTaskData : ITaskDataWithTopic
+    [TaskTopic("TestTopic")]
+    public interface ITaskDataWithTopic : ITaskData
     {
-        public bool IsProcess { get; set; }
     }
 }

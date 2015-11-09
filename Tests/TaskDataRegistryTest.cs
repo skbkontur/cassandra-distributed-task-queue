@@ -15,7 +15,7 @@ namespace RemoteQueue.Tests
         [Test]
         public void GetAllTaskNames()
         {
-            Assert.That(taskDataRegistry.GetAllTaskNames(), Is.EquivalentTo(new[] {"TaskData1", "TaskData2", "TaskData3", "TaskData1WithTopic1", "TaskData2WithTopic1", "TaskData3WithTopic2"}));
+            Assert.That(taskDataRegistry.GetAllTaskNames(), Is.EquivalentTo(new[] {"TaskData1", "TaskData2", "TaskData3", "TaskData1WithTopic1", "TaskData2WithTopic1", "TaskData3WithTopic2", "TaskData4WithTopic3"}));
         }
 
         [Test]
@@ -27,6 +27,7 @@ namespace RemoteQueue.Tests
             Assert.That(taskDataRegistry.GetTaskName(typeof(TaskData1WithTopic1)), Is.EqualTo("TaskData1WithTopic1"));
             Assert.That(taskDataRegistry.GetTaskName(typeof(TaskData2WithTopic1)), Is.EqualTo("TaskData2WithTopic1"));
             Assert.That(taskDataRegistry.GetTaskName(typeof(TaskData3WithTopic2)), Is.EqualTo("TaskData3WithTopic2"));
+            Assert.That(taskDataRegistry.GetTaskName(typeof(TaskData4WithTopic3)), Is.EqualTo("TaskData4WithTopic3"));
             Assert.Throws<InvalidProgramStateException>(() => taskDataRegistry.GetTaskName(typeof(string)));
         }
 
@@ -39,6 +40,7 @@ namespace RemoteQueue.Tests
             Assert.That(taskDataRegistry.GetTaskType("TaskData1WithTopic1"), Is.EqualTo(typeof(TaskData1WithTopic1)));
             Assert.That(taskDataRegistry.GetTaskType("TaskData2WithTopic1"), Is.EqualTo(typeof(TaskData2WithTopic1)));
             Assert.That(taskDataRegistry.GetTaskType("TaskData3WithTopic2"), Is.EqualTo(typeof(TaskData3WithTopic2)));
+            Assert.That(taskDataRegistry.GetTaskType("TaskData4WithTopic3"), Is.EqualTo(typeof(TaskData4WithTopic3)));
             Assert.Throws<InvalidProgramStateException>(() => taskDataRegistry.GetTaskType("UnregisteredTask"));
         }
 
@@ -51,6 +53,7 @@ namespace RemoteQueue.Tests
             Assert.That(TryGetTaskType("TaskData1WithTopic1"), Is.EqualTo(typeof(TaskData1WithTopic1)));
             Assert.That(TryGetTaskType("TaskData2WithTopic1"), Is.EqualTo(typeof(TaskData2WithTopic1)));
             Assert.That(TryGetTaskType("TaskData3WithTopic2"), Is.EqualTo(typeof(TaskData3WithTopic2)));
+            Assert.That(TryGetTaskType("TaskData4WithTopic3"), Is.EqualTo(typeof(TaskData4WithTopic3)));
             Assert.That(TryGetTaskType("UnregisteredTask"), Is.Null);
         }
 
@@ -64,7 +67,7 @@ namespace RemoteQueue.Tests
         [Test]
         public void GetAllTaskTopics()
         {
-            Assert.That(taskDataRegistry.GetAllTaskTopics(), Is.EquivalentTo(new[] {"0", "1", "Topic1", "Topic2"}));
+            Assert.That(taskDataRegistry.GetAllTaskTopics(), Is.EquivalentTo(new[] {"0", "1", "Topic1", "Topic2", "Topic3"}));
         }
 
         [Test]
@@ -76,7 +79,13 @@ namespace RemoteQueue.Tests
             Assert.That(taskDataRegistry.GetTaskTopic("TaskData1WithTopic1"), Is.EqualTo("Topic1"));
             Assert.That(taskDataRegistry.GetTaskTopic("TaskData2WithTopic1"), Is.EqualTo("Topic1"));
             Assert.That(taskDataRegistry.GetTaskTopic("TaskData3WithTopic2"), Is.EqualTo("Topic2"));
+            Assert.That(taskDataRegistry.GetTaskTopic("TaskData4WithTopic3"), Is.EqualTo("Topic3"));
             Assert.Throws<InvalidProgramStateException>(() => taskDataRegistry.GetTaskTopic("UnregisteredTask"));
+        }
+
+        [TaskTopic("Topic3")]
+        private interface ITaskDataWithTopic : ITaskData
+        {
         }
 
         private readonly TestTaskDataRegistry taskDataRegistry = new TestTaskDataRegistry();
@@ -91,6 +100,7 @@ namespace RemoteQueue.Tests
                 Register<TaskData1WithTopic1>();
                 Register<TaskData2WithTopic1>();
                 Register<TaskData3WithTopic2>();
+                Register<TaskData4WithTopic3>();
             }
         }
 
@@ -121,6 +131,11 @@ namespace RemoteQueue.Tests
 
         [TaskName("TaskData3WithTopic2"), TaskTopic("Topic2")]
         private class TaskData3WithTopic2 : ITaskData
+        {
+        }
+
+        [TaskName("TaskData4WithTopic3")]
+        private class TaskData4WithTopic3 : ITaskDataWithTopic
         {
         }
     }
