@@ -58,7 +58,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
             compositeCounter.Expect(m => m.GetSnapshotOrNull(maxSnapshotLength)).Return(null);
             DoTest(400 - maxHistoryDepthTicks, 400, null, new[] {GetEvent("a", 301)}, new[] {new[] {GetMeta("a", 10)}});
 
-            var cs0 = new CompositeCounterSnapshot() {TotalSnapshot = new ProcessedTasksCounter.CounterSnapshot(null, 12123, 2)};
+            var cs0 = new CompositeCounterSnapshot() {TotalSnapshot = new ProcessedTasksCounter.CounterSnapshot(null, 12123, 2, null)};
             compositeCounter.Expect(m => m.GetSnapshotOrNull(maxSnapshotLength)).Return(cs0);
             var counterControllerSnapshot = new CounterControllerSnapshot
                 {
@@ -73,7 +73,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
         [Test]
         public void TestLoadState()
         {
-            var cs0 = new CompositeCounterSnapshot() {TotalSnapshot = new ProcessedTasksCounter.CounterSnapshot(null, 12123, 2)};
+            var cs0 = new CompositeCounterSnapshot() {TotalSnapshot = new ProcessedTasksCounter.CounterSnapshot(null, 12123, 2, new [] {1})};
             snapshotStorage.Expect(s => s.ReadSnapshotOrNull()).Return(new CounterControllerSnapshot()
                 {
                     CounterSnapshot = cs0,
