@@ -80,6 +80,7 @@
     <Compile Include="Implementation\MetaReaderSettings.cs" />
     <Compile Include="Implementation\ProcessedTasksCounter.cs" />
     <Compile Include="Implementation\SnaphotConverter.cs" />
+    <Compile Include="Implementation\TaskStateHelpers.cs" />
     <Compile Include="Implementation\UnprocessedEventsMap.cs" />
     <Compile Include="Implementation\Utils\DateTimeFormatter.cs" />
     <Compile Include="Implementation\Utils\DictionaryHelpers.cs" />

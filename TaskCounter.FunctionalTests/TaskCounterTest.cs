@@ -15,53 +15,44 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Cassandra;
 using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Container;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.PropertyInjection;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Serializer;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Settings;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
+using TestCommon.NUnitWrappers;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
 {
-    [ContainerInitializer(50)]
-    public class RemoteTaskQueueRemoteLockAttribute : Attribute, IContainerInitializationAction
-    {
-        public void BeforeTest(IContainer container, TestDetails testDetails, object fixture)
-        {
-            container.ConfigureLockRepository();
-        }
-
-        public void AfterTest(IContainer container, TestDetails testDetails, object fixture)
-        {
-        }
-    }
-
-    [ContainerInitializer(60)]
-    public class TestExchangeServicesAttribute : Attribute, IContainerInitializationAction
-    {
-        public void BeforeTest(IContainer container, TestDetails testDetails, object fixture)
-        {
-            container.Get<IExchangeServiceClient>().Start();
-        }
-
-        public void AfterTest(IContainer container, TestDetails testDetails, object fixture)
-        {
-            container.Get<IExchangeServiceClient>().Stop();
-        }
-    }
-
-    [ContainerEnvironment, Cassandra, DefaultSettings(FileName = "functionalTests.csf"), DefaultSerializer, InjectProperties, RemoteTaskQueueRemoteLock, TestExchangeServices]
+    [EdiTestSuite, WithApplicationSettings(FileName = "functionalTests.csf"),
+     WithDefaultSerializer,
+     WithExchangeServices,
+     WithRemoteLock(), //NOTE lock used in TestCounterRepository
+     WithCassandra("CatalogueCluster", "QueueKeyspace")]
     public class TaskCounterTest
     {
         [ContainerSetUp]
         public void SetUp()
         {
             Monitoring.RestartProcessingTaskCounter(DateTime.UtcNow);
+        }
+
+        [Test]
+        public void TestCounts()
+        {
+            container.Get<IExchangeServiceClient>().Stop();
+            TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
+            TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
+            TaskCount count = null;
+            WaitFor(() => (count = Monitoring.GetProcessingTaskCount()).Count == 2, TimeSpan.FromSeconds(10));
+            Assert.IsNotNull(count);
+            Assert.AreEqual(2, count.Counts[(int)TaskState.New]);
+
+            container.Get<IExchangeServiceClient>().Start();
+            WaitFor(() => Monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
         }
 
         [Test]
@@ -104,6 +95,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
             Monitoring.RestartProcessingTaskCounter(now);
             var processingTaskCount = Monitoring.GetProcessingTaskCount();
             processingTaskCount.UpdateTicks = 0;
+            processingTaskCount.Counts = null;
             processingTaskCount.ShouldBeEquivalentTo(new TaskCount
                 {
                     Count = 0,
@@ -192,15 +184,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
         }
 
         [Injected]
-        public ITestCounterRepository TestCounterRepository { get; set; }
+        private readonly ITestCounterRepository TestCounterRepository;
 
         [Injected]
-        public IRemoteTaskQueue TaskQueue { get; set; }
+        private readonly IRemoteTaskQueue TaskQueue;
 
         [Injected]
-        public IRemoteTaskQueueTaskCounterClient Monitoring { get; set; }
+        private readonly IRemoteTaskQueueTaskCounterClient Monitoring;
 
         [Injected]
-        public IEventLogRepository EventLogRepository { get; set; }
+        private readonly IEventLogRepository EventLogRepository;
+
+        [Injected]
+        private readonly IContainer container;
     }
 }

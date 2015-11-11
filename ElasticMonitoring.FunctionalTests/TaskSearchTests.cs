@@ -7,25 +7,26 @@ using System.Threading;
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Cassandra;
 using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Container;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.PropertyInjection;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Serializer;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Settings;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Client;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests.Environment;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
+using TestCommon.NUnitWrappers;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [ContainerEnvironment, Cassandra, DefaultSettings(FileName = "functionalTests.csf"), DefaultSerializer, InjectProperties, RemoteTaskQueueRemoteLock, TestExchangeServices]
+    [EdiTestSuite,
+     WithApplicationSettings(FileName = "functionalTests.csf"),
+     WithExchangeServices,
+     WithDefaultSerializer,
+     WithCassandra("CatalogueCluster", "QueueKeyspace"),
+     WithRemoteLock("remoteLock")]
     public class TaskSearchTests
     {
         [ContainerSetUp]
@@ -33,12 +34,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             WaitFor(() =>
                 {
-                    var status = ElasticMonitoringServiceClient.GetStatus();
+                    var status = elasticMonitoringServiceClient.GetStatus();
                     return status.DistributedLockAcquired;
                 }, TimeSpan.FromMinutes(1));
-            ElasticMonitoringServiceClient.DeleteAll();
+            elasticMonitoringServiceClient.DeleteAll();
 
-            TaskSearchIndexSchema.ActualizeTemplate();
+            taskSearchIndexSchema.ActualizeTemplate();
         }
 
         [Test]
@@ -49,7 +50,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var taskId = QueueTask(new SlowTaskData());
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
-            ElasticMonitoringServiceClient.UpdateAndFlush();
+            elasticMonitoringServiceClient.UpdateAndFlush();
 
             var t1 = DateTime.Now;
             CheckSearch("*", t0, t1, taskId);
@@ -69,7 +70,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var taskId = QueueTask(new FailingTaskData {UniqueData = uniqueData});
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
-            ElasticMonitoringServiceClient.UpdateAndFlush();
+            elasticMonitoringServiceClient.UpdateAndFlush();
 
             var t1 = DateTime.Now;
             CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
@@ -87,7 +88,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 Console.WriteLine("Iteration: {0}", i);
                 var taskId0 = QueueTask(new SlowTaskData());
                 WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
-                ElasticMonitoringServiceClient.UpdateAndFlush();
+                elasticMonitoringServiceClient.UpdateAndFlush();
                 CheckSearch(string.Format("\"{0}\"", taskId0), t0, DateTime.Now, taskId0);
             }
         }
@@ -104,7 +105,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 var taskId2 = QueueTask(new SlowTaskData());
                 //Console.WriteLine("ids: {0} {1} {2}", taskId0, taskId1, taskId2);
                 WaitForTasks(new[] {taskId0, taskId1, taskId2}, TimeSpan.FromSeconds(5));
-                ElasticMonitoringServiceClient.UpdateAndFlush();
+                elasticMonitoringServiceClient.UpdateAndFlush();
                 CheckSearch(string.Format("\"{0}\"", taskId0), t0, DateTime.Now, taskId0);
             }
         }
@@ -121,7 +122,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var taskId1 = QueueTask(new AlphaTaskData());
             WaitForTasks(new[] {taskId1}, TimeSpan.FromSeconds(5));
 
-            ElasticMonitoringServiceClient.UpdateAndFlush();
+            elasticMonitoringServiceClient.UpdateAndFlush();
 
             var t2 = DateTime.Now;
 
@@ -145,7 +146,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             for(var i = 0; i < 200; i++)
                 lst.Add(QueueTask(new SlowTaskData()));
             WaitForTasks(lst.ToArray(), TimeSpan.FromSeconds(60));
-            ElasticMonitoringServiceClient.UpdateAndFlush();
+            elasticMonitoringServiceClient.UpdateAndFlush();
 
             var t1 = DateTime.Now;
 
@@ -161,7 +162,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             //todo kill q2 and delete all ES data
             //var q2 = string.Format("({0}) AND (Meta.EnqueueTime:[\"{1}\" TO \"{2}\"])", q, ToIsoTime(@from), ToIsoTime(to));
-            var taskSearchResponse = TaskSearchClient.SearchFirst(new TaskSearchRequest()
+            var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest()
                 {
                     FromTicksUtc = @from.ToUniversalTime().Ticks,
                     ToTicksUtc = to.ToUniversalTime().Ticks,
@@ -174,7 +175,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 {
                     foreach(var id in taskSearchResponse.Ids)
                         result.Add(id);
-                    taskSearchResponse = TaskSearchClient.SearchNext(taskSearchResponse.NextScrollId);
+                    taskSearchResponse = taskSearchClient.SearchNext(taskSearchResponse.NextScrollId);
                 } while(taskSearchResponse.Ids != null && taskSearchResponse.Ids.Length > 0);
             }
             return result.ToArray();
@@ -187,7 +188,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         private string QueueTask<T>(T taskData) where T : ITaskData
         {
-            var task = RemoteTaskQueue.CreateTask<T>(taskData);
+            var task = remoteTaskQueue.CreateTask<T>(taskData);
             task.Queue();
             return task.Id;
         }
@@ -208,27 +209,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             WaitFor(() => taskIds.All(taskId =>
                 {
-                    var taskState = RemoteTaskQueue.GetTaskInfo(taskId).Context.State;
+                    var taskState = remoteTaskQueue.GetTaskInfo(taskId).Context.State;
                     return taskState == TaskState.Finished || taskState == TaskState.Fatal;
                 }), timeSpan);
         }
 
         [Injected]
-        public IElasticMonitoringServiceClient ElasticMonitoringServiceClient { get; set; }
+        private readonly IElasticMonitoringServiceClient elasticMonitoringServiceClient;
 
         [Injected]
-        public TaskSearchIndexSchema TaskSearchIndexSchema { get; set; }
+        private readonly TaskSearchIndexSchema taskSearchIndexSchema;
 
         [Injected]
-        public ITaskSearchClient TaskSearchClient { get; set; }
+        private readonly ITaskSearchClient taskSearchClient;
 
         [Injected]
-        public ICassandraCluster CassandraCluster { get; set; }
-
-        [Injected]
-        public IRemoteTaskQueue RemoteTaskQueue { get; set; }
-
-        [Injected]
-        public IEventLogRepository EventLogRepository { get; set; }
+        private readonly IRemoteTaskQueue remoteTaskQueue;
     }
 }

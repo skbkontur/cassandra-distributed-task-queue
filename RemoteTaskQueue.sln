@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteTaskQueue", "RemoteTaskQueue\RemoteTaskQueue.csproj", "{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}"
 EndProject
@@ -70,6 +70,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticMonitoring.MvcControllers", "ElasticMonitoring.MvcControllers\ElasticMonitoring.MvcControllers.csproj", "{72BDA3C5-2E09-4531-9230-86C7F019E55A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticMonitoring.TaskIndexedStorage", "ElasticMonitoring.TaskIndexedStorage\ElasticMonitoring.TaskIndexedStorage.csproj", "{DB958D74-D952-4E22-B9CB-6118D8D80EA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCommon", "TestCommon\TestCommon.csproj", "{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -193,6 +195,10 @@ Global
 		{DB958D74-D952-4E22-B9CB-6118D8D80EA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB958D74-D952-4E22-B9CB-6118D8D80EA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB958D74-D952-4E22-B9CB-6118D8D80EA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

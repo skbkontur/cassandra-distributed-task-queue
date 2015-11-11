@@ -13,7 +13,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
     {
         public ProcessedTasksCounter()
         {
-            statesCount = Enum.GetValues(typeof(TaskState)).Length;
             SetEmptyCounts();
             stateMap = new Dictionary<string, TaskState>();
             Reset();
@@ -21,7 +20,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         private void SetEmptyCounts()
         {
-            counts = new int[statesCount];
+            counts = new int[TaskStateHelpers.statesCount];
         }
 
         public void NewMetainformationAvailable(TaskMetaInformation[] metas, long nowTime)
@@ -92,7 +91,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
                 counts = SafeClone(snapshot.Counts);
                 if (counts == null)
                     SetEmptyCounts();
-                if (counts.Length != statesCount)
+                if (counts.Length != TaskStateHelpers.statesCount)
                     throw new InvalidOperationException("Snaphot corrupted");
             }
         }
@@ -174,7 +173,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
         private volatile Dictionary<string, TaskState> stateMap;
         private long lastCalculationTime = 0;
         private int count = 0;
-        private readonly int statesCount;
 
         #endregion
 

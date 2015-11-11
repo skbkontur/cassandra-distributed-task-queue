@@ -56,7 +56,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             if(totalSnapshot == null)
                 return null;
             var map = new Dictionary<string, TaskState>();
-            var counts = new int[0];
+            var counts = new int[TaskStateHelpers.statesCount];
             const TaskState fakeState = TaskState.InProcess;
             if(totalSnapshot.NotFinishedTasks != null)
             {
