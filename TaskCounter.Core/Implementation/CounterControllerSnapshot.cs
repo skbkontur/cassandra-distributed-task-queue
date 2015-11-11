@@ -2,7 +2,7 @@
 {
     public class CounterControllerSnapshot
     {
-        public long CountollerTicks { get; set; }
+        public long ControllerTicks { get; set; }
         public CompositeCounterSnapshot CounterSnapshot { get; set; }
     }
 }

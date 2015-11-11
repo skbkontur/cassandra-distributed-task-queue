@@ -63,7 +63,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
             var counterControllerSnapshot = new CounterControllerSnapshot
                 {
                     CounterSnapshot = cs0,
-                    CountollerTicks = 401
+                    ControllerTicks = 401
                 };
             snapshotStorage.Expect(s => s.SaveSnapshot(ARG.EqualsTo(counterControllerSnapshot)));
 
@@ -77,7 +77,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
             snapshotStorage.Expect(s => s.ReadSnapshotOrNull()).Return(new CounterControllerSnapshot()
                 {
                     CounterSnapshot = cs0,
-                    CountollerTicks = 100
+                    ControllerTicks = 100
                 });
             compositeCounter.Expect(c => c.LoadSnapshot(cs0));
             compositeCounter.Expect(m => m.GetSnapshotOrNull(maxSnapshotLength)).Return(null);
