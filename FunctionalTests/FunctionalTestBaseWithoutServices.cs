@@ -20,6 +20,7 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Cassandra.CassandraClient.Scheme;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
@@ -81,36 +82,23 @@ namespace FunctionalTests
                             Name = CassandraTestTaskLogger.columnFamilyName
                         }
                 }).ToArray();
-
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var settings = Container.Get<ICassandraSettings>();
-            var clusterConnection = cassandraCluster.RetrieveClusterConnection();
-            var keyspaceConnection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
-
-            var keyspaces = clusterConnection.RetrieveKeyspaces();
-            if(keyspaces.All(x => x.Name != settings.QueueKeyspace))
-            {
-                clusterConnection.AddKeyspace(
-                    new Keyspace
+            cassandraCluster.ActualizeKeyspaces(new[]
+                {
+                    new KeyspaceScheme
                         {
                             Name = settings.QueueKeyspace,
-                            ReplicaPlacementStrategy = "org.apache.cassandra.locator.SimpleStrategy",
-                            ReplicationFactor = 1
-                        });
-            }
-
-            var cassandraColumnFamilies = keyspaceConnection.DescribeKeyspace().ColumnFamilies;
+                            Configuration =
+                                {
+                                    ReplicationFactor = 1,
+                                    ReplicaPlacementStrategy = ReplicaPlacementStrategy.Simple,
+                                    ColumnFamilies = columnFamilies,
+                                }
+                        },
+                });
             foreach(var columnFamily in columnFamilies)
-            {
-                if(cassandraColumnFamilies.All(x => x.Key != columnFamily.Name))
-                    keyspaceConnection.AddColumnFamily(columnFamily);
-            }
-
-            foreach(var columnFamily in columnFamilies)
-            {
-                var columnFamilyConnection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name);
-                columnFamilyConnection.Truncate();
-            }
+                cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name).Truncate();
         }
     }
 }
