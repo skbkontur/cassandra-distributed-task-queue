@@ -5,6 +5,8 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
+using log4net;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
@@ -137,12 +139,19 @@ namespace RemoteQueue.Handling
         {
             createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
             var nowTicks = DateTime.UtcNow.Ticks;
-            var taskId = TimeGuid.NowGuid().ToGuid().ToString();
             var type = taskData.GetType();
+            var data = Serializer.Serialize(type, taskData);
+            var taskId = TimeGuid.NowGuid().ToGuid().ToString();
+            if(data.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
+            {
+                logger.InfoFormat("Blob type:{0} with id={1} has size={2} bytes. Cannot write to timeBasedColumnFamily.", typeof(T).Name, taskId, data.Length);
+                taskId = Guid.NewGuid().ToString();
+            }
+
             
             var task = new Task
                 {
-                    Data = Serializer.Serialize(type, taskData),
+                    Data = data,
                     Meta = new TaskMetaInformation(taskDataRegistry.GetTaskName(type), taskId)
                         {
                             Attempts = 0,
@@ -188,5 +197,6 @@ namespace RemoteQueue.Handling
         private readonly ITaskDataRegistry taskDataRegistry;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly bool enableContinuationOptimization;
+        private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueue));
     }
 }

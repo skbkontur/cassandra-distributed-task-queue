@@ -89,7 +89,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public TaskMetaInformation[] GetMetas(string[] taskIds)
         {
-            var metas = metaStorage.Read(taskIds);
+            var metas = metaStorage.Read(taskIds).Values.ToArray();
             metas.ForEach(x => x.MakeSnapshot());
             return metas;
         }

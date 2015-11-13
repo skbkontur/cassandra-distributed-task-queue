@@ -2,17 +2,19 @@
 
 namespace RemoteQueue.Cassandra.Primitives
 {
-    public interface IBlobStorage<T>
+    public interface IBlobStorage<T, TId>
     {
-        void Write(string id, T element);
-        void Write(KeyValuePair<string, T>[] elements);
-        T Read(string id);
-        T[] Read(string[] ids);
-        T[] ReadQuiet(string[] taskIds); 
+        BlobWriteResult Write(TId id, T element);
+        IBlobsWriteResult Write(IEnumerable<KeyValuePair<TId, T>> elements);
+        T Read(TId id);
+        Dictionary<TId, T> Read(IEnumerable<TId> ids);
         IEnumerable<T> ReadAll(int batchSize = 1000);
-        IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000);
+        IEnumerable<KeyValuePair<TId, T>> ReadAllWithIds(int batchSize = 1000);
+        void Delete(TId id, long timestamp);
+        void Delete(IEnumerable<TId> ids, long? timestamp);
+    }
 
-        void Delete(string id, long timestamp);
-        void Delete(string[] ids, long? timestamp);
+    public interface IBlobStorage<T> : IBlobStorage<T, string>
+    {
     }
 }

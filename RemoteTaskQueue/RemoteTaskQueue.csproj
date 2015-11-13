@@ -79,14 +79,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cassandra\Entities\TaskMetaUpdatedEvent.cs" />
+    <Compile Include="Cassandra\Primitives\BlobsWriteResult.cs" />
+    <Compile Include="Cassandra\Primitives\BlobWriteResult.cs" />
     <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryBase.cs" />
     <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryParameters.cs" />
+    <Compile Include="Cassandra\Primitives\IBlobsWriteResult.cs" />
     <Compile Include="Cassandra\Primitives\IColumnFamilyCreator.cs" />
     <Compile Include="Cassandra\Primitives\IColumnFamilyRepository.cs" />
     <Compile Include="Cassandra\Primitives\IColumnFamilyRepositoryParameters.cs" />
     <Compile Include="Cassandra\Primitives\KeyspaceNotFoundException.cs" />
     <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\OrderedBlobStorage.cs" />
+    <Compile Include="Cassandra\Primitives\SuccessBlobsWriteResult.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\BlobStorageExtenstions.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobStorageDecorator.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskDataBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskExceptionInfoBlobStorage.cs" />
@@ -94,6 +99,7 @@
     <Compile Include="Cassandra\Repositories\BlobStorages\TaskDataBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\TaskExceptionInfoBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\TaskMetaInformationBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorageSettings.cs" />
     <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerator.cs" />

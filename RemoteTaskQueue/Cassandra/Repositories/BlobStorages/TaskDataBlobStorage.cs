@@ -8,11 +8,11 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
     public class TaskDataBlobStorage : BlobStorageDecorator<byte[]>, ITaskDataBlobStorage
     {
         public TaskDataBlobStorage(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime)
-            : base(parameters, serializer, globalTime, columnFamilyName, orderedColumnFamilyName)
+            : base(parameters, serializer, globalTime, columnFamilyName, timeBasedColumnFamilyName)
         {
         }
 
         public const string columnFamilyName = "taskDataStorage";
-        public const string orderedColumnFamilyName = "orderedTaskDataStorage";
+        public const string timeBasedColumnFamilyName = "timeBasedTaskDataStorage";
     }
 }

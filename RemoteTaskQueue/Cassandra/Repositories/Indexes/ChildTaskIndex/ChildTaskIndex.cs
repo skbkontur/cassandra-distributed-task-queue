@@ -37,7 +37,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
         {
             var connection = repositoryParameters.CassandraCluster.RetrieveColumnFamilyConnection(repositoryParameters.Settings.QueueKeyspace, columnFamilyName);
             var indexedChildren = connection.GetRow(taskId).Select(column => serializer.Deserialize<string>(column.Value)).ToArray();
-            return metaInformationBlobStorage.Read(indexedChildren).Select(x => x.Id).ToArray();
+            return metaInformationBlobStorage.Read(indexedChildren).Keys.ToArray();
         }
 
         private readonly IColumnFamilyRepositoryParameters repositoryParameters;

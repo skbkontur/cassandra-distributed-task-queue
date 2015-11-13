@@ -9,11 +9,11 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
     public class TaskMetaInformationBlobStorage : BlobStorageDecorator<TaskMetaInformation>, ITaskMetaInformationBlobStorage
     {
         public TaskMetaInformationBlobStorage(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime)
-            : base(parameters, serializer, globalTime, columnFamilyName, orderedColumnFamilyName)
+            : base(parameters, serializer, globalTime, columnFamilyName, timeBasedColumnFamilyName)
         {
         }
 
         public const string columnFamilyName = "taskMetaInformation";
-        public const string orderedColumnFamilyName = "orderedTaskMetaInformation";
+        public const string timeBasedColumnFamilyName = "timeBasedTaskMetaInformation";
     }
 }

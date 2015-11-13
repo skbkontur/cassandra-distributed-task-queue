@@ -4,6 +4,8 @@ using System.Linq;
 
 using GroBuf;
 
+using JetBrains.Annotations;
+
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -22,7 +24,7 @@ namespace RemoteQueue.Cassandra.Primitives
             this.globalTime = globalTime;
         }
 
-        public void Write(string id, T element)
+        public BlobWriteResult Write([NotNull] string id, T element)
         {
             var connection = RetrieveColumnFamilyConnection();
             var nowTicks = globalTime.UpdateNowTicks();
@@ -32,9 +34,11 @@ namespace RemoteQueue.Cassandra.Primitives
                     Timestamp = nowTicks,
                     Value = serializer.Serialize(element)
                 });
+
+            return BlobWriteResult.Success;
         }
 
-        public void Write(KeyValuePair<string, T>[] elements)
+        public IBlobsWriteResult Write([NotNull] IEnumerable<KeyValuePair<string, T>> elements)
         {
             var connection = RetrieveColumnFamilyConnection();
             var nowTicks = globalTime.UpdateNowTicks();
@@ -49,9 +53,10 @@ namespace RemoteQueue.Cassandra.Primitives
                                                                             Value = serializer.Serialize(x.Value)
                                                                         }
                                                                 })));
+            return SuccessBlobsWriteResult.Instance;
         }
 
-        public T Read(string id)
+        public T Read([NotNull] string id)
         {
             var connection = RetrieveColumnFamilyConnection();
             Column column;
@@ -60,30 +65,15 @@ namespace RemoteQueue.Cassandra.Primitives
             return default(T);
         }
 
-        public T[] Read(string[] ids)
+        public Dictionary<string, T> Read([NotNull] IEnumerable<string> ids)
         {
-            return TryReadInternal(ids);
-        }
-
-        public T[] ReadQuiet(string[] cassandraIds)
-        {
-            CheckObjectIdentitiesValidness(cassandraIds);
-
-            var rows = new List<KeyValuePair<string, Column[]>>();
-            cassandraIds.Distinct()
-                        .Batch(1000, Enumerable.ToArray)
-                        .ForEach(batchIds => MakeInConnection(connection => rows.AddRange(connection.GetRows(batchIds, new[] {dataColumnName}))));
-
-            var rowsDict = rows.ToDictionary(row => row.Key);
-            var result = new T[cassandraIds.Length];
-            for(var i = 0; i < cassandraIds.Length; i++)
-            {
-                var id = cassandraIds[i];
-                KeyValuePair<string, Column[]> row;
-                if(rowsDict.TryGetValue(id, out row))
-                    result[i] = Read(row.Value);
-            }
-            return result;
+            return ids
+                .Batch(1000, Enumerable.ToArray)
+                .SelectMany(batch => MakeInConnection(connection => connection.GetRows(batch, new[] {dataColumnName})))
+                .Where(x => x.Value != null && x.Value.Length > 0)
+                .DistinctBy(x => x.Key)
+                .Select(pair => new KeyValuePair<string, T>(pair.Key, serializer.Deserialize<T>(pair.Value.First().Value)))
+                .ToDictionary(x => x.Key, x => x.Value);
         }
 
         public IEnumerable<T> ReadAll(int batchSize = 1000)
@@ -109,10 +99,8 @@ namespace RemoteQueue.Cassandra.Primitives
             }
         }
 
-        public void Delete(string id, long timestamp)
+        public void Delete([NotNull] string id, long timestamp)
         {
-            CheckObjectIdentityValidness(id);
-
             MakeInConnection(connection =>
                 {
                     var columns = connection.GetColumns(id, null, maximalColumnsCount);
@@ -120,17 +108,14 @@ namespace RemoteQueue.Cassandra.Primitives
                 });
         }
 
-        public void Delete(string[] ids, long? timestamp)
+        public void Delete([NotNull] IEnumerable<string> ids, long? timestamp)
         {
-            CheckObjectIdentitiesValidness(ids);
             ids.Batch(1000, Enumerable.ToArray).ForEach(x => DeleteInternal(x, timestamp));
         }
 
-        private T[] TryReadInternal(string[] ids)
+        private T[] TryReadInternal([NotNull] string[] ids)
         {
-            if(ids == null) 
-                throw new ArgumentNullException("ids");
-            if(ids.Length == 0) 
+            if(ids.Length == 0)
                 return new T[0];
 
             return ids
@@ -142,10 +127,9 @@ namespace RemoteQueue.Cassandra.Primitives
                 .Select(x => serializer.Deserialize<T>(x.Value))
                 .ToArray();
         }
-        
-        private KeyValuePair<string, T>[] TryReadInternalWithIds(string[] ids)
+
+        private KeyValuePair<string, T>[] TryReadInternalWithIds([NotNull] string[] ids)
         {
-            if(ids == null) throw new ArgumentNullException("ids");
             if(ids.Length == 0) return new KeyValuePair<string, T>[0];
             var rows = new List<KeyValuePair<string, Column[]>>();
             ids
@@ -165,8 +149,7 @@ namespace RemoteQueue.Cassandra.Primitives
 
         private void DeleteInternal(string[] ids, long? timestamp)
         {
-            MakeInConnection(
-                connection => connection.DeleteRows(ids, timestamp.HasValue ? timestamp.Value : (long?)null));
+            MakeInConnection(connection => connection.DeleteRows(ids, timestamp));
         }
 
         private void MakeInConnection(Action<IColumnFamilyConnection> action)
@@ -174,28 +157,16 @@ namespace RemoteQueue.Cassandra.Primitives
             var connection = RetrieveColumnFamilyConnection();
             action(connection);
         }
-        
+
         private TResult MakeInConnection<TResult>(Func<IColumnFamilyConnection, TResult> action)
         {
             var connection = RetrieveColumnFamilyConnection();
             return action(connection);
         }
 
-        private static void CheckObjectIdentityValidness(string id)
-        {
-            if(id == null)
-                throw new ArgumentNullException("id");
-        }
-
-        private static void CheckObjectIdentitiesValidness(string[] ids)
-        {
-            if(ids == null)
-                throw new ArgumentNullException("ids");
-        }
-
-        private readonly ISerializer serializer;
-        private readonly IGlobalTime globalTime;
         private const int maximalColumnsCount = 1000;
         private const string dataColumnName = "Data";
+        private readonly ISerializer serializer;
+        private readonly IGlobalTime globalTime;
     }
 }

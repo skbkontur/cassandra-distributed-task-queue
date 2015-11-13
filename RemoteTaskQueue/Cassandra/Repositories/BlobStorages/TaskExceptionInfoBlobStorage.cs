@@ -9,11 +9,11 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
     public class TaskExceptionInfoBlobStorage : BlobStorageDecorator<TaskExceptionInfo>, ITaskExceptionInfoBlobStorage
     {
         public TaskExceptionInfoBlobStorage(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime)
-            : base(parameters, serializer, globalTime, columnFamilyName, orderedColumnFamilyName)
+            : base(parameters, serializer, globalTime, columnFamilyName, timeBasedColumnFamilyName)
         {
         }
 
         public const string columnFamilyName = "taskExceptionInfo";
-        public const string orderedColumnFamilyName = "orderedTaskExceptionInfo";
+        public const string timeBasedColumnFamilyName = "timeBasedTaskExceptionInfo";
     }
 }

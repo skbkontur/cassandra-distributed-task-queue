@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 using GroBuf;
 
 using JetBrains.Annotations;
+
+using log4net;
 
 using MoreLinq;
 
@@ -15,21 +18,27 @@ using RemoteQueue.Cassandra.Repositories.Indexes;
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
-    public class OrderedBlobStorage<T> : ColumnFamilyRepositoryBase, IBlobStorage<T>
+    public class TimeBasedBlobStorage<T> : ColumnFamilyRepositoryBase, IBlobStorage<T, TimeGuid>
     {
-        public OrderedBlobStorage(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, string columnFamilyName)
+        public TimeBasedBlobStorage(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, string columnFamilyName)
             : base(parameters, columnFamilyName)
         {
             this.serializer = serializer;
             this.globalTime = globalTime;
         }
 
-        public void Write([NotNull] string id, T element)
+        public BlobWriteResult Write([NotNull] TimeGuid id, T element)
         {
+            var value = serializer.Serialize(element);
+            if(value.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
+            {
+                logger.InfoFormat("Blob with id={0} has size={1} bytes. Cannot write to columnFamily={2}", id.ToGuid(), value.Length, ColumnFamilyName);
+                return BlobWriteResult.OutOfSizeLimit;
+            }
+
             var connection = RetrieveColumnFamilyConnection();
             var nowTicks = globalTime.UpdateNowTicks();
             var columnInfo = GetColumnInfo(id);
@@ -38,16 +47,28 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 {
                     Name = columnInfo.ColumnName,
                     Timestamp = nowTicks,
-                    Value = serializer.Serialize(element)
+                    Value = value
                 });
+            return BlobWriteResult.Success;
         }
 
-        public void Write(KeyValuePair<string, T>[] elements)
+        public IBlobsWriteResult Write([NotNull] IEnumerable<KeyValuePair<TimeGuid, T>> elements)
         {
+            var blobsWriteResult = new BlobsWriteResult();
+            var items = elements.Select(element => new KeyValuePair<TimeGuid, byte[]>(element.Key, serializer.Serialize(element.Value)))
+                                .Where((element, index) =>
+                                    {
+                                        if(element.Value.Length <= TimeBasedBlobStorageSettings.BlobSizeLimit)
+                                            return true;
+                                        logger.InfoFormat("Blob with id={0} has size={1} bytes. Cannot write to columnFamily={2}", element.Key.ToGuid(), element.Value.Length, ColumnFamilyName);
+                                        blobsWriteResult.OutOfSizeLimitBlobIndexes.Add(index);
+                                        return false;
+                                    });
+
             var connection = RetrieveColumnFamilyConnection();
             var updateNowTicks = globalTime.UpdateNowTicks();
 
-            connection.BatchInsert(elements.Select(x =>
+            connection.BatchInsert(items.Select(x =>
                 {
                     var columnInfo = GetColumnInfo(x.Key);
                     return new KeyValuePair<string, IEnumerable<Column>>(
@@ -58,13 +79,15 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                                     {
                                         Name = columnInfo.ColumnName,
                                         Timestamp = updateNowTicks,
-                                        Value = serializer.Serialize(x.Value)
+                                        Value = x.Value
                                     }
                             });
                 }));
+
+            return blobsWriteResult;
         }
 
-        public T Read([NotNull] string id)
+        public T Read([NotNull] TimeGuid id)
         {
             var connection = RetrieveColumnFamilyConnection();
             var columnInfo = GetColumnInfo(id);
@@ -75,22 +98,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return default(T);
         }
 
-        //may be rename to Select?
-        public T[] Read([NotNull] string[] ids)
+        public Dictionary<TimeGuid, T> Read([NotNull] IEnumerable<TimeGuid> ids)
         {
-            return SelectColumns(ids).Select(column => serializer.Deserialize<T>(column.Value)).ToArray();
-        }
-
-        public T[] ReadQuiet([NotNull] string[] ids)
-        {
-            var result = new T[ids.Length];
-            var objectsMap = SelectColumns(ids).ToDictionary(x => x.Name);
-            for(var i = 0; i < ids.Length; i++)
-            {
-                if(objectsMap.ContainsKey(ids[i]))
-                    result[i] = serializer.Deserialize<T>(objectsMap[ids[i]].Value);
-            }
-            return result;
+            return SelectColumns(ids).ToDictionary(column => GetIdFromColumnName(column.Name), column => serializer.Deserialize<T>(column.Value));
         }
 
         public IEnumerable<T> ReadAll(int batchSize = 1000)
@@ -98,12 +108,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return SelectAll(batchSize, column => serializer.Deserialize<T>(column.Value));
         }
 
-        public IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000)
+        public IEnumerable<KeyValuePair<TimeGuid, T>> ReadAllWithIds(int batchSize = 1000)
         {
-            return SelectAll(batchSize, column => new KeyValuePair<string, T>(column.Name, serializer.Deserialize<T>(column.Value)));
+            return SelectAll(batchSize, column => new KeyValuePair<TimeGuid, T>(GetIdFromColumnName(column.Name), serializer.Deserialize<T>(column.Value)));
         }
 
-        public void Delete([NotNull] string id, long timestamp)
+        public void Delete([NotNull] TimeGuid id, long timestamp)
         {
             var connection = RetrieveColumnFamilyConnection();
             var columnInfo = GetColumnInfo(id);
@@ -111,7 +121,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             connection.DeleteColumn(columnInfo.RowKey, columnInfo.ColumnName, timestamp);
         }
 
-        public void Delete([NotNull] string[] ids, long? timestamp)
+        public void Delete([NotNull] IEnumerable<TimeGuid> ids, long? timestamp)
         {
             ids
                 .Select(GetColumnInfo)
@@ -119,24 +129,24 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 .ForEach(group =>
                     {
                         group
+                            .Distinct()
                             .Batch(1000, Enumerable.ToArray)
-                            .ForEach(columnInfo => MakeInConnection(connection => connection.DeleteBatch(group.Key, columnInfo.Select(x => x.ColumnName).Distinct().ToArray(), timestamp)));
+                            .ForEach(columnInfo => MakeInConnection(connection => connection.DeleteBatch(group.Key, columnInfo.Select(x => x.ColumnName).ToArray(), timestamp)));
                     });
         }
 
-        private IEnumerable<Column> SelectColumns([NotNull] string[] ids)
+        private IEnumerable<Column> SelectColumns([NotNull] IEnumerable<TimeGuid> ids)
         {
-            if(!ids.Any())
-                return new Column[0];
-
             return ids
+                .OrderBy(x => x)
                 .Select(GetColumnInfo)
                 .GroupBy(x => x.RowKey)
                 .SelectMany(group =>
                     {
                         return group
+                            .Distinct()
                             .Batch(1000, Enumerable.ToArray)
-                            .SelectMany(columnInfo => MakeInConnection(connection => connection.GetColumns(group.Key, columnInfo.Select(x => x.ColumnName).Distinct().ToArray())));
+                            .SelectMany(columnInfo => MakeInConnection(connection => connection.GetColumns(group.Key, columnInfo.Select(x => x.ColumnName).ToArray())));
                     })
                 .Where(x => x.Value != null);
         }
@@ -181,39 +191,22 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return action(connection);
         }
 
-        private static ColumnInfo GetColumnInfo(string id)
+        private static ColumnInfo GetColumnInfo(TimeGuid id)
         {
-            TimeGuid timeGuid;
-            if(!TryGetTimeGuid(id, out timeGuid))
-                throw new ArgumentException("Parameter id should be TimeGuid.");
+            var ticks = id.GetTimestamp().Ticks;
+            var rowKey = ticks / TimeBasedBlobStorageSettings.TickPartition + "_" + ticks % TimeBasedBlobStorageSettings.SplittingFactor;
 
-            var ticks = timeGuid.GetTimestamp().Ticks;
-            var rowKey = ticks / tickPartition + "_" + timeGuid.GetHashCode() % splittingFactor;
-
-            return new ColumnInfo {RowKey = rowKey, ColumnName = id};
+            return new ColumnInfo {RowKey = rowKey, ColumnName = ticks.ToString("D20", CultureInfo.InvariantCulture) + "_" + id.ToGuid()};
         }
 
-        private static bool TryGetTimeGuid(string input, out TimeGuid timeGuid)
+        private static TimeGuid GetIdFromColumnName(string columnName)
         {
-            timeGuid = null;
-            Guid guid;
-            if(!Guid.TryParse(input, out guid))
-                return false;
-            if(TimeGuidFormatter.GetVersion(guid) != GuidVersion.TimeBased)
-                return false;
-
-            timeGuid = new TimeGuid(guid);
-            return true;
+            var parts = columnName.Split('_');
+            return new TimeGuid(Guid.Parse(parts[1]));
         }
 
-        /// <summary>
-        ///     пока сделали константой, в будущем можно будет сделать CF внутри которой хранить по тикам значение splittingFactor,
-        ///     при старте загружать все в cache и по таймеру обновлять вновь добавленные.
-        /// </summary>
-        private const int splittingFactor = 10;
-
-        private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
+        private static readonly ILog logger = LogManager.GetLogger("TimeBasedBlobStorage");
     }
 }
