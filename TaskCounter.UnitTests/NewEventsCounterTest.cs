@@ -25,11 +25,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
         public void TestSnapshot()
         {
             var counter = new NewTasksCounter(10);
-            counter.NewMetainformationAvailable(CreateMetas(CreateMeta("a", true, 80), CreateMeta("b", true, 70)), 100);
+            counter.NewMetainformationAvailable(CreateMetas(CreateMeta("a", true, 80), CreateMeta("b", true, 70), CreateMeta("z", true, 99)), 100);
             CheckCount(counter, 2);
 
             var newEventsCounterSnapshot = counter.GetSnapshot(100);
             counter.Reset();
+            CheckCount(counter, 0);
+
+            counter = new NewTasksCounter(10);
             CheckCount(counter, 0);
 
             Assert.AreEqual(2, newEventsCounterSnapshot.Tasks.Length);
@@ -40,7 +43,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
 
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("a", false, 80)), 150);
 
-            CheckCount(counter, 1);
+            CheckCount(counter, 2);
         }
 
         [Test]
@@ -71,11 +74,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("d", true, 110)), 130);
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("e", true, 110)), 130);
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("z", true, 121)), 130);
-            CheckCount(counter, 3);
+            CheckCount(counter, 4);
 
             counter.NewMetainformationAvailable(CreateMetas(CreateMeta("d", false, 110)), 160);
-            counter.NewMetainformationAvailable(CreateMetas(CreateMeta("z", false, 1210)), 160);
-            CheckCount(counter, 2);
+            counter.NewMetainformationAvailable(CreateMetas(CreateMeta("z", false, 121)), 160);
+            CheckCount(counter, 3);
         }
 
         private static void CheckCount(NewTasksCounter counter, int value)

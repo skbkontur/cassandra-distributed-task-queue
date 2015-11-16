@@ -78,7 +78,7 @@
     <Compile Include="Implementation\IMetaCachedReader.cs" />
     <Compile Include="Implementation\MetaCachedReader.cs" />
     <Compile Include="Implementation\MetaReaderSettings.cs" />
-    <Compile Include="Implementation\NewEventsCounters\NewEventsCounterValue.cs" />
+    <Compile Include="Implementation\NewEventsCounters\NewEventsCounterSnapshot.cs" />
     <Compile Include="Implementation\NewEventsCounters\NewTasksCounter.cs" />
     <Compile Include="Implementation\ProcessedTasksCounter.cs" />
     <Compile Include="Implementation\SnaphotConverter.cs" />

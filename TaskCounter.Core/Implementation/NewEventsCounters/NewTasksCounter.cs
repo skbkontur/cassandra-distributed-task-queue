@@ -15,6 +15,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
     {
         public NewTasksCounter(long watchInterval)
         {
+            notCountedNewTasks = new Dictionary<string, long>();
             this.watchInterval = watchInterval;
             value = 0;
         }
@@ -33,7 +34,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
         {
             lock(lockObject)
             {
+                logger.LogInfoFormat("Reset");
                 tasks.Clear();
+                notCountedNewTasks = new Dictionary<string, long>();
                 SetValue(0);
             }
         }
@@ -42,14 +45,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
         {
             if(snapshot == null || snapshot.Tasks == null)
             {
-                logger.LogWarnFormat("Snapshot is empty");
+                logger.LogInfoFormat("Snapshot is empty");
                 return;
             }
             lock(lockObject)
             {
-                tasks.Clear();
+                Reset();
                 foreach(var task in snapshot.Tasks)
                     tasks.Add(task);
+                if (snapshot.NotCountedNewTasks != null)
+                    notCountedNewTasks = new Dictionary<string, long>(snapshot.NotCountedNewTasks);
                 SetValue(tasks.Count);
             }
         }
@@ -60,7 +65,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
             {
                 if(tasks.Count > maxLength)
                     return null;
-                return new NewEventsCounterSnapshot() {Tasks = tasks.ToArray()};
+                return new NewEventsCounterSnapshot() {Tasks = tasks.ToArray(), NotCountedNewTasks = new Dictionary<string, long>(notCountedNewTasks)};
             }
         }
 
@@ -105,12 +110,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
             if(tasks.Contains(taskId))
             {
                 if(!isWaitingState)
-                    tasks.Remove(taskId);
+                {
+                    if(tasks.Remove(taskId))
+                        lostLogger.InfoFormat("Task {0} is removed", taskId);
+                }
             }
             else
             {
                 if(isWaitingState)
-                    tasks.Add(taskId);
+                {
+                    if(tasks.Add(taskId))
+                        lostLogger.InfoFormat("Task {0} is added", taskId);
+                }
             }
         }
 
@@ -125,9 +136,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
         }
 
         private static readonly ILog logger = Log.For("NewEventsCounter");
+        private static readonly ILog lostLogger = Log.For("LostTasks");
 
         private readonly long watchInterval;
-        private readonly Dictionary<string, long> notCountedNewTasks = new Dictionary<string, long>();
+        private volatile Dictionary<string, long> notCountedNewTasks;
         private readonly HashSet<string> tasks = new HashSet<string>();
         private readonly object lockObject = new object();
         private long value;
