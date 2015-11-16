@@ -41,19 +41,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
             }
         }
 
+        public void ProcessTaskCreation<T>(TaskMetaInformation meta, T taskData)
+        {
+        }
+
+        public void ProcessTaskCancel(TaskMetaInformation meta)
+        {
+        }
+
         public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)
         {
             statsDClient.Increment("TasksQueued." + meta.Name);
-        }
-
-        public void RecordTaskExecutionTime([NotNull] TaskMetaInformation meta, TimeSpan taskExecutionTime)
-        {
-            statsDClient.Timing("ExecutionTime." + meta.Name, (long)taskExecutionTime.TotalMilliseconds);
-        }
-
-        public void RecordTaskExecutionResult([NotNull] TaskMetaInformation meta, [NotNull] HandleResult handleResult)
-        {
-            statsDClient.Increment("TasksExecuted." + meta.Name + "." + handleResult.FinishAction);
         }
 
         public void ProcessTaskEnqueueing([NotNull] TaskMetaInformation meta)
@@ -64,6 +62,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
         public void ProcessTaskDequeueing([NotNull] TaskMetaInformation meta)
         {
             statsTimerClient.TimingEnd(string.Format("{0}_{1}", meta.Id, meta.Attempts), GetStatisticsKey(meta));
+        }
+
+        public void ProcessTaskExecutionFinished(TaskMetaInformation meta, HandleResult handleResult, TimeSpan taskExecutionTime)
+        {
+            statsDClient.Timing("ExecutionTime." + meta.Name, (long)taskExecutionTime.TotalMilliseconds);
+            statsDClient.Increment("TasksExecuted." + meta.Name + "." + handleResult.FinishAction);
+        }
+
+        public void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e)
+        {
         }
 
         [NotNull]

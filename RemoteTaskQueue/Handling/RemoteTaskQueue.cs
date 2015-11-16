@@ -74,6 +74,7 @@ namespace RemoteQueue.Handling
                 var meta = HandleTasksMetaStorage.GetMeta(taskId);
                 if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError || meta.State == TaskState.InProcess)
                 {
+                    RemoteTaskQueueProfiler.ProcessTaskCancel(meta);
                     meta.State = TaskState.Canceled;
                     meta.FinishExecutingTicks = DateTime.UtcNow.Ticks;
                     HandleTasksMetaStorage.AddMeta(meta);
@@ -81,6 +82,7 @@ namespace RemoteQueue.Handling
                 }
                 return false;
             }
+            
         }
 
         public bool RerunTask(string taskId, TimeSpan delay)
@@ -136,6 +138,7 @@ namespace RemoteQueue.Handling
             var nowTicks = DateTime.UtcNow.Ticks;
             var taskId = Guid.NewGuid().ToString();
             var type = taskData.GetType();
+            
             var task = new Task
                 {
                     Data = Serializer.Serialize(type, taskData),
@@ -149,6 +152,7 @@ namespace RemoteQueue.Handling
                             MinimalStartTicks = 0,
                         }
                 };
+            RemoteTaskQueueProfiler.ProcessTaskCreation(task.Meta, taskData);
             return enableContinuationOptimization && LocalTaskQueue.Instance != null
                        ? new RemoteTaskWithContinuationOptimization(task, HandleTaskCollection, LocalTaskQueue.Instance)
                        : new RemoteTask(task, HandleTaskCollection);

@@ -7,6 +7,14 @@ namespace RemoteQueue.Profiling
 {
     public class EmptyRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
+        public void ProcessTaskCreation<T>(TaskMetaInformation meta, T taskData)
+        {
+        }
+
+        public void ProcessTaskCancel(TaskMetaInformation meta)
+        {
+        }
+
         public void ProcessTaskCreation(TaskMetaInformation meta)
         {
         }
@@ -19,11 +27,11 @@ namespace RemoteQueue.Profiling
         {
         }
 
-        public void RecordTaskExecutionTime(TaskMetaInformation meta, TimeSpan taskExecutionTime)
+        public void ProcessTaskExecutionFinished(TaskMetaInformation meta, HandleResult handleResult, TimeSpan taskExecutionTime)
         {
         }
 
-        public void RecordTaskExecutionResult(TaskMetaInformation meta, HandleResult handleResult)
+        public void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e)
         {
         }
     }

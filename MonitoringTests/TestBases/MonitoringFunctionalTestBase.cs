@@ -16,6 +16,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.Storage;
 using SKBKontur.Catalogue.TestCore;
+using SKBKontur.Catalogue.TestCore.Logging;
 using SKBKontur.Catalogue.WebTestCore;
 using SKBKontur.Catalogue.WebTestCore.TestSystem;
 
@@ -32,6 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
             ResetTaskQueueCassandraState();
             ResetBusinessObjectStorageState();
             ResetTaskQueueMonitoringState();
+
             container.Get<IExchangeServiceClient>().Start();
         }
 
