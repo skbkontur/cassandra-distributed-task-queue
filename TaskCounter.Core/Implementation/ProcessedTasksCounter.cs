@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 using RemoteQueue.Cassandra.Entities;
@@ -23,20 +22,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             counts = new int[TaskStateHelpers.statesCount];
         }
 
-        public void NewMetainformationAvailable(TaskMetaInformation[] metas, long nowTime)
-        {
-            lock (lockObject)
-            {
-                if (metas.Length <= 0)
-                    NoMeta(nowTime);
-                else
-                {
-                    foreach (var meta in metas)
-                        Process(meta);
-                }
-            }
-        }
-
         public void NoMeta(long nowTicks)
         {
             Interlocked.Exchange(ref lastCalculationTime, nowTicks);
@@ -52,17 +37,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
         public TaskCount GetCount()
         {
             var taskCount = new TaskCount
-            {
-                Count = Interlocked.CompareExchange(ref count, 0, 0),
-                UpdateTicks = Interlocked.Read(ref lastCalculationTime),
-                Counts = SafeClone(counts)
-            };
+                {
+                    Count = Interlocked.CompareExchange(ref count, 0, 0),
+                    UpdateTicks = Interlocked.Read(ref lastCalculationTime),
+                    Counts = SafeClone(counts)
+                };
             return taskCount;
         }
 
         public void Reset()
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 stateMap.Clear();
                 Interlocked.Exchange(ref lastCalculationTime, 0);
@@ -73,9 +58,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         public CounterSnapshot GetSnapshotOrNull(int maxLength)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
-                if (stateMap.Count > maxLength)
+                if(stateMap.Count > maxLength)
                     return null;
                 return new CounterSnapshot(stateMap, Interlocked.Read(ref lastCalculationTime), Interlocked.CompareExchange(ref count, 0, 0), counts);
             }
@@ -83,22 +68,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         public void LoadSnapshot(CounterSnapshot snapshot)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 stateMap = snapshot.BuildMap();
                 Interlocked.Exchange(ref lastCalculationTime, snapshot.CountCalculatedTime);
                 Interlocked.Exchange(ref count, snapshot.Count);
                 counts = SafeClone(snapshot.Counts);
-                if (counts == null)
+                if(counts == null)
                     SetEmptyCounts();
-                if (counts.Length != TaskStateHelpers.statesCount)
+                if(counts.Length != TaskStateHelpers.statesCount)
                     throw new InvalidOperationException("Snaphot corrupted");
             }
         }
 
         public int GetNotFinishedTasksCount()
         {
-            lock (lockObject)
+            lock(lockObject)
                 return stateMap.Count;
         }
 
@@ -117,9 +102,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             TaskState oldState;
             var isRunning = stateMap.TryGetValue(taskId, out oldState);
             var newIsTerm = IsTerminalState(newState);
-            if (isRunning)
+            if(isRunning)
             {
-                if (newIsTerm)
+                if(newIsTerm)
                 {
                     Decrement();
                     AddCounter(oldState, -1);
@@ -132,13 +117,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             }
             else
             {
-                if (!newIsTerm)
+                if(!newIsTerm)
                 {
                     Increment();
                     AddCounter(newState, 1);
                 }
             }
-            if (newIsTerm)
+            if(newIsTerm)
                 stateMap.Remove(taskId);
             else
                 stateMap[taskId] = newState;
@@ -156,10 +141,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         private static int[] SafeClone(int[] src)
         {
-            if (src == null) return null;
+            if(src == null) return null;
             var length = src.Length;
             var res = new int[length];
-            for (var i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
                 res[i] = Interlocked.CompareExchange(ref src[i], 0, 0);
             return res;
         }
@@ -180,12 +165,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
         {
             public CounterSnapshot(Dictionary<string, TaskState> map, long countCalculatedTime, int count, int[] counts)
             {
-                if (map != null)
+                if(map != null)
                 {
                     var i = 0;
                     TaskIds = new string[map.Count];
                     TaskStates = new TaskState[map.Count];
-                    foreach (var kvp in map)
+                    foreach(var kvp in map)
                     {
                         TaskIds[i] = kvp.Key;
                         TaskStates[i] = kvp.Value;
@@ -200,11 +185,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             public Dictionary<string, TaskState> BuildMap()
             {
                 var res = new Dictionary<string, TaskState>();
-                if (TaskIds != null && TaskStates != null)
+                if(TaskIds != null && TaskStates != null)
                 {
-                    if (TaskIds.Length != TaskStates.Length)
+                    if(TaskIds.Length != TaskStates.Length)
                         throw new InvalidOperationException("Snaphot currupted. Lengths are not same");
-                    for (var i = 0; i < TaskIds.Length; i++)
+                    for(var i = 0; i < TaskIds.Length; i++)
                         res.Add(TaskIds[i], TaskStates[i]);
                 }
                 return res;

@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CounterControllerTest.cs" />
+    <Compile Include="NewEventsCounterTest.cs" />
     <Compile Include="ProcessedTasksCounterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

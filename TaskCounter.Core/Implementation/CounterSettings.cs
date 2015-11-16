@@ -4,6 +4,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 {
     public static class CounterSettings
     {
+        public static readonly TimeSpan NewEventsWatchInterval = TimeSpan.FromMinutes(5);
         public static readonly TimeSpan EventGarbageCollectionTimeout = TimeSpan.FromMinutes(5);
         public static readonly TimeSpan MaxHistoryDepth = TimeSpan.FromDays(3);
         public static readonly TimeSpan CounterUpdateInterval = TimeSpan.FromSeconds(2);

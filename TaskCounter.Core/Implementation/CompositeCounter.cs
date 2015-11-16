@@ -5,6 +5,7 @@ using log4net;
 
 using RemoteQueue.Cassandra.Entities;
 
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.NewEventsCounters;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 
@@ -12,8 +13,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 {
     public class CompositeCounter : ICompositeCounter
     {
+        public CompositeCounter()
+        {
+            newTasksCounter = new NewTasksCounter();
+        }
+
+        private NewTasksCounter newTasksCounter;
+
         public void ProcessMetas(TaskMetaInformation[] metas, long readTicks)
         {
+            newTasksCounter.NewMetainformationAvailable(metas, readTicks);
             var processedNames = new HashSet<string>();
             foreach(var taskMetaInformation in metas)
             {
