@@ -13,11 +13,11 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Container;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
@@ -34,10 +34,48 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
      WithCassandra("CatalogueCluster", "QueueKeyspace")]
     public class TaskCounterTest
     {
-        [ContainerSetUp]
+        [EdiSetUp]
         public void SetUp()
         {
+            //todo сделать чтобы схема в кассандре создавалась
+            //    container.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(container);
+            //    var cassandraSchemeActualizer = container.Get<ICassandraSchemeActualizer>();
+
+            //    cassandraSchemeActualizer.AddNewColumnFamilies();
+            //    cassandraSchemeActualizer.TruncateAllColumnFamilies();
+
+            //    CassandraHelpers.DropAndCreateDatabase(columnFamilyRegistry.GetAllColumnFamilyNames().Concat(new[]
+            //        {
+            //            new ColumnFamily
+            //                {
+            //                    Name = "columnFamilyName",
+            //                },
+            //            new ColumnFamily
+            //                {
+            //                    Name = "remoteLock",
+            //                }
+            //        }).ToArray(), container);
             Monitoring.RestartProcessingTaskCounter(DateTime.UtcNow);
+        }
+
+        [Test, Ignore]
+        public void TestNewCounter()
+        {
+            //note long test
+            container.Get<IExchangeServiceClient>().Stop();
+            TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
+            TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
+            Thread.Sleep(TimeSpan.FromMinutes(6));
+            TaskCount count = null;
+            WaitFor(() => (count = Monitoring.GetProcessingTaskCount()).OldWaintingTaskCount == 2, TimeSpan.FromSeconds(10));
+            Assert.IsNotNull(count);
+
+            container.Get<IExchangeServiceClient>().Start();
+            WaitFor(() =>
+                {
+                    var taskCount = Monitoring.GetProcessingTaskCount();
+                    return taskCount.Count == 0 && taskCount.OldWaintingTaskCount == 0;
+                }, TimeSpan.FromSeconds(10));
         }
 
         [Test]
@@ -182,6 +220,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
                     return true;
                 }, timeSpan);
         }
+
+        [Injected]
+        private readonly IColumnFamilyRegistry columnFamilyRegistry;
 
         [Injected]
         private readonly ITestCounterRepository TestCounterRepository;

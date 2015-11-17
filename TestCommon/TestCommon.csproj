@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cassandra.CassandraClient, Version=1.6.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Cassandra.CassandraClient.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.NUnit.Extensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.NUnit.Extensions.dll</HintPath>
     </Reference>
@@ -45,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CassandraHelpers.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="NUnitWrappers\WithRemoteLock.cs" />
     <Compile Include="NUnitWrappers\WithExchangeServices.cs" />
@@ -54,6 +59,10 @@
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
+      <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -23,6 +23,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             var totalCount = counter.GetTotalCount();
             var taskCounts = counter.GetAllCounts();
             //todo post time value, not now
+            graphiteClient.Send(string.Format("{0}.TotalCount.OldWaintingTaskCount.{1}", graphitePrefix, Environment.MachineName), totalCount.OldWaintingTaskCount, DateTime.UtcNow);
             graphiteClient.Send(string.Format("{0}.TotalCount.TaskCounter.{1}", graphitePrefix, Environment.MachineName), totalCount.Count, DateTime.UtcNow);
             graphiteClient.Send(string.Format("{0}.ActualizationLag.TaskCounter.{1}", graphitePrefix, Environment.MachineName), (long)TimeSpan.FromTicks(DateTime.UtcNow.Ticks - totalCount.UpdateTicks).TotalMilliseconds, DateTime.UtcNow);
             SendCountsByState(string.Format("{0}.TotalCount", graphitePrefix), totalCount.Counts);

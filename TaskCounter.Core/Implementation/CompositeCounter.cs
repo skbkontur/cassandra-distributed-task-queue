@@ -18,8 +18,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             newTasksCounter = new NewTasksCounter();
         }
 
-        private NewTasksCounter newTasksCounter;
-
         public void ProcessMetas(TaskMetaInformation[] metas, long readTicks)
         {
             newTasksCounter.NewMetainformationAvailable(metas, readTicks);
@@ -66,7 +64,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         public TaskCount GetTotalCount()
         {
-            return totalCounter.GetCount();
+            var totalCount = totalCounter.GetCount();
+            totalCount.OldWaintingTaskCount = newTasksCounter.GetValue();
+            return totalCount;
         }
 
         public void Reset()
@@ -123,6 +123,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
             logger.LogInfoFormat("Snapshot loaded. Counter start value = {0}", totalCounter.GetCount().Count);
         }
+
+        private readonly NewTasksCounter newTasksCounter;
 
         private static readonly ILog logger = LogManager.GetLogger("CompositeCounter");
 
