@@ -90,6 +90,7 @@
     <Compile Include="Cassandra\Primitives\KeyspaceNotFoundException.cs" />
     <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
     <Compile Include="Cassandra\Primitives\SuccessBlobsWriteResult.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\IntermideateBlobStorageDecorator.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobStorageExtenstions.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobStorageDecorator.cs" />
