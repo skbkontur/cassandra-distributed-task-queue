@@ -23,13 +23,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             var totalCount = counter.GetTotalCount();
             var taskCounts = counter.GetAllCounts();
             //todo post time value, not now
-            graphiteClient.Send(string.Format("{0}.TotalCount.OldWaintingTaskCount.{1}", graphitePrefix, Environment.MachineName), totalCount.OldWaintingTaskCount, DateTime.UtcNow);
-            graphiteClient.Send(string.Format("{0}.TotalCount.TaskCounter.{1}", graphitePrefix, Environment.MachineName), totalCount.Count, DateTime.UtcNow);
-            graphiteClient.Send(string.Format("{0}.ActualizationLag.TaskCounter.{1}", graphitePrefix, Environment.MachineName), (long)TimeSpan.FromTicks(DateTime.UtcNow.Ticks - totalCount.UpdateTicks).TotalMilliseconds, DateTime.UtcNow);
+            DateTime utcNow = DateTime.UtcNow;
+            graphiteClient.Send(string.Format("{0}.TotalCount.OldWaitingTaskCount.{1}", graphitePrefix, Environment.MachineName), totalCount.OldWaitingTaskCount, utcNow);
+            graphiteClient.Send(string.Format("{0}.TotalCount.TaskCounter.{1}", graphitePrefix, Environment.MachineName), totalCount.Count, utcNow);
+            graphiteClient.Send(string.Format("{0}.ActualizationLag.TaskCounter.{1}", graphitePrefix, Environment.MachineName), (long)TimeSpan.FromTicks(utcNow.Ticks - totalCount.UpdateTicks).TotalMilliseconds, utcNow);
             SendCountsByState(string.Format("{0}.TotalCount", graphitePrefix), totalCount.Counts);
             foreach(var kvp in taskCounts)
             {
-                graphiteClient.Send(string.Format("{0}.{2}_Count.TaskCounter.{1}", graphitePrefix, Environment.MachineName, kvp.Key), kvp.Value.Count, DateTime.UtcNow);
+                graphiteClient.Send(string.Format("{0}.{2}_Count.TaskCounter.{1}", graphitePrefix, Environment.MachineName, kvp.Key), kvp.Value.Count, utcNow);
                 SendCountsByState(string.Format("{0}.{1}_Count", graphitePrefix, kvp.Key), kvp.Value.Counts);
             }
         }

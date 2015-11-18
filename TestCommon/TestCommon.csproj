@@ -32,13 +32,14 @@
   <ItemGroup>
     <Reference Include="Cassandra.CassandraClient, Version=1.6.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Cassandra.CassandraClient.dll</HintPath>
+      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.NUnit.Extensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.NUnit.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="GroboContainer">
-      <HintPath>..\..\Assemblies\Temp\GroboContainer.dll</HintPath>
+    <Reference Include="GroboContainer, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -50,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CassandraHelpers.cs" />
-    <Compile Include="Class1.cs" />
     <Compile Include="NUnitWrappers\WithRemoteLock.cs" />
     <Compile Include="NUnitWrappers\WithExchangeServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

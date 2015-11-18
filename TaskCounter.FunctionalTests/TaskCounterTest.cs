@@ -13,7 +13,6 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
@@ -55,7 +54,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
             //                    Name = "remoteLock",
             //                }
             //        }).ToArray(), container);
-            Monitoring.RestartProcessingTaskCounter(DateTime.UtcNow);
+            monitoring.RestartProcessingTaskCounter(DateTime.UtcNow);
         }
 
         [Test, Ignore]
@@ -63,18 +62,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
         {
             //note long test
             container.Get<IExchangeServiceClient>().Stop();
-            TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
-            TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
+            taskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
+            taskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
             Thread.Sleep(TimeSpan.FromMinutes(6));
             TaskCount count = null;
-            WaitFor(() => (count = Monitoring.GetProcessingTaskCount()).OldWaintingTaskCount == 2, TimeSpan.FromSeconds(10));
+            WaitFor(() => (count = monitoring.GetProcessingTaskCount()).OldWaitingTaskCount == 2, TimeSpan.FromSeconds(10));
             Assert.IsNotNull(count);
 
             container.Get<IExchangeServiceClient>().Start();
             WaitFor(() =>
                 {
-                    var taskCount = Monitoring.GetProcessingTaskCount();
-                    return taskCount.Count == 0 && taskCount.OldWaintingTaskCount == 0;
+                    var taskCount = monitoring.GetProcessingTaskCount();
+                    return taskCount.Count == 0 && taskCount.OldWaitingTaskCount == 0;
                 }, TimeSpan.FromSeconds(10));
         }
 
@@ -82,36 +81,36 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
         public void TestCounts()
         {
             container.Get<IExchangeServiceClient>().Stop();
-            TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
-            TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
+            taskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
+            taskQueue.CreateTask(new SlowTaskData() {TimeMs = 1}).Queue();
             TaskCount count = null;
-            WaitFor(() => (count = Monitoring.GetProcessingTaskCount()).Count == 2, TimeSpan.FromSeconds(10));
+            WaitFor(() => (count = monitoring.GetProcessingTaskCount()).Count == 2, TimeSpan.FromSeconds(10));
             Assert.IsNotNull(count);
             Assert.AreEqual(2, count.Counts[(int)TaskState.New]);
 
             container.Get<IExchangeServiceClient>().Start();
-            WaitFor(() => Monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
+            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
         }
 
         [Test]
         public void TestCounter()
         {
-            WaitFor(() => Monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
+            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
             var taskIds = new List<string>();
             var w = Stopwatch.StartNew();
             do
             {
-                var remoteTask = TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1000});
+                var remoteTask = taskQueue.CreateTask(new SlowTaskData() {TimeMs = 1000});
                 remoteTask.Queue();
                 taskIds.Add(remoteTask.Id);
                 Thread.Sleep(100);
-                var processedCountFromCounter = TestCounterRepository.GetCounter("SlowTaskHandler_Started") - TestCounterRepository.GetCounter("SlowTaskHandler_Finished");
-                var processingTaskCount = Monitoring.GetProcessingTaskCount();
+                var processedCountFromCounter = testCounterRepository.GetCounter("SlowTaskHandler_Started") - testCounterRepository.GetCounter("SlowTaskHandler_Finished");
+                var processingTaskCount = monitoring.GetProcessingTaskCount();
 
                 Console.WriteLine("InProgress={0} Counter={1}", processedCountFromCounter, processingTaskCount.Count);
             } while(w.ElapsedMilliseconds < 10 * 1000);
             WaitForTasks(taskIds, TimeSpan.FromMinutes(15));
-            WaitFor(() => Monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(100));
+            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(100));
         }
 
         private static void WaitFor(Func<bool> func, TimeSpan timeout, int checkTimeout = 99)
@@ -130,8 +129,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
         public void TestRestart()
         {
             var now = DateTime.UtcNow;
-            Monitoring.RestartProcessingTaskCounter(now);
-            var processingTaskCount = Monitoring.GetProcessingTaskCount();
+            monitoring.RestartProcessingTaskCounter(now);
+            var processingTaskCount = monitoring.GetProcessingTaskCount();
             processingTaskCount.UpdateTicks = 0;
             processingTaskCount.Counts = null;
             processingTaskCount.ShouldBeEquivalentTo(new TaskCount
@@ -140,9 +139,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
                     StartTicks = now.Ticks
                 });
             Thread.Sleep(100);
-            Monitoring.RestartProcessingTaskCounter(null);
+            monitoring.RestartProcessingTaskCounter(null);
 
-            processingTaskCount = Monitoring.GetProcessingTaskCount();
+            processingTaskCount = monitoring.GetProcessingTaskCount();
             var startTicks = processingTaskCount.StartTicks;
             var dateTime = now - TimeSpan.FromDays(3);
             Assert.That(startTicks >= dateTime.Ticks);
@@ -151,20 +150,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
         [Test, Ignore]
         public void TestCounterHardAndVerySlow()
         {
-            Console.WriteLine("u=" + EventLogRepository.UnstableZoneLength);
-            RunTasksAndWatiForCounterZero(false, 0, (long)TimeSpan.FromTicks(EventLogRepository.UnstableZoneLength.Ticks * 5).TotalMilliseconds, TimeSpan.FromMinutes(15));
+            Console.WriteLine("u=" + eventLogRepository.UnstableZoneLength);
+            RunTasksAndWatiForCounterZero(false, 0, (long)TimeSpan.FromTicks(eventLogRepository.UnstableZoneLength.Ticks * 5).TotalMilliseconds, TimeSpan.FromMinutes(15));
         }
 
         [Test]
         public void TestCounterHardAndSlow()
         {
-            WaitFor(() => Monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
+            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
             var w = Stopwatch.StartNew();
             var taskIds = new List<string>();
             const int count = 200;
             for(var i = 0; i < count; i++)
             {
-                var remoteTask = TaskQueue.CreateTask(new SlowTaskData() {TimeMs = 1000, UseCounter = false});
+                var remoteTask = taskQueue.CreateTask(new SlowTaskData() {TimeMs = 1000, UseCounter = false});
                 taskIds.Add(remoteTask.Id);
                 remoteTask.Queue();
             }
@@ -182,7 +181,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
                 delayMs = 0;
             Console.WriteLine("Calculated delay {0} ms", delayMs);
 
-            var testTime = TimeSpan.FromTicks(EventLogRepository.UnstableZoneLength.Ticks * 5);
+            var testTime = TimeSpan.FromTicks(eventLogRepository.UnstableZoneLength.Ticks * 5);
             Console.WriteLine("test={0:F1} min", testTime.TotalMinutes);
             var estimatedTaskRunTime = TimeSpan.FromMilliseconds(testTime.TotalMilliseconds * addRate / consumeRate);
             Console.WriteLine("est={0:F1} min", estimatedTaskRunTime.TotalMinutes);
@@ -195,7 +194,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
             var w = Stopwatch.StartNew();
             do
             {
-                var remoteTask = TaskQueue.CreateTask(new SlowTaskData {TimeMs = 1000, UseCounter = useTaskCounter});
+                var remoteTask = taskQueue.CreateTask(new SlowTaskData {TimeMs = 1000, UseCounter = useTaskCounter});
                 taskIds.Add(remoteTask.Id);
                 remoteTask.Queue();
                 if(addDelay > 0)
@@ -205,7 +204,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
             //WaitFor(() => taskQueue.GetTaskInfo<SlowTaskData>(lastTaskId).Context.State == TaskState.Finished, TimeSpan.FromSeconds(3));
             WaitForTasks(taskIds, waitTasksTime);
             Console.WriteLine("Waiting for Counter");
-            WaitFor(() => Monitoring.GetProcessingTaskCount().Count == 0, waitTasksTime);
+            WaitFor(() => monitoring.GetProcessingTaskCount().Count == 0, waitTasksTime);
         }
 
         private void WaitForTasks(List<string> taskIds, TimeSpan timeSpan)
@@ -214,29 +213,32 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
                 {
                     foreach(var taskId in taskIds)
                     {
-                        if(TaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.State != TaskState.Finished)
+                        if(taskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.State != TaskState.Finished)
                             return false;
                     }
                     return true;
                 }, timeSpan);
         }
 
+        //[Injected]
+        //private readonly IColumnFamilyRegistry columnFamilyRegistry;
+
+        // ReSharper disable UnassignedReadonlyField.Compiler
         [Injected]
-        private readonly IColumnFamilyRegistry columnFamilyRegistry;
+        private readonly ITestCounterRepository testCounterRepository;
 
         [Injected]
-        private readonly ITestCounterRepository TestCounterRepository;
+        private readonly IRemoteTaskQueue taskQueue;
 
         [Injected]
-        private readonly IRemoteTaskQueue TaskQueue;
+        private readonly IRemoteTaskQueueTaskCounterClient monitoring;
 
         [Injected]
-        private readonly IRemoteTaskQueueTaskCounterClient Monitoring;
-
-        [Injected]
-        private readonly IEventLogRepository EventLogRepository;
+        private readonly IEventLogRepository eventLogRepository;
 
         [Injected]
         private readonly IContainer container;
+
+        // ReSharper restore UnassignedReadonlyField.Compiler
     }
 }

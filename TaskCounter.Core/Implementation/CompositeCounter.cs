@@ -15,12 +15,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
     {
         public CompositeCounter()
         {
-            newTasksCounter = new NewTasksCounter();
+            oldWaitingTaskCounter = new NewTasksCounter();
         }
 
         public void ProcessMetas(TaskMetaInformation[] metas, long readTicks)
         {
-            newTasksCounter.NewMetainformationAvailable(metas, readTicks);
+            oldWaitingTaskCounter.NewMetainformationAvailable(metas, readTicks);
             var processedNames = new HashSet<string>();
             foreach(var taskMetaInformation in metas)
             {
@@ -65,12 +65,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
         public TaskCount GetTotalCount()
         {
             var totalCount = totalCounter.GetCount();
-            totalCount.OldWaintingTaskCount = newTasksCounter.GetValue();
+            totalCount.OldWaitingTaskCount = oldWaitingTaskCounter.GetValue();
             return totalCount;
         }
 
         public void Reset()
         {
+            oldWaitingTaskCounter.Reset();
             totalCounter.Reset();
             counters.Clear();
         }
@@ -124,10 +125,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             logger.LogInfoFormat("Snapshot loaded. Counter start value = {0}", totalCounter.GetCount().Count);
         }
 
-        private readonly NewTasksCounter newTasksCounter;
-
         private static readonly ILog logger = LogManager.GetLogger("CompositeCounter");
 
+        private readonly NewTasksCounter oldWaitingTaskCounter;
         private readonly ConcurrentDictionary<string, ProcessedTasksCounter> counters = new ConcurrentDictionary<string, ProcessedTasksCounter>();
         private readonly ProcessedTasksCounter totalCounter = CreateCounter();
     }
