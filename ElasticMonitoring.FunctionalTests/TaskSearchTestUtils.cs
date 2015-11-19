@@ -7,11 +7,9 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Configuration;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Scheme;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
@@ -19,6 +17,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.A
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 
+using TestCommon;
 using TestCommon.NUnitWrappers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
@@ -77,7 +76,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test, Ignore]
         public void TestCreateCassandraSchema()
         {
-            DropAndCreateDatabase(columnFamilyRegistry.GetAllColumnFamilyNames().Concat(new[]
+            container.DropAndCreateDatabase(columnFamilyRegistry.GetAllColumnFamilyNames().Concat(new[]
                 {
                     new ColumnFamily
                         {
@@ -88,26 +87,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                             Name = "remoteLock",
                         }
                 }).ToArray());
-        }
-
-        private void DropAndCreateDatabase(ColumnFamily[] columnFamilies)
-        {
-            var settings = container.Get<ICassandraSettings>();
-            cassandraCluster.ActualizeKeyspaces(new[]
-                {
-                    new KeyspaceScheme
-                        {
-                            Name = settings.QueueKeyspace,
-                            Configuration =
-                                {
-                                    ReplicationFactor = 1,
-                                    ReplicaPlacementStrategy = ReplicaPlacementStrategy.Simple,
-                                    ColumnFamilies = columnFamilies,
-                                }
-                        },
-                });
-            foreach(var columnFamily in columnFamilies)
-                cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name).Truncate();
         }
 
         // ReSharper disable UnassignedReadonlyField.Compiler

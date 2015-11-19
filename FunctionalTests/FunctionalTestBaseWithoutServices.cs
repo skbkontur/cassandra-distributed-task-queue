@@ -16,15 +16,15 @@ using GroBuf.DataMembersExtracters;
 using NUnit.Framework;
 
 using RemoteQueue.Configuration;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Scheme;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.ServiceLib;
+
+using TestCommon;
 
 namespace FunctionalTests
 {
@@ -82,23 +82,7 @@ namespace FunctionalTests
                             Name = CassandraTestTaskLogger.columnFamilyName
                         }
                 }).ToArray();
-            var cassandraCluster = Container.Get<ICassandraCluster>();
-            var settings = Container.Get<ICassandraSettings>();
-            cassandraCluster.ActualizeKeyspaces(new[]
-                {
-                    new KeyspaceScheme
-                        {
-                            Name = settings.QueueKeyspace,
-                            Configuration =
-                                {
-                                    ReplicationFactor = 1,
-                                    ReplicaPlacementStrategy = ReplicaPlacementStrategy.Simple,
-                                    ColumnFamilies = columnFamilies,
-                                }
-                        },
-                });
-            foreach(var columnFamily in columnFamilies)
-                cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name).Truncate();
+            Container.DropAndCreateDatabase(columnFamilies);
         }
     }
 }

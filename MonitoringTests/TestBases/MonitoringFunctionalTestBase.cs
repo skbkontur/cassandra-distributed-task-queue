@@ -5,11 +5,8 @@ using ExchangeService.UserClasses;
 using GroboContainer.Core;
 
 using RemoteQueue.Configuration;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Scheme;
 using SKBKontur.Catalogue.CassandraStorageCore.Initializing;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
@@ -18,6 +15,8 @@ using SKBKontur.Catalogue.RemoteTaskQueue.Storage;
 using SKBKontur.Catalogue.TestCore;
 using SKBKontur.Catalogue.WebTestCore;
 using SKBKontur.Catalogue.WebTestCore.TestSystem;
+
+using TestCommon;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 {
@@ -58,30 +57,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
         private void ResetTaskQueueCassandraState()
         {
-            var columnFamilies = container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
+            container.DropAndCreateDatabase(container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
                 {
                     new ColumnFamily
                         {
                             Name = TestCassandraCounterBlobRepository.columnFamilyName,
                         }
-                }).ToArray();
-            var cassandraCluster = container.Get<ICassandraCluster>();
-            var settings = container.Get<ICassandraSettings>();
-            cassandraCluster.ActualizeKeyspaces(new[]
-                {
-                    new KeyspaceScheme
-                        {
-                            Name = settings.QueueKeyspace,
-                            Configuration =
-                                {
-                                    ReplicationFactor = 1,
-                                    ReplicaPlacementStrategy = ReplicaPlacementStrategy.Simple,
-                                    ColumnFamilies = columnFamilies,
-                                }
-                        },
-                });
-            foreach(var columnFamily in columnFamilies)
-                cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name).Truncate();
+                }).ToArray());
         }
 
         protected IContainer container;
