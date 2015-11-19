@@ -5,6 +5,7 @@ using GroboContainer.Core;
 
 using NUnit.Framework;
 
+using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Configuration;
 using RemoteQueue.Settings;
 
@@ -18,6 +19,8 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.A
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 
+using TestCommon.NUnitWrappers;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
     [EdiTestSuite, WithApplicationSettings(FileName = "functionalTests.csf"),
@@ -30,6 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         public void TestDeleteRemoteLock()
         {
             cassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", "remoteLock").Truncate();
+            cassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", ColumnFamilyRepositoryParameters.LockColumnFamily).Truncate();
         }
 
         [Test, Ignore]

@@ -128,7 +128,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
             var snapshot = counterControllerSnapshotStorage.ReadSnapshotOrNull();
             if(snapshot != null)
             {
-                lastTicks = snapshot.CountollerTicks;
+                lastTicks = snapshot.ControllerTicks;
                 lastSnapshotSavedTime = lastTicks - snapshotSaveIntervalTicks;
                 compositeCounter.LoadSnapshot(snapshot.CounterSnapshot);
                 Interlocked.Exchange(ref startTicks, lastTicks);
@@ -188,7 +188,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
                 lastSnapshotSavedTime = now;
                 counterControllerSnapshotStorage.SaveSnapshot(new CounterControllerSnapshot()
                     {
-                        CountollerTicks = ticks,
+                        ControllerTicks = ticks,
                         CounterSnapshot = counterSnapshot
                     });
             }

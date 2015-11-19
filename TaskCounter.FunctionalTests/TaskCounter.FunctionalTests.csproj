@@ -34,6 +34,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.NUnit.Extensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.NUnit.Extensions.dll</HintPath>
     </Reference>
@@ -70,6 +74,10 @@
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Storage\Storage.csproj">
+      <Project>{07F04A01-2EA7-4CD0-9ED5-D0C6D6E98E6B}</Project>
+      <Name>Storage</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TaskCounter.Client\TaskCounter.Client.csproj">
       <Project>{616A6772-4E5B-4719-848B-593D3893D76B}</Project>
       <Name>TaskCounter.Client</Name>
@@ -81,6 +89,10 @@
     <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
       <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
       <Name>TaskDatas</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestCommon\TestCommon.csproj">
+      <Project>{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}</Project>
+      <Name>TestCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

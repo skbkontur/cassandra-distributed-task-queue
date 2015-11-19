@@ -5,6 +5,7 @@ using log4net;
 
 using RemoteQueue.Cassandra.Entities;
 
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.NewEventsCounters;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 
@@ -12,8 +13,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 {
     public class CompositeCounter : ICompositeCounter
     {
+        public CompositeCounter()
+        {
+            oldWaitingTaskCounter = new NewTasksCounter();
+        }
+
         public void ProcessMetas(TaskMetaInformation[] metas, long readTicks)
         {
+            oldWaitingTaskCounter.NewMetainformationAvailable(metas, readTicks);
             var processedNames = new HashSet<string>();
             foreach(var taskMetaInformation in metas)
             {
@@ -57,11 +64,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         public TaskCount GetTotalCount()
         {
-            return totalCounter.GetCount();
+            var totalCount = totalCounter.GetCount();
+            totalCount.OldWaitingTaskCount = oldWaitingTaskCounter.GetValue();
+            return totalCount;
         }
 
         public void Reset()
         {
+            oldWaitingTaskCounter.Reset();
             totalCounter.Reset();
             counters.Clear();
         }
@@ -117,6 +127,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         private static readonly ILog logger = LogManager.GetLogger("CompositeCounter");
 
+        private readonly NewTasksCounter oldWaitingTaskCounter;
         private readonly ConcurrentDictionary<string, ProcessedTasksCounter> counters = new ConcurrentDictionary<string, ProcessedTasksCounter>();
         private readonly ProcessedTasksCounter totalCounter = CreateCounter();
     }
