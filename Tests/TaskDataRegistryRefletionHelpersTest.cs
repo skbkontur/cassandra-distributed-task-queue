@@ -24,10 +24,11 @@ namespace RemoteQueue.Tests
         [Test]
         public void TryGetTaskTopic()
         {
-            Assert.That(typeof(TaskData0).TryGetTaskTopic(), Is.Null);
-            Assert.That(typeof(TaskData1).TryGetTaskTopic(), Is.EqualTo("Topic1"));
-            Assert.That(typeof(TaskData2).TryGetTaskTopic(), Is.EqualTo("Topic2"));
-            Assert.Throws<InvalidOperationException>(() => typeof(TaskData3).TryGetTaskTopic());
+            Assert.That(typeof(TaskData0).TryGetTaskTopic(false), Is.Null);
+            Assert.Throws<InvalidProgramStateException>(() => typeof(TaskData0).TryGetTaskTopic(true));
+            Assert.That(typeof(TaskData1).TryGetTaskTopic(false), Is.EqualTo("Topic1"));
+            Assert.That(typeof(TaskData2).TryGetTaskTopic(false), Is.EqualTo("Topic2"));
+            Assert.Throws<InvalidOperationException>(() => typeof(TaskData3).TryGetTaskTopic(false));
         }
 
         private abstract class BaseTaskData : ITaskData

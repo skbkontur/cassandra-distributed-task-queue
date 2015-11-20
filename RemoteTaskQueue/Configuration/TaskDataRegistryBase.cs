@@ -14,6 +14,11 @@ namespace RemoteQueue.Configuration
 {
     public abstract class TaskDataRegistryBase : ITaskDataRegistry
     {
+        protected TaskDataRegistryBase(bool allTasksShouldHaveTopic = false)
+        {
+            this.allTasksShouldHaveTopic = allTasksShouldHaveTopic;
+        }
+
         protected void Register<T>() where T : ITaskData
         {
             var taskType = typeof(T);
@@ -22,13 +27,13 @@ namespace RemoteQueue.Configuration
                 throw new InvalidProgramStateException(string.Format("Duplicate taskName: {0}", taskName));
             typeToName.Add(taskType, taskName);
             nameToType.Add(taskName, taskType);
-            nameToTopic.Add(taskName, ResolveTopic(taskType, taskName));
+            nameToTopic.Add(taskName, ResolveTopic(taskType, taskName, allTasksShouldHaveTopic));
         }
 
         [NotNull]
-        private static string ResolveTopic([NotNull] Type taskType, [NotNull] string taskName)
+        private static string ResolveTopic([NotNull] Type taskType, [NotNull] string taskName, bool requireTopic)
         {
-            var taskTopic = taskType.TryGetTaskTopic();
+            var taskTopic = taskType.TryGetTaskTopic(requireTopic);
             if(!string.IsNullOrWhiteSpace(taskTopic))
                 return taskTopic;
             return (Math.Abs(taskName.GetPersistentHashCode()) % topicsCount).ToString(CultureInfo.InvariantCulture);
@@ -82,5 +87,6 @@ namespace RemoteQueue.Configuration
         private readonly Dictionary<Type, string> typeToName = new Dictionary<Type, string>();
         private readonly Dictionary<string, Type> nameToType = new Dictionary<string, Type>();
         private readonly Dictionary<string, string> nameToTopic = new Dictionary<string, string>();
+        private bool allTasksShouldHaveTopic;
     }
 }
