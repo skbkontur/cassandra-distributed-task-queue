@@ -1,4 +1,4 @@
-﻿using SKBKontur.Catalogue.ServiceLib.Scheduling;
+﻿using RemoteQueue.LocalTasks.Scheduling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 {

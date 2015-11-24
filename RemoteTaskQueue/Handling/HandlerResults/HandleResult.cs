@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RemoteQueue.Handling
+namespace RemoteQueue.Handling.HandlerResults
 {
     public class HandleResult
     {

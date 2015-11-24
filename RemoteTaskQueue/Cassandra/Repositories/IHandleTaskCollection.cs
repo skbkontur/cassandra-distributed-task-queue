@@ -8,7 +8,7 @@ namespace RemoteQueue.Cassandra.Repositories
     public interface IHandleTaskCollection
     {
         [NotNull]
-        TaskIndexRecord AddTask([NotNull] Task task);
+        ColumnInfo AddTask([NotNull] Task task);
 
         [NotNull]
         Task GetTask([NotNull] string taskId);

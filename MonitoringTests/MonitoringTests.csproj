@@ -103,10 +103,6 @@
       <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>
       <Name>TaskDatas</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestCommon\TestCommon.csproj">
-      <Project>{f8a55f06-a61a-4e5f-984b-3a86a9c0b743}</Project>
-      <Name>TestCommon</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Settings\exchangeServiceTopology">

@@ -5,10 +5,9 @@ using GroboContainer.Infection;
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Handling;
+using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.Profiling;
 
-using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
 using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
 using SKBKontur.Catalogue.Core.Graphite.Client.StatsTimer;
 
@@ -18,24 +17,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
     public class GraphiteRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
         public GraphiteRemoteTaskQueueProfiler(
-            [NotNull] IProjectWideGraphitePathPrefixProvider graphitePathPrefixProvider,
+            [NotNull] IGraphiteRemoteTaskQueueProfilerSettings settings,
             [NotNull] ICatalogueStatsDClient statsDClient,
             [NotNull] IStatsTimerClient statsTimerClient)
         {
-            if(string.IsNullOrWhiteSpace(graphitePathPrefixProvider.ProjectWideGraphitePathPrefix))
+            if(string.IsNullOrWhiteSpace(settings.KeyNamePrefix))
             {
-                keyNamePrefix = string.Empty;
+                keyNamePrefix = "";
                 this.statsDClient = EmptyStatsDClient.Instance;
                 this.statsTimerClient = EmptyStatsTimerClient.Instance;
             }
             else
             {
-                keyNamePrefix = string.Format("{0}.SubSystem.RemoteTaskQueueTasks", graphitePathPrefixProvider.ProjectWideGraphitePathPrefix);
+                keyNamePrefix = settings.KeyNamePrefix;
                 this.statsDClient = statsDClient
                     .WithScopes(new[]
                         {
-                            string.Format("{0}.{1}", keyNamePrefix, Environment.MachineName),
-                            string.Format("{0}.{1}", keyNamePrefix, "Total")
+                            string.Format("{0}.{1}", settings.KeyNamePrefix, Environment.MachineName),
+                            string.Format("{0}.{1}", settings.KeyNamePrefix, "Total")
                         });
                 this.statsTimerClient = statsTimerClient;
             }

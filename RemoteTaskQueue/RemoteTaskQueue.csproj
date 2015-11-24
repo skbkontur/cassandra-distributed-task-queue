@@ -40,18 +40,8 @@
     <Reference Include="Catalogue.CassandraPrimitives.Storages">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.Core.Graphite.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Graphite.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.Sharding">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Sharding.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Objects">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.ServiceLib">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
     <Reference Include="GroBuf">
       <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
@@ -69,10 +59,6 @@
     <Reference Include="MoreLinq, Version=1.0.11522.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\MoreLinq\MoreLinq.dll</HintPath>
-    </Reference>
-    <Reference Include="SKBKontur.Graphite.Client, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GraphiteClient\SKBKontur.Graphite.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -98,15 +84,11 @@
     <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\ChildTaskIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\IChildTaskIndex.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ILiveRecordTicksMarker.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IOldestLiveRecordTicksHolder.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\LiveRecordTicksMarker.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\LiveRecordTicksMarkerState.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\OldestLiveRecordTicksHolder.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\ColumnInfo.cs" />
     <Compile Include="Cassandra\Entities\Task.cs" />
     <Compile Include="Cassandra\Entities\TaskExceptionInfo.cs" />
     <Compile Include="Cassandra\Entities\TaskMetaInformation.cs" />
-    <Compile Include="Cassandra\Entities\EnumExtensions.cs" />
+    <Compile Include="Cassandra\Entities\TaskMetaInformationExtension.cs" />
     <Compile Include="Cassandra\Entities\TaskState.cs" />
     <Compile Include="Cassandra\Entities\TimedObject.cs" />
     <Compile Include="Cassandra\Primitives\BlobStorage.cs" />
@@ -118,30 +100,31 @@
     <Compile Include="Cassandra\Primitives\IBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerator.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITasksCache.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IMinTicksCache.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TasksCache.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\MinTicksCache.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TaskMinimalStartTicksIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITaskMinimalStartTicksIndex.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\TaskIndexRecord.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\TaskIndexShardKey.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\CassandraNameHelper.cs" />
+    <Compile Include="Cassandra\Repositories\Indexes\TicksNameHelper.cs" />
     <Compile Include="Cassandra\SeparateOnBatchesEnumerable.cs" />
     <Compile Include="Cassandra\SeparateOnBatchesEnumerator.cs" />
     <Compile Include="Configuration\ColumnFamilyRegistry.cs" />
     <Compile Include="Configuration\ExchangeSchedulableRunner.cs" />
     <Compile Include="Configuration\IColumnFamilyRegistry.cs" />
     <Compile Include="Configuration\IExchangeSchedulableRunner.cs" />
-    <Compile Include="Configuration\ITaskDataRegistry.cs" />
-    <Compile Include="Configuration\ITaskHandlerRegistry.cs" />
-    <Compile Include="Configuration\TaskDataRegistryRefletionHelpers.cs" />
-    <Compile Include="Configuration\ReportConsumerStateToGraphiteTask.cs" />
+    <Compile Include="Exceptions\AmbigousMessageHandlerParametersException.cs" />
+    <Compile Include="Exceptions\TaskDataNotFoundException.cs" />
+    <Compile Include="Exceptions\TaskHandlerNotFoundException.cs" />
+    <Compile Include="Exceptions\TaskNameDuplicateException.cs" />
+    <Compile Include="Exceptions\TooManyTaskHandlersException.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\GlobalTime.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\IGlobalTime.cs" />
-    <Compile Include="Configuration\TaskNameAttribute.cs" />
-    <Compile Include="Configuration\TaskTopicAttribute.cs" />
     <Compile Include="Handling\CreateTaskOptions.cs" />
     <Compile Include="Handling\ExecutionContext\ITaskExecutionContext.cs" />
     <Compile Include="Handling\FinishAction.cs" />
     <Compile Include="Handling\HandlerManager.cs" />
-    <Compile Include="Handling\HandleResult.cs" />
+    <Compile Include="Handling\HandlerResults\HandleResult.cs" />
     <Compile Include="Handling\HandlerTask.cs" />
     <Compile Include="Handling\IHandlerManager.cs" />
     <Compile Include="Handling\IRemoteTask.cs" />
@@ -149,7 +132,9 @@
     <Compile Include="Handling\IRemoteTaskQueueInternals.cs" />
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />
+    <Compile Include="Handling\ITaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ITaskHandler.cs" />
+    <Compile Include="Handling\ITaskHandlerCollection.cs" />
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
@@ -161,8 +146,10 @@
     <Compile Include="Tracing\RemoteTaskInitialTraceContext.cs" />
     <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />
     <Compile Include="Handling\TaskCounter.cs" />
+    <Compile Include="Handling\TaskDataTypeToNameMapper.cs" />
     <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
     <Compile Include="Handling\TaskHandler.cs" />
+    <Compile Include="Handling\TaskHandlerCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTaskExceptionInfoStorage.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
@@ -175,12 +162,19 @@
     <Compile Include="Profiling\EmptyRemoteTaskQueueProfiler.cs" />
     <Compile Include="Profiling\IRemoteTaskQueueProfiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="LocalTasks\Scheduling\ActionPeriodicTask.cs" />
+    <Compile Include="LocalTasks\Scheduling\IPeriodicTask.cs" />
+    <Compile Include="LocalTasks\Scheduling\IPeriodicTaskRunner.cs" />
+    <Compile Include="LocalTasks\Scheduling\ISmartTimer.cs" />
+    <Compile Include="LocalTasks\Scheduling\PeriodicTaskRunner.cs" />
+    <Compile Include="LocalTasks\Scheduling\SmartTimer.cs" />
     <Compile Include="Settings\ICassandraSettings.cs" />
+    <Compile Include="Exceptions\NotTypedTaskHandlerException.cs" />
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="Settings\IRemoteTaskQueueSettings.cs" />
     <Compile Include="StaticGrobuf.cs" />
-    <Compile Include="Configuration\TaskDataRegistryBase.cs" />
-    <Compile Include="Configuration\TaskHandlerRegistryBase.cs" />
+    <Compile Include="UserClasses\TaskDataRegistryBase.cs" />
+    <Compile Include="UserClasses\TaskHandlerRegistryBase.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

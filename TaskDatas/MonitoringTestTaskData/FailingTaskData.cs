@@ -1,11 +1,9 @@
 using System;
 
-using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData
 {
-    [TaskName("FailingTaskData")]
     public class FailingTaskData : ITaskData
     {
         public Guid UniqueData { get; set; }

@@ -8,12 +8,11 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra;
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 {
@@ -23,18 +22,55 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         {
             base.SetUp();
             remoteTaskQueue = container.Get<IRemoteTaskQueue>();
-            taskDataStorage = container.Get<ITaskDataBlobStorage>();
+            handleTaskCollection = container.Get<IHandleTaskCollection>();
             serializer = container.Get<ISerializer>();
         }
 
-        protected Dictionary<string, AddTaskInfo> AddTasks(int iteration, params Creater[] creaters)
+        protected class Creater
+        {
+            public Creater(string taskName, long delay, Func<ITaskData> create)
+            {
+                TaskName = taskName;
+                Delay = new TimeSpan(delay * 10000000);
+                Create = create;
+            }
+
+            public Func<ITaskData> Create { get; private set; }
+            public string TaskName { get; private set; }
+            public TimeSpan Delay { get; private set; }
+        }
+
+        protected class AddTaskInfo
+        {
+            public AddTaskInfo( List<string> ids, DateTime addTime)
+            {
+                ids.Reverse();
+                Ids = ids;
+                AddTime = addTime;
+            }
+
+            public List<string> Ids { get; private set; }
+            public DateTime AddTime { get; set; }
+
+            public AddTaskInfo Add(AddTaskInfo other)
+            {
+                var resId = new List<string>();
+                resId.AddRange(Ids);
+                resId.AddRange(other.Ids);
+                var dateTime = new DateTime(Math.Min(AddTime.Ticks, other.AddTime.Ticks));
+                resId.Reverse();
+                return new AddTaskInfo(resId, dateTime);
+            }
+        }
+
+        protected Dictionary<string, AddTaskInfo> AddTasks(int iteration, params Creater [] creaters)
         {
             var result = new Dictionary<string, AddTaskInfo>();
-            foreach(var creater in creaters)
+            foreach (var creater in creaters)
             {
                 var dt = DateTime.UtcNow;
                 var ids = new List<string>();
-                for(var i = 0; i < iteration; i++)
+                for (int i = 0; i < iteration; i++)
                 {
                     var remoteTask = remoteTaskQueue.CreateTask(creater.Create());
                     ids.Add(remoteTask.Id);
@@ -73,70 +109,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             {
                 tasksListPage = tasksListPage.RefreshUntilTaskRowIsPresent(pageIds.Length);
                 cnt++;
-                for(int i = 0; i < pageIds.Length; i++)
+                for (int i = 0; i < pageIds.Length; i++)
                 {
                     var taskId = tasksListPage.GetTaskListItem(i).TaskId.GetText();
 
                     Assert.True(expectedIds.Contains(taskId), "Не ожиданная таска с id: {0}.", taskId);
                     actualIds.Add(taskId);
                 }
-                if(ids.Length > cnt * tasksPerPage)
+                if (ids.Length > cnt * tasksPerPage)
                     tasksListPage = tasksListPage.GoToNextPage();
             }
             Assert.AreEqual(actualIds.Count, expectedIds.Count, "Ожидалось найти {0} тасок, а было найдено {1}.", expectedIds.Count, actualIds.Count);
         }
 
-        protected void FinishBetaTasks(List<string> betaTaskIds)
-        {
-            foreach(var betaId in betaTaskIds)
-            {
-                var taskData = serializer.Deserialize<BetaTaskData>(taskDataStorage.Read(betaId));
-                taskData.IsProcess = false;
-                taskDataStorage.Write(betaId, serializer.Serialize(taskData));
-            }
-            foreach(var betaTaskId in betaTaskIds)
-                WaitTaskState(betaTaskId, TaskState.Finished);
-        }
-
         private IRemoteTaskQueue remoteTaskQueue;
-        private ITaskDataBlobStorage taskDataStorage;
-        private ISerializer serializer;
-
-        protected class Creater
-        {
-            public Creater(string taskName, long delay, Func<ITaskData> create)
-            {
-                TaskName = taskName;
-                Delay = new TimeSpan(delay * 10000000);
-                Create = create;
-            }
-
-            public Func<ITaskData> Create { get; private set; }
-            public string TaskName { get; private set; }
-            public TimeSpan Delay { get; private set; }
-        }
-
-        protected class AddTaskInfo
-        {
-            public AddTaskInfo(List<string> ids, DateTime addTime)
-            {
-                ids.Reverse();
-                Ids = ids;
-                AddTime = addTime;
-            }
-
-            public List<string> Ids { get; private set; }
-            public DateTime AddTime { get; private set; }
-
-            public AddTaskInfo Add(AddTaskInfo other)
-            {
-                var resId = new List<string>();
-                resId.AddRange(Ids);
-                resId.AddRange(other.Ids);
-                var dateTime = new DateTime(Math.Min(AddTime.Ticks, other.AddTime.Ticks));
-                resId.Reverse();
-                return new AddTaskInfo(resId, dateTime);
-            }
-        }
+        protected IHandleTaskCollection handleTaskCollection;
+        protected ISerializer serializer;
     }
 }

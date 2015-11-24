@@ -93,8 +93,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
 
         private static TaskMetaInformation CreateMeta(string id, bool isNew, long mst)
         {
-            return new TaskMetaInformation("TaskName", id)
+            return new TaskMetaInformation()
                 {
+                    Id = id,
                     State = isNew ? TaskState.New : TaskState.Finished,
                     MinimalStartTicks = mst
                 };

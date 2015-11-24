@@ -2,8 +2,9 @@ using System;
 
 using log4net;
 
+using RemoteQueue.LocalTasks.Scheduling;
+
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
-using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
 {
@@ -20,16 +21,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
 
         public void Stop()
         {
-            if(started)
+            if(worked)
             {
                 lock(lockObject)
                 {
-                    if(started)
+                    if(worked)
                     {
-                        periodicTaskRunner.Unregister(dumpStatusTaskId, 15000);
                         periodicTaskRunner.Unregister(sendactualizationlagtographiteTaskId, 15000);
                         periodicTaskRunner.Unregister(taskSearchUpdateTaskId, 15000);
-                        started = false;
+                        worked = false;
                         logger.Info("Stop MonitoringServiceSchedulableRunner");
                     }
                 }
@@ -38,16 +38,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
 
         public void Start()
         {
-            if(!started)
+            if(!worked)
             {
                 lock(lockObject)
                 {
-                    if(!started)
+                    if(!worked)
                     {
-                        periodicTaskRunner.Register(new ActionPeriodicTask(taskSearchUpdateTaskId, () => taskIndexController.ProcessNewEvents()), TaskIndexSettings.IndexInterval);
-                        periodicTaskRunner.Register(new ActionPeriodicTask(sendactualizationlagtographiteTaskId, () => taskIndexController.SendActualizationLagToGraphite()), TimeSpan.FromMinutes(1));
-                        periodicTaskRunner.Register(new ActionPeriodicTask(dumpStatusTaskId, () => taskIndexController.LogStatus()), TimeSpan.FromMinutes(1));
-                        started = true;
+                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.ProcessNewEvents(), taskSearchUpdateTaskId), TaskIndexSettings.IndexInterval);
+                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.SendActualizationLagToGraphite(), sendactualizationlagtographiteTaskId), TimeSpan.FromMinutes(1));
+                        periodicTaskRunner.Register(new ActionPeriodicTask(() => taskIndexController.LogStatus(), dumpStatusTaskId), TimeSpan.FromMinutes(1));
+                        worked = true;
                         logger.InfoFormat("Start MonitoringServiceSchedulableRunner");
                     }
                 }
@@ -62,7 +62,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler
         private readonly IPeriodicTaskRunner periodicTaskRunner;
         private readonly ITaskIndexController taskIndexController;
 
-        private volatile bool started;
+        private volatile bool worked;
 
         private readonly ILog logger = LogManager.GetLogger(typeof(ElasticMonitoringServiceSchedulableRunner));
     }

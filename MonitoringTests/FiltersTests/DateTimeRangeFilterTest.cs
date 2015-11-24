@@ -30,7 +30,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         public override void TearDown()
         {
-            FinishBetaTasks(addTasksInfo["BetaTaskData"].Ids);
+            foreach(var betaId in addTasksInfo["BetaTaskData"].Ids)
+            {
+                var task = handleTaskCollection.GetTask(betaId);
+                var data = serializer.Deserialize<BetaTaskData>(task.Data);
+                data.IsProcess = false;
+                task.Data = serializer.Serialize(data);
+                try
+                {
+                    handleTaskCollection.AddTask(task);
+                }
+                catch
+                {
+                }
+            }
             base.TearDown();
         }
 

@@ -1,8 +1,4 @@
-﻿using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Configuration;
-
-using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+﻿using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 
 namespace FunctionalTests
 {
@@ -13,7 +9,6 @@ namespace FunctionalTests
             base.SetUp();
             var exchangeServiceClient = Container.Get<IExchangeServiceClient>();
             exchangeServiceClient.Start();
-            taskDataRegistry = Container.Get<ITaskDataRegistry>();
         }
 
         public override void TearDown()
@@ -22,12 +17,5 @@ namespace FunctionalTests
             exchangeServiceClient.Stop();
             base.TearDown();
         }
-
-        protected TaskIndexShardKey TaskIndexShardKey(string taskName, TaskState taskState)
-        {
-            return new TaskIndexShardKey(taskDataRegistry.GetTaskTopic(taskName), taskState);
-        }
-
-        private ITaskDataRegistry taskDataRegistry;
     }
 }

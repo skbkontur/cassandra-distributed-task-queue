@@ -1,13 +1,15 @@
 ﻿using System;
 
+using RemoteQueue.Settings;
+
 namespace RemoteQueue.Handling
 {
     public class TaskCounter : ITaskCounter
     {
-        public TaskCounter(int maxRunningTasksCount, int maxRunningContinuationsCount)
+        public TaskCounter(IExchangeSchedulableRunnerSettings settings)
         {
-            this.maxRunningTasksCount = maxRunningTasksCount;
-            this.maxRunningContinuationsCount = maxRunningContinuationsCount;
+            maxRunningTasksCount = settings.MaxRunningTasksCount;
+            maxRunningContinuationsCount = settings.MaxRunningContinuationsCount;
         }
 
         public bool CanQueueTask(TaskQueueReason reason)

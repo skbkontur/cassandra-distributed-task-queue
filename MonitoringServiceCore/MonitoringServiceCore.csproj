@@ -89,6 +89,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\IMonitoringServiceSettings.cs" />
     <Compile Include="Sheduler\PostActualizationLagToGraphiteTask.cs" />
+    <Compile Include="Sheduler\SaveSnapshotTask.cs" />
+    <Compile Include="Sheduler\CounterUpdaterTask.cs" />
     <Compile Include="Sheduler\IMonitoringServiceSchedulableRunner.cs" />
     <Compile Include="Sheduler\IMonitoringTask.cs" />
     <Compile Include="Settings\MonitoringServiceSettings.cs" />

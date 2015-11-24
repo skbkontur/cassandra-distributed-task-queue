@@ -2,8 +2,9 @@ using System;
 
 using log4net;
 
+using RemoteQueue.LocalTasks.Scheduling;
+
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Settings;
-using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 {
@@ -22,15 +23,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 
         public void Stop()
         {
-            if(started)
+            if(worked)
             {
                 lock(lockObject)
                 {
-                    if(started)
+                    if(worked)
                     {
                         periodicTaskRunner.Unregister(monitoringTask.Id, 15000);
                         periodicTaskRunner.Unregister(postActualizationLagToGraphiteTask.Id, 15000);
-                        started = false;
+                        worked = false;
                         logger.Info("Stop MonitoringService");
                     }
                 }
@@ -39,15 +40,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 
         public void Start()
         {
-            if(!started)
+            if(!worked)
             {
                 lock(lockObject)
                 {
-                    if(!started)
+                    if(!worked)
                     {
                         periodicTaskRunner.Register(monitoringTask, settings.PeriodicInterval);
                         periodicTaskRunner.Register(postActualizationLagToGraphiteTask, TimeSpan.FromMinutes(1));
-                        started = true;
+                        worked = true;
                         logger.InfoFormat("Start MonitoringShedulableRunner: schedule monitoringTask with period {0}", settings.PeriodicInterval);
                     }
                 }
@@ -60,7 +61,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
         private readonly IPeriodicTaskRunner periodicTaskRunner;
         private readonly PostActualizationLagToGraphiteTask postActualizationLagToGraphiteTask;
 
-        private volatile bool started;
+        private volatile bool worked;
 
         private readonly ILog logger = LogManager.GetLogger(typeof(MonitoringServiceSchedulableRunner));
     }

@@ -25,7 +25,7 @@ namespace RemoteQueue.Cassandra.Primitives
         public void Write(string id, T element)
         {
             var connection = RetrieveColumnFamilyConnection();
-            var nowTicks = globalTime.UpdateNowTicks();
+            long nowTicks = globalTime.UpdateNowTicks();
             connection.AddColumn(id, new Column
                 {
                     Name = dataColumnName,
@@ -37,7 +37,7 @@ namespace RemoteQueue.Cassandra.Primitives
         public void Write(KeyValuePair<string, T>[] elements)
         {
             var connection = RetrieveColumnFamilyConnection();
-            var nowTicks = globalTime.UpdateNowTicks();
+            var updateNowTicks = globalTime.UpdateNowTicks();
             connection.BatchInsert(elements.Select(x => new KeyValuePair<string, IEnumerable<Column>>(
                                                             x.Key,
                                                             new[]
@@ -45,7 +45,7 @@ namespace RemoteQueue.Cassandra.Primitives
                                                                     new Column
                                                                         {
                                                                             Name = dataColumnName,
-                                                                            Timestamp = nowTicks,
+                                                                            Timestamp = updateNowTicks,
                                                                             Value = serializer.Serialize(x.Value)
                                                                         }
                                                                 })));

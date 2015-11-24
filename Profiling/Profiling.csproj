@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GraphiteRemoteTaskQueueProfiler.cs" />
+    <Compile Include="GraphiteRemoteTaskQueueProfilerSettings.cs" />
+    <Compile Include="IGraphiteRemoteTaskQueueProfilerSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

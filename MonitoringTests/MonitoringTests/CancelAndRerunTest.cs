@@ -18,11 +18,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             remoteTaskQueue = container.Get<IRemoteTaskQueue>();
         }
 
+        [Repeat(3)]
         [Test]
         public void CancelAndRerunTaskTest()
         {
             var taskId = remoteTaskQueue.CreateTask(new AlphaTaskData()).Queue(TimeSpan.FromHours(3));
-            WaitTaskState(taskId, TaskState.New);
             var taskListPage = LoadTasksListPage();
             taskListPage = taskListPage.RefreshUntilTaskRowIsPresent(1);
             taskListPage = taskListPage.RefreshUntilState(0, "New");
@@ -30,6 +30,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
             taskListPage = taskListPage.CancelTask(0);
             WaitTaskState(taskId, TaskState.Canceled);
             taskListPage = taskListPage.RefreshUntilState(0, "Canceled");
+
+            taskListPage = taskListPage.Refresh();
 
             taskListPage = taskListPage.RerunTask(0);
             WaitTaskState(taskId, TaskState.Finished);

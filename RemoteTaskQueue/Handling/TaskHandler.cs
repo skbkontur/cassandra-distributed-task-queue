@@ -3,6 +3,7 @@
 using GroBuf;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Handling.HandlerResults;
 using RemoteQueue.Tracing;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;

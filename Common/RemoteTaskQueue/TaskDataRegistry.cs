@@ -1,4 +1,4 @@
-﻿using RemoteQueue.Configuration;
+﻿using RemoteQueue.UserClasses;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
@@ -9,20 +9,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
     {
         public TaskDataRegistry()
         {
-            Register<FakeFailTaskData>();
-            Register<FakePeriodicTaskData>();
-            Register<SimpleTaskData>();
-            Register<ByteArrayTaskData>();
-            Register<ByteArrayAndNestedTaskData>();
-            Register<FileIdTaskData>();
+            Register<FakeFailTaskData>("FakeFailTaskData");
+            Register<FakePeriodicTaskData>("FakePeriodicTaskData");
+            Register<SimpleTaskData>("SimpleTaskData");
+            Register<ByteArrayTaskData>("ByteArrayTaskData");
+            Register<ByteArrayAndNestedTaskData>("ByteArrayAndNestedTaskData");
+            Register<FileIdTaskData>("FileIdTaskData");
 
-            Register<SlowTaskData>();
-            Register<AlphaTaskData>();
-            Register<BetaTaskData>();
-            Register<DeltaTaskData>();
-            Register<FailingTaskData>();
+            Register<SlowTaskData>("SlowTaskData");
+            Register<AlphaTaskData>("AlphaTaskData");
+            Register<BetaTaskData>("BetaTaskData");
+            Register<DeltaTaskData>("DeltaTaskData");
+            Register<FailingTaskData>("FailingTaskData");
 
-            Register<ChainTaskData>();
+            Register<ChainTaskData>("ChainTaskData");
         }
     }
 }

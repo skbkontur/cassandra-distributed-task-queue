@@ -1,101 +1,84 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using GroBuf;
 
+using log4net;
+
 using RemoteQueue.Handling;
+using RemoteQueue.LocalTasks.Scheduling;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
+using RemoteQueue.UserClasses;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
-using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
-using SKBKontur.Catalogue.ServiceLib.Logging;
-using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Configuration
 {
-    public class ExchangeSchedulableRunner : IExchangeSchedulableRunner, IDisposable
+    public class ExchangeSchedulableRunner : IExchangeSchedulableRunner
     {
         public ExchangeSchedulableRunner(
             IExchangeSchedulableRunnerSettings runnerSettings,
-            IPeriodicTaskRunner periodicTaskRunner,
-            ICatalogueGraphiteClient graphiteClient,
-            IProjectWideGraphitePathPrefixProvider graphitePathPrefixProvider,
-            ITaskDataRegistry taskDataRegistry,
-            ITaskHandlerRegistry taskHandlerRegistry,
+            TaskHandlerRegistryBase taskHandlerRegistry,
             ISerializer serializer,
             ICassandraCluster cassandraCluster,
             ICassandraSettings cassandraSettings,
             IRemoteTaskQueueSettings taskQueueSettings,
+            ITaskDataTypeToNameMapper taskDataTypeToNameMapper,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             this.runnerSettings = runnerSettings;
-            this.periodicTaskRunner = periodicTaskRunner;
-            var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
-            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
-            var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
-            handlerManagers.Add(new HandlerManager(string.Empty, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
-            foreach(var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
-                handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
-            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, graphitePathPrefixProvider, handlerManagers);
-        }
-
-        public void Dispose()
-        {
-            Stop();
-        }
-
-        public void Start()
-        {
-            if(!started)
-            {
-                lock(lockObject)
-                {
-                    if(!started)
-                    {
-                        foreach(var handlerManager in handlerManagers)
-                        {
-                            handlerManager.Start();
-                            periodicTaskRunner.Register(handlerManager, runnerSettings.PeriodicInterval);
-                        }
-                        periodicTaskRunner.Register(reportConsumerStateToGraphiteTask, TimeSpan.FromMinutes(1));
-                        started = true;
-                        Log.For(this).InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManagers[{0}] with period {1}:\r\n{2}", handlerManagers.Count, runnerSettings.PeriodicInterval, string.Join("\r\n", handlerManagers.Select(x => x.Id)));
-                    }
-                }
-            }
+            var taskCounter = new TaskCounter(runnerSettings);
+            var taskHandlerCollection = new TaskHandlerCollection(taskDataTypeToNameMapper, taskHandlerRegistry);
+            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataTypeToNameMapper, remoteTaskQueueProfiler);
+            var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerCollection, remoteTaskQueue);
+            handlerManager = new HandlerManager(localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime);
         }
 
         public void Stop()
         {
-            if(started)
+            if(worked)
             {
                 lock(lockObject)
                 {
-                    if(started)
+                    if(worked)
                     {
-                        periodicTaskRunner.Unregister(reportConsumerStateToGraphiteTask.Id, 15000);
-                        Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() =>
-                            {
-                                periodicTaskRunner.Unregister(theHandlerManager.Id, 15000);
-                                theHandlerManager.Stop();
-                            })).ToArray());
-                        started = false;
-                        Log.For(this).Info("Stop ExchangeSchedulableRunner.");
+                        periodicTaskRunner.Unregister(handlerManager.Id, 15000);
+                        handlerManager.Stop();
+                        worked = false;
+                        logger.Info("Stop ExchangeSchedulableRunner.");
                     }
                 }
             }
         }
 
-        private volatile bool started;
+        public void Start()
+        {
+            if(!worked)
+            {
+                lock(lockObject)
+                {
+                    if(!worked)
+                    {
+                        handlerManager.Start();
+                        periodicTaskRunner.Register(handlerManager, runnerSettings.PeriodicInterval);
+                        worked = true;
+                        logger.InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManager with period {0}", runnerSettings.PeriodicInterval);
+                    }
+                }
+            }
+        }
+
+        public Tuple<long, long> GetQueueLength()
+        {
+            return handlerManager.GetCassandraQueueLength();
+        }
+
+        private volatile bool worked;
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
-        private readonly IPeriodicTaskRunner periodicTaskRunner;
-        private readonly ReportConsumerStateToGraphiteTask reportConsumerStateToGraphiteTask;
+        private readonly IHandlerManager handlerManager;
         private readonly object lockObject = new object();
-        private readonly List<IHandlerManager> handlerManagers = new List<IHandlerManager>();
+        private readonly IPeriodicTaskRunner periodicTaskRunner = new PeriodicTaskRunner();
+        private static readonly ILog logger = LogManager.GetLogger(typeof(ExchangeSchedulableRunner));
     }
 }

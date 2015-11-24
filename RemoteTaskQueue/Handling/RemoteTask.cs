@@ -39,12 +39,13 @@ namespace RemoteQueue.Handling
         }
 
         [NotNull]
-        protected TaskIndexRecord Publish(TimeSpan delay)
+        protected ColumnInfo Publish(TimeSpan delay)
         {
             using(new PublishTaskTraceContext())
             {
+                var nowTicks = DateTime.UtcNow.Ticks;
                 var delayTicks = Math.Max(delay.Ticks, 0);
-                task.Meta.MinimalStartTicks = DateTime.UtcNow.Ticks + delayTicks;
+                task.Meta.MinimalStartTicks = Math.Max(task.Meta.MinimalStartTicks, nowTicks + delayTicks) + 1;
                 return handleTaskCollection.AddTask(task);
             }
         }

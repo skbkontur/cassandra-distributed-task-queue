@@ -1,39 +1,39 @@
-﻿using ExchangeService.UserClasses;
+﻿using System;
+
+using ExchangeService.UserClasses;
 using ExchangeService.UserClasses.MonitoringTestTaskData;
 
-using GroboContainer.Core;
-
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+using RemoteQueue.UserClasses;
 
 namespace ExchangeService.Configuration
 {
     public class TaskHandlerRegistry : TaskHandlerRegistryBase
     {
-        public TaskHandlerRegistry(IContainer container, ITaskDataRegistry taskDataRegistry)
-            : base(taskDataRegistry)
+        public TaskHandlerRegistry(Func<FakeFailTaskHandler> createFakeFailTaskHandler,
+                                   Func<FakePeriodicTaskHandler> createFakePeriodicTaskHandler,
+                                   Func<SimpleTaskHandler> createSimpleTaskHandler,
+                                   Func<ByteArrayTaskDataHandler> createByteArrayTaskDataHandler,
+                                   Func<ByteArrayAndNestedTaskHandler> createByteArrayAndNestedTaskHandler,
+                                   Func<FileIdTaskDataHandler> createFileIdTaskDataHandler,
+                                   Func<AlphaTaskHandler> createAlphaTaskHandler,
+                                   Func<BetaTaskHandler> createBetaTaskHandler,
+                                   Func<DeltaTaskHandler> createDeltaTaskHandler,
+                                   Func<SlowTaskHandler> createSlowTaskHandler,
+                                   Func<ChainTaskHandler> createChainTaskHandler,
+                                   Func<FailingTaskHandler> createFailingTaskHandler)
         {
-            this.container = container;
-            Register<FakeFailTaskHandler>();
-            Register<FakePeriodicTaskHandler>();
-            Register<SimpleTaskHandler>();
-            Register<ByteArrayTaskDataHandler>();
-            Register<FileIdTaskDataHandler>();
-            Register<AlphaTaskHandler>();
-            Register<BetaTaskHandler>();
-            Register<DeltaTaskHandler>();
-            Register<SlowTaskHandler>();
-            Register<ByteArrayAndNestedTaskHandler>();
-            Register<ChainTaskHandler>();
-            Register<FailingTaskHandler>();
+            Register(createFakeFailTaskHandler);
+            Register(createFakePeriodicTaskHandler);
+            Register(createSimpleTaskHandler);
+            Register(createByteArrayTaskDataHandler);
+            Register(createFileIdTaskDataHandler);
+            Register(createAlphaTaskHandler);
+            Register(createBetaTaskHandler);
+            Register(createDeltaTaskHandler);
+            Register(createSlowTaskHandler);
+            Register(createByteArrayAndNestedTaskHandler);
+            Register(createChainTaskHandler);
+            Register(createFailingTaskHandler);
         }
-
-        private void Register<THandler>()
-            where THandler : ITaskHandler
-        {
-            Register(() => container.Create<THandler>());
-        }
-
-        private readonly IContainer container;
     }
 }

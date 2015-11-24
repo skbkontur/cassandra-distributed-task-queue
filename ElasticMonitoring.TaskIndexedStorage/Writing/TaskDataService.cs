@@ -6,7 +6,7 @@ using GrEmit.Utils;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Configuration;
+using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts;
 
@@ -14,9 +14,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class TaskDataService
     {
-        public TaskDataService(ITaskDataRegistry taskDataRegistry)
+        public TaskDataService(ITaskDataTypeToNameMapper taskDataTypeToNameMapper)
         {
-            this.taskDataRegistry = taskDataRegistry;
+            this.taskDataTypeToNameMapper = taskDataTypeToNameMapper;
         }
 
         public object CreateTaskIndexedInfo([NotNull] MetaIndexedInfo metaIndexedInfo, [CanBeNull] string exceptionInfo, [CanBeNull] object taskData)
@@ -26,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             if(data == null)
             {
                 Type taskType;
-                if(!taskDataRegistry.TryGetTaskType(typeName, out taskType))
+                if(!taskDataTypeToNameMapper.TryGetTaskType(typeName, out taskType))
                     return new TaskIndexedInfo<UnknownData>(metaIndexedInfo, exceptionInfo, null); //NOTE hack. Type can be unknown
 
                 lock(lockObject)
@@ -59,10 +59,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         private delegate object ConstructorDelegate(MetaIndexedInfo info, string exceptionInfo, object data);
 
-        private readonly ITaskDataRegistry taskDataRegistry;
-
         private readonly Hashtable map = new Hashtable();
         private readonly object lockObject = new object();
+
+        private readonly ITaskDataTypeToNameMapper taskDataTypeToNameMapper;
 
         // ReSharper disable ClassNeverInstantiated.Local
 

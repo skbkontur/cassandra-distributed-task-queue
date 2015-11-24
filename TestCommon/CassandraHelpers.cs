@@ -1,34 +1,48 @@
-﻿using GroboContainer.Core;
+﻿using System.Linq;
+
+using GroboContainer.Core;
 
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Scheme;
 
 namespace TestCommon
 {
-    public static class CassandraHelpers
+    public class CassandraHelpers
     {
-        public static void DropAndCreateDatabase(this IContainer container, ColumnFamily[] columnFamilies)
+        public static void DropAndCreateDatabase(ColumnFamily[] columnFamilies, IContainer container)
         {
             var settings = container.Get<ICassandraSettings>();
             var cassandraCluster = container.Get<ICassandraCluster>();
-            cassandraCluster.ActualizeKeyspaces(new[]
-                {
-                    new KeyspaceScheme
-                        {
-                            Name = settings.QueueKeyspace,
-                            Configuration =
-                                {
-                                    ReplicationFactor = 1,
-                                    ReplicaPlacementStrategy = ReplicaPlacementStrategy.Simple,
-                                    ColumnFamilies = columnFamilies,
-                                }
-                        },
-                });
-            foreach(var columnFamily in columnFamilies)
-                cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name).Truncate();
+            var clusterConnection = cassandraCluster.RetrieveClusterConnection();
+            var keyspaceConnection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
+
+            var keyspaces = clusterConnection.RetrieveKeyspaces();
+            if (keyspaces.All(x => x.Name != settings.QueueKeyspace))
+            {
+                clusterConnection.AddKeyspace(
+                    new Keyspace
+                    {
+                        Name = settings.QueueKeyspace,
+                        ReplicaPlacementStrategy = "org.apache.cassandra.locator.SimpleStrategy",
+                        ReplicationFactor = 1
+                    });
+            }
+
+            var cassandraColumnFamilies = keyspaceConnection.DescribeKeyspace().ColumnFamilies;
+            foreach (var columnFamily in columnFamilies)
+            {
+                if (!cassandraColumnFamilies.Any(x => x.Key == columnFamily.Name))
+                    keyspaceConnection.AddColumnFamily(columnFamily);
+            }
+
+            foreach (var columnFamily in columnFamilies)
+            {
+                var columnFamilyConnection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name);
+                columnFamilyConnection.Truncate();
+            }
         }
+ 
     }
 }

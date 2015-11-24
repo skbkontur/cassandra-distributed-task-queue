@@ -1,7 +1,7 @@
 ﻿using System;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Handling;
+using RemoteQueue.Handling.HandlerResults;
 
 namespace RemoteQueue.Profiling
 {

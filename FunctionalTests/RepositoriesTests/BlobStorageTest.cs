@@ -1,4 +1,6 @@
-﻿using GroBuf;
+﻿using System.Linq;
+
+using GroBuf;
 
 using NUnit.Framework;
 
@@ -8,12 +10,16 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Scheme;
 
 namespace FunctionalTests.RepositoriesTests
 {
     public class BlobStorageTest : FunctionalTestBase
     {
+        public class Class1
+        {
+            public string Field1 { get; set; }
+        }
+
         public override void SetUp()
         {
             base.SetUp();
@@ -21,28 +27,19 @@ namespace FunctionalTests.RepositoriesTests
             var serializer = Container.Get<ISerializer>();
             var globalTime = Container.Get<IGlobalTime>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
+            var settings = Container.Get<ICassandraSettings>();
             const string columnFamilyName = "Class1CF";
-            cassandraCluster.ActualizeKeyspaces(new[]
-                {
-                    new KeyspaceScheme
-                        {
-                            Name = Container.Get<ICassandraSettings>().QueueKeyspace,
-                            Configuration =
-                                {
-                                    ReplicationFactor = 1,
-                                    ReplicaPlacementStrategy = ReplicaPlacementStrategy.Simple,
-                                    ColumnFamilies = new[]
-                                        {
-                                            new ColumnFamily
-                                                {
-                                                    Name = columnFamilyName,
-                                                    GCGraceSeconds = 10,
-                                                    Caching = ColumnFamilyCaching.All,
-                                                }
-                                        },
-                                }
-                        },
-                });
+            var connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
+            var keyspace = connection.DescribeKeyspace();
+            if(!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
+            {
+                connection.AddColumnFamily(new ColumnFamily
+                    {
+                        Name = columnFamilyName,
+                        GCGraceSeconds = 10,
+                        Caching = ColumnFamilyCaching.All
+                    });
+            }
             blobStorage = new BlobStorage<Class1>(repositoryParameters, serializer, globalTime, columnFamilyName);
         }
 
@@ -51,16 +48,11 @@ namespace FunctionalTests.RepositoriesTests
         {
             const string id = "a";
             const string field1 = "yyy";
-            blobStorage.Write(id, new Class1 {Field1 = field1});
+            blobStorage.Write(id, new Class1{Field1 = field1});
             var elem = blobStorage.Read(id);
             Assert.AreEqual(field1, elem.Field1);
         }
 
         private IBlobStorage<Class1> blobStorage;
-
-        public class Class1
-        {
-            public string Field1 { get; set; }
-        }
     }
 }

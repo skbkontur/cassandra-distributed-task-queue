@@ -3,8 +3,9 @@ using System.Threading;
 
 using GroBuf;
 
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
+using RemoteQueue.Handling.HandlerResults;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
@@ -12,23 +13,24 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
 {
     public class BetaTaskHandler : TaskHandler<BetaTaskData>
     {
-        public BetaTaskHandler(ISerializer serializer, ITaskDataBlobStorage taskDataStorage)
+        private readonly IHandleTaskCollection handleTaskCollection;
+        private readonly ISerializer serializer;
+
+        public BetaTaskHandler(IHandleTaskCollection handleTaskCollection, ISerializer serializer)
         {
+            this.handleTaskCollection = handleTaskCollection;
             this.serializer = serializer;
-            this.taskDataStorage = taskDataStorage;
         }
 
         protected override HandleResult HandleTask(BetaTaskData taskData)
         {
-            while(taskData.IsProcess)
+            while (taskData.IsProcess)
             {
-                Thread.Sleep(TimeSpan.FromMilliseconds(50));
-                taskData = serializer.Deserialize<BetaTaskData>(taskDataStorage.Read(Context.Id));
+                Thread.Sleep(1000);
+                Console.WriteLine("Hello World");
+                taskData = serializer.Deserialize<BetaTaskData>(handleTaskCollection.GetTask(Context.Id).Data);
             }
             return Finish();
         }
-
-        private readonly ISerializer serializer;
-        private readonly ITaskDataBlobStorage taskDataStorage;
     }
 }

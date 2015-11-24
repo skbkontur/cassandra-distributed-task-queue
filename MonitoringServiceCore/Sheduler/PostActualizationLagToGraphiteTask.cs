@@ -1,9 +1,10 @@
 ﻿using System;
 
+using RemoteQueue.LocalTasks.Scheduling;
+
 using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementation;
-using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Sheduler
 {

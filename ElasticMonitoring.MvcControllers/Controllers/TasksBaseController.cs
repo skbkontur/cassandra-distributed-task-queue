@@ -7,7 +7,7 @@ using System.Web.Routing;
 using Humanizer;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Configuration;
+using RemoteQueue.UserClasses;
 
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Models;
@@ -18,11 +18,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 {
     public abstract class TasksBaseController : ControllerBase
     {
-        protected TasksBaseController(ControllerBaseParameters baseParameters, TasksControllerImpl controllerImpl, ITaskDataRegistry taskDataRegistry)
+        protected TasksBaseController(ControllerBaseParameters baseParameters, TasksControllerImpl controllerImpl, TaskDataRegistryBase taskDataRegistryBase)
             : base(baseParameters)
         {
             this.controllerImpl = controllerImpl;
-            taskDataNames = taskDataRegistry.GetAllTaskNames().OrderBy(x => x).ToArray();
+            taskDataNames = taskDataRegistryBase.GetAllTaskDataInfos().OrderBy(x => x.Value).Select(x => x.Value).Distinct().ToArray();
             taskStates = Enum.GetValues(typeof(TaskState)).Cast<TaskState>().Select(x => new KeyValuePair<string, string>(x.ToString(), x.Humanize())).ToArray();
         }
 
