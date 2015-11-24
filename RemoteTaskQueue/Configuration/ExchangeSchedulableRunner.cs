@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 using GroBuf;
 
-using log4net;
-
 using RemoteQueue.Handling;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
@@ -15,6 +13,7 @@ using RemoteQueue.Settings;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
 using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Configuration
@@ -65,7 +64,7 @@ namespace RemoteQueue.Configuration
                         }
                         periodicTaskRunner.Register(reportConsumerStateToGraphiteTask, TimeSpan.FromMinutes(1));
                         started = true;
-                        logger.InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManagers[{0}] with period {1}:\r\n{2}", handlerManagers.Count, runnerSettings.PeriodicInterval, string.Join("\r\n", handlerManagers.Select(x => x.Id)));
+                        Log.For(this).InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManagers[{0}] with period {1}:\r\n{2}", handlerManagers.Count, runnerSettings.PeriodicInterval, string.Join("\r\n", handlerManagers.Select(x => x.Id)));
                     }
                 }
             }
@@ -86,7 +85,7 @@ namespace RemoteQueue.Configuration
                                 theHandlerManager.Stop();
                             })).ToArray());
                         started = false;
-                        logger.Info("Stop ExchangeSchedulableRunner.");
+                        Log.For(this).Info("Stop ExchangeSchedulableRunner.");
                     }
                 }
             }
@@ -98,6 +97,5 @@ namespace RemoteQueue.Configuration
         private readonly ReportConsumerStateToGraphiteTask reportConsumerStateToGraphiteTask;
         private readonly object lockObject = new object();
         private readonly List<IHandlerManager> handlerManagers = new List<IHandlerManager>();
-        private static readonly ILog logger = LogManager.GetLogger(typeof(ExchangeSchedulableRunner));
     }
 }

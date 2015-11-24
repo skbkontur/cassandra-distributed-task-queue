@@ -31,9 +31,9 @@ namespace RemoteQueue.Configuration
         }
 
         [NotNull]
-        private static string ResolveTopic([NotNull] Type taskType, [NotNull] string taskName, bool requireTopic)
+        private static string ResolveTopic([NotNull] Type taskType, [NotNull] string taskName, bool taskTopicIsRequired)
         {
-            var taskTopic = taskType.TryGetTaskTopic(requireTopic);
+            var taskTopic = taskType.TryGetTaskTopic(taskTopicIsRequired);
             if(!string.IsNullOrWhiteSpace(taskTopic))
                 return taskTopic;
             return (Math.Abs(taskName.GetPersistentHashCode()) % topicsCount).ToString(CultureInfo.InvariantCulture);

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -41,9 +40,9 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         [NotNull]
-        public IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys)
+        public TaskIndexRecord[] GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys)
         {
-            return taskIndexShardKeys.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000).ToArray());
+            return taskIndexShardKeys.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000)).ToArray();
         }
 
         [NotNull]

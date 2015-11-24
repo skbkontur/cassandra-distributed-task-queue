@@ -14,6 +14,7 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Tracing;
 
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteQueue.Handling
 {
@@ -42,10 +43,9 @@ namespace RemoteQueue.Handling
         public void Run()
         {
             var nowTicks = DateTime.UtcNow.Ticks;
-            var taskIndexRecordsBatches = handleTasksMetaStorage
-                .GetIndexRecords(nowTicks, allTaskIndexShardKeysToRead)
-                .Batch(maxRunningTasksCount, Enumerable.ToArray);
-            foreach(var taskIndexRecordsBatch in taskIndexRecordsBatches)
+            var taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(nowTicks, allTaskIndexShardKeysToRead);
+            Log.For(this).InfoFormat("Number of live minimalStartTicksIndex records for topic '{0}': {1}", taskTopic, taskIndexRecords.Length);
+            foreach (var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {
                 var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
                 for(var i = 0; i < taskIndexRecordsBatch.Length; i++)
@@ -82,6 +82,6 @@ namespace RemoteQueue.Handling
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;
         private readonly TaskIndexShardKey[] allTaskIndexShardKeysToRead;
-        private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError};
+        private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.WaitingForRerunAfterError, TaskState.InProcess};
     }
 }

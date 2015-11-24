@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
@@ -14,7 +12,7 @@ namespace RemoteQueue.Cassandra.Repositories
         LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskIndexShardKey taskIndexShardKey);
 
         [NotNull]
-        IEnumerable<TaskIndexRecord> GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys);
+        TaskIndexRecord[] GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys);
 
         [NotNull]
         TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta);

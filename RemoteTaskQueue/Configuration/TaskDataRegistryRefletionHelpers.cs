@@ -20,10 +20,10 @@ namespace RemoteQueue.Configuration
         }
 
         [CanBeNull]
-        public static string TryGetTaskTopic([NotNull] this Type taskDataType, bool requireTaskTopic)
+        public static string TryGetTaskTopic([NotNull] this Type taskDataType, bool taskTopicIsRequired)
         {
-            var taskTopicAttribute = Enumerable.SingleOrDefault(GetAllTypesToSearchForAttributes(taskDataType).SelectMany(GetAttributesForType<TaskTopicAttribute>));
-            if(requireTaskTopic && taskTopicAttribute == null)
+            var taskTopicAttribute = GetAllTypesToSearchForAttributes(taskDataType).SelectMany(GetAttributesForType<TaskTopicAttribute>).SingleOrDefault();
+            if(taskTopicIsRequired && taskTopicAttribute == null)
                 throw new InvalidProgramStateException(string.Format("TaskTopic attribute not found for: {0}", taskDataType.FullName));
             return taskTopicAttribute.With(x => x.TaskTopic);
         }
