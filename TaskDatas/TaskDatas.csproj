@@ -43,6 +43,7 @@
     <Compile Include="MonitoringTestTaskData\DeltaTaskData.cs" />
     <Compile Include="FileIdTaskData.cs" />
     <Compile Include="MonitoringTestTaskData\FailingTaskData.cs" />
+    <Compile Include="MonitoringTestTaskData\ITaskDataWithTopic.cs" />
     <Compile Include="MonitoringTestTaskData\SlowTaskData.cs" />
     <Compile Include="NestedClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

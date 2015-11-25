@@ -1,6 +1,7 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 using NUnit.Framework;
 
@@ -13,8 +14,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
 {
     public class TasksListPage : CommonPageBase
     {
-        public readonly StaticText TasksCount;
-
         public TasksListPage()
         {
             NextPage = new Link("Paginator_Next");
@@ -75,14 +74,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
                 if(expectedCount.ToString(CultureInfo.InvariantCulture) == TasksCount.GetText())
                     return page;
             }
-            Assert.Fail("Недождались ожидаесого кол-во задач в списке за {0}. Ожидалось: \"{1}\", но было \"{2}.\"", timeout, expectedCount, TasksCount.GetText());
+            Assert.Fail("РќРµРґРѕР¶РґР°Р»РёСЃСЊ РѕР¶РёРґР°РµСЃРѕРіРѕ РєРѕР»-РІРѕ Р·Р°РґР°С‡ РІ СЃРїРёСЃРєРµ Р·Р° {0}. РћР¶РёРґР°Р»РѕСЃСЊ: \"{1}\", РЅРѕ Р±С‹Р»Рѕ \"{2}.\"", timeout, expectedCount, TasksCount.GetText());
             return null;
         }
 
         public IEnumerable<TaskInfo> GetTaskInfos(int count)
         {
             var taskInfos = new List<TaskInfo>();
-            
             for(var i = 0; i < count; i++)
             {
                 var taskListItem = GetTaskListItem(i);
@@ -93,16 +91,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
                         MinimalStartTime = taskListItem.MinimalStartTime.GetDateTimeUtc(),
                     });
             }
-
             return taskInfos;
         }
 
         public TasksListPage RefreshUntilTaskRowIsPresent(int expectedCount)
         {
-            return RefreshUntil(this, page => { 
-                page.GetTaskListItem(expectedCount - 1).WaitPresenceWithRetries();
-                return true;
-            });
+            return RefreshUntil(this, page => page.GetTaskListItem(expectedCount - 1).IsPresent);
+        }
+
+        public TasksListPage RefreshUntilAllTasksInState(int expectedTasksCount, string expectedState)
+        {
+            return RefreshUntil(this, page => Enumerable.Range(0, expectedTasksCount).All(index =>
+                {
+                    var taskListItem = page.GetTaskListItem(index);
+                    return taskListItem.IsPresent && taskListItem.TaskState.GetText() == expectedState;
+                }));
         }
 
         public TaskDetailsPage GoToTaskDetails(int index)
@@ -186,5 +189,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases
         public CheckBox InProcess { get; private set; }
 
         public ButtonInput Search { get; private set; }
+        public readonly StaticText TasksCount;
     }
 }

@@ -1,19 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
+using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
     public interface IHandleTasksMetaStorage
     {
-        IEnumerable<Tuple<string, ColumnInfo>> GetAllTasksInStates(long ticks, params TaskState[] states);
+        [CanBeNull]
+        LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskIndexShardKey taskIndexShardKey);
 
         [NotNull]
-        ColumnInfo AddMeta([NotNull] TaskMetaInformation meta);
+        TaskIndexRecord[] GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys);
+
+        [NotNull]
+        TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta);
 
         TaskMetaInformation GetMeta(string taskId);
         TaskMetaInformation[] GetMetas(string[] taskIds);

@@ -1,9 +1,8 @@
 using log4net;
 
-using RemoteQueue.LocalTasks.Scheduling;
-
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Utils;
+using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Scheduler
 {
@@ -21,15 +20,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Scheduler
 
         public void Stop()
         {
-            if(worked)
+            if(started)
             {
                 lock(lockObject)
                 {
-                    if(worked)
+                    if(started)
                     {
                         periodicTaskRunner.Unregister(counterTaskId, 15000);
                         periodicTaskRunner.Unregister(counterGraphiteTaskId, 15000);
-                        worked = false;
+                        started = false;
                         logger.LogInfoFormat("Stop TaskCounterServiceSchedulableRunner");
                     }
                 }
@@ -38,15 +37,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Scheduler
 
         public void Start()
         {
-            if(!worked)
+            if(!started)
             {
                 lock(lockObject)
                 {
-                    if(!worked)
+                    if(!started)
                     {
-                        periodicTaskRunner.Register(new ActionPeriodicTask(() => counterController.ProcessNewEvents(), counterTaskId), CounterSettings.CounterUpdateInterval);
-                        periodicTaskRunner.Register(new ActionPeriodicTask(() => graphitePoster.PostData(), counterGraphiteTaskId), CounterSettings.GraphitePostInterval);
-                        worked = true;
+                        periodicTaskRunner.Register(new ActionPeriodicTask(counterTaskId, () => counterController.ProcessNewEvents()), CounterSettings.CounterUpdateInterval);
+                        periodicTaskRunner.Register(new ActionPeriodicTask(counterGraphiteTaskId, () => graphitePoster.PostData()), CounterSettings.GraphitePostInterval);
+                        started = true;
                         logger.LogInfoFormat("Start TaskCounterServiceSchedulableRunner");
                     }
                 }
@@ -61,7 +60,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Scheduler
         private readonly ICounterController counterController;
         private readonly GraphitePoster graphitePoster;
 
-        private volatile bool worked;
+        private volatile bool started;
 
         private readonly ILog logger = LogManager.GetLogger(typeof(TaskCounterServiceSchedulableRunner));
     }

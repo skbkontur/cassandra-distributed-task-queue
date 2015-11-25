@@ -31,48 +31,27 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catalogue.TestCore">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
-    </Reference>
-    <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Catalogue.Objects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="Rhino.Mocks, Version=3.6.0.0, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TasksCacheTest.cs" />
+    <Compile Include="EnumExtensionsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TaskCounterTests\TaskCounterTest.cs" />
+    <Compile Include="TaskCounterTest.cs" />
+    <Compile Include="TaskDataRegistryRefletionHelpersTest.cs" />
+    <Compile Include="TaskDataRegistryTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
-      <Project>{c86636e6-89c3-4930-a6bd-ccdf61b5d8f1}</Project>
-      <Name>MonitoringDataTypes</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonitoringServiceCore\MonitoringServiceCore.csproj">
-      <Project>{eb9a3dbc-5c00-4774-93d6-925943dde4cb}</Project>
-      <Name>MonitoringServiceCore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{d8d12ac6-ec15-4ea9-92be-80ee41a1e152}</Project>
       <Name>RemoteTaskQueue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskCounter.Core\TaskCounter.Core.csproj">
-      <Project>{E7FBDDB8-FD6F-4573-B14B-7AEDBD4044BB}</Project>
-      <Name>TaskCounter.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskCounter.DataTypes\TaskCounter.DataTypes.csproj">
-      <Project>{B4D49A81-6047-480C-93BF-0B1AAA5ECB52}</Project>
-      <Name>TaskCounter.DataTypes</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

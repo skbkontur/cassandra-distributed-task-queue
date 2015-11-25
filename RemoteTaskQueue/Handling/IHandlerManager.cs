@@ -1,14 +1,17 @@
-﻿using System;
+﻿using JetBrains.Annotations;
 
-using RemoteQueue.LocalTasks.Scheduling;
+using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+
+using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Handling
 {
     public interface IHandlerManager : IPeriodicTask
     {
+        [NotNull]
+        LiveRecordTicksMarkerState[] GetCurrentLiveRecordTicksMarkers();
+
         void Start();
         void Stop();
-        long GetQueueLength();
-        Tuple<long, long> GetCassandraQueueLength();
     }
 }

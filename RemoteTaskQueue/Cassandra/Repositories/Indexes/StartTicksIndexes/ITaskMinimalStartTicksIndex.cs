@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using JetBrains.Annotations;
-
-using RemoteQueue.Cassandra.Entities;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public interface ITaskMinimalStartTicksIndex
     {
-        IEnumerable<Tuple<string, ColumnInfo>> GetTaskIds(TaskState taskState, long nowTicks, int batchSize = 2000);
+        [CanBeNull]
+        LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskIndexShardKey taskIndexShardKey);
+
+        void AddRecord([NotNull] TaskIndexRecord taskIndexRecord);
+
+        void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord);
 
         [NotNull]
-        ColumnInfo IndexMeta([NotNull] TaskMetaInformation taskMetaInformation);
-
-        void UnindexMeta(string taskId, ColumnInfo columnInfo);
+        IEnumerable<TaskIndexRecord> GetRecords([NotNull] TaskIndexShardKey taskIndexShardKey, long toTicks, int batchSize);
     }
 }

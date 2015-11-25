@@ -1,10 +1,12 @@
+using JetBrains.Annotations;
+
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
     public interface ITicksHolder
     {
-        long UpdateMaxTicks(string name, long ticks);
-        long GetMaxTicks(string name);
-        long UpdateMinTicks(string name, long ticks);
-        long GetMinTicks(string name);
+        void UpdateMaxTicks([NotNull] string name, long ticks);
+        long GetMaxTicks([NotNull] string name);
+        void UpdateMinTicks([NotNull] string name, long ticks);
+        long GetMinTicks([NotNull] string name);
     }
 }

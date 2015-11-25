@@ -20,7 +20,7 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         [NotNull]
-        public ColumnInfo AddTask([NotNull] Task task)
+        public TaskIndexRecord AddTask([NotNull] Task task)
         {
             if(task.Meta.Attempts == 0)
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
@@ -43,15 +43,7 @@ namespace RemoteQueue.Cassandra.Repositories
         {
             var taskDatas = taskDataStorage.ReadQuiet(taskIds);
             var metas = handleTasksMetaStorage.GetMetasQuiet(taskIds);
-            return taskDatas.Zip(
-                metas,
-                (t, m) =>
-                new Task
-                    {
-                        Data = t,
-                        Meta = m
-                    }
-                )
+            return taskDatas.Zip(metas, (t, m) => new Task {Data = t, Meta = m})
                             .Where(x => x.Meta != null && x.Data != null)
                             .ToArray();
         }

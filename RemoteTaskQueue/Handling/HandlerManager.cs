@@ -1,59 +1,66 @@
 ﻿using System;
 using System.Linq;
 
-using log4net;
+using JetBrains.Annotations;
 
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Cassandra.Repositories.Indexes;
+using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Tracing;
 
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager(ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
+        public HandlerManager([NotNull] string taskTopic, int maxRunningTasksCount, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
         {
+            this.taskTopic = taskTopic;
+            this.maxRunningTasksCount = maxRunningTasksCount;
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
+            allTaskIndexShardKeysToRead = allTaskStatesToRead
+                .Select(x => string.IsNullOrEmpty(taskTopic) ? TaskIndexShardKey.AnyTaskTopic(x) : new TaskIndexShardKey(taskTopic, x))
+                .ToArray();
         }
 
-        public string Id { get { return "HandlerManager"; } }
+        public string Id { get { return string.Format("HandlerManager_{0}", taskTopic); } }
+
+        [NotNull]
+        public LiveRecordTicksMarkerState[] GetCurrentLiveRecordTicksMarkers()
+        {
+            return allTaskIndexShardKeysToRead.Select(x => handleTasksMetaStorage.TryGetCurrentLiveRecordTicksMarker(x) ?? new LiveRecordTicksMarkerState(x, Timestamp.Now.Ticks)).ToArray();
+        }
 
         public void Run()
         {
-            lock(lockObject)
+            var nowTicks = DateTime.UtcNow.Ticks;
+            var taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(nowTicks, allTaskIndexShardKeysToRead);
+            Log.For(this).InfoFormat("Number of live minimalStartTicksIndex records for topic '{0}': {1}", taskTopic, taskIndexRecords.Length);
+            foreach (var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {
-                var nowTicks = DateTime.UtcNow.Ticks;
-                var taskInfoBatches = handleTasksMetaStorage
-                    .GetAllTasksInStates(nowTicks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError)
-                    .Batch(100, Enumerable.ToArray);
-                if(logger.IsDebugEnabled)
-                    logger.DebugFormat("Начали обработку очереди.");
-                foreach(var taskInfoBatch in taskInfoBatches)
+                var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
+                for(var i = 0; i < taskIndexRecordsBatch.Length; i++)
                 {
-                    var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskInfoBatch.Select(x => x.Item1).ToArray());
-                    for(var i = 0; i < taskInfoBatch.Length; i++)
+                    var taskMeta = taskMetas[i];
+                    var taskIndexRecord = taskIndexRecordsBatch[i];
+                    if(taskMeta != null && taskMeta.Id != taskIndexRecord.TaskId)
+                        throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));
+                    using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                     {
-                        var taskMeta = taskMetas[i];
-                        var taskInfo = taskInfoBatch[i];
-                        var taskId = taskInfo.Item1;
-                        if(taskMeta != null && taskMeta.Id != taskId)
-                            throw new InvalidProgramStateException(string.Format("taskInfo.TaskId ({0}) != taskMeta.TaskId ({1})", taskId, taskMeta.Id));
-                        using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
-                        {
-                            bool queueIsFull, taskIsSentToThreadPool;
-                            localTaskQueue.QueueTask(taskId, taskInfo.Item2, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
-                            taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
-                            if(queueIsFull)
-                                return;
-                        }
+                        bool queueIsFull, taskIsSentToThreadPool;
+                        localTaskQueue.QueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
+                        taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
+                        if(queueIsFull)
+                            return;
                     }
                 }
             }
@@ -66,29 +73,15 @@ namespace RemoteQueue.Handling
 
         public void Stop()
         {
-            if(!started)
-                return;
-            started = false;
-            localTaskQueue.StopAndWait(100 * 1000);
+            localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
         }
 
-        public long GetQueueLength()
-        {
-            return localTaskQueue.GetQueueLength();
-        }
-
-        public Tuple<long, long> GetCassandraQueueLength()
-        {
-            var allTasksInStates = handleTasksMetaStorage.GetAllTasksInStates(DateTime.UtcNow.Ticks, TaskState.New, TaskState.WaitingForRerun, TaskState.InProcess, TaskState.WaitingForRerunAfterError);
-            long all = allTasksInStates.Count();
-            return new Tuple<long, long>(all, all);
-        }
-
-        private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerManager));
+        private readonly string taskTopic;
+        private readonly int maxRunningTasksCount;
         private readonly ILocalTaskQueue localTaskQueue;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;
-        private readonly object lockObject = new object();
-        private volatile bool started;
+        private readonly TaskIndexShardKey[] allTaskIndexShardKeysToRead;
+        private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.WaitingForRerunAfterError, TaskState.InProcess};
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using NUnit.Framework;
 
@@ -20,28 +21,30 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         [Test]
         public void Test()
         {
-            var ids = new string[10];
+            var expectedIds = new List<string>();
             for(var i = 0; i < 10; i++)
-                ids[i] = AddTask(new SimpleTaskData());
-            foreach(var id in ids)
+                expectedIds.Add(AddTask(new SimpleTaskData()));
+            foreach(var id in expectedIds)
                 Console.WriteLine(id);
-            var tasksListPage = LoadTasksListPage();
-            tasksListPage = tasksListPage.RefreshUntilTaskRowIsPresent(10);
+            var tasksListPage = LoadTasksListPage().RefreshUntilAllTasksInState(10, "Finished");
             Console.WriteLine();
+            var actualIds = new List<string>();
             for(var i = 0; i < 10; i++)
             {
                 var item = tasksListPage.GetTaskListItem(i);
-                item.TaskId.WaitText(ids[9 - i]);
                 item.TaskState.WaitText("Finished");
                 item.TaskName.WaitText("SimpleTaskData");
                 item.Attempts.WaitText("1");
+                var taskId = item.TaskId.GetText();
+                actualIds.Add(taskId);
                 var details = tasksListPage.GoToTaskDetails(i);
-                details.TaskId.WaitText(ids[9 - i]);
+                details.TaskId.WaitText(taskId);
                 details.TaskState.WaitText("Finished");
                 details.TaskName.WaitText("SimpleTaskData");
                 details.Attempts.WaitText("1");
                 tasksListPage = details.GoToTasksListPage();
             }
+            Assert.That(actualIds, Is.EquivalentTo(expectedIds));
         }
 
         [Test]

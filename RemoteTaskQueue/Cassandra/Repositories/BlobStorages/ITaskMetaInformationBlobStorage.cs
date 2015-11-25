@@ -5,6 +5,5 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public interface ITaskMetaInformationBlobStorage : IBlobStorage<TaskMetaInformation>
     {
-        
     }
 }

@@ -5,7 +5,7 @@ using GroBuf;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
@@ -15,14 +15,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
     public class TaskMetaProcessor : ITaskMetaProcessor
     {
         public TaskMetaProcessor(
-            ITaskDataTypeToNameMapper taskDataTypeToNameMapper,
+            ITaskDataRegistry taskDataRegistry,
             ITaskDataBlobStorage taskDataStorage,
             ITaskExceptionInfoBlobStorage taskExceptionInfoStorage,
             TaskWriter writer,
             ISerializer serializer,
             ICatalogueStatsDClient statsDClient, ITaskWriteDynamicSettings taskWriteDynamicSettings)
         {
-            this.taskDataTypeToNameMapper = taskDataTypeToNameMapper;
+            this.taskDataRegistry = taskDataRegistry;
             this.taskDataStorage = taskDataStorage;
             this.taskExceptionInfoStorage = taskExceptionInfoStorage;
             this.writer = writer;
@@ -43,7 +43,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 var taskData = taskDatas[i];
                 Type taskType;
                 object taskDataObj = null;
-                if(taskDataTypeToNameMapper.TryGetTaskType(batch[i].Name, out taskType))
+                if(taskDataRegistry.TryGetTaskType(batch[i].Name, out taskType))
                     taskDataObj = serializer.Deserialize(taskType, taskData);
                 taskDataObjects[i] = taskDataObj;
             }
@@ -51,7 +51,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 statsDClient.Timing("Index", () => writer.IndexBatch(batch, taskExceptionInfos, taskDataObjects));
         }
 
-        private readonly ITaskDataTypeToNameMapper taskDataTypeToNameMapper;
+        private readonly ITaskDataRegistry taskDataRegistry;
         private readonly ITaskDataBlobStorage taskDataStorage;
         private readonly ITaskExceptionInfoBlobStorage taskExceptionInfoStorage;
         private readonly TaskWriter writer;

@@ -1,8 +1,9 @@
-using RemoteQueue.Handling;
+using RemoteQueue.Configuration;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData
 {
-    public class DeltaTaskData : ITaskData
+    [TaskName("DeltaTaskData")]
+    public class DeltaTaskData : ITaskDataWithTopic
     {
     }
 }

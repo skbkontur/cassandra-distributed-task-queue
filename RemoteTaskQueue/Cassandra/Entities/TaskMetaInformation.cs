@@ -1,15 +1,21 @@
-﻿namespace RemoteQueue.Cassandra.Entities
+﻿using JetBrains.Annotations;
+
+namespace RemoteQueue.Cassandra.Entities
 {
     public class TaskMetaInformation
     {
-        public override string ToString()
+        public TaskMetaInformation([NotNull] string name, [NotNull] string id)
         {
-            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, TraceId: {6}]",
-                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId);
+            Name = name;
+            Id = id;
         }
 
-        public string Name { get; set; }
-        public string Id { get; set; }
+        [NotNull]
+        public string Name { get; private set; }
+
+        [NotNull]
+        public string Id { get; private set; }
+
         public long Ticks { get; set; }
         public long MinimalStartTicks { get; set; }
         public long? StartExecutingTicks { get; set; }
@@ -27,11 +33,18 @@
             snapshot = StaticGrobuf.GetSerializer().Serialize(this);
         }
 
-        internal TaskMetaInformation GetSnapshot()
+        [CanBeNull]
+        internal TaskMetaInformation TryGetSnapshot()
         {
             if(snapshot == null)
                 return null;
             return StaticGrobuf.GetSerializer().Deserialize<TaskMetaInformation>(snapshot);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, TraceId: {6}]",
+                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId);
         }
 
         private byte[] snapshot;

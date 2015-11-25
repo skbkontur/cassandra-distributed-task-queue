@@ -1,9 +1,11 @@
 ﻿using System;
 
+using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas
 {
+    [TaskName("ByteArrayAndNestedTaskData")]
     public class ByteArrayAndNestedTaskData : ITaskData
     {
         public string Value { get; set; }

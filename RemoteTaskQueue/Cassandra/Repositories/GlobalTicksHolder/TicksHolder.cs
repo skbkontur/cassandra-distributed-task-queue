@@ -1,15 +1,15 @@
-using System;
-
 using GroBuf;
+
+using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Primitives;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 
-using log4net;
-
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
+    // todo (maybe-optimize): по-хорошему надо распилить на две CF
+    // здесь реализуется не очень хороший паттерн - в одной CF метки времени для записи выбираются разными способами: ticks и long.MaxValue - ticks
     public class TicksHolder : ColumnFamilyRepositoryBase, ITicksHolder
     {
         public TicksHolder(ISerializer serializer, IColumnFamilyRepositoryParameters parameters)
@@ -18,7 +18,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
             this.serializer = serializer;
         }
 
-        public long UpdateMaxTicks(string name, long ticks)
+        public void UpdateMaxTicks([NotNull] string name, long ticks)
         {
             var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(name, new Column
@@ -27,10 +27,9 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
                     Timestamp = ticks,
                     Value = serializer.Serialize(ticks)
                 });
-            return GetMaxTicks(name);
         }
 
-        public long GetMaxTicks(string name)
+        public long GetMaxTicks([NotNull] string name)
         {
             var connection = RetrieveColumnFamilyConnection();
             Column column;
@@ -39,7 +38,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
             return serializer.Deserialize<long>(column.Value);
         }
 
-        public long UpdateMinTicks(string name, long ticks)
+        public void UpdateMinTicks([NotNull] string name, long ticks)
         {
             var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(name, new Column
@@ -48,10 +47,9 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
                     Timestamp = long.MaxValue - ticks,
                     Value = serializer.Serialize(long.MaxValue - ticks)
                 });
-            return GetMinTicks(name);
         }
 
-        public long GetMinTicks(string name)
+        public long GetMinTicks([NotNull] string name)
         {
             var connection = RetrieveColumnFamilyConnection();
             Column column;
@@ -61,10 +59,8 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
         }
 
         public const string columnFamilyName = "ticksHolder";
-        private readonly ISerializer serializer;
         private const string maxTicksColumnName = "MaxTicks";
         private const string minTicksColumnName = "MinTicks";
-
-        private static readonly ILog logger = LogManager.GetLogger(typeof(TicksHolder));
+        private readonly ISerializer serializer;
     }
 }
