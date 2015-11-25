@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using GroboContainer.Infection;
+
 using log4net;
 
 using RemoteQueue.Cassandra.Entities;
@@ -9,18 +11,19 @@ using RemoteQueue.Cassandra.Entities;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Utils;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.NewEventsCounters
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.OldWaitingTasksCounters
 {
-    public class NewTasksCounter
+    public class OldWaitingTasksCounter
     {
-        public NewTasksCounter(long watchInterval)
+        public OldWaitingTasksCounter(long watchInterval)
         {
             notCountedNewTasks = new Dictionary<string, long>();
             this.watchInterval = watchInterval;
             value = 0;
         }
-
-        public NewTasksCounter()
+        
+        [ContainerConstructor]
+        public OldWaitingTasksCounter()
             : this(CounterSettings.NewEventsWatchInterval.Ticks)
         {
         }
@@ -41,7 +44,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
             }
         }
 
-        public void LoadSnapshot(NewEventsCounterSnapshot snapshot)
+        public void LoadSnapshot(OldWaitingCounterSnapshot snapshot)
         {
             if(snapshot == null || snapshot.Tasks == null)
             {
@@ -53,19 +56,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
                 Reset();
                 foreach(var task in snapshot.Tasks)
                     tasks.Add(task);
-                if (snapshot.NotCountedNewTasks != null)
+                if(snapshot.NotCountedNewTasks != null)
                     notCountedNewTasks = new Dictionary<string, long>(snapshot.NotCountedNewTasks);
                 SetValue(tasks.Count);
             }
         }
 
-        public NewEventsCounterSnapshot GetSnapshot(int maxLength)
+        public OldWaitingCounterSnapshot GetSnapshot(int maxLength)
         {
             lock(lockObject)
             {
                 if(tasks.Count > maxLength)
                     return null;
-                return new NewEventsCounterSnapshot() {Tasks = tasks.ToArray(), NotCountedNewTasks = new Dictionary<string, long>(notCountedNewTasks)};
+                return new OldWaitingCounterSnapshot() {Tasks = tasks.ToArray(), NotCountedNewTasks = new Dictionary<string, long>(notCountedNewTasks)};
             }
         }
 
@@ -74,24 +77,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
             lock(lockObject)
             {
                 var borderTicks = now - watchInterval;
-                foreach(var taskMetaInformation in metas)
-                {
-                    var isWaitingState = IsWaitingState(taskMetaInformation);
-                    var taskId = taskMetaInformation.Id;
-                    var minimalStartTicks = taskMetaInformation.MinimalStartTicks;
-                    if(minimalStartTicks < borderTicks)
-                        CountTask(taskId, isWaitingState);
-                    else
-                    {
-                        if(isWaitingState)
-                            notCountedNewTasks[taskId] = minimalStartTicks;
-                        else
-                        {
-                            CountTask(taskId, false);
-                            notCountedNewTasks.Remove(taskId);
-                        }
-                    }
-                }
+
                 notCountedNewTasks.DeleteWhere(pair =>
                     {
                         if(pair.Value < borderTicks)
@@ -101,7 +87,36 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
                         }
                         return false;
                     });
+                //note metas sorted by LastModificationTicks
+                foreach(var taskMetaInformation in metas)
+                {
+                    var taskId = taskMetaInformation.Id;
+                    var minimalStartTicks = taskMetaInformation.MinimalStartTicks;
+                    if(minimalStartTicks >= borderTicks)
+                    {
+                        if(IsWaitingState(taskMetaInformation))
+                        {
+                            notCountedNewTasks[taskId] = minimalStartTicks;
+                            CountTask(taskId, false);
+                        }
+                        else
+                        {
+                            CountTask(taskId, false);
+                            notCountedNewTasks.Remove(taskId);
+                        }
+                    }
+                    else
+                        CountTask(taskId, IsWaitingState(taskMetaInformation));
+                }
                 SetValue(tasks.Count);
+            }
+        }
+
+        public string[] GetOldWaitingTaskIds()
+        {
+            lock(lockObject)
+            {
+                return tasks.ToArray();
             }
         }
 
@@ -125,6 +140,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
             }
         }
 
+        public Status GetStatus()
+        {
+            lock(lockObject)
+                return new Status()
+                    {
+                        NotCountedNewTasksCount = notCountedNewTasks.Count
+                    };
+        }
+
         private void SetValue(int count)
         {
             Interlocked.Exchange(ref value, count);
@@ -143,5 +167,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ne
         private readonly HashSet<string> tasks = new HashSet<string>();
         private readonly object lockObject = new object();
         private long value;
+
+        public class Status
+        {
+            public int NotCountedNewTasksCount { get; set; }
+        }
     }
 }

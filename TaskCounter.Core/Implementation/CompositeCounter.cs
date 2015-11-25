@@ -5,7 +5,7 @@ using log4net;
 
 using RemoteQueue.Cassandra.Entities;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.NewEventsCounters;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.OldWaitingTasksCounters;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 
@@ -13,14 +13,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 {
     public class CompositeCounter : ICompositeCounter
     {
-        public CompositeCounter()
+        public CompositeCounter(OldWaitingTasksCounter oldWaitingTasksCounter)
         {
-            oldWaitingTaskCounter = new NewTasksCounter();
+            this.oldWaitingTasksCounter = oldWaitingTasksCounter;
         }
 
         public void ProcessMetas(TaskMetaInformation[] metas, long readTicks)
         {
-            oldWaitingTaskCounter.NewMetainformationAvailable(metas, readTicks);
+            oldWaitingTasksCounter.NewMetainformationAvailable(metas, readTicks);
             var processedNames = new HashSet<string>();
             foreach(var taskMetaInformation in metas)
             {
@@ -65,13 +65,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
         public TaskCount GetTotalCount()
         {
             var totalCount = totalCounter.GetCount();
-            totalCount.OldWaitingTaskCount = oldWaitingTaskCounter.GetValue();
+            totalCount.OldWaitingTaskCount = oldWaitingTasksCounter.GetValue();
             return totalCount;
         }
 
         public void Reset()
         {
-            oldWaitingTaskCounter.Reset();
+            oldWaitingTasksCounter.Reset();
             totalCounter.Reset();
             counters.Clear();
         }
@@ -96,10 +96,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
                 logger.LogWarnFormat("Total snapshot is big");
                 return null;
             }
+            var oldWaitingCounterSnapshot = oldWaitingTasksCounter.GetSnapshot(maxLength);
             return new CompositeCounterSnapshot()
                 {
                     Snapshots = snapshots,
-                    TotalSnapshot = totalSnapshot
+                    TotalSnapshot = totalSnapshot,
+                    OldWaitingCounterSnapshot = oldWaitingCounterSnapshot
                 };
         }
 
@@ -107,27 +109,41 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
         {
             logger.LogInfoFormat("Loading snapshot");
             Reset();
-            if(snapshot == null || snapshot.Snapshots == null || snapshot.Snapshots.Count == 0)
+            oldWaitingTasksCounter.Reset();
+            totalCounter.Reset();
+            if(snapshot == null)
             {
                 logger.LogWarnFormat("Snapshot is empty");
                 return;
             }
-            totalCounter.Reset();
 
-            foreach(var kvp in snapshot.Snapshots)
+            if(snapshot.Snapshots != null && snapshot.Snapshots.Count != 0)
             {
-                var name = kvp.Key;
-                GetCounter(name).LoadSnapshot(kvp.Value);
+                foreach(var kvp in snapshot.Snapshots)
+                {
+                    var name = kvp.Key;
+                    GetCounter(name).LoadSnapshot(kvp.Value);
+                }
             }
+            else
+                logger.LogWarnFormat("Per-counter snapshots are empty");
             if(snapshot.TotalSnapshot != null)
                 totalCounter.LoadSnapshot(snapshot.TotalSnapshot);
+            else
+                logger.LogWarnFormat("totalCounter snapshot is empty");
+
+            if(snapshot.OldWaitingCounterSnapshot != null)
+                oldWaitingTasksCounter.LoadSnapshot(snapshot.OldWaitingCounterSnapshot);
+            else
+                logger.LogWarnFormat("oldWaitingTasksCounter snapshot is empty");
 
             logger.LogInfoFormat("Snapshot loaded. Counter start value = {0}", totalCounter.GetCount().Count);
         }
 
+        private readonly OldWaitingTasksCounter oldWaitingTasksCounter;
+
         private static readonly ILog logger = LogManager.GetLogger("CompositeCounter");
 
-        private readonly NewTasksCounter oldWaitingTaskCounter;
         private readonly ConcurrentDictionary<string, ProcessedTasksCounter> counters = new ConcurrentDictionary<string, ProcessedTasksCounter>();
         private readonly ProcessedTasksCounter totalCounter = CreateCounter();
     }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.NewEventsCounters
+namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.OldWaitingTasksCounters
 {
-    public class NewEventsCounterSnapshot
+    public class OldWaitingCounterSnapshot
     {
         public string[] Tasks { get; set; }
         public Dictionary<string, long> NotCountedNewTasks { get; set; }

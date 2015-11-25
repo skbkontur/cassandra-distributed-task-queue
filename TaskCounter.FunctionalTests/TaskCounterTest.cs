@@ -58,7 +58,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
         }
 
         [Test, Ignore]
-        public void TestNewCounter()
+        public void TestOldWaitingTaskCount()
         {
             //note long test
             container.Get<IExchangeServiceClient>().Stop();

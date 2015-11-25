@@ -1,6 +1,9 @@
 ﻿using System;
 
+using Newtonsoft.Json;
+
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.OldWaitingTasksCounters;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
@@ -8,15 +11,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Http
 {
     public class TaskCounterHttpHandler : IHttpHandler
     {
-        public TaskCounterHttpHandler(ICounterController counterController)
+        public TaskCounterHttpHandler(ICounterController counterController, OldWaitingTasksCounter oldWaitingTasksCounter)
         {
             this.counterController = counterController;
+            this.oldWaitingTasksCounter = oldWaitingTasksCounter;
         }
 
         [HttpMethod]
         public TaskCount GetProcessingTaskCount()
         {
             return counterController.GetTotalCount();
+        }
+
+        [HttpMethod]
+        [JsonHttpMethod]
+        public string GetOldWaitingTasksJson()
+        {
+            return JsonConvert.SerializeObject(oldWaitingTasksCounter.GetOldWaitingTaskIds());
         }
 
         [HttpMethod]
@@ -29,5 +40,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Http
         }
 
         private readonly ICounterController counterController;
+        private readonly OldWaitingTasksCounter oldWaitingTasksCounter;
     }
 }

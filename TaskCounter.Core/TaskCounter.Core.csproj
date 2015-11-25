@@ -57,6 +57,10 @@
     <Reference Include="MoreLinq">
       <HintPath>..\..\Assemblies\MoreLinq\MoreLinq.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="SKBKontur.Graphite.Client">
       <HintPath>..\..\Assemblies\GraphiteClient\SKBKontur.Graphite.Client.dll</HintPath>
     </Reference>
@@ -78,10 +82,11 @@
     <Compile Include="Implementation\IMetaCachedReader.cs" />
     <Compile Include="Implementation\MetaCachedReader.cs" />
     <Compile Include="Implementation\MetaReaderSettings.cs" />
-    <Compile Include="Implementation\NewEventsCounters\NewEventsCounterSnapshot.cs" />
-    <Compile Include="Implementation\NewEventsCounters\NewTasksCounter.cs" />
+    <Compile Include="Implementation\OldWaitingTasksCounters\OldWaitingCounterSnapshot.cs" />
+    <Compile Include="Implementation\OldWaitingTasksCounters\OldWaitingTasksCounter.cs" />
     <Compile Include="Implementation\ProcessedTasksCounter.cs" />
     <Compile Include="Implementation\SnaphotConverter.cs" />
+    <Compile Include="Implementation\SnapshotStorageUtils.cs" />
     <Compile Include="Implementation\TaskStateHelpers.cs" />
     <Compile Include="Implementation\UnprocessedEventsMap.cs" />
     <Compile Include="Implementation\Utils\DateTimeFormatter.cs" />
