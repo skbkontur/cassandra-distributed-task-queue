@@ -3,8 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>
-    </ProductVersion>
+    <ProductVersion></ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E7FBDDB8-FD6F-4573-B14B-7AEDBD4044BB}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -59,7 +58,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\Assemblies\json.net\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="SKBKontur.Graphite.Client">
       <HintPath>..\..\Assemblies\GraphiteClient\SKBKontur.Graphite.Client.dll</HintPath>
