@@ -38,24 +38,6 @@ namespace RemoteQueue.Cassandra.Primitives
             return BlobWriteResult.Success;
         }
 
-        public IBlobsWriteResult Write([NotNull] IEnumerable<KeyValuePair<string, T>> elements)
-        {
-            var connection = RetrieveColumnFamilyConnection();
-            var nowTicks = globalTime.UpdateNowTicks();
-            connection.BatchInsert(elements.Select(x => new KeyValuePair<string, IEnumerable<Column>>(
-                                                            x.Key,
-                                                            new[]
-                                                                {
-                                                                    new Column
-                                                                        {
-                                                                            Name = dataColumnName,
-                                                                            Timestamp = nowTicks,
-                                                                            Value = serializer.Serialize(x.Value)
-                                                                        }
-                                                                })));
-            return SuccessBlobsWriteResult.Instance;
-        }
-
         public T Read([NotNull] string id)
         {
             var connection = RetrieveColumnFamilyConnection();

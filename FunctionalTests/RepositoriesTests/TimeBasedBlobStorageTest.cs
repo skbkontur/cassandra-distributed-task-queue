@@ -70,17 +70,6 @@ namespace FunctionalTests.RepositoriesTests
         }
 
         [Test]
-        public void TestMultiWrite()
-        {
-            var id1 = TimeGuid.NowGuid();
-            var id2 = TimeGuid.NowGuid();
-
-            timeBasedBlobStorage.Write(new[] {new KeyValuePair<TimeGuid, int?>(id1, 1), new KeyValuePair<TimeGuid, int?>(id2, 2)});
-            Assert.That(timeBasedBlobStorage.Read(id1), Is.EqualTo(1));
-            Assert.That(timeBasedBlobStorage.Read(id2), Is.EqualTo(2));
-        }
-
-        [Test]
         public void TestReadQuiet()
         {
             var id1 = TimeGuid.NowGuid();

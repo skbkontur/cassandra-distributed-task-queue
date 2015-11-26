@@ -29,19 +29,6 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return blobStorage.Write(id, element);
         }
 
-        public IBlobsWriteResult Write([NotNull] IEnumerable<KeyValuePair<string, T>> elements)
-        {
-            elements = elements.ToArray();
-            var splitResult = KeyValuePairsSplit(elements);
-
-            if(splitResult.TimeBasedBlobItems.Any())
-                timeBasedBlobStorage.Write(splitResult.TimeBasedBlobItems);
-
-            blobStorage.Write(elements);
-
-            return SuccessBlobsWriteResult.Instance;
-        }
-
         public T Read([NotNull] string id)
         {
             TimeGuid timeGuidId;

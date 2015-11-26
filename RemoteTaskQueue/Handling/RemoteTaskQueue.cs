@@ -41,6 +41,7 @@ namespace RemoteQueue.Handling
             this.taskDataRegistry = taskDataRegistry;
             Serializer = serializer;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
+            keyspace = cassandraSettings.QueueKeyspace;
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             GlobalTime = new GlobalTime(ticksHolder);
@@ -144,8 +145,8 @@ namespace RemoteQueue.Handling
             var taskId = TimeGuid.NowGuid().ToGuid().ToString();
             if(data.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
             {
-                logger.InfoFormat("Blob type:{0} with id={1} has size={2} bytes. Cannot write to timeBasedColumnFamily.", typeof(T).Name, taskId, data.Length);
                 taskId = Guid.NewGuid().ToString();
+                logger.WarnFormat("Blob type:{0} with id={1} has size={2} bytes. Cannot write to timeBasedColumnFamily in keyspace:{3}.", typeof(T).Name, taskId, data.Length, keyspace);
             }
 
             
@@ -198,5 +199,6 @@ namespace RemoteQueue.Handling
         private readonly IChildTaskIndex childTaskIndex;
         private readonly bool enableContinuationOptimization;
         private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueue));
+        private readonly string keyspace;
     }
 }

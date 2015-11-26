@@ -1,5 +1,3 @@
-using RemoteQueue.Settings;
-
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 
@@ -10,17 +8,17 @@ namespace RemoteQueue.Cassandra.Primitives
         protected ColumnFamilyRepositoryBase(IColumnFamilyRepositoryParameters parameters, string columnFamilyName)
         {
             cassandraCluster = parameters.CassandraCluster;
-            settings = parameters.Settings;
             ColumnFamilyName = columnFamilyName;
+            Keyspace = parameters.Settings.QueueKeyspace;
         }
 
         public IColumnFamilyConnection RetrieveColumnFamilyConnection()
         {
-            return cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName);
+            return cassandraCluster.RetrieveColumnFamilyConnection(Keyspace, ColumnFamilyName);
         }
 
+        public string Keyspace { get; private set; }
         public string ColumnFamilyName { get; private set; }
         private readonly ICassandraCluster cassandraCluster;
-        private readonly ICassandraSettings settings;
     }
 }

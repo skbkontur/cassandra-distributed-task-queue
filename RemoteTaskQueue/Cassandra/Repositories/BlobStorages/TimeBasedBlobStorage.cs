@@ -35,7 +35,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             var value = serializer.Serialize(element);
             if(value.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
             {
-                logger.InfoFormat("Blob with id={0} has size={1} bytes. Cannot write to columnFamily={2}", id.ToGuid(), value.Length, ColumnFamilyName);
+                logger.WarnFormat("Blob with id={0} has size={1} bytes. Cannot write to columnFamily={2} in keyspace={3}", id.ToGuid(), value.Length, ColumnFamilyName, Keyspace);
                 return BlobWriteResult.OutOfSizeLimit;
             }
 
@@ -50,41 +50,6 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                     Value = value
                 });
             return BlobWriteResult.Success;
-        }
-
-        public IBlobsWriteResult Write([NotNull] IEnumerable<KeyValuePair<TimeGuid, T>> elements)
-        {
-            var blobsWriteResult = new BlobsWriteResult();
-            var items = elements.Select(element => new KeyValuePair<TimeGuid, byte[]>(element.Key, serializer.Serialize(element.Value)))
-                                .Where((element, index) =>
-                                    {
-                                        if(element.Value.Length <= TimeBasedBlobStorageSettings.BlobSizeLimit)
-                                            return true;
-                                        logger.InfoFormat("Blob with id={0} has size={1} bytes. Cannot write to columnFamily={2}", element.Key.ToGuid(), element.Value.Length, ColumnFamilyName);
-                                        blobsWriteResult.OutOfSizeLimitBlobIndexes.Add(index);
-                                        return false;
-                                    });
-
-            var connection = RetrieveColumnFamilyConnection();
-            var updateNowTicks = globalTime.UpdateNowTicks();
-
-            connection.BatchInsert(items.Select(x =>
-                {
-                    var columnInfo = GetColumnInfo(x.Key);
-                    return new KeyValuePair<string, IEnumerable<Column>>(
-                        columnInfo.RowKey,
-                        new[]
-                            {
-                                new Column
-                                    {
-                                        Name = columnInfo.ColumnName,
-                                        Timestamp = updateNowTicks,
-                                        Value = x.Value
-                                    }
-                            });
-                }));
-
-            return blobsWriteResult;
         }
 
         public T Read([NotNull] TimeGuid id)

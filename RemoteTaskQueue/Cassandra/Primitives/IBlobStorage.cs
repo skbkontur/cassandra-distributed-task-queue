@@ -5,7 +5,6 @@ namespace RemoteQueue.Cassandra.Primitives
     public interface IBlobStorage<T, TId>
     {
         BlobWriteResult Write(TId id, T element);
-        IBlobsWriteResult Write(IEnumerable<KeyValuePair<TId, T>> elements);
         T Read(TId id);
         Dictionary<TId, T> Read(IEnumerable<TId> ids);
         IEnumerable<T> ReadAll(int batchSize = 1000);
