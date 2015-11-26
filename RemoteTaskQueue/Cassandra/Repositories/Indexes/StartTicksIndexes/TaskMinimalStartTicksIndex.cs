@@ -10,6 +10,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
@@ -69,8 +70,13 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 return null;
             var overlapDuration = GetOverlapDuration(taskIndexShardKey);
             var fromTicks = liveRecordTicksMarker.State.CurrentTicks - overlapDuration.Ticks;
-            var twoDaysSafetyBelt = (DateTime.UtcNow - TimeSpan.FromDays(2)).Ticks;
-            return Math.Max(fromTicks, twoDaysSafetyBelt);
+            var safetyBelt = (DateTime.UtcNow - TimeSpan.FromHours(6)).Ticks;
+            if(fromTicks < safetyBelt)
+            {
+                Log.For(this).WarnFormat("fromTicks ({0}) < safetyBelt ({1})", new Timestamp(fromTicks), new Timestamp(safetyBelt));
+                return safetyBelt;
+            }
+            return fromTicks;
         }
 
         private TimeSpan GetOverlapDuration([NotNull] TaskIndexShardKey taskIndexShardKey)
