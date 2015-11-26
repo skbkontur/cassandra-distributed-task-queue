@@ -81,16 +81,19 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         private TimeSpan GetOverlapDuration([NotNull] TaskIndexShardKey taskIndexShardKey)
         {
-            var utcNow = DateTime.UtcNow;
-            DateTime lastBigOverlapMoment;
-            if(!lastBigOverlapMomentsByShardKey.TryGetValue(taskIndexShardKey, out lastBigOverlapMoment) || utcNow - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
+            lock(locker)
             {
-                lastBigOverlapMomentsByShardKey[taskIndexShardKey] = utcNow;
-                //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
-                //что потребует изменения этого отката. Поэтому берется, как кажется, с запасом
-                return TimeSpan.FromMinutes(8); // Против адских затупов кассандры
+                var utcNow = DateTime.UtcNow;
+                DateTime lastBigOverlapMoment;
+                if(!lastBigOverlapMomentsByShardKey.TryGetValue(taskIndexShardKey, out lastBigOverlapMoment) || utcNow - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
+                {
+                    lastBigOverlapMomentsByShardKey[taskIndexShardKey] = utcNow;
+                    //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
+                    //что потребует изменения этого отката. Поэтому берется, как кажется, с запасом
+                    return TimeSpan.FromMinutes(8); // Против адских затупов кассандры
+                }
+                return TimeSpan.FromMinutes(1); // Штатная зона нестабильности
             }
-            return TimeSpan.FromMinutes(1); // Штатная зона нестабильности
         }
 
         public const string columnFamilyName = "TaskMinimalStartTicksIndex";
@@ -98,6 +101,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
         private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;
+        private readonly object locker = new object();
         private readonly Dictionary<TaskIndexShardKey, DateTime> lastBigOverlapMomentsByShardKey = new Dictionary<TaskIndexShardKey, DateTime>();
     }
 }
