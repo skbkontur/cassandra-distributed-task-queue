@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using GroBuf;
 
+using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
@@ -31,12 +32,13 @@ namespace RemoteQueue.Configuration
             ICassandraCluster cassandraCluster,
             ICassandraSettings cassandraSettings,
             IRemoteTaskQueueSettings taskQueueSettings,
-            IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+            IRemoteTaskQueueProfiler remoteTaskQueueProfiler,
+            ITaskCreator taskCreator)
         {
             this.runnerSettings = runnerSettings;
             this.periodicTaskRunner = periodicTaskRunner;
             var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
-            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
+            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler, taskCreator);
             var localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
             handlerManagers.Add(new HandlerManager(string.Empty, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             foreach(var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())

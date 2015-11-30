@@ -45,12 +45,12 @@ namespace RemoteQueue.Handling
             var nowTicks = DateTime.UtcNow.Ticks;
             var taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(nowTicks, allTaskIndexShardKeysToRead);
             Log.For(this).InfoFormat("Number of live minimalStartTicksIndex records for topic '{0}': {1}", taskTopic, taskIndexRecords.Length);
-            foreach (var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
+            foreach(var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {
-                var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
+                var taskMetas = handleTasksMetaStorage.GetMetas(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
                 for(var i = 0; i < taskIndexRecordsBatch.Length; i++)
                 {
-                    var taskMeta = taskMetas[i];
+                    var taskMeta = taskMetas.ContainsKey(taskIndexRecordsBatch[i].TaskId) ? taskMetas[taskIndexRecordsBatch[i].TaskId] : null;
                     var taskIndexRecord = taskIndexRecordsBatch[i];
                     if(taskMeta != null && taskMeta.Id != taskIndexRecord.TaskId)
                         throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));

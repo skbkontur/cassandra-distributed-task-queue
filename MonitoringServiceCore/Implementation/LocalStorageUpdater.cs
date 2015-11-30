@@ -62,7 +62,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                          x.State == MTaskState.WaitingForRerun ||
                          x.State == MTaskState.WaitingForRerunAfterError).ToArray();
                 var list = new List<MonitoringTaskMetadata>();
-                var metas = handleTasksMetaStorage.GetMetas(metadatas.Select(x => x.TaskId).ToArray());
+                var metas = handleTasksMetaStorage.GetMetas(metadatas.Select(x => x.TaskId).ToArray()).Values;
                 foreach(var meta in metas)
                 {
                     MonitoringTaskMetadata newMetadata;
@@ -96,7 +96,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                     logger.Error("Some events has taskId=[null]");
                 uniqueEventBatch = eventsWithNotEmptyTaskId;
 
-                var taskMetas = handleTasksMetaStorage.GetMetas(uniqueEventBatch.Select(x => x.TaskId).ToArray()).ToDictionary(x => x.Id);
+                var taskMetas = handleTasksMetaStorage.GetMetas(uniqueEventBatch.Select(x => x.TaskId).ToArray());
                 if(uniqueEventBatch.Length > taskMetas.Count)
                     logger.WarnFormat("Lost {0} task metas", uniqueEventBatch.Length - taskMetas.Count);
 

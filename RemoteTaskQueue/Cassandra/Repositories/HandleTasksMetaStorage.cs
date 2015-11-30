@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -87,18 +88,11 @@ namespace RemoteQueue.Cassandra.Repositories
             return meta;
         }
 
-        public TaskMetaInformation[] GetMetas(string[] taskIds)
+        public IDictionary<string, TaskMetaInformation> GetMetas(string[] taskIds)
         {
-            var metas = metaStorage.Read(taskIds).Values.ToArray();
-            metas.ForEach(x => x.MakeSnapshot());
-            return metas;
-        }
-
-        public TaskMetaInformation[] GetMetasQuiet(string[] taskIds)
-        {
-            var metas = metaStorage.ReadQuiet(taskIds);
-            metas.Where(x => x != null).ForEach(x => x.MakeSnapshot());
-            return metas;
+            var result = metaStorage.Read(taskIds);
+            result.Values.ForEach(x => x.MakeSnapshot());
+            return result;
         }
 
         private readonly ITaskMetaInformationBlobStorage metaStorage;

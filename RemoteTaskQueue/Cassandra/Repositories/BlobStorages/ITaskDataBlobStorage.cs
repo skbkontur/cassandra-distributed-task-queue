@@ -1,8 +1,7 @@
-﻿using RemoteQueue.Cassandra.Primitives;
-
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+﻿namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public interface ITaskDataBlobStorage : IBlobStorage<byte[]>
     {
+        string GenerateBlobId(byte[] blob);
     }
 }

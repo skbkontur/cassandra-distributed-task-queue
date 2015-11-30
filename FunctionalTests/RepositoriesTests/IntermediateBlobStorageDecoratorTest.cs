@@ -18,7 +18,7 @@ using SKBKontur.Catalogue.Objects;
 
 namespace FunctionalTests.RepositoriesTests
 {
-    public class IntermideateBlobStorageDecoratorTest : FunctionalTestBaseWithoutServices
+    public class IntermediateBlobStorageDecoratorTest : FunctionalTestBaseWithoutServices
     {
         public override void SetUp()
         {
@@ -33,7 +33,7 @@ namespace FunctionalTests.RepositoriesTests
             AddColumnFamily(blobStorageColumnFamilyName);
             AddColumnFamily(timeBasedBlobStorageColumnFamilyName);
 
-            intermideateBlobStorageDecorator = new IntermideateBlobStorageDecorator<int?>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName, timeBasedBlobStorageColumnFamilyName);
+            intermediateBlobStorageDecorator = new IntermediateBlobStorageDecorator<int?>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName, timeBasedBlobStorageColumnFamilyName);
             blobStorage = new BlobStorage<int?>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName);
             timeBasedBlobStorage = new TimeBasedBlobStorage<int?>(repositoryParameters, serializer, globalTime, timeBasedBlobStorageColumnFamilyName);
         }
@@ -62,21 +62,23 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void TestRead()
         {
+            Assert.That(intermediateBlobStorageDecorator.Read(id), Is.Null);
+
             blobStorage.Write(id, 1);
-            Assert.That(intermideateBlobStorageDecorator.Read(id), Is.EqualTo(1));
+            Assert.That(intermediateBlobStorageDecorator.Read(id), Is.EqualTo(1));
 
             timeBasedBlobStorage.Write(timeGuidId, 2);
-            Assert.That(intermideateBlobStorageDecorator.Read(id), Is.EqualTo(1));
-            Assert.That(intermideateBlobStorageDecorator.Read(timeGuidId.ToGuid().ToString()), Is.EqualTo(2));
+            Assert.That(intermediateBlobStorageDecorator.Read(id), Is.EqualTo(1));
+            Assert.That(intermediateBlobStorageDecorator.Read(timeGuidId.ToGuid().ToString()), Is.EqualTo(2));
         }
 
         [Test]
         public void TestWrite()
         {
-            intermideateBlobStorageDecorator.Write(id, 1);
+            intermediateBlobStorageDecorator.Write(id, 1);
             Assert.That(blobStorage.Read(id), Is.EqualTo(1));
 
-            intermideateBlobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), 2);
+            intermediateBlobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), 2);
             Assert.That(timeBasedBlobStorage.Read(timeGuidId), Is.EqualTo(2));
             Assert.That(blobStorage.Read(timeGuidId.ToGuid().ToString()), Is.EqualTo(2));
         }
@@ -85,43 +87,32 @@ namespace FunctionalTests.RepositoriesTests
         public void TestMultiRead()
         {
             var stringTimeGuidId = timeGuidId.ToGuid().ToString();
-            Assert.That(intermideateBlobStorageDecorator.Read(new string[0]).Count, Is.EqualTo(0));
-            Assert.That(intermideateBlobStorageDecorator.Read(new[] {id}).Count, Is.EqualTo(0));
-            Assert.That(intermideateBlobStorageDecorator.Read(new[] {stringTimeGuidId}).Count, Is.EqualTo(0));
-            Assert.That(intermideateBlobStorageDecorator.Read(new[] {id, stringTimeGuidId}).Count, Is.EqualTo(0));
+            Assert.That(intermediateBlobStorageDecorator.Read(new string[0]).Count, Is.EqualTo(0));
+            Assert.That(intermediateBlobStorageDecorator.Read(new[] {id}).Count, Is.EqualTo(0));
+            Assert.That(intermediateBlobStorageDecorator.Read(new[] {stringTimeGuidId}).Count, Is.EqualTo(0));
+            Assert.That(intermediateBlobStorageDecorator.Read(new[] {id, stringTimeGuidId}).Count, Is.EqualTo(0));
 
             blobStorage.Write(id, 1);
-            var actual = intermideateBlobStorageDecorator.Read(new[] {id, stringTimeGuidId});
+            var actual = intermediateBlobStorageDecorator.Read(new[] {id, stringTimeGuidId});
             Assert.That(actual.Count, Is.EqualTo(1));
             Assert.That(actual[id], Is.EqualTo(1));
 
             timeBasedBlobStorage.Write(timeGuidId, 2);
-            actual = intermideateBlobStorageDecorator.Read(new[] {id, stringTimeGuidId});
+            actual = intermediateBlobStorageDecorator.Read(new[] {id, stringTimeGuidId});
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[id], Is.EqualTo(1));
             Assert.That(actual[stringTimeGuidId], Is.EqualTo(2));
         }
 
         [Test]
-        public void TestReadQuiet()
-        {
-            blobStorage.Write(id, 1);
-            Assert.That(intermideateBlobStorageDecorator.ReadQuiet(new[] {id, timeGuidId.ToGuid().ToString()}), Is.EqualTo(new int?[] {1, null}));
-
-            timeBasedBlobStorage.Write(timeGuidId, 2);
-            Assert.That(intermideateBlobStorageDecorator.ReadQuiet(new[] {id, timeGuidId.ToGuid().ToString()}), Is.EqualTo(new int?[] {1, 2}));
-            Assert.That(intermideateBlobStorageDecorator.ReadQuiet(new[] {timeGuidId.ToGuid().ToString(), id}), Is.EqualTo(new int?[] {2, 1}));
-        }
-
-        [Test]
         public void TestDelete()
         {
             blobStorage.Write(id, 1);
-            intermideateBlobStorageDecorator.Delete(id, DateTime.UtcNow.Ticks);
+            intermediateBlobStorageDecorator.Delete(id, DateTime.UtcNow.Ticks);
             Assert.IsNull(blobStorage.Read(id));
 
             timeBasedBlobStorage.Write(timeGuidId, 2);
-            intermideateBlobStorageDecorator.Delete(timeGuidId.ToGuid().ToString(), DateTime.UtcNow.Ticks);
+            intermediateBlobStorageDecorator.Delete(timeGuidId.ToGuid().ToString(), DateTime.UtcNow.Ticks);
             Assert.IsNull(timeBasedBlobStorage.Read(timeGuidId));
             Assert.IsNull(blobStorage.Read(timeGuidId.ToGuid().ToString()));
         }
@@ -131,7 +122,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             blobStorage.Write(id, 1);
             timeBasedBlobStorage.Write(timeGuidId, 2);
-            intermideateBlobStorageDecorator.Delete(new[] {id, timeGuidId.ToGuid().ToString()}, DateTime.UtcNow.Ticks);
+            intermediateBlobStorageDecorator.Delete(new[] {id, timeGuidId.ToGuid().ToString()}, DateTime.UtcNow.Ticks);
 
             Assert.IsNull(blobStorage.Read(id));
             Assert.IsNull(blobStorage.Read(timeGuidId.ToGuid().ToString()));
@@ -141,16 +132,15 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void TestReadAll()
         {
-            intermideateBlobStorageDecorator.Write(id, 11);
-            intermideateBlobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), 12);
+            intermediateBlobStorageDecorator.Write(id, 11);
+            intermediateBlobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), 12);
 
             var anotherTimeGuidId = TimeGuid.NewGuid(new Timestamp(DateTime.UtcNow.AddDays(1)));
 
-            intermideateBlobStorageDecorator.Write(anotherId, 21);
-            intermideateBlobStorageDecorator.Write(anotherTimeGuidId.ToGuid().ToString(), 22);
+            intermediateBlobStorageDecorator.Write(anotherId, 21);
+            intermediateBlobStorageDecorator.Write(anotherTimeGuidId.ToGuid().ToString(), 22);
 
-            Assert.That(intermideateBlobStorageDecorator.ReadAll(1).ToArray(), Is.EquivalentTo(new[] {11, 12, 21, 22}));
-            Assert.That(intermideateBlobStorageDecorator.ReadAllWithIds(1).ToArray(), Is.EquivalentTo(new[]
+            Assert.That(intermediateBlobStorageDecorator.ReadAll(1).ToArray(), Is.EquivalentTo(new[]
                 {
                     new KeyValuePair<string, int?>(id, 11),
                     new KeyValuePair<string, int?>(timeGuidId.ToGuid().ToString(), 12),
@@ -163,7 +153,7 @@ namespace FunctionalTests.RepositoriesTests
         private const string timeBasedBlobStorageColumnFamilyName = "orderedBlobStorageTest";
         private const string id = "21E011E8-F715-4EBF-944A-012033C0CE7C";
         private const string anotherId = "8B728A4E-68D6-4BAD-90FA-DFCFFF27F77B";
-        private IntermideateBlobStorageDecorator<int?> intermideateBlobStorageDecorator;
+        private IntermediateBlobStorageDecorator<int?> intermediateBlobStorageDecorator;
         private BlobStorage<int?> blobStorage;
         private TimeBasedBlobStorage<int?> timeBasedBlobStorage;
         private readonly TimeGuid timeGuidId = TimeGuid.NowGuid();

@@ -3,6 +3,7 @@
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Primitives;
+using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
@@ -23,12 +24,13 @@ namespace FunctionalTests.RepositoriesTests
             var globalTime = Container.Get<IGlobalTime>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
             const string columnFamilyName = "Class1CF";
-            connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
+            var queueKeyspace = Container.Get<ICassandraSettings>().QueueKeyspace;
+            connection = cassandraCluster.RetrieveKeyspaceConnection(queueKeyspace);
             cassandraCluster.ActualizeKeyspaces(new[]
                 {
                     new KeyspaceScheme
                         {
-                            Name = Container.Get<ICassandraSettings>().QueueKeyspace,
+                            Name = queueKeyspace,
                             Configuration =
                                 {
                                     ReplicationFactor = 1,

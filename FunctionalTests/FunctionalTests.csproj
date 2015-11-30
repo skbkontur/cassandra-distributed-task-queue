@@ -82,7 +82,7 @@
     <Compile Include="ExchangeTests\TaskTestsExtensions.cs" />
     <Compile Include="FunctionalTestBaseWithoutServices.cs" />
     <Compile Include="Logging\Log4netConfiguration.cs" />
-    <Compile Include="RepositoriesTests\IntermideateBlobStorageDecoratorTest.cs" />
+    <Compile Include="RepositoriesTests\IntermediateBlobStorageDecoratorTest.cs" />
     <Compile Include="RepositoriesTests\BlobStoragesWriteOutOfSizeLimitBlobTest.cs" />
     <Compile Include="RepositoriesTests\BlobStorageDecoratorTest.cs" />
     <Compile Include="RepositoriesTests\BlobStorageTest.cs" />

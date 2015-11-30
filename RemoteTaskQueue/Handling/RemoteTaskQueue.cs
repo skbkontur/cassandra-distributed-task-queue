@@ -5,8 +5,6 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using log4net;
-
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
@@ -15,7 +13,6 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
-using RemoteQueue.Handling.ExecutionContext;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
@@ -24,7 +21,6 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Handling
 {
@@ -36,12 +32,13 @@ namespace RemoteQueue.Handling
             ICassandraSettings cassandraSettings,
             IRemoteTaskQueueSettings taskQueueSettings,
             ITaskDataRegistry taskDataRegistry,
-            IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+            IRemoteTaskQueueProfiler remoteTaskQueueProfiler,
+            ITaskCreator taskCreator)
         {
             this.taskDataRegistry = taskDataRegistry;
+            this.taskCreator = taskCreator;
             Serializer = serializer;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
-            keyspace = cassandraSettings.QueueKeyspace;
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
             var ticksHolder = new TicksHolder(serializer, parameters);
             GlobalTime = new GlobalTime(ticksHolder);
@@ -86,7 +83,6 @@ namespace RemoteQueue.Handling
                 }
                 return false;
             }
-            
         }
 
         public bool RerunTask(string taskId, TimeSpan delay)
@@ -118,16 +114,14 @@ namespace RemoteQueue.Handling
         public RemoteTaskInfo[] GetTaskInfos(string[] taskIds)
         {
             var tasks = HandleTaskCollection.GetTasks(taskIds);
-            var taskExceptionInfos = HandleTaskExceptionInfoStorage.ReadExceptionInfosQuiet(taskIds);
-            return tasks.Zip(
-                taskExceptionInfos,
-                (t, e) =>
-                new RemoteTaskInfo
-                    {
-                        Context = t.Meta,
-                        TaskData = (ITaskData)Serializer.Deserialize(taskDataRegistry.GetTaskType(t.Meta.Name), t.Data),
-                        ExceptionInfo = e
-                    }).ToArray();
+            var taskExceptionInfos = HandleTaskExceptionInfoStorage.ReadExceptionInfos(taskIds);
+
+            return tasks.Select(task => new RemoteTaskInfo
+                {
+                    Context = task.Meta,
+                    TaskData = (ITaskData)Serializer.Deserialize(taskDataRegistry.GetTaskType(task.Meta.Name), task.Data),
+                    ExceptionInfo = taskExceptionInfos.ContainsKey(task.Meta.Id) ? taskExceptionInfos[task.Meta.Id] : null
+                }).ToArray();
         }
 
         public RemoteTaskInfo<T>[] GetTaskInfos<T>(string[] taskIds) where T : ITaskData
@@ -138,43 +132,11 @@ namespace RemoteQueue.Handling
         [NotNull]
         public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
         {
-            createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
-            var nowTicks = DateTime.UtcNow.Ticks;
-            var type = taskData.GetType();
-            var data = Serializer.Serialize(type, taskData);
-            var taskId = TimeGuid.NowGuid().ToGuid().ToString();
-            if(data.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
-            {
-                taskId = Guid.NewGuid().ToString();
-                logger.WarnFormat("Blob type:{0} with id={1} has size={2} bytes. Cannot write to timeBasedColumnFamily in keyspace:{3}.", typeof(T).Name, taskId, data.Length, keyspace);
-            }
-
-            
-            var task = new Task
-                {
-                    Data = data,
-                    Meta = new TaskMetaInformation(taskDataRegistry.GetTaskName(type), taskId)
-                        {
-                            Attempts = 0,
-                            Ticks = nowTicks,
-                            ParentTaskId = string.IsNullOrEmpty(createTaskOptions.ParentTaskId) ? GetCurrentExecutingTaskId() : createTaskOptions.ParentTaskId,
-                            TaskGroupLock = createTaskOptions.TaskGroupLock,
-                            State = TaskState.New,
-                            MinimalStartTicks = 0,
-                        }
-                };
+            var task = taskCreator.Create(taskData, createTaskOptions);
             RemoteTaskQueueProfiler.ProcessTaskCreation(task.Meta, taskData);
             return enableContinuationOptimization && LocalTaskQueue.Instance != null
                        ? new RemoteTaskWithContinuationOptimization(task, HandleTaskCollection, LocalTaskQueue.Instance)
                        : new RemoteTask(task, HandleTaskCollection);
-        }
-
-        private static string GetCurrentExecutingTaskId()
-        {
-            var context = TaskExecutionContext.Current;
-            if(context == null)
-                return null;
-            return context.CurrentTask.Meta.Id;
         }
 
         public string[] GetChildrenTaskIds(string taskId)
@@ -196,9 +158,8 @@ namespace RemoteQueue.Handling
         }
 
         private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly ITaskCreator taskCreator;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly bool enableContinuationOptimization;
-        private static readonly ILog logger = LogManager.GetLogger(typeof(RemoteTaskQueue));
-        private readonly string keyspace;
     }
 }

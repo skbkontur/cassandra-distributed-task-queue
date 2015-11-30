@@ -1,6 +1,7 @@
 ﻿using GroBuf;
 
 using RemoteQueue.Cassandra.Primitives;
+using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 namespace ExchangeService.UserClasses

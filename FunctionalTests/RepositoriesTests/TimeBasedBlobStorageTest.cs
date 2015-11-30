@@ -70,23 +70,6 @@ namespace FunctionalTests.RepositoriesTests
         }
 
         [Test]
-        public void TestReadQuiet()
-        {
-            var id1 = TimeGuid.NowGuid();
-            var id2 = TimeGuid.NowGuid();
-
-            Assert.That(timeBasedBlobStorage.ReadQuiet(new[] {id1, id2}), Is.EquivalentTo(new int?[] {null, null}));
-
-            timeBasedBlobStorage.Write(id1, 1);
-            Assert.That(timeBasedBlobStorage.ReadQuiet(new[] {id1, id2}), Is.EqualTo(new int?[] {1, null}));
-            Assert.That(timeBasedBlobStorage.ReadQuiet(new[] {id2, id1}), Is.EqualTo(new int?[] {null, 1}));
-
-            timeBasedBlobStorage.Write(id2, 2);
-            Assert.That(timeBasedBlobStorage.ReadQuiet(new[] {id1, id2}), Is.EqualTo(new int?[] {1, 2}));
-            Assert.That(timeBasedBlobStorage.ReadQuiet(new[] {id2, id1}), Is.EqualTo(new int?[] {2, 1}));
-        }
-
-        [Test]
         public void TestMultiRead()
         {
             var id1 = TimeGuid.NowGuid();
@@ -146,8 +129,7 @@ namespace FunctionalTests.RepositoriesTests
             timeBasedBlobStorage.Write(id21, 21);
             timeBasedBlobStorage.Write(id22, 22);
 
-            Assert.That(timeBasedBlobStorage.ReadAll(1).ToArray(), Is.EquivalentTo(new int?[] {11, 12, 21, 22}));
-            Assert.That(timeBasedBlobStorage.ReadAllWithIds(1).ToArray(), Is.EquivalentTo(new[]
+            Assert.That(timeBasedBlobStorage.ReadAll(1).ToArray(), Is.EquivalentTo(new[]
                 {
                     new KeyValuePair<TimeGuid, int?>(id11, 11),
                     new KeyValuePair<TimeGuid, int?>(id12, 12),

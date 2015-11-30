@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using RemoteQueue.Cassandra.Entities;
 
@@ -8,6 +9,6 @@ namespace RemoteQueue.Cassandra.Repositories
     {
         void TryAddExceptionInfo(string taskId, Exception e);
         bool TryGetExceptionInfo(string taskId, out TaskExceptionInfo exceptionInfo);
-        TaskExceptionInfo[] ReadExceptionInfosQuiet(string[] taskIds);
+        IDictionary<string, TaskExceptionInfo> ReadExceptionInfos(string[] taskIds);
     }
 }

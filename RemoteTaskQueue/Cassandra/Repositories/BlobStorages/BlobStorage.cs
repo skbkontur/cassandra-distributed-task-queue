@@ -8,12 +8,13 @@ using JetBrains.Annotations;
 
 using MoreLinq;
 
+using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 
-namespace RemoteQueue.Cassandra.Primitives
+namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class BlobStorage<T> : ColumnFamilyRepositoryBase, IBlobStorage<T>
     {
@@ -24,7 +25,7 @@ namespace RemoteQueue.Cassandra.Primitives
             this.globalTime = globalTime;
         }
 
-        public BlobWriteResult Write([NotNull] string id, T element)
+        public void Write([NotNull] string id, T element)
         {
             var connection = RetrieveColumnFamilyConnection();
             var nowTicks = globalTime.UpdateNowTicks();
@@ -34,10 +35,9 @@ namespace RemoteQueue.Cassandra.Primitives
                     Timestamp = nowTicks,
                     Value = serializer.Serialize(element)
                 });
-
-            return BlobWriteResult.Success;
         }
 
+        [CanBeNull]
         public T Read([NotNull] string id)
         {
             var connection = RetrieveColumnFamilyConnection();
@@ -47,25 +47,17 @@ namespace RemoteQueue.Cassandra.Primitives
             return default(T);
         }
 
-        public Dictionary<string, T> Read([NotNull] IEnumerable<string> ids)
+        public Dictionary<string, T> Read([NotNull] string[] ids)
         {
             return ids
+                .Distinct()
                 .Batch(1000, Enumerable.ToArray)
                 .SelectMany(batch => MakeInConnection(connection => connection.GetRows(batch, new[] {dataColumnName})))
                 .Where(x => x.Value != null && x.Value.Length > 0)
-                .DistinctBy(x => x.Key)
-                .Select(pair => new KeyValuePair<string, T>(pair.Key, serializer.Deserialize<T>(pair.Value.First().Value)))
-                .ToDictionary(x => x.Key, x => x.Value);
+                .ToDictionary(pair => pair.Key, pair => serializer.Deserialize<T>(pair.Value.First().Value));
         }
 
-        public IEnumerable<T> ReadAll(int batchSize = 1000)
-        {
-            var connection = RetrieveColumnFamilyConnection();
-            var keys = connection.GetKeys(batchSize);
-            return TryReadInternal(keys.ToArray());
-        }
-
-        public IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000)
+        public IEnumerable<KeyValuePair<string, T>> ReadAll(int batchSize = 1000)
         {
             var connection = RetrieveColumnFamilyConnection();
             string exclusiveStartKey = null;
@@ -75,7 +67,7 @@ namespace RemoteQueue.Cassandra.Primitives
                 if(keys.Length == 0)
                     yield break;
                 exclusiveStartKey = keys.Last();
-                var objects = TryReadInternalWithIds(keys);
+                var objects = TryReadInternal(keys);
                 foreach(var @object in objects)
                     yield return @object;
             }
@@ -95,22 +87,7 @@ namespace RemoteQueue.Cassandra.Primitives
             ids.Batch(1000, Enumerable.ToArray).ForEach(x => DeleteInternal(x, timestamp));
         }
 
-        private T[] TryReadInternal([NotNull] string[] ids)
-        {
-            if(ids.Length == 0)
-                return new T[0];
-
-            return ids
-                .Batch(1000, Enumerable.ToArray)
-                .SelectMany(batch => MakeInConnection(connection => connection.GetRows(batch, new[] {dataColumnName})))
-                .Where(x => x.Value != null && x.Value.Length > 0)
-                .DistinctBy(x => x.Key)
-                .Select(x => x.Value.First())
-                .Select(x => serializer.Deserialize<T>(x.Value))
-                .ToArray();
-        }
-
-        private KeyValuePair<string, T>[] TryReadInternalWithIds([NotNull] string[] ids)
+        private IEnumerable<KeyValuePair<string, T>> TryReadInternal([NotNull] string[] ids)
         {
             if(ids.Length == 0) return new KeyValuePair<string, T>[0];
             var rows = new List<KeyValuePair<string, Column[]>>();
@@ -121,7 +98,7 @@ namespace RemoteQueue.Cassandra.Primitives
 
             return ids.Where(rowsDict.ContainsKey)
                       .Select(id => new KeyValuePair<string, T>(id, Read(rowsDict[id].Value)))
-                      .Where(obj => obj.Value != null).ToArray();
+                      .Where(obj => obj.Value != null);
         }
 
         private T Read(IEnumerable<Column> columns)

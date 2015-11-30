@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using log4net;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-
-using log4net;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -36,9 +38,9 @@ namespace RemoteQueue.Cassandra.Repositories
             return exceptionInfo != null;
         }
 
-        public TaskExceptionInfo[] ReadExceptionInfosQuiet(string[] taskIds)
+        public IDictionary<string, TaskExceptionInfo> ReadExceptionInfos(string[] taskIds)
         {
-            return storage.ReadQuiet(taskIds);
+            return storage.Read(taskIds);
         }
 
         private readonly ITaskExceptionInfoBlobStorage storage;

@@ -20,39 +20,38 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             timeBasedBlobStorage = new TimeBasedBlobStorage<T>(parameters, serializer, globalTime, timeBasedColumnFamilyName);
         }
 
-        public BlobWriteResult Write([NotNull] string id, T element)
+        public void Write([NotNull] string id, T element)
         {
             TimeGuid timeGuidId;
-            if(TimeGuid.TryParse(id, out timeGuidId) && timeBasedBlobStorage.Write(timeGuidId, element) == BlobWriteResult.Success)
-                return BlobWriteResult.Success;
+            if(TimeGuid.TryParse(id, out timeGuidId))
+            {
+                timeBasedBlobStorage.Write(timeGuidId, element);
+                return;
+            }
 
-            return blobStorage.Write(id, element);
+            blobStorage.Write(id, element);
         }
 
+        [CanBeNull]
         public T Read([NotNull] string id)
         {
             TimeGuid timeGuidId;
             return TimeGuid.TryParse(id, out timeGuidId) ? timeBasedBlobStorage.Read(timeGuidId) : blobStorage.Read(id);
         }
 
-        public Dictionary<string, T> Read([NotNull] IEnumerable<string> ids)
+        public Dictionary<string, T> Read([NotNull] string[] ids)
         {
             var splitResult = Split(ids);
-            var dictionary = blobStorage.Read(splitResult.BlobItems);
-            foreach(var pair in timeBasedBlobStorage.Read(splitResult.TimeBasedBlobItems))
+            var dictionary = blobStorage.Read(splitResult.BlobItems.ToArray());
+            foreach(var pair in timeBasedBlobStorage.Read(splitResult.TimeBasedBlobItems.ToArray()))
                 dictionary.Add(pair.Key.ToGuid().ToString(), pair.Value);
 
             return dictionary;
         }
 
-        public IEnumerable<T> ReadAll(int batchSize = 1000)
+        public IEnumerable<KeyValuePair<string, T>> ReadAll(int batchSize = 1000)
         {
-            return blobStorage.ReadAll(batchSize).Concat(timeBasedBlobStorage.ReadAll(batchSize));
-        }
-
-        public IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000)
-        {
-            return blobStorage.ReadAllWithIds(batchSize).Concat(timeBasedBlobStorage.ReadAllWithIds(batchSize).Select(x => new KeyValuePair<string, T>(x.Key.ToGuid().ToString(), x.Value)));
+            return blobStorage.ReadAll(batchSize).Concat(timeBasedBlobStorage.ReadAll(batchSize).Select(x => new KeyValuePair<string, T>(x.Key.ToGuid().ToString(), x.Value)));
         }
 
         public void Delete([NotNull] string id, long timestamp)
@@ -72,21 +71,6 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
             if(splitResult.BlobItems.Any())
                 blobStorage.Delete(splitResult.BlobItems, timestamp);
-        }
-
-        private static SplitResult<KeyValuePair<TimeGuid, T>, KeyValuePair<string, T>> KeyValuePairsSplit([NotNull] IEnumerable<KeyValuePair<string, T>> items)
-        {
-            var result = new SplitResult<KeyValuePair<TimeGuid, T>, KeyValuePair<string, T>>();
-            foreach(var item in items)
-            {
-                var id = item.Key;
-                TimeGuid timeGuidId;
-                if(TimeGuid.TryParse(id, out timeGuidId))
-                    result.TimeBasedBlobItems.Add(new KeyValuePair<TimeGuid, T>(timeGuidId, item.Value));
-                else
-                    result.BlobItems.Add(item);
-            }
-            return result;
         }
 
         private static SplitResult<TimeGuid, string> Split([NotNull] IEnumerable<string> ids)

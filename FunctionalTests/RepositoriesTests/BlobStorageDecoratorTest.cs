@@ -102,17 +102,6 @@ namespace FunctionalTests.RepositoriesTests
         }
 
         [Test]
-        public void TestReadQuiet()
-        {
-            blobStorage.Write(id, 1);
-            Assert.That(blobStorageDecorator.ReadQuiet(new[] {id, timeGuidId.ToGuid().ToString()}), Is.EqualTo(new int?[] {1, null}));
-
-            timeBasedBlobStorage.Write(timeGuidId, 2);
-            Assert.That(blobStorageDecorator.ReadQuiet(new[] {id, timeGuidId.ToGuid().ToString()}), Is.EqualTo(new int?[] {1, 2}));
-            Assert.That(blobStorageDecorator.ReadQuiet(new[] {timeGuidId.ToGuid().ToString(), id}), Is.EqualTo(new int?[] {2, 1}));
-        }
-
-        [Test]
         public void TestDelete()
         {
             blobStorage.Write(id, 1);
@@ -146,8 +135,7 @@ namespace FunctionalTests.RepositoriesTests
             blobStorage.Write(anotherId, 21);
             timeBasedBlobStorage.Write(anotherTimeGuidId, 22);
 
-            Assert.That(blobStorageDecorator.ReadAll(1).ToArray(), Is.EquivalentTo(new[] {11, 12, 21, 22}));
-            Assert.That(blobStorageDecorator.ReadAllWithIds(1).ToArray(), Is.EquivalentTo(new[]
+            Assert.That(blobStorageDecorator.ReadAll(1).ToArray(), Is.EquivalentTo(new[]
                 {
                     new KeyValuePair<string, int?>(id, 11),
                     new KeyValuePair<string, int?>(timeGuidId.ToGuid().ToString(), 12),

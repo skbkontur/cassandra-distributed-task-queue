@@ -12,81 +12,62 @@ using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
-    public class IntermideateBlobStorageDecorator<T> : IBlobStorage<T>
+    public class IntermediateBlobStorageDecorator<T> : IBlobStorage<T>
     {
-        public IntermideateBlobStorageDecorator(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, string columnFamilyName, string timeBasedColumnFamilyName)
+        public IntermediateBlobStorageDecorator(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, string columnFamilyName, string timeBasedColumnFamilyName)
         {
             blobStorage = new BlobStorage<T>(parameters, serializer, globalTime, columnFamilyName);
             timeBasedBlobStorage = new TimeBasedBlobStorage<T>(parameters, serializer, globalTime, timeBasedColumnFamilyName);
         }
 
-        public BlobWriteResult Write([NotNull] string id, T element)
+        public void Write([NotNull] string id, T element)
         {
+            blobStorage.Write(id, element);
+
             TimeGuid timeGuidId;
             if(TimeGuid.TryParse(id, out timeGuidId))
                 timeBasedBlobStorage.Write(timeGuidId, element);
-
-            return blobStorage.Write(id, element);
         }
 
+        [CanBeNull]
         public T Read([NotNull] string id)
         {
             TimeGuid timeGuidId;
             return TimeGuid.TryParse(id, out timeGuidId) ? timeBasedBlobStorage.Read(timeGuidId) : blobStorage.Read(id);
         }
 
-        public Dictionary<string, T> Read([NotNull] IEnumerable<string> ids)
+        public Dictionary<string, T> Read([NotNull] string[] ids)
         {
             var splitResult = Split(ids);
-            var dictionary = blobStorage.Read(splitResult.BlobItems);
-            foreach(var pair in timeBasedBlobStorage.Read(splitResult.TimeBasedBlobItems))
+            var dictionary = blobStorage.Read(splitResult.BlobItems.ToArray());
+            foreach(var pair in timeBasedBlobStorage.Read(splitResult.TimeBasedBlobItems.ToArray()))
                 dictionary.Add(pair.Key.ToGuid().ToString(), pair.Value);
 
             return dictionary;
         }
 
-        public IEnumerable<T> ReadAll(int batchSize = 1000)
+        public IEnumerable<KeyValuePair<string, T>> ReadAll(int batchSize = 1000)
         {
             return blobStorage.ReadAll(batchSize);
         }
 
-        public IEnumerable<KeyValuePair<string, T>> ReadAllWithIds(int batchSize = 1000)
-        {
-            return blobStorage.ReadAllWithIds(batchSize);
-        }
-
         public void Delete([NotNull] string id, long timestamp)
         {
+            blobStorage.Delete(id, timestamp);
+
             TimeGuid timeGuidId;
             if(TimeGuid.TryParse(id, out timeGuidId))
                 timeBasedBlobStorage.Delete(timeGuidId, timestamp);
-
-            blobStorage.Delete(id, timestamp);
         }
 
         public void Delete([NotNull] IEnumerable<string> ids, long? timestamp)
         {
             ids = ids.ToArray();
+            blobStorage.Delete(ids, timestamp);
+
             var splitResult = Split(ids);
             if(splitResult.TimeBasedBlobItems.Any())
                 timeBasedBlobStorage.Delete(splitResult.TimeBasedBlobItems, timestamp);
-
-            blobStorage.Delete(ids, timestamp);
-        }
-
-        private static SplitResult<KeyValuePair<TimeGuid, T>, KeyValuePair<string, T>> KeyValuePairsSplit([NotNull] IEnumerable<KeyValuePair<string, T>> items)
-        {
-            var result = new SplitResult<KeyValuePair<TimeGuid, T>, KeyValuePair<string, T>>();
-            foreach(var item in items)
-            {
-                var id = item.Key;
-                TimeGuid timeGuidId;
-                if(TimeGuid.TryParse(id, out timeGuidId))
-                    result.TimeBasedBlobItems.Add(new KeyValuePair<TimeGuid, T>(timeGuidId, item.Value));
-                else
-                    result.BlobItems.Add(item);
-            }
-            return result;
         }
 
         private static SplitResult<TimeGuid, string> Split([NotNull] IEnumerable<string> ids)

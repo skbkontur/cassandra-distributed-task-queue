@@ -32,7 +32,6 @@ namespace FunctionalTests.RepositoriesTests
             AddColumnFamily(timeBasedBlobStorageColumnFamilyName);
 
             blobStorageDecorator = new BlobStorageDecorator<byte[]>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName, timeBasedBlobStorageColumnFamilyName);
-            blobStorage = new BlobStorage<byte[]>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName);
             timeBasedBlobStorage = new TimeBasedBlobStorage<byte[]>(repositoryParameters, serializer, globalTime, timeBasedBlobStorageColumnFamilyName);
         }
 
@@ -58,27 +57,24 @@ namespace FunctionalTests.RepositoriesTests
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidProgramStateException))]
         public void TestTimeBasedStorageNotWriteBigBlob()
         {
             var blob = new byte[TimeBasedBlobStorageSettings.BlobSizeLimit + 1];
-            Assert.That(timeBasedBlobStorage.Write(timeGuidId, blob), Is.EqualTo(BlobWriteResult.OutOfSizeLimit));
-            Assert.That(timeBasedBlobStorage.Read(timeGuidId), Is.Null);
+            timeBasedBlobStorage.Write(timeGuidId, blob);
         }
 
         [Test]
-        public void TestTimeBasedBlobWriteToBlobStorage()
+        [ExpectedException(typeof(InvalidProgramStateException))]
+        public void TestBlobStorageDecoratorNotWriteBigTimeBasedBlob()
         {
             var blob = new byte[TimeBasedBlobStorageSettings.BlobSizeLimit + 1];
-            var blobWriteResult = blobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), blob);
-            Assert.That(blobWriteResult, Is.EqualTo(BlobWriteResult.Success));
-            Assert.That(timeBasedBlobStorage.Read(timeGuidId), Is.Null);
-            Assert.That(blobStorage.Read(timeGuidId.ToGuid().ToString()).Length, Is.EqualTo(TimeBasedBlobStorageSettings.BlobSizeLimit + 1));
+            blobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), blob);
         }
 
         private const string blobStorageColumnFamilyName = "blobStorageTest";
         private const string timeBasedBlobStorageColumnFamilyName = "orderedBlobStorageTest";
         private BlobStorageDecorator<byte[]> blobStorageDecorator;
-        private BlobStorage<byte[]> blobStorage;
         private TimeBasedBlobStorage<byte[]> timeBasedBlobStorage;
         private readonly TimeGuid timeGuidId = TimeGuid.NowGuid();
         private IKeyspaceConnection connection;

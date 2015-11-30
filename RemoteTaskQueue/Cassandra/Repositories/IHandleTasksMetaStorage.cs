@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using System.Collections.Generic;
+
+using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
@@ -18,7 +20,6 @@ namespace RemoteQueue.Cassandra.Repositories
         TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta);
 
         TaskMetaInformation GetMeta(string taskId);
-        TaskMetaInformation[] GetMetas(string[] taskIds);
-        TaskMetaInformation[] GetMetasQuiet(string[] taskIds);
+        IDictionary<string, TaskMetaInformation> GetMetas(string[] taskIds);
     }
 }

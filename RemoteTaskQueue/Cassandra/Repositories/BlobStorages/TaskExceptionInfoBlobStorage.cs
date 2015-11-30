@@ -6,7 +6,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
-    public class TaskExceptionInfoBlobStorage : IntermideateBlobStorageDecorator<TaskExceptionInfo>, ITaskExceptionInfoBlobStorage
+    public class TaskExceptionInfoBlobStorage : IntermediateBlobStorageDecorator<TaskExceptionInfo>, ITaskExceptionInfoBlobStorage
     {
         public TaskExceptionInfoBlobStorage(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime)
             : base(parameters, serializer, globalTime, columnFamilyName, timeBasedColumnFamilyName)

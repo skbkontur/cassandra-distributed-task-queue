@@ -26,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         private TaskMetaInformation[] ReadRaw(string[] ids)
         {
-            return handleTasksMetaStorage.GetMetas(ids);
+            return handleTasksMetaStorage.GetMetas(ids).Values.ToArray();
         }
 
         private void CollectGarbage(long nowTicks)

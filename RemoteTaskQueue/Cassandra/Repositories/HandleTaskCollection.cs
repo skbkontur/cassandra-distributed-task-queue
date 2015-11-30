@@ -41,11 +41,12 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public Task[] GetTasks([NotNull] string[] taskIds)
         {
-            var taskDatas = taskDataStorage.ReadQuiet(taskIds);
-            var metas = handleTasksMetaStorage.GetMetasQuiet(taskIds);
-            return taskDatas.Zip(metas, (t, m) => new Task {Data = t, Meta = m})
-                            .Where(x => x.Meta != null && x.Data != null)
-                            .ToArray();
+            var taskDatasMap = taskDataStorage.Read(taskIds);
+            var metasMap = handleTasksMetaStorage.GetMetas(taskIds);
+
+            return taskDatasMap.Select(pair => new Task {Data = pair.Value, Meta = metasMap.ContainsKey(pair.Key) ? metasMap[pair.Key] : null})
+                               .Where(task => task.Meta != null)
+                               .ToArray();
         }
 
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;

@@ -35,17 +35,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         public void IndexMetas(TaskMetaInformation[] batch)
         {
             string[] taskIds = batch.Select(m => m.Id).ToArray();
-            var taskDatas = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.ReadQuiet(taskIds));
-            var taskExceptionInfos = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.ReadQuiet(taskIds));
-            var taskDataObjects = new object[taskDatas.Length];
+            var taskDataMap = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.Read(taskIds));
+            var taskExceptionInfoMap = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(taskIds));
+            var taskExceptionInfos = new TaskExceptionInfo[batch.Length];
+            var taskDataObjects = new object[batch.Length];
             for(var i = 0; i < batch.Length; i++)
             {
-                var taskData = taskDatas[i];
+                var taskData = taskDataMap.ContainsKey(batch[i].Id) ? taskDataMap[batch[i].Id] : null;
                 Type taskType;
                 object taskDataObj = null;
                 if(taskDataRegistry.TryGetTaskType(batch[i].Name, out taskType))
                     taskDataObj = serializer.Deserialize(taskType, taskData);
                 taskDataObjects[i] = taskDataObj;
+
+                taskExceptionInfos[i] = taskExceptionInfoMap.ContainsKey(batch[i].Id) ? taskExceptionInfoMap[batch[i].Id] : null;
             }
             if(batch.Length > 0)
                 statsDClient.Timing("Index", () => writer.IndexBatch(batch, taskExceptionInfos, taskDataObjects));
