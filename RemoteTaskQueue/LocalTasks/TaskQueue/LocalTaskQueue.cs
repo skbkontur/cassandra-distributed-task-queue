@@ -52,18 +52,19 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             Task.WaitAll(tasks, timeout);
         }
 
-        public void QueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
+        public void TryQueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool queueIsStopped, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
         {
             using(var infrastructureTraceContext = new InfrastructureTaskTraceContext(taskIsBeingTraced))
             {
-                DoQueueTask(taskIndexRecord, taskMeta, taskQueueReason, out queueIsFull, out taskIsSentToThreadPool, taskIsBeingTraced);
+                DoTryQueueTask(taskIndexRecord, taskMeta, taskQueueReason, out queueIsFull, out queueIsStopped, out taskIsSentToThreadPool, taskIsBeingTraced);
                 infrastructureTraceContext.Finish(taskIsSentToThreadPool);
             }
         }
 
-        private void DoQueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
+        private void DoTryQueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool queueIsStopped, out bool taskIsSentToThreadPool, bool taskIsBeingTraced)
         {
             queueIsFull = false;
+            queueIsStopped = false;
             taskIsSentToThreadPool = false;
             if(taskMeta != null && !taskHandlerRegistry.ContainsHandlerFor(taskMeta.Name))
                 return;
@@ -83,7 +84,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 lock(lockObject)
                 {
                     if(stopped)
-                        throw new TaskQueueException("Невозможно добавить асинхронную задачу - очередь остановлена");
+                    {
+                        queueIsStopped = true;
+                        return;
+                    }
                     if(hashtable.ContainsKey(taskIndexRecord.TaskId))
                         return;
                     var taskWrapper = new TaskWrapper(taskIndexRecord.TaskId, taskQueueReason, taskIsBeingTraced, handlerTask, this);

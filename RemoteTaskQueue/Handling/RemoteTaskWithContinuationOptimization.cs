@@ -18,13 +18,13 @@ namespace RemoteQueue.Handling
         }
 
         [NotNull]
-        public override sealed string Queue(TimeSpan delay)
+        public sealed override string Queue(TimeSpan delay)
         {
             using(new RemoteTaskInitialTraceContext(task.Meta))
             {
                 var taskIndexRecord = Publish(delay);
-                bool queueIsFull, taskIsSentToThreadPool;
-                localTaskQueue.QueueTask(taskIndexRecord, task.Meta, TaskQueueReason.TaskContinuation, out queueIsFull, out taskIsSentToThreadPool, taskIsBeingTraced : true);
+                bool queueIsFull, queueIsStopped, taskIsSentToThreadPool;
+                localTaskQueue.TryQueueTask(taskIndexRecord, task.Meta, TaskQueueReason.TaskContinuation, out queueIsFull, out queueIsStopped, out taskIsSentToThreadPool, taskIsBeingTraced : true);
                 return Id;
             }
         }

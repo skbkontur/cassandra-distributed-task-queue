@@ -169,7 +169,6 @@
     <Compile Include="Handling\TaskQueueReason.cs" />
     <Compile Include="LocalTasks\TaskQueue\ILocalTaskQueue.cs" />
     <Compile Include="LocalTasks\TaskQueue\LocalTaskQueue.cs" />
-    <Compile Include="LocalTasks\TaskQueue\TaskQueueException.cs" />
     <Compile Include="LocalTasks\TaskQueue\LocalTaskProcessingResult.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskWrapper.cs" />
     <Compile Include="Profiling\EmptyRemoteTaskQueueProfiler.cs" />

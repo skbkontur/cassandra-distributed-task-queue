@@ -1,6 +1,4 @@
-﻿using System;
-
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
@@ -10,8 +8,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     public interface ILocalTaskQueue
     {
-        void Start();
-        void StopAndWait(TimeSpan timeout);
-        void QueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool taskIsSentToThreadPool, bool taskIsBeingTraced);
+        void TryQueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, out bool queueIsFull, out bool queueIsStopped, out bool taskIsSentToThreadPool, bool taskIsBeingTraced);
     }
 }

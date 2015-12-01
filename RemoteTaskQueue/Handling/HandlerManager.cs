@@ -56,10 +56,10 @@ namespace RemoteQueue.Handling
                         throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));
                     using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                     {
-                        bool queueIsFull, taskIsSentToThreadPool;
-                        localTaskQueue.QueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
+                        bool queueIsFull, queueIsStopped, taskIsSentToThreadPool;
+                        localTaskQueue.TryQueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out queueIsStopped, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
                         taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
-                        if(queueIsFull)
+                        if(queueIsFull || queueIsStopped)
                             return;
                     }
                 }
