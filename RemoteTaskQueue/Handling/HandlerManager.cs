@@ -66,16 +66,6 @@ namespace RemoteQueue.Handling
             }
         }
 
-        public void Start()
-        {
-            localTaskQueue.Start();
-        }
-
-        public void Stop()
-        {
-            localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
-        }
-
         private readonly string taskTopic;
         private readonly int maxRunningTasksCount;
         private readonly ILocalTaskQueue localTaskQueue;
