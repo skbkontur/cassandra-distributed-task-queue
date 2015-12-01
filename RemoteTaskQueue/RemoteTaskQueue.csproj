@@ -153,6 +153,7 @@
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
+    <Compile Include="LocalTasks\TaskQueue\LocalTaskQueueingResult.cs" />
     <Compile Include="Tracing\BusinessLogicTaskTraceContext.cs" />
     <Compile Include="Tracing\InfrastructureTaskTraceContext.cs" />
     <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />

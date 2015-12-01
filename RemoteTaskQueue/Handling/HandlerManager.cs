@@ -45,7 +45,7 @@ namespace RemoteQueue.Handling
             var nowTicks = DateTime.UtcNow.Ticks;
             var taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(nowTicks, allTaskIndexShardKeysToRead);
             Log.For(this).InfoFormat("Number of live minimalStartTicksIndex records for topic '{0}': {1}", taskTopic, taskIndexRecords.Length);
-            foreach (var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
+            foreach(var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {
                 var taskMetas = handleTasksMetaStorage.GetMetasQuiet(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
                 for(var i = 0; i < taskIndexRecordsBatch.Length; i++)
@@ -56,10 +56,9 @@ namespace RemoteQueue.Handling
                         throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));
                     using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                     {
-                        bool queueIsFull, queueIsStopped, taskIsSentToThreadPool;
-                        localTaskQueue.TryQueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out queueIsStopped, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
-                        taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
-                        if(queueIsFull || queueIsStopped)
+                        var result = localTaskQueue.TryQueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, taskTraceContext.TaskIsBeingTraced);
+                        taskTraceContext.Finish(result.TaskIsSentToThreadPool, () => globalTime.GetNowTicks());
+                        if(result.QueueIsFull || result.QueueIsStopped)
                             return;
                     }
                 }
