@@ -61,10 +61,7 @@ namespace RemoteQueue.Cassandra.Repositories
             if(oldMeta != null)
             {
                 if(oldMeta.State != taskMeta.State || oldMeta.MinimalStartTicks != taskMeta.MinimalStartTicks)
-                {
                     minimalStartTicksIndex.RemoveRecord(FormatIndexRecord(oldMeta));
-                    minimalStartTicksIndex.RemoveRecord(new TaskIndexRecord(oldMeta.Id, oldMeta.MinimalStartTicks, TaskIndexShardKey.AnyTaskTopic(oldMeta.State)));
-                }
             }
 
             taskMeta.MakeSnapshot();

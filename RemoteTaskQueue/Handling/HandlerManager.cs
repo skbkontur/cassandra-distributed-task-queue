@@ -27,9 +27,7 @@ namespace RemoteQueue.Handling
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
-            allTaskIndexShardKeysToRead = allTaskStatesToRead
-                .Select(x => string.IsNullOrEmpty(taskTopic) ? TaskIndexShardKey.AnyTaskTopic(x) : new TaskIndexShardKey(taskTopic, x))
-                .ToArray();
+            allTaskIndexShardKeysToRead = allTaskStatesToRead.Select(x => new TaskIndexShardKey(taskTopic, x)).ToArray();
         }
 
         public string Id { get { return string.Format("HandlerManager_{0}", taskTopic); } }

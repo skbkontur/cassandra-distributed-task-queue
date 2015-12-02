@@ -46,14 +46,5 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
         {
             return string.Format("TaskTopic: {0}, TaskState: {1}", TaskTopic, TaskState);
         }
-
-        [NotNull]
-        public static TaskIndexShardKey AnyTaskTopic(TaskState taskState)
-        {
-            return new TaskIndexShardKey(AnyTaskTopicName, taskState);
-        }
-
-        [Obsolete("Will be removed after migration to sharded queue")]
-        public const string AnyTaskTopicName = "AnyTaskTopic";
     }
 }
