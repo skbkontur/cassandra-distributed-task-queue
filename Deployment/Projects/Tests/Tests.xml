@@ -26,8 +26,8 @@
   <Import Project="..\Configuration\FrontEndSuites.xml" />
   
   <ItemGroup>
-    <NUnitAssemblies Include="$(TestSolutionDir)\Tests\bin\$(BuildConfiguration)\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
-    <NUnitAssemblies Include="$(TestSolutionDir)\TaskCounter.UnitTests\bin\$(BuildConfiguration)\Catalogue.RemoteTaskQueue.TaskCounter.UnitTests.dll"></NUnitAssemblies>
+    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
+    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskCounter.UnitTests.dll"></NUnitAssemblies>
   </ItemGroup>
 
   <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Test_New.targets" />
