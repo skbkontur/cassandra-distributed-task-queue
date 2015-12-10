@@ -1,6 +1,7 @@
 ﻿using GroBuf;
 
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Profiling;
@@ -16,7 +17,7 @@ namespace RemoteQueue.Handling
         ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; }
         IHandleTasksMetaStorage HandleTasksMetaStorage { get; }
         IHandleTaskCollection HandleTaskCollection { get; }
-        IHandleTaskExceptionInfoStorage HandleTaskExceptionInfoStorage { get; }
+        ITaskExceptionInfoBlobStorage TaskExceptionInfoStorage { get; }
         IRemoteLockCreator RemoteLockCreator { get; }
         IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; }
         IRemoteTaskQueue RemoteTaskQueue { get; }

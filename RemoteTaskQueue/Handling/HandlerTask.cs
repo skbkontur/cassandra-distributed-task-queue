@@ -10,6 +10,7 @@ using log4net;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
@@ -39,7 +40,7 @@ namespace RemoteQueue.Handling
             remoteTaskQueue = remoteTaskQueueInternals.RemoteTaskQueue;
             handleTaskCollection = remoteTaskQueueInternals.HandleTaskCollection;
             remoteLockCreator = remoteTaskQueueInternals.RemoteLockCreator;
-            handleTaskExceptionInfoStorage = remoteTaskQueueInternals.HandleTaskExceptionInfoStorage;
+            taskExceptionInfoStorage = remoteTaskQueueInternals.TaskExceptionInfoStorage;
             handleTasksMetaStorage = remoteTaskQueueInternals.HandleTasksMetaStorage;
             taskMinimalStartTicksIndex = remoteTaskQueueInternals.TaskMinimalStartTicksIndex;
             remoteTaskQueueProfiler = remoteTaskQueueInternals.RemoteTaskQueueProfiler;
@@ -204,12 +205,12 @@ namespace RemoteQueue.Handling
                 TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Finished);
                 return LocalTaskProcessingResult.Success;
             case FinishAction.Fatal:
-                TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
                 LogError(handleResult.Error, task.Meta);
+                TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
                 return LocalTaskProcessingResult.Error;
             case FinishAction.RerunAfterError:
-                TryUpdateTaskState(task, nowTicks + handleResult.RerunDelay.Ticks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.WaitingForRerunAfterError);
                 LogError(handleResult.Error, task.Meta);
+                TryUpdateTaskState(task, nowTicks + handleResult.RerunDelay.Ticks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.WaitingForRerunAfterError);
                 return LocalTaskProcessingResult.Rerun;
             case FinishAction.Rerun:
                 TryUpdateTaskState(task, nowTicks + handleResult.RerunDelay.Ticks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.WaitingForRerun);
@@ -221,12 +222,19 @@ namespace RemoteQueue.Handling
 
         private void LogError(Exception e, TaskMetaInformation meta)
         {
-            TaskExceptionInfo previousExceptionInfo;
-            if(!handleTaskExceptionInfoStorage.TryGetExceptionInfo(taskIndexRecord.TaskId, out previousExceptionInfo))
-                previousExceptionInfo = new TaskExceptionInfo();
+            var previousExceptionInfo = taskExceptionInfoStorage.Read(meta.TaskExceptionId) ?? new TaskExceptionInfo();
             if(!previousExceptionInfo.EqualsToException(e))
                 logger.Error(string.Format("Ошибка во время обработки задачи '{0}'.", meta), e);
-            handleTaskExceptionInfoStorage.TryAddExceptionInfo(taskIndexRecord.TaskId, e);
+            try
+            {
+                string exceptionId;
+                if(taskExceptionInfoStorage.TryWrite(new TaskExceptionInfo {ExceptionMessageInfo = e.ToString()}, out exceptionId))
+                    meta.TaskExceptionId = exceptionId;
+            }
+            catch
+            {
+                logger.ErrorFormat("Не смогли записать ошибку для задачи '{0}'. {1}", meta.Id, e);
+            }
         }
 
         private readonly TaskIndexRecord taskIndexRecord;
@@ -237,11 +245,11 @@ namespace RemoteQueue.Handling
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IRemoteLockCreator remoteLockCreator;
-        private readonly IHandleTaskExceptionInfoStorage handleTaskExceptionInfoStorage;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
+        private readonly ITaskExceptionInfoBlobStorage taskExceptionInfoStorage;
     }
 }

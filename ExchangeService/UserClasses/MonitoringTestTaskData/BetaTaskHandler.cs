@@ -23,7 +23,7 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
             while(taskData.IsProcess)
             {
                 Thread.Sleep(TimeSpan.FromMilliseconds(50));
-                taskData = serializer.Deserialize<BetaTaskData>(taskDataStorage.Read(Context.Id));
+                taskData = serializer.Deserialize<BetaTaskData>(taskDataStorage.Read(Context.TaskDataId));
             }
             return Finish();
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 using GroBuf;
@@ -23,6 +24,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         {
             base.SetUp();
             remoteTaskQueue = container.Get<IRemoteTaskQueue>();
+            taskMetaInformation = container.Get<ITaskMetaInformationBlobStorage>();
             taskDataStorage = container.Get<ITaskDataBlobStorage>();
             serializer = container.Get<ISerializer>();
         }
@@ -88,12 +90,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         protected void FinishBetaTasks(List<string> betaTaskIds)
         {
-            foreach(var betaId in betaTaskIds)
+            var metas = taskMetaInformation.Read(betaTaskIds.ToArray());
+            var taskDatas = taskDataStorage.Read(metas.Values.Select(x => x.TaskDataId).ToArray());
+            foreach(var pair in taskDatas)
             {
-                var taskData = serializer.Deserialize<BetaTaskData>(taskDataStorage.Read(betaId));
+                var taskData = serializer.Deserialize<BetaTaskData>(pair.Value);
                 taskData.IsProcess = false;
-                taskDataStorage.Write(betaId, serializer.Serialize(taskData));
+                taskDataStorage.Write(pair.Key, serializer.Serialize(taskData));
             }
+
             foreach(var betaTaskId in betaTaskIds)
                 WaitTaskState(betaTaskId, TaskState.Finished);
         }
@@ -101,6 +106,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         private IRemoteTaskQueue remoteTaskQueue;
         private ITaskDataBlobStorage taskDataStorage;
         private ISerializer serializer;
+        private ITaskMetaInformationBlobStorage taskMetaInformation;
 
         protected class Creater
         {

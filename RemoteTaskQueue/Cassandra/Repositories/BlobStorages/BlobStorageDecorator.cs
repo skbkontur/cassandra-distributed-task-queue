@@ -20,16 +20,24 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             timeBasedBlobStorage = new TimeBasedBlobStorage<T>(parameters, serializer, globalTime, timeBasedColumnFamilyName);
         }
 
-        public void Write([NotNull] string id, T element)
+        public void Write([NotNull]string id, T element)
+        {
+            blobStorage.Write(id, element);
+
+            TimeGuid timeGuid;
+            if(TimeGuid.TryParse(id, out timeGuid))
+                timeBasedBlobStorage.Write(timeGuid, element);
+        }
+
+        public bool TryWrite([NotNull] T element, out string id)
         {
             TimeGuid timeGuidId;
-            if(TimeGuid.TryParse(id, out timeGuidId))
-            {
-                timeBasedBlobStorage.Write(timeGuidId, element);
-                return;
-            }
+            if(!timeBasedBlobStorage.TryWrite(element, out timeGuidId))
+                return blobStorage.TryWrite(element, out id);
 
+            id = timeGuidId.ToGuid().ToString();
             blobStorage.Write(id, element);
+            return true;
         }
 
         [CanBeNull]
@@ -51,26 +59,26 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public IEnumerable<KeyValuePair<string, T>> ReadAll(int batchSize = 1000)
         {
-            return blobStorage.ReadAll(batchSize).Concat(timeBasedBlobStorage.ReadAll(batchSize).Select(x => new KeyValuePair<string, T>(x.Key.ToGuid().ToString(), x.Value)));
+            return blobStorage.ReadAll(batchSize);
         }
 
         public void Delete([NotNull] string id, long timestamp)
         {
+            blobStorage.Delete(id, timestamp);
+
             TimeGuid timeGuidId;
             if(TimeGuid.TryParse(id, out timeGuidId))
                 timeBasedBlobStorage.Delete(timeGuidId, timestamp);
-            else
-                blobStorage.Delete(id, timestamp);
         }
 
         public void Delete([NotNull] IEnumerable<string> ids, long? timestamp)
         {
+            ids = ids.ToArray();
+            blobStorage.Delete(ids, timestamp);
+
             var splitResult = Split(ids);
             if(splitResult.TimeBasedBlobItems.Any())
                 timeBasedBlobStorage.Delete(splitResult.TimeBasedBlobItems, timestamp);
-
-            if(splitResult.BlobItems.Any())
-                blobStorage.Delete(splitResult.BlobItems, timestamp);
         }
 
         private static SplitResult<TimeGuid, string> Split([NotNull] IEnumerable<string> ids)

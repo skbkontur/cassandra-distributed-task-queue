@@ -16,7 +16,7 @@ using SKBKontur.Catalogue.Objects;
 
 namespace FunctionalTests.RepositoriesTests
 {
-    public class BlobStoragesWriteOutOfSizeLimitBlobTest : FunctionalTestBaseWithoutServices
+    public class OutOfSizeLimitBlobStorageTest : FunctionalTestBaseWithoutServices
     {
         public override void SetUp()
         {
@@ -32,6 +32,7 @@ namespace FunctionalTests.RepositoriesTests
             AddColumnFamily(timeBasedBlobStorageColumnFamilyName);
 
             blobStorageDecorator = new BlobStorageDecorator<byte[]>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName, timeBasedBlobStorageColumnFamilyName);
+            blobStorage = new BlobStorage<byte[]>(repositoryParameters, serializer, globalTime, blobStorageColumnFamilyName);
             timeBasedBlobStorage = new TimeBasedBlobStorage<byte[]>(repositoryParameters, serializer, globalTime, timeBasedBlobStorageColumnFamilyName);
         }
 
@@ -45,7 +46,7 @@ namespace FunctionalTests.RepositoriesTests
         private void AddColumnFamily(string columnFamilyName)
         {
             var keyspace = connection.DescribeKeyspace();
-            if(!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
+            if(keyspace.ColumnFamilies.All(x => x.Key != columnFamilyName))
             {
                 connection.AddColumnFamily(new ColumnFamily
                     {
@@ -58,25 +59,26 @@ namespace FunctionalTests.RepositoriesTests
 
         [Test]
         [ExpectedException(typeof(InvalidProgramStateException))]
-        public void TestTimeBasedStorageNotWriteBigBlob()
+        public void TestExceptionOnWrite()
         {
-            var blob = new byte[TimeBasedBlobStorageSettings.BlobSizeLimit + 1];
-            timeBasedBlobStorage.Write(timeGuidId, blob);
+            timeBasedBlobStorage.Write(TimeGuid.NowGuid(), new byte[TimeBasedBlobStorageSettings.BlobSizeLimit + 1]);
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidProgramStateException))]
-        public void TestBlobStorageDecoratorNotWriteBigTimeBasedBlob()
+        public void TestWriteDataMoreBlobSizeLimit()
         {
-            var blob = new byte[TimeBasedBlobStorageSettings.BlobSizeLimit + 1];
-            blobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), blob);
+            string returnId;
+            Assert.That(blobStorageDecorator.TryWrite(new byte[TimeBasedBlobStorageSettings.BlobSizeLimit + 1], out returnId), Is.True);
+            TimeGuid timeGuid;
+            Assert.That(TimeGuid.TryParse(returnId, out timeGuid), Is.False);
+            Assert.That(blobStorage.Read(returnId), Is.Not.Null);
         }
 
         private const string blobStorageColumnFamilyName = "blobStorageTest";
-        private const string timeBasedBlobStorageColumnFamilyName = "orderedBlobStorageTest";
+        private const string timeBasedBlobStorageColumnFamilyName = "timeBasedBlobStorageTest";
         private BlobStorageDecorator<byte[]> blobStorageDecorator;
+        private BlobStorage<byte[]> blobStorage;
         private TimeBasedBlobStorage<byte[]> timeBasedBlobStorage;
-        private readonly TimeGuid timeGuidId = TimeGuid.NowGuid();
         private IKeyspaceConnection connection;
     }
 }

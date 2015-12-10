@@ -27,6 +27,8 @@ namespace RemoteQueue.Cassandra.Entities
         public string TaskGroupLock { get; set; }
         public string TraceId { get; set; }
         public bool TraceIsActive { get; set; }
+        public string TaskDataId { get { return taskDataId ?? Id; } set { taskDataId = value; } }
+        public string TaskExceptionId { get { return taskExceptionId ?? Id; } set { taskExceptionId = value; } }
 
         internal void MakeSnapshot()
         {
@@ -48,5 +50,7 @@ namespace RemoteQueue.Cassandra.Entities
         }
 
         private byte[] snapshot;
+        private string taskDataId;
+        private string taskExceptionId;
     }
 }

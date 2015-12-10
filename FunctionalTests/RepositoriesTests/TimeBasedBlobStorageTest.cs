@@ -45,7 +45,7 @@ namespace FunctionalTests.RepositoriesTests
         private void AddColumnFamily()
         {
             var keyspace = connection.DescribeKeyspace();
-            if(!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
+            if(keyspace.ColumnFamilies.All(x => x.Key != columnFamilyName))
             {
                 connection.AddColumnFamily(new ColumnFamily
                     {

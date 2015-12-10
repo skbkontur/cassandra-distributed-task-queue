@@ -37,6 +37,13 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 });
         }
 
+        public bool TryWrite(T element, out string id)
+        {
+            id = Guid.NewGuid().ToString();
+            Write(id, element);
+            return true;
+        }
+
         [CanBeNull]
         public T Read([NotNull] string id)
         {

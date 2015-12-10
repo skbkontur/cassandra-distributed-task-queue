@@ -28,7 +28,9 @@ namespace RemoteQueue.Cassandra.Repositories
             if(task.Meta.MinimalStartTicks <= DateTime.UtcNow.Ticks + 1)
                 remoteTaskQueueProfiler.ProcessTaskEnqueueing(task.Meta);
 
-            taskDataStorage.Write(task.Meta.Id, task.Data);
+            string taskDataId;
+            if(taskDataStorage.TryWrite(task.Data, out taskDataId))
+                task.Meta.TaskDataId = taskDataId;
             return handleTasksMetaStorage.AddMeta(task.Meta);
         }
 
@@ -41,12 +43,12 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public Task[] GetTasks([NotNull] string[] taskIds)
         {
-            var taskDatasMap = taskDataStorage.Read(taskIds);
             var metasMap = handleTasksMetaStorage.GetMetas(taskIds);
+            var taskDatasMap = taskDataStorage.Read(metasMap.Values.Select(x => x.TaskDataId).ToArray());
 
-            return taskDatasMap.Select(pair => new Task {Data = pair.Value, Meta = metasMap.ContainsKey(pair.Key) ? metasMap[pair.Key] : null})
-                               .Where(task => task.Meta != null)
-                               .ToArray();
+            return metasMap.Select(pair => new Task {Meta = pair.Value, Data = taskDatasMap.ContainsKey(pair.Value.TaskDataId) ? taskDatasMap[pair.Value.TaskDataId] : null})
+                           .Where(task => task.Data != null)
+                           .ToArray();
         }
 
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;

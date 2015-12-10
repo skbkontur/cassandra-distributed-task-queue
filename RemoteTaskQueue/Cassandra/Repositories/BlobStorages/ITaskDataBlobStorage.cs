@@ -2,6 +2,5 @@
 {
     public interface ITaskDataBlobStorage : IBlobStorage<byte[]>
     {
-        string GenerateBlobId(byte[] blob);
     }
 }

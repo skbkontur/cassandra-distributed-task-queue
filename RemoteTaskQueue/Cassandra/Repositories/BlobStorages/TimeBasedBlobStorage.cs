@@ -27,22 +27,23 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             this.globalTime = globalTime;
         }
 
-        public void Write([NotNull] TimeGuid id, T element)
+        public bool TryWrite(T element, out TimeGuid id)
+        {
+            id = null;
+            var value = serializer.Serialize(element);
+            if(value.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
+                return false;
+            id = TimeGuid.NowGuid();
+            WriteInternal(id, value);
+            return true;
+        }
+
+        public void Write(TimeGuid id, T element)
         {
             var value = serializer.Serialize(element);
             if(value.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
                 throw new InvalidProgramStateException(string.Format("Blob with id={0} has size={1} bytes. Cannot write to columnFamily={2} in keyspace={3}", id.ToGuid(), value.Length, ColumnFamilyName, Keyspace));
-
-            var connection = RetrieveColumnFamilyConnection();
-            var nowTicks = globalTime.UpdateNowTicks();
-            var columnInfo = GetColumnInfo(id);
-
-            connection.AddColumn(columnInfo.RowKey, new Column
-                {
-                    Name = columnInfo.ColumnName,
-                    Timestamp = nowTicks,
-                    Value = value
-                });
+            WriteInternal(id, value);
         }
 
         [CanBeNull]
@@ -126,6 +127,20 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 }
                 exclusiveStartKey = keys.Last();
             }
+        }
+
+        private void WriteInternal(TimeGuid id, byte[] value)
+        {
+            var connection = RetrieveColumnFamilyConnection();
+            var nowTicks = globalTime.UpdateNowTicks();
+            var columnInfo = GetColumnInfo(id);
+
+            connection.AddColumn(columnInfo.RowKey, new Column
+                {
+                    Name = columnInfo.ColumnName,
+                    Timestamp = nowTicks,
+                    Value = value
+                });
         }
 
         private void MakeInConnection(Action<IColumnFamilyConnection> action)

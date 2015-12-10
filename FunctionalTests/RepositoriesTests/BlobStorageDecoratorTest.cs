@@ -48,7 +48,7 @@ namespace FunctionalTests.RepositoriesTests
         private void AddColumnFamily(string columnFamilyName)
         {
             var keyspace = connection.DescribeKeyspace();
-            if(!keyspace.ColumnFamilies.Any(x => x.Key == columnFamilyName))
+            if(keyspace.ColumnFamilies.All(x => x.Key != columnFamilyName))
             {
                 connection.AddColumnFamily(new ColumnFamily
                     {
@@ -62,6 +62,8 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void TestRead()
         {
+            Assert.That(blobStorageDecorator.Read(id), Is.Null);
+
             blobStorage.Write(id, 1);
             Assert.That(blobStorageDecorator.Read(id), Is.EqualTo(1));
 
@@ -78,6 +80,7 @@ namespace FunctionalTests.RepositoriesTests
 
             blobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), 2);
             Assert.That(timeBasedBlobStorage.Read(timeGuidId), Is.EqualTo(2));
+            Assert.That(blobStorage.Read(timeGuidId.ToGuid().ToString()), Is.EqualTo(2));
         }
 
         [Test]
@@ -111,6 +114,7 @@ namespace FunctionalTests.RepositoriesTests
             timeBasedBlobStorage.Write(timeGuidId, 2);
             blobStorageDecorator.Delete(timeGuidId.ToGuid().ToString(), DateTime.UtcNow.Ticks);
             Assert.IsNull(timeBasedBlobStorage.Read(timeGuidId));
+            Assert.IsNull(blobStorage.Read(timeGuidId.ToGuid().ToString()));
         }
 
         [Test]
@@ -121,19 +125,20 @@ namespace FunctionalTests.RepositoriesTests
             blobStorageDecorator.Delete(new[] {id, timeGuidId.ToGuid().ToString()}, DateTime.UtcNow.Ticks);
 
             Assert.IsNull(blobStorage.Read(id));
+            Assert.IsNull(blobStorage.Read(timeGuidId.ToGuid().ToString()));
             Assert.IsNull(timeBasedBlobStorage.Read(timeGuidId));
         }
 
         [Test]
         public void TestReadAll()
         {
-            blobStorage.Write(id, 11);
-            timeBasedBlobStorage.Write(timeGuidId, 12);
+            blobStorageDecorator.Write(id, 11);
+            blobStorageDecorator.Write(timeGuidId.ToGuid().ToString(), 12);
 
             var anotherTimeGuidId = TimeGuid.NewGuid(new Timestamp(DateTime.UtcNow.AddDays(1)));
 
-            blobStorage.Write(anotherId, 21);
-            timeBasedBlobStorage.Write(anotherTimeGuidId, 22);
+            blobStorageDecorator.Write(anotherId, 21);
+            blobStorageDecorator.Write(anotherTimeGuidId.ToGuid().ToString(), 22);
 
             Assert.That(blobStorageDecorator.ReadAll(1).ToArray(), Is.EquivalentTo(new[]
                 {

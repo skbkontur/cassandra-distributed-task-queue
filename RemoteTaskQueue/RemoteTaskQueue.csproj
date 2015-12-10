@@ -86,9 +86,8 @@
     <Compile Include="Cassandra\Primitives\IColumnFamilyRepositoryParameters.cs" />
     <Compile Include="Cassandra\Primitives\KeyspaceNotFoundException.cs" />
     <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\IntermediateBlobStorageDecorator.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobStorageDecorator.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskDataBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskExceptionInfoBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskMetaInformationBlobStorage.cs" />
@@ -99,9 +98,7 @@
     <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerator.cs" />
-    <Compile Include="Cassandra\Repositories\TaskCreator.cs" />
     <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
-    <Compile Include="Cassandra\Repositories\ITaskCreator.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\ChildTaskIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\IChildTaskIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ILiveRecordTicksMarker.cs" />
@@ -119,7 +116,6 @@
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\ITicksHolder.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\TicksHolder.cs" />
     <Compile Include="Cassandra\Repositories\HandleTaskCollection.cs" />
-    <Compile Include="Cassandra\Repositories\HandleTaskExceptionInfoStorage.cs" />
     <Compile Include="Cassandra\Repositories\HandleTasksMetaStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\IBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
@@ -169,7 +165,6 @@
     <Compile Include="Handling\TaskCounter.cs" />
     <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
     <Compile Include="Handling\TaskHandler.cs" />
-    <Compile Include="Cassandra\Repositories\IHandleTaskExceptionInfoStorage.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
     <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
     <Compile Include="Handling\TaskQueueReason.cs" />
