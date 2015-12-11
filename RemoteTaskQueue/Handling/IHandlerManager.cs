@@ -10,8 +10,5 @@ namespace RemoteQueue.Handling
     {
         [NotNull]
         LiveRecordTicksMarkerState[] GetCurrentLiveRecordTicksMarkers();
-
-        void Start();
-        void Stop();
     }
 }

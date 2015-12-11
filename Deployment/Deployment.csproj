@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -62,6 +62,7 @@
     <Content Include="Projects\Services\ExchangeService.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Projects\Services\ElasticMonitoringService.xml" />
     <Content Include="Projects\Services\TaskCounterService.xml" />
     <Content Include="Projects\Services\MonitoringService.xml" />
     <Content Include="Projects\Tests\Tests.xml" />

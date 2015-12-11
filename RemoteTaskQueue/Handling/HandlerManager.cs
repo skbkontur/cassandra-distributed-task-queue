@@ -27,9 +27,7 @@ namespace RemoteQueue.Handling
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
-            allTaskIndexShardKeysToRead = allTaskStatesToRead
-                .Select(x => string.IsNullOrEmpty(taskTopic) ? TaskIndexShardKey.AnyTaskTopic(x) : new TaskIndexShardKey(taskTopic, x))
-                .ToArray();
+            allTaskIndexShardKeysToRead = allTaskStatesToRead.Select(x => new TaskIndexShardKey(taskTopic, x)).ToArray();
         }
 
         public string Id { get { return string.Format("HandlerManager_{0}", taskTopic); } }
@@ -56,24 +54,13 @@ namespace RemoteQueue.Handling
                         throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));
                     using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                     {
-                        bool queueIsFull, taskIsSentToThreadPool;
-                        localTaskQueue.QueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, out queueIsFull, out taskIsSentToThreadPool, taskTraceContext.TaskIsBeingTraced);
-                        taskTraceContext.Finish(taskIsSentToThreadPool, () => globalTime.GetNowTicks());
-                        if(queueIsFull)
+                        var result = localTaskQueue.TryQueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, taskTraceContext.TaskIsBeingTraced);
+                        taskTraceContext.Finish(result.TaskIsSentToThreadPool, () => globalTime.GetNowTicks());
+                        if(result.QueueIsFull || result.QueueIsStopped)
                             return;
                     }
                 }
             }
-        }
-
-        public void Start()
-        {
-            localTaskQueue.Start();
-        }
-
-        public void Stop()
-        {
-            localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
         }
 
         private readonly string taskTopic;

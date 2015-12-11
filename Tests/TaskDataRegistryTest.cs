@@ -1,5 +1,7 @@
 using System;
 
+using GroboContainer.Infection;
+
 using NUnit.Framework;
 
 using RemoteQueue.Configuration;
@@ -90,6 +92,7 @@ namespace RemoteQueue.Tests
 
         private readonly TestTaskDataRegistry taskDataRegistry = new TestTaskDataRegistry();
 
+        [IgnoredImplementation]
         private class TestTaskDataRegistry : TaskDataRegistryBase
         {
             public TestTaskDataRegistry()

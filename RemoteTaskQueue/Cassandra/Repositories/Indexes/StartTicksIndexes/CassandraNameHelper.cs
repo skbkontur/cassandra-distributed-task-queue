@@ -19,7 +19,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public static string ToCassandraKey([NotNull] this TaskIndexShardKey taskIndexShardKey)
         {
             var taskStateCassandraName = taskIndexShardKey.TaskState.GetCassandraName();
-            return taskIndexShardKey.TaskTopic == TaskIndexShardKey.AnyTaskTopicName ? taskStateCassandraName : string.Format("{0}_{1}", taskIndexShardKey.TaskTopic, taskStateCassandraName);
+            return string.Format("{0}_{1}", taskIndexShardKey.TaskTopic, taskStateCassandraName);
         }
 
         [NotNull]
