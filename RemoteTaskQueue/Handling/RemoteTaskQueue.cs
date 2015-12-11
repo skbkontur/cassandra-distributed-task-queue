@@ -22,7 +22,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
-using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Handling
 {

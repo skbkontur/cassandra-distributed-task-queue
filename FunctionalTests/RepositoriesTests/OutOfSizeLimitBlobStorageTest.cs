@@ -13,6 +13,7 @@ using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace FunctionalTests.RepositoriesTests
 {

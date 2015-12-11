@@ -15,6 +15,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {

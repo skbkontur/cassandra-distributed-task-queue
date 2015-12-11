@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
-using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
@@ -20,7 +20,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             timeBasedBlobStorage = new TimeBasedBlobStorage<T>(parameters, serializer, globalTime, timeBasedColumnFamilyName);
         }
 
-        public void Write([NotNull]string id, T element)
+        public void Write([NotNull] string id, T element)
         {
             blobStorage.Write(id, element);
 
