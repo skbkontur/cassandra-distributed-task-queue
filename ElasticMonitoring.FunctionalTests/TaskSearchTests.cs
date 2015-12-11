@@ -26,6 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
      WithExchangeServices,
      WithDefaultSerializer,
      WithCassandra("CatalogueCluster", "QueueKeyspace"),
+     WithTestRemoteTaskQueue,
      WithRemoteLock("remoteLock")]
     public class TaskSearchTests
     {

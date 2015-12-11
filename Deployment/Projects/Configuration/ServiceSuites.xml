@@ -20,6 +20,9 @@
     <Service Include="$(MSBuildThisFileDirectory)\..\Services\TaskCounterService.xml">
       <TaskGroupName>Catalogue</TaskGroupName>
     </Service>
+    <Service Include="$(MSBuildThisFileDirectory)\..\Services\ElasticMonitoringService.xml">
+      <TaskGroupName>Catalogue</TaskGroupName>
+    </Service>
   </ItemGroup>
 
 </Project>

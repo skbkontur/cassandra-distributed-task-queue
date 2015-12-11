@@ -28,6 +28,7 @@
   <ItemGroup>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskCounter.UnitTests.dll"></NUnitAssemblies>
+    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests.dll"></NUnitAssemblies>
   </ItemGroup>
 
   <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Test_New.targets" />
