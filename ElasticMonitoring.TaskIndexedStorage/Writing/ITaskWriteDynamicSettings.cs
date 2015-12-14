@@ -10,5 +10,6 @@
         string GraphitePrefixOrNull { get; }
         string RemoteLockId { get; }
         long? MaxTicks { get; }
+        int MaxBatch { get; }
     }
 }
