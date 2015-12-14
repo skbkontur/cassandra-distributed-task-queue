@@ -22,7 +22,7 @@ using TestCommon.NUnitWrappers;
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
     [EdiTestSuite,
-     WithApplicationSettings(FileName = "functionalTests.csf"),
+     WithApplicationSettings(FileName = "elasticMonitoringTests.csf"),
      WithExchangeServices,
      WithDefaultSerializer,
      WithCassandra("CatalogueCluster", "QueueKeyspace"),
