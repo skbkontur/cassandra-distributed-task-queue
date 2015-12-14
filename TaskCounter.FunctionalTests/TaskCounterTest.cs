@@ -26,7 +26,7 @@ using TestCommon.NUnitWrappers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
 {
-    [EdiTestSuite, WithApplicationSettings(FileName = "functionalTests.csf"),
+    [EdiTestSuite, WithApplicationSettings(FileName = "taskCounterTests.csf"),
      WithDefaultSerializer,
      WithExchangeServices,
      WithRemoteLock(), //NOTE lock used in TestCounterRepository

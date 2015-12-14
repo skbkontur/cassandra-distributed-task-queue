@@ -108,7 +108,7 @@
     <None Include="Settings\dependencies.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Settings\functionalTests.csf">
+    <None Include="Settings\elasticMonitoringTests.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
