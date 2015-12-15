@@ -48,9 +48,9 @@ namespace RemoteQueue.Handling
                 var taskMetas = handleTasksMetaStorage.GetMetas(taskIndexRecordsBatch.Select(x => x.TaskId).ToArray());
                 for(var i = 0; i < taskIndexRecordsBatch.Length; i++)
                 {
-                    var taskMeta = taskMetas.ContainsKey(taskIndexRecordsBatch[i].TaskId) ? taskMetas[taskIndexRecordsBatch[i].TaskId] : null;
+                    TaskMetaInformation taskMeta;
                     var taskIndexRecord = taskIndexRecordsBatch[i];
-                    if(taskMeta != null && taskMeta.Id != taskIndexRecord.TaskId)
+                    if(taskMetas.TryGetValue(taskIndexRecord.TaskId, out taskMeta) && taskMeta.Id != taskIndexRecord.TaskId)
                         throw new InvalidProgramStateException(string.Format("taskIndexRecord.TaskId ({0}) != taskMeta.TaskId ({1})", taskIndexRecord.TaskId, taskMeta.Id));
                     using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                     {

@@ -19,7 +19,10 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta);
 
-        TaskMetaInformation GetMeta(string taskId);
-        IDictionary<string, TaskMetaInformation> GetMetas(string[] taskIds);
+        [NotNull]
+        TaskMetaInformation GetMeta([NotNull] string taskId);
+
+        [NotNull]
+        Dictionary<string, TaskMetaInformation> GetMetas([NotNull] string[] taskIds);
     }
 }

@@ -14,6 +14,8 @@ using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
 
+using SKBKontur.Catalogue.Objects;
+
 namespace RemoteQueue.Cassandra.Repositories
 {
     public class HandleTasksMetaStorage : IHandleTasksMetaStorage
@@ -77,19 +79,22 @@ namespace RemoteQueue.Cassandra.Repositories
             return new TaskIndexRecord(taskMeta.Id, taskMeta.MinimalStartTicks, taskIndexShardKey);
         }
 
-        public TaskMetaInformation GetMeta(string taskId)
+        [NotNull]
+        public TaskMetaInformation GetMeta([NotNull] string taskId)
         {
             var meta = metaStorage.Read(taskId);
-            if(meta != null)
-                meta.MakeSnapshot();
+            if(meta == null)
+                throw new InvalidProgramStateException(string.Format("TaskMeta not found for: {0}", taskId));
+            meta.MakeSnapshot();
             return meta;
         }
 
-        public IDictionary<string, TaskMetaInformation> GetMetas(string[] taskIds)
+        [NotNull]
+        public Dictionary<string, TaskMetaInformation> GetMetas([NotNull] string[] taskIds)
         {
-            var result = metaStorage.Read(taskIds);
-            result.Values.ForEach(x => x.MakeSnapshot());
-            return result;
+            var metas = metaStorage.Read(taskIds);
+            metas.Values.ForEach(x => x.MakeSnapshot());
+            return metas;
         }
 
         private readonly ITaskMetaInformationBlobStorage metaStorage;

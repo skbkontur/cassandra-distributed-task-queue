@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -37,18 +38,22 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public Task GetTask([NotNull] string taskId)
         {
-            return GetTasks(new[] {taskId}).First();
+            return GetTasks(new[] {taskId}).Single();
         }
 
         [NotNull]
-        public Task[] GetTasks([NotNull] string[] taskIds)
+        public List<Task> GetTasks([NotNull] string[] taskIds)
         {
-            var metasMap = handleTasksMetaStorage.GetMetas(taskIds);
-            var taskDatasMap = taskDataStorage.Read(metasMap.Values.Select(x => x.TaskDataId).ToArray());
-
-            return metasMap.Select(pair => new Task {Meta = pair.Value, Data = taskDatasMap.ContainsKey(pair.Value.TaskDataId) ? taskDatasMap[pair.Value.TaskDataId] : null})
-                           .Where(task => task.Data != null)
-                           .ToArray();
+            var taskMetas = handleTasksMetaStorage.GetMetas(taskIds);
+            var taskDatas = taskDataStorage.Read(taskMetas.Values.Select(x => x.TaskDataId).ToArray());
+            var tasks = new List<Task>();
+            foreach(var taskMeta in taskMetas.Values)
+            {
+                byte[] taskData;
+                if(taskDatas.TryGetValue(taskMeta.TaskDataId, out taskData))
+                    tasks.Add(new Task {Meta = taskMeta, Data = taskData});
+            }
+            return tasks;
         }
 
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;

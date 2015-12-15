@@ -25,11 +25,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         {
         }
 
-        private TaskMetaInformation[] ReadRaw(string[] ids)
-        {
-            return handleTasksMetaStorage.GetMetas(ids).Values.ToArray();
-        }
-
         public void CollectGarbage(long nowTicks)
         {
             lock(stateLock)
@@ -50,8 +45,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private void ReadFromStorage(HashSet<string> notCached, TaskMetaUpdatedEvent[] events, TaskMetaInformation[] result)
         {
-            var rawMetas = ReadRaw(notCached.ToArray());
-            var taskMetaInformations = rawMetas.ToDictionary(information => information.Id);
+            var taskMetaInformations = handleTasksMetaStorage.GetMetas(notCached.ToArray());
             lock(stateLock)
             {
                 for(var i = 0; i < events.Length; i++)

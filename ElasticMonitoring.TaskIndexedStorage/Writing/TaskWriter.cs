@@ -1,4 +1,6 @@
-﻿using Elasticsearch.Net;
+﻿using System;
+
+using Elasticsearch.Net;
 
 using JetBrains.Annotations;
 
@@ -25,19 +27,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient = elasticsearchClientFactory.GetClient(TaskWriterJsonSettings.GetSerializerSettings());
         }
 
-        public void IndexBatch(TaskMetaInformation[] metas, TaskExceptionInfo[] exceptionInfos, object[] taskDatas)
+        public void IndexBatch([NotNull] Tuple<TaskMetaInformation, TaskExceptionInfo, object>[] batch)
         {
-            logger.LogInfoFormat("IndexBatch: {0} tasks", metas.Length);
-            IndexTasks(metas, exceptionInfos, taskDatas);
-        }
-
-        private void IndexTasks(TaskMetaInformation[] metas, TaskExceptionInfo[] exceptionInfos, object[] taskDatas)
-        {
-            var body = new object[metas.Length * 2];
-            for(var i = 0; i < metas.Length; i++)
+            logger.LogInfoFormat("IndexBatch: {0} tasks", batch.Length);
+            var body = new object[batch.Length * 2];
+            for(var i = 0; i < batch.Length; i++)
             {
-                var meta = metas[i];
-                var taskData = taskDatas[i];
+                var meta = batch[i].Item1;
+                var taskData = batch[i].Item3;
                 var indexName = indexNameFactory.GetIndexForTask(meta);
                 body[2 * i] = new
                     {
@@ -48,8 +45,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                 _id = meta.Id
                             }
                     };
-
-                body[2 * i + 1] = BuildSavedData(meta, exceptionInfos[i], taskData);
+                body[2 * i + 1] = BuildSavedData(meta, batch[i].Item2, taskData);
             }
             elasticsearchClient.Bulk<BulkResponse>(body).DieIfErros();
         }

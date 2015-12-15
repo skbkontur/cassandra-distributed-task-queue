@@ -65,7 +65,7 @@ namespace RemoteQueue.Handling
         public IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; private set; }
         IRemoteTaskQueue IRemoteTaskQueueInternals.RemoteTaskQueue { get { return this; } }
 
-        public bool CancelTask(string taskId)
+        public bool CancelTask([NotNull] string taskId)
         {
             IRemoteLock remoteLock;
             if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
@@ -85,7 +85,7 @@ namespace RemoteQueue.Handling
             }
         }
 
-        public bool RerunTask(string taskId, TimeSpan delay)
+        public bool RerunTask([NotNull] string taskId, TimeSpan delay)
         {
             IRemoteLock remoteLock;
             if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
@@ -100,22 +100,24 @@ namespace RemoteQueue.Handling
             }
         }
 
-        public RemoteTaskInfo GetTaskInfo(string taskId)
+        [NotNull]
+        public RemoteTaskInfo GetTaskInfo([NotNull] string taskId)
         {
-            return GetTaskInfos(new[] {taskId}).First();
+            return GetTaskInfos(new[] {taskId}).Single();
         }
 
-        public RemoteTaskInfo<T> GetTaskInfo<T>(string taskId)
+        [NotNull]
+        public RemoteTaskInfo<T> GetTaskInfo<T>([NotNull] string taskId)
             where T : ITaskData
         {
-            return GetTaskInfos<T>(new[] {taskId}).First();
+            return GetTaskInfos<T>(new[] {taskId}).Single();
         }
 
-        public RemoteTaskInfo[] GetTaskInfos(string[] taskIds)
+        [NotNull]
+        public RemoteTaskInfo[] GetTaskInfos([NotNull] string[] taskIds)
         {
             var tasks = HandleTaskCollection.GetTasks(taskIds);
             var taskExceptionInfos = TaskExceptionInfoStorage.Read(tasks.Select(x => x.Meta.TaskExceptionId).ToArray());
-
             return tasks.Select(task => new RemoteTaskInfo
                 {
                     Context = task.Meta,
@@ -124,13 +126,14 @@ namespace RemoteQueue.Handling
                 }).ToArray();
         }
 
-        public RemoteTaskInfo<T>[] GetTaskInfos<T>(string[] taskIds) where T : ITaskData
+        [NotNull]
+        public RemoteTaskInfo<T>[] GetTaskInfos<T>([NotNull] string[] taskIds) where T : ITaskData
         {
             return GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>).ToArray();
         }
 
         [NotNull]
-        public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
+        public IRemoteTask CreateTask<T>([NotNull] T taskData, [CanBeNull] CreateTaskOptions createTaskOptions = null) where T : ITaskData
         {
             createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
             var type = taskData.GetType();
@@ -154,11 +157,7 @@ namespace RemoteQueue.Handling
                        : new RemoteTask(task, HandleTaskCollection);
         }
 
-        public string[] GetChildrenTaskIds(string taskId)
-        {
-            return childTaskIndex.GetChildTaskIds(taskId);
-        }
-
+        [CanBeNull]
         private static string GetCurrentExecutingTaskId()
         {
             var context = TaskExecutionContext.Current;
@@ -167,7 +166,14 @@ namespace RemoteQueue.Handling
             return context.CurrentTask.Meta.Id;
         }
 
-        private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>(RemoteTaskInfo task) where T : ITaskData
+        [NotNull]
+        public string[] GetChildrenTaskIds([NotNull] string taskId)
+        {
+            return childTaskIndex.GetChildTaskIds(taskId);
+        }
+
+        [NotNull]
+        private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>([NotNull] RemoteTaskInfo task) where T : ITaskData
         {
             var taskType = task.TaskData.GetType();
             if(!typeof(T).IsAssignableFrom(taskType))

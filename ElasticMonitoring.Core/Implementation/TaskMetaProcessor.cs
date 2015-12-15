@@ -3,6 +3,8 @@ using System.Linq;
 
 using GroBuf;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Configuration;
@@ -32,25 +34,29 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                                     EmptyStatsDClient.Instance;
         }
 
-        public void IndexMetas(TaskMetaInformation[] batch)
+        public void IndexMetas([NotNull] TaskMetaInformation[] batch)
         {
-            var taskDataMap = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.Read(batch.Select(x => x.TaskDataId).ToArray()));
+            if(!batch.Any())
+                return;
+            var taskDatas = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.Read(batch.Select(x => x.TaskDataId).ToArray()));
             var taskExceptionInfoMap = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch.Select(x => x.TaskExceptionId).ToArray()));
-            var taskExceptionInfos = new TaskExceptionInfo[batch.Length];
-            var taskDataObjects = new object[batch.Length];
+            var enrichedBatch = new Tuple<TaskMetaInformation, TaskExceptionInfo, object>[batch.Length];
             for(var i = 0; i < batch.Length; i++)
             {
-                var taskData = taskDataMap.ContainsKey(batch[i].TaskDataId) ? taskDataMap[batch[i].TaskDataId] : null;
-                Type taskType;
+                var taskMeta = batch[i];
+                byte[] taskData;
                 object taskDataObj = null;
-                if(taskDataRegistry.TryGetTaskType(batch[i].Name, out taskType))
-                    taskDataObj = serializer.Deserialize(taskType, taskData);
-                taskDataObjects[i] = taskDataObj;
-
-                taskExceptionInfos[i] = taskExceptionInfoMap.ContainsKey(batch[i].TaskExceptionId) ? taskExceptionInfoMap[batch[i].TaskExceptionId] : null;
+                if(taskDatas.TryGetValue(taskMeta.TaskDataId, out taskData))
+                {
+                    Type taskType;
+                    if(taskDataRegistry.TryGetTaskType(taskMeta.Name, out taskType))
+                        taskDataObj = serializer.Deserialize(taskType, taskData);
+                }
+                TaskExceptionInfo taskExceptionInfo;
+                taskExceptionInfoMap.TryGetValue(taskMeta.TaskExceptionId, out taskExceptionInfo);
+                enrichedBatch[i] = Tuple.Create(taskMeta, taskExceptionInfo, taskDataObj);
             }
-            if(batch.Length > 0)
-                statsDClient.Timing("Index", () => writer.IndexBatch(batch, taskExceptionInfos, taskDataObjects));
+            statsDClient.Timing("Index", () => writer.IndexBatch(enrichedBatch));
         }
 
         private readonly ITaskDataRegistry taskDataRegistry;

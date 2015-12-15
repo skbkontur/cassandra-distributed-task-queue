@@ -1,19 +1,30 @@
 ﻿using System;
 
+using JetBrains.Annotations;
+
 namespace RemoteQueue.Handling
 {
     public interface IRemoteTaskQueue
     {
-        bool CancelTask(string taskId);
-        bool RerunTask(string taskId, TimeSpan delay);
+        bool CancelTask([NotNull] string taskId);
+        bool RerunTask([NotNull] string taskId, TimeSpan delay);
 
-        RemoteTaskInfo GetTaskInfo(string taskId);
-        RemoteTaskInfo<T> GetTaskInfo<T>(string taskId) where T : ITaskData;
+        [NotNull]
+        RemoteTaskInfo GetTaskInfo([NotNull] string taskId);
 
-        RemoteTaskInfo[] GetTaskInfos(string[] taskIds);
-        RemoteTaskInfo<T>[] GetTaskInfos<T>(string[] taskIds) where T : ITaskData;
+        [NotNull]
+        RemoteTaskInfo<T> GetTaskInfo<T>([NotNull] string taskId) where T : ITaskData;
 
-        IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions = null) where T : ITaskData;
-        string[] GetChildrenTaskIds(string taskId);
+        [NotNull]
+        RemoteTaskInfo[] GetTaskInfos([NotNull] string[] taskIds);
+
+        [NotNull]
+        RemoteTaskInfo<T>[] GetTaskInfos<T>([NotNull] string[] taskIds) where T : ITaskData;
+
+        [NotNull]
+        IRemoteTask CreateTask<T>([NotNull] T taskData, [CanBeNull] CreateTaskOptions createTaskOptions = null) where T : ITaskData;
+
+        [NotNull]
+        string[] GetChildrenTaskIds([NotNull] string taskId);
     }
 }
