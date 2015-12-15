@@ -133,24 +133,21 @@ namespace RemoteQueue.Handling
         public IRemoteTask CreateTask<T>(T taskData, CreateTaskOptions createTaskOptions) where T : ITaskData
         {
             createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
-            var nowTicks = DateTime.UtcNow.Ticks;
             var type = taskData.GetType();
-            var data = Serializer.Serialize(type, taskData);
-            var taskMetaInformationId = TimeGuid.NowGuid().ToGuid().ToString();
+            var taskId = TimeGuid.NowGuid().ToGuid().ToString();
             var task = new Task
                 {
-                    Data = data,
-                    Meta = new TaskMetaInformation(taskDataRegistry.GetTaskName(type), taskMetaInformationId)
+                    Data = Serializer.Serialize(type, taskData),
+                    Meta = new TaskMetaInformation(taskDataRegistry.GetTaskName(type), taskId)
                         {
                             Attempts = 0,
-                            Ticks = nowTicks,
+                            Ticks = DateTime.UtcNow.Ticks,
                             ParentTaskId = string.IsNullOrEmpty(createTaskOptions.ParentTaskId) ? GetCurrentExecutingTaskId() : createTaskOptions.ParentTaskId,
                             TaskGroupLock = createTaskOptions.TaskGroupLock,
                             State = TaskState.New,
                             MinimalStartTicks = 0,
                         }
                 };
-
             RemoteTaskQueueProfiler.ProcessTaskCreation(task.Meta, taskData);
             return enableContinuationOptimization && LocalTaskQueue.Instance != null
                        ? new RemoteTaskWithContinuationOptimization(task, HandleTaskCollection, LocalTaskQueue.Instance)

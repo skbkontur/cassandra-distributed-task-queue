@@ -16,6 +16,12 @@ namespace RemoteQueue.Cassandra.Entities
         [NotNull]
         public string Id { get; private set; }
 
+        [NotNull]
+        public string TaskDataId { get { return taskDataId ?? Id; } set { taskDataId = value; } }
+
+        [NotNull]
+        public string TaskExceptionId { get { return taskExceptionId ?? Id; } set { taskExceptionId = value; } }
+
         public long Ticks { get; set; }
         public long MinimalStartTicks { get; set; }
         public long? StartExecutingTicks { get; set; }
@@ -27,8 +33,6 @@ namespace RemoteQueue.Cassandra.Entities
         public string TaskGroupLock { get; set; }
         public string TraceId { get; set; }
         public bool TraceIsActive { get; set; }
-        public string TaskDataId { get { return taskDataId ?? Id; } set { taskDataId = value; } }
-        public string TaskExceptionId { get { return taskExceptionId ?? Id; } set { taskExceptionId = value; } }
 
         internal void MakeSnapshot()
         {
@@ -45,8 +49,8 @@ namespace RemoteQueue.Cassandra.Entities
 
         public override string ToString()
         {
-            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, TraceId: {6}]",
-                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId);
+            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, TraceId: {6}, TaskDataId: {7}, TaskExceptionId: {8}]",
+                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId, TaskDataId, TaskExceptionId);
         }
 
         private byte[] snapshot;
