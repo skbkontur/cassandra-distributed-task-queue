@@ -40,4 +40,5 @@ ElasticSearchSchema.MonitoringSearch.OldDataIndex = old-data
 ActualizeElasticSchemaOnStart = true
 
 ElasticMonitoring.RemoteLockId = TaskSearch_Loading_Lock
+ElasticMonitoring.MaxBatch = 100
 #ElasticSearchSchema.MonitoringSearch.MaxTicks = 0

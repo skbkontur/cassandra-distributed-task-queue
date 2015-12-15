@@ -25,6 +25,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
             long maxTicks;
             MaxTicks = !applicationSettings.TryGetLong("ElasticSearchSchema.MonitoringSearch.MaxTicks", out maxTicks) ? null : (long?)maxTicks;
+
+            MaxBatch = applicationSettings.GetInt("ElasticMonitoring.MaxBatch");
         }
 
         private static long ConvertToUtcTicks(string timeStr)
@@ -58,6 +60,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         public string GraphitePrefixOrNull { get; private set; }
         public string RemoteLockId { get; private set; }
         public long? MaxTicks { get; private set; }
+        public int MaxBatch { get; private set; }
 
         private readonly bool enableDestructiveActions;
     }

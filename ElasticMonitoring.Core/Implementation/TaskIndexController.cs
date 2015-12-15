@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using GroboContainer.Infection;
-
 using log4net;
 
 using MoreLinq;
@@ -35,8 +33,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             IRemoteLockCreator remoteLockCreator,
             ICatalogueStatsDClient statsDClient,
             ICatalogueGraphiteClient graphiteClient,
-            ITaskWriteDynamicSettings dynamicSettings,
-            int maxBatch)
+            ITaskWriteDynamicSettings dynamicSettings)
         {
             this.eventLogRepository = eventLogRepository;
             this.reader = reader;
@@ -44,7 +41,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             this.globalTime = globalTime;
             this.remoteLockCreator = remoteLockCreator;
             this.lastReadTicksStorage = lastReadTicksStorage;
-            this.maxBatch = maxBatch;
+            maxBatch = dynamicSettings.MaxBatch;
             unstableZoneTicks = eventLogRepository.UnstableZoneLength.Ticks;
             unprocessedEventsMap = new EventsMap(unstableZoneTicks * 2);
             processedEventsMap = new EventsMap(unstableZoneTicks * 2);
@@ -67,32 +64,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             if(maxTicks.HasValue)
                 logger.LogInfoFormat("MaxTicks is {0}", DateTimeFormatter.FormatWithMsAndTicks(maxTicks.Value));
             logger.LogInfoFormat("RemoteLockId: '{0}'", remoteLockId);
-
-        }
-
-        [ContainerConstructor]
-        public TaskIndexController(
-            IEventLogRepository eventLogRepository,
-            IMetaCachedReader reader,
-            ITaskMetaProcessor taskMetaProcessor,
-            LastReadTicksStorage lastReadTicksStorage,
-            IGlobalTime globalTime,
-            IRemoteLockCreator remoteLockCreator,
-            ICatalogueStatsDClient statsDClient,
-            ICatalogueGraphiteClient graphiteClient,
-            ITaskWriteDynamicSettings dynamicSettings
-            )
-            : this(eventLogRepository,
-                   reader,
-                   taskMetaProcessor,
-                   lastReadTicksStorage,
-                   globalTime,
-                   remoteLockCreator,
-                   statsDClient,
-                   graphiteClient,
-                   dynamicSettings,
-                   TaskIndexSettings.MaxBatch)
-        {
         }
 
         private const long unknownTicks = long.MinValue;
@@ -172,7 +143,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
                 if(!hasEvents)
                     ProcessEventsBatch(new TaskMetaUpdatedEvent[0], now);
-                //Interlocked.Exchange(ref lastTicks, now);
             }
         }
 

@@ -14,7 +14,7 @@
     <FrontEndMode>FromDeploy</FrontEndMode>
     <ServiceRunMode>Run</ServiceRunMode>
 
-    <GlobalServices Condition="'$(GlobalServices)' == ''">Cassandra;ChomeDriver</GlobalServices>
+    <GlobalServices Condition="'$(GlobalServices)' == ''">Cassandra;ChomeDriver;ElasticSearch</GlobalServices>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -29,7 +29,6 @@
   <ItemGroup>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.MonitoringTests.dll"></NUnitAssemblies>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\RemoteTaskQueue.FunctionalTests.dll"></NUnitAssemblies>
-    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests.dll"></NUnitAssemblies>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests.dll"></NUnitAssemblies>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests.dll"></NUnitAssemblies>
   </ItemGroup>
