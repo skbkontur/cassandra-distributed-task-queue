@@ -5,6 +5,8 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
+using MoreLinq;
+
 using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
@@ -49,10 +51,17 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         [NotNull]
         public Dictionary<string, byte[]> Read([NotNull] TaskMetaInformation[] taskMetas)
         {
-            var blobIdToTaskIdMap = taskMetas.Where(x => x.IsTimeBased()).ToDictionary(x => x.GetTaskDataId(), x => x.Id);
+            var legacyBlobIds = new List<string>();
+            var blobIdToTaskIdMap = new Dictionary<BlobId, string>();
+            foreach(var taskMeta in taskMetas.DistinctBy(x => x.Id))
+            {
+                if(taskMeta.IsTimeBased())
+                    blobIdToTaskIdMap.Add(taskMeta.GetTaskDataId(), taskMeta.Id);
+                else
+                    legacyBlobIds.Add(taskMeta.Id);
+            }
             var taskDatas = timeBasedBlobStorage.Read(blobIdToTaskIdMap.Keys.ToArray())
                                                 .ToDictionary(x => blobIdToTaskIdMap[x.Key], x => x.Value);
-            var legacyBlobIds = taskMetas.Where(x => !x.IsTimeBased()).Select(x => x.Id).ToArray();
             if(legacyBlobIds.Any())
             {
                 foreach(var kvp in legacyBlobStorage.Read(legacyBlobIds))

@@ -49,7 +49,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         ///     Result does NOT contain entries for non existing or blobs
         /// </remarks>
         [NotNull]
-        public Dictionary<string, T> Read([NotNull] string[] ids)
+        public Dictionary<string, T> Read([NotNull] List<string> ids)
         {
             return ids
                 .Distinct()

@@ -51,7 +51,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             var legacyBlobIds = new List<string>();
             var blobIdToTaskIdMap = new Dictionary<BlobId, string>();
-            foreach(var taskId in taskIds)
+            foreach(var taskId in taskIds.Distinct())
             {
                 TimeGuid timeGuid;
                 if(TimeGuid.TryParse(taskId, out timeGuid))
@@ -63,7 +63,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                                                 .ToDictionary(x => blobIdToTaskIdMap[x.Key], x => serializer.Deserialize<TaskMetaInformation>(x.Value));
             if(legacyBlobIds.Any())
             {
-                foreach(var kvp in legacyBlobStorage.Read(legacyBlobIds.ToArray()))
+                foreach(var kvp in legacyBlobStorage.Read(legacyBlobIds))
                     taskMetas.Add(kvp.Key, kvp.Value);
             }
             return taskMetas;

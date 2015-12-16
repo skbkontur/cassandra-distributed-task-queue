@@ -6,6 +6,8 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
+using MoreLinq;
+
 using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
@@ -51,8 +53,24 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         [NotNull]
         public Dictionary<string, TaskExceptionInfo[]> Read([NotNull] TaskMetaInformation[] taskMetas)
         {
-            var timeBasedBlobs = GetTimeBasedBlobs(taskMetas);
-            var legacyBlobs = GetLegacyTaskExceptionInfos(taskMetas);
+            var legacyBlobIds = new List<string>();
+            var blobIdToTaskIdMap = new Dictionary<BlobId, string>();
+            foreach(var taskMeta in taskMetas.DistinctBy(x => x.Id))
+            {
+                if(taskMeta.IsTimeBased())
+                {
+                    foreach(var blobId in taskMeta.GetTaskExceptionInfoIds())
+                        blobIdToTaskIdMap.Add(blobId, taskMeta.Id);
+                }
+                else
+                    legacyBlobIds.Add(taskMeta.Id);
+            }
+            var timeBasedBlobs = timeBasedBlobStorage.Read(blobIdToTaskIdMap.Keys.ToArray())
+                                                     .GroupBy(x => blobIdToTaskIdMap[x.Key])
+                                                     .ToDictionary(x => x.Key);
+            var legacyBlobs = legacyBlobIds.Any()
+                                  ? legacyBlobStorage.Read(legacyBlobIds)
+                                  : new Dictionary<string, TaskExceptionInfo>();
             var result = new Dictionary<string, TaskExceptionInfo[]>();
             foreach(var taskId in taskMetas.Select(x => x.Id))
             {
@@ -68,24 +86,6 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 result.Add(taskId, taskExceptionInfos);
             }
             return result;
-        }
-
-        [NotNull]
-        private Dictionary<string, IGrouping<string, KeyValuePair<BlobId, byte[]>>> GetTimeBasedBlobs([NotNull] TaskMetaInformation[] taskMetas)
-        {
-            var blobIdToTaskIdMap = taskMetas.Where(x => x.IsTimeBased())
-                                             .SelectMany(x => x.GetTaskExceptionInfoIds().Select(blobId => new {TaskId = x.Id, BlobId = blobId}))
-                                             .ToDictionary(x => x.BlobId, x => x.TaskId);
-            return timeBasedBlobStorage.Read(blobIdToTaskIdMap.Keys.ToArray()).GroupBy(x => blobIdToTaskIdMap[x.Key]).ToDictionary(x => x.Key);
-        }
-
-        [NotNull]
-        private Dictionary<string, TaskExceptionInfo> GetLegacyTaskExceptionInfos([NotNull] TaskMetaInformation[] taskMetas)
-        {
-            var legacyBlobIds = taskMetas.Where(x => !x.IsTimeBased()).Select(x => x.Id).ToArray();
-            if(!legacyBlobIds.Any())
-                return new Dictionary<string, TaskExceptionInfo>();
-            return legacyBlobStorage.Read(legacyBlobIds);
         }
 
         [NotNull]

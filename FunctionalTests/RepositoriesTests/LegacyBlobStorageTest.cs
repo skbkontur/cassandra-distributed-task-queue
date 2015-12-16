@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using GroBuf;
 
@@ -69,16 +70,16 @@ namespace FunctionalTests.RepositoriesTests
         {
             var id1 = "9F7DF556-08BE-4E3E-8532-1489BF624657";
             var id2 = "AABAE964-1310-4842-B4ED-967F38796644";
-            Assert.That(blobStorage.Read(new string[0]).Count, Is.EqualTo(0));
-            Assert.That(blobStorage.Read(new[] {id1, id2}).Count, Is.EqualTo(0));
+            Assert.That(blobStorage.Read(new List<string>()).Count, Is.EqualTo(0));
+            Assert.That(blobStorage.Read(new List<string> {id1, id2}).Count, Is.EqualTo(0));
 
             blobStorage.Write(id1, new Class1 {Field1 = "id1"}, DateTime.UtcNow.Ticks);
-            var actual = blobStorage.Read(new[] {id1, id2});
+            var actual = blobStorage.Read(new List<string> {id1, id2});
             Assert.That(actual.Count, Is.EqualTo(1));
             Assert.That(actual[id1].Field1, Is.EqualTo("id1"));
 
             blobStorage.Write(id2, new Class1 {Field1 = "id2"}, DateTime.UtcNow.Ticks);
-            actual = blobStorage.Read(new[] {id1, id2});
+            actual = blobStorage.Read(new List<string> {id1, id2});
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[id1].Field1, Is.EqualTo("id1"));
             Assert.That(actual[id2].Field1, Is.EqualTo("id2"));
