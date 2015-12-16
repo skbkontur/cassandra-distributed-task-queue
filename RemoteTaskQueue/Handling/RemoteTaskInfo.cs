@@ -1,19 +1,45 @@
-﻿using RemoteQueue.Cassandra.Entities;
+﻿using JetBrains.Annotations;
+
+using RemoteQueue.Cassandra.Entities;
 
 namespace RemoteQueue.Handling
 {
     public class RemoteTaskInfo
     {
-        public TaskMetaInformation Context { get; set; }
-        public ITaskData TaskData { get; set; }
-        public TaskExceptionInfo ExceptionInfo { get; set; }
+        public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] ITaskData taskData, [NotNull] TaskExceptionInfo[] exceptionInfos)
+        {
+            Context = context;
+            TaskData = taskData;
+            ExceptionInfos = exceptionInfos;
+        }
+
+        [NotNull]
+        public TaskMetaInformation Context { get; private set; }
+
+        [NotNull]
+        public ITaskData TaskData { get; private set; }
+
+        [NotNull]
+        public TaskExceptionInfo[] ExceptionInfos { get; private set; }
     }
 
     public class RemoteTaskInfo<T>
         where T : ITaskData
     {
-        public TaskMetaInformation Context { get; set; }
-        public T TaskData { get; set; }
-        public TaskExceptionInfo ExceptionInfo { get; set; }
+        public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] T taskData, [NotNull] TaskExceptionInfo[] exceptionInfos)
+        {
+            Context = context;
+            TaskData = taskData;
+            ExceptionInfos = exceptionInfos;
+        }
+
+        [NotNull]
+        public TaskMetaInformation Context { get; private set; }
+
+        [NotNull]
+        public T TaskData { get; private set; }
+
+        [NotNull]
+        public TaskExceptionInfo[] ExceptionInfos { get; private set; }
     }
 }

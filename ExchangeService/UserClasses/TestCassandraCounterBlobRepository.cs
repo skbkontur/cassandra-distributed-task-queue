@@ -1,15 +1,15 @@
 ﻿using GroBuf;
 
-using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 
 namespace ExchangeService.UserClasses
 {
-    public class TestCassandraCounterBlobRepository : BlobStorage<int>, ITestCassandraCounterBlobRepository
+    public class TestCassandraCounterBlobRepository : LegacyBlobStorage<int>
     {
-        public TestCassandraCounterBlobRepository(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime)
-            : base(parameters, serializer, globalTime, columnFamilyName)
+        public TestCassandraCounterBlobRepository(ICassandraCluster cassandraCluster, ISerializer serializer, string keyspaceName)
+            : base(cassandraCluster, serializer, keyspaceName, columnFamilyName)
         {
         }
 

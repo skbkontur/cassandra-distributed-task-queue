@@ -1,10 +1,14 @@
-﻿using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+﻿using System;
+
+using RemoteQueue.Cassandra.Repositories.BlobStorages;
+
+using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
 namespace ExchangeService.UserClasses
 {
     public class TestCounterRepository : ITestCounterRepository
     {
-        public TestCounterRepository(ITestCassandraCounterBlobRepository storage, IRemoteLockCreator remoteLockCreator)
+        public TestCounterRepository(LegacyBlobStorage<int> storage, IRemoteLockCreator remoteLockCreator)
         {
             this.storage = storage;
             this.remoteLockCreator = remoteLockCreator;
@@ -56,7 +60,7 @@ namespace ExchangeService.UserClasses
 
         private void SetCounterInternal(string taskId, int value)
         {
-            storage.Write(taskId, value);
+            storage.Write(taskId, value, DateTime.UtcNow.Ticks);
         }
 
         private IRemoteLock Lock(string taskId)
@@ -64,7 +68,7 @@ namespace ExchangeService.UserClasses
             return remoteLockCreator.Lock("TestCounterRepository_" + taskId);
         }
 
-        private readonly ITestCassandraCounterBlobRepository storage;
+        private readonly LegacyBlobStorage<int> storage;
         private readonly IRemoteLockCreator remoteLockCreator;
     }
 }

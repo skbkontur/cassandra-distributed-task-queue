@@ -16,33 +16,27 @@ namespace RemoteQueue.Configuration
     {
         public ColumnFamilyRegistry()
         {
-            Register(ColumnFamilyRepositoryParameters.LockColumnFamily);
-
-            Register(TaskDataBlobStorage.columnFamilyName);
-            Register(TaskDataBlobStorage.timeBasedColumnFamilyName);
-            Register(TaskExceptionInfoBlobStorage.columnFamilyName);
-            Register(TaskExceptionInfoBlobStorage.timeBasedColumnFamilyName);
-            Register(TaskMetaInformationBlobStorage.columnFamilyName);
-            Register(TaskMetaInformationBlobStorage.timeBasedColumnFamilyName);
-            Register(TicksHolder.columnFamilyName);
-            Register(TaskMinimalStartTicksIndex.columnFamilyName);
-            Register(EventLogRepository.columnFamilyName);
-            Register(ChildTaskIndex.columnFamilyName);
+            foreach(var cfName in TaskMetaStorage.GetColumnFamilyNames())
+                cfNames.Add(cfName);
+            foreach(var cfName in TaskDataStorage.GetColumnFamilyNames())
+                cfNames.Add(cfName);
+            foreach(var cfName in TaskExceptionInfoStorage.GetColumnFamilyNames())
+                cfNames.Add(cfName);
+            cfNames.Add(ColumnFamilyRepositoryParameters.LockColumnFamily);
+            cfNames.Add(TicksHolder.columnFamilyName);
+            cfNames.Add(TaskMinimalStartTicksIndex.columnFamilyName);
+            cfNames.Add(EventLogRepository.columnFamilyName);
+            cfNames.Add(ChildTaskIndex.columnFamilyName);
         }
 
         public ColumnFamily[] GetAllColumnFamilyNames()
         {
-            return set.ToArray();
-        }
-
-        private void Register(string columnFamilyName)
-        {
-            set.Add(new ColumnFamily
+            return cfNames.Select(cfName => new ColumnFamily
                 {
-                    Name = columnFamilyName
-                });
+                    Name = cfName
+                }).ToArray();
         }
 
-        private readonly HashSet<ColumnFamily> set = new HashSet<ColumnFamily>();
+        private readonly HashSet<string> cfNames = new HashSet<string>();
     }
 }

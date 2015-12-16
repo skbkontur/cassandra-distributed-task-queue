@@ -21,14 +21,14 @@ namespace RemoteQueue.Cassandra.Repositories
     public class HandleTasksMetaStorage : IHandleTasksMetaStorage
     {
         public HandleTasksMetaStorage(
-            ITaskMetaInformationBlobStorage metaStorage,
+            ITaskMetaStorage taskMetaStorage,
             ITaskMinimalStartTicksIndex minimalStartTicksIndex,
             IEventLogRepository eventLogRepository,
             IGlobalTime globalTime,
             IChildTaskIndex childTaskIndex,
             ITaskDataRegistry taskDataRegistry)
         {
-            this.metaStorage = metaStorage;
+            this.taskMetaStorage = taskMetaStorage;
             this.minimalStartTicksIndex = minimalStartTicksIndex;
             this.eventLogRepository = eventLogRepository;
             this.globalTime = globalTime;
@@ -51,14 +51,15 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta)
         {
-            var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalTime.GetNowTicks());
+            var globalNowTicks = globalTime.UpdateNowTicks();
+            var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalNowTicks);
             taskMeta.LastModificationTicks = nowTicks;
             eventLogRepository.AddEvent(taskMeta.Id, nowTicks);
             var newIndexRecord = FormatIndexRecord(taskMeta);
             minimalStartTicksIndex.AddRecord(newIndexRecord);
             if(taskMeta.State == TaskState.New)
                 childTaskIndex.AddMeta(taskMeta);
-            metaStorage.Write(taskMeta.Id, taskMeta);
+            taskMetaStorage.Write(taskMeta, globalNowTicks);
 
             var oldMeta = taskMeta.TryGetSnapshot();
             if(oldMeta != null)
@@ -82,7 +83,7 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public TaskMetaInformation GetMeta([NotNull] string taskId)
         {
-            var meta = metaStorage.Read(taskId);
+            var meta = taskMetaStorage.Read(taskId);
             if(meta == null)
                 throw new InvalidProgramStateException(string.Format("TaskMeta not found for: {0}", taskId));
             meta.MakeSnapshot();
@@ -92,12 +93,12 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public Dictionary<string, TaskMetaInformation> GetMetas([NotNull] string[] taskIds)
         {
-            var metas = metaStorage.Read(taskIds);
+            var metas = taskMetaStorage.Read(taskIds);
             metas.Values.ForEach(x => x.MakeSnapshot());
             return metas;
         }
 
-        private readonly ITaskMetaInformationBlobStorage metaStorage;
+        private readonly ITaskMetaStorage taskMetaStorage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IGlobalTime globalTime;

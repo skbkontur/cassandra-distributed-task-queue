@@ -37,7 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     MinimalStartTime = TickToDateTime(taskData.Context.MinimalStartTicks),
                     ParentTaskId = taskData.Context.ParentTaskId,
                     ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskData.Context.Id),
-                    ExceptionInfo = taskData.With(x => x.ExceptionInfo).Return(x => x.ExceptionMessageInfo, ""),
+                    ExceptionInfo = taskData.ExceptionInfos.LastOrDefault().Return(x => x.ExceptionMessageInfo, string.Empty),
                     AttemptCount = taskData.Context.Attempts,
                     DetailsTree = BuildDetailsTree(taskData, id, urlHelper, currentUserHasAccessToTaskData)
                 };
@@ -219,7 +219,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     TotalTasksToRerun = taskSearchResponse.TotalCount
                 };
         }
-        
+
         private TasksCancelModel DoCancelTasks(TaskSearchResponse taskSearchResponse)
         {
             if(taskSearchResponse.TotalCount > maxTasksToCancel)

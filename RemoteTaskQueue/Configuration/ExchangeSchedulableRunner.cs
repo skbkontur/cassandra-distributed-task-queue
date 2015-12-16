@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using GroBuf;
 
-using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;

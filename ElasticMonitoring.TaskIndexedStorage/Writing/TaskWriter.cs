@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Elasticsearch.Net;
 
@@ -27,7 +28,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient = elasticsearchClientFactory.GetClient(TaskWriterJsonSettings.GetSerializerSettings());
         }
 
-        public void IndexBatch([NotNull] Tuple<TaskMetaInformation, TaskExceptionInfo, object>[] batch)
+        public void IndexBatch([NotNull] Tuple<TaskMetaInformation, TaskExceptionInfo[], object>[] batch)
         {
             logger.LogInfoFormat("IndexBatch: {0} tasks", batch.Length);
             var body = new object[batch.Length * 2];
@@ -50,7 +51,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient.Bulk<BulkResponse>(body).DieIfErros();
         }
 
-        private object BuildSavedData([NotNull] TaskMetaInformation meta, [CanBeNull] TaskExceptionInfo exceptionInfo, object taskData)
+        private object BuildSavedData([NotNull] TaskMetaInformation meta, [NotNull] TaskExceptionInfo[] exceptionInfos, [CanBeNull] object taskData)
         {
             var metaIndexedInfo = new MetaIndexedInfo
                 {
@@ -66,8 +67,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     MinimalStartTime = meta.MinimalStartTicks,
                     StartExecutingTime = meta.StartExecutingTicks,
                 };
-            var info = exceptionInfo == null ? null : exceptionInfo.ExceptionMessageInfo;
-            return taskDataService.CreateTaskIndexedInfo(metaIndexedInfo, info, taskData);
+            var exceptionInfo = string.Join("\r\n", exceptionInfos.Select(x => x.ExceptionMessageInfo));
+            return taskDataService.CreateTaskIndexedInfo(metaIndexedInfo, exceptionInfo, taskData);
         }
 
         private readonly IWriteIndexNameFactory indexNameFactory;

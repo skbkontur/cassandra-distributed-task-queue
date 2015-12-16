@@ -17,7 +17,7 @@ namespace RemoteQueue.Handling
         ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; }
         IHandleTasksMetaStorage HandleTasksMetaStorage { get; }
         IHandleTaskCollection HandleTaskCollection { get; }
-        ITaskExceptionInfoBlobStorage TaskExceptionInfoStorage { get; }
+        ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; }
         IRemoteLockCreator RemoteLockCreator { get; }
         IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; }
         IRemoteTaskQueue RemoteTaskQueue { get; }

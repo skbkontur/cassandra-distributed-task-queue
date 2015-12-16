@@ -43,19 +43,20 @@ namespace RemoteQueue.Handling
             var ticksHolder = new TicksHolder(serializer, parameters);
             GlobalTime = new GlobalTime(ticksHolder);
             TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, GlobalTime, new OldestLiveRecordTicksHolder(ticksHolder));
-            var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, GlobalTime);
+            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
             var eventLongRepository = new EventLogRepository(serializer, GlobalTime, parameters, ticksHolder);
-            childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
-            HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskDataRegistry);
-            HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, new TaskDataBlobStorage(parameters, serializer, GlobalTime), remoteTaskQueueProfiler);
-            TaskExceptionInfoStorage = new TaskExceptionInfoBlobStorage(parameters, serializer, GlobalTime);
+            childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaStorage);
+            HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskDataRegistry);
+            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
+            HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, taskDataStorage, remoteTaskQueueProfiler);
+            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
             RemoteLockCreator = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(parameters.Settings.QueueKeyspace));
             RemoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 
-        public ITaskExceptionInfoBlobStorage TaskExceptionInfoStorage { get; private set; }
+        public ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; private set; }
         public ISerializer Serializer { get; private set; }
         public IGlobalTime GlobalTime { get; private set; }
         public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; private set; }
@@ -117,12 +118,12 @@ namespace RemoteQueue.Handling
         public RemoteTaskInfo[] GetTaskInfos([NotNull] string[] taskIds)
         {
             var tasks = HandleTaskCollection.GetTasks(taskIds);
-            var taskExceptionInfos = TaskExceptionInfoStorage.Read(tasks.Select(x => x.Meta.TaskExceptionId).ToArray());
-            return tasks.Select(task => new RemoteTaskInfo
+            var taskExceptionInfos = TaskExceptionInfoStorage.Read(tasks.Select(x => x.Meta).ToArray());
+            return tasks.Select(task =>
                 {
-                    Context = task.Meta,
-                    TaskData = (ITaskData)Serializer.Deserialize(taskDataRegistry.GetTaskType(task.Meta.Name), task.Data),
-                    ExceptionInfo = taskExceptionInfos.ContainsKey(task.Meta.TaskExceptionId) ? taskExceptionInfos[task.Meta.TaskExceptionId] : null
+                    var taskType = taskDataRegistry.GetTaskType(task.Meta.Name);
+                    var taskData = (ITaskData)Serializer.Deserialize(taskType, task.Data);
+                    return new RemoteTaskInfo(task.Meta, taskData, taskExceptionInfos[task.Meta.Id]);
                 }).ToArray();
         }
 
@@ -138,19 +139,17 @@ namespace RemoteQueue.Handling
             createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
             var type = taskData.GetType();
             var taskId = TimeGuid.NowGuid().ToGuid().ToString();
-            var task = new Task
+            var taskMeta = new TaskMetaInformation(taskDataRegistry.GetTaskName(type), taskId)
                 {
-                    Data = Serializer.Serialize(type, taskData),
-                    Meta = new TaskMetaInformation(taskDataRegistry.GetTaskName(type), taskId)
-                        {
-                            Attempts = 0,
-                            Ticks = DateTime.UtcNow.Ticks,
-                            ParentTaskId = string.IsNullOrEmpty(createTaskOptions.ParentTaskId) ? GetCurrentExecutingTaskId() : createTaskOptions.ParentTaskId,
-                            TaskGroupLock = createTaskOptions.TaskGroupLock,
-                            State = TaskState.New,
-                            MinimalStartTicks = 0,
-                        }
+                    Attempts = 0,
+                    Ticks = DateTime.UtcNow.Ticks,
+                    ParentTaskId = string.IsNullOrEmpty(createTaskOptions.ParentTaskId) ? GetCurrentExecutingTaskId() : createTaskOptions.ParentTaskId,
+                    TaskGroupLock = createTaskOptions.TaskGroupLock,
+                    State = TaskState.New,
+                    MinimalStartTicks = 0,
                 };
+            var taskDataBytes = Serializer.Serialize(type, taskData);
+            var task = new Task(taskMeta, taskDataBytes);
             RemoteTaskQueueProfiler.ProcessTaskCreation(task.Meta, taskData);
             return enableContinuationOptimization && LocalTaskQueue.Instance != null
                        ? new RemoteTaskWithContinuationOptimization(task, HandleTaskCollection, LocalTaskQueue.Instance)
@@ -178,12 +177,7 @@ namespace RemoteQueue.Handling
             var taskType = task.TaskData.GetType();
             if(!typeof(T).IsAssignableFrom(taskType))
                 throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
-            return new RemoteTaskInfo<T>
-                {
-                    Context = task.Context,
-                    TaskData = (T)task.TaskData,
-                    ExceptionInfo = task.ExceptionInfo,
-                };
+            return new RemoteTaskInfo<T>(task.Context, (T)task.TaskData, task.ExceptionInfos);
         }
 
         private readonly ITaskDataRegistry taskDataRegistry;

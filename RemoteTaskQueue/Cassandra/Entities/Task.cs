@@ -1,8 +1,19 @@
-﻿namespace RemoteQueue.Cassandra.Entities
+﻿using JetBrains.Annotations;
+
+namespace RemoteQueue.Cassandra.Entities
 {
     public class Task
     {
-        public byte[] Data { get; set; }
-        public TaskMetaInformation Meta { get; set; }
+        public Task([NotNull] TaskMetaInformation meta, [NotNull] byte[] data)
+        {
+            Meta = meta;
+            Data = data;
+        }
+
+        [NotNull]
+        public TaskMetaInformation Meta { get; private set; }
+
+        [NotNull]
+        public byte[] Data { get; private set; }
     }
 }

@@ -41,16 +41,16 @@ namespace FunctionalTests.ExchangeTests
             var serializer = new Serializer(new AllPropertiesExtractor());
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
-            var taskDataBlobStorage = new TaskDataBlobStorage(parameters, serializer, globalTime);
+            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, globalTime, new OldestLiveRecordTicksHolder(ticksHolder));
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
-            var taskMetaInformationBlobStorage = new TaskMetaInformationBlobStorage(parameters, serializer, globalTime);
-            var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaInformationBlobStorage);
-            var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaInformationBlobStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex, Container.Get<ITaskDataRegistry>());
-            handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataBlobStorage, new EmptyRemoteTaskQueueProfiler());
+            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
+            var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaStorage);
+            var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex, Container.Get<ITaskDataRegistry>());
+            handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataStorage, new EmptyRemoteTaskQueueProfiler());
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
             var remoteLockCreator = new RemoteLocker(new CassandraRemoteLockImplementation(parameters.CassandraCluster, serializer, remoteLockImplementationSettings), new RemoteLockerMetrics(parameters.Settings.QueueKeyspace));
-            testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(parameters, serializer, globalTime), remoteLockCreator);
+            testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(cassandraCluster, serializer, cassandraSettings.QueueKeyspace), remoteLockCreator);
             taskQueue = Container.Get<IRemoteTaskQueue>();
         }
 

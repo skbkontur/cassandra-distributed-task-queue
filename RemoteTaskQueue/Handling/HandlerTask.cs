@@ -95,10 +95,10 @@ namespace RemoteQueue.Handling
             }
         }
 
-        private bool TryUpdateTaskState([NotNull] Task task, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
+        private bool TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
         {
-            var newMeta = allFieldsSerializer.Copy(task.Meta);
-            newMeta.MinimalStartTicks = Math.Max(newMinimalStartTicks, task.Meta.MinimalStartTicks + 1);
+            var newMeta = allFieldsSerializer.Copy(oldMeta);
+            newMeta.MinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
             newMeta.StartExecutingTicks = startExecutingTicks;
             newMeta.FinishExecutingTicks = finishExecutingTicks;
             newMeta.Attempts = attempts;
@@ -107,7 +107,6 @@ namespace RemoteQueue.Handling
             {
                 handleTasksMetaStorage.AddMeta(newMeta);
                 logger.InfoFormat("Changed task state. Task = {0}", newMeta);
-                task.Meta = newMeta;
                 return true;
             }
             catch(Exception e)
@@ -124,11 +123,6 @@ namespace RemoteQueue.Handling
             {
                 //note тут обязательно надо перечитывать мету
                 task = handleTaskCollection.GetTask(taskIndexRecord.TaskId);
-                if(task.Meta == null)
-                {
-                    logger.Warn(string.Format("Ошибка во время чтения задачи '{0}'. Отсутствует метаинформация.", taskIndexRecord.TaskId));
-                    return LocalTaskProcessingResult.Undefined;
-                }
             }
             catch(Exception e)
             {
@@ -153,7 +147,7 @@ namespace RemoteQueue.Handling
             logger.InfoFormat("Начинаем обрабатывать задачу [{0}]. Reason = {1}", task.Meta, reason);
 
             nowTicks = DateTime.UtcNow.Ticks;
-            if(!TryUpdateTaskState(task, nowTicks, nowTicks, null, task.Meta.Attempts + 1, TaskState.InProcess))
+            if(!TryUpdateTaskState(task.Meta, nowTicks, nowTicks, null, task.Meta.Attempts + 1, TaskState.InProcess))
             {
                 logger.ErrorFormat("Не удалось обновить метаинформацию у задачи '{0}'.", task.Meta);
                 return LocalTaskProcessingResult.Undefined;
@@ -168,7 +162,7 @@ namespace RemoteQueue.Handling
             {
                 LogError(e, task.Meta);
                 nowTicks = DateTime.UtcNow.Ticks;
-                TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
+                TryUpdateTaskState(task.Meta, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
                 return LocalTaskProcessingResult.Error;
             }
 
@@ -180,9 +174,8 @@ namespace RemoteQueue.Handling
                     var sw = Stopwatch.StartNew();
                     remoteTaskQueueProfiler.ProcessTaskDequeueing(task.Meta);
                     var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
-                    TimeSpan taskExecutionTime = sw.Elapsed;
-                    remoteTaskQueueProfiler.ProcessTaskExecutionFinished(task.Meta, handleResult, taskExecutionTime);
-                    localTaskProcessingResult = UpdateTaskMetaByHandleResult(task, handleResult);
+                    remoteTaskQueueProfiler.ProcessTaskExecutionFinished(task.Meta, handleResult, sw.Elapsed);
+                    localTaskProcessingResult = UpdateTaskMetaByHandleResult(task.Meta, handleResult);
                 }
                 catch(Exception e)
                 {
@@ -190,46 +183,44 @@ namespace RemoteQueue.Handling
                     localTaskProcessingResult = LocalTaskProcessingResult.Error;
                     LogError(e, task.Meta);
                     nowTicks = DateTime.UtcNow.Ticks;
-                    TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
+                    TryUpdateTaskState(task.Meta, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
                 }
             }
             return localTaskProcessingResult;
         }
 
-        private LocalTaskProcessingResult UpdateTaskMetaByHandleResult([NotNull] Task task, [NotNull] HandleResult handleResult)
+        private LocalTaskProcessingResult UpdateTaskMetaByHandleResult([NotNull] TaskMetaInformation oldMeta, [NotNull] HandleResult handleResult)
         {
             var nowTicks = DateTime.UtcNow.Ticks;
             switch(handleResult.FinishAction)
             {
             case FinishAction.Finish:
-                TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Finished);
+                TryUpdateTaskState(oldMeta, nowTicks, oldMeta.StartExecutingTicks, nowTicks, oldMeta.Attempts, TaskState.Finished);
                 return LocalTaskProcessingResult.Success;
             case FinishAction.Fatal:
-                LogError(handleResult.Error, task.Meta);
-                TryUpdateTaskState(task, nowTicks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.Fatal);
+                LogError(handleResult.Error, oldMeta);
+                TryUpdateTaskState(oldMeta, nowTicks, oldMeta.StartExecutingTicks, nowTicks, oldMeta.Attempts, TaskState.Fatal);
                 return LocalTaskProcessingResult.Error;
             case FinishAction.RerunAfterError:
-                LogError(handleResult.Error, task.Meta);
-                TryUpdateTaskState(task, nowTicks + handleResult.RerunDelay.Ticks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.WaitingForRerunAfterError);
+                LogError(handleResult.Error, oldMeta);
+                TryUpdateTaskState(oldMeta, nowTicks + handleResult.RerunDelay.Ticks, oldMeta.StartExecutingTicks, nowTicks, oldMeta.Attempts, TaskState.WaitingForRerunAfterError);
                 return LocalTaskProcessingResult.Rerun;
             case FinishAction.Rerun:
-                TryUpdateTaskState(task, nowTicks + handleResult.RerunDelay.Ticks, task.Meta.StartExecutingTicks, nowTicks, task.Meta.Attempts, TaskState.WaitingForRerun);
+                TryUpdateTaskState(oldMeta, nowTicks + handleResult.RerunDelay.Ticks, oldMeta.StartExecutingTicks, nowTicks, oldMeta.Attempts, TaskState.WaitingForRerun);
                 return LocalTaskProcessingResult.Rerun;
             default:
                 throw new InvalidProgramStateException(string.Format("Invalid FinishAction: {0}", handleResult.FinishAction));
             }
         }
 
-        private void LogError(Exception e, TaskMetaInformation meta)
+        private void LogError([NotNull] Exception e, [NotNull] TaskMetaInformation meta)
         {
-            var previousExceptionInfo = taskExceptionInfoStorage.Read(meta.TaskExceptionId) ?? new TaskExceptionInfo();
-            if(!previousExceptionInfo.EqualsToException(e))
-                logger.Error(string.Format("Ошибка во время обработки задачи '{0}'.", meta), e);
+            logger.Error(string.Format("Ошибка во время обработки задачи '{0}'.", meta), e);
             try
             {
-                string exceptionId;
-                if(taskExceptionInfoStorage.TryWrite(new TaskExceptionInfo {ExceptionMessageInfo = e.ToString()}, out exceptionId))
-                    meta.TaskExceptionId = exceptionId;
+                BlobId taskExceptionInfoId;
+                if(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, e, out taskExceptionInfoId))
+                    meta.AddTaskExceptionInfoId(taskExceptionInfoId);
             }
             catch
             {
@@ -245,11 +236,11 @@ namespace RemoteQueue.Handling
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IRemoteLockCreator remoteLockCreator;
+        private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
-        private readonly ITaskExceptionInfoBlobStorage taskExceptionInfoStorage;
     }
 }

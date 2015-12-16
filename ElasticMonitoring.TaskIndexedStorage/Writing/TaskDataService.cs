@@ -19,7 +19,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             this.taskDataRegistry = taskDataRegistry;
         }
 
-        public object CreateTaskIndexedInfo([NotNull] MetaIndexedInfo metaIndexedInfo, [CanBeNull] string exceptionInfo, [CanBeNull] object taskData)
+        public object CreateTaskIndexedInfo([NotNull] MetaIndexedInfo metaIndexedInfo, [NotNull] string exceptionInfo, [CanBeNull] object taskData)
         {
             var typeName = metaIndexedInfo.Name;
             var data = (Data)map[typeName];

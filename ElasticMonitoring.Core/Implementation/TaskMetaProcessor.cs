@@ -18,8 +18,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
     {
         public TaskMetaProcessor(
             ITaskDataRegistry taskDataRegistry,
-            ITaskDataBlobStorage taskDataStorage,
-            ITaskExceptionInfoBlobStorage taskExceptionInfoStorage,
+            ITaskDataStorage taskDataStorage,
+            ITaskExceptionInfoStorage taskExceptionInfoStorage,
             TaskWriter writer,
             ISerializer serializer,
             ICatalogueStatsDClient statsDClient, ITaskWriteDynamicSettings taskWriteDynamicSettings)
@@ -38,30 +38,28 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         {
             if(!batch.Any())
                 return;
-            var taskDatas = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.Read(batch.Select(x => x.TaskDataId).ToArray()));
-            var taskExceptionInfoMap = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch.Select(x => x.TaskExceptionId).ToArray()));
-            var enrichedBatch = new Tuple<TaskMetaInformation, TaskExceptionInfo, object>[batch.Length];
+            var taskDatas = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.Read(batch));
+            var taskExceptionInfos = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch));
+            var enrichedBatch = new Tuple<TaskMetaInformation, TaskExceptionInfo[], object>[batch.Length];
             for(var i = 0; i < batch.Length; i++)
             {
                 var taskMeta = batch[i];
                 byte[] taskData;
                 object taskDataObj = null;
-                if(taskDatas.TryGetValue(taskMeta.TaskDataId, out taskData))
+                if(taskDatas.TryGetValue(taskMeta.Id, out taskData))
                 {
                     Type taskType;
                     if(taskDataRegistry.TryGetTaskType(taskMeta.Name, out taskType))
                         taskDataObj = serializer.Deserialize(taskType, taskData);
                 }
-                TaskExceptionInfo taskExceptionInfo;
-                taskExceptionInfoMap.TryGetValue(taskMeta.TaskExceptionId, out taskExceptionInfo);
-                enrichedBatch[i] = Tuple.Create(taskMeta, taskExceptionInfo, taskDataObj);
+                enrichedBatch[i] = Tuple.Create(taskMeta, taskExceptionInfos[taskMeta.Id], taskDataObj);
             }
             statsDClient.Timing("Index", () => writer.IndexBatch(enrichedBatch));
         }
 
         private readonly ITaskDataRegistry taskDataRegistry;
-        private readonly ITaskDataBlobStorage taskDataStorage;
-        private readonly ITaskExceptionInfoBlobStorage taskExceptionInfoStorage;
+        private readonly ITaskDataStorage taskDataStorage;
+        private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly TaskWriter writer;
         private readonly ISerializer serializer;
         private readonly ICatalogueStatsDClient statsDClient;

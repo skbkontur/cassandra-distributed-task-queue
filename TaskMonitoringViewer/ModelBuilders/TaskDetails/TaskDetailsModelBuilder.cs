@@ -5,7 +5,6 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
 
 using TaskState = SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives.TaskState;
@@ -14,27 +13,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 {
     public class TaskDetailsModelBuilder : ITaskDetailsModelBuilder
     {
-        public TaskDetailsModelBuilder(
-            ITaskMetadataModelBuilder taskMetadataModelBuilder,
-            IRemoteTaskQueue remoteTaskQueue,
-            IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage)
+        public TaskDetailsModelBuilder(ITaskMetadataModelBuilder taskMetadataModelBuilder, IRemoteTaskQueue remoteTaskQueue)
         {
             this.taskMetadataModelBuilder = taskMetadataModelBuilder;
             this.remoteTaskQueue = remoteTaskQueue;
-            this.remoteTaskQueueMonitoringServiceStorage = remoteTaskQueueMonitoringServiceStorage;
         }
 
         public TaskDetailsModel Build(RemoteTaskInfo remoteTaskInfo, int? pageNumber, string searchRequestId)
         {
             MonitoringTaskMetadata metadata;
             TryConvertTaskMetaInformationToMonitoringTaskMetadata(remoteTaskInfo.Context, out metadata);
-
             return new TaskDetailsModel
                 {
                     TaskMetaInfoModel = taskMetadataModelBuilder.Build(metadata),
                     ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(remoteTaskInfo.Context.Id),
                     TaskData = remoteTaskInfo.TaskData,
-                    ExceptionInfo = remoteTaskInfo.ExceptionInfo
+                    ExceptionInfo = remoteTaskInfo.ExceptionInfos.LastOrDefault()
                 };
         }
 
@@ -68,6 +62,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
 
         private readonly ITaskMetadataModelBuilder taskMetadataModelBuilder;
         private readonly IRemoteTaskQueue remoteTaskQueue;
-        private readonly IRemoteTaskQueueMonitoringServiceStorage remoteTaskQueueMonitoringServiceStorage;
     }
 }

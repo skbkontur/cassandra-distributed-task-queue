@@ -8,40 +8,31 @@ using JetBrains.Annotations;
 
 using MoreLinq;
 
-using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
-    public class BlobStorage<T> : ColumnFamilyRepositoryBase, IBlobStorage<T>
+    public class LegacyBlobStorage<T>
     {
-        public BlobStorage(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, string columnFamilyName)
-            : base(parameters, columnFamilyName)
+        public LegacyBlobStorage(ICassandraCluster cassandraCluster, ISerializer serializer, string keyspaceName, string columnFamilyName)
         {
+            this.cassandraCluster = cassandraCluster;
             this.serializer = serializer;
-            this.globalTime = globalTime;
+            this.keyspaceName = keyspaceName;
+            this.columnFamilyName = columnFamilyName;
         }
 
-        public void Write([NotNull] string id, T element)
+        public void Write([NotNull] string id, [NotNull] T element, long timestamp)
         {
             var connection = RetrieveColumnFamilyConnection();
-            var nowTicks = globalTime.UpdateNowTicks();
             connection.AddColumn(id, new Column
                 {
                     Name = dataColumnName,
-                    Timestamp = nowTicks,
+                    Timestamp = timestamp,
                     Value = serializer.Serialize(element)
                 });
-        }
-
-        public bool TryWrite(T element, out string id)
-        {
-            id = Guid.NewGuid().ToString();
-            Write(id, element);
-            return true;
         }
 
         [CanBeNull]
@@ -54,6 +45,10 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return default(T);
         }
 
+        /// <remarks>
+        ///     Result does NOT contain entries for non existing or blobs
+        /// </remarks>
+        [NotNull]
         public Dictionary<string, T> Read([NotNull] string[] ids)
         {
             return ids
@@ -64,6 +59,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 .ToDictionary(pair => pair.Key, pair => serializer.Deserialize<T>(pair.Value.First().Value));
         }
 
+        [NotNull]
         public IEnumerable<KeyValuePair<string, T>> ReadAll(int batchSize = 1000)
         {
             var connection = RetrieveColumnFamilyConnection();
@@ -94,6 +90,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             ids.Batch(1000, Enumerable.ToArray).ForEach(x => DeleteInternal(x, timestamp));
         }
 
+        [NotNull]
         private IEnumerable<KeyValuePair<string, T>> TryReadInternal([NotNull] string[] ids)
         {
             if(ids.Length == 0) return new KeyValuePair<string, T>[0];
@@ -108,12 +105,13 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                       .Where(obj => obj.Value != null);
         }
 
+        [CanBeNull]
         private T Read(IEnumerable<Column> columns)
         {
             return columns.Where(column => column.Name == dataColumnName).Select(column => serializer.Deserialize<T>(column.Value)).FirstOrDefault();
         }
 
-        private void DeleteInternal(string[] ids, long? timestamp)
+        private void DeleteInternal([NotNull] string[] ids, long? timestamp)
         {
             MakeInConnection(connection => connection.DeleteRows(ids, timestamp));
         }
@@ -130,9 +128,16 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return action(connection);
         }
 
+        private IColumnFamilyConnection RetrieveColumnFamilyConnection()
+        {
+            return cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamilyName);
+        }
+
         private const int maximalColumnsCount = 1000;
         private const string dataColumnName = "Data";
+        private readonly ICassandraCluster cassandraCluster;
         private readonly ISerializer serializer;
-        private readonly IGlobalTime globalTime;
+        private readonly string keyspaceName;
+        private readonly string columnFamilyName;
     }
 }

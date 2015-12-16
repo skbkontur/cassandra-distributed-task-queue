@@ -15,11 +15,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
 {
     public class ChildTaskIndex : IChildTaskIndex
     {
-        public ChildTaskIndex(IColumnFamilyRepositoryParameters repositoryParameters, ISerializer serializer, ITaskMetaInformationBlobStorage metaInformationBlobStorage)
+        public ChildTaskIndex(IColumnFamilyRepositoryParameters repositoryParameters, ISerializer serializer, ITaskMetaStorage taskMetaStorage)
         {
             this.repositoryParameters = repositoryParameters;
             this.serializer = serializer;
-            this.metaInformationBlobStorage = metaInformationBlobStorage;
+            this.taskMetaStorage = taskMetaStorage;
         }
 
         public void AddMeta([NotNull] TaskMetaInformation meta)
@@ -40,13 +40,13 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
         {
             var connection = repositoryParameters.CassandraCluster.RetrieveColumnFamilyConnection(repositoryParameters.Settings.QueueKeyspace, columnFamilyName);
             var indexedChildren = connection.GetRow(taskId).Select(column => serializer.Deserialize<string>(column.Value)).ToArray();
-            return metaInformationBlobStorage.Read(indexedChildren).Keys.ToArray();
+            return taskMetaStorage.Read(indexedChildren).Keys.ToArray();
         }
 
         public const string columnFamilyName = "childTaskIndex";
 
         private readonly IColumnFamilyRepositoryParameters repositoryParameters;
         private readonly ISerializer serializer;
-        private readonly ITaskMetaInformationBlobStorage metaInformationBlobStorage;
+        private readonly ITaskMetaStorage taskMetaStorage;
     }
 }

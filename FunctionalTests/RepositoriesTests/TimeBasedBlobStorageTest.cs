@@ -26,15 +26,13 @@ namespace FunctionalTests.RepositoriesTests
         public override void SetUp()
         {
             base.SetUp();
-            var repositoryParameters = Container.Get<IColumnFamilyRepositoryParameters>();
             var serializer = Container.Get<ISerializer>();
-            var globalTime = Container.Get<IGlobalTime>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var settings = Container.Get<ICassandraSettings>();
             connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
             AddColumnFamily();
 
-            timeBasedBlobStorage = new TimeBasedBlobStorage<int?>(repositoryParameters, serializer, globalTime, columnFamilyName);
+            //timeBasedBlobStorage = new TimeBasedBlobStorage(new TimeBasedBlobStorageSettings(settings.QueueKeyspace, largeCfName, regularCfName), cassandraCluster, serializer);
         }
 
         public override void TearDown()
@@ -57,16 +55,16 @@ namespace FunctionalTests.RepositoriesTests
             }
         }
 
-        [Test]
+       /* [Test]
         public void TestReadWrite()
         {
-            var id = TimeGuid.NowGuid();
+            var id = new BlobId(TimeGuid.NowGuid(), BlobType.Regular);
             Assert.IsNull(timeBasedBlobStorage.Read(id));
 
-            timeBasedBlobStorage.Write(id, 10);
+            timeBasedBlobStorage.Write(id, 10, DateTime.UtcNow.Ticks);
             Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(10));
 
-            timeBasedBlobStorage.Write(id, 11);
+            timeBasedBlobStorage.Write(id, 11, DateTime.UtcNow.Ticks);
             Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(11));
         }
 
@@ -137,9 +135,17 @@ namespace FunctionalTests.RepositoriesTests
                     new KeyValuePair<TimeGuid, int?>(id21, 21),
                     new KeyValuePair<TimeGuid, int?>(id22, 22),
                 }));
+        }*/
+
+        [Test]
+        public void TestWriteDataMoreBlobSizeLimit()
+        {
+            var blobId = new BlobId(TimeGuid.NowGuid(), BlobType.Regular);
+            timeBasedBlobStorage.Write(blobId, new byte[TimeBasedBlobStorageSettings.RegularBlobSizeLimit + 1], DateTime.UtcNow.Ticks);
+            Assert.That(timeBasedBlobStorage.Read(blobId), Is.Not.Null);
         }
 
-        private TimeBasedBlobStorage<int?> timeBasedBlobStorage;
+        private TimeBasedBlobStorage timeBasedBlobStorage;
         private IKeyspaceConnection connection;
     }
 }

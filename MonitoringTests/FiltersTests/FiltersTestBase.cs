@@ -23,10 +23,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
         public override void SetUp()
         {
             base.SetUp();
-            remoteTaskQueue = container.Get<IRemoteTaskQueue>();
-            taskMetaInformation = container.Get<ITaskMetaInformationBlobStorage>();
-            taskDataStorage = container.Get<ITaskDataBlobStorage>();
             serializer = container.Get<ISerializer>();
+            remoteTaskQueue = container.Get<IRemoteTaskQueue>();
+            taskDataStorage = container.Get<TaskDataStorage>();
+            taskMetaStorage = container.Get<TaskMetaStorage>();
         }
 
         protected Dictionary<string, AddTaskInfo> AddTasks(int iteration, params Creater[] creaters)
@@ -90,23 +90,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
 
         protected void FinishBetaTasks(List<string> betaTaskIds)
         {
-            var metas = taskMetaInformation.Read(betaTaskIds.ToArray());
-            var taskDatas = taskDataStorage.Read(metas.Values.Select(x => x.TaskDataId).ToArray());
+            var taskMetas = taskMetaStorage.Read(betaTaskIds.ToArray());
+            var taskDatas = taskDataStorage.Read(taskMetas.Values.ToArray());
             foreach(var pair in taskDatas)
             {
                 var taskData = serializer.Deserialize<BetaTaskData>(pair.Value);
                 taskData.IsProcess = false;
-                taskDataStorage.Write(pair.Key, serializer.Serialize(taskData));
+                taskDataStorage.Overwrite(pair.Key, taskMetas[pair.Key].TaskDataId, serializer.Serialize(taskData));
             }
-
             foreach(var betaTaskId in betaTaskIds)
                 WaitTaskState(betaTaskId, TaskState.Finished);
         }
 
-        private IRemoteTaskQueue remoteTaskQueue;
-        private ITaskDataBlobStorage taskDataStorage;
         private ISerializer serializer;
-        private ITaskMetaInformationBlobStorage taskMetaInformation;
+        private IRemoteTaskQueue remoteTaskQueue;
+        private TaskDataStorage taskDataStorage;
+        private TaskMetaStorage taskMetaStorage;
 
         protected class Creater
         {

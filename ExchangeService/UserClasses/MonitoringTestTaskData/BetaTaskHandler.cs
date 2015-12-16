@@ -12,7 +12,7 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
 {
     public class BetaTaskHandler : TaskHandler<BetaTaskData>
     {
-        public BetaTaskHandler(ISerializer serializer, ITaskDataBlobStorage taskDataStorage)
+        public BetaTaskHandler(ISerializer serializer, ITaskDataStorage taskDataStorage)
         {
             this.serializer = serializer;
             this.taskDataStorage = taskDataStorage;
@@ -23,12 +23,13 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
             while(taskData.IsProcess)
             {
                 Thread.Sleep(TimeSpan.FromMilliseconds(50));
-                taskData = serializer.Deserialize<BetaTaskData>(taskDataStorage.Read(Context.TaskDataId));
+                var taskDataBytes = taskDataStorage.Read(Context);
+                taskData = serializer.Deserialize<BetaTaskData>(taskDataBytes);
             }
             return Finish();
         }
 
         private readonly ISerializer serializer;
-        private readonly ITaskDataBlobStorage taskDataStorage;
+        private readonly ITaskDataStorage taskDataStorage;
     }
 }

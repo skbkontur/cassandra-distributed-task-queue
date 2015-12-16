@@ -3,126 +3,142 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-using GroBuf;
-
 using JetBrains.Annotations;
 
 using MoreLinq;
 
-using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Connections;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
-    public class TimeBasedBlobStorage<T> : ColumnFamilyRepositoryBase, IBlobStorage<T, TimeGuid>
+    public class TimeBasedBlobStorage
     {
-        public TimeBasedBlobStorage(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, string columnFamilyName)
-            : base(parameters, columnFamilyName)
+        public TimeBasedBlobStorage(TimeBasedBlobStorageSettings settings, ICassandraCluster cassandraCluster)
         {
-            this.serializer = serializer;
-            this.globalTime = globalTime;
+            this.settings = settings;
+            this.cassandraCluster = cassandraCluster;
         }
 
-        public bool TryWrite(T element, out TimeGuid id)
+        [NotNull]
+        public static BlobId GenerateNewBlobId(int blobSize)
         {
-            id = null;
-            var value = serializer.Serialize(element);
-            if(value.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
-                return false;
-            id = TimeGuid.NowGuid();
-            WriteInternal(id, value);
-            return true;
+            var id = TimeGuid.NowGuid();
+            return new BlobId(id, blobSize > TimeBasedBlobStorageSettings.RegularBlobSizeLimit ? BlobType.Large : BlobType.Regular);
         }
 
-        public void Write(TimeGuid id, T element)
+        public void Write([NotNull] BlobId id, [NotNull] byte[] value, long timestamp)
         {
-            var value = serializer.Serialize(element);
-            if(value.Length > TimeBasedBlobStorageSettings.BlobSizeLimit)
-                throw new InvalidProgramStateException(string.Format("Blob with id={0} has size={1} bytes. Cannot write to columnFamily={2} in keyspace={3}", id.ToGuid(), value.Length, ColumnFamilyName, Keyspace));
-            WriteInternal(id, value);
+            if(value == null)
+                throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", id));
+            if(id.Type == BlobType.Regular && value.Length > TimeBasedBlobStorageSettings.RegularBlobSizeLimit)
+                Log.For(this).ErrorFormat("Writing large blob with id={0} of size={1} into time-based cf: {2}", id.Id, value.Length, settings.RegularBlobsCfName);
+            var columnAddress = GetColumnAddress(id);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, columnAddress.CfName);
+            connection.AddColumn(columnAddress.RowKey, new Column
+                {
+                    Name = columnAddress.ColumnName,
+                    Value = value,
+                    Timestamp = timestamp,
+                });
+        }
+
+        public void Delete([NotNull] BlobId id, long timestamp)
+        {
+            var columnAddress = GetColumnAddress(id);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, columnAddress.CfName);
+            connection.DeleteColumn(columnAddress.RowKey, columnAddress.ColumnName, timestamp);
         }
 
         [CanBeNull]
-        public T Read([NotNull] TimeGuid id)
+        public byte[] Read([NotNull] BlobId id)
         {
-            var connection = RetrieveColumnFamilyConnection();
-            var columnInfo = GetColumnInfo(id);
-
+            var columnAddress = GetColumnAddress(id);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, columnAddress.CfName);
             Column column;
-            if(connection.TryGetColumn(columnInfo.RowKey, columnInfo.ColumnName, out column))
-                return serializer.Deserialize<T>(column.Value);
-            return default(T);
+            if(!connection.TryGetColumn(columnAddress.RowKey, columnAddress.ColumnName, out column) || column.Value == null)
+                return null;
+            return column.Value;
         }
 
-        public Dictionary<TimeGuid, T> Read([NotNull] TimeGuid[] ids)
+        /// <remarks>
+        ///     Result does NOT contain entries for non existing blobs
+        /// </remarks>
+        [NotNull]
+        public Dictionary<BlobId, byte[]> Read([NotNull] BlobId[] ids)
         {
-            return ids
-                .Distinct()
-                .OrderBy(x => x)
-                .Select(GetColumnInfo)
-                .GroupBy(x => x.RowKey)
-                .SelectMany(@group =>
-                    {
-                        return @group
-                            .Batch(1000, Enumerable.ToArray)
-                            .SelectMany(columnInfo => MakeInConnection(connection => connection.GetColumns(@group.Key, columnInfo.Select(x => x.ColumnName).ToArray())));
-                    })
-                .Where(x => x.Value != null)
-                .ToDictionary(column => GetIdFromColumnName(column.Name), column => serializer.Deserialize<T>(column.Value));
+            var distinctIds = ids.DistinctBy(x => x.Id).ToArray();
+            return ReadRegular(distinctIds, defaultBatchSize)
+                .Concat(ReadLarge(distinctIds, defaultBatchSize))
+                .Where(x => x.Column.Value != null)
+                .ToDictionary(x => x.BlobId, x => x.Column.Value);
         }
 
-        public IEnumerable<KeyValuePair<TimeGuid, T>> ReadAll(int batchSize = 1000)
+        [NotNull]
+        private IEnumerable<ColumnWithId> ReadRegular([NotNull] BlobId[] ids, int batchSize)
         {
-            return SelectAll(batchSize, column => new KeyValuePair<TimeGuid, T>(GetIdFromColumnName(column.Name), serializer.Deserialize<T>(column.Value)));
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, settings.RegularBlobsCfName);
+            return ids.Where(x => x.Type == BlobType.Regular)
+                      .OrderBy(blobId => blobId.Id)
+                      .Select(blobId => new {BlobId = blobId, ColumnAddress = GetColumnAddress(blobId)})
+                      .GroupBy(x => x.ColumnAddress.RowKey)
+                      .SelectMany(gByRow => gByRow.Batch(batchSize, Enumerable.ToArray)
+                                                  .SelectMany(batch =>
+                                                      {
+                                                          var columnNameToBlobIdMap = batch.ToDictionary(x => x.ColumnAddress.ColumnName, x => x.BlobId);
+                                                          var columns = connection.GetColumns(gByRow.Key, columnNameToBlobIdMap.Keys.ToArray());
+                                                          return columns.Select(column => new ColumnWithId {BlobId = columnNameToBlobIdMap[column.Name], Column = column});
+                                                      }));
         }
 
-        public void Delete([NotNull] TimeGuid id, long timestamp)
+        [NotNull]
+        private IEnumerable<ColumnWithId> ReadLarge([NotNull] BlobId[] ids, int batchSize)
         {
-            var connection = RetrieveColumnFamilyConnection();
-            var columnInfo = GetColumnInfo(id);
-
-            connection.DeleteColumn(columnInfo.RowKey, columnInfo.ColumnName, timestamp);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, settings.LargeBlobsCfName);
+            return ids.Where(x => x.Type == BlobType.Large)
+                      .Select(blobId => new {BlobId = blobId, ColumnAddress = GetColumnAddress(blobId)})
+                      .Batch(batchSize, Enumerable.ToArray)
+                      .SelectMany(batch =>
+                          {
+                              var rowKeyToBlobIdMap = batch.ToDictionary(x => x.ColumnAddress.RowKey, x => x.BlobId);
+                              var kvps = connection.GetRows(rowKeyToBlobIdMap.Keys.ToArray(), new[] {largeBlobColumnName});
+                              return kvps.Where(x => x.Value != null && x.Value.Any())
+                                         .Select(x => new ColumnWithId {BlobId = rowKeyToBlobIdMap[x.Key], Column = x.Value.Single()});
+                          });
         }
 
-        public void Delete([NotNull] IEnumerable<TimeGuid> ids, long? timestamp)
+        [NotNull]
+        public IEnumerable<Tuple<BlobId, byte[]>> ReadAll(int batchSize = defaultBatchSize)
         {
-            ids.Select(GetColumnInfo)
-               .GroupBy(x => x.RowKey)
-               .ForEach(group =>
-                   {
-                       group
-                           .Distinct()
-                           .Batch(1000, Enumerable.ToArray)
-                           .ForEach(columnInfo => MakeInConnection(connection => connection.DeleteBatch(group.Key, columnInfo.Select(x => x.ColumnName).ToArray(), timestamp)));
-                   });
+            return ReadAllRegular(batchSize).Concat(ReadAllLarge(batchSize));
         }
 
-        private IEnumerable<TResult> SelectAll<TResult>(int batchSize, Func<Column, TResult> createResult)
+        [NotNull]
+        private IEnumerable<Tuple<BlobId, byte[]>> ReadAllRegular(int batchSize)
         {
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, settings.RegularBlobsCfName);
             string exclusiveStartKey = null;
             while(true)
             {
-                var keys = RetrieveColumnFamilyConnection().GetKeys(exclusiveStartKey, count : batchSize);
+                var keys = connection.GetKeys(exclusiveStartKey, count : batchSize);
                 if(keys.Length == 0)
                     yield break;
-
                 foreach(var key in keys)
                 {
                     string exclusiveStartColumnName = null;
                     while(true)
                     {
-                        var columns = RetrieveColumnFamilyConnection().GetColumns(key, exclusiveStartColumnName, batchSize);
+                        var columns = connection.GetColumns(key, exclusiveStartColumnName, count : batchSize);
                         if(columns.Length == 0)
                             break;
-
                         foreach(var column in columns)
-                            yield return createResult(column);
-
+                        {
+                            if(column.Value != null)
+                                yield return Tuple.Create(new BlobId(GetTimeGuidFromColumnName(column.Name), BlobType.Regular), column.Value);
+                        }
                         exclusiveStartColumnName = columns.Last().Name;
                     }
                 }
@@ -130,53 +146,87 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             }
         }
 
-        private void WriteInternal(TimeGuid id, byte[] value)
+        [NotNull]
+        private IEnumerable<Tuple<BlobId, byte[]>> ReadAllLarge(int batchSize)
         {
-            var connection = RetrieveColumnFamilyConnection();
-            var nowTicks = globalTime.UpdateNowTicks();
-            var columnInfo = GetColumnInfo(id);
-
-            connection.AddColumn(columnInfo.RowKey, new Column
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, settings.LargeBlobsCfName);
+            string exclusiveStartKey = null;
+            while(true)
+            {
+                var keys = connection.GetKeys(exclusiveStartKey, count : batchSize);
+                if(keys.Length == 0)
+                    yield break;
+                exclusiveStartKey = keys.Last();
+                var blobIds = keys.Select(x => new BlobId(GetTimeGuidFromRowKey(x), BlobType.Large)).ToArray();
+                foreach(var columnWithId in ReadLarge(blobIds, batchSize))
                 {
-                    Name = columnInfo.ColumnName,
-                    Timestamp = nowTicks,
-                    Value = value
-                });
+                    if(columnWithId.Column.Value != null)
+                        yield return Tuple.Create(columnWithId.BlobId, columnWithId.Column.Value);
+                }
+            }
         }
 
-        private void MakeInConnection(Action<IColumnFamilyConnection> action)
+        [NotNull]
+        private ColumnAddress GetColumnAddress([NotNull] BlobId id)
         {
-            var connection = RetrieveColumnFamilyConnection();
-            action(connection);
+            var timeGuid = id.Id;
+            switch(id.Type)
+            {
+            case BlobType.Regular:
+                var ticks = timeGuid.GetTimestamp().Ticks;
+                return new ColumnAddress
+                    {
+                        CfName = settings.RegularBlobsCfName,
+                        RowKey = string.Format("{0}_{1}", ticks / TimeBasedBlobStorageSettings.TickPartition, Math.Abs(timeGuid.GetHashCode()) % TimeBasedBlobStorageSettings.SplittingFactor),
+                        ColumnName = string.Format("{0}_{1}", ticks.ToString("D20", CultureInfo.InvariantCulture), timeGuid.ToGuid()),
+                    };
+            case BlobType.Large:
+                return new ColumnAddress
+                    {
+                        CfName = settings.LargeBlobsCfName,
+                        RowKey = timeGuid.ToGuid().ToString(),
+                        ColumnName = largeBlobColumnName,
+                    };
+            default:
+                throw new InvalidProgramStateException(string.Format("Invalid BlobType in id: {0}", id));
+            }
         }
 
-        private TResult MakeInConnection<TResult>(Func<IColumnFamilyConnection, TResult> action)
+        [NotNull]
+        private static TimeGuid GetTimeGuidFromColumnName([NotNull] string columnName)
         {
-            var connection = RetrieveColumnFamilyConnection();
-            return action(connection);
+            TimeGuid timeGuid;
+            if(!TimeGuid.TryParse(columnName.Split('_')[1], out timeGuid))
+                throw new InvalidProgramStateException(string.Format("Invalid regular column name: {0}", columnName));
+            return timeGuid;
         }
 
-        private static ColumnInfo GetColumnInfo(TimeGuid id)
+        [NotNull]
+        private static TimeGuid GetTimeGuidFromRowKey([NotNull] string rowKey)
         {
-            var ticks = id.GetTimestamp().Ticks;
-            var rowKey = ticks / TimeBasedBlobStorageSettings.TickPartition + "_" + Math.Abs(id.GetHashCode()) % TimeBasedBlobStorageSettings.SplittingFactor;
-
-            return new ColumnInfo {RowKey = rowKey, ColumnName = ticks.ToString("D20", CultureInfo.InvariantCulture) + "_" + id.ToGuid()};
+            TimeGuid timeGuid;
+            if(!TimeGuid.TryParse(rowKey, out timeGuid))
+                throw new InvalidProgramStateException(string.Format("Invalid rowKey: {0}", rowKey));
+            return timeGuid;
         }
 
-        private static TimeGuid GetIdFromColumnName(string columnName)
-        {
-            var parts = columnName.Split('_');
-            return new TimeGuid(Guid.Parse(parts[1]));
-        }
+        private const int defaultBatchSize = 1000;
+        private const string largeBlobColumnName = "Data";
 
-        private readonly ISerializer serializer;
-        private readonly IGlobalTime globalTime;
+        private readonly TimeBasedBlobStorageSettings settings;
+        private readonly ICassandraCluster cassandraCluster;
 
-        private class ColumnInfo
+        private class ColumnAddress
         {
+            public string CfName { get; set; }
             public string RowKey { get; set; }
             public string ColumnName { get; set; }
+        }
+
+        private class ColumnWithId
+        {
+            public BlobId BlobId { get; set; }
+            public Column Column { get; set; }
         }
     }
 }

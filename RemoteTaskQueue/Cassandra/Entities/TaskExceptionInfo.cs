@@ -1,16 +1,16 @@
 ﻿using System;
 
+using JetBrains.Annotations;
+
 namespace RemoteQueue.Cassandra.Entities
 {
     public class TaskExceptionInfo
     {
-        public bool EqualsToException(Exception exception)
+        public TaskExceptionInfo([NotNull] Exception exception)
         {
-            if(ExceptionMessageInfo == null && exception == null)
-                return true;
-            return ExceptionMessageInfo == exception.ToString();
+            ExceptionMessageInfo = exception.ToString();
         }
 
-        public string ExceptionMessageInfo { get; set; }
+        public string ExceptionMessageInfo { get; private set; }
     }
 }
