@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+
+using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 
@@ -21,6 +23,12 @@ namespace RemoteQueue.Handling
 
         [NotNull]
         public TaskExceptionInfo[] ExceptionInfos { get; private set; }
+
+        [Obsolete("For FakeRemoteTaskQueue impl only")]
+        public void SetExceptionInfo([NotNull] TaskExceptionInfo taskExceptionInfo)
+        {
+            ExceptionInfos = new[]{taskExceptionInfo};
+        }
     }
 
     public class RemoteTaskInfo<T>
