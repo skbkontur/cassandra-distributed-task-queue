@@ -46,7 +46,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         }
 
         /// <remarks>
-        ///     Result does NOT contain entries for non existing or blobs
+        ///     Result does NOT contain entries for non existing blobs
         /// </remarks>
         [NotNull]
         public Dictionary<string, T> Read([NotNull] List<string> ids)
