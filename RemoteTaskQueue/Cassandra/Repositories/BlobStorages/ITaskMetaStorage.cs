@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using JetBrains.Annotations;
@@ -8,7 +9,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public interface ITaskMetaStorage
     {
-        void Write([NotNull] TaskMetaInformation taskMeta, long globalNowTicks);
+        void Write([NotNull] TaskMetaInformation taskMeta, long timestamp);
+
+        void Delete([NotNull] string taskId, long timestamp);
 
         [CanBeNull]
         TaskMetaInformation Read([NotNull] string taskId);
@@ -18,5 +21,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         /// </remarks>
         [NotNull]
         Dictionary<string, TaskMetaInformation> Read([NotNull] string[] taskIds);
+
+        [NotNull]
+        IEnumerable<Tuple<string, TaskMetaInformation>> ReadAll(int batchSize);
     }
 }

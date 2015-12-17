@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using GroBuf;
@@ -23,15 +24,23 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, keyspaceName, legacyCfName);
         }
 
-        public void Write([NotNull] TaskMetaInformation taskMeta, long globalNowTicks)
+        public void Write([NotNull] TaskMetaInformation taskMeta, long timestamp)
         {
             TimeGuid timeGuid;
             if(!TimeGuid.TryParse(taskMeta.Id, out timeGuid))
                 throw new InvalidProgramStateException(string.Format("TaskMeta.Id is not a TimeGuid for: {0}", taskMeta));
             var blobId = new BlobId(timeGuid, BlobType.Regular);
             var taskMetaBytes = serializer.Serialize(taskMeta);
-            legacyBlobStorage.Write(taskMeta.Id, taskMeta, globalNowTicks);
-            timeBasedBlobStorage.Write(blobId, taskMetaBytes, globalNowTicks);
+            legacyBlobStorage.Write(taskMeta.Id, taskMeta, timestamp);
+            timeBasedBlobStorage.Write(blobId, taskMetaBytes, timestamp);
+        }
+
+        public void Delete([NotNull] string taskId, long timestamp)
+        {
+            legacyBlobStorage.Delete(taskId, timestamp);
+            TimeGuid timeGuid;
+            if(TimeGuid.TryParse(taskId, out timeGuid))
+                timeBasedBlobStorage.Delete(new BlobId(timeGuid, BlobType.Regular), timestamp);
         }
 
         [CanBeNull]
@@ -67,6 +76,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                     taskMetas.Add(kvp.Key, kvp.Value);
             }
             return taskMetas;
+        }
+
+        [NotNull]
+        public IEnumerable<Tuple<string, TaskMetaInformation>> ReadAll(int batchSize)
+        {
+            return legacyBlobStorage.ReadAll(batchSize);
         }
 
         [NotNull]

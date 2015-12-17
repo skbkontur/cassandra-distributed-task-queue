@@ -33,6 +33,14 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return blobId;
         }
 
+        public void Delete([NotNull] TaskMetaInformation taskMeta)
+        {
+            var timestamp = Timestamp.Now.Ticks;
+            legacyBlobStorage.Delete(taskMeta.Id, timestamp);
+            if(taskMeta.IsTimeBased())
+                timeBasedBlobStorage.Delete(taskMeta.GetTaskDataId(), timestamp);
+        }
+
         public void Overwrite([NotNull] string taskId, [NotNull] BlobId blobId, [NotNull] byte[] taskData)
         {
             var timestamp = Timestamp.Now.Ticks;

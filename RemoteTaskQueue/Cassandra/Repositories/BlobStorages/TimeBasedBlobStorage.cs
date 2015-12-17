@@ -111,7 +111,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         }
 
         [NotNull]
-        public IEnumerable<Tuple<BlobId, byte[]>> ReadAll(int batchSize = defaultBatchSize)
+        public IEnumerable<Tuple<BlobId, byte[]>> ReadAll(int batchSize)
         {
             return ReadAllRegular(batchSize).Concat(ReadAllLarge(batchSize));
         }

@@ -11,6 +11,7 @@ using MoreLinq;
 using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
@@ -37,6 +38,17 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             legacyBlobStorage.Write(taskMeta.Id, newExceptionInfo, timestamp);
             timeBasedBlobStorage.Write(newExceptionInfoId, newExceptionInfoBytes, timestamp);
             return true;
+        }
+
+        public void Delete([NotNull] TaskMetaInformation taskMeta)
+        {
+            var timestamp = Timestamp.Now.Ticks;
+            legacyBlobStorage.Delete(taskMeta.Id, timestamp);
+            if(taskMeta.IsTimeBased())
+            {
+                foreach(var blobId in taskMeta.GetTaskExceptionInfoIds())
+                    timeBasedBlobStorage.Delete(blobId, timestamp);
+            }
         }
 
         [CanBeNull]

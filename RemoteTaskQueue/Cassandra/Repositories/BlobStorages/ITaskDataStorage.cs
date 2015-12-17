@@ -11,6 +11,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         [NotNull]
         BlobId Write([NotNull] string taskId, [NotNull] byte[] taskData);
 
+        void Delete([NotNull] TaskMetaInformation taskMeta);
+
         [CanBeNull]
         byte[] Read([NotNull] TaskMetaInformation taskMeta);
 

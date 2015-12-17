@@ -60,7 +60,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         }
 
         [NotNull]
-        public IEnumerable<KeyValuePair<string, T>> ReadAll(int batchSize = 1000)
+        public IEnumerable<Tuple<string, T>> ReadAll(int batchSize)
         {
             var connection = RetrieveColumnFamilyConnection();
             string exclusiveStartKey = null;
@@ -85,15 +85,10 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 });
         }
 
-        public void Delete([NotNull] IEnumerable<string> ids, long? timestamp)
-        {
-            ids.Batch(1000, Enumerable.ToArray).ForEach(x => DeleteInternal(x, timestamp));
-        }
-
         [NotNull]
-        private IEnumerable<KeyValuePair<string, T>> TryReadInternal([NotNull] string[] ids)
+        private IEnumerable<Tuple<string, T>> TryReadInternal([NotNull] string[] ids)
         {
-            if(ids.Length == 0) return new KeyValuePair<string, T>[0];
+            if(ids.Length == 0) return new Tuple<string, T>[0];
             var rows = new List<KeyValuePair<string, Column[]>>();
             ids
                 .Batch(1000, Enumerable.ToArray)
@@ -101,19 +96,14 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             var rowsDict = rows.ToDictionary(row => row.Key);
 
             return ids.Where(rowsDict.ContainsKey)
-                      .Select(id => new KeyValuePair<string, T>(id, Read(rowsDict[id].Value)))
-                      .Where(obj => obj.Value != null);
+                      .Select(id => Tuple.Create(id, Read(rowsDict[id].Value)))
+                      .Where(obj => obj.Item2 != null);
         }
 
         [CanBeNull]
         private T Read(IEnumerable<Column> columns)
         {
             return columns.Where(column => column.Name == dataColumnName).Select(column => serializer.Deserialize<T>(column.Value)).FirstOrDefault();
-        }
-
-        private void DeleteInternal([NotNull] string[] ids, long? timestamp)
-        {
-            MakeInConnection(connection => connection.DeleteRows(ids, timestamp));
         }
 
         private void MakeInConnection(Action<IColumnFamilyConnection> action)
