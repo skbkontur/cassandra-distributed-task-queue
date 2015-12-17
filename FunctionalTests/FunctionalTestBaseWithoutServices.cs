@@ -5,8 +5,6 @@ using System.Threading;
 
 using ExchangeService.UserClasses;
 
-using FunctionalTests.Logging;
-
 using GroboContainer.Core;
 using GroboContainer.Impl;
 
@@ -23,6 +21,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.ServiceLib;
+using SKBKontur.Catalogue.TestCore;
 
 using TestCommon;
 
@@ -34,11 +33,11 @@ namespace FunctionalTests
         [SetUp]
         public virtual void SetUp()
         {
+            Log4NetHelper.SetUpLoggingOnce("RemoteTaskQueue");
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
             Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
             Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
             Container.ConfigureLockRepository();
-            Log4NetConfiguration.InitializeOnce();
             ResetTaskQueueCassandraState();
             ResetTaskQueueMonitoringState();
         }

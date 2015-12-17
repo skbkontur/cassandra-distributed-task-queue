@@ -10,49 +10,23 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Connections;
-using SKBKontur.Cassandra.CassandraClient.Scheme;
 
 namespace FunctionalTests.RepositoriesTests
 {
-    public class LegacyBlobStorageTest : FunctionalTestBase
+    public class LegacyBlobStorageTest : BlobStorageFunctionalTestBase
     {
-        public override void SetUp()
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
             var serializer = Container.Get<ISerializer>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
-            const string columnFamilyName = "Class1CF";
-            var queueKeyspace = Container.Get<ICassandraSettings>().QueueKeyspace;
-            connection = cassandraCluster.RetrieveKeyspaceConnection(queueKeyspace);
-            cassandraCluster.ActualizeKeyspaces(new[]
-                {
-                    new KeyspaceScheme
-                        {
-                            Name = queueKeyspace,
-                            Configuration =
-                                {
-                                    ReplicationFactor = 1,
-                                    ReplicaPlacementStrategy = ReplicaPlacementStrategy.Simple,
-                                    ColumnFamilies = new[]
-                                        {
-                                            new ColumnFamily
-                                                {
-                                                    Name = columnFamilyName,
-                                                    GCGraceSeconds = 10,
-                                                    Caching = ColumnFamilyCaching.All,
-                                                }
-                                        },
-                                }
-                        },
-                });
-            blobStorage = new LegacyBlobStorage<Class1>(cassandraCluster, serializer, queueKeyspace, columnFamilyName);
+            var keyspaceName = Container.Get<ICassandraSettings>().QueueKeyspace;
+            blobStorage = new LegacyBlobStorage<Dto>(cassandraCluster, serializer, keyspaceName, cfName);
         }
 
-        public override void TearDown()
+        protected override ColumnFamily[] GetColumnFamilies()
         {
-            connection.RemoveColumnFamily(columnFamilyName);
-            base.TearDown();
+            return new[] {new ColumnFamily {Name = cfName}};
         }
 
         [Test]
@@ -60,7 +34,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             const string id = "a";
             const string field1 = "yyy";
-            blobStorage.Write(id, new Class1 {Field1 = field1}, DateTime.UtcNow.Ticks);
+            blobStorage.Write(id, new Dto {Field1 = field1}, DateTime.UtcNow.Ticks);
             var elem = blobStorage.Read(id);
             Assert.AreEqual(field1, elem.Field1);
         }
@@ -73,23 +47,22 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(blobStorage.Read(new List<string>()).Count, Is.EqualTo(0));
             Assert.That(blobStorage.Read(new List<string> {id1, id2}).Count, Is.EqualTo(0));
 
-            blobStorage.Write(id1, new Class1 {Field1 = "id1"}, DateTime.UtcNow.Ticks);
+            blobStorage.Write(id1, new Dto {Field1 = "id1"}, DateTime.UtcNow.Ticks);
             var actual = blobStorage.Read(new List<string> {id1, id2});
             Assert.That(actual.Count, Is.EqualTo(1));
             Assert.That(actual[id1].Field1, Is.EqualTo("id1"));
 
-            blobStorage.Write(id2, new Class1 {Field1 = "id2"}, DateTime.UtcNow.Ticks);
+            blobStorage.Write(id2, new Dto {Field1 = "id2"}, DateTime.UtcNow.Ticks);
             actual = blobStorage.Read(new List<string> {id1, id2});
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[id1].Field1, Is.EqualTo("id1"));
             Assert.That(actual[id2].Field1, Is.EqualTo("id2"));
         }
 
-        private const string columnFamilyName = "Class1CF";
-        private LegacyBlobStorage<Class1> blobStorage;
-        private IKeyspaceConnection connection;
+        private const string cfName = "LegacyBlobStorageTest";
+        private LegacyBlobStorage<Dto> blobStorage;
 
-        public class Class1
+        private class Dto
         {
             public string Field1 { get; set; }
         }

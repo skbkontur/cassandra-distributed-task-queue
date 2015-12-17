@@ -1,151 +1,178 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-
-using GroBuf;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace FunctionalTests.RepositoriesTests
 {
-    public class TimeBasedBlobStorageTest : FunctionalTestBaseWithoutServices
+    public class TimeBasedBlobStorageTest : BlobStorageFunctionalTestBase
     {
-        private const string columnFamilyName = "TimeBasedBlobStorageTest";
-
-        public override void SetUp()
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
-            var serializer = Container.Get<ISerializer>();
-            var cassandraCluster = Container.Get<ICassandraCluster>();
-            var settings = Container.Get<ICassandraSettings>();
-            connection = cassandraCluster.RetrieveKeyspaceConnection(settings.QueueKeyspace);
-            AddColumnFamily();
-
-            //timeBasedBlobStorage = new TimeBasedBlobStorage(new TimeBasedBlobStorageSettings(settings.QueueKeyspace, largeCfName, regularCfName), cassandraCluster, serializer);
+            var settings = new TimeBasedBlobStorageSettings(Container.Get<ICassandraSettings>().QueueKeyspace, largeCfName, regularCfName);
+            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, Container.Get<ICassandraCluster>());
         }
 
-        public override void TearDown()
+        protected override ColumnFamily[] GetColumnFamilies()
         {
-            connection.RemoveColumnFamily(columnFamilyName);
-            base.TearDown();
-        }
-
-        private void AddColumnFamily()
-        {
-            var keyspace = connection.DescribeKeyspace();
-            if(keyspace.ColumnFamilies.All(x => x.Key != columnFamilyName))
-            {
-                connection.AddColumnFamily(new ColumnFamily
-                    {
-                        Name = columnFamilyName,
-                        GCGraceSeconds = 10,
-                        Caching = ColumnFamilyCaching.All
-                    });
-            }
-        }
-
-       /* [Test]
-        public void TestReadWrite()
-        {
-            var id = new BlobId(TimeGuid.NowGuid(), BlobType.Regular);
-            Assert.IsNull(timeBasedBlobStorage.Read(id));
-
-            timeBasedBlobStorage.Write(id, 10, DateTime.UtcNow.Ticks);
-            Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(10));
-
-            timeBasedBlobStorage.Write(id, 11, DateTime.UtcNow.Ticks);
-            Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(11));
-        }
-
-        [Test]
-        public void TestMultiRead()
-        {
-            var id1 = TimeGuid.NowGuid();
-            var id2 = TimeGuid.NowGuid();
-
-            Assert.That(timeBasedBlobStorage.Read(new TimeGuid[0]).Count, Is.EqualTo(0));
-            Assert.That(timeBasedBlobStorage.Read(new[] {id1, id2}).Count, Is.EqualTo(0));
-
-            timeBasedBlobStorage.Write(id1, 1);
-            var dictionary = timeBasedBlobStorage.Read(new[] {id1, id2});
-            Assert.That(dictionary.Count, Is.EqualTo(1));
-            Assert.That(dictionary[id1], Is.EqualTo(1));
-
-            timeBasedBlobStorage.Write(id2, 2);
-            dictionary = timeBasedBlobStorage.Read(new[] {id1, id2});
-            Assert.That(dictionary.Count, Is.EqualTo(2));
-            Assert.That(dictionary[id1], Is.EqualTo(1));
-            Assert.That(dictionary[id2], Is.EqualTo(2));
-        }
-
-        [Test]
-        public void TestDelete()
-        {
-            var id = TimeGuid.NowGuid();
-
-            timeBasedBlobStorage.Write(id, 1);
-            timeBasedBlobStorage.Delete(id, DateTime.UtcNow.Ticks);
-
-            Assert.IsNull(timeBasedBlobStorage.Read(id));
-        }
-
-        [Test]
-        public void TestMultiDelete()
-        {
-            var id1 = TimeGuid.NowGuid();
-            var id2 = TimeGuid.NowGuid();
-
-            timeBasedBlobStorage.Write(id1, 1);
-            timeBasedBlobStorage.Write(id2, 2);
-
-            timeBasedBlobStorage.Delete(new[] {id1, id2}, DateTime.UtcNow.Ticks);
-            Assert.That(timeBasedBlobStorage.Read(new[] {id1, id2}).Count, Is.EqualTo(0));
-        }
-
-        [Test]
-        public void TestReadAll()
-        {
-            var id11 = TimeGuid.NowGuid();
-            var id12 = TimeGuid.NowGuid();
-
-            var shift = new Timestamp(DateTime.UtcNow.AddDays(1));
-            var id21 = TimeGuid.NewGuid(shift);
-            var id22 = TimeGuid.NewGuid(shift);
-
-            timeBasedBlobStorage.Write(id11, 11);
-            timeBasedBlobStorage.Write(id12, 12);
-            timeBasedBlobStorage.Write(id21, 21);
-            timeBasedBlobStorage.Write(id22, 22);
-
-            Assert.That(timeBasedBlobStorage.ReadAll(1).ToArray(), Is.EquivalentTo(new[]
+            return new[]
                 {
-                    new KeyValuePair<TimeGuid, int?>(id11, 11),
-                    new KeyValuePair<TimeGuid, int?>(id12, 12),
-                    new KeyValuePair<TimeGuid, int?>(id21, 21),
-                    new KeyValuePair<TimeGuid, int?>(id22, 22),
-                }));
-        }*/
+                    new ColumnFamily {Name = largeCfName},
+                    new ColumnFamily {Name = regularCfName}
+                };
+        }
 
         [Test]
-        public void TestWriteDataMoreBlobSizeLimit()
+        public void GenerateNewBlobId()
         {
-            var blobId = new BlobId(TimeGuid.NowGuid(), BlobType.Regular);
-            timeBasedBlobStorage.Write(blobId, new byte[TimeBasedBlobStorageSettings.RegularBlobSizeLimit + 1], DateTime.UtcNow.Ticks);
-            Assert.That(timeBasedBlobStorage.Read(blobId), Is.Not.Null);
+            Assert.That(TimeBasedBlobStorage.GenerateNewBlobId(0).Type, Is.EqualTo(BlobType.Regular));
+            Assert.That(TimeBasedBlobStorage.GenerateNewBlobId(TimeBasedBlobStorageSettings.MaxRegularBlobSize).Type, Is.EqualTo(BlobType.Regular));
+            Assert.That(TimeBasedBlobStorage.GenerateNewBlobId(TimeBasedBlobStorageSettings.MaxRegularBlobSize + 1).Type, Is.EqualTo(BlobType.Large));
+            Assert.That(TimeBasedBlobStorage.GenerateNewBlobId(int.MaxValue).Type, Is.EqualTo(BlobType.Large));
         }
+
+        [Test]
+        public void Write_Regular()
+        {
+            var id = RegularBlobId();
+            Assert.IsNull(timeBasedBlobStorage.Read(id));
+            WriteByte(id, 10);
+            Assert.That(ReadByte(id), Is.EqualTo(10));
+        }
+
+        [Test]
+        public void Write_Large()
+        {
+            var id = LargeBlobId();
+            Assert.IsNull(timeBasedBlobStorage.Read(id));
+            WriteByte(id, 11);
+            Assert.That(ReadByte(id), Is.EqualTo(11));
+        }
+
+        [Test]
+        public void Write_NullValue_IsForbidden()
+        {
+            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(RegularBlobId(), null, DateTime.UtcNow.Ticks));
+        }
+
+        [Test]
+        public void Write_EmptyValue()
+        {
+            var id = RegularBlobId();
+            timeBasedBlobStorage.Write(id, new byte[0], DateTime.UtcNow.Ticks);
+            Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(new byte[0]));
+        }
+
+        [Test]
+        public void Write_Regular_WithLargeValue()
+        {
+            var id = RegularBlobId();
+            var rng = new Random();
+            var value = rng.NextBytes(TimeBasedBlobStorageSettings.MaxRegularBlobSize + 1);
+            timeBasedBlobStorage.Write(id, value, DateTime.UtcNow.Ticks);
+            Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(value));
+        }
+
+        [Test]
+        public void Delete()
+        {
+            var id = RegularBlobId();
+            WriteByte(id, 1);
+            timeBasedBlobStorage.Delete(id, DateTime.UtcNow.Ticks);
+            Assert.IsNull(ReadByte(id));
+        }
+
+        [Test]
+        public void Read_MultipleKeys()
+        {
+            var id1 = RegularBlobId();
+            var id2 = RegularBlobId();
+            var id3 = LargeBlobId();
+            var allKeys = new[] {id1, id2, id3};
+
+            Assert.That(timeBasedBlobStorage.Read(new BlobId[0]), Is.Empty);
+            Assert.That(timeBasedBlobStorage.Read(allKeys), Is.Empty);
+
+            WriteByte(id1, 1);
+            var result = timeBasedBlobStorage.Read(allKeys);
+            Assert.That(result.Count, Is.EqualTo(1));
+            Assert.That(result[id1].Single(), Is.EqualTo(1));
+
+            WriteByte(id2, 2);
+            result = timeBasedBlobStorage.Read(allKeys);
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result[id1].Single(), Is.EqualTo(1));
+            Assert.That(result[id2].Single(), Is.EqualTo(2));
+
+            WriteByte(id3, 3);
+            result = timeBasedBlobStorage.Read(allKeys);
+            Assert.That(result.Count, Is.EqualTo(3));
+            Assert.That(result[id1].Single(), Is.EqualTo(1));
+            Assert.That(result[id2].Single(), Is.EqualTo(2));
+            Assert.That(result[id3].Single(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void ReadAll()
+        {
+            var idLarge = LargeBlobId();
+            var id11 = RegularBlobId();
+            var id12 = RegularBlobId();
+            var shift = new Timestamp(DateTime.UtcNow.AddDays(1));
+            var id21 = RegularBlobId(TimeGuid.NewGuid(shift));
+            var id22 = RegularBlobId(TimeGuid.NewGuid(shift));
+
+            WriteByte(idLarge, 255);
+            WriteByte(id11, 11);
+            WriteByte(id12, 12);
+            WriteByte(id21, 21);
+            WriteByte(id22, 22);
+
+            Assert.That(timeBasedBlobStorage.ReadAll(1).Select(x => Tuple.Create(x.Item1, x.Item2.Single())).ToArray(), Is.EquivalentTo(new[]
+                {
+                    new Tuple<BlobId, byte>(idLarge, 255),
+                    new Tuple<BlobId, byte>(id11, 11),
+                    new Tuple<BlobId, byte>(id12, 12),
+                    new Tuple<BlobId, byte>(id21, 21),
+                    new Tuple<BlobId, byte>(id22, 22),
+                }));
+        }
+
+        private static BlobId RegularBlobId(TimeGuid timeGuid = null)
+        {
+            return new BlobId(timeGuid ?? TimeGuid.NowGuid(), BlobType.Regular);
+        }
+
+        private static BlobId LargeBlobId()
+        {
+            return new BlobId(TimeGuid.NowGuid(), BlobType.Large);
+        }
+
+        private void WriteByte(BlobId id, byte value)
+        {
+            timeBasedBlobStorage.Write(id, new[] {value}, DateTime.UtcNow.Ticks);
+        }
+
+        private byte? ReadByte(BlobId id)
+        {
+            var bytes = timeBasedBlobStorage.Read(id);
+            if(bytes == null)
+                return null;
+            return bytes.Single();
+        }
+
+        private const string largeCfName = "TimeBasedBlobStorageTest_LargeCf";
+        private const string regularCfName = "TimeBasedBlobStorageTest_RegularCf";
 
         private TimeBasedBlobStorage timeBasedBlobStorage;
-        private IKeyspaceConnection connection;
     }
 }

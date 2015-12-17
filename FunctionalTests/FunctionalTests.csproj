@@ -51,11 +51,9 @@
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.Core.Configuration.Settings">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.XmlSerialization">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.XmlSerialization.dll</HintPath>
+    <Reference Include="Catalogue.TestCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
@@ -73,7 +71,6 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExchangeTests\AutoParentTaskIdTest.cs" />
@@ -81,7 +78,7 @@
     <Compile Include="ExchangeTests\SimpleTaskTest.cs" />
     <Compile Include="ExchangeTests\TaskTestsExtensions.cs" />
     <Compile Include="FunctionalTestBaseWithoutServices.cs" />
-    <Compile Include="Logging\Log4netConfiguration.cs" />
+    <Compile Include="RepositoriesTests\BlobStorageFunctionalTestBase.cs" />
     <Compile Include="RepositoriesTests\LegacyBlobStorageTest.cs" />
     <Compile Include="ExchangeTests\FailTaskTest.cs" />
     <Compile Include="ExchangeTests\PeriodicTaskTest.cs" />
@@ -127,7 +124,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Logging\log4net.config" />
     <None Include="Settings\exchangeServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

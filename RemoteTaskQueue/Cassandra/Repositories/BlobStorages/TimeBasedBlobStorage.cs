@@ -27,14 +27,14 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public static BlobId GenerateNewBlobId(int blobSize)
         {
             var id = TimeGuid.NowGuid();
-            return new BlobId(id, blobSize > TimeBasedBlobStorageSettings.RegularBlobSizeLimit ? BlobType.Large : BlobType.Regular);
+            return new BlobId(id, blobSize > TimeBasedBlobStorageSettings.MaxRegularBlobSize ? BlobType.Large : BlobType.Regular);
         }
 
         public void Write([NotNull] BlobId id, [NotNull] byte[] value, long timestamp)
         {
             if(value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", id));
-            if(id.Type == BlobType.Regular && value.Length > TimeBasedBlobStorageSettings.RegularBlobSizeLimit)
+            if(id.Type == BlobType.Regular && value.Length > TimeBasedBlobStorageSettings.MaxRegularBlobSize)
                 Log.For(this).ErrorFormat("Writing large blob with id={0} of size={1} into time-based cf: {2}", id.Id, value.Length, settings.RegularBlobsCfName);
             var columnAddress = GetColumnAddress(id);
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, columnAddress.CfName);

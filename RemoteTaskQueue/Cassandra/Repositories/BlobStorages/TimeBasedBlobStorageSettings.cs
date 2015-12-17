@@ -30,7 +30,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         ///     blobSizeLimit = 50 *1024*1024/(6*20 000/10) примерно 4kb
         ///     если надо больше можно уменьшить tickPartition
         /// </summary>
-        public const int RegularBlobSizeLimit = 4 * 1024;
+        public const int MaxRegularBlobSize = 4 * 1024;
 
         /// <summary>
         ///     пока сделали константой, в будущем можно будет сделать CF внутри которой хранить по тикам значение splittingFactor,
