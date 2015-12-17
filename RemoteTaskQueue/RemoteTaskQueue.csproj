@@ -81,10 +81,7 @@
     <Compile Include="Cassandra\Entities\TaskMetaUpdatedEvent.cs" />
     <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryBase.cs" />
     <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryParameters.cs" />
-    <Compile Include="Cassandra\Primitives\IColumnFamilyCreator.cs" />
-    <Compile Include="Cassandra\Primitives\IColumnFamilyRepository.cs" />
     <Compile Include="Cassandra\Primitives\IColumnFamilyRepositoryParameters.cs" />
-    <Compile Include="Cassandra\Primitives\KeyspaceNotFoundException.cs" />
     <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobId.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorage.cs" />

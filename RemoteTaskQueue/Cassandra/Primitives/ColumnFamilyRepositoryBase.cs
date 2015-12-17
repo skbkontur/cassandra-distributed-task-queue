@@ -3,22 +3,22 @@ using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Primitives
 {
-    public abstract class ColumnFamilyRepositoryBase : IColumnFamilyRepository
+    public abstract class ColumnFamilyRepositoryBase
     {
         protected ColumnFamilyRepositoryBase(IColumnFamilyRepositoryParameters parameters, string columnFamilyName)
         {
             cassandraCluster = parameters.CassandraCluster;
-            ColumnFamilyName = columnFamilyName;
-            Keyspace = parameters.Settings.QueueKeyspace;
+            keyspace = parameters.Settings.QueueKeyspace;
+            this.columnFamilyName = columnFamilyName;
         }
 
-        public IColumnFamilyConnection RetrieveColumnFamilyConnection()
+        protected IColumnFamilyConnection RetrieveColumnFamilyConnection()
         {
-            return cassandraCluster.RetrieveColumnFamilyConnection(Keyspace, ColumnFamilyName);
+            return cassandraCluster.RetrieveColumnFamilyConnection(keyspace, columnFamilyName);
         }
 
-        public string Keyspace { get; private set; }
-        public string ColumnFamilyName { get; private set; }
         private readonly ICassandraCluster cassandraCluster;
+        private readonly string keyspace;
+        private readonly string columnFamilyName;
     }
 }
