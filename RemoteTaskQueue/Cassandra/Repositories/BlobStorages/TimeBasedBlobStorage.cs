@@ -156,13 +156,13 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 var keys = connection.GetKeys(exclusiveStartKey, count : batchSize);
                 if(keys.Length == 0)
                     yield break;
-                exclusiveStartKey = keys.Last();
                 var blobIds = keys.Select(x => new BlobId(GetTimeGuidFromRowKey(x), BlobType.Large)).ToArray();
                 foreach(var columnWithId in ReadLarge(blobIds, batchSize))
                 {
                     if(columnWithId.Column.Value != null)
                         yield return Tuple.Create(columnWithId.BlobId, columnWithId.Column.Value);
                 }
+                exclusiveStartKey = keys.Last();
             }
         }
 

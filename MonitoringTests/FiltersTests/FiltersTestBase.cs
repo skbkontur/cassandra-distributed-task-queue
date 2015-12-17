@@ -96,7 +96,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             {
                 var taskData = serializer.Deserialize<BetaTaskData>(pair.Value);
                 taskData.IsProcess = false;
-                taskDataStorage.Overwrite(pair.Key, taskMetas[pair.Key].TaskDataId, serializer.Serialize(taskData));
+                taskDataStorage.Overwrite(taskMetas[pair.Key], serializer.Serialize(taskData));
             }
             foreach(var betaTaskId in betaTaskIds)
                 WaitTaskState(betaTaskId, TaskState.Finished);

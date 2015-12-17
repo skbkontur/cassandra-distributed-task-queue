@@ -40,6 +40,20 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return true;
         }
 
+        [CanBeNull]
+        private TaskExceptionInfo TryGetLastExceptionInfo([NotNull] TaskMetaInformation taskMeta)
+        {
+            if(!taskMeta.IsTimeBased())
+                return legacyBlobStorage.Read(taskMeta.Id);
+            var lastExceptionInfoId = taskMeta.GetTaskExceptionInfoIds().LastOrDefault();
+            if(lastExceptionInfoId == null)
+                return null;
+            var lastExceptionInfoBytes = timeBasedBlobStorage.Read(lastExceptionInfoId);
+            if(lastExceptionInfoBytes == null)
+                return null;
+            return serializer.Deserialize<TaskExceptionInfo>(lastExceptionInfoBytes);
+        }
+
         public void Delete([NotNull] TaskMetaInformation taskMeta)
         {
             var timestamp = Timestamp.Now.Ticks;
@@ -51,23 +65,13 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             }
         }
 
-        [CanBeNull]
-        private TaskExceptionInfo TryGetLastExceptionInfo([NotNull] TaskMetaInformation taskMeta)
-        {
-            if(!taskMeta.IsTimeBased())
-                return legacyBlobStorage.Read(taskMeta.Id);
-            var lastExceptionInfoBytes = timeBasedBlobStorage.Read(taskMeta.GetTaskDataId());
-            if(lastExceptionInfoBytes == null)
-                return null;
-            return serializer.Deserialize<TaskExceptionInfo>(lastExceptionInfoBytes);
-        }
-
         [NotNull]
         public Dictionary<string, TaskExceptionInfo[]> Read([NotNull] TaskMetaInformation[] taskMetas)
         {
             var legacyBlobIds = new List<string>();
             var blobIdToTaskIdMap = new Dictionary<BlobId, string>();
-            foreach(var taskMeta in taskMetas.DistinctBy(x => x.Id))
+            var distinctTaskMetas = taskMetas.DistinctBy(x => x.Id).ToArray();
+            foreach(var taskMeta in distinctTaskMetas)
             {
                 if(taskMeta.IsTimeBased())
                 {
@@ -84,7 +88,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                                   ? legacyBlobStorage.Read(legacyBlobIds)
                                   : new Dictionary<string, TaskExceptionInfo>();
             var result = new Dictionary<string, TaskExceptionInfo[]>();
-            foreach(var taskId in taskMetas.Select(x => x.Id))
+            foreach(var taskId in distinctTaskMetas.Select(x => x.Id))
             {
                 TaskExceptionInfo[] taskExceptionInfos;
                 TaskExceptionInfo legacyExceptionInfo;
