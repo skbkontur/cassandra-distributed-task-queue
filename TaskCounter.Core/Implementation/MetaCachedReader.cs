@@ -43,15 +43,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation
 
         private void ReadFromStorage(HashSet<string> notCached, TaskMetaUpdatedEvent[] events, TaskMetaInformation[] result)
         {
-            var taskMetaInformations = handleTasksMetaStorage.GetMetas(notCached.ToArray());
+            var taskMetas = handleTasksMetaStorage.GetMetas(notCached.ToArray());
             lock(stateLock)
             {
                 for(var i = 0; i < events.Length; i++)
                 {
-                    TaskMetaInformation value;
-                    if(taskMetaInformations.TryGetValue(events[i].TaskId, out value))
+                    TaskMetaInformation taskMeta;
+                    if(taskMetas.TryGetValue(events[i].TaskId, out taskMeta))
                     {
-                        var cachedMeta = MergeWithCache(value);
+                        var cachedMeta = MergeWithCache(taskMeta);
                         if(cachedMeta.LastModificationTicks.Value >= events[i].Ticks)
                             result[i] = cachedMeta;
                     }
