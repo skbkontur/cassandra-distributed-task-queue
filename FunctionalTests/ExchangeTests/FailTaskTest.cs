@@ -41,10 +41,10 @@ namespace FunctionalTests.ExchangeTests
             var serializer = new Serializer(new AllPropertiesExtractor());
             var ticksHolder = new TicksHolder(serializer, parameters);
             var globalTime = new GlobalTime(ticksHolder);
-            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
+            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings);
             var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, globalTime, new OldestLiveRecordTicksHolder(ticksHolder));
             var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
-            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
+            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings);
             var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaStorage);
             var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex, Container.Get<ITaskDataRegistry>());
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataStorage, new EmptyRemoteTaskQueueProfiler());

@@ -7,6 +7,7 @@ using GroBuf;
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
@@ -16,12 +17,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskMetaStorage : ITaskMetaStorage
     {
-        public TaskMetaStorage(ICassandraCluster cassandraCluster, ISerializer serializer, string keyspaceName)
+        public TaskMetaStorage(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings)
         {
             this.serializer = serializer;
-            var settings = new TimeBasedBlobStorageSettings(keyspaceName, largeBlobsCfName, regularBlobsCfName);
+            var settings = new TimeBasedBlobStorageSettings(cassandraSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
-            legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, keyspaceName, legacyCfName);
+            legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, cassandraSettings.QueueKeyspace, legacyCfName);
         }
 
         public void Write([NotNull] TaskMetaInformation taskMeta, long timestamp)

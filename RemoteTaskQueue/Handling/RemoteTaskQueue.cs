@@ -43,13 +43,13 @@ namespace RemoteQueue.Handling
             var ticksHolder = new TicksHolder(serializer, parameters);
             GlobalTime = new GlobalTime(ticksHolder);
             TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, GlobalTime, new OldestLiveRecordTicksHolder(ticksHolder));
-            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
+            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings);
             var eventLongRepository = new EventLogRepository(serializer, GlobalTime, parameters, ticksHolder);
             childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaStorage);
             HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskDataRegistry);
-            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
+            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, taskDataStorage, remoteTaskQueueProfiler);
-            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, cassandraSettings.QueueKeyspace);
+            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, cassandraSettings);
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
             RemoteLockCreator = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(parameters.Settings.QueueKeyspace));

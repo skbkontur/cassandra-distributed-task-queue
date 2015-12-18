@@ -9,6 +9,7 @@ using JetBrains.Annotations;
 using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
@@ -17,12 +18,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskExceptionInfoStorage : ITaskExceptionInfoStorage
     {
-        public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, string keyspaceName)
+        public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings)
         {
             this.serializer = serializer;
-            var settings = new TimeBasedBlobStorageSettings(keyspaceName, largeBlobsCfName, regularBlobsCfName);
+            var settings = new TimeBasedBlobStorageSettings(cassandraSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
-            legacyBlobStorage = new LegacyBlobStorage<TaskExceptionInfo>(cassandraCluster, serializer, keyspaceName, legacyCfName);
+            legacyBlobStorage = new LegacyBlobStorage<TaskExceptionInfo>(cassandraCluster, serializer, cassandraSettings.QueueKeyspace, legacyCfName);
         }
 
         public bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out BlobId newExceptionInfoId)
