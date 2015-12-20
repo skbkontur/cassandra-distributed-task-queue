@@ -18,7 +18,7 @@ namespace RemoteQueue.Handling
         }
 
         [NotNull]
-        public sealed override string Queue(TimeSpan delay)
+        public override sealed string Queue(TimeSpan delay)
         {
             using(new RemoteTaskInitialTraceContext(task.Meta))
             {
