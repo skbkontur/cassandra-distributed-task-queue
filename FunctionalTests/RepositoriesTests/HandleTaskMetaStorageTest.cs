@@ -10,6 +10,8 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
 
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+
 namespace FunctionalTests.RepositoriesTests
 {
     public class HandleTaskMetaStorageTest : FunctionalTestBaseWithoutServices
@@ -22,6 +24,11 @@ namespace FunctionalTests.RepositoriesTests
             handleTasksMetaStorage = Container.Get<IHandleTasksMetaStorage>();
         }
 
+        private static string NewTaskId()
+        {
+            return TimeGuid.NowGuid().ToGuid().ToString();
+        }
+
         private TaskIndexShardKey TaskIndexShardKey(string taskName, TaskState taskState)
         {
             return new TaskIndexShardKey(taskDataRegistry.GetTaskTopic(taskName), taskState);
@@ -31,7 +38,7 @@ namespace FunctionalTests.RepositoriesTests
         public void StressTest()
         {
             var nowTicks = DateTime.UtcNow.Ticks;
-            var meta = new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
+            var meta = new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.New,
                     MinimalStartTicks = nowTicks + 1
@@ -48,7 +55,7 @@ namespace FunctionalTests.RepositoriesTests
         public void StressTest2()
         {
             var nowTicks = DateTime.UtcNow.Ticks;
-            var metas = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.Select(x => new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
+            var metas = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.Select(x => new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.New,
                     MinimalStartTicks = nowTicks + x
@@ -70,7 +77,7 @@ namespace FunctionalTests.RepositoriesTests
         public void SimpleTest()
         {
             var ticks = DateTime.UtcNow.Ticks;
-            var id = Guid.NewGuid().ToString();
+            var id = NewTaskId();
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id)
                 {
                     State = TaskState.New,
@@ -90,12 +97,12 @@ namespace FunctionalTests.RepositoriesTests
         public void DifferentStatesTest()
         {
             var ticks = DateTime.UtcNow.Ticks;
-            handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
+            handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.InProcess,
                     MinimalStartTicks = ticks
                 });
-            handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", Guid.NewGuid().ToString())
+            handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.Finished,
                     MinimalStartTicks = ticks
@@ -108,12 +115,12 @@ namespace FunctionalTests.RepositoriesTests
         public void DifferentNamesTest()
         {
             var ticks = DateTime.UtcNow.Ticks;
-            handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName1", Guid.NewGuid().ToString())
+            handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName1", NewTaskId())
                 {
                     State = TaskState.New,
                     MinimalStartTicks = ticks
                 });
-            handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName2", Guid.NewGuid().ToString())
+            handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName2", NewTaskId())
                 {
                     State = TaskState.New,
                     MinimalStartTicks = ticks
@@ -126,10 +133,10 @@ namespace FunctionalTests.RepositoriesTests
         public void ManyTasksTest()
         {
             var ticks = DateTime.UtcNow.Ticks;
-            var id1 = Guid.NewGuid().ToString();
-            var id2 = Guid.NewGuid().ToString();
-            var id3 = Guid.NewGuid().ToString();
-            var id4 = Guid.NewGuid().ToString();
+            var id1 = NewTaskId();
+            var id2 = NewTaskId();
+            var id3 = NewTaskId();
+            var id4 = NewTaskId();
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id1)
                 {
                     State = TaskState.New,
@@ -160,7 +167,7 @@ namespace FunctionalTests.RepositoriesTests
         public void TaskWithSameIdsTest()
         {
             var ticks = DateTime.UtcNow.Ticks;
-            var id = Guid.NewGuid().ToString();
+            var id = NewTaskId();
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id)
                 {
                     State = TaskState.New,
