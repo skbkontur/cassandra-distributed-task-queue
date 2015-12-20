@@ -61,7 +61,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
                 {
                     new ColumnFamily
                         {
-                            Name = TestCassandraCounterBlobRepository.columnFamilyName,
+                            Name = TestCounterRepository.CfName,
                         }
                 }).ToArray());
         }

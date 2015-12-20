@@ -74,7 +74,7 @@ namespace FunctionalTests
                 {
                     new ColumnFamily
                         {
-                            Name = TestCassandraCounterBlobRepository.columnFamilyName,
+                            Name = TestCounterRepository.CfName,
                         },
                     new ColumnFamily
                         {

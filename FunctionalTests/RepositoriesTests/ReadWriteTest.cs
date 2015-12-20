@@ -23,7 +23,7 @@ namespace FunctionalTests.RepositoriesTests
             base.SetUp();
             settings = Container.Get<ICassandraSettings>();
             cassandraCluster = Container.Get<ICassandraCluster>();
-            connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, TestCassandraCounterBlobRepository.columnFamilyName);
+            connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, TestCounterRepository.CfName);
             logger = LogManager.GetLogger(typeof(ReadWriteTest));
         }
 

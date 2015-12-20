@@ -50,7 +50,7 @@ namespace FunctionalTests.ExchangeTests
             handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataStorage, new EmptyRemoteTaskQueueProfiler());
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
             var remoteLockCreator = new RemoteLocker(new CassandraRemoteLockImplementation(parameters.CassandraCluster, serializer, remoteLockImplementationSettings), new RemoteLockerMetrics(parameters.Settings.QueueKeyspace));
-            testCounterRepository = new TestCounterRepository(new TestCassandraCounterBlobRepository(cassandraCluster, serializer, cassandraSettings.QueueKeyspace), remoteLockCreator);
+            testCounterRepository = new TestCounterRepository(cassandraCluster, serializer, cassandraSettings, remoteLockCreator);
             taskQueue = Container.Get<IRemoteTaskQueue>();
         }
 

@@ -86,7 +86,6 @@
     <Compile Include="UserClasses\MonitoringTestTaskData\SlowTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\DeltaTaskHandler.cs" />
     <Compile Include="UserClasses\SimpleTaskHandler.cs" />
-    <Compile Include="UserClasses\TestCassandraCounterBlobRepository.cs" />
     <Compile Include="UserClasses\TestCounterRepository.cs" />
   </ItemGroup>
   <ItemGroup>
