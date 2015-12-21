@@ -60,7 +60,7 @@ namespace FunctionalTests.ExchangeTests
             var taskId = AddTask(9);
             try
             {
-                Wait(new[] {taskId}, 12345);
+                Wait(new[] {taskId}, 1000);
                 throw new Exception("Wait не должен отработать");
             }
             catch(TooLateException)
@@ -97,24 +97,15 @@ namespace FunctionalTests.ExchangeTests
             Wait(ids, 15000);
         }
 
-        [Test, Ignore("Стресс-тест")]
-        public void TestStress()
-        {
-            for(var i = 0; i < 1000; i++)
-                TestManyFailTask();
-        }
-
-        [Test, Ignore("Стресс-тест-много-задач")]
+        [Test]
+        [Repeat(10)]
         public void TestStressManyTasks()
         {
-            for(var i = 0; i < 10; i++)
-            {
-                const int count = 200;
-                var ids = new string[count];
-                for(var j = 0; j < count; j++)
-                    ids[j] = AddTask(15);
-                Wait(ids, 90000);
-            }
+            const int count = 200;
+            var ids = new string[count];
+            for (var j = 0; j < count; j++)
+                ids[j] = AddTask(10);
+            Wait(ids, 90000);
         }
 
         private string AddTask(int attempts)
@@ -125,21 +116,14 @@ namespace FunctionalTests.ExchangeTests
             return task.Id;
         }
 
-        private void Wait(string[] taskIds, int ms = 5000)
+        private void Wait(string[] taskIds, int timeout = 5000)
         {
             var current = 0;
             while(true)
             {
-                var fail = false;
-                for(var i = 0; i < taskIds.Length; i++)
-                {
-                    var task = handleTaskCollection.GetTask(taskIds[i]);
-                    if(task.Meta.State != TaskState.Fatal)
-                        fail = true;
-                }
-
+                var fail = handleTaskCollection.GetTasks(taskIds).Any(x => x.Meta.State != TaskState.Fatal);
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
-                Console.WriteLine(Now() + " CurrentValues: " + String.Join(", ", attempts));
+                Console.WriteLine(Now() + " CurrentValues: " + string.Join(", ", attempts));
                 if(!fail)
                 {
                     for(var i = 0; i < attempts.Length; i++)
@@ -153,10 +137,11 @@ namespace FunctionalTests.ExchangeTests
                     break;
                 }
 
+                var sleepInterval = Math.Max(500, timeout / 10);
                 Thread.Sleep(sleepInterval);
                 current += sleepInterval;
-                if(current > ms)
-                    throw new TooLateException("Время ожидания превысило {0} мс.", ms);
+                if(current > timeout)
+                    throw new TooLateException("Время ожидания превысило {0} мс.", timeout);
             }
         }
 
@@ -164,8 +149,6 @@ namespace FunctionalTests.ExchangeTests
         {
             return DateTime.UtcNow.ToString("dd.MM.yyyy mm:hh:ss.ffff");
         }
-
-        private const int sleepInterval = 200;
 
         private IHandleTaskCollection handleTaskCollection;
         private ITestCounterRepository testCounterRepository;
