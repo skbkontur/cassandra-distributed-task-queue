@@ -19,6 +19,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         public void DeleteAll()
         {
+            elasticsearchClient.ClearScroll("_all").ProcessResponse();
+
             elasticsearchClient.IndicesDelete(settings.LastTicksIndex).ProcessResponse(200, 404);
             //todo bug разрушает индексы
             ////elasticsearchClient.IndicesDelete(AllIndexWildcard).ProcessResponse(200, 404);
