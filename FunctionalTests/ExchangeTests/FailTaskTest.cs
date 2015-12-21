@@ -105,7 +105,7 @@ namespace FunctionalTests.ExchangeTests
         [Repeat(10)]
         public void TestStressManyTasks()
         {
-            const int count = 200;
+            const int count = 100;
             var ids = new string[count];
             for(var j = 0; j < count; j++)
                 ids[j] = AddTask(10);
