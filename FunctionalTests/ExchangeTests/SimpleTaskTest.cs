@@ -90,8 +90,9 @@ namespace FunctionalTests.ExchangeTests
             Wait(new[] {taskId}, 2);
             Thread.Sleep(2000);
             Assert.AreEqual(2, testCounterRepository.GetCounter(taskId));
-            Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
-            Assert.AreEqual(2, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.Attempts);
+            var taskMeta = taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context;
+            Assert.AreEqual(TaskState.Finished, taskMeta.State);
+            Assert.AreEqual(2, taskMeta.Attempts);
             Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskIndexShardKey>
                 {
                     {taskId, TaskIndexShardKey("SimpleTaskData", TaskState.Finished)}
@@ -104,7 +105,7 @@ namespace FunctionalTests.ExchangeTests
             while(true)
             {
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
-                Console.WriteLine(Now() + " CurrentValues: " + String.Join(", ", attempts));
+                Console.WriteLine(Now() + " CurrentValues: " + string.Join(", ", attempts));
                 var minValue = attempts.Min();
                 if(minValue >= criticalValue)
                     break;

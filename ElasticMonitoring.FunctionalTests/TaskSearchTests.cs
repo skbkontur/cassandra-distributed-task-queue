@@ -11,7 +11,6 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.TestEnvironments.Container;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
@@ -30,7 +29,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
      WithRemoteLock("remoteLock")]
     public class TaskSearchTests
     {
-        [ContainerSetUp]
+        [EdiSetUp]
         public void SetUp()
         {
             WaitFor(() =>
