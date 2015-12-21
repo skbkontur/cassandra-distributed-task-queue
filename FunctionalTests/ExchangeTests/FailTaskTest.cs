@@ -126,10 +126,11 @@ namespace FunctionalTests.ExchangeTests
             var sleepInterval = Math.Max(500, timeout / 10);
             while(true)
             {
+                var allTasksAreFinished = handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == TaskState.Fatal);
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
                 Log.For(this).InfoFormat("CurrentCounterValues: {0}", string.Join(", ", attempts));
                 var notFinishedTaskIds = taskIds.EquiZip(attempts, (taskId, attempt) => new {taskId, attempt}).Where(x => x.attempt > 0).Select(x => x.taskId).ToArray();
-                if(handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == TaskState.Fatal))
+                if(allTasksAreFinished)
                 {
                     Assert.That(notFinishedTaskIds, Is.Empty);
                     Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey("FakeFailTaskData", TaskState.Fatal)));
