@@ -22,13 +22,13 @@ namespace ExchangeService.UserClasses
                 Log.For(this).InfoFormat("Finished task: {0}", Context.Id);
                 return Fatal(new Exception());
             }
-            var rerunInterval = Math.Min(MinDelayBeforeTaskRerunInTicks * Context.Attempts * Context.Attempts, MaxDelayBeforeTaskRerunInTicks);
-            Log.For(this).InfoFormat("Rerun task: {0}, Counter: {1}", Context.Id, counter);
-            return RerunAfterError(new Exception(), TimeSpan.FromTicks(rerunInterval));
+            var rerunInterval = TimeSpan.FromTicks(Math.Min(minDelayBeforeTaskRerun.Ticks * Context.Attempts * Context.Attempts, maxDelayBeforeTaskRerun.Ticks));
+            Log.For(this).InfoFormat("Rerun task: {0}, Counter: {1}, RerunInterval: {2}", Context.Id, counter, rerunInterval);
+            return RerunAfterError(new Exception(), rerunInterval);
         }
 
-        private readonly long MinDelayBeforeTaskRerunInTicks = TimeSpan.FromMilliseconds(30).Ticks;
-        private readonly long MaxDelayBeforeTaskRerunInTicks = TimeSpan.FromSeconds(10).Ticks;
+        private readonly TimeSpan minDelayBeforeTaskRerun = TimeSpan.FromMilliseconds(30);
+        private readonly TimeSpan maxDelayBeforeTaskRerun = TimeSpan.FromSeconds(10);
         private readonly ITestCounterRepository testCounterRepository;
     }
 }
