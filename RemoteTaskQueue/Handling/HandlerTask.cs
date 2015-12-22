@@ -88,6 +88,7 @@ namespace RemoteQueue.Handling
                 using(remoteLock)
                     result = ProcessTask();
                 logger.InfoFormat("Завершили выполнение задачи '{0}' с результатом '{1}'. Отпустили блокировку ('{2}').", taskMeta.Id, result, taskIndexRecord.TaskId);
+                return result;
             }
             finally
             {
