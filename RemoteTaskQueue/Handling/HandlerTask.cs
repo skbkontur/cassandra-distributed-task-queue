@@ -84,13 +84,18 @@ namespace RemoteQueue.Handling
                     logger.InfoFormat("Не смогли взять блокировку на задачу '{0}', пропускаем её.", taskIndexRecord.TaskId);
                     return LocalTaskProcessingResult.Undefined;
                 }
+                LocalTaskProcessingResult result;
                 using(remoteLock)
-                    return ProcessTask();
+                    result = ProcessTask();
+                logger.InfoFormat("Завершили выполнение задачи '{0}' с результатом '{1}'. Отпустили блокировку ('{2}').", taskMeta.Id, result, taskIndexRecord.TaskId);
             }
             finally
             {
                 if(taskGroupRemoteLock != null)
+                {
                     taskGroupRemoteLock.Dispose();
+                    logger.InfoFormat("Отпустили блокировку '{0}' в процессе завершения задачи '{1}'.", taskMeta.TaskGroupLock, taskMeta.Id);
+                }
             }
         }
 
