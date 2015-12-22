@@ -137,7 +137,7 @@ namespace RemoteQueue.Handling
             var nowTicks = DateTime.UtcNow.Ticks;
             if(oldMeta.MinimalStartTicks != 0 && (oldMeta.MinimalStartTicks > nowTicks))
             {
-                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.", oldMeta.MinimalStartTicks, oldMeta.Id, nowTicks);
+                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем nowTicks ({2}), поэтому не берем задачу в обработку, ждем.", oldMeta.MinimalStartTicks, oldMeta.Id, nowTicks);
                 return LocalTaskProcessingResult.Undefined;
             }
 
