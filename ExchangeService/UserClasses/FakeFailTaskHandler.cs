@@ -3,6 +3,7 @@
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace ExchangeService.UserClasses
 {
@@ -15,31 +16,19 @@ namespace ExchangeService.UserClasses
 
         protected override HandleResult HandleTask(FakeFailTaskData taskData)
         {
-            var decrementCounter = testCounterRepository.DecrementCounter(Context.Id);
-            Log(decrementCounter.ToString() + "\n");
-            if(decrementCounter == 0)
+            var counter = testCounterRepository.DecrementCounter(Context.Id);
+            if (counter == 0)
             {
-                Log("Finish\n");
+                Log.For(this).InfoFormat("Finished task: {0}", Context.Id);
                 return Fatal(new Exception());
             }
-            var now = DateTime.UtcNow.Ticks;
-            var rerunInterval = GetMinimalStartTicks(Context.Attempts, now) - now;
-            Log("Rerun\n");
-            return RerunAfterError(new Exception(), TimeSpan.FromTicks(rerunInterval));
+            var rerunInterval = TimeSpan.FromTicks(Math.Min(minDelayBeforeTaskRerun.Ticks * Context.Attempts * Context.Attempts, maxDelayBeforeTaskRerun.Ticks));
+            Log.For(this).InfoFormat("Rerun task: {0}, Counter: {1}, RerunInterval: {2}", Context.Id, counter, rerunInterval);
+            return RerunAfterError(new Exception(), rerunInterval);
         }
 
-        private long GetMinimalStartTicks(int attempts, long nowTicks)
-        {
-            return nowTicks + Math.Min(MinDelayBeforeTaskRerunInTicks * attempts * attempts, MaxDelayBeforeTaskRerunInTicks);
-        }
-
-        private void Log(string text)
-        {
-//            File.AppendAllText(@"c:\logs\" + Context.Id + ".txt", text);
-        }
-
-        private readonly long MinDelayBeforeTaskRerunInTicks = TimeSpan.FromSeconds(0.1).Ticks;
-        private readonly long MaxDelayBeforeTaskRerunInTicks = TimeSpan.FromMinutes(30).Ticks;
+        private readonly TimeSpan minDelayBeforeTaskRerun = TimeSpan.FromMilliseconds(30);
+        private readonly TimeSpan maxDelayBeforeTaskRerun = TimeSpan.FromSeconds(10);
         private readonly ITestCounterRepository testCounterRepository;
     }
 }
