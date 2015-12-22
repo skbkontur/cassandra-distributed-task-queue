@@ -85,8 +85,8 @@ namespace RemoteQueue.Cassandra.Entities
 
         public override string ToString()
         {
-            return string.Format("[Name: {0}, Id: {1}, Attempts: {2}, ParentTaskId: {3}, TaskGroupLock: {4}, State: {5}, TraceId: {6}, TaskDataId: {7}, TaskExceptionInfoIds: {8}]",
-                                 Name, Id, Attempts, ParentTaskId, TaskGroupLock, State, TraceId, TaskDataId, TaskExceptionInfoIds == null ? "NONE" : string.Join("; ", TaskExceptionInfoIds.Select(x => x.ToString())));
+            return string.Format("[Name: {0}, Id: {1}, State: {2}, Attempts: {3}, MinimalStartTicks: {4}, ParentTaskId: {5}, TaskGroupLock: {6}, TraceId: {7}, TaskDataId: {8}, TaskExceptionInfoIds: {9}]",
+                                 Name, Id, State, Attempts, MinimalStartTicks, ParentTaskId, TaskGroupLock, TraceId, TaskDataId, TaskExceptionInfoIds == null ? "NONE" : string.Join("; ", TaskExceptionInfoIds.Select(x => x.ToString())));
         }
 
         private byte[] snapshot;

@@ -68,7 +68,7 @@ namespace RemoteQueue.Handling
             var nowTicks = DateTime.UtcNow.Ticks;
             if(taskMeta.MinimalStartTicks != 0 && (taskMeta.MinimalStartTicks > nowTicks))
             {
-                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем  startTicks ({2}), поэтому не берем задачу в обработку, ждем.", taskMeta.MinimalStartTicks, taskMeta.Id, nowTicks);
+                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем nowTicks ({2}), поэтому не берем задачу в обработку, ждем.", taskMeta.MinimalStartTicks, taskMeta.Id, nowTicks);
                 return LocalTaskProcessingResult.Undefined;
             }
             IRemoteLock taskGroupRemoteLock = null;
@@ -96,14 +96,14 @@ namespace RemoteQueue.Handling
         }
 
         [CanBeNull]
-        private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState state)
+        private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState newState)
         {
             var newMeta = allFieldsSerializer.Copy(oldMeta);
             newMeta.MinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
             newMeta.StartExecutingTicks = startExecutingTicks;
             newMeta.FinishExecutingTicks = finishExecutingTicks;
             newMeta.Attempts = attempts;
-            newMeta.State = state;
+            newMeta.State = newState;
             try
             {
                 handleTasksMetaStorage.AddMeta(newMeta);
