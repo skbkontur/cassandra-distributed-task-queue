@@ -107,7 +107,7 @@ namespace FunctionalTests.ExchangeTests
         {
             const int count = 100;
             var ids = new string[count];
-            for (var j = 0; j < count; j++)
+            for(var j = 0; j < count; j++)
                 ids[j] = AddTask(10);
             Wait(ids, 90000);
         }
@@ -124,19 +124,19 @@ namespace FunctionalTests.ExchangeTests
         {
             var sw = Stopwatch.StartNew();
             var sleepInterval = Math.Max(500, timeout / 10);
-            while (true)
+            while(true)
             {
                 var allTasksAreFinished = handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == TaskState.Fatal);
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
                 Log.For(this).InfoFormat("CurrentCounterValues: {0}", string.Join(", ", attempts));
-                var notFinishedTaskIds = taskIds.EquiZip(attempts, (taskId, attempt) => new { taskId, attempt }).Where(x => x.attempt > 0).Select(x => x.taskId).ToArray();
-                if (allTasksAreFinished)
+                var notFinishedTaskIds = taskIds.EquiZip(attempts, (taskId, attempt) => new {taskId, attempt}).Where(x => x.attempt > 0).Select(x => x.taskId).ToArray();
+                if(allTasksAreFinished)
                 {
                     Assert.That(notFinishedTaskIds, Is.Empty);
                     Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey("FakeFailTaskData", TaskState.Fatal)));
                     break;
                 }
-                if (sw.ElapsedMilliseconds > timeout)
+                if(sw.ElapsedMilliseconds > timeout)
                     throw new TooLateException("Время ожидания превысило {0} мс. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
                 Thread.Sleep(sleepInterval);
             }
