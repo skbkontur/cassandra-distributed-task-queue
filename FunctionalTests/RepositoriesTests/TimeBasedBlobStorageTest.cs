@@ -97,7 +97,7 @@ namespace FunctionalTests.RepositoriesTests
             var id1 = RegularBlobId();
             var id2 = RegularBlobId();
             var id3 = LargeBlobId();
-            var allKeys = new[] {id1, id2, id3};
+            var allKeys = new[] {id1, id2, id2, id3, id3};
 
             Assert.That(timeBasedBlobStorage.Read(new BlobId[0]), Is.Empty);
             Assert.That(timeBasedBlobStorage.Read(allKeys), Is.Empty);
@@ -119,6 +119,26 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(result[id1].Single(), Is.EqualTo(1));
             Assert.That(result[id2].Single(), Is.EqualTo(2));
             Assert.That(result[id3].Single(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void Read_MultipleKeys_DifferentRows()
+        {
+            var id1 = RegularBlobId(TimeGuid.NewGuid(new Timestamp(DateTime.UtcNow.Add(TimeSpan.FromDays(1)))));
+            var id2 = RegularBlobId(TimeGuid.NewGuid(new Timestamp(DateTime.UtcNow.Add(TimeSpan.FromDays(-1)))));
+            var id3 = LargeBlobId();
+            var id4 = LargeBlobId();
+            var allKeys = new[] { id1, id2, id3, id4 };
+            WriteByte(id1, 1);
+            WriteByte(id2, 2);
+            WriteByte(id3, 3);
+            WriteByte(id4, 4);
+            var result = timeBasedBlobStorage.Read(allKeys);
+            Assert.That(result.Count, Is.EqualTo(4));
+            Assert.That(result[id1].Single(), Is.EqualTo(1));
+            Assert.That(result[id2].Single(), Is.EqualTo(2));
+            Assert.That(result[id3].Single(), Is.EqualTo(3));
+            Assert.That(result[id4].Single(), Is.EqualTo(4));
         }
 
         [Test]
