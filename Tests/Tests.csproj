@@ -51,6 +51,7 @@
     <Compile Include="TaskCounterTest.cs" />
     <Compile Include="TaskDataRegistryRefletionHelpersTest.cs" />
     <Compile Include="TaskDataRegistryTest.cs" />
+    <Compile Include="TaskMetaInformationTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">

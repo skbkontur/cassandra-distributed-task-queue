@@ -5,11 +5,13 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public interface ITaskExceptionInfoStorage
     {
-        bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out BlobId newExceptionInfoId);
+        bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out List<TimeGuid> newExceptionInfoIds);
 
         void Delete([NotNull] TaskMetaInformation taskMeta);
 

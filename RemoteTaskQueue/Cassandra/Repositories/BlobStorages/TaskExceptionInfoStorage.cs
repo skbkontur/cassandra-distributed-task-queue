@@ -12,7 +12,9 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
@@ -21,23 +23,26 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings)
         {
             this.serializer = serializer;
-            var settings = new TimeBasedBlobStorageSettings(cassandraSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
-            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
+            timeBasedBlobStorage = new SingleParttionTimeBasedBlobStorage(new ColumnFamilyFullName(cassandraSettings.QueueKeyspace, timeBasedCfName), cassandraCluster);
             legacyBlobStorage = new LegacyBlobStorage<TaskExceptionInfo>(cassandraCluster, serializer, cassandraSettings.QueueKeyspace, legacyCfName);
         }
 
-        public bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out BlobId newExceptionInfoId)
+        public bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out List<TimeGuid> newExceptionInfoIds)
         {
-            newExceptionInfoId = null;
+            newExceptionInfoIds = null;
             var newExceptionInfo = new TaskExceptionInfo(exception);
             var lastExceptionInfo = TryGetLastExceptionInfo(taskMeta);
             if(lastExceptionInfo != null && lastExceptionInfo.ExceptionMessageInfo == newExceptionInfo.ExceptionMessageInfo)
                 return false;
             var newExceptionInfoBytes = serializer.Serialize(newExceptionInfo);
-            newExceptionInfoId = TimeBasedBlobStorage.GenerateNewBlobId(newExceptionInfoBytes.Length);
-            var timestamp = newExceptionInfoId.Id.GetTimestamp().Ticks;
+            var newExceptionInfoId = TimeGuid.NowGuid();
+            var timestamp = newExceptionInfoId.GetTimestamp().Ticks;
+            TimeGuid oldExceptionInfoId;
+            newExceptionInfoIds = taskMeta.AddExceptionInfoId(newExceptionInfoId, out oldExceptionInfoId);
             legacyBlobStorage.Write(taskMeta.Id, newExceptionInfo, timestamp);
-            timeBasedBlobStorage.Write(newExceptionInfoId, newExceptionInfoBytes, timestamp);
+            timeBasedBlobStorage.Write(taskMeta.Id, newExceptionInfoId, newExceptionInfoBytes, timestamp);
+            if(oldExceptionInfoId != null)
+                timeBasedBlobStorage.Delete(taskMeta.Id, oldExceptionInfoId, timestamp);
             return true;
         }
 
@@ -49,7 +54,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             var lastExceptionInfoId = taskMeta.GetTaskExceptionInfoIds().LastOrDefault();
             if(lastExceptionInfoId == null)
                 return null;
-            var lastExceptionInfoBytes = timeBasedBlobStorage.Read(lastExceptionInfoId);
+            var lastExceptionInfoBytes = timeBasedBlobStorage.Read(taskMeta.Id, lastExceptionInfoId);
             if(lastExceptionInfoBytes == null)
                 return null;
             return serializer.Deserialize<TaskExceptionInfo>(lastExceptionInfoBytes);
@@ -62,7 +67,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             if(taskMeta.IsTimeBased())
             {
                 foreach(var blobId in taskMeta.GetTaskExceptionInfoIds())
-                    timeBasedBlobStorage.Delete(blobId, timestamp);
+                    timeBasedBlobStorage.Delete(taskMeta.Id, blobId, timestamp);
             }
         }
 
@@ -70,21 +75,19 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public Dictionary<string, TaskExceptionInfo[]> Read([NotNull] TaskMetaInformation[] taskMetas)
         {
             var legacyBlobIds = new List<string>();
-            var blobIdToTaskIdMap = new Dictionary<BlobId, string>();
+            var timeBasedBlobsByTaskId = new Dictionary<string, Dictionary<TimeGuid, byte[]>>();
             var distinctTaskMetas = taskMetas.DistinctBy(x => x.Id).ToArray();
             foreach(var taskMeta in distinctTaskMetas)
             {
                 if(taskMeta.IsTimeBased())
                 {
-                    foreach(var blobId in taskMeta.GetTaskExceptionInfoIds())
-                        blobIdToTaskIdMap.Add(blobId, taskMeta.Id);
+                    var columnIds = taskMeta.GetTaskExceptionInfoIds().ToArray();
+                    var blobs = timeBasedBlobStorage.Read(taskMeta.Id, columnIds);
+                    timeBasedBlobsByTaskId.Add(taskMeta.Id, blobs);
                 }
                 else
                     legacyBlobIds.Add(taskMeta.Id);
             }
-            var timeBasedBlobs = timeBasedBlobStorage.Read(blobIdToTaskIdMap.Keys.ToArray())
-                                                     .GroupBy(x => blobIdToTaskIdMap[x.Key])
-                                                     .ToDictionary(x => x.Key);
             var legacyBlobs = legacyBlobIds.Any()
                                   ? legacyBlobStorage.Read(legacyBlobIds)
                                   : new Dictionary<string, TaskExceptionInfo>();
@@ -93,8 +96,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             {
                 TaskExceptionInfo[] taskExceptionInfos;
                 TaskExceptionInfo legacyExceptionInfo;
-                IGrouping<string, KeyValuePair<BlobId, byte[]>> timeBasedExceptionInfos;
-                if(timeBasedBlobs.TryGetValue(taskId, out timeBasedExceptionInfos))
+                Dictionary<TimeGuid, byte[]> timeBasedExceptionInfos;
+                if(timeBasedBlobsByTaskId.TryGetValue(taskId, out timeBasedExceptionInfos))
                     taskExceptionInfos = timeBasedExceptionInfos.Select(x => serializer.Deserialize<TaskExceptionInfo>(x.Value)).ToArray();
                 else if(legacyBlobs.TryGetValue(taskId, out legacyExceptionInfo))
                     taskExceptionInfos = new[] {legacyExceptionInfo};
@@ -108,15 +111,14 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         [NotNull]
         public static string[] GetColumnFamilyNames()
         {
-            return new[] {legacyCfName, largeBlobsCfName, regularBlobsCfName};
+            return new[] {legacyCfName, timeBasedCfName};
         }
 
         private const string legacyCfName = "taskExceptionInfo";
-        private const string largeBlobsCfName = "largeTaskExceptionInfos";
-        private const string regularBlobsCfName = "regularTaskExceptionInfos";
+        private const string timeBasedCfName = "timeBasedTaskExceptionInfos";
 
         private readonly ISerializer serializer;
-        private readonly TimeBasedBlobStorage timeBasedBlobStorage;
+        private readonly SingleParttionTimeBasedBlobStorage timeBasedBlobStorage;
         private readonly LegacyBlobStorage<TaskExceptionInfo> legacyBlobStorage;
     }
 }

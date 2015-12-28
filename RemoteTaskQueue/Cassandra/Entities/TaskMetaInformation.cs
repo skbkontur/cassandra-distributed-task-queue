@@ -28,7 +28,7 @@ namespace RemoteQueue.Cassandra.Entities
         public BlobId TaskDataId { get; set; }
 
         [CanBeNull]
-        public List<BlobId> TaskExceptionInfoIds { get; private set; }
+        public List<TimeGuid> TaskExceptionInfoIds { get; set; }
 
         public long Ticks { get; set; }
         public long MinimalStartTicks { get; set; }
@@ -57,17 +57,25 @@ namespace RemoteQueue.Cassandra.Entities
         }
 
         [NotNull]
-        internal List<BlobId> GetTaskExceptionInfoIds()
+        internal List<TimeGuid> GetTaskExceptionInfoIds()
         {
-            return TaskExceptionInfoIds ?? new List<BlobId>();
+            return TaskExceptionInfoIds ?? new List<TimeGuid>();
         }
 
-        internal void AddTaskExceptionInfoId([NotNull] BlobId taskExceptionInfoId)
+        [NotNull]
+        internal List<TimeGuid> AddExceptionInfoId([NotNull] TimeGuid newExceptionInfoId, [CanBeNull] out TimeGuid oldExceptionInfoId)
         {
-            if(TaskExceptionInfoIds != null)
-                TaskExceptionInfoIds.Add(taskExceptionInfoId);
+            var taskExceptionInfoIds = GetTaskExceptionInfoIds();
+            if(taskExceptionInfoIds.Count < TaskExceptionIfoIdsLimit)
+                oldExceptionInfoId = null;
             else
-                TaskExceptionInfoIds = new List<BlobId> {taskExceptionInfoId};
+            {
+                const int oldExceptionInfoIdIndex = TaskExceptionIfoIdsLimit / 2;
+                oldExceptionInfoId = taskExceptionInfoIds[oldExceptionInfoIdIndex];
+                taskExceptionInfoIds = taskExceptionInfoIds.Take(oldExceptionInfoIdIndex).Concat(taskExceptionInfoIds.Skip(oldExceptionInfoIdIndex + 1)).ToList();
+            }
+            taskExceptionInfoIds.Add(newExceptionInfoId);
+            return taskExceptionInfoIds;
         }
 
         internal void MakeSnapshot()
@@ -88,6 +96,8 @@ namespace RemoteQueue.Cassandra.Entities
             return string.Format("[Name: {0}, Id: {1}, State: {2}, Attempts: {3}, MinimalStartTicks: {4}, ParentTaskId: {5}, TaskGroupLock: {6}, TraceId: {7}, TaskDataId: {8}, TaskExceptionInfoIds: {9}]",
                                  Name, Id, State, Attempts, MinimalStartTicks, ParentTaskId, TaskGroupLock, TraceId, TaskDataId, TaskExceptionInfoIds == null ? "NONE" : string.Join("; ", TaskExceptionInfoIds.Select(x => x.ToString())));
         }
+
+        public const int TaskExceptionIfoIdsLimit = 201;
 
         private byte[] snapshot;
     }
