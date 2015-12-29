@@ -12,9 +12,9 @@ using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
-    public class SingleParttionTimeBasedBlobStorage
+    public class SinglePartitionTimeBasedBlobStorage
     {
-        public SingleParttionTimeBasedBlobStorage(ColumnFamilyFullName cfName, ICassandraCluster cassandraCluster)
+        public SinglePartitionTimeBasedBlobStorage(ColumnFamilyFullName cfName, ICassandraCluster cassandraCluster)
         {
             this.cfName = cfName;
             this.cassandraCluster = cassandraCluster;

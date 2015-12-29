@@ -14,13 +14,13 @@ using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace FunctionalTests.RepositoriesTests
 {
-    public class SingleParttionTimeBasedBlobStorageTest : BlobStorageFunctionalTestBase
+    public class SinglePartitionTimeBasedBlobStorageTest : BlobStorageFunctionalTestBase
     {
         [SetUp]
         public void SetUp()
         {
             var cfName = new ColumnFamilyFullName(Container.Get<ICassandraSettings>().QueueKeyspace, timeBasedCfName);
-            timeBasedBlobStorage = new SingleParttionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>());
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>());
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
@@ -109,8 +109,8 @@ namespace FunctionalTests.RepositoriesTests
             return bytes.Single();
         }
 
-        private const string timeBasedCfName = "SingleParttionTimeBasedBlobStorageTestCf";
+        private const string timeBasedCfName = "SinglePartitionTimeBasedBlobStorageTestCf";
 
-        private SingleParttionTimeBasedBlobStorage timeBasedBlobStorage;
+        private SinglePartitionTimeBasedBlobStorage timeBasedBlobStorage;
     }
 }

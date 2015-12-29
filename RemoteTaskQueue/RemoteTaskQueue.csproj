@@ -84,7 +84,7 @@
     <Compile Include="Cassandra\Primitives\IColumnFamilyRepositoryParameters.cs" />
     <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobId.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\SingleParttionTimeBasedBlobStorage.cs" />
+    <Compile Include="Cassandra\Repositories\BlobStorages\SinglePartitionTimeBasedBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskDataStorage.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\ITaskExceptionInfoStorage.cs" />
