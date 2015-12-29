@@ -203,11 +203,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             return result.ToArray();
         }
 
-        private static string ToIsoTime(DateTime dt)
-        {
-            return dt.ToUniversalTime().ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK");
-        }
-
         private string QueueTask<T>(T taskData) where T : ITaskData
         {
             var task = remoteTaskQueue.CreateTask<T>(taskData);
