@@ -58,10 +58,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             var columnNameToIdMap = columnIds.Distinct().ToDictionary(FormatColumnName, x => x);
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(cfName.KeyspaceName, cfName.ColumnFamilyName);
             var columns = connection.GetColumns(rowKey, columnNameToIdMap.Keys.ToArray());
-            return columns
-                .Select(column => new ColumnWithId {ColumnId = columnNameToIdMap[column.Name], Column = column})
-                .Where(x => x.Column.Value != null)
-                .ToDictionary(x => x.ColumnId, x => x.Column.Value);
+            return columns.Select(x => new ColumnWithId {ColumnId = columnNameToIdMap[x.Name], Column = x})
+                          .Where(x => x.Column.Value != null)
+                          .ToDictionary(x => x.ColumnId, x => x.Column.Value);
         }
 
         [NotNull]

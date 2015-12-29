@@ -128,7 +128,7 @@ namespace FunctionalTests.RepositoriesTests
             var id2 = RegularBlobId(TimeGuid.NewGuid(new Timestamp(DateTime.UtcNow.Add(TimeSpan.FromDays(-1)))));
             var id3 = LargeBlobId();
             var id4 = LargeBlobId();
-            var allKeys = new[] { id1, id2, id3, id4 };
+            var allKeys = new[] {id1, id2, id3, id4};
             WriteByte(id1, 1);
             WriteByte(id2, 2);
             WriteByte(id3, 3);

@@ -87,6 +87,7 @@
     <Compile Include="ExchangeTests\FailTaskTest.cs" />
     <Compile Include="ExchangeTests\PeriodicTaskTest.cs" />
     <Compile Include="RepositoriesTests\GlobalTimeTest.cs" />
+    <Compile Include="RepositoriesTests\SingleParttionTimeBasedBlobStorageTest.cs" />
     <Compile Include="RepositoriesTests\TaskMetaStorageTest.cs" />
     <Compile Include="RepositoriesTests\TimeBasedBlobStorageTest.cs" />
     <Compile Include="RepositoriesTests\ReadWriteTest.cs" />
