@@ -10,6 +10,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData
     {
         public Guid UniqueData { get; set; }
 
+        public int RetryCount { get; set; }
+
         public override string ToString()
         {
             return string.Format("UniqueData: {0}", UniqueData);

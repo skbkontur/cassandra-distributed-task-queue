@@ -61,13 +61,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         }
 
         [Test]
-        public void SearchByExceptionSubstring()
+        public void TestSearchByExceptionSubstring()
         {
             var t0 = DateTime.Now;
 
             var uniqueData = Guid.NewGuid();
             Console.WriteLine("ud={0}", uniqueData);
-            var taskId = QueueTask(new FailingTaskData {UniqueData = uniqueData});
+            var taskId = QueueTask(new FailingTaskData {UniqueData = uniqueData, RetryCount = 0});
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
             elasticMonitoringServiceClient.UpdateAndFlush();
@@ -77,6 +77,28 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("ExceptionInfo:\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1, new string[0]);
+        }
+        
+        [Test]
+        public void TestSearchByExceptionSubstring_MultipleDifferentErrors()
+        {
+            var t0 = DateTime.Now;
+
+            var uniqueData = Guid.NewGuid();
+            Console.WriteLine("ud={0}", uniqueData);
+            var failingTaskData = new FailingTaskData {UniqueData = uniqueData, RetryCount = 2};
+            var taskId = QueueTask(failingTaskData);
+            WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(30));
+
+            elasticMonitoringServiceClient.UpdateAndFlush();
+
+            var t1 = DateTime.Now;
+            CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
+            CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
+            CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1, new string[0]);
+
+            for(var attempts = 1; attempts <= 3; attempts++)
+                CheckSearch(string.Format("\"FailingTask failed: {0}. Attempts = {1}\"", failingTaskData, attempts), t0, t1, taskId);
         }
 
         [Test]
