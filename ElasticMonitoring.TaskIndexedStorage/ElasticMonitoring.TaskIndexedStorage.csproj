@@ -79,7 +79,7 @@
     <Compile Include="Writing\Contracts\MetaIndexedInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Writing\Contracts\LastUpdateTicks.cs" />
-    <Compile Include="Writing\LongStringsToNullConverter.cs" />
+    <Compile Include="Writing\TruncateLongStringsConverter.cs" />
     <Compile Include="Writing\StringConverter.cs" />
     <Compile Include="Writing\TaskDataService.cs" />
     <Compile Include="Writing\TaskWriter.cs" />
@@ -89,6 +89,7 @@
     <Compile Include="Utils\DateTimeFormatter.cs" />
     <Compile Include="Utils\NamedLoggerExtension.cs" />
     <Compile Include="Writing\TaskWriterJsonSettings.cs" />
+    <Compile Include="Writing\TruncateLongStringsConverter2K.cs" />
     <Compile Include="Writing\WriteIndexNameFactory.cs" />
   </ItemGroup>
   <ItemGroup>

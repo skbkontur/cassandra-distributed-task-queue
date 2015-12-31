@@ -11,8 +11,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     ContractResolver = new OmitNonIndexablePropertiesContractResolver(),
                     Converters = new JsonConverter[]
                         {
-                            //new LongStringsToNullConverter2(),
-                            new LongStringsToNullConverter(500),
+                            new TruncateLongStringsConverter(500),
                         }
                 };
         }

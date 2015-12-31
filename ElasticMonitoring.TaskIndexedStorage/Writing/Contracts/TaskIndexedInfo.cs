@@ -18,7 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         public MetaIndexedInfo Meta { get; set; }
         public T Data { get; set; }
 
-        [JsonConverter(typeof(StringConverter))]
+        [JsonConverter(typeof(TruncateLongStringsConverter2K))]
         public string ExceptionInfo { get; set; }
     }
 }

@@ -67,7 +67,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     MinimalStartTime = meta.MinimalStartTicks,
                     StartExecutingTime = meta.StartExecutingTicks,
                 };
-            var exceptionInfo = string.Join("\r\n", exceptionInfos.Select(x => x.ExceptionMessageInfo));
+            var exceptionInfo = string.Join("\r\n", exceptionInfos.Reverse().Select(x => x.ExceptionMessageInfo));
             return taskDataService.CreateTaskIndexedInfo(metaIndexedInfo, exceptionInfo, taskData);
         }
 

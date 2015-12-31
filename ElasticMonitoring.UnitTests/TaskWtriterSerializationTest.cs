@@ -33,14 +33,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
         [Test]
         public void TestCutStringsExceptExceptionInfo()
         {
-            var info = new TaskIndexedInfo<Data>(new MetaIndexedInfo() {Name = new string('q', 502)}, new string('e', 502), new Data()
+            var info = new TaskIndexedInfo<Data>(new MetaIndexedInfo() {Name = new string('q', 502)}, new string('e', 2049), new Data()
                 {
                     A = 1, S = new string('z', 501)
                 });
-            Check(info, new TaskIndexedInfo<Data>(new MetaIndexedInfo() {Name = null}, new string('e', 502), new Data()
+            Check(info, new TaskIndexedInfo<Data>(new MetaIndexedInfo() {Name = new string('q', 500)}, new string('e', 2048), new Data()
                 {
                     A = 1,
-                    S = null
+                    S = new string('z', 500)
                 }));
         }
 
