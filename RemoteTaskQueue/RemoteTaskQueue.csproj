@@ -123,8 +123,6 @@
     <Compile Include="Cassandra\Repositories\Indexes\TaskIndexRecord.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\TaskIndexShardKey.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\CassandraNameHelper.cs" />
-    <Compile Include="Cassandra\SeparateOnBatchesEnumerable.cs" />
-    <Compile Include="Cassandra\SeparateOnBatchesEnumerator.cs" />
     <Compile Include="Configuration\ColumnFamilyRegistry.cs" />
     <Compile Include="Configuration\ExchangeSchedulableRunner.cs" />
     <Compile Include="Configuration\IColumnFamilyRegistry.cs" />
