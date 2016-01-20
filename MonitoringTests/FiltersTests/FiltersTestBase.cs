@@ -5,9 +5,10 @@ using System.Threading;
 
 using GroBuf;
 
+using MoreLinq;
+
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Handling;
@@ -67,7 +68,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var actualIds = new HashSet<string>();
             Array.ForEach(ids, x => expectedIds.Add(x));
             const int tasksPerPage = 100;
-            var parts = new SeparateOnBatchesEnumerable<string>(ids, tasksPerPage);
+            var parts = ids.Batch(tasksPerPage, Enumerable.ToArray);
             int cnt = 0;
             tasksListPage = tasksListPage.SearchUntilTaskListItemsCountIs(ids.Length);
 
