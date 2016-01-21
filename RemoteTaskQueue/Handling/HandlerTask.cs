@@ -68,7 +68,7 @@ namespace RemoteQueue.Handling
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
                 return LocalTaskProcessingResult.Undefined;
             }
-            var nowTicks = DateTime.UtcNow.Ticks;
+            var nowTicks = Timestamp.Now.Ticks;
             if(taskMeta.MinimalStartTicks > nowTicks)
             {
                 logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем nowTicks ({2}), поэтому не берем задачу в обработку, ждем.", taskMeta.MinimalStartTicks, taskMeta.Id, nowTicks);
@@ -147,7 +147,7 @@ namespace RemoteQueue.Handling
                 return LocalTaskProcessingResult.Undefined;
             }
 
-            var nowTicks = DateTime.UtcNow.Ticks;
+            var nowTicks = Timestamp.Now.Ticks;
             if(oldMeta.MinimalStartTicks > nowTicks)
             {
                 logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем nowTicks ({2}), поэтому не берем задачу в обработку, ждем.", oldMeta.MinimalStartTicks, oldMeta.Id, nowTicks);
@@ -254,7 +254,7 @@ namespace RemoteQueue.Handling
         [CanBeNull]
         private TaskMetaInformation TrySwitchToInProcessState([NotNull] TaskMetaInformation oldMeta)
         {
-            var nowTicks = DateTime.UtcNow.Ticks;
+            var nowTicks = Timestamp.Now.Ticks;
             var newMinimalStartTicks = nowTicks + CassandraNameHelper.TaskMinimalStartTicksIndexTicksPartition;
             var inProcessMeta = TryUpdateTaskState(oldMeta, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds : null);
             return inProcessMeta;
@@ -262,13 +262,13 @@ namespace RemoteQueue.Handling
 
         private void TrySwitchToTerminalState([NotNull] TaskMetaInformation inProcessMeta, TaskState terminalState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
-            var nowTicks = DateTime.UtcNow.Ticks;
+            var nowTicks = Timestamp.Now.Ticks;
             TryUpdateTaskState(inProcessMeta, nowTicks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, terminalState, newExceptionInfoIds);
         }
 
         private void TrySwitchToWaitingForRerunState([NotNull] TaskMetaInformation inProcessMeta, TaskState waitingForRerunState, TimeSpan rerunDelay, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
-            var nowTicks = DateTime.UtcNow.Ticks;
+            var nowTicks = Timestamp.Now.Ticks;
             TryUpdateTaskState(inProcessMeta, nowTicks + rerunDelay.Ticks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, waitingForRerunState, newExceptionInfoIds);
         }
 

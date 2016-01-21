@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,7 +27,7 @@ namespace RemoteQueue.Cassandra.Repositories
             if(task.Meta.Attempts == 0)
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
 
-            if(task.Meta.MinimalStartTicks <= DateTime.UtcNow.Ticks + 1)
+            if(task.Meta.MinimalStartTicks <= Timestamp.Now.Ticks + 1)
                 remoteTaskQueueProfiler.ProcessTaskEnqueueing(task.Meta);
 
             task.Meta.TaskDataId = taskDataStorage.Write(task.Meta.Id, task.Data);

@@ -22,6 +22,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Handling
@@ -95,7 +96,7 @@ namespace RemoteQueue.Handling
             {
                 var meta = HandleTasksMetaStorage.GetMeta(taskId);
                 meta.State = TaskState.WaitingForRerun;
-                meta.MinimalStartTicks = DateTime.UtcNow.Ticks + delay.Ticks;
+                meta.MinimalStartTicks = Timestamp.Now.Ticks + delay.Ticks;
                 HandleTasksMetaStorage.AddMeta(meta);
                 return true;
             }

@@ -7,6 +7,8 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Tracing;
 
+using SKBKontur.Catalogue.Objects;
+
 namespace RemoteQueue.Handling
 {
     internal class RemoteTask : IRemoteTask
@@ -44,7 +46,7 @@ namespace RemoteQueue.Handling
             using(new PublishTaskTraceContext())
             {
                 var delayTicks = Math.Max(delay.Ticks, 0);
-                task.Meta.MinimalStartTicks = DateTime.UtcNow.Ticks + delayTicks;
+                task.Meta.MinimalStartTicks = Timestamp.Now.Ticks + delayTicks;
                 return handleTaskCollection.AddTask(task);
             }
         }
