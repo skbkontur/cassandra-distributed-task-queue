@@ -157,10 +157,10 @@ namespace FunctionalTests.RepositoriesTests
                     State = TaskState.Unknown,
                     MinimalStartTicks = ticks + 1
                 });
-            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 9, TaskIndexShardKey("TaskName", TaskState.InProcess), TaskIndexShardKey("TaskName", TaskState.New)).ToArray();
-            Assert.AreEqual(2, tasks.Length);
-            Assert.AreEqual(id2, tasks[0].TaskId);
-            Assert.AreEqual(id3, tasks[1].TaskId);
+            var toTicks = ticks + 9;
+            var taskIndexShardKeys = new[] {TaskIndexShardKey("TaskName", TaskState.InProcess), TaskIndexShardKey("TaskName", TaskState.New)};
+            Assert.That(handleTasksMetaStorage.GetIndexRecords(toTicks, taskIndexShardKeys).Select(x => x.TaskId).ToArray(), Is.EqualTo(new[] {id3, id2}));
+            Assert.That(handleTasksMetaStorage.GetIndexRecords(toTicks, taskIndexShardKeys.Reverse().ToArray()).Select(x => x.TaskId).ToArray(), Is.EqualTo(new[] {id3, id2}));
         }
 
         [Test]
