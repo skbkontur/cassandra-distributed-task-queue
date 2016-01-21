@@ -45,7 +45,9 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public TaskIndexRecord[] GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys)
         {
-            return taskIndexShardKeys.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000)).ToArray();
+            return taskIndexShardKeys.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000))
+                                     .OrderBy(x => x.MinimalStartTicks)
+                                     .ToArray();
         }
 
         [NotNull]
