@@ -35,14 +35,14 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public static long GetTicksRowNumber(long ticks)
         {
-            return ticks / ticksPartition;
+            return ticks / TaskMinimalStartTicksIndexTicksPartition;
         }
 
         public static long GetMinimalTicksForRow(long rowNumber)
         {
-            return rowNumber * ticksPartition;
+            return rowNumber * TaskMinimalStartTicksIndexTicksPartition;
         }
 
-        private static readonly long ticksPartition = TimeSpan.FromMinutes(6).Ticks;
+        public static readonly long TaskMinimalStartTicksIndexTicksPartition = TimeSpan.FromMinutes(6).Ticks;
     }
 }

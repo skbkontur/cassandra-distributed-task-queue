@@ -108,7 +108,9 @@ namespace RemoteQueue.Handling
         private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState newState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
             var newMeta = allFieldsSerializer.Copy(oldMeta);
-            newMeta.MinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
+            if(newState == oldMeta.State)
+                newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
+            newMeta.MinimalStartTicks = newMinimalStartTicks;
             newMeta.StartExecutingTicks = startExecutingTicks;
             newMeta.FinishExecutingTicks = finishExecutingTicks;
             newMeta.Attempts = attempts;
@@ -253,7 +255,8 @@ namespace RemoteQueue.Handling
         private TaskMetaInformation TrySwitchToInProcessState([NotNull] TaskMetaInformation oldMeta)
         {
             var nowTicks = DateTime.UtcNow.Ticks;
-            var inProcessMeta = TryUpdateTaskState(oldMeta, nowTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds : null);
+            var newMinimalStartTicks = nowTicks + CassandraNameHelper.TaskMinimalStartTicksIndexTicksPartition;
+            var inProcessMeta = TryUpdateTaskState(oldMeta, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds : null);
             return inProcessMeta;
         }
 
