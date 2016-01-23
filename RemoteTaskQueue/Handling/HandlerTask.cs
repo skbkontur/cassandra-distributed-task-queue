@@ -57,11 +57,11 @@ namespace RemoteQueue.Handling
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
                 return LocalTaskProcessingResult.Undefined;
             }
-            if(taskMeta.MinimalStartTicks > taskIndexRecord.MinimalStartTicks)
+           /* if(taskMeta.MinimalStartTicks > taskIndexRecord.MinimalStartTicks)
             {
                 logger.InfoFormat("Удаляем зависшую запись индекса: {0}", taskIndexRecord);
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
-            }
+            }*/
             if(taskMeta.State == TaskState.Finished || taskMeta.State == TaskState.Fatal || taskMeta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskIndexRecord.TaskId, taskMeta.State);
