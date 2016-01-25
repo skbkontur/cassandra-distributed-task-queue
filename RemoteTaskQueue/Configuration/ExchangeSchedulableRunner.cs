@@ -75,11 +75,12 @@ namespace RemoteQueue.Configuration
                 {
                     if(started)
                     {
+                        Log.For(this).Info("Stoping ExchangeSchedulableRunner");
                         periodicTaskRunner.Unregister(reportConsumerStateToGraphiteTask.Id, 15000);
                         Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() => { periodicTaskRunner.Unregister(theHandlerManager.Id, 15000); })).ToArray());
                         localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
                         started = false;
-                        Log.For(this).Info("Stop ExchangeSchedulableRunner.");
+                        Log.For(this).Info("ExchangeSchedulableRunner stopped");
                     }
                 }
             }
