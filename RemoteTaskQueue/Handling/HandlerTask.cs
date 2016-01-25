@@ -57,11 +57,6 @@ namespace RemoteQueue.Handling
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
                 return LocalTaskProcessingResult.Undefined;
             }
-           /* if(taskMeta.MinimalStartTicks > taskIndexRecord.MinimalStartTicks)
-            {
-                logger.InfoFormat("Удаляем зависшую запись индекса: {0}", taskIndexRecord);
-                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
-            }*/
             if(taskMeta.State == TaskState.Finished || taskMeta.State == TaskState.Fatal || taskMeta.State == TaskState.Canceled)
             {
                 logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskIndexRecord.TaskId, taskMeta.State);
@@ -105,7 +100,7 @@ namespace RemoteQueue.Handling
         }
 
         [CanBeNull]
-        private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState newState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
+        private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, [NotNull] TaskIndexRecord oldTaskIndexRecord, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState newState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
             var newMeta = allFieldsSerializer.Copy(oldMeta);
             if(newState == oldMeta.State)
@@ -119,7 +114,7 @@ namespace RemoteQueue.Handling
                 newMeta.TaskExceptionInfoIds = newExceptionInfoIds;
             try
             {
-                handleTasksMetaStorage.AddMeta(newMeta);
+                handleTasksMetaStorage.AddMeta(newMeta, oldTaskIndexRecord);
                 logger.InfoFormat("Changed task state. Task = {0}", newMeta);
                 return newMeta;
             }
@@ -256,20 +251,22 @@ namespace RemoteQueue.Handling
         {
             var nowTicks = Timestamp.Now.Ticks;
             var newMinimalStartTicks = nowTicks + CassandraNameHelper.TaskMinimalStartTicksIndexTicksPartition;
-            var inProcessMeta = TryUpdateTaskState(oldMeta, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds : null);
+            var inProcessMeta = TryUpdateTaskState(oldMeta, taskIndexRecord, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds: null);
             return inProcessMeta;
         }
 
         private void TrySwitchToTerminalState([NotNull] TaskMetaInformation inProcessMeta, TaskState terminalState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
             var nowTicks = Timestamp.Now.Ticks;
-            TryUpdateTaskState(inProcessMeta, nowTicks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, terminalState, newExceptionInfoIds);
+            var inProcessTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(inProcessMeta);
+            TryUpdateTaskState(inProcessMeta, inProcessTaskIndexRecord, nowTicks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, terminalState, newExceptionInfoIds);
         }
 
         private void TrySwitchToWaitingForRerunState([NotNull] TaskMetaInformation inProcessMeta, TaskState waitingForRerunState, TimeSpan rerunDelay, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
             var nowTicks = Timestamp.Now.Ticks;
-            TryUpdateTaskState(inProcessMeta, nowTicks + rerunDelay.Ticks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, waitingForRerunState, newExceptionInfoIds);
+            var inProcessTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(inProcessMeta);
+            TryUpdateTaskState(inProcessMeta, inProcessTaskIndexRecord, nowTicks + rerunDelay.Ticks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, waitingForRerunState, newExceptionInfoIds);
         }
 
         private readonly TaskIndexRecord taskIndexRecord;

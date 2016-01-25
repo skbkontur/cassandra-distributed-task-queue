@@ -4,8 +4,6 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using MoreLinq;
-
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -51,7 +49,7 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         [NotNull]
-        public TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta)
+        public TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta, [CanBeNull] TaskIndexRecord oldTaskIndexRecord)
         {
             var globalNowTicks = globalTime.UpdateNowTicks();
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalNowTicks);
@@ -62,20 +60,13 @@ namespace RemoteQueue.Cassandra.Repositories
             if(taskMeta.State == TaskState.New)
                 childTaskIndex.AddMeta(taskMeta);
             taskMetaStorage.Write(taskMeta, globalNowTicks);
-
-            var oldMeta = taskMeta.TryGetSnapshot();
-            if(oldMeta != null)
-            {
-                if(oldMeta.State != taskMeta.State || oldMeta.MinimalStartTicks != taskMeta.MinimalStartTicks)
-                    minimalStartTicksIndex.RemoveRecord(FormatIndexRecord(oldMeta));
-            }
-
-            taskMeta.MakeSnapshot();
+            if(oldTaskIndexRecord != null)
+                minimalStartTicksIndex.RemoveRecord(oldTaskIndexRecord);
             return newIndexRecord;
         }
 
         [NotNull]
-        private TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta)
+        public TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta)
         {
             var taskTopic = taskDataRegistry.GetTaskTopic(taskMeta.Name);
             var taskIndexShardKey = new TaskIndexShardKey(taskTopic, taskMeta.State);
@@ -88,16 +79,13 @@ namespace RemoteQueue.Cassandra.Repositories
             var meta = taskMetaStorage.Read(taskId);
             if(meta == null)
                 throw new InvalidProgramStateException(string.Format("TaskMeta not found for: {0}", taskId));
-            meta.MakeSnapshot();
             return meta;
         }
 
         [NotNull]
         public Dictionary<string, TaskMetaInformation> GetMetas([NotNull] string[] taskIds)
         {
-            var metas = taskMetaStorage.Read(taskIds);
-            metas.Values.ForEach(x => x.MakeSnapshot());
-            return metas;
+            return taskMetaStorage.Read(taskIds);
         }
 
         private readonly ITaskMetaStorage taskMetaStorage;

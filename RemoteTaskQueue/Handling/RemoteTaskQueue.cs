@@ -77,10 +77,11 @@ namespace RemoteQueue.Handling
                 var meta = HandleTasksMetaStorage.GetMeta(taskId);
                 if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError || meta.State == TaskState.InProcess)
                 {
+                    var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(meta);
                     RemoteTaskQueueProfiler.ProcessTaskCancel(meta);
                     meta.State = TaskState.Canceled;
                     meta.FinishExecutingTicks = DateTime.UtcNow.Ticks;
-                    HandleTasksMetaStorage.AddMeta(meta);
+                    HandleTasksMetaStorage.AddMeta(meta, oldTaskIndexRecord);
                     return true;
                 }
                 return false;
@@ -95,9 +96,10 @@ namespace RemoteQueue.Handling
             using(remoteLock)
             {
                 var meta = HandleTasksMetaStorage.GetMeta(taskId);
+                var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(meta);
                 meta.State = TaskState.WaitingForRerun;
                 meta.MinimalStartTicks = Timestamp.Now.Ticks + delay.Ticks;
-                HandleTasksMetaStorage.AddMeta(meta);
+                HandleTasksMetaStorage.AddMeta(meta, oldTaskIndexRecord);
                 return true;
             }
         }

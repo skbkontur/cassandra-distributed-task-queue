@@ -78,19 +78,6 @@ namespace RemoteQueue.Cassandra.Entities
             return taskExceptionInfoIds;
         }
 
-        internal void MakeSnapshot()
-        {
-            snapshot = StaticGrobuf.GetSerializer().Serialize(this);
-        }
-
-        [CanBeNull]
-        internal TaskMetaInformation TryGetSnapshot()
-        {
-            if(snapshot == null)
-                return null;
-            return StaticGrobuf.GetSerializer().Deserialize<TaskMetaInformation>(snapshot);
-        }
-
         public override string ToString()
         {
             return string.Format("[Name: {0}, Id: {1}, State: {2}, Attempts: {3}, MinimalStartTicks: {4}, ParentTaskId: {5}, TaskGroupLock: {6}, TraceId: {7}, TaskDataId: {8}, TaskExceptionInfoIds: {9}]",
@@ -98,7 +85,5 @@ namespace RemoteQueue.Cassandra.Entities
         }
 
         public const int TaskExceptionIfoIdsLimit = 201;
-
-        private byte[] snapshot;
     }
 }

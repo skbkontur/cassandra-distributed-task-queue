@@ -175,7 +175,6 @@
     <Compile Include="Settings\ICassandraSettings.cs" />
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="Settings\IRemoteTaskQueueSettings.cs" />
-    <Compile Include="StaticGrobuf.cs" />
     <Compile Include="Configuration\TaskDataRegistryBase.cs" />
     <Compile Include="Configuration\TaskHandlerRegistryBase.cs" />
   </ItemGroup>

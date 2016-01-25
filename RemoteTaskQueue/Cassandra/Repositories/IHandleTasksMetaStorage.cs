@@ -17,7 +17,10 @@ namespace RemoteQueue.Cassandra.Repositories
         TaskIndexRecord[] GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys);
 
         [NotNull]
-        TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta);
+        TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta, [CanBeNull] TaskIndexRecord oldTaskIndexRecord);
+
+        [NotNull]
+        TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta);
 
         [NotNull]
         TaskMetaInformation GetMeta([NotNull] string taskId);

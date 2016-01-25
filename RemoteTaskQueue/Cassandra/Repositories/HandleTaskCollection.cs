@@ -31,7 +31,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 remoteTaskQueueProfiler.ProcessTaskEnqueueing(task.Meta);
 
             task.Meta.TaskDataId = taskDataStorage.Write(task.Meta.Id, task.Data);
-            return handleTasksMetaStorage.AddMeta(task.Meta);
+            return handleTasksMetaStorage.AddMeta(task.Meta, oldTaskIndexRecord : null);
         }
 
         [NotNull]

@@ -5,11 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using GroBuf;
+using GroBuf.DataMembersExtracters;
+
 using Newtonsoft.Json;
 
 using NUnit.Framework;
-
-using RemoteQueue;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation;
 
@@ -21,7 +22,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
         public void TestReadSnapshot()
         {
             var decompress = SnapshotStorageUtils.Decompress(File.ReadAllBytes(@""));
-            var counterControllerSnapshot = StaticGrobuf.GetSerializer().Deserialize<CounterControllerSnapshot>(decompress);
+            var serializer = new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead);
+            var counterControllerSnapshot = serializer.Deserialize<CounterControllerSnapshot>(decompress);
             var s = JsonConvert.SerializeObject(counterControllerSnapshot);
             Console.WriteLine(s);
         }
