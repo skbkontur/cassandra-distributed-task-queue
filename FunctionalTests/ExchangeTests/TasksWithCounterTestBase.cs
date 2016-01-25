@@ -32,8 +32,17 @@ namespace FunctionalTests.ExchangeTests
                 if(allTasksAreFinished)
                 {
                     Assert.That(notFinishedTaskIds, Is.Empty);
-                    Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey(taskName, terminalState)));
-                    break;
+                    try
+                    {
+                        Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey(taskName, terminalState)));
+                        break;
+                    }
+                    catch(AssertionException e)
+                    {
+                        if(sw.Elapsed > timeout)
+                            throw;
+                        Log.For(this).Warn("Maybe we have a stability issue because index records are being removed after new task meta has been written. Will keep waiting.", e);
+                    }
                 }
                 if(sw.Elapsed > timeout)
                     throw new TooLateException("Время ожидания превысило {0} мс. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
