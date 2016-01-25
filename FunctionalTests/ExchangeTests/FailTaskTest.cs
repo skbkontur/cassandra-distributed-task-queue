@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
 
 using ExchangeService.Exceptions;
 using ExchangeService.UserClasses;
 
 using GroBuf;
 using GroBuf.DataMembersExtracters;
-
-using MoreLinq;
 
 using NUnit.Framework;
 
@@ -30,11 +25,10 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
-using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace FunctionalTests.ExchangeTests
 {
-    public class FailTaskTest : FunctionalTestBase
+    public class FailTaskTest : TasksWithCounterTestBase
     {
         public override void SetUp()
         {
@@ -64,7 +58,7 @@ namespace FunctionalTests.ExchangeTests
             var taskId = AddTask(9);
             try
             {
-                Wait(new[] {taskId}, 1000);
+                WaitForFatalState(new[] {taskId}, TimeSpan.FromSeconds(1));
                 throw new Exception("Wait не должен отработать");
             }
             catch(TooLateException)
@@ -81,14 +75,14 @@ namespace FunctionalTests.ExchangeTests
             var ids = new string[count];
             for(var i = 0; i < count; i++)
                 ids[i] = AddTask(7);
-            Wait(ids, 60000);
+            WaitForFatalState(ids, TimeSpan.FromSeconds(60));
         }
 
         [Test]
         public void TestOneFailTask()
         {
             var taskId = AddTask(3);
-            Wait(new[] {taskId});
+            WaitForFatalState(new[] {taskId}, TimeSpan.FromSeconds(5));
         }
 
         [Test]
@@ -98,7 +92,7 @@ namespace FunctionalTests.ExchangeTests
             var ids = new string[count];
             for(var i = 0; i < count; i++)
                 ids[i] = AddTask(3);
-            Wait(ids, 15000);
+            WaitForFatalState(ids, TimeSpan.FromSeconds(15));
         }
 
         [Test]
@@ -109,7 +103,7 @@ namespace FunctionalTests.ExchangeTests
             var ids = new string[count];
             for(var j = 0; j < count; j++)
                 ids[j] = AddTask(10);
-            Wait(ids, 90000);
+            WaitForFatalState(ids, TimeSpan.FromSeconds(90));
         }
 
         private string AddTask(int attempts)
@@ -120,30 +114,11 @@ namespace FunctionalTests.ExchangeTests
             return task.Id;
         }
 
-        private void Wait(string[] taskIds, int timeout = 5000)
+        private void WaitForFatalState(string[] taskIds, TimeSpan timeout)
         {
-            var sw = Stopwatch.StartNew();
-            var sleepInterval = Math.Max(500, timeout / 10);
-            while(true)
-            {
-                var allTasksAreFinished = handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == TaskState.Fatal);
-                var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
-                Log.For(this).InfoFormat("CurrentCounterValues: {0}", string.Join(", ", attempts));
-                var notFinishedTaskIds = taskIds.EquiZip(attempts, (taskId, attempt) => new {taskId, attempt}).Where(x => x.attempt > 0).Select(x => x.taskId).ToArray();
-                if(allTasksAreFinished)
-                {
-                    Assert.That(notFinishedTaskIds, Is.Empty);
-                    Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey("FakeFailTaskData", TaskState.Fatal)));
-                    break;
-                }
-                if(sw.ElapsedMilliseconds > timeout)
-                    throw new TooLateException("Время ожидания превысило {0} мс. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
-                Thread.Sleep(sleepInterval);
-            }
+            Wait(taskIds, TaskState.Fatal, "FakeFailTaskData", timeout);
         }
 
-        private IHandleTaskCollection handleTaskCollection;
-        private ITestCounterRepository testCounterRepository;
         private IRemoteTaskQueue taskQueue;
     }
 }

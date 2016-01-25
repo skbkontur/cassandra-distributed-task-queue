@@ -80,6 +80,7 @@
     <Compile Include="ExchangeTests\AutoParentTaskIdTest.cs" />
     <Compile Include="ExchangeTests\ChildIndexTest.cs" />
     <Compile Include="ExchangeTests\SimpleTaskTest.cs" />
+    <Compile Include="ExchangeTests\TasksWithCounterTestBase.cs" />
     <Compile Include="ExchangeTests\TaskTestsExtensions.cs" />
     <Compile Include="FunctionalTestBaseWithoutServices.cs" />
     <Compile Include="RepositoriesTests\BlobStorageFunctionalTestBase.cs" />
