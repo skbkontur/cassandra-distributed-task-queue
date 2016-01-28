@@ -90,6 +90,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                     number_of_replicas = settings.ReplicaCount,
                                     index = new Dictionary<string, string>
                                             {
+                                                { "routing.allocation.require._name", "edi-elastic-*" },
                                                 { "routing.allocation.exclude._name", "edi-elastic-*-i*" }
                                             }
                                 },
