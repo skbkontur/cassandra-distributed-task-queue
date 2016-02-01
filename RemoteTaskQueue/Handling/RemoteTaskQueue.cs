@@ -80,7 +80,7 @@ namespace RemoteQueue.Handling
                     var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(meta);
                     RemoteTaskQueueProfiler.ProcessTaskCancel(meta);
                     meta.State = TaskState.Canceled;
-                    meta.FinishExecutingTicks = DateTime.UtcNow.Ticks;
+                    meta.FinishExecutingTicks = Timestamp.Now.Ticks;
                     HandleTasksMetaStorage.AddMeta(meta, oldTaskIndexRecord);
                     return true;
                 }
@@ -145,7 +145,7 @@ namespace RemoteQueue.Handling
             var taskMeta = new TaskMetaInformation(taskDataRegistry.GetTaskName(type), taskId)
                 {
                     Attempts = 0,
-                    Ticks = DateTime.UtcNow.Ticks,
+                    Ticks = Timestamp.Now.Ticks,
                     ParentTaskId = string.IsNullOrEmpty(createTaskOptions.ParentTaskId) ? GetCurrentExecutingTaskId() : createTaskOptions.ParentTaskId,
                     TaskGroupLock = createTaskOptions.TaskGroupLock,
                     State = TaskState.New,

@@ -49,7 +49,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var connection = RetrieveColumnFamilyConnection();
             var rowKey = CassandraNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
             var columnName = CassandraNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
-            connection.DeleteColumn(rowKey, columnName, (DateTime.UtcNow + TimeSpan.FromMinutes(1)).Ticks);
+            connection.DeleteColumn(rowKey, columnName, (Timestamp.Now + TimeSpan.FromMinutes(1)).Ticks);
         }
 
         [NotNull]
@@ -70,7 +70,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 return null;
             var overlapDuration = GetOverlapDuration(taskIndexShardKey);
             var fromTicks = liveRecordTicksMarker.State.CurrentTicks - overlapDuration.Ticks;
-            var safetyBelt = (DateTime.UtcNow - TimeSpan.FromHours(6)).Ticks;
+            var safetyBelt = (Timestamp.Now - TimeSpan.FromHours(6)).Ticks;
             if(fromTicks < safetyBelt)
             {
                 Log.For(this).WarnFormat("fromTicks ({0}) < safetyBelt ({1})", new Timestamp(fromTicks), new Timestamp(safetyBelt));
@@ -83,11 +83,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             lock(locker)
             {
-                var utcNow = DateTime.UtcNow;
-                DateTime lastBigOverlapMoment;
-                if(!lastBigOverlapMomentsByShardKey.TryGetValue(taskIndexShardKey, out lastBigOverlapMoment) || utcNow - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
+                var now = Timestamp.Now;
+                Timestamp lastBigOverlapMoment;
+                if(!lastBigOverlapMomentsByShardKey.TryGetValue(taskIndexShardKey, out lastBigOverlapMoment) || now - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
                 {
-                    lastBigOverlapMomentsByShardKey[taskIndexShardKey] = utcNow;
+                    lastBigOverlapMomentsByShardKey[taskIndexShardKey] = now;
                     //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,
                     //что потребует изменения этого отката. Поэтому берется, как кажется, с запасом
                     return TimeSpan.FromMinutes(8); // Против адских затупов кассандры
@@ -102,6 +102,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly IGlobalTime globalTime;
         private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;
         private readonly object locker = new object();
-        private readonly Dictionary<TaskIndexShardKey, DateTime> lastBigOverlapMomentsByShardKey = new Dictionary<TaskIndexShardKey, DateTime>();
+        private readonly Dictionary<TaskIndexShardKey, Timestamp> lastBigOverlapMomentsByShardKey = new Dictionary<TaskIndexShardKey, Timestamp>();
     }
 }

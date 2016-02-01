@@ -12,6 +12,8 @@ using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
 using RemoteQueue.Tracing;
 
+using SKBKontur.Catalogue.Objects;
+
 using Task = System.Threading.Tasks.Task;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
@@ -69,7 +71,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             var taskIsSentToThreadPool = false;
             if(taskMeta != null && !taskHandlerRegistry.ContainsHandlerFor(taskMeta.Name))
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
-            if(taskMeta == null && taskIndexRecord.MinimalStartTicks >= (DateTime.UtcNow - TimeSpan.FromMinutes(20)).Ticks)
+            if(taskMeta == null && taskIndexRecord.MinimalStartTicks > (Timestamp.Now - TimeSpan.FromMinutes(20)).Ticks)
             {
                 logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskIndexRecord.TaskId);
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
