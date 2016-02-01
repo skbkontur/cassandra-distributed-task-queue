@@ -13,6 +13,7 @@ using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -41,11 +42,16 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         [NotNull]
-        public TaskIndexRecord[] GetIndexRecords(long toTicks, [NotNull] params TaskIndexShardKey[] taskIndexShardKeys)
+        public TaskIndexRecord[] GetIndexRecords(long toTicks, [NotNull] TaskIndexShardKey[] taskIndexShardKeys)
         {
-            return taskIndexShardKeys.SelectMany(x => minimalStartTicksIndex.GetRecords(x, toTicks, batchSize : 2000))
-                                     .OrderBy(x => x.MinimalStartTicks)
-                                     .ToArray();
+            var liveRecordsByKey = new Dictionary<TaskIndexShardKey, TaskIndexRecord[]>();
+            foreach(var taskIndexShardKey in taskIndexShardKeys)
+            {
+                var liveRecords = minimalStartTicksIndex.GetRecords(taskIndexShardKey, toTicks, batchSize : 2000).ToArray();
+                liveRecordsByKey.Add(taskIndexShardKey, liveRecords);
+                Log.For(this).InfoFormat("Got {0} live minimalStartTicksIndex records for taskIndexShardKey: {1}; Oldest live record: {2}", liveRecords.Length, taskIndexShardKey, liveRecords.FirstOrDefault());
+            }
+            return liveRecordsByKey.SelectMany(x => x.Value).OrderBy(x => x.MinimalStartTicks).ToArray();
         }
 
         [NotNull]

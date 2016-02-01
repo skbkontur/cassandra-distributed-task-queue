@@ -43,13 +43,13 @@ namespace FunctionalTests.RepositoriesTests
                     State = TaskState.New,
                     MinimalStartTicks = nowTicks + 1
                 };
-            for (var i = 0; i <= 1000; i++)
+            for(var i = 0; i <= 1000; i++)
             {
                 var oldTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(meta);
                 meta.MinimalStartTicks++;
                 handleTasksMetaStorage.AddMeta(meta, oldTaskIndexRecord);
             }
-            Assert.AreEqual(1, handleTasksMetaStorage.GetIndexRecords(nowTicks + 1002, TaskIndexShardKey("TaskName", TaskState.New)).ToArray().Length);
+            Assert.AreEqual(1, handleTasksMetaStorage.GetIndexRecords(nowTicks + 1002, new[] {TaskIndexShardKey("TaskName", TaskState.New)}).Length);
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace FunctionalTests.RepositoriesTests
                     handleTasksMetaStorage.AddMeta(t, oldTaskIndexRecord);
                 }
             }
-            Assert.AreEqual(10, handleTasksMetaStorage.GetIndexRecords(nowTicks + 1012, TaskIndexShardKey("TaskName", TaskState.Finished)).ToArray().Length);
+            Assert.AreEqual(10, handleTasksMetaStorage.GetIndexRecords(nowTicks + 1012, new[] {TaskIndexShardKey("TaskName", TaskState.Finished)}).Length);
         }
 
         [Test]
@@ -83,14 +83,14 @@ namespace FunctionalTests.RepositoriesTests
                 {
                     State = TaskState.New,
                     MinimalStartTicks = ticks
-                }, oldTaskIndexRecord: null);
-            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, TaskIndexShardKey("TaskName", TaskState.New)).ToArray();
+                }, oldTaskIndexRecord : null);
+            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(1, tasks.Length);
             Assert.AreEqual(id, tasks[0].TaskId);
-            tasks = handleTasksMetaStorage.GetIndexRecords(ticks, TaskIndexShardKey("TaskName", TaskState.New)).ToArray();
+            tasks = handleTasksMetaStorage.GetIndexRecords(ticks, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(1, tasks.Length);
             Assert.AreEqual(id, tasks[0].TaskId);
-            tasks = handleTasksMetaStorage.GetIndexRecords(ticks - 1, TaskIndexShardKey("TaskName", TaskState.New)).ToArray();
+            tasks = handleTasksMetaStorage.GetIndexRecords(ticks - 1, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(0, tasks.Length);
         }
 
@@ -102,13 +102,13 @@ namespace FunctionalTests.RepositoriesTests
                 {
                     State = TaskState.InProcess,
                     MinimalStartTicks = ticks
-                }, oldTaskIndexRecord: null);
+                }, oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.Finished,
                     MinimalStartTicks = ticks
-                }, oldTaskIndexRecord: null);
-            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, TaskIndexShardKey("TaskName", TaskState.InProcess)).ToArray();
+                }, oldTaskIndexRecord : null);
+            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
             Assert.AreEqual(1, tasks.Length);
         }
 
@@ -120,13 +120,13 @@ namespace FunctionalTests.RepositoriesTests
                 {
                     State = TaskState.New,
                     MinimalStartTicks = ticks
-                }, oldTaskIndexRecord: null);
+                }, oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName2", NewTaskId())
                 {
                     State = TaskState.New,
                     MinimalStartTicks = ticks
-                }, oldTaskIndexRecord: null);
-            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, TaskIndexShardKey("TaskName1", TaskState.New)).ToArray();
+                }, oldTaskIndexRecord : null);
+            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName1", TaskState.New)});
             Assert.AreEqual(1, tasks.Length);
         }
 
@@ -142,22 +142,22 @@ namespace FunctionalTests.RepositoriesTests
                 {
                     State = TaskState.New,
                     MinimalStartTicks = ticks + 10
-                }, oldTaskIndexRecord: null);
+                }, oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id2)
                 {
                     State = TaskState.InProcess,
                     MinimalStartTicks = ticks
-                }, oldTaskIndexRecord: null);
+                }, oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id3)
                 {
                     State = TaskState.New,
                     MinimalStartTicks = ticks - 5
-                }, oldTaskIndexRecord: null);
+                }, oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id4)
                 {
                     State = TaskState.Unknown,
                     MinimalStartTicks = ticks + 1
-                }, oldTaskIndexRecord: null);
+                }, oldTaskIndexRecord : null);
             var toTicks = ticks + 9;
             var taskIndexShardKeys = new[] {TaskIndexShardKey("TaskName", TaskState.InProcess), TaskIndexShardKey("TaskName", TaskState.New)};
             Assert.That(handleTasksMetaStorage.GetIndexRecords(toTicks, taskIndexShardKeys).Select(x => x.TaskId).ToArray(), Is.EqualTo(new[] {id3, id2}));
@@ -173,18 +173,18 @@ namespace FunctionalTests.RepositoriesTests
                 {
                     State = TaskState.New,
                     MinimalStartTicks = ticks + 10
-                }, oldTaskIndexRecord: null);
+                }, oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id)
                 {
                     State = TaskState.InProcess,
                     MinimalStartTicks = ticks + 15
-                }, oldTaskIndexRecord: null);
-            var newTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 12, TaskIndexShardKey("TaskName", TaskState.New)).ToArray();
+                }, oldTaskIndexRecord : null);
+            var newTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 12, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(1, newTasks.Length);
             Assert.AreEqual(id, newTasks[0].TaskId);
-            var inProcessTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 12, TaskIndexShardKey("TaskName", TaskState.InProcess)).ToArray();
+            var inProcessTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 12, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
             Assert.AreEqual(0, inProcessTasks.Length);
-            inProcessTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 16, TaskIndexShardKey("TaskName", TaskState.InProcess)).ToArray();
+            inProcessTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 16, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
             Assert.AreEqual(1, inProcessTasks.Length);
             Assert.AreEqual(id, inProcessTasks[0].TaskId);
         }
