@@ -7,6 +7,7 @@ using GroboContainer.Core;
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
@@ -17,13 +18,14 @@ namespace FunctionalTests.ExchangeTests
     {
         public static void CheckTaskMinimalStartTicksIndexStates(this IContainer container, Dictionary<string, TaskIndexShardKey> expectedShardKeys)
         {
+            var globalTime = container.Get<IGlobalTime>();
             var index = container.Get<ITaskMinimalStartTicksIndex>();
             var allShardKeysForTasks = new Dictionary<string, List<TaskIndexShardKey>>();
             foreach(var taskTopic in container.Get<ITaskDataRegistry>().GetAllTaskTopics())
             {
                 foreach(var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
                 {
-                    var indexRecords = index.GetRecords(new TaskIndexShardKey(taskTopic, taskState), DateTime.UtcNow.Ticks, 2000).ToArray();
+                    var indexRecords = index.GetRecords(new TaskIndexShardKey(taskTopic, taskState), globalTime.GetNowTicks(), 2000).ToArray();
                     foreach(var indexRecord in indexRecords)
                     {
                         List<TaskIndexShardKey> shardKeys;
