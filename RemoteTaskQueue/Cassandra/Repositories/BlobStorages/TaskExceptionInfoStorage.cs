@@ -36,12 +36,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 return false;
             var newExceptionInfoId = TimeGuid.NowGuid();
             var timestamp = newExceptionInfoId.GetTimestamp().Ticks;
+            TimeGuid oldExceptionInfoId;
+            newExceptionInfoIds = taskMeta.AddExceptionInfoId(newExceptionInfoId, out oldExceptionInfoId);
             if(!taskMeta.IsTimeBased())
                 legacyBlobStorage.Write(taskMeta.Id, newExceptionInfo, timestamp);
             else
             {
-                TimeGuid oldExceptionInfoId;
-                newExceptionInfoIds = taskMeta.AddExceptionInfoId(newExceptionInfoId, out oldExceptionInfoId);
                 var newExceptionInfoBytes = serializer.Serialize(newExceptionInfo);
                 timeBasedBlobStorage.Write(taskMeta.Id, newExceptionInfoId, newExceptionInfoBytes, timestamp);
                 if(oldExceptionInfoId != null)
