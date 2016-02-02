@@ -11,6 +11,7 @@ using log4net;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Connections;
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
@@ -49,7 +50,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                         return false;
                     }
                     liveRecordTicksMarker.TryMoveForward(currentLiveRecordTicks);
-                    if(!loggedTooOldIndexRecord && currentLiveRecordTicks < (DateTime.UtcNow - TimeSpan.FromHours(1)).Ticks)
+                    if(!loggedTooOldIndexRecord && currentLiveRecordTicks < (Timestamp.Now - TimeSpan.FromHours(1)).Ticks)
                     {
                         logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
                                           Current.TaskId, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
@@ -100,11 +101,11 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 if(!statistics.ContainsKey(taskIndexShardKey))
                     statistics[taskIndexShardKey] = new TaskStateStatistics();
                 statistics[taskIndexShardKey].Update(iTo - iFrom);
-                if(lastStatisticsLogDateTime <= DateTime.UtcNow - TimeSpan.FromMinutes(1))
+                if(lastStatisticsLogMoment <= Timestamp.Now - TimeSpan.FromMinutes(1))
                 {
                     PrintStatistics();
                     statistics = new Dictionary<TaskIndexShardKey, TaskStateStatistics>();
-                    lastStatisticsLogDateTime = DateTime.UtcNow;
+                    lastStatisticsLogMoment = Timestamp.Now;
                 }
             }
         }
@@ -122,7 +123,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private static readonly object statisticsLockObject = new object();
 
         private static readonly ILog logger = LogManager.GetLogger(typeof(GetEventsEnumerator));
-        private static DateTime lastStatisticsLogDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(1);
+        private static Timestamp lastStatisticsLogMoment = Timestamp.Now - TimeSpan.FromMinutes(1);
 
         private readonly ILiveRecordTicksMarker liveRecordTicksMarker;
         private readonly ISerializer serializer;

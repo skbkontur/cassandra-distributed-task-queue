@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 using JetBrains.Annotations;
 
@@ -40,8 +39,8 @@ namespace RemoteQueue.Handling
 
         public void Run()
         {
-            var nowTicks = DateTime.UtcNow.Ticks;
-            var taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(nowTicks, allTaskIndexShardKeysToRead);
+            var toTicks = Timestamp.Now.Ticks;
+            var taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(toTicks, allTaskIndexShardKeysToRead);
             Log.For(this).InfoFormat("Number of live minimalStartTicksIndex records for topic '{0}': {1}", taskTopic, taskIndexRecords.Length);
             foreach(var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {

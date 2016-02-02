@@ -251,7 +251,7 @@ namespace RemoteQueue.Handling
         {
             var nowTicks = Timestamp.Now.Ticks;
             var newMinimalStartTicks = nowTicks + CassandraNameHelper.TaskMinimalStartTicksIndexTicksPartition;
-            var inProcessMeta = TryUpdateTaskState(oldMeta, taskIndexRecord, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds: null);
+            var inProcessMeta = TryUpdateTaskState(oldMeta, taskIndexRecord, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds : null);
             return inProcessMeta;
         }
 

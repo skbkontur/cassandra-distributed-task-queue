@@ -10,6 +10,7 @@ using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
 {
@@ -30,7 +31,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
             connection.AddColumn(meta.ParentTaskId, new Column
                 {
                     Name = meta.Id,
-                    Timestamp = DateTime.UtcNow.Ticks,
+                    Timestamp = Timestamp.Now.Ticks,
                     Value = serializer.Serialize(meta.Id)
                 });
         }

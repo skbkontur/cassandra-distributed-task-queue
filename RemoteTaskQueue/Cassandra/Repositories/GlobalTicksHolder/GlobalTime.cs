@@ -1,5 +1,7 @@
 ﻿using System;
 
+using SKBKontur.Catalogue.Objects;
+
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
     public class GlobalTime : IGlobalTime
@@ -11,14 +13,14 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 
         public long UpdateNowTicks()
         {
-            var newNowTicks = Math.Max(ticksHolder.GetMaxTicks(globalTicksName) + 1, DateTime.UtcNow.Ticks);
+            var newNowTicks = Math.Max(ticksHolder.GetMaxTicks(globalTicksName) + 1, Timestamp.Now.Ticks);
             ticksHolder.UpdateMaxTicks(globalTicksName, newNowTicks);
             return newNowTicks;
         }
 
         public long GetNowTicks()
         {
-            return Math.Max(ticksHolder.GetMaxTicks(globalTicksName), DateTime.UtcNow.Ticks);
+            return Math.Max(ticksHolder.GetMaxTicks(globalTicksName), Timestamp.Now.Ticks);
         }
 
         private readonly ITicksHolder ticksHolder;
