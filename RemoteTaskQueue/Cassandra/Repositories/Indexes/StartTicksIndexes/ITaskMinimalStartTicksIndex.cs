@@ -9,9 +9,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         [CanBeNull]
         LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskIndexShardKey taskIndexShardKey);
 
-        void AddRecord([NotNull] TaskIndexRecord taskIndexRecord);
+        void AddRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp);
 
-        void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord);
+        void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp);
 
         [NotNull]
         IEnumerable<TaskIndexRecord> GetRecords([NotNull] TaskIndexShardKey taskIndexShardKey, long toTicks, int batchSize);

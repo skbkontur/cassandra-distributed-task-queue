@@ -13,6 +13,7 @@ using log4net;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
@@ -47,6 +48,7 @@ namespace RemoteQueue.Handling
             handleTasksMetaStorage = remoteTaskQueueInternals.HandleTasksMetaStorage;
             taskMinimalStartTicksIndex = remoteTaskQueueInternals.TaskMinimalStartTicksIndex;
             remoteTaskQueueProfiler = remoteTaskQueueInternals.RemoteTaskQueueProfiler;
+            globalTime = remoteTaskQueueInternals.GlobalTime;
         }
 
         public LocalTaskProcessingResult RunTask()
@@ -54,7 +56,7 @@ namespace RemoteQueue.Handling
             if(taskMeta == null)
             {
                 logger.ErrorFormat("Удаляем запись индекса, для которой не записалась мета: {0}", taskIndexRecord);
-                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
+                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
                 return LocalTaskProcessingResult.Undefined;
             }
             var nowTicks = Timestamp.Now.Ticks;
@@ -64,7 +66,7 @@ namespace RemoteQueue.Handling
                 if(taskIndexRecord.MinimalStartTicks < nowTicks - maxAllowedIndexInconsistencyDuration.Ticks)
                 {
                     logger.ErrorFormat("Удаляем зависшую запись индекса: {0}", taskIndexRecord);
-                    taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
+                    taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
                 }
                 return LocalTaskProcessingResult.Undefined;
             }
@@ -158,8 +160,9 @@ namespace RemoteQueue.Handling
                 var newIndexRecord = handleTasksMetaStorage.FormatIndexRecord(taskMeta);
                 logger.ErrorFormat("MinimalStartTicks ({0}) задачи '{1}' в состоянии {2} больше, чем nowTicks ({3}), поэтому не берем задачу в обработку и чиним индекс; oldIndexRecord: {4}; newIndexRecord: {5}",
                                    oldMeta.MinimalStartTicks, oldMeta.Id, oldMeta.State, nowTicks, taskIndexRecord, newIndexRecord);
-                taskMinimalStartTicksIndex.AddRecord(newIndexRecord);
-                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
+                var globalNowTicks = globalTime.UpdateNowTicks();
+                taskMinimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks);
+                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalNowTicks);
                 return LocalTaskProcessingResult.Undefined;
             }
 
@@ -288,6 +291,7 @@ namespace RemoteQueue.Handling
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
+        private readonly IGlobalTime globalTime;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
         private static readonly TimeSpan maxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);

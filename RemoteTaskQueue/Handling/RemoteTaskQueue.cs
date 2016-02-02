@@ -43,7 +43,7 @@ namespace RemoteQueue.Handling
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
             var ticksHolder = new TicksHolder(cassandraCluster, serializer, cassandraSettings);
             GlobalTime = new GlobalTime(ticksHolder);
-            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, GlobalTime, new OldestLiveRecordTicksHolder(ticksHolder));
+            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, new OldestLiveRecordTicksHolder(ticksHolder));
             var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings);
             var eventLongRepository = new EventLogRepository(serializer, GlobalTime, parameters, ticksHolder);
             childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaStorage);

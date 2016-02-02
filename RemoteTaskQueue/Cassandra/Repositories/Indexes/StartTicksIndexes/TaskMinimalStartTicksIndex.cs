@@ -6,7 +6,6 @@ using GroBuf;
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Catalogue.Objects;
@@ -16,11 +15,10 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class TaskMinimalStartTicksIndex : ColumnFamilyRepositoryBase, ITaskMinimalStartTicksIndex
     {
-        public TaskMinimalStartTicksIndex(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder)
+        public TaskMinimalStartTicksIndex(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder)
             : base(parameters, ColumnFamilyName)
         {
             this.serializer = serializer;
-            this.globalTime = globalTime;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
         }
 
@@ -30,7 +28,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return oldestLiveRecordTicksHolder.TryGetCurrentMarkerValue(taskIndexShardKey).With(x => x.State);
         }
 
-        public void AddRecord([NotNull] TaskIndexRecord taskIndexRecord)
+        public void AddRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp)
         {
             oldestLiveRecordTicksHolder.MoveMarkerBackwardIfNecessary(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
             var connection = RetrieveColumnFamilyConnection();
@@ -39,17 +37,18 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             connection.AddColumn(rowKey, new Column
                 {
                     Name = columnName,
-                    Timestamp = globalTime.GetNowTicks(),
-                    Value = serializer.Serialize(taskIndexRecord.TaskId)
+                    Timestamp = timestamp,
+                    Value = serializer.Serialize(taskIndexRecord.TaskId),
+                    TTL = null,
                 });
         }
 
-        public void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord)
+        public void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp)
         {
             var connection = RetrieveColumnFamilyConnection();
             var rowKey = CassandraNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
             var columnName = CassandraNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
-            connection.DeleteColumn(rowKey, columnName, (Timestamp.Now + TimeSpan.FromMinutes(1)).Ticks);
+            connection.DeleteColumn(rowKey, columnName, timestamp);
         }
 
         [NotNull]
@@ -99,7 +98,6 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public const string ColumnFamilyName = "TaskMinimalStartTicksIndex";
 
         private readonly ISerializer serializer;
-        private readonly IGlobalTime globalTime;
         private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;
         private readonly object locker = new object();
         private readonly Dictionary<TaskIndexShardKey, Timestamp> lastBigOverlapMomentsByShardKey = new Dictionary<TaskIndexShardKey, Timestamp>();

@@ -62,12 +62,12 @@ namespace RemoteQueue.Cassandra.Repositories
             taskMeta.LastModificationTicks = nowTicks;
             eventLogRepository.AddEvent(taskMeta.Id, nowTicks);
             var newIndexRecord = FormatIndexRecord(taskMeta);
-            minimalStartTicksIndex.AddRecord(newIndexRecord);
+            minimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks);
             if(taskMeta.State == TaskState.New)
                 childTaskIndex.AddMeta(taskMeta);
             taskMetaStorage.Write(taskMeta, globalNowTicks);
             if(oldTaskIndexRecord != null)
-                minimalStartTicksIndex.RemoveRecord(oldTaskIndexRecord);
+                minimalStartTicksIndex.RemoveRecord(oldTaskIndexRecord, globalNowTicks);
             return newIndexRecord;
         }
 
