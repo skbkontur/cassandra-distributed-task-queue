@@ -53,20 +53,25 @@ namespace RemoteQueue.Handling
         {
             if(taskMeta == null)
             {
-                logger.InfoFormat("Удаляем запись индекса, для которой не записалась мета: {0}", taskIndexRecord);
-                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
-                return LocalTaskProcessingResult.Undefined;
-            }
-            if(taskMeta.State == TaskState.Finished || taskMeta.State == TaskState.Fatal || taskMeta.State == TaskState.Canceled)
-            {
-                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskIndexRecord.TaskId, taskMeta.State);
+                logger.ErrorFormat("Удаляем запись индекса, для которой не записалась мета: {0}", taskIndexRecord);
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
                 return LocalTaskProcessingResult.Undefined;
             }
             var nowTicks = Timestamp.Now.Ticks;
-            if(taskMeta.MinimalStartTicks > nowTicks)
+            if(taskMeta.State == TaskState.Finished || taskMeta.State == TaskState.Fatal || taskMeta.State == TaskState.Canceled)
             {
-                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем nowTicks ({2}), поэтому не берем задачу в обработку, ждем.", taskMeta.MinimalStartTicks, taskMeta.Id, nowTicks);
+                logger.InfoFormat("Даже не пытаемся обработать таску '{0}', потому что она уже находится в состоянии '{1}'", taskIndexRecord.TaskId, taskMeta.State);
+                if(taskIndexRecord.MinimalStartTicks < nowTicks - maxAllowedIndexInconsistencyDuration.Ticks)
+                {
+                    logger.ErrorFormat("Удаляем зависшую запись индекса: {0}", taskIndexRecord);
+                    taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
+                }
+                return LocalTaskProcessingResult.Undefined;
+            }
+            if(taskMeta.MinimalStartTicks > nowTicks && taskIndexRecord.MinimalStartTicks > nowTicks - maxAllowedIndexInconsistencyDuration.Ticks)
+            {
+                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' в состоянии {2} больше, чем nowTicks ({3}), поэтому не берем задачу в обработку, ждем; taskIndexRecord: {4}",
+                                  taskMeta.MinimalStartTicks, taskMeta.Id, taskMeta.State, nowTicks, taskIndexRecord);
                 return LocalTaskProcessingResult.Undefined;
             }
             IRemoteLock taskGroupRemoteLock = null;
@@ -131,7 +136,6 @@ namespace RemoteQueue.Handling
             TaskMetaInformation oldMeta;
             try
             {
-                //note тут обязательно надо перечитывать мету
                 var task = handleTaskCollection.GetTask(taskIndexRecord.TaskId);
                 oldMeta = task.Meta;
                 taskData = task.Data;
@@ -142,16 +146,19 @@ namespace RemoteQueue.Handling
                 return LocalTaskProcessingResult.Undefined;
             }
 
-            var nowTicks = Timestamp.Now.Ticks;
-            if(oldMeta.MinimalStartTicks > nowTicks)
+            if(oldMeta.State == TaskState.Finished || oldMeta.State == TaskState.Fatal || oldMeta.State == TaskState.Canceled)
             {
-                logger.InfoFormat("MinimalStartTicks ({0}) задачи '{1}' больше, чем nowTicks ({2}), поэтому не берем задачу в обработку, ждем.", oldMeta.MinimalStartTicks, oldMeta.Id, nowTicks);
+                logger.InfoFormat("Другая очередь успела обработать задачу: {0}", taskIndexRecord);
                 return LocalTaskProcessingResult.Undefined;
             }
 
-            if(oldMeta.State == TaskState.Finished || oldMeta.State == TaskState.Fatal || oldMeta.State == TaskState.Canceled)
+            var nowTicks = Timestamp.Now.Ticks;
+            if(oldMeta.MinimalStartTicks > nowTicks)
             {
-                logger.InfoFormat("Другая очередь успела обработать задачу '{0}'", taskIndexRecord.TaskId);
+                var newIndexRecord = handleTasksMetaStorage.FormatIndexRecord(taskMeta);
+                logger.ErrorFormat("MinimalStartTicks ({0}) задачи '{1}' в состоянии {2} больше, чем nowTicks ({3}), поэтому не берем задачу в обработку и чиним индекс; oldIndexRecord: {4}; newIndexRecord: {5}",
+                                   oldMeta.MinimalStartTicks, oldMeta.Id, oldMeta.State, nowTicks, taskIndexRecord, newIndexRecord);
+                taskMinimalStartTicksIndex.AddRecord(newIndexRecord);
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord);
                 return LocalTaskProcessingResult.Undefined;
             }
@@ -161,7 +168,7 @@ namespace RemoteQueue.Handling
             var inProcessMeta = TrySwitchToInProcessState(oldMeta);
             if(inProcessMeta == null)
             {
-                logger.ErrorFormat("Не удалось обновить метаинформацию у задачи '{0}'.", oldMeta);
+                logger.ErrorFormat("Не удалось начать обработку задачи: {0}", oldMeta);
                 return LocalTaskProcessingResult.Undefined;
             }
 
@@ -283,5 +290,6 @@ namespace RemoteQueue.Handling
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
+        private static readonly TimeSpan maxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
     }
 }
