@@ -131,12 +131,20 @@ namespace RemoteQueue.Handling
             var nowTicks = Timestamp.Now.Ticks;
             if(oldMeta.MinimalStartTicks > nowTicks)
             {
-                var newIndexRecord = handleTasksMetaStorage.FormatIndexRecord(taskMeta);
-                logger.ErrorFormat("MinimalStartTicks ({0}) задачи '{1}' в состоянии {2} больше, чем nowTicks ({3}), поэтому не берем задачу в обработку и чиним индекс; oldIndexRecord: {4}; newIndexRecord: {5}",
-                                   oldMeta.MinimalStartTicks, oldMeta.Id, oldMeta.State, nowTicks, taskIndexRecord, newIndexRecord);
-                var globalNowTicks = globalTime.UpdateNowTicks();
-                taskMinimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks);
-                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalNowTicks);
+                if(taskIndexRecord.MinimalStartTicks > nowTicks - maxAllowedIndexInconsistencyDuration.Ticks)
+                {
+                    logger.InfoFormat("После перечитывания меты под локом MinimalStartTicks ({0}) задачи '{1}' в состоянии {2} больше, чем nowTicks ({3}), поэтому не берем задачу в обработку, ждем; taskIndexRecord: {4}",
+                                      oldMeta.MinimalStartTicks, oldMeta.Id, oldMeta.State, nowTicks, taskIndexRecord);
+                }
+                else
+                {
+                    var newIndexRecord = handleTasksMetaStorage.FormatIndexRecord(oldMeta);
+                    logger.ErrorFormat("После перечитывания меты под локом MinimalStartTicks ({0}) задачи '{1}' в состоянии {2} больше, чем nowTicks ({3}), поэтому не берем задачу в обработку и чиним индекс; oldIndexRecord: {4}; newIndexRecord: {5}",
+                                       oldMeta.MinimalStartTicks, oldMeta.Id, oldMeta.State, nowTicks, taskIndexRecord, newIndexRecord);
+                    var globalNowTicks = globalTime.UpdateNowTicks();
+                    taskMinimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks);
+                    taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalNowTicks);
+                }
                 return LocalTaskProcessingResult.Undefined;
             }
 
