@@ -34,15 +34,19 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             var lastExceptionInfo = TryGetLastExceptionInfo(taskMeta);
             if(lastExceptionInfo != null && lastExceptionInfo.ExceptionMessageInfo == newExceptionInfo.ExceptionMessageInfo)
                 return false;
-            var newExceptionInfoBytes = serializer.Serialize(newExceptionInfo);
             var newExceptionInfoId = TimeGuid.NowGuid();
             var timestamp = newExceptionInfoId.GetTimestamp().Ticks;
-            TimeGuid oldExceptionInfoId;
-            newExceptionInfoIds = taskMeta.AddExceptionInfoId(newExceptionInfoId, out oldExceptionInfoId);
-            legacyBlobStorage.Write(taskMeta.Id, newExceptionInfo, timestamp);
-            timeBasedBlobStorage.Write(taskMeta.Id, newExceptionInfoId, newExceptionInfoBytes, timestamp);
-            if(oldExceptionInfoId != null)
-                timeBasedBlobStorage.Delete(taskMeta.Id, oldExceptionInfoId, timestamp);
+            if(!taskMeta.IsTimeBased())
+                legacyBlobStorage.Write(taskMeta.Id, newExceptionInfo, timestamp);
+            else
+            {
+                TimeGuid oldExceptionInfoId;
+                newExceptionInfoIds = taskMeta.AddExceptionInfoId(newExceptionInfoId, out oldExceptionInfoId);
+                var newExceptionInfoBytes = serializer.Serialize(newExceptionInfo);
+                timeBasedBlobStorage.Write(taskMeta.Id, newExceptionInfoId, newExceptionInfoBytes, timestamp);
+                if(oldExceptionInfoId != null)
+                    timeBasedBlobStorage.Delete(taskMeta.Id, oldExceptionInfoId, timestamp);
+            }
             return true;
         }
 
@@ -63,8 +67,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public void Delete([NotNull] TaskMetaInformation taskMeta)
         {
             var timestamp = Timestamp.Now.Ticks;
-            legacyBlobStorage.Delete(taskMeta.Id, timestamp);
-            if(taskMeta.IsTimeBased())
+            if(!taskMeta.IsTimeBased())
+                legacyBlobStorage.Delete(taskMeta.Id, timestamp);
+            else
             {
                 foreach(var blobId in taskMeta.GetTaskExceptionInfoIds())
                     timeBasedBlobStorage.Delete(taskMeta.Id, blobId, timestamp);

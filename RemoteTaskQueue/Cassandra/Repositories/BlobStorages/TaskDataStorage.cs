@@ -12,6 +12,7 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
@@ -27,9 +28,11 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         [NotNull]
         public BlobId Write([NotNull] string taskId, [NotNull] byte[] taskData)
         {
+            TimeGuid timeGuid;
+            if(!TimeGuid.TryParse(taskId, out timeGuid))
+                throw new InvalidProgramStateException(string.Format("TaskId is not time-based: {0}", taskId));
             var blobId = TimeBasedBlobStorage.GenerateNewBlobId(taskData.Length);
             var timestamp = blobId.Id.GetTimestamp().Ticks;
-            legacyBlobStorage.Write(taskId, taskData, timestamp);
             timeBasedBlobStorage.Write(blobId, taskData, timestamp);
             return blobId;
         }
@@ -37,8 +40,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public void Delete([NotNull] TaskMetaInformation taskMeta)
         {
             var timestamp = Timestamp.Now.Ticks;
-            legacyBlobStorage.Delete(taskMeta.Id, timestamp);
-            if(taskMeta.IsTimeBased())
+            if(!taskMeta.IsTimeBased())
+                legacyBlobStorage.Delete(taskMeta.Id, timestamp);
+            else
                 timeBasedBlobStorage.Delete(taskMeta.GetTaskDataId(), timestamp);
         }
 

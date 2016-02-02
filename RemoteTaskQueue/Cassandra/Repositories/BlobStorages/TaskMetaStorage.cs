@@ -26,9 +26,10 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public void Write([NotNull] TaskMetaInformation taskMeta, long timestamp)
         {
-            legacyBlobStorage.Write(taskMeta.Id, taskMeta, timestamp);
             TimeGuid timeGuid;
-            if(TimeGuid.TryParse(taskMeta.Id, out timeGuid))
+            if(!TimeGuid.TryParse(taskMeta.Id, out timeGuid))
+                legacyBlobStorage.Write(taskMeta.Id, taskMeta, timestamp);
+            else
             {
                 var blobId = new BlobId(timeGuid, BlobType.Regular);
                 var taskMetaBytes = serializer.Serialize(taskMeta);
@@ -38,9 +39,10 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public void Delete([NotNull] string taskId, long timestamp)
         {
-            legacyBlobStorage.Delete(taskId, timestamp);
             TimeGuid timeGuid;
-            if(TimeGuid.TryParse(taskId, out timeGuid))
+            if(!TimeGuid.TryParse(taskId, out timeGuid))
+                legacyBlobStorage.Delete(taskId, timestamp);
+            else
                 timeBasedBlobStorage.Delete(new BlobId(timeGuid, BlobType.Regular), timestamp);
         }
 
