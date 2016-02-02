@@ -43,6 +43,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                     Name = columnAddress.ColumnName,
                     Value = value,
                     Timestamp = timestamp,
+                    TTL = null,
                 });
         }
 

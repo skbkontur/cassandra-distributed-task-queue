@@ -31,7 +31,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 {
                     Name = dataColumnName,
                     Timestamp = timestamp,
-                    Value = serializer.Serialize(element)
+                    Value = serializer.Serialize(element),
+                    TTL = null,
                 });
         }
 
