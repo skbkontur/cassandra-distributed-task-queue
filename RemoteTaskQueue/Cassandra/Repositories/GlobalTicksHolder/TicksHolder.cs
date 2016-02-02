@@ -1,66 +1,88 @@
+using System;
+using System.Collections.Concurrent;
+
 using GroBuf;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Primitives;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
     // todo (maybe-optimize): по-хорошему надо распилить на две CF
     // здесь реализуется не очень хороший паттерн - в одной CF метки времени для записи выбираются разными способами: ticks и long.MaxValue - ticks
-    public class TicksHolder : ColumnFamilyRepositoryBase, ITicksHolder
+    public class TicksHolder : ITicksHolder
     {
-        public TicksHolder(ISerializer serializer, IColumnFamilyRepositoryParameters parameters)
-            : base(parameters, columnFamilyName)
+        public TicksHolder(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings)
         {
+            this.cassandraCluster = cassandraCluster;
             this.serializer = serializer;
+            keyspaceName = cassandraSettings.QueueKeyspace;
         }
 
         public void UpdateMaxTicks([NotNull] string name, long ticks)
         {
-            var connection = RetrieveColumnFamilyConnection();
-            connection.AddColumn(name, new Column
+            long maxTicks;
+            if(persistedMaxTicks.TryGetValue(name, out maxTicks) && ticks <= maxTicks)
+                return;
+            RetrieveColumnFamilyConnection().AddColumn(name, new Column
                 {
                     Name = maxTicksColumnName,
                     Timestamp = ticks,
-                    Value = serializer.Serialize(ticks)
+                    Value = serializer.Serialize(ticks),
+                    TTL = null,
                 });
+            persistedMaxTicks.AddOrUpdate(name, ticks, (key, oldMaxTicks) => Math.Max(ticks, oldMaxTicks));
         }
 
         public long GetMaxTicks([NotNull] string name)
         {
-            var connection = RetrieveColumnFamilyConnection();
             Column column;
-            if(!connection.TryGetColumn(name, maxTicksColumnName, out column))
+            if(!RetrieveColumnFamilyConnection().TryGetColumn(name, maxTicksColumnName, out column))
                 return 0;
             return serializer.Deserialize<long>(column.Value);
         }
 
         public void UpdateMinTicks([NotNull] string name, long ticks)
         {
-            var connection = RetrieveColumnFamilyConnection();
-            connection.AddColumn(name, new Column
+            long minTicks;
+            if(persistedMinTicks.TryGetValue(name, out minTicks) && ticks >= minTicks)
+                return;
+            RetrieveColumnFamilyConnection().AddColumn(name, new Column
                 {
                     Name = minTicksColumnName,
                     Timestamp = long.MaxValue - ticks,
-                    Value = serializer.Serialize(long.MaxValue - ticks)
+                    Value = serializer.Serialize(long.MaxValue - ticks),
+                    TTL = null,
                 });
+            persistedMinTicks.AddOrUpdate(name, ticks, (key, oldMinTicks) => Math.Min(ticks, oldMinTicks));
         }
 
         public long GetMinTicks([NotNull] string name)
         {
-            var connection = RetrieveColumnFamilyConnection();
             Column column;
-            if(!connection.TryGetColumn(name, minTicksColumnName, out column))
+            if(!RetrieveColumnFamilyConnection().TryGetColumn(name, minTicksColumnName, out column))
                 return 0;
             return long.MaxValue - serializer.Deserialize<long>(column.Value);
         }
 
-        public const string columnFamilyName = "ticksHolder";
+        [NotNull]
+        private IColumnFamilyConnection RetrieveColumnFamilyConnection()
+        {
+            return cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, ColumnFamilyName);
+        }
+
+        public const string ColumnFamilyName = "ticksHolder";
         private const string maxTicksColumnName = "MaxTicks";
         private const string minTicksColumnName = "MinTicks";
+        private readonly ICassandraCluster cassandraCluster;
         private readonly ISerializer serializer;
+        private readonly string keyspaceName;
+        private readonly ConcurrentDictionary<string, long> persistedMaxTicks = new ConcurrentDictionary<string, long>();
+        private readonly ConcurrentDictionary<string, long> persistedMinTicks = new ConcurrentDictionary<string, long>();
     }
 }

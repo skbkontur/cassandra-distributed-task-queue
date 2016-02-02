@@ -23,8 +23,8 @@ namespace RemoteQueue.Configuration
             foreach(var cfName in TaskExceptionInfoStorage.GetColumnFamilyNames())
                 cfNames.Add(cfName);
             cfNames.Add(ColumnFamilyRepositoryParameters.LockColumnFamily);
-            cfNames.Add(TicksHolder.columnFamilyName);
-            cfNames.Add(TaskMinimalStartTicksIndex.columnFamilyName);
+            cfNames.Add(TicksHolder.ColumnFamilyName);
+            cfNames.Add(TaskMinimalStartTicksIndex.ColumnFamilyName);
             cfNames.Add(EventLogRepository.columnFamilyName);
             cfNames.Add(ChildTaskIndex.columnFamilyName);
         }

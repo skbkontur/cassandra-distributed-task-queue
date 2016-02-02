@@ -41,7 +41,7 @@ namespace RemoteQueue.Handling
             Serializer = serializer;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
             var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
-            var ticksHolder = new TicksHolder(serializer, parameters);
+            var ticksHolder = new TicksHolder(cassandraCluster, serializer, cassandraSettings);
             GlobalTime = new GlobalTime(ticksHolder);
             TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(parameters, serializer, GlobalTime, new OldestLiveRecordTicksHolder(ticksHolder));
             var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings);

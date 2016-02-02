@@ -17,7 +17,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
     public class TaskMinimalStartTicksIndex : ColumnFamilyRepositoryBase, ITaskMinimalStartTicksIndex
     {
         public TaskMinimalStartTicksIndex(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IGlobalTime globalTime, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder)
-            : base(parameters, columnFamilyName)
+            : base(parameters, ColumnFamilyName)
         {
             this.serializer = serializer;
             this.globalTime = globalTime;
@@ -96,7 +96,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             }
         }
 
-        public const string columnFamilyName = "TaskMinimalStartTicksIndex";
+        public const string ColumnFamilyName = "TaskMinimalStartTicksIndex";
 
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
