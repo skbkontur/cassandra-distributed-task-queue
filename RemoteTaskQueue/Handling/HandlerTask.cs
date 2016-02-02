@@ -106,32 +106,6 @@ namespace RemoteQueue.Handling
             }
         }
 
-        [CanBeNull]
-        private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, [NotNull] TaskIndexRecord oldTaskIndexRecord, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState newState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
-        {
-            var newMeta = allFieldsSerializer.Copy(oldMeta);
-            if(newState == oldMeta.State)
-                newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
-            newMeta.MinimalStartTicks = newMinimalStartTicks;
-            newMeta.StartExecutingTicks = startExecutingTicks;
-            newMeta.FinishExecutingTicks = finishExecutingTicks;
-            newMeta.Attempts = attempts;
-            newMeta.State = newState;
-            if(newExceptionInfoIds != null && newExceptionInfoIds.Any())
-                newMeta.TaskExceptionInfoIds = newExceptionInfoIds;
-            try
-            {
-                handleTasksMetaStorage.AddMeta(newMeta, oldTaskIndexRecord);
-                logger.InfoFormat("Changed task state. Task = {0}", newMeta);
-                return newMeta;
-            }
-            catch(Exception e)
-            {
-                logger.Error(string.Format("Can't update task state for: {0}", oldMeta), e);
-                return null;
-            }
-        }
-
         private LocalTaskProcessingResult ProcessTask()
         {
             byte[] taskData;
@@ -277,6 +251,32 @@ namespace RemoteQueue.Handling
             var nowTicks = Timestamp.Now.Ticks;
             var inProcessTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(inProcessMeta);
             TryUpdateTaskState(inProcessMeta, inProcessTaskIndexRecord, nowTicks + rerunDelay.Ticks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, waitingForRerunState, newExceptionInfoIds);
+        }
+
+        [CanBeNull]
+        private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, [NotNull] TaskIndexRecord oldTaskIndexRecord, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState newState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
+        {
+            var newMeta = allFieldsSerializer.Copy(oldMeta);
+            if(newState == oldMeta.State)
+                newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
+            newMeta.MinimalStartTicks = newMinimalStartTicks;
+            newMeta.StartExecutingTicks = startExecutingTicks;
+            newMeta.FinishExecutingTicks = finishExecutingTicks;
+            newMeta.Attempts = attempts;
+            newMeta.State = newState;
+            if(newExceptionInfoIds != null && newExceptionInfoIds.Any())
+                newMeta.TaskExceptionInfoIds = newExceptionInfoIds;
+            try
+            {
+                handleTasksMetaStorage.AddMeta(newMeta, oldTaskIndexRecord);
+                logger.InfoFormat("Changed task state. Task = {0}", newMeta);
+                return newMeta;
+            }
+            catch(Exception e)
+            {
+                logger.Error(string.Format("Can't update task state for: {0}", oldMeta), e);
+                return null;
+            }
         }
 
         private readonly TaskIndexRecord taskIndexRecord;

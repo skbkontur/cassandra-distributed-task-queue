@@ -5,21 +5,24 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Primitives;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
-    public class TaskMinimalStartTicksIndex : ColumnFamilyRepositoryBase, ITaskMinimalStartTicksIndex
+    public class TaskMinimalStartTicksIndex : ITaskMinimalStartTicksIndex
     {
-        public TaskMinimalStartTicksIndex(IColumnFamilyRepositoryParameters parameters, ISerializer serializer, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder)
-            : base(parameters, ColumnFamilyName)
+        public TaskMinimalStartTicksIndex(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder)
         {
+            this.cassandraCluster = cassandraCluster;
             this.serializer = serializer;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
+            keyspaceName = cassandraSettings.QueueKeyspace;
         }
 
         [CanBeNull]
@@ -31,10 +34,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public void AddRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp)
         {
             oldestLiveRecordTicksHolder.MoveMarkerBackwardIfNecessary(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
-            var connection = RetrieveColumnFamilyConnection();
             var rowKey = CassandraNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
             var columnName = CassandraNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
-            connection.AddColumn(rowKey, new Column
+            RetrieveColumnFamilyConnection().AddColumn(rowKey, new Column
                 {
                     Name = columnName,
                     Timestamp = timestamp,
@@ -45,10 +47,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp)
         {
-            var connection = RetrieveColumnFamilyConnection();
             var rowKey = CassandraNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
             var columnName = CassandraNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
-            connection.DeleteColumn(rowKey, columnName, timestamp);
+            RetrieveColumnFamilyConnection().DeleteColumn(rowKey, columnName, timestamp);
         }
 
         [NotNull]
@@ -58,8 +59,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var fromTicks = TryGetFromTicks(taskIndexShardKey, out liveRecordTicksMarker);
             if(!fromTicks.HasValue)
                 return new TaskIndexRecord[0];
-            var connection = RetrieveColumnFamilyConnection();
-            return new GetEventsEnumerable(liveRecordTicksMarker, serializer, connection, fromTicks.Value, toTicks, batchSize);
+            return new GetEventsEnumerable(liveRecordTicksMarker, serializer, RetrieveColumnFamilyConnection(), fromTicks.Value, toTicks, batchSize);
         }
 
         private long? TryGetFromTicks([NotNull] TaskIndexShardKey taskIndexShardKey, out ILiveRecordTicksMarker liveRecordTicksMarker)
@@ -95,10 +95,18 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             }
         }
 
+        [NotNull]
+        private IColumnFamilyConnection RetrieveColumnFamilyConnection()
+        {
+            return cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, ColumnFamilyName);
+        }
+
         public const string ColumnFamilyName = "TaskMinimalStartTicksIndex";
 
+        private readonly ICassandraCluster cassandraCluster;
         private readonly ISerializer serializer;
         private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;
+        private readonly string keyspaceName;
         private readonly object locker = new object();
         private readonly Dictionary<TaskIndexShardKey, Timestamp> lastBigOverlapMomentsByShardKey = new Dictionary<TaskIndexShardKey, Timestamp>();
     }
