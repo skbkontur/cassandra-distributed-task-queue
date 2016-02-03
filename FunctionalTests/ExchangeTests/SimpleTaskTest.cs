@@ -27,6 +27,7 @@ namespace FunctionalTests.ExchangeTests
         }
 
         [Test]
+        [Repeat(10)]
         public void TestRun()
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();

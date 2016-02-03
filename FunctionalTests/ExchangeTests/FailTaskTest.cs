@@ -79,6 +79,7 @@ namespace FunctionalTests.ExchangeTests
         }
 
         [Test]
+        [Repeat(10)]
         public void TestOneFailTask()
         {
             var taskId = AddTask(3);
