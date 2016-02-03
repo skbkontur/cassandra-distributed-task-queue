@@ -26,17 +26,20 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 
         public void UpdateMaxTicks([NotNull] string name, long ticks)
         {
-            long maxTicks;
-            if(persistedMaxTicks.TryGetValue(name, out maxTicks) && ticks <= maxTicks)
-                return;
-            RetrieveColumnFamilyConnection().AddColumn(name, new Column
-                {
-                    Name = maxTicksColumnName,
-                    Timestamp = ticks,
-                    Value = serializer.Serialize(ticks),
-                    TTL = null,
-                });
-            persistedMaxTicks.AddOrUpdate(name, ticks, (key, oldMaxTicks) => Math.Max(ticks, oldMaxTicks));
+            //lock(locker)
+            {
+                /*long? maxTicks;
+                if(persistedMaxTicks.TryGetValue(name, out maxTicks) && maxTicks.HasValue && ticks <= maxTicks.Value)
+                    return;*/
+                RetrieveColumnFamilyConnection().AddColumn(name, new Column
+                    {
+                        Name = maxTicksColumnName,
+                        Timestamp = ticks,
+                        Value = serializer.Serialize(ticks),
+                        TTL = null,
+                    });
+                //persistedMaxTicks.AddOrUpdate(name, ticks, (key, oldMaxTicks) => oldMaxTicks.HasValue ? Math.Max(ticks, oldMaxTicks.Value) : ticks);
+            }
         }
 
         public long GetMaxTicks([NotNull] string name)
@@ -49,17 +52,20 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 
         public void UpdateMinTicks([NotNull] string name, long ticks)
         {
-            long minTicks;
-            if(persistedMinTicks.TryGetValue(name, out minTicks) && ticks >= minTicks)
-                return;
-            RetrieveColumnFamilyConnection().AddColumn(name, new Column
-                {
-                    Name = minTicksColumnName,
-                    Timestamp = long.MaxValue - ticks,
-                    Value = serializer.Serialize(long.MaxValue - ticks),
-                    TTL = null,
-                });
-            persistedMinTicks.AddOrUpdate(name, ticks, (key, oldMinTicks) => Math.Min(ticks, oldMinTicks));
+            //lock(locker)
+            {
+                /*long? minTicks;
+                if(persistedMinTicks.TryGetValue(name, out minTicks) && minTicks.HasValue && ticks >= minTicks.Value)
+                    return;*/
+                RetrieveColumnFamilyConnection().AddColumn(name, new Column
+                    {
+                        Name = minTicksColumnName,
+                        Timestamp = long.MaxValue - ticks,
+                        Value = serializer.Serialize(long.MaxValue - ticks),
+                        TTL = null,
+                    });
+                //persistedMinTicks.AddOrUpdate(name, ticks, (key, oldMinTicks) => oldMinTicks.HasValue ? Math.Min(ticks, oldMinTicks.Value) : ticks);
+            }
         }
 
         public long GetMinTicks([NotNull] string name)
@@ -76,13 +82,20 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
             return cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, ColumnFamilyName);
         }
 
+        public void ResetInMemoryState()
+        {
+            persistedMaxTicks.Clear();
+            persistedMinTicks.Clear();
+        }
+
         public const string ColumnFamilyName = "ticksHolder";
         private const string maxTicksColumnName = "MaxTicks";
         private const string minTicksColumnName = "MinTicks";
         private readonly ICassandraCluster cassandraCluster;
         private readonly ISerializer serializer;
         private readonly string keyspaceName;
-        private readonly ConcurrentDictionary<string, long> persistedMaxTicks = new ConcurrentDictionary<string, long>();
-        private readonly ConcurrentDictionary<string, long> persistedMinTicks = new ConcurrentDictionary<string, long>();
+        private readonly object locker = new object();
+        private readonly ConcurrentDictionary<string, long?> persistedMaxTicks = new ConcurrentDictionary<string, long?>();
+        private readonly ConcurrentDictionary<string, long?> persistedMinTicks = new ConcurrentDictionary<string, long?>();
     }
 }
