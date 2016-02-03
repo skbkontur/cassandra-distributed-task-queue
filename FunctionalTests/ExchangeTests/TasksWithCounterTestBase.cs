@@ -12,6 +12,7 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
@@ -19,6 +20,14 @@ namespace FunctionalTests.ExchangeTests
 {
     public abstract class TasksWithCounterTestBase : FunctionalTestBase
     {
+        public override void SetUp()
+        {
+            base.SetUp();
+            testCounterRepository = Container.Get<ITestCounterRepository>();
+            taskQueue = Container.Get<IRemoteTaskQueue>();
+            handleTaskCollection = Container.Get<IHandleTaskCollection>();
+        }
+
         protected void Wait(string[] taskIds, TaskState terminalState, string taskName, TimeSpan timeout)
         {
             var sw = Stopwatch.StartNew();
@@ -50,6 +59,7 @@ namespace FunctionalTests.ExchangeTests
             }
         }
 
+        protected IRemoteTaskQueue taskQueue;
         protected IHandleTaskCollection handleTaskCollection;
         protected ITestCounterRepository testCounterRepository;
     }

@@ -1,57 +1,17 @@
 ﻿using System;
 
 using ExchangeService.Exceptions;
-using ExchangeService.UserClasses;
-
-using GroBuf;
-using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
-using RemoteQueue.Profiling;
-using RemoteQueue.Settings;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
-using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
 namespace FunctionalTests.ExchangeTests
 {
     public class FailTaskTest : TasksWithCounterTestBase
     {
-        public override void SetUp()
-        {
-            base.SetUp();
-            var cassandraSettings = Container.Get<ICassandraSettings>();
-            var cassandraCluster = Container.Get<ICassandraCluster>();
-            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
-            var serializer = new Serializer(new AllPropertiesExtractor());
-            var ticksHolder = Container.Get<ITicksHolder>();
-            var globalTime = new GlobalTime(ticksHolder);
-            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings);
-            var taskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, cassandraSettings, new OldestLiveRecordTicksHolder(ticksHolder));
-            var eventLongRepository = new EventLogRepository(serializer, globalTime, parameters, ticksHolder);
-            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings);
-            var childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaStorage);
-            var handleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, taskMinimalStartTicksIndex, eventLongRepository, globalTime, childTaskIndex, Container.Get<ITaskDataRegistry>());
-            handleTaskCollection = new HandleTaskCollection(handleTasksMetaStorage, taskDataStorage, new EmptyRemoteTaskQueueProfiler());
-            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
-            var remoteLockCreator = new RemoteLocker(new CassandraRemoteLockImplementation(parameters.CassandraCluster, serializer, remoteLockImplementationSettings), new RemoteLockerMetrics(parameters.Settings.QueueKeyspace));
-            testCounterRepository = new TestCounterRepository(cassandraCluster, serializer, cassandraSettings, remoteLockCreator);
-            taskQueue = Container.Get<IRemoteTaskQueue>();
-        }
-
         [Test]
         public void TestTooLateOneFailTask()
         {
@@ -119,7 +79,5 @@ namespace FunctionalTests.ExchangeTests
         {
             Wait(taskIds, TaskState.Fatal, "FakeFailTaskData", timeout);
         }
-
-        private IRemoteTaskQueue taskQueue;
     }
 }

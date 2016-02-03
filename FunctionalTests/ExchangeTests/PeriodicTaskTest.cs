@@ -1,11 +1,8 @@
 ﻿using System;
 
-using ExchangeService.UserClasses;
-
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
@@ -14,14 +11,6 @@ namespace FunctionalTests.ExchangeTests
 {
     public class PeriodicTaskTest : TasksWithCounterTestBase
     {
-        public override void SetUp()
-        {
-            base.SetUp();
-            testCounterRepository = Container.Get<ITestCounterRepository>();
-            taskQueue = Container.Get<IRemoteTaskQueue>();
-            handleTaskCollection = Container.Get<IHandleTaskCollection>();
-        }
-
         [Test]
         [Repeat(10)]
         public void TestOnePeriodicTask()
@@ -65,7 +54,5 @@ namespace FunctionalTests.ExchangeTests
         {
             Wait(taskIds, TaskState.Finished, "FakePeriodicTaskData", TimeSpan.FromSeconds(5));
         }
-
-        private IRemoteTaskQueue taskQueue;
     }
 }
