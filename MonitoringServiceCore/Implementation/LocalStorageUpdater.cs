@@ -49,6 +49,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
             lock(lockObject)
             {
                 processedEvents.Clear();
+                globalTime.ResetInMemoryState();
             }
         }
 

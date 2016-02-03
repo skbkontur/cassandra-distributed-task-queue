@@ -57,6 +57,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Http
             ThrowIfDisabled();
             var ticks = globalTime.GetNowTicks();
             taskIndexController.SetMinTicksHack(ticks);
+            globalTime.ResetInMemoryState();
         }
 
         private readonly ITaskIndexController taskIndexController;

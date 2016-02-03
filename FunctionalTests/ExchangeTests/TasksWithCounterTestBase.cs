@@ -60,7 +60,7 @@ namespace FunctionalTests.ExchangeTests
         }
 
         protected IRemoteTaskQueue taskQueue;
-        protected IHandleTaskCollection handleTaskCollection;
+        private IHandleTaskCollection handleTaskCollection;
         protected ITestCounterRepository testCounterRepository;
     }
 }

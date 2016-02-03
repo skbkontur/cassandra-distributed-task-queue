@@ -23,6 +23,11 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
             return Math.Max(ticksHolder.GetMaxTicks(globalTicksName), Timestamp.Now.Ticks);
         }
 
+        public void ResetInMemoryState()
+        {
+            ticksHolder.ResetInMemoryState();
+        }
+
         private readonly ITicksHolder ticksHolder;
         private const string globalTicksName = "GlobalTicks2";
     }

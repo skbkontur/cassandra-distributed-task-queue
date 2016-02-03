@@ -4,5 +4,6 @@
     {
         long UpdateNowTicks();
         long GetNowTicks();
+        void ResetInMemoryState();
     }
 }
