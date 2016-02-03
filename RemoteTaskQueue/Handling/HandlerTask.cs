@@ -55,25 +55,14 @@ namespace RemoteQueue.Handling
         {
             if(taskMeta == null)
             {
-                logger.ErrorFormat("Удаляем запись индекса, для которой не записалась мета: {0}", taskIndexRecord);
+                logger.ErrorFormat("Удаляем запись индекса, для которой мета так и не записалась: {0}", taskIndexRecord);
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
                 return LocalTaskProcessingResult.Undefined;
             }
-            var now = Timestamp.Now;
-            if(taskMeta.State == TaskState.Finished || taskMeta.State == TaskState.Fatal || taskMeta.State == TaskState.Canceled)
+            var localNow = Timestamp.Now;
+            if(taskIndexRecord != handleTasksMetaStorage.FormatIndexRecord(taskMeta) && taskIndexRecord.MinimalStartTicks > localNow.Ticks - maxAllowedIndexInconsistencyDuration.Ticks)
             {
-                logger.InfoFormat("Даже не пытаемся обработать таску, потому что она уже находится в состоянии {0}: {1}", taskMeta.State, taskIndexRecord);
-                if(taskIndexRecord.MinimalStartTicks < now.Ticks - maxAllowedIndexInconsistencyDuration.Ticks)
-                {
-                    logger.ErrorFormat("Удаляем зависшую запись индекса: {0}", taskIndexRecord);
-                    taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
-                }
-                return LocalTaskProcessingResult.Undefined;
-            }
-            if(taskMeta.MinimalStartTicks > now.Ticks && taskIndexRecord.MinimalStartTicks > now.Ticks - maxAllowedIndexInconsistencyDuration.Ticks)
-            {
-                logger.InfoFormat("taskMeta.MinimalStartTicks ({0}) задачи {1} в состоянии {2} больше, чем now.Ticks ({3}), поэтому не берем задачу в обработку, ждем; taskIndexRecord: {4}",
-                                  new Timestamp(taskMeta.MinimalStartTicks), taskMeta.Id, taskMeta.State, now, taskIndexRecord);
+                logger.InfoFormat("taskIndexRecord != IndexRecord(taskMeta), поэтому ждем; taskMeta: {0}; taskIndexRecord: {1}; localNow: {2}", taskMeta, taskIndexRecord, localNow);
                 return LocalTaskProcessingResult.Undefined;
             }
             return TryProcessTaskExclusively();
@@ -127,28 +116,28 @@ namespace RemoteQueue.Handling
                 return LocalTaskProcessingResult.Undefined;
             }
 
-            if(oldMeta.State == TaskState.Finished || oldMeta.State == TaskState.Fatal || oldMeta.State == TaskState.Canceled)
+            var localNow = Timestamp.Now;
+            if(taskIndexRecord != handleTasksMetaStorage.FormatIndexRecord(oldMeta))
             {
-                logger.InfoFormat("Другая очередь успела обработать задачу: {0}", taskIndexRecord);
-                return LocalTaskProcessingResult.Undefined;
-            }
-
-            var now = Timestamp.Now;
-            if(oldMeta.MinimalStartTicks > now.Ticks)
-            {
-                if(taskIndexRecord.MinimalStartTicks > now.Ticks - maxAllowedIndexInconsistencyDuration.Ticks)
-                {
-                    logger.InfoFormat("После перечитывания меты под локом oldMeta.MinimalStartTicks ({0}) задачи {1} в состоянии {2} больше, чем now.Ticks ({3}), поэтому не берем задачу в обработку, ждем; taskIndexRecord: {4}",
-                                      new Timestamp(oldMeta.MinimalStartTicks), oldMeta.Id, oldMeta.State, now, taskIndexRecord);
-                }
+                if(taskIndexRecord.MinimalStartTicks > localNow.Ticks - maxAllowedIndexInconsistencyDuration.Ticks)
+                    logger.InfoFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta), поэтому ждем; oldMeta: {0}; taskIndexRecord: {1}; localNow: {2}", oldMeta, taskIndexRecord, localNow);
                 else
                 {
-                    var newIndexRecord = handleTasksMetaStorage.FormatIndexRecord(oldMeta);
-                    logger.ErrorFormat("После перечитывания меты под локом oldMeta.MinimalStartTicks ({0}) задачи {1} в состоянии {2} больше, чем now.Ticks ({3}), поэтому не берем задачу в обработку и чиним индекс; oldIndexRecord: {4}; newIndexRecord: {5}",
-                                       new Timestamp(oldMeta.MinimalStartTicks), oldMeta.Id, oldMeta.State, now, taskIndexRecord, newIndexRecord);
-                    var globalNowTicks = globalTime.UpdateNowTicks();
-                    taskMinimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks);
-                    taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalNowTicks);
+                    if(oldMeta.State == TaskState.Finished || oldMeta.State == TaskState.Fatal || oldMeta.State == TaskState.Canceled)
+                    {
+                        logger.ErrorFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {0} и задача уже находится в терминальном состоянии, поэтому просто удаляем зависшую запись из индекса; oldMeta: {1}; taskIndexRecord: {2}; localNow: {3}",
+                                           maxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, localNow);
+                        taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
+                    }
+                    else
+                    {
+                        var newIndexRecord = handleTasksMetaStorage.FormatIndexRecord(oldMeta);
+                        logger.ErrorFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {0}, поэтому чиним индекс; oldMeta: {1}; taskIndexRecord: {2}; newIndexRecord: {3}; localNow: {4}",
+                                           maxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, newIndexRecord, localNow);
+                        var globalNowTicks = globalTime.UpdateNowTicks();
+                        taskMinimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks);
+                        taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalNowTicks);
+                    }
                 }
                 return LocalTaskProcessingResult.Undefined;
             }
