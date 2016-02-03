@@ -13,6 +13,7 @@ using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Configuration;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -40,13 +41,7 @@ namespace FunctionalTests
             Container.ConfigureLockRepository();
             ResetTaskQueueCassandraState();
             ResetTaskQueueMonitoringState();
-        }
-
-        private void ResetTaskQueueMonitoringState()
-        {
-            var client = Container.Get<IRemoteTaskQueueMonitoringServiceClient>();
-            client.DropLocalStorage();
-            client.ActualizeDatabaseScheme();
+            ResetTicksHolderState();
         }
 
         [TearDown]
@@ -82,6 +77,18 @@ namespace FunctionalTests
                         }
                 }).ToArray();
             Container.DropAndCreateDatabase(columnFamilies);
+        }
+
+        private void ResetTaskQueueMonitoringState()
+        {
+            var client = Container.Get<IRemoteTaskQueueMonitoringServiceClient>();
+            client.DropLocalStorage();
+            client.ActualizeDatabaseScheme();
+        }
+
+        private void ResetTicksHolderState()
+        {
+            Container.Get<TicksHolder>().ResetInMemoryState();
         }
     }
 }

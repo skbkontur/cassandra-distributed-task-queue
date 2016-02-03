@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+
+using MoreLinq;
 
 using NUnit.Framework;
 
@@ -6,7 +11,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 namespace FunctionalTests.RepositoriesTests
 {
-    public class TicksHolderTest : FunctionalTestBase
+    public class TicksHolderTest : FunctionalTestBaseWithoutServices
     {
         public override void SetUp()
         {
@@ -36,6 +41,39 @@ namespace FunctionalTests.RepositoriesTests
             Assert.AreEqual(ticks, ticksHolder.GetMinTicks("r"));
             Assert.AreEqual(ticks - 2, UpdateMinTicks("r", ticks - 2));
             Assert.AreEqual(ticks - 2, ticksHolder.GetMinTicks("r"));
+        }
+
+        [Test]
+        public void ConcurrentUpdates()
+        {
+            var key = Guid.NewGuid().ToString();
+            const int threadsCount = 4;
+            const int countPerThread = 1000 * 1000;
+            const int valuesCount = threadsCount * countPerThread;
+            var rng = new Random(Guid.NewGuid().GetHashCode());
+            var values = Enumerable.Range(0, valuesCount).Select(x => rng.Next(valuesCount)).ToList();
+            var valuesByThread = values.Batch(countPerThread, Enumerable.ToArray).ToArray();
+            var threads = new List<Thread>();
+            var startSignal = new ManualResetEvent(false);
+            for(var i = 0; i < threadsCount; i++)
+            {
+                var threadIndex = i;
+                var thread = new Thread(() =>
+                    {
+                        startSignal.WaitOne();
+                        foreach(var value in valuesByThread[threadIndex])
+                        {
+                            ticksHolder.UpdateMinTicks(key, value);
+                            ticksHolder.UpdateMaxTicks(key, value);
+                        }
+                    });
+                thread.Start();
+                threads.Add(thread);
+            }
+            startSignal.Set();
+            threads.ForEach(thread => thread.Join());
+            Assert.That(ticksHolder.GetMinTicks(key), Is.EqualTo(values.Min()));
+            Assert.That(ticksHolder.GetMaxTicks(key), Is.EqualTo(values.Max()));
         }
 
         private long UpdateMaxTicks(string name, long ticks)
