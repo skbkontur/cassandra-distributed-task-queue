@@ -84,7 +84,10 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         [NotNull]
         public IEnumerable<Tuple<string, TaskMetaInformation>> ReadAll(int batchSize)
         {
-            return legacyBlobStorage.ReadAll(batchSize);
+            TimeGuid dummy;
+            return timeBasedBlobStorage.ReadAll(batchSize)
+                                       .Select(x => Tuple.Create(x.Item1.Id.ToGuid().ToString(), serializer.Deserialize<TaskMetaInformation>(x.Item2)))
+                                       .Concat(legacyBlobStorage.ReadAll(batchSize).Where(x => !TimeGuid.TryParse(x.Item1, out dummy)));
         }
 
         [NotNull]
