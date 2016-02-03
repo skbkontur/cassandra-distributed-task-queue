@@ -87,8 +87,9 @@ namespace RemoteQueue.Cassandra.Entities
                 taskExceptionInfoIds = string.Format("SingleExceptionId = {0}", TaskExceptionInfoIds.Single());
             else
                 taskExceptionInfoIds = string.Format("FirstExceptionId = {0}, LastExceptionId = {1}, Count = {2}", TaskExceptionInfoIds.First(), TaskExceptionInfoIds.Last(), TaskExceptionInfoIds.Count);
+            var minimalStartTicks = MinimalStartTicks > 0 ? new Timestamp(MinimalStartTicks).ToString() : MinimalStartTicks.ToString();
             return string.Format("[Name: {0}, Id: {1}, State: {2}, Attempts: {3}, MinimalStartTicks: {4}, ParentTaskId: {5}, TaskGroupLock: {6}, TraceId: {7}, TaskDataId: {8}, TaskExceptionInfoIds: {9}]",
-                                 Name, Id, State, Attempts, MinimalStartTicks, ParentTaskId, TaskGroupLock, TraceId, TaskDataId, taskExceptionInfoIds);
+                                 Name, Id, State, Attempts, minimalStartTicks, ParentTaskId, TaskGroupLock, TraceId, TaskDataId, taskExceptionInfoIds);
         }
 
         public const int TaskExceptionIfoIdsLimit = 201;

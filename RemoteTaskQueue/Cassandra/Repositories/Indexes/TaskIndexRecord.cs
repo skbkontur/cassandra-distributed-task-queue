@@ -1,5 +1,7 @@
 using JetBrains.Annotations;
 
+using SKBKontur.Catalogue.Objects;
+
 namespace RemoteQueue.Cassandra.Repositories.Indexes
 {
     public class TaskIndexRecord
@@ -21,7 +23,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
 
         public override string ToString()
         {
-            return string.Format("TaskId: {0}, MinimalStartTicks: {1}, TaskIndexShardKey: {2}", TaskId, MinimalStartTicks, TaskIndexShardKey);
+            var minimalStartTicks = MinimalStartTicks >= Timestamp.MinValue.Ticks ? new Timestamp(MinimalStartTicks).ToString() : MinimalStartTicks.ToString();
+            return string.Format("TaskId: {0}, MinimalStartTicks: {1}, TaskIndexShardKey: {2}", TaskId, minimalStartTicks, TaskIndexShardKey);
         }
     }
 }
