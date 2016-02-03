@@ -40,12 +40,12 @@ namespace RemoteQueue.Handling
             this.taskDataRegistry = taskDataRegistry;
             Serializer = serializer;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
-            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
-            var ticksHolder = new TicksHolder(cassandraCluster, serializer, cassandraSettings);
-            GlobalTime = new GlobalTime(ticksHolder);
-            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, cassandraSettings, new OldestLiveRecordTicksHolder(ticksHolder));
+            TicksHolder = new TicksHolder(cassandraCluster, serializer, cassandraSettings);
+            GlobalTime = new GlobalTime(TicksHolder);
+            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, cassandraSettings, new OldestLiveRecordTicksHolder(TicksHolder));
             var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings);
-            var eventLongRepository = new EventLogRepository(serializer, GlobalTime, parameters, ticksHolder);
+            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
+            var eventLongRepository = new EventLogRepository(serializer, GlobalTime, parameters, TicksHolder);
             childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaStorage);
             HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskDataRegistry);
             var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings);
@@ -59,6 +59,7 @@ namespace RemoteQueue.Handling
 
         public ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; private set; }
         public ISerializer Serializer { get; private set; }
+        public ITicksHolder TicksHolder { get; private set; }
         public IGlobalTime GlobalTime { get; private set; }
         public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; private set; }
         public IHandleTasksMetaStorage HandleTasksMetaStorage { get; private set; }

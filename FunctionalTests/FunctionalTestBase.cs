@@ -11,15 +11,13 @@ namespace FunctionalTests
         public override void SetUp()
         {
             base.SetUp();
-            var exchangeServiceClient = Container.Get<IExchangeServiceClient>();
-            exchangeServiceClient.Start();
+            Container.Get<IExchangeServiceClient>().Start();
             taskDataRegistry = Container.Get<ITaskDataRegistry>();
         }
 
         public override void TearDown()
         {
-            var exchangeServiceClient = Container.Get<IExchangeServiceClient>();
-            exchangeServiceClient.Stop();
+            Container.Get<IExchangeServiceClient>().Stop();
             base.TearDown();
         }
 
