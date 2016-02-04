@@ -39,7 +39,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 }, TimeSpan.FromMinutes(1));
             elasticMonitoringServiceClient.DeleteAll();
 
-            taskSearchIndexSchema.ActualizeTemplate();
+            taskSearchIndexSchema.ActualizeTemplate(true);
         }
 
         [Test]

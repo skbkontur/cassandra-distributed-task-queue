@@ -25,10 +25,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient.IndicesDeleteTemplateForAll("monitoringsearch-template").ProcessResponse(200, 404);
         }
 
-        public void ActualizeTemplate()
+        public void ActualizeTemplate(bool local = false)
         {
-            PutDataTemplate(settings.TemplateNamePrefix + DataTemplateSuffix, settings.IndexPrefix + "*");
-            PutDataTemplate(settings.TemplateNamePrefix + OldDataTemplateSuffix, settings.OldDataIndex);
+            PutDataTemplate(settings.TemplateNamePrefix + DataTemplateSuffix, settings.IndexPrefix + "*", local);
+            PutDataTemplate(settings.TemplateNamePrefix + OldDataTemplateSuffix, settings.OldDataIndex, local);
             CreateIndexIfNotExists(settings.OldDataIndex, new {});
             CreateLastUpdateTicksIndex(settings.LastTicksIndex);
         }
@@ -73,7 +73,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 logger.LogInfoFormat("Index already exists");
         }
 
-        private void PutDataTemplate(string templateName, string indicesPattern)
+        private Dictionary<string, string> IndexSettings(bool local)
+        {
+            return local ?
+                       new Dictionary<string, string>() :
+                       new Dictionary<string, string>
+                           {
+                               {"routing.allocation.require._name", "edi-elastic-*"},
+                               {"routing.allocation.exclude._name", "edi-elastic-*-i*"}
+                           };
+        }
+
+        private void PutDataTemplate(string templateName, string indicesPattern, bool local)
         {
             logger.LogInfoFormat("Attempt to put data template name '{0}' pattern '{1}'", templateName, indicesPattern);
             var response = elasticsearchClient.IndicesGetTemplateForAll(templateName).ProcessResponse(200, 404);
@@ -88,11 +99,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                 {
                                     number_of_shards = settings.NumberOfShards,
                                     number_of_replicas = settings.ReplicaCount,
-                                    index = new Dictionary<string, string>
-                                            {
-                                                { "routing.allocation.require._name", "edi-elastic-*" },
-                                                { "routing.allocation.exclude._name", "edi-elastic-*-i*" }
-                                            }
+                                    index = IndexSettings(local)
                                 },
                             mappings = new
                                 {

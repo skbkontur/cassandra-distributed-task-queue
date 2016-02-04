@@ -23,7 +23,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             {
                 logger.LogInfoFormat("ActualizeElasticSchemaOnStart is true");
                 getTaskSearchIndexSchema().RemoveOldVersionTemplates();
-                getTaskSearchIndexSchema().ActualizeTemplate();
+                getTaskSearchIndexSchema().ActualizeTemplate(true);
             }
         }
 
