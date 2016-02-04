@@ -175,6 +175,11 @@ namespace RemoteQueue.Handling
             return childTaskIndex.GetChildTaskIds(taskId);
         }
 
+        public void ResetTicksHolderInMemoryState()
+        {
+            TicksHolder.ResetInMemoryState();
+        }
+
         [NotNull]
         private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>([NotNull] RemoteTaskInfo task) where T : ITaskData
         {
