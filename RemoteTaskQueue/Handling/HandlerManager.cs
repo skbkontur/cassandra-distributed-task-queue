@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 using JetBrains.Annotations;
 
@@ -40,7 +41,7 @@ namespace RemoteQueue.Handling
         public void Run()
         {
             var toTicks = Timestamp.Now.Ticks;
-            var taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(toTicks, allTaskIndexShardKeysToRead);
+            var taskIndexRecords = Shuffle(handleTasksMetaStorage.GetIndexRecords(toTicks, allTaskIndexShardKeysToRead));
             Log.For(this).InfoFormat("Number of live minimalStartTicksIndex records for topic '{0}': {1}", taskTopic, taskIndexRecords.Length);
             foreach(var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {
@@ -61,6 +62,21 @@ namespace RemoteQueue.Handling
                 }
             }
         }
+
+        static T[] Shuffle<T>(T[] array)
+        {
+            int n = array.Length;
+            for(int i = 0; i < n; i++)
+            {
+                int r = i + (int)(random.NextDouble() * (n - i));
+                T t = array[r];
+                array[r] = array[i];
+                array[i] = t;
+            }
+            return array;
+        }
+
+        static readonly Random random = new Random(Guid.NewGuid().GetHashCode());
 
         private readonly string taskTopic;
         private readonly int maxRunningTasksCount;
