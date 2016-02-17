@@ -49,12 +49,15 @@ namespace RemoteQueue.Handling
             taskMinimalStartTicksIndex = remoteTaskQueueInternals.TaskMinimalStartTicksIndex;
             remoteTaskQueueProfiler = remoteTaskQueueInternals.RemoteTaskQueueProfiler;
             globalTime = remoteTaskQueueInternals.GlobalTime;
+            taskTopicMetrics = TaskTopicMetrics.ForTopic(taskIndexRecord.TaskIndexShardKey.TaskTopic);
         }
 
         public LocalTaskProcessingResult RunTask()
         {
+            taskTopicMetrics.Started.Mark();
             if(taskMeta == null)
             {
+                taskTopicMetrics.NoMeta.Mark();
                 logger.ErrorFormat("Удаляем запись индекса, для которой мета так и не записалась: {0}", taskIndexRecord);
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
                 return LocalTaskProcessingResult.Undefined;
@@ -62,6 +65,7 @@ namespace RemoteQueue.Handling
             var localNow = Timestamp.Now;
             if(taskIndexRecord != handleTasksMetaStorage.FormatIndexRecord(taskMeta) && taskIndexRecord.MinimalStartTicks > localNow.Ticks - MaxAllowedIndexInconsistencyDuration.Ticks)
             {
+                taskTopicMetrics.InconsistentIndexRecord.Mark();
                 logger.InfoFormat("taskIndexRecord != IndexRecord(taskMeta), поэтому ждем; taskMeta: {0}; taskIndexRecord: {1}; localNow: {2}", taskMeta, taskIndexRecord, localNow);
                 return LocalTaskProcessingResult.Undefined;
             }
@@ -71,19 +75,26 @@ namespace RemoteQueue.Handling
         private LocalTaskProcessingResult TryProcessTaskExclusively()
         {
             IRemoteLock taskGroupRemoteLock = null;
-            if(!string.IsNullOrEmpty(taskMeta.TaskGroupLock) && !remoteLockCreator.TryGetLock(taskMeta.TaskGroupLock, out taskGroupRemoteLock))
+            if(!string.IsNullOrEmpty(taskMeta.TaskGroupLock))
             {
-                logger.InfoFormat("Не смогли взять групповую блокировку {0} на задачу: {1}", taskMeta.TaskGroupLock, taskIndexRecord.TaskId);
-                return LocalTaskProcessingResult.Undefined;
+                if(!remoteLockCreator.TryGetLock(taskMeta.TaskGroupLock, out taskGroupRemoteLock))
+                {
+                    taskTopicMetrics.DidNotGetTaskGroupLock.Mark();
+                    logger.InfoFormat("Не смогли взять групповую блокировку {0} на задачу: {1}", taskMeta.TaskGroupLock, taskIndexRecord.TaskId);
+                    return LocalTaskProcessingResult.Undefined;
+                }
+                taskTopicMetrics.GotTaskGroupLock.Mark();
             }
             try
             {
                 IRemoteLock remoteLock;
                 if(!remoteLockCreator.TryGetLock(taskIndexRecord.TaskId, out remoteLock))
                 {
+                    taskTopicMetrics.DidNotGetTaskLock.Mark();
                     logger.InfoFormat("Не смогли взять блокировку на задачу, пропускаем её: {0}", taskIndexRecord);
                     return LocalTaskProcessingResult.Undefined;
                 }
+                taskTopicMetrics.GotTaskLock.Mark();
                 LocalTaskProcessingResult result;
                 using(remoteLock)
                     result = ProcessTask();
@@ -112,6 +123,7 @@ namespace RemoteQueue.Handling
             }
             catch(Exception e)
             {
+                taskTopicMetrics.ReadTaskException_UnderLock.Mark();
                 logger.Error(string.Format("Ошибка во время чтения задачи: {0}", taskIndexRecord), e);
                 return LocalTaskProcessingResult.Undefined;
             }
@@ -121,11 +133,15 @@ namespace RemoteQueue.Handling
             if(taskIndexRecord != indexRecordConsistentWithActualMeta)
             {
                 if(taskIndexRecord.MinimalStartTicks > localNow.Ticks - MaxAllowedIndexInconsistencyDuration.Ticks)
+                {
+                    taskTopicMetrics.InconsistentIndexRecord_UnderLock.Mark();
                     logger.InfoFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta), поэтому ждем; oldMeta: {0}; taskIndexRecord: {1}; localNow: {2}", oldMeta, taskIndexRecord, localNow);
+                }
                 else
                 {
                     if(oldMeta.State == TaskState.Finished || oldMeta.State == TaskState.Fatal || oldMeta.State == TaskState.Canceled)
                     {
+                        taskTopicMetrics.TaskAlreadyFinished_UnderLock.Mark();
                         logger.ErrorFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {0} и задача уже находится в терминальном состоянии, поэтому просто удаляем зависшую запись из индекса; oldMeta: {1}; taskIndexRecord: {2}; localNow: {3}",
                                            MaxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, localNow);
                         taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
@@ -134,6 +150,7 @@ namespace RemoteQueue.Handling
                     {
                         logger.ErrorFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {0}, поэтому чиним индекс; oldMeta: {1}; taskIndexRecord: {2}; indexRecordConsistentWithActualMeta: {3}; localNow: {4}",
                                            MaxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, indexRecordConsistentWithActualMeta, localNow);
+                        taskTopicMetrics.FixIndex_UnderLock.Mark();                        
                         var globalNowTicks = globalTime.UpdateNowTicks();
                         taskMinimalStartTicksIndex.AddRecord(indexRecordConsistentWithActualMeta, globalNowTicks);
                         taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalNowTicks);
@@ -147,10 +164,12 @@ namespace RemoteQueue.Handling
             var inProcessMeta = TrySwitchToInProcessState(oldMeta);
             if(inProcessMeta == null)
             {
+                taskTopicMetrics.StartProcessingFailed_UnderLock.Mark();
                 logger.ErrorFormat("Не удалось начать обработку задачи: {0}", oldMeta);
                 return LocalTaskProcessingResult.Undefined;
             }
 
+            taskTopicMetrics.Processed.Mark();
             return ProcessTask(inProcessMeta, taskData);
         }
 
@@ -295,7 +314,8 @@ namespace RemoteQueue.Handling
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private readonly IGlobalTime globalTime;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
-        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
-        public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
+        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());        
+        public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);        
+        private readonly TaskTopicMetrics taskTopicMetrics;
     }
 }
