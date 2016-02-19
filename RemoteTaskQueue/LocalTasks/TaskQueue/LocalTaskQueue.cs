@@ -71,9 +71,9 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             var taskIsSentToThreadPool = false;
             if(taskMeta != null && !taskHandlerRegistry.ContainsHandlerFor(taskMeta.Name))
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
-            if(taskMeta == null && taskIndexRecord.MinimalStartTicks > (Timestamp.Now - TimeSpan.FromMinutes(20)).Ticks)
+            if(taskMeta == null && taskIndexRecord.MinimalStartTicks > (Timestamp.Now - HandlerTask.MaxAllowedIndexInconsistencyDuration).Ticks)
             {
-                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем", taskIndexRecord.TaskId);
+                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем {1}", taskIndexRecord.TaskId, HandlerTask.MaxAllowedIndexInconsistencyDuration);
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             }
             if(!taskCounter.TryIncrement(taskQueueReason))

@@ -60,7 +60,7 @@ namespace RemoteQueue.Handling
                 return LocalTaskProcessingResult.Undefined;
             }
             var localNow = Timestamp.Now;
-            if(taskIndexRecord != handleTasksMetaStorage.FormatIndexRecord(taskMeta) && taskIndexRecord.MinimalStartTicks > localNow.Ticks - maxAllowedIndexInconsistencyDuration.Ticks)
+            if(taskIndexRecord != handleTasksMetaStorage.FormatIndexRecord(taskMeta) && taskIndexRecord.MinimalStartTicks > localNow.Ticks - MaxAllowedIndexInconsistencyDuration.Ticks)
             {
                 logger.InfoFormat("taskIndexRecord != IndexRecord(taskMeta), поэтому ждем; taskMeta: {0}; taskIndexRecord: {1}; localNow: {2}", taskMeta, taskIndexRecord, localNow);
                 return LocalTaskProcessingResult.Undefined;
@@ -117,25 +117,25 @@ namespace RemoteQueue.Handling
             }
 
             var localNow = Timestamp.Now;
-            if(taskIndexRecord != handleTasksMetaStorage.FormatIndexRecord(oldMeta))
+            var indexRecordConsistentWithActualMeta = handleTasksMetaStorage.FormatIndexRecord(oldMeta);
+            if(taskIndexRecord != indexRecordConsistentWithActualMeta)
             {
-                if(taskIndexRecord.MinimalStartTicks > localNow.Ticks - maxAllowedIndexInconsistencyDuration.Ticks)
+                if(taskIndexRecord.MinimalStartTicks > localNow.Ticks - MaxAllowedIndexInconsistencyDuration.Ticks)
                     logger.InfoFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta), поэтому ждем; oldMeta: {0}; taskIndexRecord: {1}; localNow: {2}", oldMeta, taskIndexRecord, localNow);
                 else
                 {
                     if(oldMeta.State == TaskState.Finished || oldMeta.State == TaskState.Fatal || oldMeta.State == TaskState.Canceled)
                     {
                         logger.ErrorFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {0} и задача уже находится в терминальном состоянии, поэтому просто удаляем зависшую запись из индекса; oldMeta: {1}; taskIndexRecord: {2}; localNow: {3}",
-                                           maxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, localNow);
+                                           MaxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, localNow);
                         taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
                     }
                     else
                     {
-                        var newIndexRecord = handleTasksMetaStorage.FormatIndexRecord(oldMeta);
-                        logger.ErrorFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {0}, поэтому чиним индекс; oldMeta: {1}; taskIndexRecord: {2}; newIndexRecord: {3}; localNow: {4}",
-                                           maxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, newIndexRecord, localNow);
+                        logger.ErrorFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {0}, поэтому чиним индекс; oldMeta: {1}; taskIndexRecord: {2}; indexRecordConsistentWithActualMeta: {3}; localNow: {4}",
+                                           MaxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, indexRecordConsistentWithActualMeta, localNow);
                         var globalNowTicks = globalTime.UpdateNowTicks();
-                        taskMinimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks);
+                        taskMinimalStartTicksIndex.AddRecord(indexRecordConsistentWithActualMeta, globalNowTicks);
                         taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalNowTicks);
                     }
                 }
@@ -296,6 +296,6 @@ namespace RemoteQueue.Handling
         private readonly IGlobalTime globalTime;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
-        private static readonly TimeSpan maxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
+        public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
     }
 }
