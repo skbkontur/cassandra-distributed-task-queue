@@ -4,13 +4,15 @@ using JetBrains.Annotations;
 
 using Metrics;
 
+using RemoteQueue.Cassandra.Repositories.Indexes;
+
 namespace RemoteQueue.Handling
 {
-    internal class TaskTopicMetrics
+    internal class TaskShardMetrics
     {
-        private TaskTopicMetrics([NotNull] string taskTopic)
+        private TaskShardMetrics([NotNull] TaskIndexShardKey shardKey)
         {
-            var context = Metric.Context("RemoteTaskQueue").Context("Topics").Context(taskTopic).Context("Tasks");
+            var context = Metric.Context("RemoteTaskQueue").Context("Shards").Context(shardKey.TaskTopic).Context(shardKey.TaskState.ToString()).Context("Tasks");
             Started = context.Meter("Started", Unit.Events, TimeUnit.Minutes);
             NoMeta = context.Meter("NoMeta", Unit.Events, TimeUnit.Minutes);
             InconsistentIndexRecord = context.Meter("InconsistentIndexRecord", Unit.Events, TimeUnit.Minutes);
@@ -26,9 +28,9 @@ namespace RemoteQueue.Handling
             Processed = context.Meter("Processed", Unit.Events, TimeUnit.Minutes);
         }
 
-        public static TaskTopicMetrics ForTopic([NotNull] string taskTopic)
+        public static TaskShardMetrics ForShard([NotNull] TaskIndexShardKey shardKey)
         {
-            return taskTopicToMetrics.GetOrAdd(taskTopic, s => new TaskTopicMetrics(taskTopic));
+            return shardKeyToMetrics.GetOrAdd(shardKey, s => new TaskShardMetrics(shardKey));
         }
 
         [NotNull]
@@ -70,6 +72,6 @@ namespace RemoteQueue.Handling
         [NotNull]
         public Meter Processed { get; private set; }
 
-        private static readonly ConcurrentDictionary<string, TaskTopicMetrics> taskTopicToMetrics = new ConcurrentDictionary<string, TaskTopicMetrics>();
+        private static readonly ConcurrentDictionary<TaskIndexShardKey, TaskShardMetrics> shardKeyToMetrics = new ConcurrentDictionary<TaskIndexShardKey, TaskShardMetrics>();
     }
 }
