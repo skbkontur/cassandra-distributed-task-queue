@@ -21,8 +21,7 @@ namespace TestCommon
                             Name = settings.QueueKeyspace,
                             Configuration =
                                 {
-                                    ReplicationFactor = 1,
-                                    ReplicaPlacementStrategy = ReplicaPlacementStrategy.Simple,
+                                    ReplicationStrategy = SimpleReplicationStrategy.Create(1),
                                     ColumnFamilies = columnFamilies,
                                 }
                         },
