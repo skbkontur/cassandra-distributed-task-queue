@@ -24,5 +24,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 
             Register<ChainTaskData>();
         }
+
+        public static void Touch()
+        {
+        }
     }
 }

@@ -9,6 +9,7 @@ using SKBKontur.Catalogue.Core.Web.Globals;
 using SKBKontur.Catalogue.Core.Web.Globals.ViewPrecompilation;
 using SKBKontur.Catalogue.Core.Web.RenderingHelpers;
 using SKBKontur.Catalogue.Core.Web.RenderingHelpers.Webpack;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Globals;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration;
 using SKBKontur.Catalogue.RemoteTaskQueue.Front.Controllers;
@@ -18,6 +19,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
 {
     public class Global : CatalogueFrontGlobalBase
     {
+        protected Global()
+        {
+            TaskDataRegistry.Touch();
+        }
+
         protected override void OnError()
         {
             ErrorHtmlHandler.HandleError(Context);

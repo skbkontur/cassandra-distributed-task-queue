@@ -173,6 +173,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ElasticMonitoring.MvcControllers\ElasticMonitoring.MvcControllers.csproj">
       <Project>{72BDA3C5-2E09-4531-9230-86C7F019E55A}</Project>
       <Name>ElasticMonitoring.MvcControllers</Name>
