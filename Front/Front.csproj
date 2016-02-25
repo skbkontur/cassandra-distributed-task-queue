@@ -77,6 +77,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
     </Reference>
+    <Reference Include="Humanizer">
+      <HintPath>..\..\Assemblies\Humanizer\Humanizer.dll</HintPath>
+    </Reference>
     <Reference Include="RazorGenerator.Mvc, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Mvc5\RazorGenerator.Mvc.2.3.4\RazorGenerator.Mvc.dll</HintPath>
@@ -104,8 +107,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Areas\AdminToolsArea\AdminToolsAreaRegistration.cs" />
-    <Compile Include="Areas\AdminToolsArea\Controllers\TasksController.cs" />
     <Compile Include="Areas\AdminToolsArea\Controllers\RemoteTaskQueueController.cs" />
+    <Compile Include="Areas\AdminToolsArea\Controllers\TasksController.cs" />
     <Compile Include="Configuration\Configurator.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Global.asax.cs">
@@ -170,10 +173,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{27afc62a-6f6b-443e-a83b-20d6714d8faf}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ElasticMonitoring.MvcControllers\ElasticMonitoring.MvcControllers.csproj">
       <Project>{72BDA3C5-2E09-4531-9230-86C7F019E55A}</Project>
       <Name>ElasticMonitoring.MvcControllers</Name>

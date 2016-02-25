@@ -20,8 +20,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
     {
         protected override void OnError()
         {
-            if(!ErrorRedirectHandler.Handle(Context))
-                ErrorHtmlHandler.HandleError(Context);
+            ErrorHtmlHandler.HandleError(Context);
         }
 
         protected override void ConfigurePrecompiledViewEngines(IPrecompiledViewEngineCollection engineCollection, IApplicationSettings applicationSettings)
