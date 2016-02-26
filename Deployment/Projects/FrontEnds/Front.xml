@@ -15,7 +15,6 @@
     <ProjectFile>$(ProjectDir)\Front.csproj</ProjectFile>
     <UseSharedResources>true</UseSharedResources>
     <OutputDirName>Front</OutputDirName>
-    <CombineScripts>true</CombineScripts>
     <ScriptsHostPage>Views\Default\DebugView.cshtml</ScriptsHostPage>
     <ScriptsHostPagesRoot>.\</ScriptsHostPagesRoot>
   </PropertyGroup>
