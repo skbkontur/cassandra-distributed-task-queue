@@ -31,9 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catalogue.Objects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>
     <Reference Include="GroboContainer, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -59,7 +59,6 @@
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -35,6 +35,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.CommonBusinessObjects, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.CommonBusinessObjects.dll</HintPath>
@@ -56,9 +60,6 @@
     <Reference Include="Catalogue.ObjectManipulation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.ObjectManipulation.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Objects">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ViewPrecompilation">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ViewPrecompilation.dll</HintPath>

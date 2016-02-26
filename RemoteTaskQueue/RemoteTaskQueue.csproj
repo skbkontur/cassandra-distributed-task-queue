@@ -40,15 +40,16 @@
     <Reference Include="Catalogue.CassandraPrimitives.Storages">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.Graphite.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Graphite.Client.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.Core.Sharding">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Sharding.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Objects">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Objects.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
