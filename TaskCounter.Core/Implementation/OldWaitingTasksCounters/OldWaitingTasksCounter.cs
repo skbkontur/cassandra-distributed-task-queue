@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -156,9 +157,26 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.Ol
 
         public long GetValue()
         {
+            LogTasks();
             return Interlocked.Read(ref value);
         }
 
+        private void LogTasks()
+        {
+            if(DateTime.UtcNow - lastLogTasksDateTime <= TimeSpan.FromMinutes(1))
+                return;
+            lock(lockObject)
+            {
+                var taskIds = tasks.ToArray();
+                if(taskIds.Length > 0)
+                {
+                    logger.WarnFormat("Probably lost tasks: {0}", string.Join(",", taskIds.Take(100)));
+                    lastLogTasksDateTime = DateTime.UtcNow;
+                }
+            }
+        }
+
+        private DateTime lastLogTasksDateTime = DateTime.MinValue;
         private static readonly ILog logger = Log.For("NewEventsCounter");
         private static readonly ILog lostLogger = Log.For("LostTasks");
 
