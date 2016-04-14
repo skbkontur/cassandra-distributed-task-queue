@@ -178,7 +178,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 return new ColumnAddress
                     {
                         CfName = settings.RegularBlobsCfName,
-                        RowKey = string.Format("{0}_{1}", ticks / TimeBasedBlobStorageSettings.TickPartition, Math.Abs(timeGuid.GetHashCode()) % TimeBasedBlobStorageSettings.SplittingFactor),
+                        RowKey = string.Format("{0}_{1}", ticks / TimeBasedBlobStorageSettings.TickPartition, Math.Abs((long)timeGuid.GetHashCode()) % TimeBasedBlobStorageSettings.SplittingFactor),
                         ColumnName = string.Format("{0}_{1}", ticks.ToString("D20", CultureInfo.InvariantCulture), timeGuid.ToGuid()),
                     };
             case BlobType.Large:
