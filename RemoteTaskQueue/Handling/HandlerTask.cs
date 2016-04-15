@@ -87,6 +87,7 @@ namespace RemoteQueue.Handling
             }
             try
             {
+                var sw = Stopwatch.StartNew();
                 IRemoteLock remoteLock;
                 if(!remoteLockCreator.TryGetLock(taskIndexRecord.TaskId, out remoteLock))
                 {
@@ -98,7 +99,9 @@ namespace RemoteQueue.Handling
                 LocalTaskProcessingResult result;
                 using(remoteLock)
                     result = ProcessTask();
-                logger.InfoFormat("Завершили выполнение задачи {0} с результатом {1}. Отпустили блокировку {2}", taskMeta.Id, result, taskIndexRecord.TaskId);
+                sw.Stop();
+                logger.InfoFormat("Завершили выполнение задачи {0} с результатом {1}. Отпустили блокировку {2}. Время работы с учетом взятия лока: {3}{4}",
+                                  taskMeta.Id, result, taskIndexRecord.TaskId, sw.Elapsed, sw.Elapsed > longRunningTaskDurationThreshold ? " [LONG RUNNING]" : string.Empty);
                 return result;
             }
             finally
@@ -314,8 +317,9 @@ namespace RemoteQueue.Handling
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private readonly IGlobalTime globalTime;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
-        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());        
-        public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);        
+        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
+        private static readonly TimeSpan longRunningTaskDurationThreshold = TimeSpan.FromMinutes(1);
+        public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
         private readonly TaskShardMetrics taskShardMetrics;
     }
 }
