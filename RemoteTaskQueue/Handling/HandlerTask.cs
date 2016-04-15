@@ -191,9 +191,9 @@ namespace RemoteQueue.Handling
             var task = new Task(inProcessMeta, taskData);
             using(TaskExecutionContext.ForTask(task))
             {
+                var sw = Stopwatch.StartNew();
                 try
                 {
-                    var sw = Stopwatch.StartNew();
                     remoteTaskQueueProfiler.ProcessTaskDequeueing(inProcessMeta);
                     var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
                     remoteTaskQueueProfiler.ProcessTaskExecutionFinished(inProcessMeta, handleResult, sw.Elapsed);
@@ -202,7 +202,7 @@ namespace RemoteQueue.Handling
                 catch(Exception e)
                 {
                     localTaskProcessingResult = LocalTaskProcessingResult.Error;
-                    remoteTaskQueueProfiler.ProcessTaskExecutionFailed(inProcessMeta, e);
+                    remoteTaskQueueProfiler.ProcessTaskExecutionFailed(inProcessMeta, e, sw.Elapsed);
                     var taskExceptionInfoId = TryLogError(e, inProcessMeta);
                     TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, taskExceptionInfoId);
                 }

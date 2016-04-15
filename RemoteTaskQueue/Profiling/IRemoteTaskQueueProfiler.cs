@@ -13,6 +13,6 @@ namespace RemoteQueue.Profiling
         void ProcessTaskEnqueueing(TaskMetaInformation meta);
         void ProcessTaskDequeueing(TaskMetaInformation meta);
         void ProcessTaskExecutionFinished(TaskMetaInformation meta, HandleResult handleResult, TimeSpan taskExecutionTime);
-        void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e);
+        void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e, TimeSpan taskExecutionTime);
     }
 }

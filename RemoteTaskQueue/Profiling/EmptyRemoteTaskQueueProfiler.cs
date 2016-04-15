@@ -31,7 +31,7 @@ namespace RemoteQueue.Profiling
         {
         }
 
-        public void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e)
+        public void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e, TimeSpan taskExecutionTime)
         {
         }
     }

@@ -70,8 +70,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
             statsDClient.Increment("TasksExecuted." + meta.Name + "." + handleResult.FinishAction);
         }
 
-        public void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e)
+        public void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e, TimeSpan taskExecutionTime)
         {
+            statsDClient.Timing("ExecutionTime." + meta.Name, (long)taskExecutionTime.TotalMilliseconds);
+            statsDClient.Increment("TasksExecutionFailed." + meta.Name);
         }
 
         [NotNull]
