@@ -192,8 +192,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             return DoCancelTasks(taskSearchClient.SearchNext(iteratorContext));
         }
 
-        private const int maxTasksToRerun = 10000;
-        private const int maxTasksToCancel = 10000;
+        private const int maxTasksToRerun = 30000;
+        private const int maxTasksToCancel = 30000;
 
         private TasksRerunModel DoRerunTasks(TaskSearchResponse taskSearchResponse)
         {
