@@ -36,7 +36,7 @@ namespace RemoteQueue.Configuration
             var taskTopic = taskType.TryGetTaskTopic(taskTopicIsRequired);
             if(!string.IsNullOrWhiteSpace(taskTopic))
                 return taskTopic;
-            return (Math.Abs(taskName.GetPersistentHashCode()) % topicsCount).ToString(CultureInfo.InvariantCulture);
+            return ShardingHelpers.GetShard(taskName.GetPersistentHashCode(), topicsCount).ToString(CultureInfo.InvariantCulture);
         }
 
         [NotNull]
