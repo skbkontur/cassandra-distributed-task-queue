@@ -43,14 +43,14 @@ namespace RemoteQueue.Handling
         [NotNull]
         protected TaskIndexRecord Publish(TimeSpan delay)
         {
+            if(delay.Ticks < 0)
+                throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             using(new PublishTaskTraceContext())
             {
-                var delayTicks = Math.Max(delay.Ticks, 0);
-                task.Meta.MinimalStartTicks = Timestamp.Now.Ticks + delayTicks;
+                task.Meta.MinimalStartTicks = Timestamp.Now.Ticks + delay.Ticks;
                 return handleTaskCollection.AddTask(task);
             }
         }
-
 
         protected readonly Task task;
         private readonly IHandleTaskCollection handleTaskCollection;

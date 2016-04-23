@@ -91,6 +91,8 @@ namespace RemoteQueue.Handling
 
         public bool RerunTask([NotNull] string taskId, TimeSpan delay)
         {
+            if(delay.Ticks < 0)
+                throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             IRemoteLock remoteLock;
             if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
                 return false;
