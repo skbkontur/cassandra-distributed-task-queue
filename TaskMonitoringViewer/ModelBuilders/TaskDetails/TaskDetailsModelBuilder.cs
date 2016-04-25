@@ -39,12 +39,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.ModelBuilders
                 taskMetadata = new MonitoringTaskMetadata();
                 return false;
             }
+            DateTime minimalStartTicks;
+            if(info.MinimalStartTicks < DateTime.MinValue.Ticks)
+                minimalStartTicks = DateTime.MinValue;
+            else if(info.MinimalStartTicks > DateTime.MaxValue.Ticks)
+                minimalStartTicks = DateTime.MaxValue;
+            else
+                minimalStartTicks = new DateTime(info.MinimalStartTicks);
             taskMetadata = new MonitoringTaskMetadata
                 {
                     Name = info.Name,
                     TaskId = info.Id,
                     Ticks = new DateTime(info.Ticks),
-                    MinimalStartTicks = new DateTime(info.MinimalStartTicks),
+                    MinimalStartTicks = minimalStartTicks,
                     StartExecutingTicks = info.StartExecutingTicks.HasValue ? (DateTime?)new DateTime(info.StartExecutingTicks.Value) : null,
                     FinishExecutingTicks = info.FinishExecutingTicks.HasValue ? (DateTime?)new DateTime(info.FinishExecutingTicks.Value) : null,
                     State = default(TaskState),

@@ -25,7 +25,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
 
         public override string ToString()
         {
-            var minimalStartTicks = MinimalStartTicks >= Timestamp.MinValue.Ticks ? new Timestamp(MinimalStartTicks).ToString() : MinimalStartTicks.ToString();
+            var minimalStartTicks = MinimalStartTicks >= Timestamp.MinValue.Ticks && MinimalStartTicks <= Timestamp.MaxValue.Ticks ? new Timestamp(MinimalStartTicks).ToString() : MinimalStartTicks.ToString();
             return string.Format("TaskId: {0}, MinimalStartTicks: {1}, TaskIndexShardKey: {2}", TaskId, minimalStartTicks, TaskIndexShardKey);
         }
 

@@ -175,12 +175,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceCore.Implementati
                 logger.Error("MetaInformation null");
                 return false;
             }
+            DateTime minimalStartTicks;
+            if(info.MinimalStartTicks < DateTime.MinValue.Ticks)
+                minimalStartTicks = DateTime.MinValue;
+            else if(info.MinimalStartTicks > DateTime.MaxValue.Ticks)
+                minimalStartTicks = DateTime.MaxValue;
+            else
+                minimalStartTicks = new DateTime(info.MinimalStartTicks);
             taskMetadata = new MonitoringTaskMetadata
                 {
                     Name = info.Name,
                     TaskId = info.Id,
                     Ticks = new DateTime(info.Ticks),
-                    MinimalStartTicks = new DateTime(info.MinimalStartTicks),
+                    MinimalStartTicks = minimalStartTicks,
                     StartExecutingTicks = NullableTickToNullableDateTime(info.StartExecutingTicks),
                     FinishExecutingTicks = NullableTickToNullableDateTime(info.FinishExecutingTicks),
                     LastModificationDateTime = NullableTickToNullableDateTime(info.LastModificationTicks),

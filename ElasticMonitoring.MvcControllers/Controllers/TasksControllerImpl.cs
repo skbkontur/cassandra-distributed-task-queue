@@ -32,9 +32,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     TaskId = taskData.Context.Id,
                     State = taskData.Context.State,
                     EnqueueTime = new DateTime(taskData.Context.Ticks, DateTimeKind.Utc),
-                    StartExecutedTime = TickToDateTime(taskData.Context.StartExecutingTicks),
-                    FinishExecutedTime = TickToDateTime(taskData.Context.FinishExecutingTicks),
-                    MinimalStartTime = TickToDateTime(taskData.Context.MinimalStartTicks),
+                    StartExecutedTime = TicksToUtcDateTime(taskData.Context.StartExecutingTicks),
+                    FinishExecutedTime = TicksToUtcDateTime(taskData.Context.FinishExecutingTicks),
+                    MinimalStartTime = TicksToUtcDateTime(taskData.Context.MinimalStartTicks),
                     ParentTaskId = taskData.Context.ParentTaskId,
                     ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskData.Context.Id),
                     ExceptionInfo = taskData.ExceptionInfos.LastOrDefault().Return(x => x.ExceptionMessageInfo, string.Empty),
@@ -51,13 +51,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                 throw new Exception(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
             fileDownloadName = string.Format("{0}_{1}_{2}.data", DateTime.UtcNow.ToString("yyyy.MM.dd hh:mm:ss"), path, id);
             return (byte[])value;
-        }
-
-        private static DateTime? TickToDateTime(long? startExecutingTicks)
-        {
-            if(!startExecutingTicks.HasValue)
-                return null;
-            return new DateTime(startExecutingTicks.Value, DateTimeKind.Utc);
         }
 
         public void Cancel(string id)
@@ -96,10 +89,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                             Id = x.Context.Id,
                             Name = x.Context.Name,
                             State = x.Context.State,
-                            EnqueueTime = FromTicks(x.Context.Ticks),
-                            StartExecutionTime = FromTicks(x.Context.StartExecutingTicks),
-                            FinishExecutionTime = FromTicks(x.Context.FinishExecutingTicks),
-                            MinimalStartTime = FromTicks(x.Context.MinimalStartTicks),
+                            EnqueueTime = TicksToUtcDateTime(x.Context.Ticks),
+                            StartExecutionTime = TicksToUtcDateTime(x.Context.StartExecutingTicks),
+                            FinishExecutionTime = TicksToUtcDateTime(x.Context.FinishExecutingTicks),
+                            MinimalStartTime = TicksToUtcDateTime(x.Context.MinimalStartTicks),
                             AttemptCount = x.Context.Attempts,
                             ParentTaskId = x.Context.ParentTaskId,
                         }).ToArray(),
@@ -135,10 +128,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                             Id = x.Context.Id,
                             Name = x.Context.Name,
                             State = x.Context.State,
-                            EnqueueTime = FromTicks(x.Context.Ticks),
-                            StartExecutionTime = FromTicks(x.Context.StartExecutingTicks),
-                            FinishExecutionTime = FromTicks(x.Context.FinishExecutingTicks),
-                            MinimalStartTime = FromTicks(x.Context.MinimalStartTicks),
+                            EnqueueTime = TicksToUtcDateTime(x.Context.Ticks),
+                            StartExecutionTime = TicksToUtcDateTime(x.Context.StartExecutingTicks),
+                            FinishExecutionTime = TicksToUtcDateTime(x.Context.FinishExecutingTicks),
+                            MinimalStartTime = TicksToUtcDateTime(x.Context.MinimalStartTicks),
                             AttemptCount = x.Context.Attempts,
                             ParentTaskId = x.Context.ParentTaskId,
                         }).ToArray(),
@@ -191,9 +184,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         {
             return DoCancelTasks(taskSearchClient.SearchNext(iteratorContext));
         }
-
-        private const int maxTasksToRerun = 30000;
-        private const int maxTasksToCancel = 30000;
 
         private TasksRerunModel DoRerunTasks(TaskSearchResponse taskSearchResponse)
         {
@@ -255,13 +245,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             return result;
         }
 
-        private static DateTime? FromTicks(long? ticks)
+        private static DateTime? TicksToUtcDateTime(long? ticks)
         {
-            if(ticks.HasValue)
-                return new DateTime(ticks.Value, DateTimeKind.Utc);
-            return null;
+            if(!ticks.HasValue)
+                return null;
+            Timestamp result;
+            if(ticks.Value < Timestamp.MinValue.Ticks)
+                result = Timestamp.MinValue;
+            else if(ticks.Value > Timestamp.MaxValue.Ticks)
+                result = Timestamp.MaxValue;
+            else
+                result = new Timestamp(ticks.Value);
+            return result.ToDateTime();
         }
 
+        private const int maxTasksToRerun = 30000;
+        private const int maxTasksToCancel = 30000;
         private readonly ITaskSearchClient taskSearchClient;
         private readonly IRemoteTaskQueue remoteTaskQueue;
     }
