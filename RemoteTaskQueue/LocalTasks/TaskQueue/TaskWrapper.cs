@@ -16,10 +16,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 {
     internal class TaskWrapper
     {
-        public TaskWrapper([NotNull] string taskId, [CanBeNull] string taskName, TaskQueueReason taskQueueReason, bool taskIsBeingTraced, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
+        public TaskWrapper([NotNull] string taskId, [NotNull] string groboTraceKey, TaskQueueReason taskQueueReason, bool taskIsBeingTraced, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
         {
             this.taskId = taskId;
-            this.taskName = taskName ?? "Unknown";
+            this.groboTraceKey = groboTraceKey;
             this.taskQueueReason = taskQueueReason;
             this.taskIsBeingTraced = taskIsBeingTraced;
             this.handlerTask = handlerTask;
@@ -31,9 +31,9 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public void Run()
         {
-            LocalTaskProcessingResult result;
-            var stopwatch = Stopwatch.StartNew();
             TracingAnalyzer.ClearStats();
+            var sw = Stopwatch.StartNew();
+            LocalTaskProcessingResult result;
             try
             {
                 result = handlerTask.RunTask();
@@ -45,12 +45,12 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
             try
             {
-                var elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                sw.Stop();
                 finished = true;
                 localTaskQueue.TaskFinished(taskId, taskQueueReason, taskIsBeingTraced, result);
                 double quantile;
-                if (timeStatistics.GetOrAdd(taskName, s => new TimeStatistics(s)).AddTime(elapsedMilliseconds, out quantile))
-                    profileLogger.Info(taskName + TracingAnalyzerStatsFormatter.Format(TracingAnalyzer.GetStats(), elapsedMilliseconds, quantile));
+                if(timeStatistics.GetOrAdd(groboTraceKey, s => new TimeStatistics(s)).AddTime(sw.ElapsedMilliseconds, out quantile))
+                    ProfileLogger.Instance.Info(string.Format("GroboTraceKey: {0}, TracingStats: {1}", groboTraceKey, TracingAnalyzerStatsFormatter.Format(TracingAnalyzer.GetStats(), sw.ElapsedMilliseconds, quantile)));
             }
             catch(Exception e)
             {
@@ -59,14 +59,13 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         }
 
         private readonly string taskId;
-        private readonly string taskName;
+        private readonly string groboTraceKey;
         private readonly TaskQueueReason taskQueueReason;
         private readonly bool taskIsBeingTraced;
         private readonly HandlerTask handlerTask;
         private readonly LocalTaskQueue localTaskQueue;
         private volatile bool finished;
         private readonly ILog logger = LogManager.GetLogger(typeof(LocalTaskQueue));
-        private static readonly ILog profileLogger = LogManager.GetLogger(typeof(TaskWrapper).Assembly, "ProfileLogger");
         private static readonly ConcurrentDictionary<string, TimeStatistics> timeStatistics = new ConcurrentDictionary<string, TimeStatistics>();
     }
 }
