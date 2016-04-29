@@ -50,7 +50,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 localTaskQueue.TaskFinished(taskId, taskQueueReason, taskIsBeingTraced, result);
                 double quantile;
                 if(timeStatistics.GetOrAdd(groboTraceKey, s => new TimeStatistics(s)).AddTime(sw.ElapsedMilliseconds, out quantile))
-                    ProfileLogger.Instance.Info(string.Format("GroboTraceKey: {0}, TracingStats: {1}", groboTraceKey, TracingAnalyzerStatsFormatter.Format(TracingAnalyzer.GetStats(), sw.ElapsedMilliseconds, quantile)));
+                    ProfileLogger.Instance.Info(string.Format("GroboTraceKey: {0}, TaskId: {1}, TracingStats: {2}", groboTraceKey, taskId, TracingAnalyzerStatsFormatter.Format(TracingAnalyzer.GetStats(), sw.ElapsedMilliseconds, quantile)));
             }
             catch(Exception e)
             {
