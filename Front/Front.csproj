@@ -130,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AdminToolsIcon.ico" />
+    <Content Include="es2015-loose-mode.js" />
     <Content Include="Settings\dependencies.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
