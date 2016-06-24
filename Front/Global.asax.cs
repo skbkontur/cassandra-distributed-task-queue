@@ -46,9 +46,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
         private static void OverrideRenderAdminToolsStylesAndScriptsHandler(HtmlHelper html)
         {
             html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryScript("webworms-initializer").ToString());
-            html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryStyle("webworms-bundle").ToString());
-            html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryStyle("webworms-admintools-bundle").ToString());
             html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryScript("webworms-bundle").ToString());
+            html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryStyle("remote-task-queue-bundle").ToString());
+            html.ViewContext.Writer.WriteLine(html.RenderWebpackEntryScript("remote-task-queue-bundle").ToString());
         }
 
         protected override void RegisterRoutes(RouteCollection routes)

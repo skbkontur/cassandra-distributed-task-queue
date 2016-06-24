@@ -133,6 +133,7 @@
     <Content Include="Settings\dependencies.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Statics\remote-task-queue-bundle.js" />
     <Content Include="webpack.config.js" />
     <Content Include="package.json" />
     <None Include="Settings\front.csf" />
