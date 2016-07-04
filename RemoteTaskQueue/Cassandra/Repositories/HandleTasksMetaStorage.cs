@@ -95,12 +95,12 @@ namespace RemoteQueue.Cassandra.Repositories
             return taskMetaStorage.Read(taskIds);
         }
 
-        private T[] Shuffle<T>(T[] array)
+        [NotNull]
+        private T[] Shuffle<T>([NotNull] T[] array)
         {
-            var n = array.Length;
-            for (var i = 0; i < n; i++)
+            for(var i = 0; i < array.Length; i++)
             {
-                var r = i + (int)(random.NextDouble() * (n - i));
+                var r = i + (int)(random.NextDouble() * (array.Length - i));
                 var t = array[r];
                 array[r] = array[i];
                 array[i] = t;
