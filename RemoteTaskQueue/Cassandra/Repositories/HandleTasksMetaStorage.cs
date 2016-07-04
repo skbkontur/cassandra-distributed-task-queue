@@ -47,7 +47,7 @@ namespace RemoteQueue.Cassandra.Repositories
             var liveRecordsByKey = new Dictionary<TaskIndexShardKey, TaskIndexRecord[]>();
             foreach(var taskIndexShardKey in taskIndexShardKeys)
             {
-                var liveRecords = minimalStartTicksIndex.GetRecords(taskIndexShardKey, toTicks, batchSize : 2000).ToArray();
+                var liveRecords = minimalStartTicksIndex.GetRecords(taskIndexShardKey, toTicks, batchSize : 2000).Take(10000).ToArray();
                 liveRecordsByKey.Add(taskIndexShardKey, liveRecords);
                 if(liveRecords.Any())
                     Log.For(this).InfoFormat("Got {0} live minimalStartTicksIndex records for taskIndexShardKey: {1}; Oldest live record: {2}", liveRecords.Length, taskIndexShardKey, liveRecords.First());
