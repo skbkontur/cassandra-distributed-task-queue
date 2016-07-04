@@ -52,7 +52,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 if(liveRecords.Any())
                     Log.For(this).InfoFormat("Got {0} live minimalStartTicksIndex records for taskIndexShardKey: {1}; Oldest live record: {2}", liveRecords.Length, taskIndexShardKey, liveRecords.First());
             }
-            return liveRecordsByKey.SelectMany(x => x.Value).OrderBy(x => x.MinimalStartTicks).ToArray();
+            return Shuffle(liveRecordsByKey.SelectMany(x => x.Value).ToArray());
         }
 
         [NotNull]
@@ -95,11 +95,25 @@ namespace RemoteQueue.Cassandra.Repositories
             return taskMetaStorage.Read(taskIds);
         }
 
+        private T[] Shuffle<T>(T[] array)
+        {
+            var n = array.Length;
+            for (var i = 0; i < n; i++)
+            {
+                var r = i + (int)(random.NextDouble() * (n - i));
+                var t = array[r];
+                array[r] = array[i];
+                array[i] = t;
+            }
+            return array;
+        }
+
         private readonly ITaskMetaStorage taskMetaStorage;
         private readonly ITaskMinimalStartTicksIndex minimalStartTicksIndex;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IGlobalTime globalTime;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly Random random = new Random(Guid.NewGuid().GetHashCode());
     }
 }
