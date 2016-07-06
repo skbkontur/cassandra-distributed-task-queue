@@ -51,7 +51,7 @@ namespace RemoteQueue.Handling
             var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, taskDataStorage, remoteTaskQueueProfiler);
             TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, cassandraSettings);
-            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspace, parameters.LockColumnFamilyName));
+            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspaceForLock, parameters.LockColumnFamilyName));
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
             RemoteLockCreator = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(parameters.Settings.QueueKeyspace));
             RemoteTaskQueueProfiler = remoteTaskQueueProfiler;
