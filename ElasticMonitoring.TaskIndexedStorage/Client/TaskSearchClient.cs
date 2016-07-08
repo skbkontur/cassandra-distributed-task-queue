@@ -11,9 +11,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class TaskSearchClient : ITaskSearchClient
     {
-        public TaskSearchClient(IElasticsearchClientFactory elasticsearchClientFactory, SearchIndexNameFactory searchIndexNameFactory)
+        public TaskSearchClient(IElasticsearchClientFactory elasticsearchClientFactory, SearchIndexNameFactory searchIndexNameFactory, TaskSearchDynamicSettings taskSearchDynamicSettings)
         {
             this.searchIndexNameFactory = searchIndexNameFactory;
+            this.taskSearchDynamicSettings = taskSearchDynamicSettings;
             elasticsearchClient = elasticsearchClientFactory.GetClient();
         }
 
@@ -70,28 +71,33 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     });
             }
 
+            string indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(
+                taskSearchRequest.FromTicksUtc,
+                taskSearchRequest.ToTicksUtc,
+                taskSearchDynamicSettings.SearchIndexNameFormat);
             var metaResponse =
                 elasticsearchClient
-                    .Search<SearchResponseNoData>(searchIndexNameFactory.GetIndexForTimeRange(taskSearchRequest.FromTicksUtc, taskSearchRequest.ToTicksUtc), new
-                        {
-                            size = pageSize,
-                            version = true,
-                            _source = false,
-                            query = new
-                                {
-                                    @bool = new
-                                        {
-                                            must = filters
-                                        }
-                                },
-                            sort = new[]
-                                {
-                                    new Dictionary<string, object>
-                                        {
-                                            {"Meta.MinimalStartTime", new {order = "desc"}}
-                                        }
-                                }
-                        }, x => x.IgnoreUnavailable(true).Scroll(scrollLiveTime).SearchType(SearchType.QueryThenFetch))
+                    .Search<SearchResponseNoData>(indexForTimeRange,
+                                                  new
+                                                      {
+                                                          size = pageSize,
+                                                          version = true,
+                                                          _source = false,
+                                                          query = new
+                                                              {
+                                                                  @bool = new
+                                                                      {
+                                                                          must = filters
+                                                                      }
+                                                              },
+                                                          sort = new[]
+                                                              {
+                                                                  new Dictionary<string, object>
+                                                                      {
+                                                                          {"Meta.MinimalStartTime", new {order = "desc"}}
+                                                                      }
+                                                              }
+                                                      }, x => x.IgnoreUnavailable(true).Scroll(scrollLiveTime).SearchType(SearchType.QueryThenFetch))
                     .ProcessResponse();
             return new TaskSearchResponse
                 {
@@ -104,6 +110,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         private const string scrollLiveTime = "10m";
         private const int pageSize = 100;
         private readonly SearchIndexNameFactory searchIndexNameFactory;
+        private readonly TaskSearchDynamicSettings taskSearchDynamicSettings;
         private readonly IElasticsearchClient elasticsearchClient;
     }
 }

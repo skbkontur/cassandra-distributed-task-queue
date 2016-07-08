@@ -7,12 +7,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class SearchIndexNameFactory
     {
-        public SearchIndexNameFactory(TaskSearchDynamicSettings settings)
-        {
-            searchIndexNameFormat = settings.SearchIndexNameFormat;
-        }
-
-        public string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc)
+        public string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc, string indexNameFormat)
         {
             //todo now output is big for large interval. use wildcards??
             var stringBuilder = new StringBuilder();
@@ -21,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             string lastName = null;
             while(time <= endTime)
             {
-                var currentName = DateToBeginDate(time).ToString(searchIndexNameFormat);
+                var currentName = DateToBeginDate(time).ToString(indexNameFormat);
                 if(lastName != currentName)
                 {
                     lastName = currentName;
@@ -45,6 +40,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         }
 
         private static readonly TimeSpan minimumSupportedIndexCreationInterval = TimeSpan.FromDays(1);
-        private readonly string searchIndexNameFormat;
     }
 }

@@ -5,6 +5,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public static class IndexNameConverter
     {
+        public static string FillIndexNamePlaceholder(string aliasFormat, string index)
+        {
+            const string placeholder = "{index}"; //NOTE '{index}' also used by ES while index created using template with alias. do not change
+            return aliasFormat.Replace(placeholder, index);
+        }
+
         public static string ConvertToDateTimeFormat(string s)
         {
             var sb = new StringBuilder();

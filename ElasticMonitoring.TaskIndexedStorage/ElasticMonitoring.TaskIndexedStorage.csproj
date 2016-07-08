@@ -84,7 +84,6 @@
     <Compile Include="Writing\TaskDataService.cs" />
     <Compile Include="Writing\TaskWriter.cs" />
     <Compile Include="Search\TaskSearchDynamicSettings.cs" />
-    <Compile Include="Search\TaskSearchSettings.cs" />
     <Compile Include="Types\ElasticMonitoringStatus.cs" />
     <Compile Include="Utils\DateTimeFormatter.cs" />
     <Compile Include="Utils\NamedLoggerExtension.cs" />

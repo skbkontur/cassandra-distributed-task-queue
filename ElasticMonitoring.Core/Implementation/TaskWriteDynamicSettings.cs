@@ -11,21 +11,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
     {
         public TaskWriteDynamicSettings(IApplicationSettings applicationSettings)
         {
-            if(!applicationSettings.TryGetBool("ElasticSearchSchema.MonitoringSearch.EnableDestructveActions", out enableDestructiveActions))
+            const string monitoringsearch = "ElasticSearchSchema.MonitoringSearch.";
+            if(!applicationSettings.TryGetBool(monitoringsearch + "EnableDestructveActions", out enableDestructiveActions))
                 enableDestructiveActions = false;
-            CurrentIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat"));
-            OldIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.OldIndexNameFormat"));
-            LastTicksIndex = applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.LastTicksIndex");
-
+            CurrentIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(applicationSettings.GetString(monitoringsearch + "CurrentIndexNameFormat"));
+            OldIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(IndexNameConverter.FillIndexNamePlaceholder(
+                applicationSettings.GetString(monitoringsearch + "OldDataAliasFormat"),
+                applicationSettings.GetString(monitoringsearch + "CurrentIndexNameFormat")));
+            LastTicksIndex = applicationSettings.GetString(monitoringsearch + "LastTicksIndex");
+            OldDataIndex = applicationSettings.GetString(monitoringsearch + "OldDataIndex");
             string timeStr;
-            CalculatedIndexStartTimeTicks = !applicationSettings.TryGetString("ElasticSearchSchema.MonitoringSearch.IndexStartTime", out timeStr) ? 0 : ConvertToUtcTicks(timeStr);
+            CalculatedIndexStartTimeTicks = !applicationSettings.TryGetString(monitoringsearch + "IndexStartTime", out timeStr) ? 0 : ConvertToUtcTicks(timeStr);
+
+            SearchAliasFormat = applicationSettings.GetString(monitoringsearch + "SearchAliasFormat");
+            OldDataAliasFormat = applicationSettings.GetString(monitoringsearch + "OldDataAliasFormat");
+
+            long maxTicks;
+            MaxTicks = !applicationSettings.TryGetLong(monitoringsearch + "MaxTicks", out maxTicks) ? null : (long?)maxTicks;
+
             string value;
             GraphitePrefixOrNull = !applicationSettings.TryGetString("ElasticMonitoring.GraphitePrefix", out value) ? null : value;
             RemoteLockId = applicationSettings.GetString("ElasticMonitoring.RemoteLockId");
-
-            long maxTicks;
-            MaxTicks = !applicationSettings.TryGetLong("ElasticSearchSchema.MonitoringSearch.MaxTicks", out maxTicks) ? null : (long?)maxTicks;
-
             MaxBatch = applicationSettings.GetInt("ElasticMonitoring.MaxBatch");
         }
 
@@ -52,7 +58,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         public bool EnableDestructiveActions { get { return enableDestructiveActions; } }
 
+        public string SearchAliasFormat { get; private set; }
+        public string OldDataAliasFormat { get; private set; }
+
+        public string OldDataIndex { get; private set; }
         public string CurrentIndexNameFormat { get; private set; }
+        //NOTE this is alias name, not index name
         public string OldIndexNameFormat { get; private set; }
         public string LastTicksIndex { get; private set; }
         public long CalculatedIndexStartTimeTicks { get; private set; }

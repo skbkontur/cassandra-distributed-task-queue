@@ -53,6 +53,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             //note some indices crashed after delete and rectreate. restart ES
             var client = elasticsearchClientFactory.GetClient();
+            client.ClearScroll("_all").ProcessResponse();
             client.IndicesDelete("_all").ProcessResponse();
         }
 

@@ -19,11 +19,15 @@ ReplicationFactor = 1
 ElasticSearchSchema.MonitoringSearch.NumberOfShards = 1
 ElasticSearchSchema.MonitoringSearch.NumberOfReplicas = 0
 
-ElasticSearchSchema.MonitoringSearch.SearchIndexNameFormat = monitoring-index-{yyyy.MM.dd}-search
-
 ElasticSearchSchema.MonitoringSearch.IndexPrefix = monitoring-index-
-ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearch
 ElasticSearchSchema.MonitoringSearch.TemplateNamePrefix = monitoring-
+ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearch
+
+ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat = monitoring-index-{yyyy.MM.dd}
 ElasticSearchSchema.MonitoringSearch.SearchAliasFormat = {index}-search
 ElasticSearchSchema.MonitoringSearch.OldDataAliasFormat = {index}-old
 ElasticSearchSchema.MonitoringSearch.OldDataIndex = old-data
+
+ElasticMonitoring.RemoteLockId = TaskSearch_Loading_Lock
+ElasticMonitoring.MaxBatch = 100
+

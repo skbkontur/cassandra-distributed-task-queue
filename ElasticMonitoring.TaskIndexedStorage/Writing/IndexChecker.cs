@@ -8,7 +8,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class IndexChecker
     {
-        public IndexChecker(ElasticsearchClientFactory factory)
+        public IndexChecker(IElasticsearchClientFactory factory)
         {
             elasticsearchClient = factory.GetClient();
         }

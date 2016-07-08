@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 
 using NUnit.Framework;
 
@@ -32,7 +30,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [EdiSetUp]
         public void SetUp()
         {
-            WaitFor(() =>
+            TaskSearchHelpers.WaitFor(() =>
                 {
                     var status = elasticMonitoringServiceClient.GetStatus();
                     return status.DistributedLockAcquired;
@@ -57,7 +55,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
             CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId), t0, t1, taskId);
             CheckSearch(string.Format("Meta.Name:{0}", typeof(SlowTaskData).Name), t0, t1, taskId);
-            CheckSearch(string.Format("Meta.Name:Zzz", typeof(SlowTaskData).Name), t0, t1, new string[0]);
+            CheckSearch(string.Format("Meta.Name:Zzz"), t0, t1, new string[0]);
         }
 
         [Test]
@@ -78,7 +76,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             CheckSearch(string.Format("ExceptionInfo:\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1, new string[0]);
         }
-        
+
         [Test]
         public void TestSearchByExceptionSubstring_MultipleDifferentErrors()
         {
@@ -177,30 +175,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         private void CheckSearch(string q, DateTime from, DateTime to, params string[] ids)
         {
-            CollectionAssert.AreEquivalent(ids, Search(q, from, to), "q=" + q);
-        }
-
-        private string[] Search(string q, DateTime from, DateTime to)
-        {
-            //todo kill q2 and delete all ES data
-            //var q2 = string.Format("({0}) AND (Meta.EnqueueTime:[\"{1}\" TO \"{2}\"])", q, ToIsoTime(@from), ToIsoTime(to));
-            var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest()
-                {
-                    FromTicksUtc = @from.ToUniversalTime().Ticks,
-                    ToTicksUtc = to.ToUniversalTime().Ticks,
-                    QueryString = q
-                });
-            var result = new List<string>();
-            if(taskSearchResponse.NextScrollId != null)
-            {
-                do
-                {
-                    foreach(var id in taskSearchResponse.Ids)
-                        result.Add(id);
-                    taskSearchResponse = taskSearchClient.SearchNext(taskSearchResponse.NextScrollId);
-                } while(taskSearchResponse.Ids != null && taskSearchResponse.Ids.Length > 0);
-            }
-            return result.ToArray();
+            TaskSearchHelpers.CheckSearch(taskSearchClient, q, from, to, ids);
         }
 
         private string QueueTask<T>(T taskData) where T : ITaskData
@@ -210,21 +185,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             return task.Id;
         }
 
-        private static void WaitFor(Func<bool> func, TimeSpan timeout, int checkTimeout = 99)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            while(stopwatch.Elapsed < timeout)
-            {
-                Thread.Sleep(checkTimeout);
-                if(func())
-                    return;
-            }
-            Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
-        }
-
         private void WaitForTasks(IEnumerable<string> taskIds, TimeSpan timeSpan)
         {
-            WaitFor(() => taskIds.All(taskId =>
+            TaskSearchHelpers.WaitFor(() => taskIds.All(taskId =>
                 {
                     var taskState = remoteTaskQueue.GetTaskInfo(taskId).Context.State;
                     return taskState == TaskState.Finished || taskState == TaskState.Fatal;

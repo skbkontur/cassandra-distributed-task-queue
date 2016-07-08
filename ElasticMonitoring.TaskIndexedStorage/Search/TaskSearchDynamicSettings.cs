@@ -7,7 +7,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
     {
         public TaskSearchDynamicSettings(IApplicationSettings applicationSettings)
         {
-            SearchIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.SearchIndexNameFormat"));
+            SearchIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(
+                IndexNameConverter.FillIndexNamePlaceholder(applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.SearchAliasFormat"),
+                                                            applicationSettings.GetString("ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat")));
         }
 
         public string SearchIndexNameFormat { get; private set; }
