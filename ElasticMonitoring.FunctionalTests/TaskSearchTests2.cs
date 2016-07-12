@@ -4,9 +4,6 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 
-using Rhino.Mocks;
-
-using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
@@ -34,7 +31,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [EdiSetUp]
         public void SetUp()
         {
-            mockRepository = new MockRepository();
             TaskSearchHelpers.WaitFor(() =>
                 {
                     var status = elasticMonitoringServiceClient.GetStatus();
@@ -45,19 +41,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             taskSearchIndexSchema.ActualizeTemplate(true);
         }
 
-        [EdiTearDown]
-        public void TearDown()
+        [Test]
+        public void TestCloseNotExisting()
         {
-            mockRepository.VerifyAll();
-            mockRepository.BackToRecordAll(BackToRecordOptions.None);
-            mockRepository.ReplayAll();
+            CloseAndCheck(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddDays(-2));
         }
 
-        private T GetMock<T>()
+        [Test]
+        public void TestCloseAlreadyClosed()
         {
-            var mock = mockRepository.StrictMock<T>();
-            mock.Replay();
-            return mock;
+            var @from = DateTime.UtcNow.AddDays(-4);
+            var to = DateTime.UtcNow.AddDays(-2);
+            CloseAndCheck(@from, to);
+            CheckIndicesClosed(@from, to);
+            CloseAndCheck(@from, to);
         }
 
         [Test]
@@ -106,6 +103,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         private void CloseAndCheck(DateTime @from, DateTime to)
         {
             service.CloseOldIndices(@from, to);
+            CheckIndicesClosed(@from, to);
+        }
+
+        private void CheckIndicesClosed(DateTime @from, DateTime to)
+        {
             var indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(@from.Ticks, to.Ticks, taskWriteDynamicSettings.CurrentIndexNameFormat);
             var client = elasticsearchClientFactory.GetClient();
             var response = client.ClusterState("metadata", indexForTimeRange).ProcessResponse();
@@ -126,24 +128,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             return new TaskMetaInformation("SlowTaskData", Guid.NewGuid().ToString()) {Ticks = ticks2, LastModificationTicks = lastModificationTicks};
         }
 
-        // ReSharper disable UnassignedField.Compiler
+        // ReSharper disable UnassignedReadonlyField.Compiler
         [Injected]
-        private SearchIndexNameFactory searchIndexNameFactory;
-
-        [Injected]
-        private IApplicationSettings applicationSettings;
-
-        [Injected]
-        private TaskDataService taskDataService;
+        private readonly SearchIndexNameFactory searchIndexNameFactory;
 
         [Injected]
         private readonly IElasticsearchClientFactory elasticsearchClientFactory;
 
         [Injected]
-        private TaskSchemaDynamicSettings taskSchemaDynamicSettings;
-
-        [Injected]
-        private TaskIndexCloseService service;
+        private readonly TaskIndexCloseService service;
 
         [Injected]
         private readonly IElasticMonitoringServiceClient elasticMonitoringServiceClient;
@@ -154,14 +147,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Injected]
         private readonly ITaskSearchClient taskSearchClient;
 
-        // ReSharper restore UnassignedField.Compiler
-
         [Injected]
-        private ITaskWriteDynamicSettings taskWriteDynamicSettings;
+        private readonly ITaskWriteDynamicSettings taskWriteDynamicSettings;
 
         [Injected]
         private readonly TaskWriter taskWriter;
 
-        private MockRepository mockRepository;
+        // ReSharper restore UnassignedReadonlyField.Compiler
     }
 }
