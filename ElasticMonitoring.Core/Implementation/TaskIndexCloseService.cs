@@ -23,20 +23,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         private bool AdjustIndexState(string index)
         {
-            var response = elasticsearchClient.ClusterState("metadata", index).ProcessResponse(200, 404);
-            foreach(var obj in response.Response["metadata"]["indices"])
+            var response = elasticsearchClient.CatIndices(index, p => p.H("status")).ProcessResponse(200, 404);
+            if(response.HttpStatusCode == 404)
             {
-                if(obj.Name == index)
-                {
-                    if(obj.Value.state.ToString() == "open")
-                        return true;
-                    if(obj.Value.state.ToString() == "close")
-                        return false;
-                }
+                logger.InfoFormat("Index = '{0}' not exists - creating it", index);
+                var respCreate = elasticsearchClient.IndicesCreate(index, new { }).ProcessResponse(200, 400);
+                if (!(respCreate.HttpStatusCode == 400 && respCreate.ServerError != null && respCreate.ServerError.ExceptionType == "IndexAlreadyExistsException"))
+                    respCreate.ProcessResponse(); //note throw any other error
+                return true;
             }
-            logger.InfoFormat("Index = '{0}' not exists - creating it", index);
-            elasticsearchClient.IndicesCreate(index, new {}).ProcessResponse();
-            return true;
+            var state = response.Response;
+            return state.Trim('\r','\n',' ') == "open";
         }
 
         public void CloseOldIndices(DateTime from, DateTime to)
@@ -49,9 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             var indexNames = indexForTimeRange.Split(',');
             logger.InfoFormat("Indices to process: {0}", indexNames.Length);
             foreach(var indexName in indexNames)
-            {
                 CloseIndex(indexName);
-            }
             logger.InfoFormat("Closing Old indices done");
         }
 
