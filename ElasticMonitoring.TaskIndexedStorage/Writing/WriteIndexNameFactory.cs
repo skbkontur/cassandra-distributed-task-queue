@@ -21,6 +21,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             {
                 var indexName = BuildIndexNameForTime(taskMetaInformation.Ticks, oldFormat);
                 if(oldFormat != currentFormat && !indexChecker.CheckAliasExists(indexName))
+                    //NOTE эта ситуация возможна если пишут сразу старую задачу в не созданный еще индекс - alias еще не создан (тк индекс еще не создали)
                     indexName = BuildIndexNameForTime(taskMetaInformation.Ticks, currentFormat);
                 return indexName;
             }

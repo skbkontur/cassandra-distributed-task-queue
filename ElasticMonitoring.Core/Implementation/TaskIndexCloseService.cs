@@ -50,29 +50,34 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             logger.InfoFormat("Indices to process: {0}", indexNames.Length);
             foreach(var indexName in indexNames)
             {
-                if(!AdjustIndexState(indexName))
-                    logger.InfoFormat("Index = '{0}' already closed", indexName);
-                else
-                {
-                    logger.InfoFormat("Redirecting aliases for index = '{0}'", indexName);
-                    var oldDataAlias = IndexNameConverter.FillIndexNamePlaceholder(taskWriteDynamicSettings.OldDataAliasFormat, indexName);
-                    var searchAlias = IndexNameConverter.FillIndexNamePlaceholder(taskWriteDynamicSettings.SearchAliasFormat, indexName);
-                    var body = new
-                        {
-                            actions = new object[]
-                                {
-                                    new {remove = new {index = indexName, alias = oldDataAlias}},
-                                    new {add = new {index = taskWriteDynamicSettings.OldDataIndex, alias = oldDataAlias}},
-                                    new {remove = new {index = indexName, alias = searchAlias}},
-                                    new {add = new {index = taskWriteDynamicSettings.OldDataIndex, alias = searchAlias}},
-                                }
-                        };
-                    elasticsearchClient.IndicesUpdateAliasesForAll(body).ProcessResponse();
-                    logger.InfoFormat("Closeing index = '{0}'", indexName);
-                    elasticsearchClient.IndicesClose(indexName);
-                }
+                CloseIndex(indexName);
             }
             logger.InfoFormat("Closing Old indices done");
+        }
+
+        public void CloseIndex(string indexName)
+        {
+            if(!AdjustIndexState(indexName))
+                logger.InfoFormat("Index = '{0}' already closed", indexName);
+            else
+            {
+                logger.InfoFormat("Redirecting aliases for index = '{0}'", indexName);
+                var oldDataAlias = IndexNameConverter.FillIndexNamePlaceholder(taskWriteDynamicSettings.OldDataAliasFormat, indexName);
+                var searchAlias = IndexNameConverter.FillIndexNamePlaceholder(taskWriteDynamicSettings.SearchAliasFormat, indexName);
+                var body = new
+                    {
+                        actions = new object[]
+                            {
+                                new {remove = new {index = indexName, alias = oldDataAlias}},
+                                new {add = new {index = taskWriteDynamicSettings.OldDataIndex, alias = oldDataAlias}},
+                                new {remove = new {index = indexName, alias = searchAlias}},
+                                new {add = new {index = taskWriteDynamicSettings.OldDataIndex, alias = searchAlias}},
+                            }
+                    };
+                elasticsearchClient.IndicesUpdateAliasesForAll(body).ProcessResponse();
+                logger.InfoFormat("Closing index = '{0}'", indexName);
+                elasticsearchClient.IndicesClose(indexName);
+            }
         }
 
         private static readonly ILog logger = LogManager.GetLogger("TaskIndexCloseService");
