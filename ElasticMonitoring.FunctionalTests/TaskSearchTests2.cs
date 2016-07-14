@@ -84,6 +84,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             var x3 = DateTime.UtcNow;
             var meta3 = CreateMeta(x3, false);
+            
+            CheckSearch(string.Format("Data.TimeMs:123"), x2, x2, new string[0]); //note alias redirected to old data but it is empty now
 
             taskWriter.IndexBatch(new[]
                 {

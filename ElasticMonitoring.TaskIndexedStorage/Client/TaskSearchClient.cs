@@ -71,7 +71,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     });
             }
 
-            string indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(
+            var indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(
                 taskSearchRequest.FromTicksUtc,
                 taskSearchRequest.ToTicksUtc,
                 taskSearchDynamicSettings.SearchIndexNameFormat);
@@ -94,7 +94,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                               {
                                                                   new Dictionary<string, object>
                                                                       {
-                                                                          {"Meta.MinimalStartTime", new {order = "desc"}}
+                                                                          {"Meta.MinimalStartTime", new {order = "desc", unmapped_type = "long"}}
                                                                       }
                                                               }
                                                       }, x => x.IgnoreUnavailable(true).Scroll(scrollLiveTime).SearchType(SearchType.QueryThenFetch))
