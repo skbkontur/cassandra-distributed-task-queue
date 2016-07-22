@@ -73,7 +73,7 @@
     <Compile Include="TaskSearchTests.cs" />
     <Compile Include="TaskSearchTests2.cs" />
     <Compile Include="TaskSearchTestUtils.cs" />
-    <Compile Include="WithTestRemoteTaskQueue.cs" />
+    <Compile Include="WithColumnFamilies.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
