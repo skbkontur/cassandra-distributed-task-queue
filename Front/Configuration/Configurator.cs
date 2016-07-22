@@ -1,5 +1,6 @@
 ﻿using GroboContainer.Core;
 
+using SKBKontur.Catalogue.CassandraStorageCore;
 using SKBKontur.Catalogue.RemoteTaskQueue.Storage;
 
 using TestCommon;
@@ -10,7 +11,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration
     {
         public static void Configure(IContainer container)
         {
-            container.ConfigureForTests();
+            WithTestRemoteTaskQueue.SetUpRemoteTaskQueue(container);
+            container.Configurator.ForAbstraction<ICassandraCoreSettings>().UseInstances(new TestCassandraCoreSettings());
             container.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(container);
         }
     }
