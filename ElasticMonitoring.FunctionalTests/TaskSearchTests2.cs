@@ -19,12 +19,12 @@ using TestCommon.NUnitWrappers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [EdiTestSuite,
+    [EdiTestSuite("ElasticMonitoringTestSuite"),
      WithApplicationSettings(FileName = "elasticMonitoringTests.csf"),
      WithExchangeServices,
      WithDefaultSerializer,
      WithCassandra("CatalogueCluster", "QueueKeyspace"),
-     WithTestRemoteTaskQueue,
+     WithColumnFamilies,
      WithRemoteLock("remoteLock")]
     public class TaskSearchTests2
     {

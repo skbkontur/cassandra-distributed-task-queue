@@ -22,13 +22,16 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
+using TestCommon;
 using TestCommon.NUnitWrappers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
 {
-    [EdiTestSuite, WithApplicationSettings(FileName = "taskCounterTests.csf"),
+    [EdiTestSuite("TaskCounterTestSuite"),
+     WithApplicationSettings(FileName = "taskCounterTests.csf"),
      WithDefaultSerializer,
      WithExchangeServices,
+     WithTestRemoteTaskQueue,
      WithRemoteLock(), //NOTE lock used in TestCounterRepository
      WithCassandra("CatalogueCluster", "QueueKeyspace")]
     public class TaskCounterTest

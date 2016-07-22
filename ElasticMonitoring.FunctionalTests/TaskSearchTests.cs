@@ -18,16 +18,18 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.A
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
+using TestCommon;
 using TestCommon.NUnitWrappers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [EdiTestSuite,
+    [EdiTestSuite("ElasticMonitoringTestSuite"),
      WithApplicationSettings(FileName = "elasticMonitoringTests.csf"),
      WithExchangeServices,
      WithDefaultSerializer,
      WithCassandra("CatalogueCluster", "QueueKeyspace"),
      WithTestRemoteTaskQueue,
+     WithColumnFamilies,
      WithRemoteLock("remoteLock")]
     public class TaskSearchTests
     {
