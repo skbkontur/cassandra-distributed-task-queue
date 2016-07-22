@@ -1,7 +1,8 @@
 ﻿using GroboContainer.Core;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.Storage;
-using SKBKontur.Catalogue.ServiceLib;
+
+using TestCommon;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration
 {
@@ -9,7 +10,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration
     {
         public static void Configure(IContainer container)
         {
-            container.Get<IStorageConfigurator>().Configure(container);
+            container.ConfigureForTests();
             container.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(container);
         }
     }

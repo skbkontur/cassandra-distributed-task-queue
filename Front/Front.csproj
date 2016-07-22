@@ -199,6 +199,10 @@
       <Project>{8ba574ca-6c25-414f-9e99-1e7f032bb962}</Project>
       <Name>TaskMonitoringViewer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestCommon\TestCommon.csproj">
+      <Project>{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}</Project>
+      <Name>TestCommon</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
