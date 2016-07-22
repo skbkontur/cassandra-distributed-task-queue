@@ -25,13 +25,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
         public override void SetUp()
         {
             base.SetUp();
-            container = ContainerCache.GetContainer("RemoteTaskQueue.MonitoringTests", "monitoringTests.csf",
-                                                    c => c.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(c));
+            container = ContainerCache.GetContainer("RemoteTaskQueue.MonitoringTests", "monitoringTests.csf", ConfigureContainer);
             container.Get<IExchangeServiceClient>().Stop();
             ResetTaskQueueCassandraState();
             ResetBusinessObjectStorageState();
             ResetTaskQueueMonitoringState();
             container.Get<IExchangeServiceClient>().Start();
+        }
+
+        private void ConfigureContainer(IContainer c)
+        {
+            c.ConfigureForTests();
+            c.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(c);
         }
 
         private void ResetBusinessObjectStorageState()

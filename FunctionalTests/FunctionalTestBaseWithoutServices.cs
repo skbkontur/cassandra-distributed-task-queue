@@ -17,9 +17,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Configuration;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
-using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.TestCore;
@@ -37,7 +35,7 @@ namespace FunctionalTests
             Log4NetHelper.SetUpLoggingOnce("RemoteTaskQueue");
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
             Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
+            Container.ConfigureForTests();
             Container.ConfigureLockRepository();
             ResetTaskQueueCassandraState();
             ResetTaskQueueMonitoringState();
