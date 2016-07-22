@@ -35,7 +35,7 @@ namespace FunctionalTests
             Log4NetHelper.SetUpLoggingOnce("RemoteTaskQueue");
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
             Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-            Container.ConfigureForTests();
+            WithTestRemoteTaskQueue.SetUpRemoteTaskQueue(Container);
             Container.ConfigureLockRepository();
             ResetTaskQueueCassandraState();
             ResetTaskQueueMonitoringState();
