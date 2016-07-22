@@ -4,22 +4,6 @@ LogDirectory = logs
 
 ListeningPort = 4413
 
-# Конфигурирование Кассандры
-ClusterName = CatalogueCluster
-KeyspaceName = QueueKeyspace
-ConnectionIdleTimeout = 00:10:00
-Endpoints =  127.0.0.1:9160
-EndpointForFierceCommands = 127.0.0.1:9160
-ReadConsistencyLevel = QUORUM
-WriteConsistencyLevel = QUORUM
-Timeout = 6000
-FierceTimeout = 6000
-Attempts = 20
-MaximalColumnsCount = 1000
-MaximalRowsCount = 1000
-CheckConnectionsInterval = 00:01:00
-
-
 ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat = monitoring-index-{yyyy.MM.dd}
 ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearch
 ElasticSearchSchema.MonitoringSearch.IndexStartTime = {now}-1.00:00:00
