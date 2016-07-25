@@ -34,12 +34,17 @@ namespace FunctionalTests
         {
             Log4NetHelper.SetUpLoggingOnce("RemoteTaskQueue");
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
-            Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-            WithTestRemoteTaskQueue.SetUpRemoteTaskQueue(Container);
-            Container.ConfigureLockRepository();
+            ConfigureContainer(Container);
             ResetTaskQueueCassandraState();
             ResetTaskQueueMonitoringState();
             ResetTicksHolderState();
+        }
+
+        protected virtual void ConfigureContainer(Container container)
+        {
+            container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
+            WithTestRemoteTaskQueue.SetUpRemoteTaskQueue(container);
+            container.ConfigureLockRepository();
         }
 
         [TearDown]

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Linq;
 
+using GroboContainer.Core;
 using GroboContainer.Infection;
+
+using GroBuf;
+using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
@@ -9,8 +13,12 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
+using RemoteQueue.Settings;
 
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 
 namespace FunctionalTests.RepositoriesTests
 {
@@ -22,6 +30,15 @@ namespace FunctionalTests.RepositoriesTests
             taskDataRegistry = new DummyTaskDataRegistry();
             Container.Configurator.ForAbstraction<ITaskDataRegistry>().UseInstances(taskDataRegistry);
             handleTasksMetaStorage = Container.Get<IHandleTasksMetaStorage>();
+        }
+
+        protected override void ConfigureContainer(Container container)
+        {
+            container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
+            var remoteQueueTestsCassandraSettings = new RemoteQueueTestsCassandraSettings();
+            container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(remoteQueueTestsCassandraSettings);
+            container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseInstances(remoteQueueTestsCassandraSettings);
+            container.ConfigureLockRepository();
         }
 
         private static string NewTaskId()
