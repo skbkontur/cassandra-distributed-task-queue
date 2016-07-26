@@ -56,6 +56,10 @@
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
+    <Reference Include="GroBuf, Version=1.1.8.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="nunit.framework">
       <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>

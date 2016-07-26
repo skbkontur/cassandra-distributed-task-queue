@@ -5,6 +5,8 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
+using log4net;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Configuration;
@@ -50,12 +52,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 {
                     Type taskType;
                     if(taskDataRegistry.TryGetTaskType(taskMeta.Name, out taskType))
-                        taskDataObj = serializer.Deserialize(taskType, taskData);
+                        taskDataObj = DeserializeTaskDataSafe(taskType, taskData, taskMeta);
                 }
                 enrichedBatch[i] = Tuple.Create(taskMeta, taskExceptionInfos[taskMeta.Id], taskDataObj);
             }
             statsDClient.Timing("Index", () => writer.IndexBatch(enrichedBatch));
         }
+
+        private object DeserializeTaskDataSafe(Type taskType, byte[] taskData, TaskMetaInformation taskMetaInformation)
+        {
+            try
+            {
+                return serializer.Deserialize(taskType, taskData);
+            }
+            catch(Exception e)
+            {
+                logger.ErrorFormat("Data deserialization error. Taskmeta {0}\r\nException {1}", taskMetaInformation, e);
+                return null;
+            }
+        }
+
+        private static readonly ILog logger = LogManager.GetLogger("TaskMetaProcessor");
 
         private readonly ITaskDataRegistry taskDataRegistry;
         private readonly ITaskDataStorage taskDataStorage;

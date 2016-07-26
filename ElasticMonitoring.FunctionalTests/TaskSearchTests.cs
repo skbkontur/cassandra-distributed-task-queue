@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using GroBuf;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
@@ -38,6 +42,31 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             elasticMonitoringServiceClient.DeleteAll();
 
             taskSearchIndexSchema.ActualizeTemplate(true);
+        }
+
+        [Test]
+        public void TestCreateNotDeserializedTaskData()
+        {
+            var t0 = DateTime.Now;
+            var taskId = QueueTask(new SlowTaskData(), TimeSpan.FromSeconds(1));
+            Console.WriteLine("TaskId: {0}", taskId);
+            var taskMetaInformation = handleTasksMetaStorage.GetMeta(taskId);
+
+            var badBytes = new byte[] {};
+            Assert.Catch<Exception>(() => serializer.Deserialize<SlowTaskData>(badBytes));
+
+            taskDataStorage.Overwrite(taskMetaInformation, badBytes);
+
+            var taskId2 = QueueTask(new SlowTaskData(), TimeSpan.FromSeconds(2));
+
+            WaitForTasks(new[] {taskId, taskId2}, TimeSpan.FromSeconds(5));
+
+            var t1 = DateTime.Now;
+
+            elasticMonitoringServiceClient.UpdateAndFlush();
+
+            CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId), t0, t1, taskId);
+            CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId2), t0, t1, taskId2);
         }
 
         [Test]
@@ -178,21 +207,30 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             TaskSearchHelpers.CheckSearch(taskSearchClient, q, from, to, ids);
         }
 
-        private string QueueTask<T>(T taskData) where T : ITaskData
+        private string QueueTask<T>(T taskData, TimeSpan? delay = null) where T : ITaskData
         {
-            var task = remoteTaskQueue.CreateTask<T>(taskData);
-            task.Queue();
+            var task = remoteTaskQueue.CreateTask(taskData);
+            task.Queue(delay ?? TimeSpan.Zero);
             return task.Id;
         }
 
         private void WaitForTasks(IEnumerable<string> taskIds, TimeSpan timeSpan)
         {
-            TaskSearchHelpers.WaitFor(() => taskIds.All(taskId =>
+            TaskSearchHelpers.WaitFor(() =>
                 {
-                    var taskState = remoteTaskQueue.GetTaskInfo(taskId).Context.State;
-                    return taskState == TaskState.Finished || taskState == TaskState.Fatal;
-                }), timeSpan);
+                    var tasks = remoteTaskQueue.HandleTaskCollection.GetTasks(taskIds.ToArray());
+                    return tasks.All(t => t.Meta.State == TaskState.Finished || t.Meta.State == TaskState.Fatal);
+                }, timeSpan);
         }
+
+        [Injected]
+        private ISerializer serializer;
+
+        [Injected]
+        private IHandleTasksMetaStorage handleTasksMetaStorage;
+
+        [Injected]
+        private TaskDataStorage taskDataStorage;
 
         [Injected]
         private readonly IElasticMonitoringServiceClient elasticMonitoringServiceClient;
@@ -204,6 +242,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         private readonly ITaskSearchClient taskSearchClient;
 
         [Injected]
-        private readonly IRemoteTaskQueue remoteTaskQueue;
+        private readonly RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue;
     }
 }
