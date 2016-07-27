@@ -11,7 +11,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Configuration
     {
         public static void Configure(IContainer container)
         {
-            WithTestRemoteTaskQueue.SetUpRemoteTaskQueue(container);
+            container.ConfigureRemoteTaskQueue();
             container.Configurator.ForAbstraction<ICassandraCoreSettings>().UseInstances(new TestCassandraCoreSettings());
             container.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(container);
         }

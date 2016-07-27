@@ -43,7 +43,7 @@ namespace FunctionalTests
         protected virtual void ConfigureContainer(Container container)
         {
             container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-            WithTestRemoteTaskQueue.SetUpRemoteTaskQueue(container);
+            container.ConfigureRemoteTaskQueue();
             container.ConfigureLockRepository();
         }
 
