@@ -67,7 +67,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             }
             catch(Exception e)
             {
-                logger.ErrorFormat("Data deserialization error. Taskmeta {0}\r\nException {1}", taskMetaInformation, e);
+                logger.Error(string.Format("Data deserialization error. Taskmeta {0}", taskMetaInformation), e);
                 return null;
             }
         }
