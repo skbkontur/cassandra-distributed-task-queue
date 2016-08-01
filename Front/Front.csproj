@@ -83,7 +83,7 @@
     </Reference>
     <Reference Include="GroboTrace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
+      <HintPath>..\..\Assemblies\GroboTrace\GroboTrace.dll</HintPath>
     </Reference>
     <Reference Include="Humanizer">
       <HintPath>..\..\Assemblies\Humanizer\Humanizer.dll</HintPath>

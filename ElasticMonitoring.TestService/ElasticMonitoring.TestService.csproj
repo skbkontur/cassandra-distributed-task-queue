@@ -53,7 +53,7 @@
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
     <Reference Include="GroboTrace">
-      <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
+      <HintPath>..\..\Assemblies\GroboTrace\GroboTrace.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
