@@ -14,10 +14,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.TestService
 {
     public class EntryPoint : ApplicationBase
     {
-        protected override void ConfigureTracingWrapper(TracingWrapperConfigurator configurator)
-        {
-        }
-
         protected override string ConfigFileName { get { return "taskCounterService.csf"; } }
 
         private static void Main()

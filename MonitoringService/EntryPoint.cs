@@ -13,10 +13,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringService
 {
     public class EntryPoint : ApplicationBase
     {
-        protected override void ConfigureTracingWrapper(TracingWrapperConfigurator configurator)
-        {
-        }
-
         protected override string ConfigFileName { get { return "monitoringService.csf"; } }
 
         private static void Main()

@@ -63,10 +63,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front
             Container.ConfigureWebpackPathProvider();
         }
 
-        protected override void ConfigureTracingWrapper(TracingWrapperConfigurator configurator)
-        {
-        }
-
         protected override string ConfigFileName { get { return "front.csf"; } }
 
         private static string GetControllersNamespace()

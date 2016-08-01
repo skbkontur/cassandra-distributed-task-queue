@@ -12,10 +12,6 @@ namespace ExchangeService
 {
     internal class EntryPoint : ApplicationBase
     {
-        protected override void ConfigureTracingWrapper(TracingWrapperConfigurator configurator)
-        {
-        }
-
         protected override string ConfigFileName { get { return "exchangeService.csf"; } }
 
         private static void Main()
