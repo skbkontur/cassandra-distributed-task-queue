@@ -1,15 +1,12 @@
-﻿using GroBuf;
+﻿using GroboContainer.Core;
 
-using GroboContainer.Core;
-
+using GroBuf;
 
 using RemoteQueue.Cassandra.Primitives;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
-using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
 {
@@ -18,7 +15,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
         public static void ConfigureLockRepository(this IContainer container, string remoteLockColumnFamily = null)
         {
             var serializer = container.Get<ISerializer>();
-            container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             var columnFamilyRepositoryParameters = container.Get<IColumnFamilyRepositoryParameters>();
             remoteLockColumnFamily = remoteLockColumnFamily ?? columnFamilyRepositoryParameters.LockColumnFamilyName;
             var cassandraRemoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(columnFamilyRepositoryParameters.Settings.QueueKeyspaceForLock, remoteLockColumnFamily));

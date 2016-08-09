@@ -1,6 +1,8 @@
 ﻿using GroboTrace;
 
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
 
@@ -21,6 +23,7 @@ namespace ExchangeService
 
         private void Run()
         {
+            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             Container.ConfigureLockRepository();
             Container.Get<HttpService>().Run();
         }
