@@ -40,10 +40,6 @@
     <Reference Include="Catalogue.CassandraPrimitives.Storages">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>

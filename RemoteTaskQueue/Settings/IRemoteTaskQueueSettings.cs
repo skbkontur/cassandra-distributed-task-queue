@@ -5,6 +5,5 @@
         bool EnableContinuationOptimization { get; }
         string QueueKeyspace { get; }
         string QueueKeyspaceForLock { get; }
-        bool RemoteLockMigrationEnabled { get; }
     }
 }
