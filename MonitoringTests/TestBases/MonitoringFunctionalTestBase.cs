@@ -7,9 +7,11 @@ using GroboContainer.Core;
 using RemoteQueue.Configuration;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraStorageCore;
 using SKBKontur.Catalogue.CassandraStorageCore.Initializing;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.PageBases;
 using SKBKontur.Catalogue.RemoteTaskQueue.Storage;
@@ -36,6 +38,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
         private void ConfigureContainer(IContainer c)
         {
+            container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             c.ConfigureRemoteTaskQueue();
             c.Configurator.ForAbstraction<ICassandraCoreSettings>().UseType<TestCassandraCoreSettings>();
             c.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(c);

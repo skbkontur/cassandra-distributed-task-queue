@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net;
 
+using GroboContainer.Infection;
+
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -8,6 +10,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 {
+    [IgnoredImplementation]
     public class RemoteQueueTestsCassandraSettings : ICassandraSettings, ICassandraClusterSettings, IRemoteTaskQueueSettings
     {
         public IPEndPoint[] Endpoints

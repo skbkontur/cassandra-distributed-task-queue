@@ -35,7 +35,6 @@ namespace TestCommon
         public static void ConfigureRemoteTaskQueue(this IContainer container)
         {
             var remoteQueueTestsCassandraSettings = new RemoteQueueTestsCassandraSettings();
-            container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(remoteQueueTestsCassandraSettings);
             container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseInstances(remoteQueueTestsCassandraSettings);
             container.Configurator.ForAbstraction<ITaskDataRegistry>().UseType<TaskDataRegistry>();
         }

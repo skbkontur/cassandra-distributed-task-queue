@@ -45,7 +45,7 @@ namespace FunctionalTests
         protected virtual void ConfigureContainer(Container container)
         {
             container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-			container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
+            container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             container.ConfigureRemoteTaskQueue();
             container.ConfigureLockRepository();
         }

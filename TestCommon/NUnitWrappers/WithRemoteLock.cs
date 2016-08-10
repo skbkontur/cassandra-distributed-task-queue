@@ -8,6 +8,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 namespace TestCommon.NUnitWrappers
 {
     [WithDefaultSerializer]
+    [WithCassandraClusterSettings]
     [WithCassandra("CatalogueCluster", "QueueKeyspace")]
     public class WithRemoteLock : EdiTestSuiteWrapperAttribute
     {
