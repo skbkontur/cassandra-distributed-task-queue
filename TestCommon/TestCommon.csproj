@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CassandraHelpers.cs" />
+    <Compile Include="NUnitWrappers\WithCassandraClusterSettings.cs" />
     <Compile Include="NUnitWrappers\WithRemoteLock.cs" />
     <Compile Include="NUnitWrappers\WithExchangeServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
