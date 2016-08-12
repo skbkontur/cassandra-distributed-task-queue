@@ -1,4 +1,4 @@
-using System.Linq;
+Ôªøusing System.Linq;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding.Builders.Base;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding.Context;
@@ -17,7 +17,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             {
                 var urlHelper = taskDataBuildingContext.UrlHelper;
                 var value = targetObject;
-                return RawHtml(string.Format(@"<a href=""{0}""> <span class=""glyphicon glyphicon-download-alt"" aria-hidden=""true""></span> —Í‡˜‡Ú¸ ({1} ·‡ÈÚ)</a>",
+                return RawHtml(string.Format(@"<a href=""{0}""> <span class=""glyphicon glyphicon-download-alt"" aria-hidden=""true""></span> –°–∫–∞—á–∞—Ç—å ({1} –±–∞–π—Ç)</a>",
                                              urlHelper.Action("GetBytes", new {id = taskDataBuildingContext.TaskId, path = string.Join(".", buildingContext.MemberBuildingContext.PathFromRoot.Select(x => x))}),
                                              ((byte[])value).Length));
             }

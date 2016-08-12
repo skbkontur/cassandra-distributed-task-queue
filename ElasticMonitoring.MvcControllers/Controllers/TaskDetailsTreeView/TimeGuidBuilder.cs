@@ -1,4 +1,4 @@
-using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+п»їusing SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding.Builders.Base;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding.Context;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding.Results;
@@ -12,7 +12,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             if(buildingContext.MemberBuildingContext.DeclaredType == typeof(TimeGuid))
             {
                 var guid = ((TimeGuid)targetObject).ToGuid();
-                // TODO Чтобы сделать search link надо сначала запилить сериализацию TimeGuid-ов в Elastic
+                // TODO Р§С‚РѕР±С‹ СЃРґРµР»Р°С‚СЊ search link РЅР°РґРѕ СЃРЅР°С‡Р°Р»Р° Р·Р°РїРёР»РёС‚СЊ СЃРµСЂРёР°Р»РёР·Р°С†РёСЋ TimeGuid-РѕРІ РІ Elastic
                 return StringValue(guid.ToString());
             }
             return NoResult.Instance;
