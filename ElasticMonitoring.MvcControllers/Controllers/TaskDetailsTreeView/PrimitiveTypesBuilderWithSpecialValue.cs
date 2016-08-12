@@ -9,11 +9,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 {
     internal class PrimitiveTypesBuilderWithSpecialValue : PrimitiveTypesBuilder
     {
+        // UrlHelper.Action has a limit for a query string of about 64 Kb.
+        // Also long values are truncated when writing to Elasticsearch so querying them is useless anyway.
+        private const int maxLength = 1000;
+
         public override IBuildingResult Build(object targetObject, BuildingContext buildingContext)
         {
             var propertyType = buildingContext.MemberBuildingContext.DeclaredType;
             if(propertyType == typeof(string) || propertyType == typeof(Guid))
             {
+                var targetObjectText = targetObject.ToString();
+                if(targetObjectText.Length > maxLength)
+                    return StringValue(targetObjectText);
+
                 return RawHtml(targetObject +
                                string.Format(@"<a target=""_blank"" href=""{0}"" class=""pull-right"" data-toggle=""tooltip"" data-placement=""left"" title=""Найти все задачи, у которых это поле равно данному значению"" ><span class=""glyphicon glyphicon-search""></span><span>", BuildSearchLink(targetObject, buildingContext)));
             }
