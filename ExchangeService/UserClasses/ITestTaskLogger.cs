@@ -1,11 +1,11 @@
 ﻿using System;
-using System.CodeDom;
-using System.Dynamic;
 using System.Linq;
 
 using RemoteQueue.Cassandra.Primitives;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 
 namespace ExchangeService.UserClasses
 {
@@ -17,8 +17,9 @@ namespace ExchangeService.UserClasses
 
     public class CassandraTestTaskLogger : ColumnFamilyRepositoryBase, ITestTaskLogger
     {
-        public CassandraTestTaskLogger(IColumnFamilyRepositoryParameters parameters) :
-            base(parameters, columnFamilyName)
+        public CassandraTestTaskLogger(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings taskQueueSettings)
+            :
+                base(cassandraCluster, taskQueueSettings, columnFamilyName)
         {
         }
 
@@ -27,7 +28,7 @@ namespace ExchangeService.UserClasses
             RetrieveColumnFamilyConnection().AddColumn(loggingTaskIdKey, new Column
                 {
                     Name = taskId,
-                    Value = new byte[]{1},
+                    Value = new byte[] {1},
                     Timestamp = DateTime.UtcNow.Ticks
                 });
         }

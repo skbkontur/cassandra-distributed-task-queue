@@ -32,7 +32,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         public void TestDeleteRemoteLock()
         {
             cassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", "remoteLock").Truncate();
-            cassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", ColumnFamilyRepositoryParameters.LockColumnFamily).Truncate();
+            cassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", RemoteTaskQueueLockConstants.LockColumnFamily).Truncate();
         }
 
         [Test, Ignore]

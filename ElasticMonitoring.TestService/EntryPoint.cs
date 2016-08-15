@@ -8,7 +8,6 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
-using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler;
@@ -32,9 +31,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
         private void Run()
         {
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
+            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
+            Container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             ConfigureRemoteLock(Container);
-            Container.Get<ElasticAvailabilityChecker>().WaitAlive(); 
+            Container.Get<ElasticAvailabilityChecker>().WaitAlive();
             Container.Get<LazySchemaActualizer>().ActualizeSchema(); //NOTE hack for local usage
             Container.Get<IElasticMonitoringServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();
@@ -42,7 +42,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
         private static void ConfigureRemoteLock(IContainer container)
         {
-            var keyspaceName = container.Get<ICassandraSettings>().QueueKeyspace;
+            var keyspaceName = container.Get<IRemoteTaskQueueSettings>().QueueKeyspace;
             const string columnFamilyName = "remoteLock";
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(keyspaceName, columnFamilyName));
             var remoteLockImplementation = container.Create<CassandraRemoteLockImplementationSettings, CassandraRemoteLockImplementation>(remoteLockImplementationSettings);

@@ -8,20 +8,22 @@ using GroBuf;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
     public class EventLogRepository : ColumnFamilyRepositoryBase, IEventLogRepository
     {
-        public EventLogRepository(ISerializer serializer, IGlobalTime globalTime, IColumnFamilyRepositoryParameters parameters, ITicksHolder ticksHolder)
-            : base(parameters, columnFamilyName)
+        public EventLogRepository(ISerializer serializer, IGlobalTime globalTime, ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings settings, ITicksHolder ticksHolder)
+            : base(cassandraCluster, settings, columnFamilyName)
         {
             this.serializer = serializer;
             this.globalTime = globalTime;
             this.ticksHolder = ticksHolder;
-            var connectionParameters = parameters.CassandraCluster.RetrieveColumnFamilyConnection(parameters.Settings.QueueKeyspace, columnFamilyName).GetConnectionParameters();
+            var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName).GetConnectionParameters();
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
         }
 

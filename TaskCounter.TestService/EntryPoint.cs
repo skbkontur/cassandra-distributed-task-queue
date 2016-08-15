@@ -1,5 +1,7 @@
 ﻿using GroboTrace;
 
+using RemoteQueue.Settings;
+
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Http;
@@ -25,7 +27,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.TestService
 
         private void Run()
         {
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
+            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
+            Container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             Container.Configurator.ForAbstraction<IHttpHandler>().UseType<TaskCounterHttpHandler>();
             Container.Get<ITaskCounterServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();

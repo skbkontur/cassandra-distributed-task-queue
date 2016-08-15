@@ -17,12 +17,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class TaskMinimalStartTicksIndex : ITaskMinimalStartTicksIndex
     {
-        public TaskMinimalStartTicksIndex(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder)
+        public TaskMinimalStartTicksIndex(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder)
         {
             this.cassandraCluster = cassandraCluster;
             this.serializer = serializer;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
-            keyspaceName = cassandraSettings.QueueKeyspace;
+            keyspaceName = remoteTaskQueueSettings.QueueKeyspace;
         }
 
         [CanBeNull]

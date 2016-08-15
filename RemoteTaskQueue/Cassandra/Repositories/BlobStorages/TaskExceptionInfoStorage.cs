@@ -20,11 +20,11 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskExceptionInfoStorage : ITaskExceptionInfoStorage
     {
-        public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings)
+        public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings)
         {
             this.serializer = serializer;
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(new ColumnFamilyFullName(cassandraSettings.QueueKeyspace, timeBasedCfName), cassandraCluster);
-            legacyBlobStorage = new LegacyBlobStorage<TaskExceptionInfo>(cassandraCluster, serializer, cassandraSettings.QueueKeyspace, legacyCfName);
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(new ColumnFamilyFullName(remoteTaskQueueSettings.QueueKeyspace, timeBasedCfName), cassandraCluster);
+            legacyBlobStorage = new LegacyBlobStorage<TaskExceptionInfo>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName);
         }
 
         public bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out List<TimeGuid> newExceptionInfoIds)

@@ -14,7 +14,7 @@ namespace TestCommon
     {
         public static void DropAndCreateDatabase(this IContainer container, ColumnFamily[] columnFamilies)
         {
-            var settings = container.Get<ICassandraSettings>();
+            var settings = container.Get<IRemoteTaskQueueSettings>();
             var cassandraCluster = container.Get<ICassandraCluster>();
             cassandraCluster.ActualizeKeyspaces(new[]
                 {

@@ -18,7 +18,7 @@ namespace FunctionalTests.RepositoriesTests
         [SetUp]
         public void SetUp()
         {
-            var settings = new TimeBasedBlobStorageSettings(Container.Get<ICassandraSettings>().QueueKeyspace, largeCfName, regularCfName);
+            var settings = new TimeBasedBlobStorageSettings(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, largeCfName, regularCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, Container.Get<ICassandraCluster>());
         }
 

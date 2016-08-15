@@ -1,24 +1,25 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 using GroBuf;
 
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
 {
     public class ChildTaskIndex : IChildTaskIndex
     {
-        public ChildTaskIndex(IColumnFamilyRepositoryParameters repositoryParameters, ISerializer serializer, ITaskMetaStorage taskMetaStorage)
+        public ChildTaskIndex(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings settings, ISerializer serializer, ITaskMetaStorage taskMetaStorage)
         {
-            this.repositoryParameters = repositoryParameters;
+            this.cassandraCluster = cassandraCluster;
+            this.settings = settings;
             this.serializer = serializer;
             this.taskMetaStorage = taskMetaStorage;
         }
@@ -27,7 +28,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
         {
             if(string.IsNullOrEmpty(meta.ParentTaskId))
                 return;
-            var connection = repositoryParameters.CassandraCluster.RetrieveColumnFamilyConnection(repositoryParameters.Settings.QueueKeyspace, columnFamilyName);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName);
             connection.AddColumn(meta.ParentTaskId, new Column
                 {
                     Name = meta.Id,
@@ -39,14 +40,15 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
         [NotNull]
         public string[] GetChildTaskIds([NotNull] string taskId)
         {
-            var connection = repositoryParameters.CassandraCluster.RetrieveColumnFamilyConnection(repositoryParameters.Settings.QueueKeyspace, columnFamilyName);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName);
             var indexedChildren = connection.GetRow(taskId).Select(column => serializer.Deserialize<string>(column.Value)).ToArray();
             return taskMetaStorage.Read(indexedChildren).Keys.ToArray();
         }
 
         public const string columnFamilyName = "childTaskIndex";
 
-        private readonly IColumnFamilyRepositoryParameters repositoryParameters;
+        private readonly ICassandraCluster cassandraCluster;
+        private readonly IRemoteTaskQueueSettings settings;
         private readonly ISerializer serializer;
         private readonly ITaskMetaStorage taskMetaStorage;
     }

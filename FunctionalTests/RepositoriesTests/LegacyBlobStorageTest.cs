@@ -20,7 +20,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             var serializer = Container.Get<ISerializer>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
-            var keyspaceName = Container.Get<ICassandraSettings>().QueueKeyspace;
+            var keyspaceName = Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace;
             blobStorage = new LegacyBlobStorage<Dto>(cassandraCluster, serializer, keyspaceName, cfName);
         }
 

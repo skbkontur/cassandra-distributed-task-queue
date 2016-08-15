@@ -17,11 +17,11 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
     // здесь реализуется не очень хороший паттерн - в одной CF метки времени для записи выбираются разными способами: ticks и long.MaxValue - ticks
     public class TicksHolder : ITicksHolder
     {
-        public TicksHolder(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings)
+        public TicksHolder(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings settings)
         {
             this.cassandraCluster = cassandraCluster;
             this.serializer = serializer;
-            keyspaceName = cassandraSettings.QueueKeyspace;
+            keyspaceName = settings.QueueKeyspace;
         }
 
         public void UpdateMaxTicks([NotNull] string name, long ticks)

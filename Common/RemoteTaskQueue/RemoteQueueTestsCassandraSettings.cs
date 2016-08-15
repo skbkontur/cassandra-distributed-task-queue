@@ -11,7 +11,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
 {
     [IgnoredImplementation]
-    public class RemoteQueueTestsCassandraSettings : ICassandraSettings, ICassandraClusterSettings, IRemoteTaskQueueSettings
+    public class RemoteQueueTestsCassandraSettings : ICassandraClusterSettings, IRemoteTaskQueueSettings
     {
         public IPEndPoint[] Endpoints
         {

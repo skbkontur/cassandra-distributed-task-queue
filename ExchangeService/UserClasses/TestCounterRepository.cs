@@ -12,9 +12,9 @@ namespace ExchangeService.UserClasses
 {
     public class TestCounterRepository : ITestCounterRepository
     {
-        public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings, IRemoteLockCreator remoteLockCreator)
+        public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings taskQueueSettings, IRemoteLockCreator remoteLockCreator)
         {
-            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, cassandraSettings.QueueKeyspace, CfName);
+            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, taskQueueSettings.QueueKeyspace, CfName);
             this.remoteLockCreator = remoteLockCreator;
         }
 

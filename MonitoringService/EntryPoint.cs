@@ -1,5 +1,7 @@
 ﻿using GroboTrace;
 
+using RemoteQueue.Settings;
+
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Core.SynchronizationStorage.LocalStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
@@ -24,7 +26,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringService
 
         private void Run()
         {
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
+            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
+            Container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             Container.Get<ILocalStorage>().ActualizeDatabaseScheme();
             Container.Get<IMonitoringServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();

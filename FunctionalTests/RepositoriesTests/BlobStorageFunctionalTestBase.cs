@@ -6,6 +6,8 @@ using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
+using RemoteQueue.Settings;
+
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
@@ -25,7 +27,8 @@ namespace FunctionalTests.RepositoriesTests
             Log4NetHelper.SetUpLoggingOnce("BlobStorageFunctionalTestBase");
             Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
             Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(Container.Get<RemoteQueueTestsCassandraSettings>());
+            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
+            Container.ConfigureRemoteTaskQueue();
             Container.DropAndCreateDatabase(GetColumnFamilies());
         }
 

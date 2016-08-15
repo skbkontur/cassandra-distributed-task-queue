@@ -19,7 +19,7 @@ namespace FunctionalTests.RepositoriesTests
         [SetUp]
         public void SetUp()
         {
-            var cfName = new ColumnFamilyFullName(Container.Get<ICassandraSettings>().QueueKeyspace, timeBasedCfName);
+            var cfName = new ColumnFamilyFullName(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, timeBasedCfName);
             timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>());
         }
 

@@ -16,12 +16,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskMetaStorage : ITaskMetaStorage
     {
-        public TaskMetaStorage(ICassandraCluster cassandraCluster, ISerializer serializer, ICassandraSettings cassandraSettings)
+        public TaskMetaStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings)
         {
             this.serializer = serializer;
-            var settings = new TimeBasedBlobStorageSettings(cassandraSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
+            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
-            legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, cassandraSettings.QueueKeyspace, legacyCfName);
+            legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName);
         }
 
         public void Write([NotNull] TaskMetaInformation taskMeta, long timestamp)

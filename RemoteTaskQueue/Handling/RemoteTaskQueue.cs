@@ -33,7 +33,6 @@ namespace RemoteQueue.Handling
         public RemoteTaskQueue(
             ISerializer serializer,
             ICassandraCluster cassandraCluster,
-            ICassandraSettings cassandraSettings,
             IRemoteTaskQueueSettings taskQueueSettings,
             ITaskDataRegistry taskDataRegistry,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
@@ -41,28 +40,27 @@ namespace RemoteQueue.Handling
             this.taskDataRegistry = taskDataRegistry;
             Serializer = serializer;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
-            TicksHolder = new TicksHolder(cassandraCluster, serializer, cassandraSettings);
+            TicksHolder = new TicksHolder(cassandraCluster, serializer, taskQueueSettings);
             GlobalTime = new GlobalTime(TicksHolder);
-            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, cassandraSettings, new OldestLiveRecordTicksHolder(TicksHolder));
-            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, cassandraSettings);
-            var parameters = new ColumnFamilyRepositoryParameters(cassandraCluster, cassandraSettings);
-            var eventLongRepository = new EventLogRepository(serializer, GlobalTime, parameters, TicksHolder);
-            childTaskIndex = new ChildTaskIndex(parameters, serializer, taskMetaStorage);
+            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(TicksHolder));
+            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, taskQueueSettings);
+            var eventLongRepository = new EventLogRepository(serializer, GlobalTime, cassandraCluster, taskQueueSettings, TicksHolder);
+            childTaskIndex = new ChildTaskIndex(cassandraCluster, taskQueueSettings, serializer, taskMetaStorage);
             HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskDataRegistry);
-            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, cassandraSettings);
+            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, taskQueueSettings);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, taskDataStorage, remoteTaskQueueProfiler);
-            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, cassandraSettings);
+            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, taskQueueSettings);
 
-            var remoteLockImplementationSettings_old = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(parameters.Settings.QueueKeyspaceForLock, parameters.LockColumnFamilyName));
+            var remoteLockImplementationSettings_old = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(taskQueueSettings.QueueKeyspaceForLock, RemoteTaskQueueLockConstants.LockColumnFamily));
             var remoteLockImplementation_old = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings_old);
-            var remoteLocker_old = new RemoteLocker(remoteLockImplementation_old, new RemoteLockerMetrics(parameters.Settings.QueueKeyspace));
-            if(parameters.Settings.RemoteLockMigrationEnabled)
+            var remoteLocker_old = new RemoteLocker(remoteLockImplementation_old, new RemoteLockerMetrics(taskQueueSettings.QueueKeyspace));
+            if(taskQueueSettings.RemoteLockMigrationEnabled)
             {
                 var remoteLockImplementationSettings_new = CassandraRemoteLockImplementationSettings.Default(
-                    new ColumnFamilyFullName(RemoteLockConfiguration.AllRemoteLocksKeyspace, ColumnFamilyRepositoryParameters.NewLockColumnFamily));
+                    new ColumnFamilyFullName(RemoteLockConfiguration.AllRemoteLocksKeyspace, RemoteTaskQueueLockConstants.NewLockColumnFamily));
                 var remoteLockImplementation_new = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings_new);
                 var remoteLocker_new = new RemoteLocker(remoteLockImplementation_new, 
-                    new RemoteLockerMetrics(string.Format("{0}_{1}", RemoteLockConfiguration.AllRemoteLocksKeyspace, ColumnFamilyRepositoryParameters.NewLockColumnFamily)));
+                    new RemoteLockerMetrics(string.Format("{0}_{1}", RemoteLockConfiguration.AllRemoteLocksKeyspace, RemoteTaskQueueLockConstants.NewLockColumnFamily)));
                 RemoteLockCreator = new MigratingRemoteLocker(remoteLocker_old, remoteLocker_new);
             }
             else

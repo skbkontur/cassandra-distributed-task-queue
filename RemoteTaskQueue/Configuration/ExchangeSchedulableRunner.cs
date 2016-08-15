@@ -30,14 +30,13 @@ namespace RemoteQueue.Configuration
             ITaskHandlerRegistry taskHandlerRegistry,
             ISerializer serializer,
             ICassandraCluster cassandraCluster,
-            ICassandraSettings cassandraSettings,
             IRemoteTaskQueueSettings taskQueueSettings,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             this.runnerSettings = runnerSettings;
             this.periodicTaskRunner = periodicTaskRunner;
             var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
-            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, cassandraSettings, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
+            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
             ticksHolder = remoteTaskQueue.TicksHolder;
             localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
             foreach(var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())

@@ -93,8 +93,7 @@
   <ItemGroup>
     <Compile Include="Cassandra\Entities\TaskMetaUpdatedEvent.cs" />
     <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryBase.cs" />
-    <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryParameters.cs" />
-    <Compile Include="Cassandra\Primitives\IColumnFamilyRepositoryParameters.cs" />
+    <Compile Include="Cassandra\Primitives\RemoteTaskQueueLockConstants.cs" />
     <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobId.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\SinglePartitionTimeBasedBlobStorage.cs" />
@@ -187,7 +186,6 @@
     <Compile Include="Profiling\EmptyRemoteTaskQueueProfiler.cs" />
     <Compile Include="Profiling\IRemoteTaskQueueProfiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\ICassandraSettings.cs" />
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="Settings\IRemoteTaskQueueSettings.cs" />
     <Compile Include="Configuration\TaskDataRegistryBase.cs" />
