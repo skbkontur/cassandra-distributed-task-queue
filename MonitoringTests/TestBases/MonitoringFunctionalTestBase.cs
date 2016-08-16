@@ -38,7 +38,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.TestBases
 
         private void ConfigureContainer(IContainer c)
         {
-            container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
+            c.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             c.ConfigureRemoteTaskQueue();
             c.Configurator.ForAbstraction<ICassandraCoreSettings>().UseType<TestCassandraCoreSettings>();
             c.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(c);
