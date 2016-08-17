@@ -33,12 +33,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 
         protected override sealed void ConfigureCassandraBasicSchema(CassandraStoringSchema schema)
         {
-            RemoteLockConfiguration.ConfigureRemoteLock(schema, LocalKeyspaceName);
+            RemoteLockConfiguration.ConfigureRemoteLock(schema, LocalKeyspaceName, RemoteLockConfiguration.RemoteLockColumnFamily);
+            RemoteLockConfiguration.ConfigureRemoteLock(schema, RemoteLockConfiguration.AllRemoteLocksKeyspace, RemoteLockConfiguration.CoreRemoteLockColumnFamily);
             FileDataStorageConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
             GlobalTicksHolderConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
-
-            schema.ColumnFamily("lock", c => c.Name(ColumnFamilyRepositoryParameters.LockColumnFamily).KeyspaceName(LocalKeyspaceName));
-
             StrictBosEventLogStorageConfiguration.ConfigureCassandraSchema(schema, LocalKeyspaceName);
             schema.ColumnFamily(bosEventLogColumnFamilyName, x => x.Name(bosEventLogColumnFamilyName).KeyspaceName(LocalKeyspaceName));
         }
