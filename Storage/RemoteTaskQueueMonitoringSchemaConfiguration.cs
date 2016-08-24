@@ -1,14 +1,12 @@
 ﻿using GroboContainer.Core;
 
-using RemoteQueue.Cassandra.Primitives;
-
+using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.CassandraStorageCore;
 using SKBKontur.Catalogue.CassandraStorageCore.EventLog;
 using SKBKontur.Catalogue.CassandraStorageCore.FileDataStorage;
 using SKBKontur.Catalogue.CassandraStorageCore.GlobalTicks;
 using SKBKontur.Catalogue.CassandraStorageCore.RemoteLock;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
-using SKBKontur.Catalogue.CassandraStorageCore.Storage.Persistent;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.Persistent.Cassandra.Schema;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 
