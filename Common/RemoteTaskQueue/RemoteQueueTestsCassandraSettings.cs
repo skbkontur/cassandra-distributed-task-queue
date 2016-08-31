@@ -36,5 +36,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
         public string QueueKeyspace { get { return "QueueKeyspace"; } }
         public string QueueKeyspaceForLock { get { return QueueKeyspace;  } }
         public bool EnableContinuationOptimization { get { return true; } }
+        public bool EnableMetrics { get { return false; } }
     }
 }
