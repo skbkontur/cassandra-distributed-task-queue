@@ -62,6 +62,7 @@
     <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\NestedClassTypeBuilder.cs" />
     <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\NullValuesBuilder.cs" />
     <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\SubObject.cs" />
+    <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\SubObjectBuildingError.cs" />
     <Compile Include="Controllers\ObjectTreeViewBuilding\Builders\SubObjectsResults.cs" />
     <Compile Include="Controllers\ObjectTreeViewBuilding\ObjectTreeModelValue.cs" />
     <Compile Include="Controllers\TaskDetailsTreeView\ByteArrayBuilder.cs" />
