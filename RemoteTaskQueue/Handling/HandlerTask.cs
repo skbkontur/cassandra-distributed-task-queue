@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 
 using GroBuf;
-using GroBuf.DataMembersExtracters;
 
 using JetBrains.Annotations;
 
@@ -22,6 +21,7 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.GrobufExtensions;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
@@ -280,7 +280,7 @@ namespace RemoteQueue.Handling
         [CanBeNull]
         private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, [NotNull] TaskIndexRecord oldTaskIndexRecord, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState newState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
-            var newMeta = allFieldsSerializer.Copy(oldMeta);
+            var newMeta = GrobufSerializers.AllFieldsSerializer.Copy(oldMeta);
             if(newState == oldMeta.State)
                 newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
             newMeta.MinimalStartTicks = newMinimalStartTicks;
@@ -317,7 +317,6 @@ namespace RemoteQueue.Handling
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private readonly IGlobalTime globalTime;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
-        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
         private static readonly TimeSpan longRunningTaskDurationThreshold = TimeSpan.FromMinutes(1);
         public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
         private readonly TaskShardMetrics taskShardMetrics;

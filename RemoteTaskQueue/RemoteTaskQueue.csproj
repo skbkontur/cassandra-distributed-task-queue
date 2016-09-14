@@ -51,6 +51,10 @@
     <Reference Include="Catalogue.Core.Sharding">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Sharding.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.GrobufExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.GrobufExtensions.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
