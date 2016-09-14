@@ -35,8 +35,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             {
                 var buildingError = new SubObjectBuildingError
                     {
-                        Error = "Couldn't evaluate property",
-                        Exception = e
+                        Error = string.Format("Couldn't evaluate property. Exception: {0}", e)
                     };
                 return new SubObject
                     {
