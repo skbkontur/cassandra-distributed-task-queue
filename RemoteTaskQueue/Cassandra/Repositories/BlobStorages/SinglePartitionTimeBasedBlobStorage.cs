@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -14,10 +15,11 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class SinglePartitionTimeBasedBlobStorage
     {
-        public SinglePartitionTimeBasedBlobStorage(ColumnFamilyFullName cfName, ICassandraCluster cassandraCluster)
+        public SinglePartitionTimeBasedBlobStorage(ColumnFamilyFullName cfName, ICassandraCluster cassandraCluster, TimeSpan ttl)
         {
             this.cfName = cfName;
             this.cassandraCluster = cassandraCluster;
+            this.ttl = ttl;
         }
 
         public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp)
@@ -30,7 +32,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                     Name = FormatColumnName(columnId),
                     Value = value,
                     Timestamp = timestamp,
-                    TTL = null,
+                    TTL = (int) ttl.TotalSeconds,
                 });
         }
 
@@ -72,6 +74,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         private readonly ColumnFamilyFullName cfName;
         private readonly ICassandraCluster cassandraCluster;
+        private readonly TimeSpan ttl;
 
         private class ColumnWithId
         {

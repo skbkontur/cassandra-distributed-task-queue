@@ -19,14 +19,16 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public TaskMetaStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings)
         {
             this.serializer = serializer;
-            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
+            ttl = remoteTaskQueueSettings.TasksTtl;
+            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName, ttl);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
-            legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName);
+            legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName, ttl);
         }
 
         public void Write([NotNull] TaskMetaInformation taskMeta, long timestamp)
         {
             TimeGuid timeGuid;
+            taskMeta.TtlTicks = ttl.Ticks;
             if(!TimeGuid.TryParse(taskMeta.Id, out timeGuid))
                 legacyBlobStorage.Write(taskMeta.Id, taskMeta, timestamp);
             else
@@ -103,5 +105,6 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         private readonly ISerializer serializer;
         private readonly TimeBasedBlobStorage timeBasedBlobStorage;
         private readonly LegacyBlobStorage<TaskMetaInformation> legacyBlobStorage;
+        private readonly TimeSpan ttl;
     }
 }

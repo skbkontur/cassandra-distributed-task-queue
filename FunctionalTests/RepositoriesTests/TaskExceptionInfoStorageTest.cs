@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using GroBuf;
+
 using MoreLinq;
 
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace FunctionalTests.RepositoriesTests
@@ -179,6 +183,27 @@ namespace FunctionalTests.RepositoriesTests
                 {
                     new Tuple<TaskMetaInformation, Exception[]>(meta, exceptions.Take(100).Concat(exceptions.Skip(199)).ToArray()), 
                 });
+        }
+
+        [TestCase(MetaType.TimeGuid)]
+        [TestCase(MetaType.Legacy)]
+        public void Ttl(MetaType metaType)
+        {
+            taskExceptionInfoStorage = new TaskExceptionInfoStorage(
+                Container.Get<ICassandraCluster>(), 
+                Container.Get<ISerializer>(),
+                new SmallTtlRemoteTaskQueueSettings(Container.Get<IRemoteTaskQueueSettings>(), TimeSpan.FromSeconds(2))
+                );
+
+            var exception = new Exception("Message");
+            var meta = NewMeta(metaType);
+
+            List<TimeGuid> ids;
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
+            meta.TaskExceptionInfoIds = ids;
+
+            Assert.That(() => taskExceptionInfoStorage.Read(new []{meta})[meta.Id].Length, Is.EqualTo(1));
+            Assert.That(() => taskExceptionInfoStorage.Read(new[] { meta })[meta.Id].Length, Is.EqualTo(0).After(10000, 100));
         }
 
         private void Check(Tuple<TaskMetaInformation, Exception[]>[] expected)

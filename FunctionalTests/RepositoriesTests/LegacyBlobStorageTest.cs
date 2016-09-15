@@ -21,7 +21,7 @@ namespace FunctionalTests.RepositoriesTests
             var serializer = Container.Get<ISerializer>();
             var cassandraCluster = Container.Get<ICassandraCluster>();
             var keyspaceName = Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace;
-            blobStorage = new LegacyBlobStorage<Dto>(cassandraCluster, serializer, keyspaceName, cfName);
+            blobStorage = new LegacyBlobStorage<Dto>(cassandraCluster, serializer, keyspaceName, cfName, TimeSpan.FromHours(1));
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
@@ -32,7 +32,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void TestReadWrite()
         {
-            const string id = "a";
+            var id = Guid.NewGuid().ToString();
             const string field1 = "yyy";
             blobStorage.Write(id, new Dto {Field1 = field1}, DateTime.UtcNow.Ticks);
             var elem = blobStorage.Read(id);
@@ -42,8 +42,8 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void TestMultiRead()
         {
-            var id1 = "9F7DF556-08BE-4E3E-8532-1489BF624657";
-            var id2 = "AABAE964-1310-4842-B4ED-967F38796644";
+            var id1 = Guid.NewGuid().ToString();
+            var id2 = Guid.NewGuid().ToString();
             Assert.That(blobStorage.Read(new List<string>()).Count, Is.EqualTo(0));
             Assert.That(blobStorage.Read(new List<string> {id1, id2}).Count, Is.EqualTo(0));
 
@@ -57,6 +57,22 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[id1].Field1, Is.EqualTo("id1"));
             Assert.That(actual[id2].Field1, Is.EqualTo("id2"));
+        }
+
+        [Test]
+        public void TestTtl()
+        {
+            var serializer = Container.Get<ISerializer>();
+            var cassandraCluster = Container.Get<ICassandraCluster>();
+            var keyspaceName = Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace;
+            blobStorage = new LegacyBlobStorage<Dto>(cassandraCluster, serializer, keyspaceName, cfName, TimeSpan.FromSeconds(2));
+
+            var id = Guid.NewGuid().ToString();
+            const string field1 = "yyy";
+            blobStorage.Write(id, new Dto { Field1 = field1 }, DateTime.UtcNow.Ticks);
+            var elem = blobStorage.Read(id);
+            Assert.AreEqual(field1, elem.Field1);
+            Assert.That(() => blobStorage.Read(id), Is.Null.After(10000, 100));
         }
 
         private const string cfName = "LegacyBlobStorageTest";

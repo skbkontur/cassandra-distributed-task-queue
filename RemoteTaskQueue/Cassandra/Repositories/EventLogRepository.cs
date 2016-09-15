@@ -25,6 +25,7 @@ namespace RemoteQueue.Cassandra.Repositories
             this.ticksHolder = ticksHolder;
             var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName).GetConnectionParameters();
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
+            eventLogTtl = settings.EventLogTtl;
         }
 
         public void AddEvent(string taskId, long nowTicks)
@@ -44,7 +45,8 @@ namespace RemoteQueue.Cassandra.Repositories
                 {
                     Name = columnInfo.Item2,
                     Timestamp = nowTicks,
-                    Value = serializer.Serialize(taskMetaUpdatedEventEntity)
+                    Value = serializer.Serialize(taskMetaUpdatedEventEntity),
+                    TTL = (int) eventLogTtl.TotalSeconds
                 });
         }
 
@@ -83,7 +85,8 @@ namespace RemoteQueue.Cassandra.Repositories
                         {
                             Name = columnInfo.Item2,
                             Timestamp = nowTicks,
-                            Value = serializer.Serialize(@event)
+                            Value = serializer.Serialize(@event),
+                            TTL = (int)eventLogTtl.TotalSeconds
                         });
                 });
             connection.BatchInsert(columns.GroupBy(x => x.Key)
@@ -106,6 +109,7 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly ITicksHolder ticksHolder;
 
         private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;
+        private TimeSpan eventLogTtl;
         private const string firstEventTicksRowName = "firstEventTicksRowName";
     }
 }

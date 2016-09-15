@@ -20,7 +20,7 @@ namespace FunctionalTests.RepositoriesTests
         public void SetUp()
         {
             var cfName = new ColumnFamilyFullName(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, timeBasedCfName);
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>());
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>(), TimeSpan.FromHours(1));
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
@@ -86,6 +86,20 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(result[id2].Single(), Is.EqualTo(2));
         }
 
+        [Test]
+        public void Ttl()
+        {
+            var cfName = new ColumnFamilyFullName(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, timeBasedCfName);
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>(), TimeSpan.FromSeconds(2));
+
+            var rowKey = NewRowKey();
+            var id = NewBlobId();
+            Assert.IsNull(ReadByte(rowKey, id));
+            WriteByte(rowKey, id, 10);
+            Assert.That(ReadByte(rowKey, id), Is.EqualTo(10));
+            Assert.That(() => ReadByte(rowKey, id), Is.Null.After(10000, 1000));
+        }
+        
         private static string NewRowKey()
         {
             return Guid.NewGuid().ToString();

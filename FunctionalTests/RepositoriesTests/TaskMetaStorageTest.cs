@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Linq;
 
+using GroBuf;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace FunctionalTests.RepositoriesTests
@@ -96,6 +100,34 @@ namespace FunctionalTests.RepositoriesTests
                     new Tuple<string, string>(taskId1, taskId1),
                     new Tuple<string, string>(taskId2, taskId2),
                 }));
+        }
+
+        [Test]
+        public void Ttl_TimeBased()
+        {
+            DoTestTtl(TimeBasedTaskId());
+        }
+        
+        [Test]
+        public void Ttl_Legacy()
+        {
+            DoTestTtl(LegacyTaskId());
+        }
+
+        private void DoTestTtl(string taskId)
+        {
+            var ttl = TimeSpan.FromSeconds(2);
+            taskMetaStorage = new TaskMetaStorage(
+                Container.Get<ICassandraCluster>(),
+                Container.Get<ISerializer>(),
+                new SmallTtlRemoteTaskQueueSettings(Container.Get<IRemoteTaskQueueSettings>(), ttl));
+
+            Assert.IsNull(taskMetaStorage.Read(taskId));
+            Write(taskId);
+            var taskMetaInformation = taskMetaStorage.Read(taskId);
+            Assert.That(taskMetaInformation.Id, Is.EqualTo(taskId));
+            Assert.That(taskMetaInformation.TtlTicks, Is.EqualTo(ttl.Ticks));
+            Assert.That(() => taskMetaStorage.Read(taskId), Is.Null.After(10000, 100));
         }
 
         private static string LegacyTaskId()

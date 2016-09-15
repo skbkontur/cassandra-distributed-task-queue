@@ -20,9 +20,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
     {
         public TaskDataStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings)
         {
-            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
+            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName, remoteTaskQueueSettings.TasksTtl);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
-            legacyBlobStorage = new LegacyBlobStorage<byte[]>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName);
+            legacyBlobStorage = new LegacyBlobStorage<byte[]>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName, remoteTaskQueueSettings.TasksTtl);
         }
 
         [NotNull]
