@@ -6,7 +6,6 @@ using ExchangeService.UserClasses;
 using RemoteQueue.Configuration;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 
@@ -14,7 +13,6 @@ using TestCommon;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [WithCassandra("CatalogueCluster", "QueueKeyspace")]
     [WithTestRemoteTaskQueue]
     public class WithColumnFamilies : EdiTestSuiteWrapperAttribute
     {
@@ -25,10 +23,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                     new ColumnFamily
                         {
                             Name = TestCounterRepository.CfName,
-                        },
-                    new ColumnFamily
-                        {                            
-                            Name = "remoteLock",
                         },
                     new ColumnFamily
                         {

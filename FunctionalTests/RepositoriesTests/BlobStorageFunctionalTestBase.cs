@@ -6,8 +6,6 @@ using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
-using RemoteQueue.Settings;
-
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;

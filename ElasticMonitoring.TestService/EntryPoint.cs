@@ -2,6 +2,7 @@
 
 using GroboTrace;
 
+using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
@@ -43,8 +44,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         private static void ConfigureRemoteLock(IContainer container)
         {
             var keyspaceName = container.Get<IRemoteTaskQueueSettings>().QueueKeyspace;
-            const string columnFamilyName = "remoteLock";
-            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(keyspaceName, columnFamilyName));
+            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(keyspaceName, RemoteTaskQueueLockConstants.LockColumnFamily));
             var remoteLockImplementation = container.Create<CassandraRemoteLockImplementationSettings, CassandraRemoteLockImplementation>(remoteLockImplementationSettings);
             container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(keyspaceName)));
         }

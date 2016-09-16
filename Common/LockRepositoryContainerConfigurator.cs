@@ -14,13 +14,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
 {
     public static class LockRepositoryContainerConfigurator
     {
-        public static void ConfigureLockRepository(this IContainer container, string remoteLockColumnFamily = null)
+        public static void ConfigureLockRepository(this IContainer container)
         {
             var serializer = container.Get<ISerializer>();
             var cassandraCluster = container.Get<ICassandraCluster>();
             var taskQueueSettings = container.Get<IRemoteTaskQueueSettings>();
-            remoteLockColumnFamily = remoteLockColumnFamily ?? RemoteTaskQueueLockConstants.LockColumnFamily;
-            var cassandraRemoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(taskQueueSettings.QueueKeyspaceForLock, remoteLockColumnFamily));
+            var cassandraRemoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(taskQueueSettings.QueueKeyspaceForLock, RemoteTaskQueueLockConstants.LockColumnFamily));
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, cassandraRemoteLockImplementationSettings);
             container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(taskQueueSettings.QueueKeyspace)));
         }

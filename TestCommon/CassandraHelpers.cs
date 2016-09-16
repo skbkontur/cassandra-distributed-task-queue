@@ -14,13 +14,13 @@ namespace TestCommon
     {
         public static void DropAndCreateDatabase(this IContainer container, ColumnFamily[] columnFamilies)
         {
-            var settings = container.Get<IRemoteTaskQueueSettings>();
             var cassandraCluster = container.Get<ICassandraCluster>();
+            var queueKeyspace = container.Get<IRemoteTaskQueueSettings>().QueueKeyspace;
             cassandraCluster.ActualizeKeyspaces(new[]
                 {
                     new KeyspaceScheme
                         {
-                            Name = settings.QueueKeyspace,
+                            Name = queueKeyspace,
                             Configuration =
                                 {
                                     ReplicationStrategy = SimpleReplicationStrategy.Create(1),
@@ -29,13 +29,12 @@ namespace TestCommon
                         },
                 });
             foreach(var columnFamily in columnFamilies)
-                cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamily.Name).Truncate();
+                cassandraCluster.RetrieveColumnFamilyConnection(queueKeyspace, columnFamily.Name).Truncate();
         }
 
         public static void ConfigureRemoteTaskQueue(this IContainer container)
         {
-            var remoteQueueTestsCassandraSettings = new RemoteQueueTestsCassandraSettings();
-            container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseInstances(remoteQueueTestsCassandraSettings);
+            container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseInstances(new RemoteQueueTestsCassandraSettings());
             container.Configurator.ForAbstraction<ITaskDataRegistry>().UseType<TaskDataRegistry>();
         }
     }

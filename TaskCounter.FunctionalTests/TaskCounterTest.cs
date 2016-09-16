@@ -23,40 +23,15 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 using TestCommon;
-using TestCommon.NUnitWrappers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
 {
-    [EdiTestSuite("TaskCounterTestSuite"),
-     WithApplicationSettings(FileName = "taskCounterTests.csf"),
-     WithDefaultSerializer,
-     WithExchangeServices,
-     WithTestRemoteTaskQueue,
-     WithRemoteLock(), //NOTE lock used in TestCounterRepository
-     WithCassandra("CatalogueCluster", "QueueKeyspace")]
+    [EdiTestSuite("TaskCounterTestSuite"), WithTestRemoteTaskQueue, WithExchangeServices, WithApplicationSettings(FileName = "taskCounterTests.csf")]
     public class TaskCounterTest
     {
         [EdiSetUp]
         public void SetUp()
         {
-            //todo сделать чтобы схема в кассандре создавалась
-            //    container.Get<RemoteTaskQueueMonitoringSchemaConfiguration>().ConfigureBusinessObjectStorage(container);
-            //    var cassandraSchemeActualizer = container.Get<ICassandraSchemeActualizer>();
-
-            //    cassandraSchemeActualizer.AddNewColumnFamilies();
-            //    cassandraSchemeActualizer.TruncateAllColumnFamilies();
-
-            //    CassandraHelpers.DropAndCreateDatabase(columnFamilyRegistry.GetAllColumnFamilyNames().Concat(new[]
-            //        {
-            //            new ColumnFamily
-            //                {
-            //                    Name = "columnFamilyName",
-            //                },
-            //            new ColumnFamily
-            //                {
-            //                    Name = "remoteLock",
-            //                }
-            //        }).ToArray(), container);
             monitoring.RestartProcessingTaskCounter(DateTime.UtcNow);
         }
 
@@ -222,9 +197,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
                     return true;
                 }, timeSpan);
         }
-
-        //[Injected]
-        //private readonly IColumnFamilyRegistry columnFamilyRegistry;
 
         // ReSharper disable UnassignedReadonlyField.Compiler
         [Injected]

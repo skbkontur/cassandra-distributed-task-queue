@@ -18,20 +18,15 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.U
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 
 using TestCommon;
-using TestCommon.NUnitWrappers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [EdiTestSuite, WithApplicationSettings(FileName = "elasticMonitoringTests.csf"),
-     WithDefaultSerializer,
-     WithCassandra("CatalogueCluster", "QueueKeyspace"),
-     WithRemoteLock("remoteLock")]
+    [EdiTestSuite, WithTestRemoteTaskQueue, WithApplicationSettings(FileName = "elasticMonitoringTests.csf")]
     public class TaskSearchTestUtils
     {
         [Test, Ignore]
         public void TestDeleteRemoteLock()
         {
-            cassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", "remoteLock").Truncate();
             cassandraCluster.RetrieveColumnFamilyConnection("QueueKeyspace", RemoteTaskQueueLockConstants.LockColumnFamily).Truncate();
         }
 
@@ -82,10 +77,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                         {
                             Name = "columnFamilyName",
                         },
-                    new ColumnFamily
-                        {
-                            Name = "remoteLock",
-                        }
                 }).ToArray());
         }
 
