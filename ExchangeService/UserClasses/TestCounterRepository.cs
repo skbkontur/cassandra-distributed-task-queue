@@ -14,7 +14,7 @@ namespace ExchangeService.UserClasses
     {
         public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings taskQueueSettings, IRemoteLockCreator remoteLockCreator)
         {
-            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, taskQueueSettings.QueueKeyspace, CfName, taskQueueSettings.TasksTtl);
+            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, taskQueueSettings.QueueKeyspace, CfName);
             this.remoteLockCreator = remoteLockCreator;
         }
 
@@ -64,7 +64,7 @@ namespace ExchangeService.UserClasses
 
         private void SetCounterInternal(string taskId, int value)
         {
-            storage.Write(taskId, value, DateTime.UtcNow.Ticks);
+            storage.Write(taskId, value, DateTime.UtcNow.Ticks, TimeSpan.FromHours(1));
         }
 
         private IRemoteLock Lock(string taskId)

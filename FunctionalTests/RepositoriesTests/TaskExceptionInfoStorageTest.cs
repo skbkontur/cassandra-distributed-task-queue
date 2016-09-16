@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using GroBuf;
-
 using MoreLinq;
 
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace FunctionalTests.RepositoriesTests
@@ -181,7 +177,7 @@ namespace FunctionalTests.RepositoriesTests
 
             Check(new[]
                 {
-                    new Tuple<TaskMetaInformation, Exception[]>(meta, exceptions.Take(100).Concat(exceptions.Skip(199)).ToArray()), 
+                    new Tuple<TaskMetaInformation, Exception[]>(meta, exceptions.Take(100).Concat(exceptions.Skip(199)).ToArray()),
                 });
         }
 
@@ -189,21 +185,15 @@ namespace FunctionalTests.RepositoriesTests
         [TestCase(MetaType.Legacy)]
         public void Ttl(MetaType metaType)
         {
-            taskExceptionInfoStorage = new TaskExceptionInfoStorage(
-                Container.Get<ICassandraCluster>(), 
-                Container.Get<ISerializer>(),
-                new SmallTtlRemoteTaskQueueSettings(Container.Get<IRemoteTaskQueueSettings>(), TimeSpan.FromSeconds(2))
-                );
-
             var exception = new Exception("Message");
-            var meta = NewMeta(metaType);
+            var meta = NewMeta(metaType, TimeSpan.FromSeconds(2));
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
-            Assert.That(() => taskExceptionInfoStorage.Read(new []{meta})[meta.Id].Length, Is.EqualTo(1));
-            Assert.That(() => taskExceptionInfoStorage.Read(new[] { meta })[meta.Id].Length, Is.EqualTo(0).After(10000, 100));
+            Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(1));
+            Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(0).After(10000, 100));
         }
 
         private void Check(Tuple<TaskMetaInformation, Exception[]>[] expected)
@@ -218,19 +208,27 @@ namespace FunctionalTests.RepositoriesTests
             }
         }
 
-        private static TaskMetaInformation TimeGuidMeta()
+        private static TaskMetaInformation TimeGuidMeta(TimeSpan? ttl = null)
         {
-            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), TimeGuid.NowGuid().ToGuid().ToString());
+            ttl = ttl ?? defaultTtl;
+            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), TimeGuid.NowGuid().ToGuid().ToString())
+                {
+                    TtlTicks = ttl.Value.Ticks
+                };
         }
 
-        private static TaskMetaInformation LegacyMeta()
+        private static TaskMetaInformation LegacyMeta(TimeSpan? ttl = null)
         {
-            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString());
+            ttl = ttl ?? defaultTtl;
+            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString())
+                {
+                    TtlTicks = ttl.Value.Ticks
+                };
         }
 
-        private static TaskMetaInformation NewMeta(MetaType metaType)
+        private static TaskMetaInformation NewMeta(MetaType metaType, TimeSpan? ttl = null)
         {
-            return metaType == MetaType.TimeGuid ? TimeGuidMeta() : LegacyMeta();
+            return metaType == MetaType.TimeGuid ? TimeGuidMeta(ttl) : LegacyMeta(ttl);
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
@@ -245,6 +243,7 @@ namespace FunctionalTests.RepositoriesTests
         }
 
         private ITaskExceptionInfoStorage taskExceptionInfoStorage;
+        private static readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);
     }
 
     internal static class Sugar

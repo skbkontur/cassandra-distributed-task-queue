@@ -12,7 +12,6 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
@@ -20,20 +19,19 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
     {
         public TaskDataStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings)
         {
-            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName, remoteTaskQueueSettings.TasksTtl);
+            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
-            legacyBlobStorage = new LegacyBlobStorage<byte[]>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName, remoteTaskQueueSettings.TasksTtl);
+            legacyBlobStorage = new LegacyBlobStorage<byte[]>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName);
         }
 
         [NotNull]
-        public BlobId Write([NotNull] string taskId, [NotNull] byte[] taskData)
+        public BlobId Write([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData)
         {
-            TimeGuid timeGuid;
-            if(!TimeGuid.TryParse(taskId, out timeGuid))
-                throw new InvalidProgramStateException(string.Format("TaskId is not time-based: {0}", taskId));
+            if(!taskMeta.IsTimeBased())
+                throw new InvalidProgramStateException(string.Format("TaskId is not time-based: {0}", taskMeta.Id));
             var blobId = TimeBasedBlobStorage.GenerateNewBlobId(taskData.Length);
             var timestamp = blobId.Id.GetTimestamp().Ticks;
-            timeBasedBlobStorage.Write(blobId, taskData, timestamp);
+            timeBasedBlobStorage.Write(blobId, taskData, timestamp, taskMeta.GetTtl());
             return blobId;
         }
 
@@ -49,8 +47,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public void Overwrite([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData)
         {
             var timestamp = Timestamp.Now.Ticks;
-            legacyBlobStorage.Write(taskMeta.Id, taskData, timestamp);
-            timeBasedBlobStorage.Write(taskMeta.GetTaskDataId(), taskData, timestamp);
+            legacyBlobStorage.Write(taskMeta.Id, taskData, timestamp, taskMeta.GetTtl());
+            timeBasedBlobStorage.Write(taskMeta.GetTaskDataId(), taskData, timestamp, taskMeta.GetTtl());
         }
 
         [CanBeNull]

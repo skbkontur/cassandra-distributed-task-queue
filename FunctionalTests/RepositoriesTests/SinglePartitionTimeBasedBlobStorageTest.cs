@@ -20,7 +20,7 @@ namespace FunctionalTests.RepositoriesTests
         public void SetUp()
         {
             var cfName = new ColumnFamilyFullName(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, timeBasedCfName);
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>(), TimeSpan.FromHours(1));
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>());
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
@@ -34,14 +34,14 @@ namespace FunctionalTests.RepositoriesTests
             var rk = NewRowKey();
             var id = NewBlobId();
             Assert.IsNull(timeBasedBlobStorage.Read(rk, id));
-            WriteByte(rk, id, 10);
+            WriteByte(rk, id, 10, defaultTtl);
             Assert.That(ReadByte(rk, id), Is.EqualTo(10));
         }
 
         [Test]
         public void Write_NullValue_IsForbidden()
         {
-            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(NewRowKey(), NewBlobId(), null, DateTime.UtcNow.Ticks));
+            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(NewRowKey(), NewBlobId(), null, DateTime.UtcNow.Ticks, defaultTtl));
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             var rk = NewRowKey();
             var id = NewBlobId();
-            timeBasedBlobStorage.Write(rk, id, new byte[0], DateTime.UtcNow.Ticks);
+            timeBasedBlobStorage.Write(rk, id, new byte[0], DateTime.UtcNow.Ticks, defaultTtl);
             Assert.That(timeBasedBlobStorage.Read(rk, id), Is.EqualTo(new byte[0]));
         }
 
@@ -58,7 +58,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             var rk = NewRowKey();
             var id = NewBlobId();
-            WriteByte(rk, id, 1);
+            WriteByte(rk, id, 1, defaultTtl);
             timeBasedBlobStorage.Delete(rk, id, DateTime.UtcNow.Ticks);
             Assert.IsNull(ReadByte(rk, id));
         }
@@ -74,12 +74,12 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(timeBasedBlobStorage.Read(rk, new TimeGuid[0]), Is.Empty);
             Assert.That(timeBasedBlobStorage.Read(rk, allKeys), Is.Empty);
 
-            WriteByte(rk, id1, 1);
+            WriteByte(rk, id1, 1, defaultTtl);
             var result = timeBasedBlobStorage.Read(rk, allKeys);
             Assert.That(result.Count, Is.EqualTo(1));
             Assert.That(result[id1].Single(), Is.EqualTo(1));
 
-            WriteByte(rk, id2, 2);
+            WriteByte(rk, id2, 2, defaultTtl);
             result = timeBasedBlobStorage.Read(rk, allKeys);
             Assert.That(result.Count, Is.EqualTo(2));
             Assert.That(result[id1].Single(), Is.EqualTo(1));
@@ -89,13 +89,10 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void Ttl()
         {
-            var cfName = new ColumnFamilyFullName(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, timeBasedCfName);
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>(), TimeSpan.FromSeconds(2));
-
             var rowKey = NewRowKey();
             var id = NewBlobId();
             Assert.IsNull(ReadByte(rowKey, id));
-            WriteByte(rowKey, id, 10);
+            WriteByte(rowKey, id, 10, TimeSpan.FromSeconds(2));
             Assert.That(ReadByte(rowKey, id), Is.EqualTo(10));
             Assert.That(() => ReadByte(rowKey, id), Is.Null.After(10000, 1000));
         }
@@ -110,9 +107,9 @@ namespace FunctionalTests.RepositoriesTests
             return TimeGuid.NowGuid();
         }
 
-        private void WriteByte(string rowKey, TimeGuid id, byte value)
+        private void WriteByte(string rowKey, TimeGuid id, byte value, TimeSpan ttl)
         {
-            timeBasedBlobStorage.Write(rowKey, id, new[] {value}, DateTime.UtcNow.Ticks);
+            timeBasedBlobStorage.Write(rowKey, id, new[] {value}, DateTime.UtcNow.Ticks, ttl);
         }
 
         private byte? ReadByte(string rowKey, TimeGuid id)
@@ -126,5 +123,6 @@ namespace FunctionalTests.RepositoriesTests
         private const string timeBasedCfName = "SinglePartitionTimeBasedBlobStorageTestCf";
 
         private SinglePartitionTimeBasedBlobStorage timeBasedBlobStorage;
+        private readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);
     }
 }

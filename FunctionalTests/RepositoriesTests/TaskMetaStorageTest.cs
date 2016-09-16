@@ -116,14 +116,9 @@ namespace FunctionalTests.RepositoriesTests
 
         private void DoTestTtl(string taskId)
         {
-            var ttl = TimeSpan.FromSeconds(2);
-            taskMetaStorage = new TaskMetaStorage(
-                Container.Get<ICassandraCluster>(),
-                Container.Get<ISerializer>(),
-                new SmallTtlRemoteTaskQueueSettings(Container.Get<IRemoteTaskQueueSettings>(), ttl));
-
             Assert.IsNull(taskMetaStorage.Read(taskId));
-            Write(taskId);
+            var ttl = TimeSpan.FromSeconds(2);
+            Write(taskId, ttl);
             var taskMetaInformation = taskMetaStorage.Read(taskId);
             Assert.That(taskMetaInformation.Id, Is.EqualTo(taskId));
             Assert.That(taskMetaInformation.TtlTicks, Is.EqualTo(ttl.Ticks));
@@ -140,11 +135,16 @@ namespace FunctionalTests.RepositoriesTests
             return TimeGuid.NowGuid().ToGuid().ToString();
         }
 
-        private void Write(string taskId)
+        private void Write(string taskId, TimeSpan? ttl = null)
         {
-            taskMetaStorage.Write(new TaskMetaInformation("TaskName", taskId), DateTime.UtcNow.Ticks);
+            ttl = ttl ?? defaultTtl;
+            taskMetaStorage.Write(new TaskMetaInformation("TaskName", taskId)
+                {
+                    TtlTicks = ttl.Value.Ticks
+                }, DateTime.UtcNow.Ticks);
         }
 
+        private readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);
         private TaskMetaStorage taskMetaStorage;
     }
 }

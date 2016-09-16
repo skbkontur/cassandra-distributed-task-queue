@@ -45,6 +45,13 @@ namespace RemoteQueue.Cassandra.Entities
         public string TraceId { get; set; }
         public bool TraceIsActive { get; set; }
 
+        public TimeSpan GetTtl()
+        {
+            if (!TtlTicks.HasValue)
+                throw new InvalidProgramStateException(string.Format("Ttl did not set for Task {0}", this));
+            return TimeSpan.FromTicks(TtlTicks.Value);
+        }
+
         internal bool IsTimeBased()
         {
             TimeGuid timeGuid;

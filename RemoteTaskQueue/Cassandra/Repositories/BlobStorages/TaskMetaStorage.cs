@@ -19,21 +19,21 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public TaskMetaStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings)
         {
             this.serializer = serializer;
-            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName, remoteTaskQueueSettings.TasksTtl);
+            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
-            legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName, remoteTaskQueueSettings.TasksTtl);
+            legacyBlobStorage = new LegacyBlobStorage<TaskMetaInformation>(cassandraCluster, serializer, remoteTaskQueueSettings.QueueKeyspace, legacyCfName);
         }
 
         public void Write([NotNull] TaskMetaInformation taskMeta, long timestamp)
         {
             TimeGuid timeGuid;
             if(!TimeGuid.TryParse(taskMeta.Id, out timeGuid))
-                legacyBlobStorage.Write(taskMeta.Id, taskMeta, timestamp);
+                legacyBlobStorage.Write(taskMeta.Id, taskMeta, timestamp, taskMeta.GetTtl());
             else
             {
                 var blobId = new BlobId(timeGuid, BlobType.Regular);
                 var taskMetaBytes = serializer.Serialize(taskMeta);
-                timeBasedBlobStorage.Write(blobId, taskMetaBytes, timestamp);
+                timeBasedBlobStorage.Write(blobId, taskMetaBytes, timestamp, taskMeta.GetTtl());
             }
         }
 

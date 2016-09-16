@@ -15,14 +15,13 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class SinglePartitionTimeBasedBlobStorage
     {
-        public SinglePartitionTimeBasedBlobStorage(ColumnFamilyFullName cfName, ICassandraCluster cassandraCluster, TimeSpan ttl)
+        public SinglePartitionTimeBasedBlobStorage(ColumnFamilyFullName cfName, ICassandraCluster cassandraCluster)
         {
             this.cfName = cfName;
             this.cassandraCluster = cassandraCluster;
-            this.ttl = ttl;
         }
 
-        public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp)
+        public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp, TimeSpan ttl)
         {
             if(value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", columnId));
@@ -74,7 +73,6 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         private readonly ColumnFamilyFullName cfName;
         private readonly ICassandraCluster cassandraCluster;
-        private readonly TimeSpan ttl;
 
         private class ColumnWithId
         {

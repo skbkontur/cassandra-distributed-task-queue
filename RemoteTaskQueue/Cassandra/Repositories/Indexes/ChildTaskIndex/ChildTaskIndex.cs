@@ -34,7 +34,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
                     Name = meta.Id,
                     Timestamp = Timestamp.Now.Ticks,
                     Value = serializer.Serialize(meta.Id),
-                    TTL = (int) settings.TasksTtl.TotalSeconds
+                    TTL = (int) meta.GetTtl().TotalSeconds
                 });
         }
 

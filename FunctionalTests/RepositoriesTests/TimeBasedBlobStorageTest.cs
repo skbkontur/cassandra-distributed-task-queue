@@ -18,7 +18,7 @@ namespace FunctionalTests.RepositoriesTests
         [SetUp]
         public void SetUp()
         {
-            var settings = new TimeBasedBlobStorageSettings(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, largeCfName, regularCfName, TimeSpan.FromHours(1));
+            var settings = new TimeBasedBlobStorageSettings(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, largeCfName, regularCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, Container.Get<ICassandraCluster>());
         }
 
@@ -61,14 +61,14 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void Write_NullValue_IsForbidden()
         {
-            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(RegularBlobId(), null, DateTime.UtcNow.Ticks));
+            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(RegularBlobId(), null, DateTime.UtcNow.Ticks, TimeSpan.FromHours(1)));
         }
 
         [Test]
         public void Write_EmptyValue()
         {
             var id = RegularBlobId();
-            timeBasedBlobStorage.Write(id, new byte[0], DateTime.UtcNow.Ticks);
+            timeBasedBlobStorage.Write(id, new byte[0], DateTime.UtcNow.Ticks, TimeSpan.FromHours(1));
             Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(new byte[0]));
         }
 
@@ -78,7 +78,7 @@ namespace FunctionalTests.RepositoriesTests
             var id = RegularBlobId();
             var rng = new Random();
             var value = rng.NextBytes(TimeBasedBlobStorageSettings.MaxRegularBlobSize + 1);
-            timeBasedBlobStorage.Write(id, value, DateTime.UtcNow.Ticks);
+            timeBasedBlobStorage.Write(id, value, DateTime.UtcNow.Ticks, TimeSpan.FromHours(1));
             Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(value));
         }
 
@@ -181,10 +181,8 @@ namespace FunctionalTests.RepositoriesTests
 
         private void DoTestTtl(BlobId id)
         {
-            var settings = new TimeBasedBlobStorageSettings(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, largeCfName, regularCfName, TimeSpan.FromSeconds(2));
-            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, Container.Get<ICassandraCluster>());
             Assert.IsNull(ReadByte(id));
-            WriteByte(id, 10);
+            WriteByte(id, 10, TimeSpan.FromSeconds(2));
             Assert.That(ReadByte(id), Is.EqualTo(10));
             Assert.That(() => ReadByte(id), Is.Null.After(10000, 1000));
         }
@@ -199,9 +197,10 @@ namespace FunctionalTests.RepositoriesTests
             return new BlobId(TimeGuid.NowGuid(), BlobType.Large);
         }
 
-        private void WriteByte(BlobId id, byte value)
+        private void WriteByte(BlobId id, byte value, TimeSpan? ttl = null)
         {
-            timeBasedBlobStorage.Write(id, new[] {value}, DateTime.UtcNow.Ticks);
+            ttl = ttl ?? TimeSpan.FromHours(1);
+            timeBasedBlobStorage.Write(id, new[] {value}, DateTime.UtcNow.Ticks, ttl.Value);
         }
 
         private byte? ReadByte(BlobId id)

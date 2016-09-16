@@ -9,7 +9,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
     public interface ITaskDataStorage
     {
         [NotNull]
-        BlobId Write([NotNull] string taskId, [NotNull] byte[] taskData);
+        BlobId Write([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData);
 
         void Overwrite([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData);
 

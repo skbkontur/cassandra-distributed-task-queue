@@ -6,12 +6,11 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class TimeBasedBlobStorageSettings
     {
-        public TimeBasedBlobStorageSettings([NotNull] string keyspaceName, [NotNull] string largeBlobsCfName, [NotNull] string regularBlobsCfName, TimeSpan ttl)
+        public TimeBasedBlobStorageSettings([NotNull] string keyspaceName, [NotNull] string largeBlobsCfName, [NotNull] string regularBlobsCfName)
         {
             KeyspaceName = keyspaceName;
             LargeBlobsCfName = largeBlobsCfName;
             RegularBlobsCfName = regularBlobsCfName;
-            Ttl = ttl;
         }
 
         [NotNull]
@@ -40,7 +39,5 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public const int SplittingFactor = 10;
 
         public static readonly long TickPartition = TimeSpan.FromMinutes(6).Ticks;
-
-        public TimeSpan Ttl { get; private set; }
     }
 }

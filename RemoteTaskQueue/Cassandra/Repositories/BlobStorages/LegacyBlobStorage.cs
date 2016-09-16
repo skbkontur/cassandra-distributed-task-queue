@@ -16,16 +16,15 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class LegacyBlobStorage<T>
     {
-        public LegacyBlobStorage(ICassandraCluster cassandraCluster, ISerializer serializer, string keyspaceName, string columnFamilyName, TimeSpan ttl)
+        public LegacyBlobStorage(ICassandraCluster cassandraCluster, ISerializer serializer, string keyspaceName, string columnFamilyName)
         {
             this.cassandraCluster = cassandraCluster;
             this.serializer = serializer;
             this.keyspaceName = keyspaceName;
             this.columnFamilyName = columnFamilyName;
-            this.ttl = ttl;
         }
 
-        public void Write([NotNull] string id, [NotNull] T element, long timestamp)
+        public void Write([NotNull] string id, [NotNull] T element, long timestamp, TimeSpan ttl)
         {
             var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(id, new Column
@@ -131,6 +130,5 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         private readonly ISerializer serializer;
         private readonly string keyspaceName;
         private readonly string columnFamilyName;
-        private readonly TimeSpan ttl;
     }
 }
