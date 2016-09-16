@@ -24,14 +24,14 @@ namespace FunctionalTests.ExchangeTests
         {
             base.SetUp();
             testCounterRepository = Container.Get<ITestCounterRepository>();
-            taskQueue = Container.Get<IRemoteTaskQueue>();
+            taskQueue = GetRemoteTaskQueue();
             handleTaskCollection = Container.Get<IHandleTaskCollection>();
         }
 
-        protected void Wait(string[] taskIds, TaskState terminalState, string taskName, TimeSpan timeout)
+        protected void Wait(string[] taskIds, TaskState terminalState, string taskName, TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
             var sw = Stopwatch.StartNew();
-            var sleepInterval = Math.Max(500, (int)timeout.TotalMilliseconds / 10);
+            sleepInterval = sleepInterval ?? TimeSpan.FromMilliseconds(Math.Max(500, (int)timeout.TotalMilliseconds / 10));
             while(true)
             {
                 var allTasksAreFinished = handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == terminalState);
@@ -55,8 +55,13 @@ namespace FunctionalTests.ExchangeTests
                 }
                 if(sw.Elapsed > timeout)
                     throw new TooLateException("Время ожидания превысило {0} мс. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
-                Thread.Sleep(sleepInterval);
+                Thread.Sleep(sleepInterval.Value);
             }
+        }
+
+        protected virtual IRemoteTaskQueue GetRemoteTaskQueue()
+        {
+            return Container.Get<IRemoteTaskQueue>();
         }
 
         protected IRemoteTaskQueue taskQueue;

@@ -72,6 +72,11 @@ namespace RemoteQueue.Cassandra.Repositories
             return newIndexRecord;
         }
 
+        public void ProlongMeta(TaskMetaInformation taskMeta)
+        {
+            taskMetaStorage.Write(taskMeta, globalTime.UpdateNowTicks());
+        }
+
         [NotNull]
         public TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta)
         {

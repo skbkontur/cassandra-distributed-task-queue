@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -36,6 +37,7 @@ namespace RemoteQueue.Cassandra.Entities
         public long? FinishExecutingTicks { get; set; }
         public long? LastModificationTicks { get; set; }
         public long? TtlTicks { get; set; }
+        public long? ExpiredAtTicks { get; set; }
         public TaskState State { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }
@@ -77,6 +79,16 @@ namespace RemoteQueue.Cassandra.Entities
             }
             taskExceptionInfoIds.Add(newExceptionInfoId);
             return taskExceptionInfoIds;
+        }
+
+        internal bool NeedProlongation()
+        {
+            if(!TtlTicks.HasValue || !ExpiredAtTicks.HasValue)
+                return true;
+            var halfOfTtl = TimeSpan.FromTicks((TtlTicks.Value + 1) / 2);
+            var ttlExpiredTimestamp = new Timestamp(ExpiredAtTicks.Value);
+            var now = Timestamp.Now;
+            return now + halfOfTtl > ttlExpiredTimestamp;
         }
 
         public override string ToString()

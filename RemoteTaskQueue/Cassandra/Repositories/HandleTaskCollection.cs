@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,6 +8,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Profiling;
+using RemoteQueue.Settings;
 
 using SKBKontur.Catalogue.Objects;
 
@@ -14,11 +16,16 @@ namespace RemoteQueue.Cassandra.Repositories
 {
     public class HandleTaskCollection : IHandleTaskCollection
     {
-        public HandleTaskCollection(IHandleTasksMetaStorage handleTasksMetaStorage, ITaskDataStorage taskDataStorage, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+        public HandleTaskCollection(
+            IHandleTasksMetaStorage handleTasksMetaStorage,
+            ITaskDataStorage taskDataStorage,
+            IRemoteTaskQueueProfiler remoteTaskQueueProfiler,
+            IRemoteTaskQueueSettings settings)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskDataStorage = taskDataStorage;
             this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
+            ttl = settings.TasksTtl;
         }
 
         [NotNull]
@@ -28,7 +35,17 @@ namespace RemoteQueue.Cassandra.Repositories
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
 
             task.Meta.TaskDataId = taskDataStorage.Write(task.Meta.Id, task.Data);
+            task.Meta.TtlTicks = ttl.Ticks;
+            task.Meta.ExpiredAtTicks = (Timestamp.Now + ttl).Ticks;
             return handleTasksMetaStorage.AddMeta(task.Meta, oldTaskIndexRecord : null);
+        }
+
+        public void ProlongTask([NotNull] Task task)
+        {
+            task.Meta.TtlTicks = ttl.Ticks;
+            task.Meta.ExpiredAtTicks = (Timestamp.Now + ttl).Ticks;
+            taskDataStorage.Overwrite(task.Meta, task.Data);
+            handleTasksMetaStorage.ProlongMeta(task.Meta);
         }
 
         [NotNull]
@@ -59,5 +76,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskDataStorage taskDataStorage;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
+        private TimeSpan ttl;
     }
 }

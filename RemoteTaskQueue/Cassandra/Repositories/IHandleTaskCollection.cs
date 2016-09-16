@@ -12,6 +12,8 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         TaskIndexRecord AddTask([NotNull] Task task);
 
+        void ProlongTask([NotNull] Task task);
+
         [NotNull]
         Task GetTask([NotNull] string taskId);
 

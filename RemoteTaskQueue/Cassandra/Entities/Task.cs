@@ -15,5 +15,10 @@ namespace RemoteQueue.Cassandra.Entities
 
         [NotNull]
         public byte[] Data { get; private set; }
+
+        internal bool NeedProlongation()
+        {
+            return Meta.NeedProlongation();
+        }
     }
 }

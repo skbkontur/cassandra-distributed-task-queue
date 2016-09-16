@@ -18,7 +18,7 @@ namespace ExchangeService.UserClasses
             var decrementCounter = testCounterRepository.DecrementCounter(Context.Id);
             if(decrementCounter == 0)
                 return Finish();
-            return Rerun(TimeSpan.FromSeconds(0.1));
+            return Rerun(FakePeriodicTaskData.RerunAfter);
         }
 
         private readonly ITestCounterRepository testCounterRepository;
