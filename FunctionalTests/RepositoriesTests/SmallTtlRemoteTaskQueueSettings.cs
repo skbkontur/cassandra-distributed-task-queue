@@ -9,7 +9,6 @@ namespace FunctionalTests.RepositoriesTests
     [IgnoredImplementation]
     public class SmallTtlRemoteTaskQueueSettings : IRemoteTaskQueueSettings
     {
-        private readonly IRemoteTaskQueueSettings baseSettings;
         public SmallTtlRemoteTaskQueueSettings(IRemoteTaskQueueSettings baseSettings, TimeSpan tasksTtl)
         {
             this.baseSettings = baseSettings;
@@ -20,6 +19,6 @@ namespace FunctionalTests.RepositoriesTests
         public string QueueKeyspace { get { return baseSettings.QueueKeyspace; } }
         public string QueueKeyspaceForLock { get { return baseSettings.QueueKeyspaceForLock; } }
         public TimeSpan TasksTtl { get; private set; }
-        public TimeSpan EventLogTtl { get { return baseSettings.EventLogTtl; } }
+        private readonly IRemoteTaskQueueSettings baseSettings;
     }
 }

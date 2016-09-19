@@ -8,6 +8,5 @@ namespace RemoteQueue.Settings
         string QueueKeyspace { get; }
         string QueueKeyspaceForLock { get; }
         TimeSpan TasksTtl { get; }
-        TimeSpan EventLogTtl { get; }
     }
 }

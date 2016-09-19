@@ -25,7 +25,7 @@ namespace RemoteQueue.Cassandra.Repositories
             this.ticksHolder = ticksHolder;
             var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName).GetConnectionParameters();
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
-            eventLogTtl = settings.EventLogTtl;
+            eventLogTtl = TimeSpan.FromDays(30);
         }
 
         public void AddEvent(string taskId, long nowTicks)
