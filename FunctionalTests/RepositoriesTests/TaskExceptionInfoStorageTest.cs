@@ -211,19 +211,13 @@ namespace FunctionalTests.RepositoriesTests
         private static TaskMetaInformation TimeGuidMeta(TimeSpan? ttl = null)
         {
             ttl = ttl ?? defaultTtl;
-            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), TimeGuid.NowGuid().ToGuid().ToString())
-                {
-                    TtlTicks = ttl.Value.Ticks
-                };
+            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), TimeGuid.NowGuid().ToGuid().ToString()).ExpiredAfter(ttl.Value);
         }
 
         private static TaskMetaInformation LegacyMeta(TimeSpan? ttl = null)
         {
             ttl = ttl ?? defaultTtl;
-            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString())
-                {
-                    TtlTicks = ttl.Value.Ticks
-                };
+            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString()).ExpiredAfter(ttl.Value);
         }
 
         private static TaskMetaInformation NewMeta(MetaType metaType, TimeSpan? ttl = null)

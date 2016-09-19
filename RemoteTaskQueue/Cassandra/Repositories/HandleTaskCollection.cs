@@ -34,16 +34,14 @@ namespace RemoteQueue.Cassandra.Repositories
             if(task.Meta.Attempts == 0)
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
 
-            task.Meta.TtlTicks = ttl.Ticks;
-            task.Meta.ExpiredAtTicks = (Timestamp.Now + ttl).Ticks;
+            task.Meta.SetUpExpiration(ttl);
             task.Meta.TaskDataId = taskDataStorage.Write(task.Meta, task.Data);
             return handleTasksMetaStorage.AddMeta(task.Meta, oldTaskIndexRecord : null);
         }
 
         public void ProlongTask([NotNull] Task task)
         {
-            task.Meta.TtlTicks = ttl.Ticks;
-            task.Meta.ExpiredAtTicks = (Timestamp.Now + ttl).Ticks;
+            task.Meta.SetUpExpiration(ttl);
             taskDataStorage.Overwrite(task.Meta, task.Data);
             handleTasksMetaStorage.ProlongMeta(task.Meta);
         }
@@ -76,6 +74,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskDataStorage taskDataStorage;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
-        private TimeSpan ttl;
+        private readonly TimeSpan ttl;
     }
 }

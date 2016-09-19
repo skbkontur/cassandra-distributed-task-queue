@@ -58,9 +58,8 @@ namespace FunctionalTests.RepositoriesTests
             var meta = new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = nowTicks + 1,
-                    TtlTicks = defaultTtl.Ticks
-                };
+                    MinimalStartTicks = nowTicks + 1
+                }.ExpiredAfter(defaultTtl);
             for(var i = 0; i <= 1000; i++)
             {
                 var oldTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(meta);
@@ -77,9 +76,8 @@ namespace FunctionalTests.RepositoriesTests
             var metas = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.Select(x => new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = nowTicks + x,
-                    TtlTicks = defaultTtl.Ticks
-                }).ToArray();
+                    MinimalStartTicks = nowTicks + x
+                }.ExpiredAfter(defaultTtl)).ToArray();
             for(var i = 0; i <= 100; i++)
             {
                 foreach(var t in metas)
@@ -101,9 +99,8 @@ namespace FunctionalTests.RepositoriesTests
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id)
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = ticks,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(1, tasks.Length);
             Assert.AreEqual(id, tasks[0].TaskId);
@@ -121,15 +118,13 @@ namespace FunctionalTests.RepositoriesTests
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.InProcess,
-                    MinimalStartTicks = ticks,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", NewTaskId())
                 {
                     State = TaskState.Finished,
-                    MinimalStartTicks = ticks,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
             Assert.AreEqual(1, tasks.Length);
         }
@@ -141,15 +136,13 @@ namespace FunctionalTests.RepositoriesTests
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName1", NewTaskId())
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = ticks,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName2", NewTaskId())
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = ticks,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName1", TaskState.New)});
             Assert.AreEqual(1, tasks.Length);
         }
@@ -165,27 +158,23 @@ namespace FunctionalTests.RepositoriesTests
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id1)
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = ticks + 10,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks + 10
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id2)
                 {
                     State = TaskState.InProcess,
-                    MinimalStartTicks = ticks,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id3)
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = ticks - 5,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks - 5
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id4)
                 {
                     State = TaskState.Unknown,
-                    MinimalStartTicks = ticks + 1,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks + 1
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             var toTicks = ticks + 9;
             var taskIndexShardKeys = new[] {TaskIndexShardKey("TaskName", TaskState.InProcess), TaskIndexShardKey("TaskName", TaskState.New)};
             Assert.That(handleTasksMetaStorage.GetIndexRecords(toTicks, taskIndexShardKeys).Select(x => x.TaskId).ToArray(), Is.EquivalentTo(new[] {id3, id2}));
@@ -200,15 +189,13 @@ namespace FunctionalTests.RepositoriesTests
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id)
                 {
                     State = TaskState.New,
-                    MinimalStartTicks = ticks + 10,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks + 10
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             handleTasksMetaStorage.AddMeta(new TaskMetaInformation("TaskName", id)
                 {
                     State = TaskState.InProcess,
-                    MinimalStartTicks = ticks + 15,
-                    TtlTicks = defaultTtl.Ticks
-                }, oldTaskIndexRecord : null);
+                    MinimalStartTicks = ticks + 15
+                }.ExpiredAfter(defaultTtl), oldTaskIndexRecord : null);
             var newTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 12, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(1, newTasks.Length);
             Assert.AreEqual(id, newTasks[0].TaskId);
@@ -221,7 +208,7 @@ namespace FunctionalTests.RepositoriesTests
 
         private ITaskDataRegistry taskDataRegistry;
         private IHandleTasksMetaStorage handleTasksMetaStorage;
-        private TimeSpan defaultTtl = TimeSpan.FromHours(1);
+        private readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);
 
         [IgnoredImplementation]
         private class DummyTaskDataRegistry : ITaskDataRegistry

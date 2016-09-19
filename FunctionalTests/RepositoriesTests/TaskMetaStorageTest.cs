@@ -138,10 +138,7 @@ namespace FunctionalTests.RepositoriesTests
         private void Write(string taskId, TimeSpan? ttl = null)
         {
             ttl = ttl ?? defaultTtl;
-            taskMetaStorage.Write(new TaskMetaInformation("TaskName", taskId)
-                {
-                    TtlTicks = ttl.Value.Ticks
-                }, DateTime.UtcNow.Ticks);
+            taskMetaStorage.Write(new TaskMetaInformation("TaskName", taskId).ExpiredAfter(ttl.Value), DateTime.UtcNow.Ticks);
         }
 
         private readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);

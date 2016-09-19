@@ -36,8 +36,8 @@ namespace RemoteQueue.Cassandra.Entities
         public long? StartExecutingTicks { get; set; }
         public long? FinishExecutingTicks { get; set; }
         public long? LastModificationTicks { get; set; }
-        public long? TtlTicks { get; set; }
-        public long? ExpiredAtTicks { get; set; }
+        public long? TtlTicks { get; private set; }
+        public long? ExpiredAtTicks { get; private set; }
         public TaskState State { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }
@@ -50,6 +50,12 @@ namespace RemoteQueue.Cassandra.Entities
             if (!TtlTicks.HasValue)
                 throw new InvalidProgramStateException(string.Format("Ttl did not set for Task {0}", this));
             return TimeSpan.FromTicks(TtlTicks.Value);
+        }
+
+        public void SetUpExpiration(TimeSpan ttl)
+        {
+            TtlTicks = ttl.Ticks;
+            ExpiredAtTicks = (Max(Timestamp.Now, GetMinimalStartTimestamp()) + ttl).Ticks;
         }
 
         internal bool IsTimeBased()
@@ -94,8 +100,21 @@ namespace RemoteQueue.Cassandra.Entities
                 return true;
             var halfOfTtl = TimeSpan.FromTicks((TtlTicks.Value + 1) / 2);
             var ttlExpiredTimestamp = new Timestamp(ExpiredAtTicks.Value);
-            var now = Timestamp.Now;
-            return now + halfOfTtl > ttlExpiredTimestamp;
+            return Max(Timestamp.Now, GetMinimalStartTimestamp()) + halfOfTtl > ttlExpiredTimestamp;
+        }
+
+        [NotNull]
+        private Timestamp GetMinimalStartTimestamp()
+        {
+            if (MinimalStartTicks >= Timestamp.MinValue.Ticks && MinimalStartTicks <= Timestamp.MaxValue.Ticks)
+                return new Timestamp(MinimalStartTicks);
+            return Timestamp.MinValue;
+        }
+
+        [NotNull]
+        private static Timestamp Max([NotNull] Timestamp t1, [NotNull] Timestamp t2)
+        {
+            return t1 > t2 ? t1 : t2;
         }
 
         public override string ToString()

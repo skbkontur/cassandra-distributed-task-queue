@@ -118,10 +118,11 @@ namespace RemoteQueue.Handling
         {
             byte[] taskData;
             TaskMetaInformation oldMeta;
-            Task task;
             try
             {
-                task = handleTaskCollection.GetTask(taskIndexRecord.TaskId);
+                var task = handleTaskCollection.GetTask(taskIndexRecord.TaskId);
+                if (task.NeedProlongation())
+                    handleTaskCollection.ProlongTask(task);
                 oldMeta = task.Meta;
                 taskData = task.Data;
             }
@@ -131,8 +132,6 @@ namespace RemoteQueue.Handling
                 logger.Error(string.Format("Ошибка во время чтения задачи: {0}", taskIndexRecord), e);
                 return LocalTaskProcessingResult.Undefined;
             }
-            if (task.NeedProlongation())
-                handleTaskCollection.ProlongTask(task);
 
             var localNow = Timestamp.Now;
             var indexRecordConsistentWithActualMeta = handleTasksMetaStorage.FormatIndexRecord(oldMeta);

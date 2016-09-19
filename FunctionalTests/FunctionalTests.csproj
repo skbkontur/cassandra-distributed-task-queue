@@ -90,6 +90,7 @@
     <Compile Include="ExchangeTests\FailTaskTest.cs" />
     <Compile Include="ExchangeTests\PeriodicTaskTest.cs" />
     <Compile Include="RepositoriesTests\GlobalTimeTest.cs" />
+    <Compile Include="RepositoriesTests\MetaExtensions.cs" />
     <Compile Include="RepositoriesTests\SinglePartitionTimeBasedBlobStorageTest.cs" />
     <Compile Include="RepositoriesTests\SmallTtlRemoteTaskQueueSettings.cs" />
     <Compile Include="RepositoriesTests\TaskExceptionInfoStorageTest.cs" />
