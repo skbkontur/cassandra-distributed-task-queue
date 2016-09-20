@@ -19,11 +19,13 @@ namespace RemoteQueue.Cassandra.Repositories
         public HandleTaskCollection(
             IHandleTasksMetaStorage handleTasksMetaStorage,
             ITaskDataStorage taskDataStorage,
+            ITaskExceptionInfoStorage taskExceptionInfoStorage,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler,
             IRemoteTaskQueueSettings settings)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskDataStorage = taskDataStorage;
+            this.taskExceptionInfoStorage = taskExceptionInfoStorage;
             this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
             ttl = settings.TasksTtl;
         }
@@ -43,6 +45,7 @@ namespace RemoteQueue.Cassandra.Repositories
         {
             task.Meta.SetUpExpiration(ttl);
             taskDataStorage.Overwrite(task.Meta, task.Data);
+            taskExceptionInfoStorage.ProlongExceptionInfos(task.Meta);
             handleTasksMetaStorage.ProlongMeta(task.Meta);
         }
 
@@ -73,6 +76,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskDataStorage taskDataStorage;
+        private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private readonly TimeSpan ttl;
     }

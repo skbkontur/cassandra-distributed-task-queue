@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 using MoreLinq;
 
@@ -192,8 +193,47 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
-            Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(1));
+            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(1));
             Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(0).After(10000, 100));
+        }
+        
+        [TestCase(MetaType.TimeGuid)]
+        [TestCase(MetaType.Legacy)]
+        public void Prolong_OneException(MetaType metaType)
+        {
+            var exception = new Exception("Message");
+            var meta = NewMeta(metaType, TimeSpan.FromSeconds(2));
+
+            List<TimeGuid> ids;
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
+            meta.TaskExceptionInfoIds = ids;
+
+            meta.SetUpExpiration(TimeSpan.FromHours(1));
+            taskExceptionInfoStorage.ProlongExceptionInfos(meta);
+            
+            Thread.Sleep(10000);
+            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Prolong_SeveralExceptions()
+        {
+            var exception1 = new Exception("Message1");
+            var exception2 = new Exception("Message2");
+            var meta = NewMeta(MetaType.TimeGuid, TimeSpan.FromSeconds(2));
+
+            List<TimeGuid> ids;
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out ids), Is.True);
+            meta.TaskExceptionInfoIds = ids;
+
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception2, out ids), Is.True);
+            meta.TaskExceptionInfoIds = ids;
+
+            meta.SetUpExpiration(TimeSpan.FromHours(1));
+            taskExceptionInfoStorage.ProlongExceptionInfos(meta);
+
+            Thread.Sleep(10000);
+            Assert.That(taskExceptionInfoStorage.Read(new[] { meta })[meta.Id].Length, Is.EqualTo(2));
         }
 
         private void Check(Tuple<TaskMetaInformation, Exception[]>[] expected)

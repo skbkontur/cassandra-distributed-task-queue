@@ -16,6 +16,7 @@ namespace ExchangeService.Configuration
             this.container = container;
             Register<FakeFailTaskHandler>();
             Register<FakePeriodicTaskHandler>();
+            Register<FakeMixedPeriodicAndFailTaskHandler>();
             Register<SimpleTaskHandler>();
             Register<ByteArrayTaskDataHandler>();
             Register<FileIdTaskDataHandler>();

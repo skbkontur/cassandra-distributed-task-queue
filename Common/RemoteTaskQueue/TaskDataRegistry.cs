@@ -11,6 +11,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
         {
             Register<FakeFailTaskData>();
             Register<FakePeriodicTaskData>();
+            Register<FakeMixedPeriodicAndFailTaskData>();
             Register<SimpleTaskData>();
             Register<ByteArrayTaskData>();
             Register<ByteArrayAndNestedTaskData>();

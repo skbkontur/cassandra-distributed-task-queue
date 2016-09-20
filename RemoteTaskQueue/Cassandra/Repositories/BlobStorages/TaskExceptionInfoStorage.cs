@@ -50,6 +50,22 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return true;
         }
 
+        public void ProlongExceptionInfos([NotNull] TaskMetaInformation taskMeta)
+        {
+            if(!taskMeta.IsTimeBased())
+            {
+                var oldExceptionInfo = legacyBlobStorage.Read(taskMeta.Id);
+                if (oldExceptionInfo != null)
+                    legacyBlobStorage.Write(taskMeta.Id, oldExceptionInfo, Timestamp.Now.Ticks, taskMeta.GetTtl());
+            }
+            else
+            {
+                var oldExceptionInfos = timeBasedBlobStorage.Read(taskMeta.Id, taskMeta.GetTaskExceptionInfoIds().ToArray());
+                foreach(var exceptionInfo in oldExceptionInfos)
+                    timeBasedBlobStorage.Write(taskMeta.Id, exceptionInfo.Key, exceptionInfo.Value, Timestamp.Now.Ticks, taskMeta.GetTtl());
+            }
+        }
+
         [CanBeNull]
         private TaskExceptionInfo TryGetLastExceptionInfo([NotNull] TaskMetaInformation taskMeta)
         {
