@@ -22,24 +22,33 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void Prolongation_Happened()
         {
-            var estimatedNumberOfRuns = 2 * (int)(tasksTtl.Ticks / FakePeriodicTaskData.RerunAfter.Ticks);
+            var estimatedNumberOfRuns = 2 * (int)(tasksTtl.Ticks / FakePeriodicTaskData.DefaultRerunAfter.Ticks);
             Console.WriteLine("Estimated number of runs: {0}", estimatedNumberOfRuns);
             var taskId = AddTask(estimatedNumberOfRuns);
-            Wait(new[] {taskId}, TaskState.Finished, "FakePeriodicTaskData", TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
+            WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakePeriodicTaskData", TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
             Assert.That(taskQueue.GetTaskInfo<FakePeriodicTaskData>(taskId).Context.TtlTicks, Is.GreaterThan(tasksTtl.Ticks));
         }
 
         [Test]
         public void Prolongation_NotHappened()
         {
-            var taskId = AddTask(3);
-            Wait(new[] {taskId}, TaskState.Finished, "FakePeriodicTaskData", TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
+            var taskId = AddTask(2);
+            WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakePeriodicTaskData", TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
             Assert.That(() => taskQueue.GetTaskInfos<FakePeriodicTaskData>(new[] {taskId}).Length, Is.EqualTo(0).After(10000, 100));
         }
 
-        private string AddTask(int attempts)
+        [Test]
+        public void Prolongation_FarRerunProtection()
         {
-            var task = taskQueue.CreateTask(new FakePeriodicTaskData());
+            var bigRerunPeriod = TimeSpan.FromDays(1440);
+            var taskId = AddTask(2, bigRerunPeriod);
+            WaitForState(new[] { taskId }, TaskState.WaitingForRerun, TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
+            Assert.That(taskQueue.GetTaskInfo<FakePeriodicTaskData>(taskId).Context.TtlTicks, Is.GreaterThanOrEqualTo(bigRerunPeriod.Ticks));
+        }
+
+        private string AddTask(int attempts, TimeSpan? rerunAfter = null)
+        {
+            var task = taskQueue.CreateTask(new FakePeriodicTaskData(rerunAfter));
             testCounterRepository.SetValueForCounter(task.Id, attempts);
             task.Queue();
             return task.Id;
@@ -56,6 +65,6 @@ namespace FunctionalTests.ExchangeTests
                 );
         }
 
-        private readonly TimeSpan tasksTtl = TimeSpan.FromSeconds(2);
+        private readonly TimeSpan tasksTtl = TimeSpan.FromSeconds(5);
     }
 }

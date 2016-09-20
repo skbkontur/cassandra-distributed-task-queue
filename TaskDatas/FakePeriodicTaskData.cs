@@ -8,6 +8,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas
     [TaskName("FakePeriodicTaskData")]
     public class FakePeriodicTaskData : ITaskData
     {
-        public static TimeSpan RerunAfter { get { return TimeSpan.FromMilliseconds(100); } }
+        public FakePeriodicTaskData(TimeSpan? rerunAfter = null)
+        {
+            RerunAfter = rerunAfter ?? DefaultRerunAfter;
+        }
+
+        public TimeSpan RerunAfter { get; private set; }
+
+        public static TimeSpan DefaultRerunAfter { get { return TimeSpan.FromMilliseconds(100); } }
     }
 }

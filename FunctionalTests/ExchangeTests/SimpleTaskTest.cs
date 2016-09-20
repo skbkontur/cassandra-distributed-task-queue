@@ -48,7 +48,7 @@ namespace FunctionalTests.ExchangeTests
             Enumerable.Range(0, 42).AsParallel().ForAll((i) =>
                 {
                     var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
-                    //Wait(new[] { taskId }, 1, (int)TimeSpan.FromSeconds(50).TotalMilliseconds);
+                    //WaitForTerminalState(new[] { taskId }, 1, (int)TimeSpan.FromSeconds(50).TotalMilliseconds);
                     lock(taskIds)
                         taskIds.Add(taskId);
                     Thread.Sleep(2000);

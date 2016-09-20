@@ -121,8 +121,11 @@ namespace RemoteQueue.Handling
             try
             {
                 var task = handleTaskCollection.GetTask(taskIndexRecord.TaskId);
-                if (task.NeedProlongation())
+                if(task.NeedProlongation())
+                {
+                    logger.InfoFormat("Продлеваем время жизни задачи {0} после вычитывания", task.Meta);
                     handleTaskCollection.ProlongTask(task);
+                }
                 oldMeta = task.Meta;
                 taskData = task.Data;
             }
@@ -175,10 +178,17 @@ namespace RemoteQueue.Handling
             }
 
             taskShardMetrics.Processed.Mark();
-            return ProcessTask(inProcessMeta, taskData);
+            var processTaskResult = ProcessTask(inProcessMeta, taskData);
+            if(processTaskResult.NewMeta.NeedProlongation())
+            {
+                logger.InfoFormat("Продлеваем время жизни задачи {0} после обработки", processTaskResult.NewMeta);
+                handleTaskCollection.ProlongTask(new Task(processTaskResult.NewMeta, taskData));
+            }
+                
+            return processTaskResult.ProcessingResult;
         }
 
-        private LocalTaskProcessingResult ProcessTask([NotNull] TaskMetaInformation inProcessMeta, [NotNull] byte[] taskData)
+        private ProcessTaskResult ProcessTask([NotNull] TaskMetaInformation inProcessMeta, [NotNull] byte[] taskData)
         {
             ITaskHandler taskHandler;
             try
@@ -188,11 +198,9 @@ namespace RemoteQueue.Handling
             catch(Exception e)
             {
                 var newExceptionInfoIds = TryLogError(e, inProcessMeta);
-                TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds);
-                return LocalTaskProcessingResult.Error;
+                return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds));
             }
-
-            LocalTaskProcessingResult localTaskProcessingResult;
+            
             var task = new Task(inProcessMeta, taskData);
             using(TaskExecutionContext.ForTask(task))
             {
@@ -201,38 +209,32 @@ namespace RemoteQueue.Handling
                 {
                     var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
                     remoteTaskQueueProfiler.ProcessTaskExecutionFinished(inProcessMeta, handleResult, sw.Elapsed);
-                    localTaskProcessingResult = UpdateTaskMetaByHandleResult(inProcessMeta, handleResult);
+                    return UpdateTaskMetaByHandleResult(inProcessMeta, handleResult);
                 }
                 catch(Exception e)
                 {
-                    localTaskProcessingResult = LocalTaskProcessingResult.Error;
                     remoteTaskQueueProfiler.ProcessTaskExecutionFailed(inProcessMeta, e, sw.Elapsed);
                     var taskExceptionInfoId = TryLogError(e, inProcessMeta);
-                    TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, taskExceptionInfoId);
+                    return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, taskExceptionInfoId));
                 }
             }
-            return localTaskProcessingResult;
         }
 
-        private LocalTaskProcessingResult UpdateTaskMetaByHandleResult([NotNull] TaskMetaInformation inProcessMeta, [NotNull] HandleResult handleResult)
+        private ProcessTaskResult UpdateTaskMetaByHandleResult([NotNull] TaskMetaInformation inProcessMeta, [NotNull] HandleResult handleResult)
         {
             List<TimeGuid> newExceptionInfoIds;
             switch(handleResult.FinishAction)
             {
             case FinishAction.Finish:
-                TrySwitchToTerminalState(inProcessMeta, TaskState.Finished, newExceptionInfoIds : null);
-                return LocalTaskProcessingResult.Success;
+                return new ProcessTaskResult(LocalTaskProcessingResult.Success, TrySwitchToTerminalState(inProcessMeta, TaskState.Finished, newExceptionInfoIds: null));
             case FinishAction.Fatal:
-                newExceptionInfoIds = TryLogError(handleResult.Error, inProcessMeta);
-                TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds);
-                return LocalTaskProcessingResult.Error;
+                newExceptionInfoIds = TryLogError(handleResult.Error, inProcessMeta);;
+                return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds));
             case FinishAction.RerunAfterError:
                 newExceptionInfoIds = TryLogError(handleResult.Error, inProcessMeta);
-                TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerunAfterError, handleResult.RerunDelay, newExceptionInfoIds);
-                return LocalTaskProcessingResult.Rerun;
+                return new ProcessTaskResult(LocalTaskProcessingResult.Rerun, TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerunAfterError, handleResult.RerunDelay, newExceptionInfoIds));
             case FinishAction.Rerun:
-                TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerun, handleResult.RerunDelay, newExceptionInfoIds : null);
-                return LocalTaskProcessingResult.Rerun;
+                return new ProcessTaskResult(LocalTaskProcessingResult.Rerun, TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerun, handleResult.RerunDelay, newExceptionInfoIds: null));
             default:
                 throw new InvalidProgramStateException(string.Format("Invalid FinishAction: {0}", handleResult.FinishAction));
             }
@@ -260,22 +262,21 @@ namespace RemoteQueue.Handling
         {
             var nowTicks = Timestamp.Now.Ticks;
             var newMinimalStartTicks = nowTicks + CassandraNameHelper.TaskMinimalStartTicksIndexTicksPartition;
-            var inProcessMeta = TryUpdateTaskState(oldMeta, taskIndexRecord, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds : null);
-            return inProcessMeta;
+            return TryUpdateTaskState(oldMeta, taskIndexRecord, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds : null);
         }
 
-        private void TrySwitchToTerminalState([NotNull] TaskMetaInformation inProcessMeta, TaskState terminalState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
+        private TaskMetaInformation TrySwitchToTerminalState([NotNull] TaskMetaInformation inProcessMeta, TaskState terminalState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
             var nowTicks = Timestamp.Now.Ticks;
             var inProcessTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(inProcessMeta);
-            TryUpdateTaskState(inProcessMeta, inProcessTaskIndexRecord, nowTicks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, terminalState, newExceptionInfoIds);
+            return TryUpdateTaskState(inProcessMeta, inProcessTaskIndexRecord, nowTicks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, terminalState, newExceptionInfoIds);
         }
 
-        private void TrySwitchToWaitingForRerunState([NotNull] TaskMetaInformation inProcessMeta, TaskState waitingForRerunState, TimeSpan rerunDelay, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
+        private TaskMetaInformation TrySwitchToWaitingForRerunState([NotNull] TaskMetaInformation inProcessMeta, TaskState waitingForRerunState, TimeSpan rerunDelay, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
             var nowTicks = Timestamp.Now.Ticks;
             var inProcessTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(inProcessMeta);
-            TryUpdateTaskState(inProcessMeta, inProcessTaskIndexRecord, nowTicks + rerunDelay.Ticks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, waitingForRerunState, newExceptionInfoIds);
+            return TryUpdateTaskState(inProcessMeta, inProcessTaskIndexRecord, nowTicks + rerunDelay.Ticks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, waitingForRerunState, newExceptionInfoIds);
         }
 
         [CanBeNull]
@@ -302,6 +303,20 @@ namespace RemoteQueue.Handling
                 logger.Error(string.Format("Can't update task state for: {0}", oldMeta), e);
                 return null;
             }
+        }
+
+        private class ProcessTaskResult
+        {
+            public ProcessTaskResult(LocalTaskProcessingResult processingResult, [NotNull] TaskMetaInformation newMeta)
+            {
+                ProcessingResult = processingResult;
+                NewMeta = newMeta;
+            }
+
+            public LocalTaskProcessingResult ProcessingResult { get; private set; }
+            
+            [NotNull]
+            public TaskMetaInformation NewMeta { get; private set; }
         }
 
         private readonly TaskIndexRecord taskIndexRecord;

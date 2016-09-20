@@ -1,6 +1,4 @@
-﻿using System;
-
-using RemoteQueue.Handling;
+﻿using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
@@ -18,7 +16,7 @@ namespace ExchangeService.UserClasses
             var decrementCounter = testCounterRepository.DecrementCounter(Context.Id);
             if(decrementCounter == 0)
                 return Finish();
-            return Rerun(FakePeriodicTaskData.RerunAfter);
+            return Rerun(taskData.RerunAfter);
         }
 
         private readonly ITestCounterRepository testCounterRepository;

@@ -54,8 +54,9 @@ namespace RemoteQueue.Cassandra.Entities
 
         public void SetUpExpiration(TimeSpan ttl)
         {
-            TtlTicks = ttl.Ticks;
-            ExpiredAtTicks = (Max(Timestamp.Now, GetMinimalStartTimestamp()) + ttl).Ticks;
+            var now = Timestamp.Now;
+            ExpiredAtTicks = (Max(now, GetMinimalStartTimestamp()) + ttl).Ticks;
+            TtlTicks = ExpiredAtTicks - now.Ticks;
         }
 
         internal bool IsTimeBased()
@@ -126,9 +127,16 @@ namespace RemoteQueue.Cassandra.Entities
                 taskExceptionInfoIds = string.Format("SingleExceptionId = {0}", TaskExceptionInfoIds.Single());
             else
                 taskExceptionInfoIds = string.Format("FirstExceptionId = {0}, LastExceptionId = {1}, Count = {2}", TaskExceptionInfoIds.First(), TaskExceptionInfoIds.Last(), TaskExceptionInfoIds.Count);
-            var minimalStartTicks = MinimalStartTicks >= Timestamp.MinValue.Ticks && MinimalStartTicks <= Timestamp.MaxValue.Ticks ? new Timestamp(MinimalStartTicks).ToString() : MinimalStartTicks.ToString();
-            return string.Format("[Name: {0}, Id: {1}, State: {2}, Attempts: {3}, MinimalStartTicks: {4}, ParentTaskId: {5}, TaskGroupLock: {6}, TraceId: {7}, TaskDataId: {8}, TaskExceptionInfoIds: {9}]",
-                                 Name, Id, State, Attempts, minimalStartTicks, ParentTaskId, TaskGroupLock, TraceId, TaskDataId, taskExceptionInfoIds);
+            var minimalStartTicks = TicksToString(MinimalStartTicks);
+            var ttl = TtlTicks.HasValue ? new TimeSpan(TtlTicks.Value).ToString() : "(null)";
+            var expiredAtTicks = ExpiredAtTicks.HasValue ? TicksToString(ExpiredAtTicks.Value) : "(null)";
+            return string.Format("[Name: {0}, Id: {1}, State: {2}, Attempts: {3}, MinimalStartTicks: {4}, ParentTaskId: {5}, TaskGroupLock: {6}, TraceId: {7}, TaskDataId: {8}, TaskExceptionInfoIds: {9} Ttl: {10}, ExpiredAt: {11}]",
+                                 Name, Id, State, Attempts, minimalStartTicks, ParentTaskId, TaskGroupLock, TraceId, TaskDataId, taskExceptionInfoIds, ttl, expiredAtTicks);
+        }
+
+        private static string TicksToString(long ticks)
+        {
+            return ticks >= Timestamp.MinValue.Ticks && ticks <= Timestamp.MaxValue.Ticks ? new Timestamp(ticks).ToString() : ticks.ToString();
         }
 
         public const int TaskExceptionIfoIdsLimit = 201;

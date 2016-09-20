@@ -28,7 +28,7 @@ namespace FunctionalTests.ExchangeTests
             handleTaskCollection = Container.Get<IHandleTaskCollection>();
         }
 
-        protected void Wait(string[] taskIds, TaskState terminalState, string taskName, TimeSpan timeout, TimeSpan? sleepInterval = null)
+        protected void WaitForTerminalState(string[] taskIds, TaskState terminalState, string taskName, TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
             var sw = Stopwatch.StartNew();
             sleepInterval = sleepInterval ?? TimeSpan.FromMilliseconds(Math.Max(500, (int)timeout.TotalMilliseconds / 10));
@@ -55,6 +55,21 @@ namespace FunctionalTests.ExchangeTests
                 }
                 if(sw.Elapsed > timeout)
                     throw new TooLateException("Время ожидания превысило {0} мс. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
+                Thread.Sleep(sleepInterval.Value);
+            }
+        }
+
+        protected void WaitForState(string[] taskIds, TaskState targetState, TimeSpan timeout, TimeSpan? sleepInterval = null)
+        {
+            var sw = Stopwatch.StartNew();
+            sleepInterval = sleepInterval ?? TimeSpan.FromMilliseconds(Math.Max(500, (int)timeout.TotalMilliseconds / 10));
+            while(true)
+            {
+                if(handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == targetState))
+                    break;
+                if (sw.Elapsed > timeout)
+                    throw new TooLateException("Время ожидания превысило {0} мс. Tasks in another state: {1}", timeout,
+                        string.Join(", ", handleTaskCollection.GetTasks(taskIds).Where(x => x.Meta.State != targetState).Select(x => x.Meta.Id)));
                 Thread.Sleep(sleepInterval.Value);
             }
         }

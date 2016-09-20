@@ -52,7 +52,7 @@ namespace FunctionalTests.ExchangeTests
 
         private void WaitForFinishedState(string[] taskIds)
         {
-            Wait(taskIds, TaskState.Finished, "FakePeriodicTaskData", TimeSpan.FromSeconds(5));
+            WaitForTerminalState(taskIds, TaskState.Finished, "FakePeriodicTaskData", TimeSpan.FromSeconds(5));
         }
     }
 }

@@ -77,7 +77,7 @@ namespace FunctionalTests.ExchangeTests
 
         private void WaitForFatalState(string[] taskIds, TimeSpan timeout)
         {
-            Wait(taskIds, TaskState.Fatal, "FakeFailTaskData", timeout);
+            WaitForTerminalState(taskIds, TaskState.Fatal, "FakeFailTaskData", timeout);
         }
     }
 }
