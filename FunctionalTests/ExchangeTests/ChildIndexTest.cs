@@ -62,10 +62,10 @@ namespace FunctionalTests.ExchangeTests
                 Container.Get<IRemoteTaskQueueProfiler>());
 
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
-            var childTaskId1 = taskQueue.CreateTask(new SimpleTaskData(), new CreateTaskOptions { ParentTaskId = taskId }).Queue();
-            var childTaskId2 = taskQueue.CreateTask(new SimpleTaskData(), new CreateTaskOptions { ParentTaskId = taskId }).Queue();
-            var childTaskId3 = taskQueue.CreateTask(new SimpleTaskData(), new CreateTaskOptions { ParentTaskId = taskId }).Queue();
-            CollectionAssert.AreEquivalent(new[] { childTaskId1, childTaskId2, childTaskId3 }, taskQueue.GetChildrenTaskIds(taskId));
+            var childTaskId1 = taskQueue.CreateTask(new SimpleTaskData(), new CreateTaskOptions {ParentTaskId = taskId}).Queue();
+            var childTaskId2 = taskQueue.CreateTask(new SimpleTaskData(), new CreateTaskOptions {ParentTaskId = taskId}).Queue();
+            var childTaskId3 = taskQueue.CreateTask(new SimpleTaskData(), new CreateTaskOptions {ParentTaskId = taskId}).Queue();
+            CollectionAssert.AreEquivalent(new[] {childTaskId1, childTaskId2, childTaskId3}, taskQueue.GetChildrenTaskIds(taskId));
             Assert.That(() => taskQueue.GetChildrenTaskIds(taskId), Is.Empty.After(10000, 100));
         }
 

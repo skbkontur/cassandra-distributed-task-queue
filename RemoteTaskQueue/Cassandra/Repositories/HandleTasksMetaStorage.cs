@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 using JetBrains.Annotations;
 
@@ -61,20 +62,23 @@ namespace RemoteQueue.Cassandra.Repositories
             var globalNowTicks = globalTime.UpdateNowTicks();
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalNowTicks);
             taskMeta.LastModificationTicks = nowTicks;
-            eventLogRepository.AddEvent(taskMeta.Id, nowTicks);
+            eventLogRepository.AddEvent(taskMeta, nowTicks);
             var newIndexRecord = FormatIndexRecord(taskMeta);
-            minimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks);
+            minimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks, taskMeta.GetTtl());
             if(taskMeta.State == TaskState.New)
-                childTaskIndex.AddMeta(taskMeta);
+                childTaskIndex.WriteIndexRecord(taskMeta, globalNowTicks);
             taskMetaStorage.Write(taskMeta, globalNowTicks);
             if(oldTaskIndexRecord != null)
                 minimalStartTicksIndex.RemoveRecord(oldTaskIndexRecord, globalNowTicks);
             return newIndexRecord;
         }
 
-        public void ProlongMeta(TaskMetaInformation taskMeta)
+        public void ProlongMetaTtl([NotNull] TaskMetaInformation taskMeta)
         {
-            taskMetaStorage.Write(taskMeta, globalTime.UpdateNowTicks());
+            var globalNowTicks = globalTime.UpdateNowTicks();
+            minimalStartTicksIndex.WriteRecord(FormatIndexRecord(taskMeta), globalNowTicks, taskMeta.GetTtl());
+            childTaskIndex.WriteIndexRecord(taskMeta, globalNowTicks);
+            taskMetaStorage.Write(taskMeta, globalNowTicks);
         }
 
         [NotNull]
@@ -105,7 +109,7 @@ namespace RemoteQueue.Cassandra.Repositories
         {
             for(var i = 0; i < array.Length; i++)
             {
-                var r = i + (int)(random.NextDouble() * (array.Length - i));
+                var r = i + (int)(random.Value.NextDouble() * (array.Length - i));
                 var t = array[r];
                 array[r] = array[i];
                 array[i] = t;
@@ -119,6 +123,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IGlobalTime globalTime;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly ITaskDataRegistry taskDataRegistry;
-        private readonly Random random = new Random(Guid.NewGuid().GetHashCode());
+        private readonly ThreadLocal<Random> random = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
     }
 }

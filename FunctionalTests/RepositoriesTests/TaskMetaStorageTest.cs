@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Linq;
 
-using GroBuf;
-
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace FunctionalTests.RepositoriesTests
@@ -107,7 +104,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             DoTestTtl(TimeBasedTaskId());
         }
-        
+
         [Test]
         public void Ttl_Legacy()
         {
@@ -137,8 +134,10 @@ namespace FunctionalTests.RepositoriesTests
 
         private void Write(string taskId, TimeSpan? ttl = null)
         {
-            ttl = ttl ?? defaultTtl;
-            taskMetaStorage.Write(new TaskMetaInformation("TaskName", taskId).ExpiredAfter(ttl.Value), DateTime.UtcNow.Ticks);
+            var taskMeta = new TaskMetaInformation("TaskName", taskId);
+            var now = Timestamp.Now;
+            taskMeta.SetMinimalStartTicks(now, ttl ?? defaultTtl);
+            taskMetaStorage.Write(taskMeta, now.Ticks);
         }
 
         private readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);

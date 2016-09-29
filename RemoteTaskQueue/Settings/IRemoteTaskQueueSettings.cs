@@ -7,6 +7,6 @@ namespace RemoteQueue.Settings
         bool EnableContinuationOptimization { get; }
         string QueueKeyspace { get; }
         string QueueKeyspaceForLock { get; }
-        TimeSpan TasksTtl { get; }
+        TimeSpan TaskTtl { get; }
     }
 }

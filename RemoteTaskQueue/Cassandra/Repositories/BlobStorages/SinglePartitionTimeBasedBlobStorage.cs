@@ -21,7 +21,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             this.cassandraCluster = cassandraCluster;
         }
 
-        public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp, TimeSpan ttl)
+        public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)
         {
             if(value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", columnId));
@@ -31,7 +31,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                     Name = FormatColumnName(columnId),
                     Value = value,
                     Timestamp = timestamp,
-                    TTL = (int) ttl.TotalSeconds,
+                    TTL = ttl.HasValue ? (int)ttl.Value.TotalSeconds : (int?)null,
                 });
         }
 

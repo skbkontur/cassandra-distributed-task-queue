@@ -5,6 +5,8 @@ using System.Linq;
 
 using GroBuf;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
@@ -25,28 +27,23 @@ namespace RemoteQueue.Cassandra.Repositories
             this.ticksHolder = ticksHolder;
             var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName).GetConnectionParameters();
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
-            eventLogTtl = TimeSpan.FromDays(30);
         }
 
-        public void AddEvent(string taskId, long nowTicks)
+        public void AddEvent([NotNull] TaskMetaInformation taskMeta, long nowTicks)
         {
-            if(string.IsNullOrEmpty(taskId))
-                throw new Exception("Try to log event with null taskId!");
-            var taskMetaUpdatedEventEntity = new TaskMetaUpdatedEvent
-                {
-                    TaskId = taskId,
-                    Ticks = nowTicks
-                };
-            var connection = RetrieveColumnFamilyConnection();
-            taskMetaUpdatedEventEntity.Ticks = nowTicks;
             ticksHolder.UpdateMinTicks(firstEventTicksRowName, nowTicks);
             var columnInfo = GetColumnInfo(nowTicks);
-            connection.AddColumn(columnInfo.Item1, new Column
+            var ttl = taskMeta.GetTtl();
+            RetrieveColumnFamilyConnection().AddColumn(columnInfo.Item1, new Column
                 {
                     Name = columnInfo.Item2,
                     Timestamp = nowTicks,
-                    Value = serializer.Serialize(taskMetaUpdatedEventEntity),
-                    TTL = (int) eventLogTtl.TotalSeconds
+                    Value = serializer.Serialize(new TaskMetaUpdatedEvent
+                        {
+                            TaskId = taskMeta.Id,
+                            Ticks = nowTicks,
+                        }),
+                    TTL = ttl.HasValue ? (int)ttl.Value.TotalSeconds : (int?)null,
                 });
         }
 
@@ -63,40 +60,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public TimeSpan UnstableZoneLength { get; private set; }
 
-        [Obsolete("для конвертаций")]
-        public void AddEvents(KeyValuePair<string, long>[] taskIdAndTicks)
-        {
-            if(taskIdAndTicks.Length == 0)
-                return;
-
-            var events = taskIdAndTicks.Select(kvp => new TaskMetaUpdatedEvent
-                {
-                    TaskId = kvp.Key,
-                    Ticks = kvp.Value
-                }).ToArray();
-            var connection = RetrieveColumnFamilyConnection();
-            ticksHolder.UpdateMinTicks(firstEventTicksRowName, events.Min(x => x.Ticks));
-
-            var nowTicks = globalTime.GetNowTicks();
-            var columns = events.Select(@event =>
-                {
-                    var columnInfo = GetColumnInfo(@event.Ticks);
-                    return new KeyValuePair<string, Column>(columnInfo.Item1, new Column
-                        {
-                            Name = columnInfo.Item2,
-                            Timestamp = nowTicks,
-                            Value = serializer.Serialize(@event),
-                            TTL = (int)eventLogTtl.TotalSeconds
-                        });
-                });
-            connection.BatchInsert(columns.GroupBy(x => x.Key)
-                                          .Select(group => new KeyValuePair<string, IEnumerable<Column>>(
-                                                               group.Key,
-                                                               group.Select(x => x.Value))));
-        }
-
-        public const string columnFamilyName = "RemoteTaskQueueEventLog";
-
+        [NotNull]
         private static Tuple<string, string> GetColumnInfo(long ticks)
         {
             var rowKey = (ticks / tickPartition).ToString();
@@ -104,12 +68,13 @@ namespace RemoteQueue.Cassandra.Repositories
             return new Tuple<string, string>(rowKey, columnName);
         }
 
+        public const string columnFamilyName = "RemoteTaskQueueEventLog";
+        private const string firstEventTicksRowName = "firstEventTicksRowName";
+
         private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
         private readonly ITicksHolder ticksHolder;
 
         private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;
-        private TimeSpan eventLogTtl;
-        private const string firstEventTicksRowName = "firstEventTicksRowName";
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
@@ -9,7 +10,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         [CanBeNull]
         LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskIndexShardKey taskIndexShardKey);
 
-        void AddRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp);
+        void AddRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp, TimeSpan? ttl);
+
+        void WriteRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp, TimeSpan? ttl);
 
         void RemoveRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp);
 

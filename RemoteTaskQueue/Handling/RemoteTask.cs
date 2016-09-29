@@ -13,15 +13,17 @@ namespace RemoteQueue.Handling
 {
     internal class RemoteTask : IRemoteTask
     {
-        public RemoteTask([NotNull] Task task, IHandleTaskCollection handleTaskCollection)
+        public RemoteTask([NotNull] Task task, TimeSpan taskTtl, IHandleTaskCollection handleTaskCollection)
         {
             this.task = task;
+            this.taskTtl = taskTtl;
             this.handleTaskCollection = handleTaskCollection;
         }
 
         [NotNull]
         public string Id { get { return task.Meta.Id; } }
 
+        [CanBeNull]
         public string ParentTaskId { get { return task.Meta.ParentTaskId; } }
 
         [NotNull]
@@ -47,12 +49,13 @@ namespace RemoteQueue.Handling
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             using(new PublishTaskTraceContext())
             {
-                task.Meta.MinimalStartTicks = Timestamp.Now.Ticks + delay.Ticks;
+                task.Meta.SetMinimalStartTicks(Timestamp.Now + delay, taskTtl);
                 return handleTaskCollection.AddTask(task);
             }
         }
 
         protected readonly Task task;
+        private readonly TimeSpan taskTtl;
         private readonly IHandleTaskCollection handleTaskCollection;
     }
 }

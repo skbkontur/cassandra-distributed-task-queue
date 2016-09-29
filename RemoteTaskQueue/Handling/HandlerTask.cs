@@ -49,6 +49,7 @@ namespace RemoteQueue.Handling
             taskMinimalStartTicksIndex = remoteTaskQueueInternals.TaskMinimalStartTicksIndex;
             remoteTaskQueueProfiler = remoteTaskQueueInternals.RemoteTaskQueueProfiler;
             globalTime = remoteTaskQueueInternals.GlobalTime;
+            taskTtl = remoteTaskQueueInternals.TaskTtl;
             taskShardMetrics = TaskShardMetrics.ForShard(taskIndexRecord.TaskIndexShardKey);
         }
 
@@ -121,13 +122,10 @@ namespace RemoteQueue.Handling
             try
             {
                 var task = handleTaskCollection.GetTask(taskIndexRecord.TaskId);
-                if(task.NeedProlongation())
-                {
-                    logger.InfoFormat("Продлеваем время жизни задачи {0} после вычитывания", task.Meta);
-                    handleTaskCollection.ProlongTask(task);
-                }
                 oldMeta = task.Meta;
                 taskData = task.Data;
+                if(oldMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()))
+                    logger.ErrorFormat("oldMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()) == true for: {0}", oldMeta);
             }
             catch(Exception e)
             {
@@ -160,7 +158,7 @@ namespace RemoteQueue.Handling
                                            MaxAllowedIndexInconsistencyDuration, oldMeta, taskIndexRecord, indexRecordConsistentWithActualMeta, localNow);
                         taskShardMetrics.FixIndex_UnderLock.Mark();
                         var globalNowTicks = globalTime.UpdateNowTicks();
-                        taskMinimalStartTicksIndex.AddRecord(indexRecordConsistentWithActualMeta, globalNowTicks);
+                        taskMinimalStartTicksIndex.AddRecord(indexRecordConsistentWithActualMeta, globalNowTicks, oldMeta.GetTtl());
                         taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalNowTicks);
                     }
                 }
@@ -179,15 +177,25 @@ namespace RemoteQueue.Handling
 
             taskShardMetrics.Processed.Mark();
             var processTaskResult = ProcessTask(inProcessMeta, taskData);
-            if(processTaskResult.NewMeta.NeedProlongation())
+
+            var newMeta = processTaskResult.NewMeta;
+            if(newMeta != null && newMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()))
             {
-                logger.InfoFormat("Продлеваем время жизни задачи {0} после обработки", processTaskResult.NewMeta);
-                handleTaskCollection.ProlongTask(new Task(processTaskResult.NewMeta, taskData));
+                logger.InfoFormat("Продлеваем время жизни задачи после обработки: {0}", newMeta);
+                try
+                {
+                    handleTaskCollection.ProlongTaskTtl(newMeta, taskData);
+                }
+                catch(Exception e)
+                {
+                    logger.Info(string.Format("Ошибка во время продления времени жизни задачи: {0}", newMeta), e);
+                }
             }
-                
+
             return processTaskResult.ProcessingResult;
         }
 
+        [NotNull]
         private ProcessTaskResult ProcessTask([NotNull] TaskMetaInformation inProcessMeta, [NotNull] byte[] taskData)
         {
             ITaskHandler taskHandler;
@@ -200,7 +208,7 @@ namespace RemoteQueue.Handling
                 var newExceptionInfoIds = TryLogError(e, inProcessMeta);
                 return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds));
             }
-            
+
             var task = new Task(inProcessMeta, taskData);
             using(TaskExecutionContext.ForTask(task))
             {
@@ -220,21 +228,22 @@ namespace RemoteQueue.Handling
             }
         }
 
+        [NotNull]
         private ProcessTaskResult UpdateTaskMetaByHandleResult([NotNull] TaskMetaInformation inProcessMeta, [NotNull] HandleResult handleResult)
         {
             List<TimeGuid> newExceptionInfoIds;
             switch(handleResult.FinishAction)
             {
             case FinishAction.Finish:
-                return new ProcessTaskResult(LocalTaskProcessingResult.Success, TrySwitchToTerminalState(inProcessMeta, TaskState.Finished, newExceptionInfoIds: null));
+                return new ProcessTaskResult(LocalTaskProcessingResult.Success, TrySwitchToTerminalState(inProcessMeta, TaskState.Finished, newExceptionInfoIds : null));
             case FinishAction.Fatal:
-                newExceptionInfoIds = TryLogError(handleResult.Error, inProcessMeta);;
+                newExceptionInfoIds = TryLogError(handleResult.Error, inProcessMeta);
                 return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds));
             case FinishAction.RerunAfterError:
                 newExceptionInfoIds = TryLogError(handleResult.Error, inProcessMeta);
                 return new ProcessTaskResult(LocalTaskProcessingResult.Rerun, TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerunAfterError, handleResult.RerunDelay, newExceptionInfoIds));
             case FinishAction.Rerun:
-                return new ProcessTaskResult(LocalTaskProcessingResult.Rerun, TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerun, handleResult.RerunDelay, newExceptionInfoIds: null));
+                return new ProcessTaskResult(LocalTaskProcessingResult.Rerun, TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerun, handleResult.RerunDelay, newExceptionInfoIds : null));
             default:
                 throw new InvalidProgramStateException(string.Format("Invalid FinishAction: {0}", handleResult.FinishAction));
             }
@@ -265,6 +274,7 @@ namespace RemoteQueue.Handling
             return TryUpdateTaskState(oldMeta, taskIndexRecord, newMinimalStartTicks, nowTicks, null, oldMeta.Attempts + 1, TaskState.InProcess, newExceptionInfoIds : null);
         }
 
+        [CanBeNull]
         private TaskMetaInformation TrySwitchToTerminalState([NotNull] TaskMetaInformation inProcessMeta, TaskState terminalState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
             var nowTicks = Timestamp.Now.Ticks;
@@ -272,6 +282,7 @@ namespace RemoteQueue.Handling
             return TryUpdateTaskState(inProcessMeta, inProcessTaskIndexRecord, nowTicks, inProcessMeta.StartExecutingTicks, nowTicks, inProcessMeta.Attempts, terminalState, newExceptionInfoIds);
         }
 
+        [CanBeNull]
         private TaskMetaInformation TrySwitchToWaitingForRerunState([NotNull] TaskMetaInformation inProcessMeta, TaskState waitingForRerunState, TimeSpan rerunDelay, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
             var nowTicks = Timestamp.Now.Ticks;
@@ -285,7 +296,7 @@ namespace RemoteQueue.Handling
             var newMeta = GrobufSerializers.AllFieldsSerializer.Copy(oldMeta);
             if(newState == oldMeta.State)
                 newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
-            newMeta.MinimalStartTicks = newMinimalStartTicks;
+            newMeta.SetMinimalStartTicks(new Timestamp(newMinimalStartTicks), taskTtl);
             newMeta.StartExecutingTicks = startExecutingTicks;
             newMeta.FinishExecutingTicks = finishExecutingTicks;
             newMeta.Attempts = attempts;
@@ -305,20 +316,6 @@ namespace RemoteQueue.Handling
             }
         }
 
-        private class ProcessTaskResult
-        {
-            public ProcessTaskResult(LocalTaskProcessingResult processingResult, [NotNull] TaskMetaInformation newMeta)
-            {
-                ProcessingResult = processingResult;
-                NewMeta = newMeta;
-            }
-
-            public LocalTaskProcessingResult ProcessingResult { get; private set; }
-            
-            [NotNull]
-            public TaskMetaInformation NewMeta { get; private set; }
-        }
-
         private readonly TaskIndexRecord taskIndexRecord;
         private readonly TaskQueueReason reason;
         private readonly TaskMetaInformation taskMeta;
@@ -332,9 +329,24 @@ namespace RemoteQueue.Handling
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private readonly IGlobalTime globalTime;
+        private readonly TimeSpan taskTtl;
         private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
         private static readonly TimeSpan longRunningTaskDurationThreshold = TimeSpan.FromMinutes(1);
         public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
         private readonly TaskShardMetrics taskShardMetrics;
+
+        private class ProcessTaskResult
+        {
+            public ProcessTaskResult(LocalTaskProcessingResult processingResult, [CanBeNull] TaskMetaInformation newMeta)
+            {
+                ProcessingResult = processingResult;
+                NewMeta = newMeta;
+            }
+
+            public LocalTaskProcessingResult ProcessingResult { get; private set; }
+
+            [CanBeNull]
+            public TaskMetaInformation NewMeta { get; private set; }
+        }
     }
 }

@@ -31,9 +31,19 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             return oldestLiveRecordTicksHolder.TryGetCurrentMarkerValue(taskIndexShardKey).With(x => x.State);
         }
 
-        public void AddRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp)
+        public void AddRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp, TimeSpan? ttl)
         {
             oldestLiveRecordTicksHolder.MoveMarkerBackwardIfNecessary(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
+            DoWriteRecord(taskIndexRecord, timestamp, ttl);
+        }
+
+        public void WriteRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp, TimeSpan? ttl)
+        {
+            DoWriteRecord(taskIndexRecord, timestamp, ttl);
+        }
+
+        private void DoWriteRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp, TimeSpan? ttl)
+        {
             var rowKey = CassandraNameHelper.GetRowKey(taskIndexRecord.TaskIndexShardKey, taskIndexRecord.MinimalStartTicks);
             var columnName = CassandraNameHelper.GetColumnName(taskIndexRecord.MinimalStartTicks, taskIndexRecord.TaskId);
             RetrieveColumnFamilyConnection().AddColumn(rowKey, new Column
@@ -41,7 +51,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     Name = columnName,
                     Timestamp = timestamp,
                     Value = serializer.Serialize(taskIndexRecord.TaskId),
-                    TTL = null,
+                    TTL = ttl.HasValue ? (int)ttl.Value.TotalSeconds : (int?)null,
                 });
         }
 

@@ -11,8 +11,8 @@ namespace RemoteQueue.Handling
 {
     internal class RemoteTaskWithContinuationOptimization : RemoteTask
     {
-        public RemoteTaskWithContinuationOptimization([NotNull] Task task, [NotNull] IHandleTaskCollection handleTaskCollection, [NotNull] ILocalTaskQueue localTaskQueue)
-            : base(task, handleTaskCollection)
+        public RemoteTaskWithContinuationOptimization([NotNull] Task task, TimeSpan taskTtl, [NotNull] IHandleTaskCollection handleTaskCollection, [NotNull] ILocalTaskQueue localTaskQueue)
+            : base(task, taskTtl, handleTaskCollection)
         {
             this.localTaskQueue = localTaskQueue;
         }

@@ -24,7 +24,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             this.columnFamilyName = columnFamilyName;
         }
 
-        public void Write([NotNull] string id, [NotNull] T element, long timestamp, TimeSpan ttl)
+        public void Write([NotNull] string id, [NotNull] T element, long timestamp, TimeSpan? ttl)
         {
             var connection = RetrieveColumnFamilyConnection();
             connection.AddColumn(id, new Column
@@ -32,7 +32,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                     Name = dataColumnName,
                     Timestamp = timestamp,
                     Value = serializer.Serialize(element),
-                    TTL = (int) ttl.TotalSeconds,
+                    TTL = ttl.HasValue ? (int)ttl.Value.TotalSeconds : (int?)null,
                 });
         }
 

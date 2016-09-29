@@ -41,23 +41,20 @@ namespace RemoteQueue.Tests
             var now = Timestamp.Now;
             var meta = new TaskMetaInformation("Test_name", "Test-id");
             var ttl = TimeSpan.FromMilliseconds(3342);
-            meta.SetUpExpiration(ttl);
+            meta.SetMinimalStartTicks(new Timestamp(meta.MinimalStartTicks), ttl);
             Assert.That(meta.GetTtl(), Is.EqualTo(ttl));
-            Assert.That(meta.ExpiredAtTicks, Is.GreaterThanOrEqualTo((now + ttl).Ticks));
+            Assert.That(meta.ExpirationTimestampTicks, Is.GreaterThanOrEqualTo((now + ttl).Ticks));
         }
 
         [Test]
         public void SetUpExpiration_MinimalStartTicks()
         {
             var minimalStart = Timestamp.Now + TimeSpan.FromHours(1);
-            var meta = new TaskMetaInformation("Test_name", "Test-id")
-                {
-                    MinimalStartTicks = minimalStart.Ticks
-                };
             var ttl = TimeSpan.FromMilliseconds(3342);
-            meta.SetUpExpiration(ttl);
+            var meta = new TaskMetaInformation("Test_name", "Test-id");
+            meta.SetMinimalStartTicks(minimalStart, ttl);
             Assert.That(meta.GetTtl(), Is.InRange(TimeSpan.FromHours(1) - ttl, TimeSpan.FromHours(1) + ttl));
-            Assert.That(meta.ExpiredAtTicks, Is.GreaterThanOrEqualTo((minimalStart + ttl).Ticks));
+            Assert.That(meta.ExpirationTimestampTicks, Is.GreaterThanOrEqualTo((minimalStart + ttl).Ticks));
         }
 
         private static TimeGuid NewExceptionInfoId(ushort c)

@@ -38,6 +38,7 @@ namespace RemoteQueue.Handling
         {
             this.taskDataRegistry = taskDataRegistry;
             Serializer = serializer;
+            TaskTtl = taskQueueSettings.TaskTtl;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
             TicksHolder = new TicksHolder(cassandraCluster, serializer, taskQueueSettings);
             GlobalTime = new GlobalTime(TicksHolder);
@@ -46,9 +47,9 @@ namespace RemoteQueue.Handling
             var eventLongRepository = new EventLogRepository(serializer, GlobalTime, cassandraCluster, taskQueueSettings, TicksHolder);
             childTaskIndex = new ChildTaskIndex(cassandraCluster, taskQueueSettings, serializer, taskMetaStorage);
             HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskDataRegistry);
-            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, taskQueueSettings);
+            taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, taskQueueSettings);
             TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, taskQueueSettings);
-            HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, taskDataStorage, TaskExceptionInfoStorage, remoteTaskQueueProfiler, taskQueueSettings);
+            HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, taskDataStorage, TaskExceptionInfoStorage, remoteTaskQueueProfiler);
 
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(new ColumnFamilyFullName(taskQueueSettings.QueueKeyspaceForLock, RemoteTaskQueueLockConstants.LockColumnFamily));
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
@@ -56,12 +57,14 @@ namespace RemoteQueue.Handling
             RemoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 
-        public ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; private set; }
+        public TimeSpan TaskTtl { get; private set; }
+
         public ISerializer Serializer { get; private set; }
         public ITicksHolder TicksHolder { get; private set; }
         public IGlobalTime GlobalTime { get; private set; }
         public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; private set; }
         public IHandleTasksMetaStorage HandleTasksMetaStorage { get; private set; }
+        public ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; private set; }
         public IHandleTaskCollection HandleTaskCollection { get; private set; }
         public IRemoteLockCreator RemoteLockCreator { get; private set; }
         public IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; private set; }
@@ -74,13 +77,13 @@ namespace RemoteQueue.Handling
                 return false;
             using(remoteLock)
             {
-                var meta = HandleTasksMetaStorage.GetMeta(taskId);
-                if(meta.State == TaskState.New || meta.State == TaskState.WaitingForRerun || meta.State == TaskState.WaitingForRerunAfterError || meta.State == TaskState.InProcess)
+                var taskMeta = HandleTasksMetaStorage.GetMeta(taskId);
+                if(taskMeta.State == TaskState.New || taskMeta.State == TaskState.WaitingForRerun || taskMeta.State == TaskState.WaitingForRerunAfterError || taskMeta.State == TaskState.InProcess)
                 {
-                    var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(meta);
-                    meta.State = TaskState.Canceled;
-                    meta.FinishExecutingTicks = Timestamp.Now.Ticks;
-                    HandleTasksMetaStorage.AddMeta(meta, oldTaskIndexRecord);
+                    var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
+                    taskMeta.State = TaskState.Canceled;
+                    taskMeta.FinishExecutingTicks = Timestamp.Now.Ticks;
+                    HandleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord);
                     return true;
                 }
                 return false;
@@ -96,11 +99,19 @@ namespace RemoteQueue.Handling
                 return false;
             using(remoteLock)
             {
-                var meta = HandleTasksMetaStorage.GetMeta(taskId);
-                var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(meta);
-                meta.State = TaskState.WaitingForRerun;
-                meta.MinimalStartTicks = Timestamp.Now.Ticks + delay.Ticks;
-                HandleTasksMetaStorage.AddMeta(meta, oldTaskIndexRecord);
+                var taskMeta = HandleTasksMetaStorage.GetMeta(taskId);
+                var oldExpirationTimestamp = taskMeta.GetExpirationTimestamp();
+                var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
+                taskMeta.State = TaskState.WaitingForRerun;
+                taskMeta.SetMinimalStartTicks(Timestamp.Now + delay, TaskTtl);
+                HandleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord);
+                if(taskMeta.NeedTtlProlongation(oldExpirationTimestamp))
+                {
+                    var taskData = taskDataStorage.Read(taskMeta);
+                    if(taskData == null)
+                        throw new InvalidProgramStateException(string.Format("TaskData not found for: {0}", taskMeta));
+                    HandleTaskCollection.ProlongTaskTtl(taskMeta, taskData);
+                }
                 return true;
             }
         }
@@ -155,8 +166,8 @@ namespace RemoteQueue.Handling
             var taskDataBytes = Serializer.Serialize(type, taskData);
             var task = new Task(taskMeta, taskDataBytes);
             return enableContinuationOptimization && LocalTaskQueue.Instance != null
-                       ? new RemoteTaskWithContinuationOptimization(task, HandleTaskCollection, LocalTaskQueue.Instance)
-                       : new RemoteTask(task, HandleTaskCollection);
+                       ? new RemoteTaskWithContinuationOptimization(task, TaskTtl, HandleTaskCollection, LocalTaskQueue.Instance)
+                       : new RemoteTask(task, TaskTtl, HandleTaskCollection);
         }
 
         [CanBeNull]
@@ -190,6 +201,7 @@ namespace RemoteQueue.Handling
 
         private readonly ITaskDataRegistry taskDataRegistry;
         private readonly IChildTaskIndex childTaskIndex;
+        private readonly TaskDataStorage taskDataStorage;
         private readonly bool enableContinuationOptimization;
     }
 }

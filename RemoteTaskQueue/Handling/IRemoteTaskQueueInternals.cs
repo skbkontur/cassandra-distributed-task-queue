@@ -1,4 +1,6 @@
-﻿using GroBuf;
+﻿using System;
+
+using GroBuf;
 
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
@@ -12,6 +14,7 @@ namespace RemoteQueue.Handling
 {
     internal interface IRemoteTaskQueueInternals
     {
+        TimeSpan TaskTtl { get; }
         ISerializer Serializer { get; }
         IGlobalTime GlobalTime { get; }
         ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; }

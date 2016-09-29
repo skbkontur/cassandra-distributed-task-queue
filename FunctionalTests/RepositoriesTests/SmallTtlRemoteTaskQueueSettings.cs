@@ -9,16 +9,17 @@ namespace FunctionalTests.RepositoriesTests
     [IgnoredImplementation]
     public class SmallTtlRemoteTaskQueueSettings : IRemoteTaskQueueSettings
     {
-        public SmallTtlRemoteTaskQueueSettings(IRemoteTaskQueueSettings baseSettings, TimeSpan tasksTtl)
+        public SmallTtlRemoteTaskQueueSettings(IRemoteTaskQueueSettings baseSettings, TimeSpan taskTtl)
         {
             this.baseSettings = baseSettings;
-            TasksTtl = tasksTtl;
+            TaskTtl = taskTtl;
         }
 
         public bool EnableContinuationOptimization { get { return baseSettings.EnableContinuationOptimization; } }
         public string QueueKeyspace { get { return baseSettings.QueueKeyspace; } }
         public string QueueKeyspaceForLock { get { return baseSettings.QueueKeyspaceForLock; } }
-        public TimeSpan TasksTtl { get; private set; }
+        public TimeSpan TaskTtl { get; private set; }
+
         private readonly IRemoteTaskQueueSettings baseSettings;
     }
 }

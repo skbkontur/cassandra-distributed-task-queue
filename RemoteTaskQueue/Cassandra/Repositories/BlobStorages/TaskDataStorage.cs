@@ -47,8 +47,10 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public void Overwrite([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData)
         {
             var timestamp = Timestamp.Now.Ticks;
-            legacyBlobStorage.Write(taskMeta.Id, taskData, timestamp, taskMeta.GetTtl());
-            timeBasedBlobStorage.Write(taskMeta.GetTaskDataId(), taskData, timestamp, taskMeta.GetTtl());
+            if(!taskMeta.IsTimeBased())
+                legacyBlobStorage.Write(taskMeta.Id, taskData, timestamp, taskMeta.GetTtl());
+            else
+                timeBasedBlobStorage.Write(taskMeta.GetTaskDataId(), taskData, timestamp, taskMeta.GetTtl());
         }
 
         [CanBeNull]

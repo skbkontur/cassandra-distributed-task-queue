@@ -11,6 +11,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace FunctionalTests.RepositoriesTests
@@ -196,7 +197,7 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(1));
             Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(0).After(10000, 100));
         }
-        
+
         [TestCase(MetaType.TimeGuid)]
         [TestCase(MetaType.Legacy)]
         public void Prolong_OneException(MetaType metaType)
@@ -208,9 +209,9 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
-            meta.SetUpExpiration(TimeSpan.FromHours(1));
-            taskExceptionInfoStorage.ProlongExceptionInfos(meta);
-            
+            meta.SetMinimalStartTicks(Timestamp.Now, TimeSpan.FromHours(1));
+            taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
+
             Thread.Sleep(10000);
             Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(1));
         }
@@ -229,11 +230,11 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception2, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
-            meta.SetUpExpiration(TimeSpan.FromHours(1));
-            taskExceptionInfoStorage.ProlongExceptionInfos(meta);
+            meta.SetMinimalStartTicks(Timestamp.Now, TimeSpan.FromHours(1));
+            taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
             Thread.Sleep(10000);
-            Assert.That(taskExceptionInfoStorage.Read(new[] { meta })[meta.Id].Length, Is.EqualTo(2));
+            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(2));
         }
 
         private void Check(Tuple<TaskMetaInformation, Exception[]>[] expected)
@@ -250,14 +251,19 @@ namespace FunctionalTests.RepositoriesTests
 
         private static TaskMetaInformation TimeGuidMeta(TimeSpan? ttl = null)
         {
-            ttl = ttl ?? defaultTtl;
-            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), TimeGuid.NowGuid().ToGuid().ToString()).ExpiredAfter(ttl.Value);
+            return TaskMeta(TimeGuid.NowGuid().ToGuid().ToString(), ttl);
         }
 
         private static TaskMetaInformation LegacyMeta(TimeSpan? ttl = null)
         {
-            ttl = ttl ?? defaultTtl;
-            return new TaskMetaInformation("Name-" + Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString()).ExpiredAfter(ttl.Value);
+            return TaskMeta(Guid.NewGuid().ToString(), ttl);
+        }
+
+        private static TaskMetaInformation TaskMeta(string taskId, TimeSpan? ttl)
+        {
+            var taskMeta = new TaskMetaInformation(string.Format("Name-{0:N}", Guid.NewGuid()), taskId);
+            taskMeta.SetMinimalStartTicks(Timestamp.Now, ttl ?? defaultTtl);
+            return taskMeta;
         }
 
         private static TaskMetaInformation NewMeta(MetaType metaType, TimeSpan? ttl = null)
@@ -278,14 +284,5 @@ namespace FunctionalTests.RepositoriesTests
 
         private ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private static readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);
-    }
-
-    internal static class Sugar
-    {
-        public static T With<T>(this T obj, Action<T> action)
-        {
-            action(obj);
-            return obj;
-        }
     }
 }

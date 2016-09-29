@@ -37,27 +37,13 @@ namespace RemoteQueue.Cassandra.Entities
         public long? FinishExecutingTicks { get; set; }
         public long? LastModificationTicks { get; set; }
         public long? TtlTicks { get; private set; }
-        public long? ExpiredAtTicks { get; private set; }
+        public long? ExpirationTimestampTicks { get; private set; }
         public TaskState State { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }
         public string TaskGroupLock { get; set; }
         public string TraceId { get; set; }
         public bool TraceIsActive { get; set; }
-
-        public TimeSpan GetTtl()
-        {
-            if (!TtlTicks.HasValue)
-                throw new InvalidProgramStateException(string.Format("Ttl did not set for Task {0}", this));
-            return TimeSpan.FromTicks(TtlTicks.Value);
-        }
-
-        public void SetUpExpiration(TimeSpan ttl)
-        {
-            var now = Timestamp.Now;
-            ExpiredAtTicks = (Max(now, GetMinimalStartTimestamp()) + ttl).Ticks;
-            TtlTicks = ExpiredAtTicks - now.Ticks;
-        }
 
         internal bool IsTimeBased()
         {
@@ -95,19 +81,38 @@ namespace RemoteQueue.Cassandra.Entities
             return taskExceptionInfoIds;
         }
 
-        internal bool NeedProlongation()
+        internal TimeSpan? GetTtl()
         {
-            if(!TtlTicks.HasValue || !ExpiredAtTicks.HasValue)
+            return TtlTicks.HasValue ? TimeSpan.FromTicks(TtlTicks.Value) : (TimeSpan?)null;
+        }
+
+        [CanBeNull]
+        internal Timestamp GetExpirationTimestamp()
+        {
+            return ExpirationTimestampTicks.HasValue ? new Timestamp(ExpirationTimestampTicks.Value) : null;
+        }
+
+        public void SetMinimalStartTicks([NotNull] Timestamp newMinimalStartTimestamp, TimeSpan ttl)
+        {
+            var now = Timestamp.Now;
+            var expirationTimestamp = Max(now, newMinimalStartTimestamp) + ttl;
+            TtlTicks = (expirationTimestamp - now).Ticks;
+            ExpirationTimestampTicks = expirationTimestamp.Ticks;
+            MinimalStartTicks = newMinimalStartTimestamp.Ticks;
+        }
+
+        internal bool NeedTtlProlongation([CanBeNull] Timestamp oldExpirationTimestamp)
+        {
+            if(oldExpirationTimestamp == null || !TtlTicks.HasValue)
                 return true;
             var halfOfTtl = TimeSpan.FromTicks((TtlTicks.Value + 1) / 2);
-            var ttlExpiredTimestamp = new Timestamp(ExpiredAtTicks.Value);
-            return Max(Timestamp.Now, GetMinimalStartTimestamp()) + halfOfTtl > ttlExpiredTimestamp;
+            return Max(Timestamp.Now, GetMinimalStartTimestamp()) + halfOfTtl > oldExpirationTimestamp;
         }
 
         [NotNull]
         private Timestamp GetMinimalStartTimestamp()
         {
-            if (MinimalStartTicks >= Timestamp.MinValue.Ticks && MinimalStartTicks <= Timestamp.MaxValue.Ticks)
+            if(MinimalStartTicks >= Timestamp.MinValue.Ticks && MinimalStartTicks <= Timestamp.MaxValue.Ticks)
                 return new Timestamp(MinimalStartTicks);
             return Timestamp.MinValue;
         }
@@ -128,10 +133,10 @@ namespace RemoteQueue.Cassandra.Entities
             else
                 taskExceptionInfoIds = string.Format("FirstExceptionId = {0}, LastExceptionId = {1}, Count = {2}", TaskExceptionInfoIds.First(), TaskExceptionInfoIds.Last(), TaskExceptionInfoIds.Count);
             var minimalStartTicks = TicksToString(MinimalStartTicks);
-            var ttl = TtlTicks.HasValue ? new TimeSpan(TtlTicks.Value).ToString() : "(null)";
-            var expiredAtTicks = ExpiredAtTicks.HasValue ? TicksToString(ExpiredAtTicks.Value) : "(null)";
-            return string.Format("[Name: {0}, Id: {1}, State: {2}, Attempts: {3}, MinimalStartTicks: {4}, ParentTaskId: {5}, TaskGroupLock: {6}, TraceId: {7}, TaskDataId: {8}, TaskExceptionInfoIds: {9} Ttl: {10}, ExpiredAt: {11}]",
-                                 Name, Id, State, Attempts, minimalStartTicks, ParentTaskId, TaskGroupLock, TraceId, TaskDataId, taskExceptionInfoIds, ttl, expiredAtTicks);
+            var ttl = TtlTicks.HasValue ? new TimeSpan(TtlTicks.Value).ToString() : "NONE";
+            var expirationTimestamp = ExpirationTimestampTicks.HasValue ? TicksToString(ExpirationTimestampTicks.Value) : "NONE";
+            return string.Format("[Name: {0}, Id: {1}, State: {2}, Attempts: {3}, MinimalStartTicks: {4}, ParentTaskId: {5}, TaskGroupLock: {6}, TraceId: {7}, TaskDataId: {8}, TaskExceptionInfoIds: {9} Ttl: {10}, ExpirationTimestamp: {11}]",
+                                 Name, Id, State, Attempts, minimalStartTicks, ParentTaskId, TaskGroupLock, TraceId, TaskDataId, taskExceptionInfoIds, ttl, expirationTimestamp);
         }
 
         private static string TicksToString(long ticks)

@@ -6,7 +6,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
 {
     public interface IChildTaskIndex
     {
-        void AddMeta([NotNull] TaskMetaInformation meta);
+        void WriteIndexRecord([NotNull] TaskMetaInformation taskMeta, long timestamp);
 
         [NotNull]
         string[] GetChildTaskIds([NotNull] string taskId);

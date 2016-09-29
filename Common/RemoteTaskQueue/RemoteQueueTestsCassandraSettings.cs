@@ -35,7 +35,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue
         public string ClusterName { get { return "CoreCluster"; } }
         public string QueueKeyspace { get { return "QueueKeyspace"; } }
         public string QueueKeyspaceForLock { get { return QueueKeyspace;  } }
-        public TimeSpan TasksTtl { get { return TimeSpan.FromHours(24); } }
+        public TimeSpan TaskTtl { get { return TimeSpan.FromHours(24); } }
         public bool EnableContinuationOptimization { get { return true; } }
         public bool EnableMetrics { get { return false; } }
     }

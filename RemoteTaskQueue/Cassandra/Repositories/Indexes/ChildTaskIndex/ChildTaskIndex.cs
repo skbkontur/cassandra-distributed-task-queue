@@ -10,7 +10,6 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
 {
@@ -24,17 +23,17 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
             this.taskMetaStorage = taskMetaStorage;
         }
 
-        public void AddMeta([NotNull] TaskMetaInformation meta)
+        public void WriteIndexRecord([NotNull] TaskMetaInformation taskMeta, long timestamp)
         {
-            if(string.IsNullOrEmpty(meta.ParentTaskId))
+            if(string.IsNullOrEmpty(taskMeta.ParentTaskId))
                 return;
-            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName);
-            connection.AddColumn(meta.ParentTaskId, new Column
+            var ttl = taskMeta.GetTtl();
+            cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName).AddColumn(taskMeta.ParentTaskId, new Column
                 {
-                    Name = meta.Id,
-                    Timestamp = Timestamp.Now.Ticks,
-                    Value = serializer.Serialize(meta.Id),
-                    TTL = (int) meta.GetTtl().TotalSeconds
+                    Name = taskMeta.Id,
+                    Timestamp = timestamp,
+                    Value = serializer.Serialize(taskMeta.Id),
+                    TTL = ttl.HasValue ? (int)ttl.Value.TotalSeconds : (int?)null,
                 });
         }
 

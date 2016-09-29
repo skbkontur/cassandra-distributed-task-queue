@@ -30,7 +30,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return new BlobId(id, blobSize > TimeBasedBlobStorageSettings.MaxRegularBlobSize ? BlobType.Large : BlobType.Regular);
         }
 
-        public void Write([NotNull] BlobId id, [NotNull] byte[] value, long timestamp, TimeSpan ttl)
+        public void Write([NotNull] BlobId id, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)
         {
             if(value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", id));
@@ -43,7 +43,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                     Name = columnAddress.ColumnName,
                     Value = value,
                     Timestamp = timestamp,
-                    TTL = (int)ttl.TotalSeconds,
+                    TTL = ttl.HasValue ? (int)ttl.Value.TotalSeconds : (int?)null,
                 });
         }
 

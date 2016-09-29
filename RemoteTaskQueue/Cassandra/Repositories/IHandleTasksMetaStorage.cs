@@ -19,7 +19,7 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta, [CanBeNull] TaskIndexRecord oldTaskIndexRecord);
 
-        void ProlongMeta([NotNull] TaskMetaInformation taskMeta);
+        void ProlongMetaTtl([NotNull] TaskMetaInformation taskMeta);
 
         [NotNull]
         TaskIndexRecord FormatIndexRecord([NotNull] TaskMetaInformation taskMeta);

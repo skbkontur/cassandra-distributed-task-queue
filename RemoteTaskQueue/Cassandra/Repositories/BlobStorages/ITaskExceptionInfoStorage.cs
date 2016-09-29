@@ -13,7 +13,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
     {
         bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out List<TimeGuid> newExceptionInfoIds);
 
-        void ProlongExceptionInfos([NotNull] TaskMetaInformation taskMeta);
+        void ProlongExceptionInfosTtl([NotNull] TaskMetaInformation taskMeta);
 
         void Delete([NotNull] TaskMetaInformation taskMeta);
 
