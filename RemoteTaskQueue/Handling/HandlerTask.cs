@@ -175,8 +175,8 @@ namespace RemoteQueue.Handling
                 return LocalTaskProcessingResult.Undefined;
             }
 
-            taskShardMetrics.Processed.Mark();
             var processTaskResult = ProcessTask(inProcessMeta, taskData);
+            taskShardMetrics.Processed.Mark();
 
             var newMeta = processTaskResult.NewMeta;
             if(newMeta != null && newMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()))
