@@ -188,7 +188,7 @@ namespace RemoteQueue.Handling
                 }
                 catch(Exception e)
                 {
-                    logger.Info(string.Format("Ошибка во время продления времени жизни задачи: {0}", newMeta), e);
+                    logger.Error(string.Format("Ошибка во время продления времени жизни задачи: {0}", newMeta), e);
                 }
             }
 
