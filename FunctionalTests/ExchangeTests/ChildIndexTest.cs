@@ -12,6 +12,7 @@ using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
 namespace FunctionalTests.ExchangeTests
@@ -54,6 +55,8 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void TtlTest()
         {
+            Container.Get<IExchangeServiceClient>().Stop();
+
             taskQueue = new RemoteTaskQueue(
                 Container.Get<ISerializer>(),
                 Container.Get<ICassandraCluster>(),

@@ -52,10 +52,10 @@ namespace FunctionalTests.ExchangeTests
             WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
             var meta = taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId).Context;
 
-            Assert.That(() => taskQueue.GetTaskInfos<FakeMixedPeriodicAndFailTaskData>(new[] {taskId}).Length, Is.EqualTo(0).After(10000, 100));
+            Assert.That(() => taskQueue.GetTaskInfos<FakeMixedPeriodicAndFailTaskData>(new[] {taskId}), Is.Empty.After(10000, 100));
             Assert.That(() => taskMetaStorage.Read(taskId), Is.Null.After(10000, 100));
             Assert.That(() => taskDataStorage.Read(meta), Is.Null.After(10000, 100));
-            Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(0).After(10000, 100));
+            Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id], Is.Empty.After(10000, 100));
         }
 
         [Test]
