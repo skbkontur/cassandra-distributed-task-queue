@@ -5,6 +5,7 @@ using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 
 namespace FunctionalTests
 {
@@ -15,7 +16,7 @@ namespace FunctionalTests
             base.SetUp();
             var exchangeServiceClient = Container.Get<IExchangeServiceClient>();
             exchangeServiceClient.Start();
-            exchangeServiceClient.ChangeTaskTtl(TimeSpan.FromHours(24));
+            exchangeServiceClient.ChangeTaskTtl(RemoteQueueTestsCassandraSettings.StandardTestTaskTtl);
             taskDataRegistry = Container.Get<ITaskDataRegistry>();
         }
 

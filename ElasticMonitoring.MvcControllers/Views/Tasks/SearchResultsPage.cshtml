@@ -80,6 +80,7 @@
                         <th>StartExecutingTime time (МСК)</th>
                         <th>FinishExecutingTime time (МСК)</th>
                         <th>MinimalStartTime time (МСК) <span class="glyphicon glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span></th>
+                        <th>ExpirationTime time (МСК)</th>
                         <th>Attempts</th>
                         <th>ParentTaskId</th>
                     </tr>
@@ -117,6 +118,7 @@
                             <td>@task.StartExecutionTime.ToFullMoscowTimeString()</td>
                             <td>@task.FinishExecutionTime.ToFullMoscowTimeString()</td>            
                             <td>@task.MinimalStartTime.ToFullMoscowTimeString()</td>            
+                            <td>@task.ExpirationTime.ToFullMoscowTimeString()</td>
                             <td>@task.AttemptCount</td>            
                             <td>@task.ParentTaskId</td>            
                         </tr>

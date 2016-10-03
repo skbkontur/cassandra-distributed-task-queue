@@ -189,6 +189,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                     FinishExecutingTime = DateTemplate(),
                                                                     LastModificationTime = DateTemplate(),
                                                                     Exception = StringTemplate(analyzed : true),
+                                                                    ExpirationTime = DateTemplate()
                                                                 }
                                                         }
                                                 }

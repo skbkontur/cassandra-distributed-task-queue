@@ -13,6 +13,7 @@ using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
@@ -98,6 +99,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("ExceptionInfo:\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1, new string[0]);
+        }
+
+        [Test]
+        public void TestSearchByExpiration()
+        {
+            var t0 = DateTime.Now;
+
+            var taskId = QueueTask(new SlowTaskData());
+            WaitForTasks(new[] { taskId }, TimeSpan.FromSeconds(5));
+
+            elasticMonitoringServiceClient.UpdateAndFlush();
+
+            var t1 = DateTime.Now;
+            var ttl = RemoteQueueTestsCassandraSettings.StandardTestTaskTtl;
+            Console.WriteLine(ToIsoTime(new DateTime(remoteTaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.ExpirationTimestampTicks.Value, DateTimeKind.Utc)));
+            CheckSearch(string.Format("Meta.ExpirationTime: [\"{0}\" TO \"{1}\"]", ToIsoTime(t0 + ttl), ToIsoTime(t1 + ttl + TimeSpan.FromSeconds(10))), t0, t1, taskId);
+        }
+
+        private static string ToIsoTime(DateTime dateTime)
+        {
+            return dateTime.ToUniversalTime().ToString("O");
         }
 
         [Test]

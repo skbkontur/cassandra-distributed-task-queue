@@ -18,6 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.M
         public DateTime? StartExecutedTime { get; set; }
         public DateTime? FinishExecutedTime { get; set; }
         public DateTime? MinimalStartTime { get; set; }
+        public DateTime? ExpirationTime { get; set; }
         public int AttemptCount { get; set; }
         public string ParentTaskId { get; set; }
         public string[] ChildTaskIds { get; set; }

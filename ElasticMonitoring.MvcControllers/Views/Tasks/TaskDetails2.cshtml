@@ -123,10 +123,14 @@
                     <td>@PrintTime(Model.MinimalStartTime)</td>
                 </tr>
                 <tr class="treegrid-8">
+                    <td>ExpirationTime</td>
+                    <td>@PrintTime(Model.ExpirationTime)</td>
+                </tr>
+                <tr class="treegrid-9">
                     <td>Attempts</td>
                     <td>@Model.AttemptCount</td>
                 </tr>
-                <tr class="treegrid-9">
+                <tr class="treegrid-10">
                     <td>ParentTaskId</td>
                     <td>
                         @if(!string.IsNullOrWhiteSpace(Model.ParentTaskId))

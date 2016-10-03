@@ -17,6 +17,7 @@ using RemoteQueue.Settings;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
 namespace FunctionalTests.ExchangeTests
@@ -29,6 +30,12 @@ namespace FunctionalTests.ExchangeTests
             taskDataStorage = Container.Get<ITaskDataStorage>();
             taskMetaStorage = Container.Get<ITaskMetaStorage>();
             taskExceptionInfoStorage = Container.Get<ITaskExceptionInfoStorage>();
+        }
+
+        public override void TearDown()
+        {
+            base.TearDown();
+            SetTaskTtlOnConsumers(RemoteQueueTestsCassandraSettings.StandardTestTaskTtl);
         }
 
         [Test]
