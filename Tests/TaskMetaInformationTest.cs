@@ -36,7 +36,7 @@ namespace RemoteQueue.Tests
         }
 
         [Test]
-        public void SetMinimalStartTicks_Now()
+        public void SetOrUpdateTtl_Now()
         {
             var now = Timestamp.Now;
             var meta = new TaskMetaInformation("Test_name", "Test-id");
@@ -47,7 +47,7 @@ namespace RemoteQueue.Tests
         }
 
         [Test]
-        public void SetMinimalStartTicks_BiggerThanNow()
+        public void SetOrUpdateTtl_MinimalStartTicks()
         {
             var minimalStart = Timestamp.Now + TimeSpan.FromHours(1);
             var ttl = TimeSpan.FromMilliseconds(3342);
