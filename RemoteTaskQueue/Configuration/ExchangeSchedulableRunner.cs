@@ -36,11 +36,11 @@ namespace RemoteQueue.Configuration
             this.runnerSettings = runnerSettings;
             this.periodicTaskRunner = periodicTaskRunner;
             var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
-            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
-            ticksHolder = remoteTaskQueue.TicksHolder;
-            localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
+            RemoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
+            ticksHolder = RemoteTaskQueue.TicksHolder;
+            localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, RemoteTaskQueue);
             foreach(var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
-                handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
+                handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, RemoteTaskQueue.HandleTasksMetaStorage, RemoteTaskQueue.GlobalTime));
             reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, graphitePathPrefixProvider, handlerManagers);
         }
 
@@ -88,6 +88,8 @@ namespace RemoteQueue.Configuration
                 }
             }
         }
+
+        public IRemoteTaskQueueInternals RemoteTaskQueue { get; private set; }
 
         private volatile bool started;
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;

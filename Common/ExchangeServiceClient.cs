@@ -24,6 +24,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Common
             Method("Stop").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
+        public void ChangeTaskTtl(TimeSpan ttl)
+        {
+            Method("ChangeTaskTtl").SendToEachReplica(DomainConsistencyLevel.All, ttl);
+        }
+
         protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
         {
             return defaultConfiguration.WithTimeout(TimeSpan.FromSeconds(30));

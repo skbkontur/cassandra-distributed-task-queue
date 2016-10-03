@@ -15,6 +15,8 @@ using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
 namespace FunctionalTests.ExchangeTests
@@ -32,23 +34,45 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void Prolongation_Happened()
         {
+            SetTaskTtlOnConsumers(TimeSpan.FromHours(1));
+
             var rerunAfter = TimeSpan.FromMilliseconds(100);
 
             var estimatedNumberOfRuns = 2 * (int)(tasksTtl.Ticks / rerunAfter.Ticks);
             Console.WriteLine("Estimated number of runs: {0}", estimatedNumberOfRuns);
-            var taskId = AddTask(estimatedNumberOfRuns, rerunAfter, new[] {estimatedNumberOfRuns, estimatedNumberOfRuns - 1, estimatedNumberOfRuns - 2});
-            WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
-            Assert.That(taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId).Context.TtlTicks, Is.GreaterThan(tasksTtl.Ticks));
-
+            var parentTaskId = Guid.NewGuid().ToString();
+            var taskId = AddTask(estimatedNumberOfRuns, rerunAfter, new[] { estimatedNumberOfRuns, estimatedNumberOfRuns - 1, estimatedNumberOfRuns - 2 }, parentTaskId);
+            WaitForTerminalState(new[] { taskId }, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromMinutes(1), TimeSpan.FromMilliseconds(100));
+            
             Thread.Sleep(10000);
             var taskInfo = taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId);
             Assert.That(taskInfo.ExceptionInfos.Length, Is.EqualTo(3));
+            Assert.That(taskQueue.GetChildrenTaskIds(parentTaskId), Is.EquivalentTo(new []{taskId}));
+        }
+
+        [Test]
+        public void Prolongation_Happened_MoreThanOnce()
+        {
+            SetTaskTtlOnConsumers(tasksTtl);
+
+            var rerunAfter = TimeSpan.FromSeconds(1);
+
+            var estimatedNumberOfRuns = (int) (tasksTtl.Ticks * 10 / rerunAfter.Ticks);
+            Console.WriteLine("Estimated number of runs: {0}", estimatedNumberOfRuns);
+            var taskId = AddTask(estimatedNumberOfRuns, rerunAfter, null, null);
+            WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromMinutes(2), TimeSpan.FromMilliseconds(100));
+            var now = Timestamp.Now;
+            var taskInfo = taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId);
+            Assert.That(taskInfo.Context.ExpirationTimestampTicks, Is.InRange((now - tasksTtl).Ticks, (now + tasksTtl).Ticks));
         }
 
         [Test]
         public void Prolongation_NotHappened()
         {
-            var taskId = AddTask(2, TimeSpan.FromMilliseconds(100), new[] {2});
+            SetTaskTtlOnConsumers(TimeSpan.FromHours(1));
+
+            var parentTaskId = Guid.NewGuid().ToString();
+            var taskId = AddTask(2, TimeSpan.FromMilliseconds(100), new[]{2}, parentTaskId);
             WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
             var meta = taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId).Context;
 
@@ -56,27 +80,37 @@ namespace FunctionalTests.ExchangeTests
             Assert.That(() => taskMetaStorage.Read(taskId), Is.Null.After(10000, 100));
             Assert.That(() => taskDataStorage.Read(meta), Is.Null.After(10000, 100));
             Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id], Is.Empty.After(10000, 100));
+            Assert.That(() => taskQueue.GetChildrenTaskIds(parentTaskId), Is.Empty.After(10000, 100));
         }
 
         [Test]
         public void Prolongation_FarRerunProtection()
         {
+            SetTaskTtlOnConsumers(tasksTtl);
+
             var bigRerunPeriod = TimeSpan.FromDays(1440);
-            var taskId = AddTask(2, bigRerunPeriod, new[] {2});
+            var taskId = AddTask(2, bigRerunPeriod, new[] { 2 }, null);
             WaitForState(new[] {taskId}, TaskState.WaitingForRerunAfterError, TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
             Assert.That(taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId).Context.TtlTicks, Is.GreaterThanOrEqualTo(bigRerunPeriod.Ticks));
 
             Thread.Sleep(10000);
-            var taskInfo = taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId);
-            Assert.That(taskInfo.ExceptionInfos.Length, Is.EqualTo(1));
+            Assert.DoesNotThrow(() => taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId));
         }
 
-        private string AddTask(int attempts, TimeSpan rerunAfter, int[] failCounterValues)
+        private string AddTask(int attempts, TimeSpan rerunAfter, int[] failCounterValues, string parentTaskId)
         {
-            var task = taskQueue.CreateTask(new FakeMixedPeriodicAndFailTaskData(rerunAfter, failCounterValues));
+            var task = taskQueue.CreateTask(new FakeMixedPeriodicAndFailTaskData(rerunAfter, failCounterValues), new CreateTaskOptions
+                {
+                    ParentTaskId = parentTaskId
+                });
             testCounterRepository.SetValueForCounter(task.Id, attempts);
             task.Queue();
             return task.Id;
+        }
+
+        private void SetTaskTtlOnConsumers(TimeSpan ttl)
+        {
+            Container.Get<IExchangeServiceClient>().ChangeTaskTtl(ttl);
         }
 
         protected override IRemoteTaskQueue GetRemoteTaskQueue()

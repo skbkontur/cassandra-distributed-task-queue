@@ -1,4 +1,6 @@
-﻿using RemoteQueue.Cassandra.Entities;
+﻿using System;
+
+using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
 
@@ -11,7 +13,9 @@ namespace FunctionalTests
         public override void SetUp()
         {
             base.SetUp();
-            Container.Get<IExchangeServiceClient>().Start();
+            var exchangeServiceClient = Container.Get<IExchangeServiceClient>();
+            exchangeServiceClient.Start();
+            exchangeServiceClient.ChangeTaskTtl(TimeSpan.FromHours(24));
             taskDataRegistry = Container.Get<ITaskDataRegistry>();
         }
 

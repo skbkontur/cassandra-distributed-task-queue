@@ -190,6 +190,11 @@ namespace RemoteQueue.Handling
             TicksHolder.ResetInMemoryState();
         }
 
+        public void ChangeTaskTtl(TimeSpan ttl)
+        {
+            TaskTtl = ttl;
+        }
+
         [NotNull]
         private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>([NotNull] RemoteTaskInfo task) where T : ITaskData
         {

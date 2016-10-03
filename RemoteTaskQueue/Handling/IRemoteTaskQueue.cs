@@ -26,7 +26,5 @@ namespace RemoteQueue.Handling
 
         [NotNull]
         string[] GetChildrenTaskIds([NotNull] string taskId);
-
-        void ResetTicksHolderInMemoryState();
     }
 }
