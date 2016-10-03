@@ -100,16 +100,16 @@ namespace RemoteQueue.Handling
             using(remoteLock)
             {
                 var taskMeta = HandleTasksMetaStorage.GetMeta(taskId);
-                var oldExpirationTimestamp = taskMeta.GetExpirationTimestamp();
                 var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
                 taskMeta.State = TaskState.WaitingForRerun;
-                taskMeta.SetMinimalStartTicks(Timestamp.Now + delay, TaskTtl);
+                taskMeta.MinimalStartTicks = (Timestamp.Now + delay).Ticks;
                 HandleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord);
-                if(taskMeta.NeedTtlProlongation(oldExpirationTimestamp))
+                if(taskMeta.NeedTtlProlongation())
                 {
                     var taskData = taskDataStorage.Read(taskMeta);
                     if(taskData == null)
                         throw new InvalidProgramStateException(string.Format("TaskData not found for: {0}", taskMeta));
+                    taskMeta.SetOrUpdateTtl(TaskTtl);
                     HandleTaskCollection.ProlongTaskTtl(taskMeta, taskData);
                 }
                 return true;

@@ -86,27 +86,26 @@ namespace RemoteQueue.Cassandra.Entities
             return TtlTicks.HasValue ? TimeSpan.FromTicks(TtlTicks.Value) : (TimeSpan?)null;
         }
 
-        [CanBeNull]
-        internal Timestamp GetExpirationTimestamp()
-        {
-            return ExpirationTimestampTicks.HasValue ? new Timestamp(ExpirationTimestampTicks.Value) : null;
-        }
-
-        public void SetMinimalStartTicks([NotNull] Timestamp newMinimalStartTimestamp, TimeSpan ttl)
+        public void SetOrUpdateTtl(TimeSpan ttl)
         {
             var now = Timestamp.Now;
-            var expirationTimestamp = Max(now, newMinimalStartTimestamp) + ttl;
+            var expirationTimestamp = Max(now, GetMinimalStartTimestamp()) + ttl;
             TtlTicks = (expirationTimestamp - now).Ticks;
             ExpirationTimestampTicks = expirationTimestamp.Ticks;
-            MinimalStartTicks = newMinimalStartTimestamp.Ticks;
         }
 
-        internal bool NeedTtlProlongation([CanBeNull] Timestamp oldExpirationTimestamp)
+        internal bool NeedTtlProlongation()
         {
-            if(oldExpirationTimestamp == null || !TtlTicks.HasValue)
+            if(!ExpirationTimestampTicks.HasValue || !TtlTicks.HasValue)
                 return true;
             var halfOfTtl = TimeSpan.FromTicks((TtlTicks.Value + 1) / 2);
-            return Max(Timestamp.Now, GetMinimalStartTimestamp()) + halfOfTtl > oldExpirationTimestamp;
+            return Max(Timestamp.Now, GetMinimalStartTimestamp()) + halfOfTtl > GetExpirationTimestamp();
+        }
+
+        [CanBeNull]
+        private Timestamp GetExpirationTimestamp()
+        {
+            return ExpirationTimestampTicks.HasValue ? new Timestamp(ExpirationTimestampTicks.Value) : null;
         }
 
         [NotNull]

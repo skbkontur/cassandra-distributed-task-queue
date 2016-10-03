@@ -134,9 +134,9 @@ namespace FunctionalTests.RepositoriesTests
 
         private void Write(string taskId, TimeSpan? ttl = null)
         {
-            var taskMeta = new TaskMetaInformation("TaskName", taskId);
             var now = Timestamp.Now;
-            taskMeta.SetMinimalStartTicks(now, ttl ?? defaultTtl);
+            var taskMeta = new TaskMetaInformation("TaskName", taskId) { MinimalStartTicks = now.Ticks };
+            taskMeta.SetOrUpdateTtl(ttl ?? defaultTtl);
             taskMetaStorage.Write(taskMeta, now.Ticks);
         }
 

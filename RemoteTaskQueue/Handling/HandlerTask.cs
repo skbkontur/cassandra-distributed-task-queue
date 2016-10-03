@@ -124,7 +124,7 @@ namespace RemoteQueue.Handling
                 var task = handleTaskCollection.GetTask(taskIndexRecord.TaskId);
                 oldMeta = task.Meta;
                 taskData = task.Data;
-                if(oldMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()))
+                if(oldMeta.NeedTtlProlongation())
                     logger.ErrorFormat("oldMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()) == true for: {0}", oldMeta);
             }
             catch(Exception e)
@@ -179,11 +179,12 @@ namespace RemoteQueue.Handling
             taskShardMetrics.Processed.Mark();
 
             var newMeta = processTaskResult.NewMeta;
-            if(newMeta != null && newMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()))
+            if(newMeta != null && newMeta.NeedTtlProlongation())
             {
                 logger.InfoFormat("Продлеваем время жизни задачи после обработки: {0}", newMeta);
                 try
                 {
+                    newMeta.SetOrUpdateTtl(taskTtl);
                     handleTaskCollection.ProlongTaskTtl(newMeta, taskData);
                 }
                 catch(Exception e)
@@ -296,7 +297,7 @@ namespace RemoteQueue.Handling
             var newMeta = GrobufSerializers.AllFieldsSerializer.Copy(oldMeta);
             if(newState == oldMeta.State)
                 newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
-            newMeta.SetMinimalStartTicks(new Timestamp(newMinimalStartTicks), taskTtl);
+            newMeta.MinimalStartTicks = newMinimalStartTicks;
             newMeta.StartExecutingTicks = startExecutingTicks;
             newMeta.FinishExecutingTicks = finishExecutingTicks;
             newMeta.Attempts = attempts;

@@ -208,8 +208,8 @@ namespace FunctionalTests.RepositoriesTests
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
-
-            meta.SetMinimalStartTicks(Timestamp.Now, TimeSpan.FromHours(1));
+            
+            meta.SetOrUpdateTtl(TimeSpan.FromHours(1));
             taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
             Thread.Sleep(10000);
@@ -230,7 +230,7 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception2, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
-            meta.SetMinimalStartTicks(Timestamp.Now, TimeSpan.FromHours(1));
+            meta.SetOrUpdateTtl(TimeSpan.FromHours(1));
             taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
             Thread.Sleep(10000);
@@ -261,8 +261,8 @@ namespace FunctionalTests.RepositoriesTests
 
         private static TaskMetaInformation TaskMeta(string taskId, TimeSpan? ttl)
         {
-            var taskMeta = new TaskMetaInformation(string.Format("Name-{0:N}", Guid.NewGuid()), taskId);
-            taskMeta.SetMinimalStartTicks(Timestamp.Now, ttl ?? defaultTtl);
+            var taskMeta = new TaskMetaInformation(string.Format("Name-{0:N}", Guid.NewGuid()), taskId) {MinimalStartTicks = Timestamp.Now.Ticks};
+            taskMeta.SetOrUpdateTtl(ttl ?? defaultTtl);
             return taskMeta;
         }
 

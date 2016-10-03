@@ -49,7 +49,8 @@ namespace RemoteQueue.Handling
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             using(new PublishTaskTraceContext())
             {
-                task.Meta.SetMinimalStartTicks(Timestamp.Now + delay, taskTtl);
+                task.Meta.MinimalStartTicks = (Timestamp.Now + delay).Ticks;
+                task.Meta.SetOrUpdateTtl(taskTtl);
                 return handleTaskCollection.AddTask(task);
             }
         }
