@@ -98,7 +98,6 @@ namespace FunctionalTests.ExchangeTests
             var bigRerunPeriod = TimeSpan.FromDays(1440);
             var taskId = AddTask(2, bigRerunPeriod, new[] { 2 }, null);
             WaitForState(new[] {taskId}, TaskState.WaitingForRerunAfterError, TimeSpan.FromSeconds(30), TimeSpan.FromMilliseconds(100));
-            Assert.That(taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId).Context.TtlTicks, Is.GreaterThanOrEqualTo(bigRerunPeriod.Ticks));
 
             Thread.Sleep(10000);
             Assert.DoesNotThrow(() => taskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId));

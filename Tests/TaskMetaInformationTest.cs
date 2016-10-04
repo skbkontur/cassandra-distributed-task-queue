@@ -42,7 +42,7 @@ namespace RemoteQueue.Tests
             var meta = new TaskMetaInformation("Test_name", "Test-id");
             var ttl = TimeSpan.FromMilliseconds(3342);
             meta.SetOrUpdateTtl(ttl);
-            Assert.That(meta.GetTtl(), Is.EqualTo(ttl));
+            Assert.That(meta.GetTtl(), Is.InRange(ttl - TimeSpan.FromSeconds(1), ttl));
             Assert.That(meta.ExpirationTimestampTicks, Is.GreaterThanOrEqualTo((now + ttl).Ticks));
         }
 

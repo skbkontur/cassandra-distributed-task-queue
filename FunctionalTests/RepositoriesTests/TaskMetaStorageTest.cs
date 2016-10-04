@@ -118,7 +118,6 @@ namespace FunctionalTests.RepositoriesTests
             Write(taskId, ttl);
             var taskMetaInformation = taskMetaStorage.Read(taskId);
             Assert.That(taskMetaInformation.Id, Is.EqualTo(taskId));
-            Assert.That(taskMetaInformation.TtlTicks, Is.EqualTo(ttl.Ticks));
             Assert.That(() => taskMetaStorage.Read(taskId), Is.Null.After(10000, 100));
         }
 
