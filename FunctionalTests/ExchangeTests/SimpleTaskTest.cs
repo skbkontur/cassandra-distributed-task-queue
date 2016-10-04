@@ -71,7 +71,7 @@ namespace FunctionalTests.ExchangeTests
         public void TestCancel()
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(1));
-            taskQueue.CancelTask(taskId);
+            Assert.That(taskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Success));
             Wait(new[] {taskId}, 0);
             Thread.Sleep(2000);
             Assert.AreEqual(0, testCounterRepository.GetCounter(taskId));
@@ -81,13 +81,30 @@ namespace FunctionalTests.ExchangeTests
                     {taskId, TaskIndexShardKey("SimpleTaskData", TaskState.Canceled)}
                 });
         }
+        
+        [Test]
+        public void TestCancel_UnknownTask()
+        {
+            Assert.That(taskQueue.TryCancelTask(Guid.NewGuid().ToString()), Is.EqualTo(TaskManipulationResult.Unsuccess_TaskDoesNotExist));
+        }
+
+        [Test]
+        public void TestCancel_LockAcquiringFails()
+        {
+            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
+            var remoteLockCreator = ((IRemoteTaskQueueInternals)taskQueue).RemoteLockCreator;
+            using(remoteLockCreator.Lock(taskId))
+            {
+                Assert.That(taskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Unsuccess_LockAcquiringFails));
+            }
+        }
 
         [Test]
         public void TestRerun()
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
             Wait(new[] {taskId}, 1);
-            taskQueue.RerunTask(taskId, TimeSpan.FromMilliseconds(1));
+            Assert.That(taskQueue.TryRerunTask(taskId, TimeSpan.FromMilliseconds(1)), Is.EqualTo(TaskManipulationResult.Success));
             Wait(new[] {taskId}, 2);
             Thread.Sleep(2000);
             Assert.AreEqual(2, testCounterRepository.GetCounter(taskId));
@@ -98,6 +115,23 @@ namespace FunctionalTests.ExchangeTests
                 {
                     {taskId, TaskIndexShardKey("SimpleTaskData", TaskState.Finished)}
                 });
+        }
+
+        [Test]
+        public void TestRerun_UnknownTask()
+        {
+            Assert.That(taskQueue.TryRerunTask(Guid.NewGuid().ToString(), TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Unsuccess_TaskDoesNotExist));
+        }
+
+        [Test]
+        public void TestRerun_LockAcquiringFails()
+        {
+            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
+            var remoteLockCreator = ((IRemoteTaskQueueInternals)taskQueue).RemoteLockCreator;
+            using (remoteLockCreator.Lock(taskId))
+            {
+                Assert.That(taskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Unsuccess_LockAcquiringFails));
+            }
         }
 
         private void Wait(string[] taskIds, int criticalValue, int ms = 5000)

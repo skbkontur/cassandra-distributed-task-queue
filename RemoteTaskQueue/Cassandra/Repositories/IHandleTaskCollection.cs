@@ -17,6 +17,9 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         Task GetTask([NotNull] string taskId);
 
+        [CanBeNull]
+        Task TryGetTask([NotNull] string taskId);
+
         [NotNull]
         List<Task> GetTasks([NotNull] string[] taskIds);
     }

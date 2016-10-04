@@ -49,6 +49,12 @@ namespace RemoteQueue.Cassandra.Repositories
             return new Task(taskMeta, taskData);
         }
 
+        [CanBeNull]
+        public Task TryGetTask([NotNull] string taskId)
+        {
+            return GetTasks(new[] {taskId}).SingleOrDefault();
+        }
+
         [NotNull]
         public List<Task> GetTasks([NotNull] string[] taskIds)
         {

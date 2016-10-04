@@ -70,49 +70,52 @@ namespace RemoteQueue.Handling
         public IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; private set; }
         IRemoteTaskQueue IRemoteTaskQueueInternals.RemoteTaskQueue { get { return this; } }
 
-        public bool CancelTask([NotNull] string taskId)
+        public TaskManipulationResult TryCancelTask([NotNull] string taskId)
         {
             IRemoteLock remoteLock;
             if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
-                return false;
+                return TaskManipulationResult.Unsuccess_LockAcquiringFails;
             using(remoteLock)
             {
-                var taskMeta = HandleTasksMetaStorage.GetMeta(taskId);
+                var task = HandleTaskCollection.TryGetTask(taskId);
+                if (task == null)
+                    return TaskManipulationResult.Unsuccess_TaskDoesNotExist;
+                var taskMeta = task.Meta;
                 if(taskMeta.State == TaskState.New || taskMeta.State == TaskState.WaitingForRerun || taskMeta.State == TaskState.WaitingForRerunAfterError || taskMeta.State == TaskState.InProcess)
                 {
                     var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
                     taskMeta.State = TaskState.Canceled;
                     taskMeta.FinishExecutingTicks = Timestamp.Now.Ticks;
                     HandleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord);
-                    return true;
+                    return TaskManipulationResult.Success;
                 }
-                return false;
+                return TaskManipulationResult.Unsuccess_InvalidTaskState;
             }
         }
 
-        public bool RerunTask([NotNull] string taskId, TimeSpan delay)
+        public TaskManipulationResult TryRerunTask([NotNull] string taskId, TimeSpan delay)
         {
             if(delay.Ticks < 0)
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             IRemoteLock remoteLock;
             if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
-                return false;
+                return TaskManipulationResult.Unsuccess_LockAcquiringFails;
             using(remoteLock)
             {
-                var taskMeta = HandleTasksMetaStorage.GetMeta(taskId);
+                var task = HandleTaskCollection.TryGetTask(taskId);
+                if (task == null)
+                    return TaskManipulationResult.Unsuccess_TaskDoesNotExist;
+                var taskMeta = task.Meta;
                 var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
                 taskMeta.State = TaskState.WaitingForRerun;
                 taskMeta.MinimalStartTicks = (Timestamp.Now + delay).Ticks;
                 HandleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord);
                 if(taskMeta.NeedTtlProlongation())
                 {
-                    var taskData = taskDataStorage.Read(taskMeta);
-                    if(taskData == null)
-                        throw new InvalidProgramStateException(string.Format("TaskData not found for: {0}", taskMeta));
                     taskMeta.SetOrUpdateTtl(TaskTtl);
-                    HandleTaskCollection.ProlongTaskTtl(taskMeta, taskData);
+                    HandleTaskCollection.ProlongTaskTtl(taskMeta, task.Data);
                 }
-                return true;
+                return TaskManipulationResult.Success;
             }
         }
 

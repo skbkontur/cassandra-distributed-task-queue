@@ -167,8 +167,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
         public OperationResult Cancel(string id)
         {
-            if(!remoteTaskQueue.CancelTask(id))
-                return new UnsuccessOperationResult {ErrorMessage = "Задача не может быть отменена"};
+            var taskManipulationResult = remoteTaskQueue.TryCancelTask(id);
+            if(taskManipulationResult != TaskManipulationResult.Success)
+                return new UnsuccessOperationResult {ErrorMessage = string.Format("Задача не может быть отменена. TaskManipulationResult: {0}", taskManipulationResult)};
             return new SuccessOperationResult
                 {
                     ActionDescription = "Задача успешно отменена",
@@ -178,8 +179,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
         public OperationResult Rerun(string id)
         {
-            if(!remoteTaskQueue.RerunTask(id, TimeSpan.FromTicks(0)))
-                return new UnsuccessOperationResult {ErrorMessage = "Задача не может перезапущена"};
+            var taskManipulationResult = remoteTaskQueue.TryRerunTask(id, TimeSpan.FromTicks(0));
+            if(taskManipulationResult != TaskManipulationResult.Success)
+                return new UnsuccessOperationResult {ErrorMessage = string.Format("Задача не может перезапущена. TaskManipulationResult: {0}", taskManipulationResult)};
             return new SuccessOperationResult
                 {
                     ActionDescription = "Задача успешно перезапущена",

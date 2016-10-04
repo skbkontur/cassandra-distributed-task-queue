@@ -56,12 +56,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 
         public void Cancel(string id)
         {
-            remoteTaskQueue.CancelTask(id);
+            remoteTaskQueue.TryCancelTask(id);
         }
 
         public void Rerun(string id)
         {
-            remoteTaskQueue.RerunTask(id, TimeSpan.FromTicks(0));
+            remoteTaskQueue.TryRerunTask(id, TimeSpan.FromTicks(0));
         }
 
         private static ObjectTreeModel BuildDetailsTree(RemoteTaskInfo taskData, string taskId, UrlHelper urlHelper, bool currentUserHasAccessToTaskData)
@@ -198,7 +198,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 
             foreach(var id in taskSearchResponse.Ids)
             {
-                if(remoteTaskQueue.RerunTask(id, TimeSpan.Zero))
+                if(remoteTaskQueue.TryRerunTask(id, TimeSpan.Zero) == TaskManipulationResult.Success)
                     rerunned++;
                 else
                     notRerunned++;
@@ -223,7 +223,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 
             foreach(var id in taskSearchResponse.Ids)
             {
-                if(remoteTaskQueue.CancelTask(id))
+                if(remoteTaskQueue.TryCancelTask(id) == TaskManipulationResult.Success)
                     canceled++;
                 else
                     notCanceled++;
