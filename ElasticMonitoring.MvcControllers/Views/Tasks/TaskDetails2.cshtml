@@ -154,11 +154,11 @@
             </table>            
         </div>
     </div>
-    @if(!string.IsNullOrWhiteSpace(Model.ExceptionInfo))
+    @foreach (var exceptionInfo in Model.ExceptionInfos)
     {
         <div class="row spa">
             <div class="col-md-8">
-                <pre>@Model.ExceptionInfo</pre>
+                <pre>@exceptionInfo</pre>
             </div>
         </div>
     }

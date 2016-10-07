@@ -37,7 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     MinimalStartTime = TicksToUtcDateTime(taskData.Context.MinimalStartTicks),
                     ParentTaskId = taskData.Context.ParentTaskId,
                     ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskData.Context.Id),
-                    ExceptionInfo = taskData.ExceptionInfos.LastOrDefault().Return(x => x.ExceptionMessageInfo, string.Empty),
+                    ExceptionInfos = taskData.ExceptionInfos.Select(x => x.ExceptionMessageInfo).ToArray(),
                     AttemptCount = taskData.Context.Attempts,
                     DetailsTree = BuildDetailsTree(taskData, id, urlHelper, currentUserHasAccessToTaskData)
                 };

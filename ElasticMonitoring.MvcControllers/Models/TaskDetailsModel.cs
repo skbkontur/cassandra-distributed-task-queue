@@ -12,7 +12,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.M
         public TaskState State { get; set; }
 
         public string TaskName { get; set; }
-        public string ExceptionInfo { get; set; }
+        public string[] ExceptionInfos { get; set; }
         public string TaskId { get; set; }
         public DateTime? EnqueueTime { get; set; }
         public DateTime? StartExecutedTime { get; set; }
