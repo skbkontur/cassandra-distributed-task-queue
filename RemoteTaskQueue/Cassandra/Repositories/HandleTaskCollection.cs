@@ -27,9 +27,6 @@ namespace RemoteQueue.Cassandra.Repositories
             if(task.Meta.Attempts == 0)
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
 
-            if(task.Meta.MinimalStartTicks <= Timestamp.Now.Ticks + 1)
-                remoteTaskQueueProfiler.ProcessTaskEnqueueing(task.Meta);
-
             task.Meta.TaskDataId = taskDataStorage.Write(task.Meta.Id, task.Data);
             return handleTasksMetaStorage.AddMeta(task.Meta, oldTaskIndexRecord : null);
         }

@@ -197,7 +197,6 @@ namespace RemoteQueue.Handling
                 var sw = Stopwatch.StartNew();
                 try
                 {
-                    remoteTaskQueueProfiler.ProcessTaskDequeueing(inProcessMeta);
                     var handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
                     remoteTaskQueueProfiler.ProcessTaskExecutionFinished(inProcessMeta, handleResult, sw.Elapsed);
                     localTaskProcessingResult = UpdateTaskMetaByHandleResult(inProcessMeta, handleResult);
