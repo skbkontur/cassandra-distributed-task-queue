@@ -9,8 +9,8 @@ namespace RemoteQueue.Handling
         TaskManipulationResult TryCancelTask([NotNull] string taskId);
         TaskManipulationResult TryRerunTask([NotNull] string taskId, TimeSpan delay);
 
-        [NotNull]
-        RemoteTaskInfo GetTaskInfo([NotNull] string taskId);
+        [CanBeNull]
+        RemoteTaskInfo TryGetTaskInfo([NotNull] string taskId);
 
         [NotNull]
         RemoteTaskInfo<T> GetTaskInfo<T>([NotNull] string taskId) where T : ITaskData;

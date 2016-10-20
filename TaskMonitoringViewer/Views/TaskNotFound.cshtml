@@ -1,0 +1,31 @@
+﻿
+\@using System.Linq
+@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsHeader
+@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskId
+@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminTaskState
+@using SKBKontur.Catalogue.Core.Web.Blocks.AdminTools.AdminToolsDetails
+@using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails
+@model TaskNotFoundModel
+@{
+    Layout = "TaskMonitoringLayout.cshtml";
+}
+
+@* ReSharper disable Razor.SectionNotResolved *@
+@section Title {
+    Задача не найдена
+}
+@* ReSharper restore Razor.SectionNotResolved *@
+
+@section Scripts{
+    
+}
+@Html.AdminToolsHeader(new AdminToolsHeaderHtmlModel
+    {
+        Text = "Задача не найдена",
+        BackText = "вернуться к списку задач",
+        BackUrl = Url.Action("Run", "RemoteTaskQueue")
+    })
+
+<div class="adminTools__details__container">
+    <h1 class="adminTools__details">Задача <b>@Model.TaskId</b> не найдена. Возможно, указан неправильный идентификатор, либо истекло время жизни задачи.</h1>
+</div>

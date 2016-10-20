@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
+
+using GrobExp.Mutators;
+
+using JetBrains.Annotations;
 
 using log4net;
 
@@ -14,6 +19,7 @@ using SKBKontur.Catalogue.Core.Web.Models.ModelConfigurations;
 using SKBKontur.Catalogue.Core.Web.PageModels;
 using SKBKontur.Catalogue.Expressions;
 using SKBKontur.Catalogue.ObjectManipulation.Extender;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.ValueExtracting;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives;
@@ -149,9 +155,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
             return searchRequestId;
         }
 
+        [CanBeNull]
         public TaskDetailsPageModel GetTaskDetailsPageModel(PageModelBaseParameters pageModelBaseParameters, string id, int pageNumber, string searchRequestId, bool showTaskData)
         {
-            var remoteTaskInfo = remoteTaskQueue.GetTaskInfo(id);
+            var remoteTaskInfo = remoteTaskQueue.TryGetTaskInfo(id);
+            if(remoteTaskInfo == null)
+                return null;
             var modelData = taskDetailsModelBuilder.Build(remoteTaskInfo, pageNumber, searchRequestId);
             if(!showTaskData)
                 modelData.TaskData = new SimpleTaskData();
@@ -191,11 +200,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
 
         public byte[] GetBytes(string id, string path, out string fileDownloadName)
         {
-            var taskData = remoteTaskQueue.GetTaskInfo(id).TaskData;
+            fileDownloadName = string.Format("{0}_{1}.data", DateTime.UtcNow.ToString("yyyy.MM.dd hh:mm:ss"), Guid.NewGuid());
+            var taskInfo = remoteTaskQueue.TryGetTaskInfo(id);
+            if(taskInfo == null)
+                return Encoding.UTF8.GetBytes(string.Format("Task {0} does not exist", id));
+            var taskData = taskInfo.TaskData;
             var value = ObjectValueExtractor.Extract(taskData.GetType(), taskData, path);
             if(value.GetType() != typeof(byte[]))
-                throw new Exception(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
-            fileDownloadName = string.Format("{0}_{1}.data", DateTime.UtcNow.ToString("yyyy.MM.dd hh:mm:ss"), Guid.NewGuid());
+                throw new InvalidProgramStateException(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
             return (byte[])value;
         }
 

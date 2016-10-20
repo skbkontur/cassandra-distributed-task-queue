@@ -121,17 +121,22 @@ namespace RemoteQueue.Handling
             }
         }
 
-        [NotNull]
-        public RemoteTaskInfo GetTaskInfo([NotNull] string taskId)
+        [CanBeNull]
+        public RemoteTaskInfo TryGetTaskInfo([NotNull] string taskId)
         {
-            return GetTaskInfos(new[] {taskId}).Single();
+            return GetTaskInfos(new[] {taskId}).SingleOrDefault();
         }
 
         [NotNull]
         public RemoteTaskInfo<T> GetTaskInfo<T>([NotNull] string taskId)
             where T : ITaskData
         {
-            return GetTaskInfos<T>(new[] {taskId}).Single();
+            var taskInfos = GetTaskInfos<T>(new[] {taskId});
+            if (taskInfos.Length == 0)
+                throw new InvalidProgramStateException(string.Format("Task {0} does not exist", taskId));
+            if (taskInfos.Length > 1)
+                throw new InvalidProgramStateException(string.Format("Expected exactly one task info for taskId = {0}, but found {1}", taskId, taskInfos.Length));
+            return taskInfos[0];
         }
 
         [NotNull]

@@ -55,7 +55,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             var startTime = DateTime.UtcNow;
             while(true)
             {
-                if(remoteTaskQueue.GetTaskInfo(taskId).Context.State == taskState)
+                // ReSharper disable once PossibleNullReferenceException
+                if(remoteTaskQueue.TryGetTaskInfo(taskId).Context.State == taskState)
                     return;
                 if(DateTime.UtcNow.Subtract(startTime) > TimeSpan.FromSeconds(15))
                     throw new Exception("Таска не приняла ожидаемое состояние за 15 сек.");

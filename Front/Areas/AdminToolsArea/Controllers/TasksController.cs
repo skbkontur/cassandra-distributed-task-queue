@@ -69,6 +69,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Front.Areas.AdminToolsArea.Control
         public ViewResult Details(string id)
         {
             var detailsModel = controllerImpl.Details(id, Url, currentUserHasAccessToWriteAction: true, currentUserHasAccessToTaskData: true);
+            if(detailsModel == null)
+                return View("TaskDetails_NotFound", new TaskNotFoundModel
+                    {
+                        TaskId = id
+                    });
             return View("TaskDetails2", detailsModel);
         }
 

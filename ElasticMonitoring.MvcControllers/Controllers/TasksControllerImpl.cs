@@ -1,7 +1,10 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
+
+using JetBrains.Annotations;
 
 using RemoteQueue.Handling;
 
@@ -22,35 +25,41 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             this.remoteTaskQueue = remoteTaskQueue;
         }
 
+        [CanBeNull]
         public TaskDetailsModel Details(string id, UrlHelper urlHelper, bool currentUserHasAccessToWriteAction, bool currentUserHasAccessToTaskData)
         {
-            var taskData = remoteTaskQueue.GetTaskInfo(id);
+            var taskInfo = remoteTaskQueue.TryGetTaskInfo(id);
+            if(taskInfo == null)
+                return null;
             return new TaskDetailsModel
                 {
                     AllowControlTaskExecution = currentUserHasAccessToWriteAction,
-                    TaskName = taskData.Context.Name,
-                    TaskId = taskData.Context.Id,
-                    State = taskData.Context.State,
-                    EnqueueTime = new DateTime(taskData.Context.Ticks, DateTimeKind.Utc),
-                    StartExecutedTime = TicksToUtcDateTime(taskData.Context.StartExecutingTicks),
-                    FinishExecutedTime = TicksToUtcDateTime(taskData.Context.FinishExecutingTicks),
-                    MinimalStartTime = TicksToUtcDateTime(taskData.Context.MinimalStartTicks),
-                    ExpirationTime = TicksToUtcDateTime(taskData.Context.ExpirationTimestampTicks),
-                    ParentTaskId = taskData.Context.ParentTaskId,
-                    ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskData.Context.Id),
-                    ExceptionInfos = taskData.ExceptionInfos.Select(x => x.ExceptionMessageInfo).ToArray(),
-                    AttemptCount = taskData.Context.Attempts,
-                    DetailsTree = BuildDetailsTree(taskData, id, urlHelper, currentUserHasAccessToTaskData)
+                    TaskName = taskInfo.Context.Name,
+                    TaskId = taskInfo.Context.Id,
+                    State = taskInfo.Context.State,
+                    EnqueueTime = new DateTime(taskInfo.Context.Ticks, DateTimeKind.Utc),
+                    StartExecutedTime = TicksToUtcDateTime(taskInfo.Context.StartExecutingTicks),
+                    FinishExecutedTime = TicksToUtcDateTime(taskInfo.Context.FinishExecutingTicks),
+                    MinimalStartTime = TicksToUtcDateTime(taskInfo.Context.MinimalStartTicks),
+                    ExpirationTime = TicksToUtcDateTime(taskInfo.Context.ExpirationTimestampTicks),
+                    ParentTaskId = taskInfo.Context.ParentTaskId,
+                    ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskInfo.Context.Id),
+                    ExceptionInfos = taskInfo.ExceptionInfos.Select(x => x.ExceptionMessageInfo).ToArray(),
+                    AttemptCount = taskInfo.Context.Attempts,
+                    DetailsTree = BuildDetailsTree(taskInfo, id, urlHelper, currentUserHasAccessToTaskData)
                 };
         }
 
         public byte[] GetBytes(string id, string path, out string fileDownloadName)
         {
-            var taskData = remoteTaskQueue.GetTaskInfo(id).TaskData;
+            fileDownloadName = string.Format("{0}_{1}_{2}.data", DateTime.UtcNow.ToString("yyyy.MM.dd hh:mm:ss"), path, id);
+            var taskInfo = remoteTaskQueue.TryGetTaskInfo(id);
+            if(taskInfo == null)
+                return Encoding.UTF8.GetBytes(string.Format("Task {0} not found", id));
+            var taskData = taskInfo.TaskData;
             var value = ObjectValueExtractor.Extract(taskData.GetType(), taskData, path);
             if(value.GetType() != typeof(byte[]))
-                throw new Exception(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
-            fileDownloadName = string.Format("{0}_{1}_{2}.data", DateTime.UtcNow.ToString("yyyy.MM.dd hh:mm:ss"), path, id);
+                throw new InvalidProgramStateException(string.Format("Type of property by path '{0}' has type '{1}' instead of '{2}'", path, value.GetType(), typeof(byte[])));
             return (byte[])value;
         }
 

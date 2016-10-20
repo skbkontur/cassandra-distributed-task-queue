@@ -3,6 +3,7 @@ using System.Web.Mvc;
 
 using SKBKontur.Catalogue.Core.Web.Controllers;
 using SKBKontur.Catalogue.Core.Web.PageModels;
+using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskDetails;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Models.TaskList;
 
 using ControllerBase = SKBKontur.Catalogue.Core.Web.Controllers.ControllerBase;
@@ -50,6 +51,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskMonitoringViewer.Controllers
         public ActionResult Show(string id, int pageNumber = 0, string searchRequestId = null)
         {
             var pageModel = controllerImpl.GetTaskDetailsPageModel(PageModelBaseParameters, id, pageNumber, searchRequestId, CurrentUserHasAccessToTaskData());
+            if(pageModel == null)
+                return View("TaskNotFound", new TaskNotFoundModel
+                    {
+                        TaskId = id
+                    });
             pageModel.TaskListUrl = Url.Action("Run", new {pageNumber, searchRequestId});
             return View("TaskDetails", pageModel);
         }

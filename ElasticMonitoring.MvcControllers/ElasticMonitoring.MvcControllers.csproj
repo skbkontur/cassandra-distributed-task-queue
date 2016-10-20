@@ -37,6 +37,10 @@
     <Reference Include="Catalogue.ViewPrecompilation">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ViewPrecompilation.dll</HintPath>
     </Reference>
+    <Reference Include="JetBrains.Annotations, Version=10.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="RazorGenerator.Mvc">
       <HintPath>..\..\Assemblies\Mvc5\RazorGenerator.Mvc.2.3.4\RazorGenerator.Mvc.dll</HintPath>
     </Reference>
@@ -84,6 +88,7 @@
     <Compile Include="Controllers\ObjectTreeViewBuilding\Rendering\ObjectTreeModelRenderContext.cs" />
     <Compile Include="Controllers\TaskDetailsTreeView\TimeGuidBuilder.cs" />
     <Compile Include="Controllers\TasksControllerImpl.cs" />
+    <Compile Include="Models\TaskNotFoundModel.cs" />
     <Compile Include="Models\TasksRerunModel.cs" />
     <Compile Include="RouteValueDictionaryExtensions.cs" />
     <Compile Include="DateTimeByTimeZoneExtensions.cs" />
@@ -101,6 +106,7 @@
     <None Include="Views\Tasks\SearchResultsPage.cshtml" />
     <None Include="Views\Tasks\SearchPage.cshtml" />
     <None Include="Views\Shared\SearchPanel.cshtml" />
+    <None Include="Views\Tasks\TaskDetails_NotFound.cshtml" />
     <None Include="Views\Tasks\TaskDetails2.cshtml" />
     <None Include="Views\Tasks\_LongActionsBasicDialog.cshtml" />
     <None Include="Views\_TasksLayout.cshtml" />
