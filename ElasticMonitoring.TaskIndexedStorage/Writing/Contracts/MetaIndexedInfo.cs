@@ -4,7 +4,6 @@ using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Serialization;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts
 {
-    //NOTE не менять
     public class MetaIndexedInfo
     {
         public string Name { get; set; }
