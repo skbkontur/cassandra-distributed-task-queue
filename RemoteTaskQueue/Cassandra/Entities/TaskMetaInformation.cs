@@ -91,9 +91,17 @@ namespace RemoteQueue.Cassandra.Entities
         public void SetOrUpdateTtl(TimeSpan ttl)
         {
             var now = Timestamp.Now;
-            var expirationTimestamp = Max(now, GetMinimalStartTimestamp()) + ttl;
-            ExpirationTimestampTicks = expirationTimestamp.Ticks;
-            ExpirationModificationTicks = now.Ticks;
+            var minimalStartTimestamp = GetMinimalStartTimestamp();
+            if (now > minimalStartTimestamp)
+            {
+                ExpirationTimestampTicks = (now + ttl).Ticks;
+                ExpirationModificationTicks = now.Ticks;
+            }
+            else
+            {
+                ExpirationTimestampTicks = (minimalStartTimestamp + ttl).Ticks;
+                ExpirationModificationTicks = minimalStartTimestamp.Ticks;
+            }
         }
 
         internal bool NeedTtlProlongation()
