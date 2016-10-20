@@ -3,8 +3,8 @@
     public enum TaskManipulationResult
     {
         Success,
-        Unsuccess_LockAcquiringFails,
-        Unsuccess_InvalidTaskState,
-        Unsuccess_TaskDoesNotExist
+        Failure_LockAcquiringFails,
+        Failure_InvalidTaskState,
+        Failure_TaskDoesNotExist
     }
 }

@@ -74,12 +74,12 @@ namespace RemoteQueue.Handling
         {
             IRemoteLock remoteLock;
             if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
-                return TaskManipulationResult.Unsuccess_LockAcquiringFails;
+                return TaskManipulationResult.Failure_LockAcquiringFails;
             using(remoteLock)
             {
                 var task = HandleTaskCollection.TryGetTask(taskId);
                 if (task == null)
-                    return TaskManipulationResult.Unsuccess_TaskDoesNotExist;
+                    return TaskManipulationResult.Failure_TaskDoesNotExist;
                 var taskMeta = task.Meta;
                 if(taskMeta.State == TaskState.New || taskMeta.State == TaskState.WaitingForRerun || taskMeta.State == TaskState.WaitingForRerunAfterError || taskMeta.State == TaskState.InProcess)
                 {
@@ -89,7 +89,7 @@ namespace RemoteQueue.Handling
                     HandleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord);
                     return TaskManipulationResult.Success;
                 }
-                return TaskManipulationResult.Unsuccess_InvalidTaskState;
+                return TaskManipulationResult.Failure_InvalidTaskState;
             }
         }
 
@@ -99,12 +99,12 @@ namespace RemoteQueue.Handling
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             IRemoteLock remoteLock;
             if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
-                return TaskManipulationResult.Unsuccess_LockAcquiringFails;
+                return TaskManipulationResult.Failure_LockAcquiringFails;
             using(remoteLock)
             {
                 var task = HandleTaskCollection.TryGetTask(taskId);
                 if (task == null)
-                    return TaskManipulationResult.Unsuccess_TaskDoesNotExist;
+                    return TaskManipulationResult.Failure_TaskDoesNotExist;
                 var taskMeta = task.Meta;
                 var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
                 taskMeta.State = TaskState.WaitingForRerun;

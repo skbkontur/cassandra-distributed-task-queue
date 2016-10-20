@@ -85,7 +85,7 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void TestCancel_UnknownTask()
         {
-            Assert.That(taskQueue.TryCancelTask(Guid.NewGuid().ToString()), Is.EqualTo(TaskManipulationResult.Unsuccess_TaskDoesNotExist));
+            Assert.That(taskQueue.TryCancelTask(Guid.NewGuid().ToString()), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace FunctionalTests.ExchangeTests
             var remoteLockCreator = ((RemoteTaskQueue)taskQueue).RemoteLockCreator;
             using(remoteLockCreator.Lock(taskId))
             {
-                Assert.That(taskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Unsuccess_LockAcquiringFails));
+                Assert.That(taskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
             }
         }
 
@@ -120,7 +120,7 @@ namespace FunctionalTests.ExchangeTests
         [Test]
         public void TestRerun_UnknownTask()
         {
-            Assert.That(taskQueue.TryRerunTask(Guid.NewGuid().ToString(), TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Unsuccess_TaskDoesNotExist));
+            Assert.That(taskQueue.TryRerunTask(Guid.NewGuid().ToString(), TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
         }
 
         [Test]
@@ -130,7 +130,7 @@ namespace FunctionalTests.ExchangeTests
             var remoteLockCreator = ((RemoteTaskQueue)taskQueue).RemoteLockCreator;
             using (remoteLockCreator.Lock(taskId))
             {
-                Assert.That(taskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Unsuccess_LockAcquiringFails));
+                Assert.That(taskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
             }
         }
 
