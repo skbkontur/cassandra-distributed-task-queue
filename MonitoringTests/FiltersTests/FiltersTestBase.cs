@@ -26,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.FiltersTests
             base.SetUp();
             serializer = container.Get<ISerializer>();
             remoteTaskQueue = container.Get<IRemoteTaskQueue>();
-            ((RemoteQueue.Handling.RemoteTaskQueue)remoteTaskQueue).ResetTicksHolderInMemoryState();
+            ((IRemoteTaskQueueBackdoor)remoteTaskQueue).ResetTicksHolderInMemoryState();
             taskDataStorage = container.Get<TaskDataStorage>();
             taskMetaStorage = container.Get<TaskMetaStorage>();
         }

@@ -156,6 +156,7 @@
     <Compile Include="Handling\IHandlerManager.cs" />
     <Compile Include="Handling\IRemoteTask.cs" />
     <Compile Include="Handling\IRemoteTaskQueue.cs" />
+    <Compile Include="Handling\IRemoteTaskQueueBackdoor.cs" />
     <Compile Include="Handling\IRemoteTaskQueueInternals.cs" />
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />

@@ -1,3 +1,5 @@
+using System;
+
 using RemoteQueue.Handling;
 
 namespace RemoteQueue.Configuration
@@ -6,6 +8,8 @@ namespace RemoteQueue.Configuration
     {
         void Start();
         void Stop();
-        IRemoteTaskQueue RemoteTaskQueue { get; }
+
+        [Obsolete("Only for usage in tests")]
+        IRemoteTaskQueueBackdoor RemoteTaskQueueBackdoor { get; }
     }
 }

@@ -35,11 +35,12 @@ namespace RemoteQueue.Configuration
             this.runnerSettings = runnerSettings;
             this.periodicTaskRunner = periodicTaskRunner;
             var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
-            remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
+            var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
             localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
             foreach(var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
                 handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, graphitePathPrefixProvider, handlerManagers);
+            RemoteTaskQueueBackdoor = remoteTaskQueue;
         }
 
         public void Dispose()
@@ -55,7 +56,7 @@ namespace RemoteQueue.Configuration
                 {
                     if(!started)
                     {
-                        remoteTaskQueue.ResetTicksHolderInMemoryState();
+                        RemoteTaskQueueBackdoor.ResetTicksHolderInMemoryState();
                         localTaskQueue.Start();
                         foreach(var handlerManager in handlerManagers)
                             periodicTaskRunner.Register(handlerManager, runnerSettings.PeriodicInterval);
@@ -79,7 +80,7 @@ namespace RemoteQueue.Configuration
                         periodicTaskRunner.Unregister(reportConsumerStateToGraphiteTask.Id, 15000);
                         Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() => { periodicTaskRunner.Unregister(theHandlerManager.Id, 15000); })).ToArray());
                         localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
-                        remoteTaskQueue.ResetTicksHolderInMemoryState();
+                        RemoteTaskQueueBackdoor.ResetTicksHolderInMemoryState();
                         started = false;
                         Log.For(this).Info("ExchangeSchedulableRunner stopped");
                     }
@@ -87,8 +88,7 @@ namespace RemoteQueue.Configuration
             }
         }
 
-        public IRemoteTaskQueue RemoteTaskQueue { get { return remoteTaskQueue; } }
-        private readonly RemoteTaskQueue remoteTaskQueue;
+        public IRemoteTaskQueueBackdoor RemoteTaskQueueBackdoor { get; private set; }
         private volatile bool started;
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
         private readonly IPeriodicTaskRunner periodicTaskRunner;

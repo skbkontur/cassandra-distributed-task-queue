@@ -27,7 +27,9 @@ using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Handling
 {
-    public class RemoteTaskQueue : IRemoteTaskQueue, IRemoteTaskQueueInternals
+#pragma warning disable 618
+    public class RemoteTaskQueue : IRemoteTaskQueue, IRemoteTaskQueueInternals, IRemoteTaskQueueBackdoor
+#pragma warning restore 618
     {
         public RemoteTaskQueue(
             ISerializer serializer,
