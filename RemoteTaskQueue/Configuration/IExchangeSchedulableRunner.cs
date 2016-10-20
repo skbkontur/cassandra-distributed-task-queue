@@ -6,6 +6,6 @@ namespace RemoteQueue.Configuration
     {
         void Start();
         void Stop();
-        IRemoteTaskQueueInternals RemoteTaskQueue { get; }
+        IRemoteTaskQueue RemoteTaskQueue { get; }
     }
 }

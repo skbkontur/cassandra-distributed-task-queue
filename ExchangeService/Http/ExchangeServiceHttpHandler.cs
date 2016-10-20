@@ -1,6 +1,7 @@
 ﻿using System;
 
 using RemoteQueue.Configuration;
+using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
@@ -28,7 +29,7 @@ namespace ExchangeService.Http
         [HttpMethod]
         public void ChangeTaskTtl(TimeSpan ttl)
         {
-            runner.RemoteTaskQueue.ChangeTaskTtl(ttl);
+            ((RemoteTaskQueue)runner.RemoteTaskQueue).ChangeTaskTtl(ttl);
         }
 
         private readonly IExchangeSchedulableRunner runner;

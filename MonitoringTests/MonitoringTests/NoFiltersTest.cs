@@ -16,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.MonitoringTests.MonitoringTests
         {
             base.SetUp();
             remoteTaskQueue = container.Get<IRemoteTaskQueue>();
-            ((IRemoteTaskQueueInternals)remoteTaskQueue).ResetTicksHolderInMemoryState();
+            ((RemoteQueue.Handling.RemoteTaskQueue)remoteTaskQueue).ResetTicksHolderInMemoryState();
         }
 
         [Test]

@@ -12,12 +12,11 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
 namespace RemoteQueue.Handling
 {
-    public interface IRemoteTaskQueueInternals
+    internal interface IRemoteTaskQueueInternals
     {
         TimeSpan TaskTtl { get; }
         ISerializer Serializer { get; }
         IGlobalTime GlobalTime { get; }
-        ITicksHolder TicksHolder { get; }
         ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; }
         IHandleTasksMetaStorage HandleTasksMetaStorage { get; }
         IHandleTaskCollection HandleTaskCollection { get; }
@@ -25,9 +24,5 @@ namespace RemoteQueue.Handling
         IRemoteLockCreator RemoteLockCreator { get; }
         IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; }
         IRemoteTaskQueue RemoteTaskQueue { get; }
-
-        void ResetTicksHolderInMemoryState();
-
-        void ChangeTaskTtl(TimeSpan ttl);
     }
 }

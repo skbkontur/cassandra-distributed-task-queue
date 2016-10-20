@@ -92,7 +92,7 @@ namespace FunctionalTests.ExchangeTests
         public void TestCancel_LockAcquiringFails()
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
-            var remoteLockCreator = ((IRemoteTaskQueueInternals)taskQueue).RemoteLockCreator;
+            var remoteLockCreator = ((RemoteTaskQueue)taskQueue).RemoteLockCreator;
             using(remoteLockCreator.Lock(taskId))
             {
                 Assert.That(taskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Unsuccess_LockAcquiringFails));
@@ -127,7 +127,7 @@ namespace FunctionalTests.ExchangeTests
         public void TestRerun_LockAcquiringFails()
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
-            var remoteLockCreator = ((IRemoteTaskQueueInternals)taskQueue).RemoteLockCreator;
+            var remoteLockCreator = ((RemoteTaskQueue)taskQueue).RemoteLockCreator;
             using (remoteLockCreator.Lock(taskId))
             {
                 Assert.That(taskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Unsuccess_LockAcquiringFails));
