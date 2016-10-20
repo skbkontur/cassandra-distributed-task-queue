@@ -99,7 +99,7 @@ namespace RemoteQueue.Cassandra.Entities
         internal bool NeedTtlProlongation()
         {
             if(!ExpirationTimestampTicks.HasValue || !ExpirationModificationTicks.HasValue)
-                return true;
+                return false;
             var halfOfGivenTtl = TimeSpan.FromTicks((ExpirationTimestampTicks.Value - ExpirationModificationTicks.Value + 1) / 2);
             return Max(Timestamp.Now, GetMinimalStartTimestamp()) + halfOfGivenTtl > GetExpirationTimestamp();
         }
