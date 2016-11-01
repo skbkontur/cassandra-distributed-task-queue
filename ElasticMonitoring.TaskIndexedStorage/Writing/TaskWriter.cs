@@ -19,13 +19,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
     public class TaskWriter
     {
         public TaskWriter(
-            IElasticsearchClientFactory elasticsearchClientFactory,
+            InternalDataElasticsearchFactory elasticsearchClientFactory,
             IWriteIndexNameFactory indexNameFactory,
             TaskDataService taskDataService)
         {
             this.indexNameFactory = indexNameFactory;
             this.taskDataService = taskDataService;
-            elasticsearchClient = elasticsearchClientFactory.GetClient(TaskWriterJsonSettings.GetSerializerSettings());
+            elasticsearchClient = elasticsearchClientFactory.CreateClient(TaskWriterJsonSettings.GetSerializerSettings());
         }
 
         public void IndexBatch([NotNull] Tuple<TaskMetaInformation, TaskExceptionInfo[], object>[] batch)

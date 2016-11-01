@@ -97,7 +97,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         private readonly TaskSearchIndexDataTestService hackService;
 
         [Injected]
-        private readonly IElasticsearchClientFactory elasticsearchClientFactory;
+        private readonly InternalDataElasticsearchFactory elasticsearchClientFactory;
 
         // ReSharper restore UnassignedReadonlyField.Compiler
     }

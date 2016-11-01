@@ -14,7 +14,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 {
     public class TaskIndexCloseService
     {
-        public TaskIndexCloseService(SearchIndexNameFactory searchIndexNameFactory, IElasticsearchClientFactory elasticsearchClientFactory, ITaskWriteDynamicSettings taskWriteDynamicSettings)
+        public TaskIndexCloseService(SearchIndexNameFactory searchIndexNameFactory, InternalDataElasticsearchFactory elasticsearchClientFactory, ITaskWriteDynamicSettings taskWriteDynamicSettings)
         {
             this.searchIndexNameFactory = searchIndexNameFactory;
             this.taskWriteDynamicSettings = taskWriteDynamicSettings;
