@@ -9,24 +9,46 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
     {
         public string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc, string indexNameFormat)
         {
-            //todo now output is big for large interval. use wildcards??
             var stringBuilder = new StringBuilder();
-            var time = DateFromTicks(fromTicksUtc);
-            var endTime = DateFromTicks(toTicksUtc);
-            string lastName = null;
-            while(time <= endTime)
+            var time = DateToBeginDate(DateFromTicks(fromTicksUtc));
+            var endTime = DateToBeginDate(DateFromTicks(toTicksUtc)).Add(minimumSupportedIndexCreationInterval);
+            string dayWildcardFormat = indexNameFormat.Replace("dd", "*"); //todo yyyy.MM.*
+            string monthWildcardFormat = dayWildcardFormat.Replace("MM", "*"); //todo yyyy.*.*
+            while(time < endTime)
             {
-                var currentName = DateToBeginDate(time).ToString(indexNameFormat);
-                if(lastName != currentName)
+                bool moved = false;
+                if(time.Day == 1)
                 {
-                    lastName = currentName;
-                    if(stringBuilder.Length > 0)
-                        stringBuilder.Append(',');
-                    stringBuilder.Append(currentName);
+                    DateTime nextTime;
+                    if(time.Month == 1)
+                    {
+                        if((nextTime = time.AddYears(1)) <= endTime)
+                        {
+                            Append(stringBuilder, time, monthWildcardFormat);
+                            time = nextTime;
+                            moved = true;
+                        }
+                    }
+                    if(!moved && (nextTime = time.AddMonths(1)) <= endTime)
+                    {
+                        Append(stringBuilder, time, dayWildcardFormat);
+                        time = nextTime;
+                        moved = true;
+                    }
                 }
-                time = time.Add(minimumSupportedIndexCreationInterval);
+                if(!moved){
+                    Append(stringBuilder, time, indexNameFormat);
+                    time = time.AddDays(1);
+                }
             }
             return stringBuilder.ToString();
+        }
+
+        private static void Append(StringBuilder stringBuilder, DateTime time, string fmt)
+        {
+            if(stringBuilder.Length > 0)
+                stringBuilder.Append(',');
+            stringBuilder.Append(time.ToString(fmt));
         }
 
         private static DateTime DateToBeginDate(DateTime dateTime)
