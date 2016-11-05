@@ -272,7 +272,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         }
 
         private const int maxTasksToRerun = 30000;
-        private const int maxTasksToCancel = 30000;
+        private const int maxTasksToCancel = 150000;
         private readonly ITaskSearchClient taskSearchClient;
         private readonly IRemoteTaskQueue remoteTaskQueue;
     }
