@@ -73,6 +73,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticMonitoring.TaskIndex
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCommon", "TestCommon\TestCommon.csproj", "{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElasticMonitoring.Api", "ElasticMonitoring.Api\ElasticMonitoring.Api.csproj", "{B2B61674-6F62-4C9F-8CCC-87961B556B4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -199,6 +201,10 @@ Global
 		{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8A55F06-A61A-4E5F-984B-3A86A9C0B743}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2B61674-6F62-4C9F-8CCC-87961B556B4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2B61674-6F62-4C9F-8CCC-87961B556B4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2B61674-6F62-4C9F-8CCC-87961B556B4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2B61674-6F62-4C9F-8CCC-87961B556B4F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -226,5 +232,6 @@ Global
 		{E9F1E687-89F6-429E-803A-12BDEBFFD29F} = {D060FCE2-6972-450F-A23C-F013AF3834C8}
 		{72BDA3C5-2E09-4531-9230-86C7F019E55A} = {EA6D8469-8510-4137-A6B5-5FB9C788200B}
 		{DB958D74-D952-4E22-B9CB-6118D8D80EA0} = {EA6D8469-8510-4137-A6B5-5FB9C788200B}
+		{B2B61674-6F62-4C9F-8CCC-87961B556B4F} = {EA6D8469-8510-4137-A6B5-5FB9C788200B}
 	EndGlobalSection
 EndGlobal
