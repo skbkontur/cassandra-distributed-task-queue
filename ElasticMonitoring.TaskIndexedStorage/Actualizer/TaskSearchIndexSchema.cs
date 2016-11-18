@@ -68,6 +68,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             {
                 logger.LogInfoFormat("Index not exists - creating {0}", indexName);
                 elasticsearchClient.IndicesCreate(indexName, body).ProcessResponse();
+                elasticsearchClient.ClusterHealth(indexName, p => p.WaitForStatus(WaitForStatus.Green)).ProcessResponse();
             }
             else
                 logger.LogInfoFormat("Index already exists");

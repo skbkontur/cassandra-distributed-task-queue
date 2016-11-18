@@ -1,5 +1,11 @@
 using System;
 
+using Elasticsearch.Net;
+
+using FluentAssertions;
+
+using Newtonsoft.Json.Linq;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
@@ -12,6 +18,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
@@ -52,7 +59,40 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         }
 
         [Test]
-        public void TestCloseIndedAndSearchInOldIndex()
+        public void TestCloseAlreadyClosedWithoutAliases()
+        {
+            var @from = DateTime.UtcNow.AddDays(-4);
+            var to = DateTime.UtcNow.AddDays(-4);
+            CloseByHand(@from, to);
+            CheckIndicesClosed(@from, to);
+
+            CheckIndexAlias(searchIndexNameFactory.GetIndexForTimeRange(@from.Ticks, @from.Ticks, taskWriteDynamicSettings.CurrentIndexNameFormat), new string[]
+                {
+                    GetOldDataAlias(@from),
+                    GetSearchAlias(@from),
+                }, true);
+            CheckIndexAlias(taskWriteDynamicSettings.OldDataIndex, new[]
+                {
+                    GetOldDataAlias(@from),
+                    GetSearchAlias(@from),
+                }, false);
+
+            CloseAndCheck(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddDays(-2));
+            //NOTE check aliases moved correctly
+            CheckIndexAlias(searchIndexNameFactory.GetIndexForTimeRange(@from.Ticks, @from.Ticks, taskWriteDynamicSettings.CurrentIndexNameFormat), new string[]
+                {
+                    GetOldDataAlias(@from),
+                    GetSearchAlias(@from),
+                }, false);
+            CheckIndexAlias(taskWriteDynamicSettings.OldDataIndex, new[]
+                {
+                    GetOldDataAlias(@from),
+                    GetSearchAlias(@from),
+                }, true);
+        }
+
+        [Test]
+        public void TestCloseIndexAndSearchInOldIndex()
         {
             var client = elasticsearchClientFactory.GetClient();
             for(var i = 0; i < 5; i++)
@@ -60,7 +100,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 var dt = DateTime.UtcNow.Subtract(TimeSpan.FromDays(i));
                 var indexName = WriteIndexNameFactory.BuildIndexNameForTime(dt.Ticks, taskWriteDynamicSettings.CurrentIndexNameFormat);
                 client.IndicesExists(indexName).ProcessResponse(404);
-                client.IndicesCreate(indexName, new {});
+                client.IndicesCreate(indexName, new {}).ProcessResponse();
             }
             var x1 = DateTime.UtcNow.AddDays(-1);
             var meta1 = CreateMeta(x1, false);
@@ -78,7 +118,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             var x3 = DateTime.UtcNow;
             var meta3 = CreateMeta(x3, false);
-            
+
             CheckSearch(string.Format("Data.TimeMs:123"), x2, x2, new string[0]); //note alias redirected to old data but it is empty now
 
             taskWriter.IndexBatch(new[]
@@ -100,6 +140,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             service.CloseOldIndices(@from, to);
             CheckIndicesClosed(@from, to);
+        }
+
+        private string GetOldDataAlias(DateTime dt)
+        {
+            return IndexNameConverter.FillIndexNamePlaceholder(taskWriteDynamicSettings.OldDataAliasFormat, searchIndexNameFactory.GetIndexForTimeRange(dt.Ticks, dt.Ticks, taskWriteDynamicSettings.CurrentIndexNameFormat));
+        }
+
+        private string GetSearchAlias(DateTime dt)
+        {
+            return searchIndexNameFactory.GetIndexForTimeRange(dt.Ticks, dt.Ticks, taskSearchDynamicSettings.SearchIndexNameFormat);
         }
 
         private void CheckIndicesClosed(DateTime @from, DateTime to)
@@ -124,7 +174,43 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             return new TaskMetaInformation("SlowTaskData", Guid.NewGuid().ToString()) {Ticks = ticks2, LastModificationTicks = lastModificationTicks};
         }
 
+        private void CheckIndexAlias(string index, string[] expected, bool shouldInclude)
+        {
+            var client = elasticsearchClientFactory.GetClient();
+            var response = client.ClusterState("metadata", index).ProcessResponse();
+            foreach(var obj in response.Response["metadata"]["indices"])
+            {
+                var aliases = ((JArray)obj.Value.aliases).ToObject<string[]>();
+                if(shouldInclude)
+                    expected.Should().BeSubsetOf(aliases);
+                else
+                    expected.Should().NotBeSubsetOf(aliases);
+            }
+        }
+
+        private void CloseByHand(DateTime @from, DateTime to)
+        {
+            var indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(@from.Ticks, to.Ticks, taskWriteDynamicSettings.CurrentIndexNameFormat);
+
+            var elasticsearchClient = elasticsearchClientFactory.GetClient();
+            foreach(var index in indexForTimeRange.Split(','))
+            {
+                var response = elasticsearchClient.CatIndices(index, p => p.H("status")).ProcessResponse(200, 404);
+                if(response.HttpStatusCode == 404)
+                {
+                    var respCreate = elasticsearchClient.IndicesCreate(index, new {}).ProcessResponse(200, 400);
+                    if(!(respCreate.HttpStatusCode == 400 && respCreate.ServerError != null && respCreate.ServerError.ExceptionType == "IndexAlreadyExistsException"))
+                        respCreate.ProcessResponse(); //note throw any other error
+                }
+                elasticsearchClient.ClusterHealth(index, p => p.WaitForStatus(WaitForStatus.Green)).ProcessResponse();
+                elasticsearchClient.IndicesClose(index).ProcessResponse();
+            }
+        }
+
         // ReSharper disable UnassignedReadonlyField.Compiler
+        [Injected]
+        private TaskSearchDynamicSettings taskSearchDynamicSettings;
+
         [Injected]
         private readonly SearchIndexNameFactory searchIndexNameFactory;
 
