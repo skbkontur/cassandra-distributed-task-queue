@@ -7,14 +7,14 @@ using Elasticsearch.Net;
 using log4net;
 
 using SKBKontur.Catalogue.Core.Configuration.Settings;
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.Utils;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
 {
     public class ElasticAvailabilityChecker
     {
-        public ElasticAvailabilityChecker(InternalDataElasticsearchFactory elasticsearchClientFactory, IApplicationSettings applicationSettings)
+        public ElasticAvailabilityChecker(RtqElasticsearchClientFactory elasticsearchClientFactory, IApplicationSettings applicationSettings)
         {
             elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
             if(!applicationSettings.TryGetTimeSpan("ElasticAliveCheckTimeout", out timeout))
