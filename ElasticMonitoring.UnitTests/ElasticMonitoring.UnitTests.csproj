@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SearchIndexNameFactoryTest.cs" />
     <Compile Include="TaskDataServiceTest.cs" />
     <Compile Include="TaskWtriterSerializationTest.cs" />
     <Compile Include="TestFormat.cs" />

@@ -215,7 +215,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         private readonly SearchIndexNameFactory searchIndexNameFactory;
 
         [Injected]
-        private readonly IElasticsearchClientFactory elasticsearchClientFactory;
+        private readonly InternalDataElasticsearchFactory elasticsearchClientFactory;
 
         [Injected]
         private readonly TaskIndexCloseService service;
