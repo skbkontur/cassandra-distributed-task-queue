@@ -35,7 +35,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 {
                     isOk = true;
                     break;
-                } 
+                }
                 Thread.Sleep(1000);
             } while(w.Elapsed < timeout);
             if(isOk)
@@ -52,9 +52,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             try
             {
                 var response = elasticsearchClient.Info();
-                if (!response.Success)
+                if(!response.Success)
                     return false;
-                return (int)response.Response["status"] == 200;
+                var legacyStatus = response.Response["status"];
+                if(legacyStatus != null)
+                    return (int)legacyStatus == 200;
+                return response.HttpStatusCode == 200;
             }
             catch(Exception e)
             {
