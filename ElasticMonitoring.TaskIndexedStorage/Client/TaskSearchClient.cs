@@ -18,14 +18,30 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
         }
 
-        private static bool NotEmpty(string[] arr)
+        public TaskSearchResponse SearchNext(string scrollId)
         {
-            return arr != null && arr.Length > 0;
+            var result = elasticsearchClient.Scroll<SearchResponseNoData>(scrollId, x => x.AddQueryString("scroll", scrollLiveTime)).ProcessResponse();
+            return new TaskSearchResponse
+                {
+                    Ids = result.Response.Hits.Hits.Select(x => x.Id).ToArray(),
+                    TotalCount = result.Response.Hits.Total,
+                    NextScrollId = result.Response.ScrollId
+                };
         }
 
-        public TaskSearchResponse Search(TaskSearchRequest taskSearchRequest, int @from, int size)
+        public TaskSearchResponse SearchFirst(TaskSearchRequest taskSearchRequest)
         {
-            var filters = new List<object>
+            return SearchImpl(taskSearchRequest, from : 0, size : pageSize, legacyMode : true);
+        }
+
+        public TaskSearchResponse Search(TaskSearchRequest taskSearchRequest, int from, int size)
+        {
+            return SearchImpl(taskSearchRequest, from, size, legacyMode : false);
+        }
+
+        private TaskSearchResponse SearchImpl(TaskSearchRequest taskSearchRequest, int from, int size, bool legacyMode)
+        {
+            var mustClause = new List<object>
                 {
                     new
                         {
@@ -37,28 +53,42 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                 },
                         }
                 };
-            if(NotEmpty(taskSearchRequest.TaskNames))
+            var matchByName = false;
+            var shouldClauses = new List<object>();
+            foreach(var taskName in taskSearchRequest.TaskNames ?? new string[0])
             {
-                filters.Add(new
+                matchByName = true;
+                shouldClauses.Add(new
                     {
-                        terms = new Dictionary<string, object>
+                        term = new Dictionary<string, object>
                             {
-                                {"Meta.Name", taskSearchRequest.TaskNames},
-                                {"minimum_should_match", 1}
+                                {"Meta.Name", taskName},
                             }
                     });
             }
-            if(NotEmpty(taskSearchRequest.TaskStates))
+            var matchByState = false;
+            foreach(var taskState in taskSearchRequest.TaskStates ?? new string[0])
             {
-                filters.Add(new
+                matchByState = true;
+                shouldClauses.Add(new
                     {
-                        terms = new Dictionary<string, object>
+                        term = new Dictionary<string, object>
                             {
-                                {"Meta.State", taskSearchRequest.TaskStates},
-                                {"minimum_should_match", 1}
+                                {"Meta.State", taskState},
                             }
                     });
             }
+            var query = shouldClauses.Any()
+                            ? new
+                                {
+                                    must = mustClause,
+                                    should = shouldClauses,
+                                    minimum_should_match = (matchByName ? 1 : 0) + (matchByState ? 1 : 0)
+                                }
+                            : (object)new
+                                {
+                                    must = mustClause
+                                };
 
             var indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(
                 taskSearchRequest.FromTicksUtc,
@@ -69,16 +99,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     .Search<SearchResponseNoData>(indexForTimeRange,
                                                   new
                                                       {
-                                                          size = size,
-                                                          from = from,
+                                                          from,
+                                                          size,
                                                           version = true,
                                                           _source = false,
                                                           query = new
                                                               {
-                                                                  @bool = new
-                                                                      {
-                                                                          must = filters
-                                                                      }
+                                                                  @bool = query
                                                               },
                                                           sort = new[]
                                                               {
@@ -87,15 +114,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                           {"Meta.MinimalStartTime", new {order = "desc", unmapped_type = "long"}}
                                                                       }
                                                               }
-                                                      }, x => x.IgnoreUnavailable(true))
+                                                      }, x =>
+                                                          {
+                                                              var searchRequestParameters = x.IgnoreUnavailable(true);
+                                                              if(legacyMode)
+                                                                  searchRequestParameters = searchRequestParameters.Scroll(scrollLiveTime).SearchType(SearchType.QueryThenFetch);
+                                                              return searchRequestParameters;
+                                                          })
                     .ProcessResponse();
             return new TaskSearchResponse
                 {
                     Ids = metaResponse.Response.Hits.Hits.Select(x => x.Id).ToArray(),
                     TotalCount = metaResponse.Response.Hits.Total,
+                    NextScrollId = metaResponse.Response.ScrollId
                 };
         }
 
+        private const string scrollLiveTime = "10m";
+        private const int pageSize = 100;
         private readonly SearchIndexNameFactory searchIndexNameFactory;
         private readonly TaskSearchDynamicSettings taskSearchDynamicSettings;
         private readonly IElasticsearchClient elasticsearchClient;

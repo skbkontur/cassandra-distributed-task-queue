@@ -46,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                             Ticks = new
                                                 {
                                                     type = "long",
-                                                    index = "no"
+                                                    index = false,
                                                 }
                                         }
                                 }
@@ -112,9 +112,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                     match_mapping_type = "string",
                                                                     mapping = new
                                                                         {
-                                                                            type = "string",
-                                                                            store = "no",
-                                                                            index = "not_analyzed"
+                                                                            type = "keyword",
+                                                                            store = false,
+                                                                            index = true,
                                                                         }
                                                                 },
                                                         },
@@ -123,12 +123,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                             template_integer = new
                                                                 {
                                                                     path_match = "Data.*",
-                                                                    match_mapping_type = "integer",
+                                                                    match_mapping_type = "long",
                                                                     mapping = new
                                                                         {
-                                                                            type = "string",
-                                                                            store = "no",
-                                                                            index = "not_analyzed"
+                                                                            type = "keyword",
+                                                                            store = false,
+                                                                            index = true,
                                                                         }
                                                                 },
                                                         },
@@ -140,9 +140,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                     match_mapping_type = "double",
                                                                     mapping = new
                                                                         {
-                                                                            type = "string",
-                                                                            store = "no",
-                                                                            index = "not_analyzed"
+                                                                            type = "keyword",
+                                                                            store = false,
+                                                                            index = true,
                                                                         }
                                                                 },
                                                         },
@@ -154,9 +154,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                                     match_mapping_type = "boolean",
                                                                     mapping = new
                                                                         {
-                                                                            type = "string",
-                                                                            store = "no",
-                                                                            index = "not_analyzed"
+                                                                            type = "keyword",
+                                                                            store = false,
+                                                                            index = true,
                                                                         }
                                                                 },
                                                         }
@@ -165,25 +165,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                                 {
                                                     Data = new
                                                         {
-                                                            type = "object",
-                                                            store = "no",
+                                                            type = "object"
                                                         },
                                                     Meta = new
                                                         {
                                                             properties = new
                                                                 {
-                                                                    Name = StringTemplate(),
-                                                                    Id = StringTemplate(),
-                                                                    State = StringTemplate(),
-                                                                    ParentTaskId = StringTemplate(),
-                                                                    TaskGroupLock = StringTemplate(),
-                                                                    Attempts = new {type = "integer"},
+                                                                    Name = KeywordTemplate(),
+                                                                    Id = KeywordTemplate(),
+                                                                    State = KeywordTemplate(),
+                                                                    ParentTaskId = KeywordTemplate(),
+                                                                    TaskGroupLock = KeywordTemplate(),
+                                                                    Attempts = new {type = "integer", store = false},
                                                                     EnqueueTime = DateTemplate(),
                                                                     MinimalStartTime = DateTemplate(),
                                                                     StartExecutingTime = DateTemplate(),
                                                                     FinishExecutingTime = DateTemplate(),
                                                                     LastModificationTime = DateTemplate(),
-                                                                    Exception = StringTemplate(analyzed : true),
+                                                                    Exception = TextTemplate(),
                                                                     ExpirationTime = DateTemplate()
                                                                 }
                                                         }
@@ -202,15 +201,19 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         private static object DateTemplate()
         {
-            return new {type = "date", format = dateFormat, store = "no"};
+            return new {type = "date", store = false, format = "dateOptionalTime"};
         }
 
-        private static object StringTemplate(bool analyzed = false)
+        private static object TextTemplate()
         {
-            return new {type = "string", store = "no", index = analyzed ? "analyzed" : "not_analyzed"};
+            return new {type = "text", store = false, index = true};
         }
 
-        private const string dateFormat = "dateOptionalTime";
+        private static object KeywordTemplate()
+        {
+            return new {type = "keyword", store = false, index = true};
+        }
+
         public const string DataTemplateSuffix = "data";
         public const string OldDataTemplateSuffix = "old-data";
         private readonly TaskSchemaDynamicSettings settings;

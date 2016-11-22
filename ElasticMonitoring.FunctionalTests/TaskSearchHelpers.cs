@@ -22,16 +22,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
         }
 
-        public static void CheckSearch(ITaskSearchClient taskSearchClient, string q, DateTime from, DateTime to, params string[] ids)
+        public static void CheckSearch(ITaskSearchClient taskSearchClient, string q, DateTime from, DateTime to, params string[] expectedIds)
         {
-            CollectionAssert.AreEquivalent(ids, Search(taskSearchClient, q, @from, to), "q=" + q);
+            var actualIds = Search(taskSearchClient, q, from, to);
+            CollectionAssert.AreEquivalent(expectedIds, actualIds, "q=" + q);
         }
 
         private static string[] Search(ITaskSearchClient taskSearchClient, string q, DateTime from, DateTime to)
         {
-            var taskSearchResponse = taskSearchClient.Search(new TaskSearchRequest()
+            var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest
                 {
-                    FromTicksUtc = @from.ToUniversalTime().Ticks,
+                    FromTicksUtc = from.ToUniversalTime().Ticks,
                     ToTicksUtc = to.ToUniversalTime().Ticks,
                     QueryString = q
                 }, 0, 1000);

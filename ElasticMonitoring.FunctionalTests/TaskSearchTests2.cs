@@ -162,9 +162,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 Assert.AreEqual("close", obj.Value.state.ToString(), string.Format("index '{0}' not closed", obj.Name));
         }
 
-        private void CheckSearch(string q, DateTime from, DateTime to, params string[] ids)
+        private void CheckSearch(string q, DateTime from, DateTime to, params string[] expectedIds)
         {
-            TaskSearchHelpers.CheckSearch(taskSearchClient, q, from, to, ids);
+            TaskSearchHelpers.CheckSearch(taskSearchClient, q, from, to, expectedIds);
         }
 
         private static TaskMetaInformation CreateMeta(DateTime ticks, bool isOld)

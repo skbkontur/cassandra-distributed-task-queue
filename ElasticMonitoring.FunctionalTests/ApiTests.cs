@@ -154,6 +154,47 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         }
 
         [Test]
+        public void TestByTaskStateAndTaskName()
+        {
+            var t0 = DateTime.UtcNow;
+            QueueTasksAndWaitForActualization(
+                new FailingTaskData(),
+                new AlphaTaskData());
+            var t1 = DateTime.UtcNow;
+            var searchResults1 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
+            {
+                EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                States = new[] { TaskState.Finished },
+                Names = new[] { typeof(AlphaTaskData).Name },
+                Size = 20,
+                From = 0,
+            });
+            searchResults1.TotalCount.Should().Be(1);
+            searchResults1.TaskMetas.Single().Name.Should().Be(typeof(AlphaTaskData).Name);
+
+            var searchResults2 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
+            {
+                EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                States = new[] { TaskState.Fatal },
+                Names = new[] { typeof(AlphaTaskData).Name },
+                Size = 20,
+                From = 0,
+            });
+            searchResults2.TotalCount.Should().Be(0);
+            searchResults2.TaskMetas.Should().BeEmpty();
+
+            var searchResults3 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
+            {
+                EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                States = new[] { TaskState.Finished },
+                Names = new[] { typeof(FailingTaskData).Name },
+                Size = 20,
+                From = 0,
+            });
+            searchResults3.TotalCount.Should().Be(0);
+            searchResults3.TaskMetas.Should().BeEmpty();
+        }
+        [Test]
         public void TestRerunTask()
         {
             var taskId = QueueTasksAndWaitForActualization(new AlphaTaskData()).Single();

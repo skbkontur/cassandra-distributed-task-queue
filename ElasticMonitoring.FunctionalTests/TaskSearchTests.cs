@@ -196,8 +196,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             CheckSearch(string.Format("Meta.Id:\"{0}\" OR Meta.Id:\"{1}\"", taskId0, taskId1), t0, t1, taskId0, taskId1);
             CheckSearch(string.Format("Meta.State:Finished"), t0, t1, taskId0, taskId1);
 
-            CheckSearch(string.Format("_missing_:Meta.ParentTaskId"), t0, t1, taskId0, taskId1);
-            CheckSearch(string.Format("_missing_:Meta.Name"), t0, t1);
+            CheckSearch(string.Format("NOT _exists_:Meta.ParentTaskId"), t0, t1, taskId0, taskId1);
+            CheckSearch(string.Format("NOT _exists_:Meta.Name"), t0, t1);
 
             CheckSearch(string.Format("Data.TimeMs:0"), t0, t1, taskId0);
             CheckSearch(string.Format("Data.UseCounter:false"), t0, t1, taskId0);
@@ -218,9 +218,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             CheckSearch("*", t0, t1, lst.ToArray());
         }
 
-        private void CheckSearch(string q, DateTime from, DateTime to, params string[] ids)
+        private void CheckSearch(string q, DateTime from, DateTime to, params string[] expectedIds)
         {
-            TaskSearchHelpers.CheckSearch(taskSearchClient, q, from, to, ids);
+            TaskSearchHelpers.CheckSearch(taskSearchClient, q, from, to, expectedIds);
         }
 
         private string QueueTask<T>(T taskData, TimeSpan? delay = null) where T : ITaskData
