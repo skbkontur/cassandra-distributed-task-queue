@@ -4,5 +4,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
     {
         public object ObjectBuildingContext { get; set; }
         public MemberBuildingContext MemberBuildingContext {get; set; }
+        public object RootObject { get; set; }
     }
 }

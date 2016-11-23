@@ -12,7 +12,6 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
 
 namespace FunctionalTests.ExchangeTests
@@ -48,11 +47,11 @@ namespace FunctionalTests.ExchangeTests
             Enumerable.Range(0, 42).AsParallel().ForAll((i) =>
                 {
                     var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
-                    //WaitForTerminalState(new[] { taskId }, 1, (int)TimeSpan.FromSeconds(50).TotalMilliseconds);
                     lock(taskIds)
                         taskIds.Add(taskId);
                     Thread.Sleep(2000);
-                    //Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
+                    // TODO Переделать на новый мониторинг
+/*
                     var monitoringServiceClient = Container.Get<IRemoteTaskQueueMonitoringServiceStorage>();
                     WaitFor(
                         () =>
@@ -63,6 +62,7 @@ namespace FunctionalTests.ExchangeTests
                                 return count == 1;
                             },
                         TimeSpan.FromSeconds(50));
+*/
                 });
             Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey("SimpleTaskData", TaskState.Finished)));
         }

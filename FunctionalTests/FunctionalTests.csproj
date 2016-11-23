@@ -114,17 +114,9 @@
       <Project>{27afc62a-6f6b-443e-a83b-20d6714d8faf}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DataTypes\MonitoringDataTypes.csproj">
-      <Project>{c86636e6-89c3-4930-a6bd-ccdf61b5d8f1}</Project>
-      <Name>MonitoringDataTypes</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ExchangeService\ExchangeService.csproj">
       <Project>{b505aee0-0cd1-4c54-af2a-c7d1ee3d4ef1}</Project>
       <Name>ExchangeService</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MonitoringServiceClient\MonitoringServiceClient.csproj">
-      <Project>{b0aad20d-160a-4d99-877b-b464c295e36f}</Project>
-      <Name>MonitoringServiceClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>

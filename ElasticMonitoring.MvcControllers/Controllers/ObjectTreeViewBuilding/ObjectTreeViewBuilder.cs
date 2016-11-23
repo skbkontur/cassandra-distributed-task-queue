@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.Controllers.ObjectTreeViewBuilding.Builders;
@@ -9,15 +10,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
 {
     internal class ObjectTreeViewBuilder
     {
-        public ObjectTreeViewBuilder(IBuildersProvider buildersProvider)
+        public ObjectTreeViewBuilder(IBuildersProvider buildersProvider, Func<object, string[], string> getHyperlinkByPath)
         {
             this.buildersProvider = buildersProvider;
+            this.getHyperlinkByPath = getHyperlinkByPath;
         }
 
         public ObjectTreeModel Build(object value, object objectBuildingContext)
         {
             return Build(value, new BuildingContext
                 {
+                    RootObject = value,
                     ObjectBuildingContext = objectBuildingContext,
                     MemberBuildingContext = new MemberBuildingContext
                         {
@@ -41,12 +44,15 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                     var subs = buildingResult as SubObjectsResults;
                     var result = new ObjectTreeModel
                         {
-                            Name = context.MemberBuildingContext.Last()
+                            Id = string.Join("_", context.MemberBuildingContext.PathFromRoot),
+                            Name = context.MemberBuildingContext.Last(),
+                            Link = getHyperlinkByPath(context.RootObject, context.MemberBuildingContext.PathFromRoot)
                         };
                     foreach(var subObject in subs.SubObjects)
                     {
                         var objectTreeModel = Build(subObject.Value, new BuildingContext
                             {
+                                RootObject = context.RootObject,
                                 MemberBuildingContext = new MemberBuildingContext
                                     {
                                         DeclaredType = subObject.DeclaredType,
@@ -63,7 +69,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
                 {
                     return new ObjectTreeModel
                         {
+                            Id = string.Join("_", context.MemberBuildingContext.PathFromRoot),
                             Name = context.MemberBuildingContext.Last(),
+                            Link = getHyperlinkByPath(context.RootObject, context.MemberBuildingContext.PathFromRoot),
                             Value = buildingResult.Result
                         };
                 }
@@ -73,5 +81,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
         }
 
         private readonly IBuildersProvider buildersProvider;
+        private readonly Func<object, string[], string> getHyperlinkByPath;
     }
 }

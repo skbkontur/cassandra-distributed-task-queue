@@ -20,7 +20,6 @@ using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringServiceClient;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.TestCore;
 
@@ -87,9 +86,12 @@ namespace FunctionalTests
 
         private void ResetTaskQueueMonitoringState()
         {
+            // TODO переделать на новый мониторинг
+/*
             var client = Container.Get<IRemoteTaskQueueMonitoringServiceClient>();
             client.DropLocalStorage();
             client.ActualizeDatabaseScheme();
+*/
         }
 
         private void ResetTicksHolderState()

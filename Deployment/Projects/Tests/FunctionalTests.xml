@@ -27,7 +27,6 @@
   <Import Project="..\Configuration\FrontEndSuites.xml" />
   
   <ItemGroup>
-    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.MonitoringTests.dll"></NUnitAssemblies>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\RemoteTaskQueue.FunctionalTests.dll"></NUnitAssemblies>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests.dll"></NUnitAssemblies>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests.dll"></NUnitAssemblies>

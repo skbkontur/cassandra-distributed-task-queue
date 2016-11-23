@@ -14,9 +14,6 @@
     <Service Include="$(MSBuildThisFileDirectory)\..\Services\ExchangeService.xml">
       <TaskGroupName>Catalogue</TaskGroupName>
     </Service>
-    <Service Include="$(MSBuildThisFileDirectory)\..\Services\MonitoringService.xml">
-      <TaskGroupName>Catalogue</TaskGroupName>
-    </Service>
     <Service Include="$(MSBuildThisFileDirectory)\..\Services\TaskCounterService.xml">
       <TaskGroupName>Catalogue</TaskGroupName>
     </Service>

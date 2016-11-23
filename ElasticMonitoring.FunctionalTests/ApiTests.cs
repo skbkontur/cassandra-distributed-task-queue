@@ -37,16 +37,43 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         }
 
         [Test]
-        public void TestSearchByRange()
+        public void TestPaging()
         {
             var t0 = DateTime.Now;
             var taskIds = QueueTasksAndWaitForActualization(
                 Enumerable.Range(0, 20)
                           .Select(x => new AlphaTaskData()).Cast<ITaskData>().ToArray());
             var t1 = DateTime.Now;
+            var searchResults1 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
+                {
+                    EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                    From = 0,
+                    Size = 10,
+                });
+            searchResults1.TotalCount.Should().Be(20);
+            var searchResults2 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
+                {
+                    EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                    From = 10,
+                    Size = 10,
+                });
+            searchResults2.TotalCount.Should().Be(20);
+            searchResults1.TaskMetas.Select(x => x.Id).Concat(searchResults2.TaskMetas.Select(x => x.Id)).ShouldAllBeEquivalentTo(taskIds);
+        }
+        
+        [Test]
+        public void TestSearchByRange()
+        {
+            var t0 = DateTime.Now;
+            var taskIds = QueueTasksAndWaitForActualization(
+                Enumerable.Range(0, 20)
+                    .Select(x => new AlphaTaskData()).Cast<ITaskData>().ToArray());
+            var t1 = DateTime.Now;
             var searchResults = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                    Size = 20,
+                    From = 0,
                 });
             searchResults.TotalCount.Should().Be(20);
             searchResults.TaskMetas.Select(x => x.Id).ShouldAllBeEquivalentTo(taskIds);
@@ -64,7 +91,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var searchResults1 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                    Names = new[] {typeof(AlphaTaskData).Name}
+                    Names = new[] {typeof(AlphaTaskData).Name},
+                    Size = 20,
+                    From = 0,
                 });
             searchResults1.TotalCount.Should().Be(1);
             searchResults1.TaskMetas.Single().Name.Should().Be(typeof(AlphaTaskData).Name);
@@ -72,7 +101,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var searchResults2 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                    Names = new[] {typeof(BetaTaskData).Name}
+                    Names = new[] {typeof(BetaTaskData).Name},
+                    Size = 20,
+                    From = 0,
                 });
             searchResults2.TotalCount.Should().Be(1);
             searchResults2.TaskMetas.Single().Name.Should().Be(typeof(BetaTaskData).Name);
@@ -80,7 +111,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var searchResults3 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                    Names = new[] {typeof(BetaTaskData).Name, typeof(DeltaTaskData).Name}
+                    Names = new[] {typeof(BetaTaskData).Name, typeof(DeltaTaskData).Name},
+                    Size = 20,
+                    From = 0,
                 });
             searchResults3.TotalCount.Should().Be(2);
             searchResults3.TaskMetas.Select(x => x.Name).ShouldAllBeEquivalentTo(new[]
@@ -101,7 +134,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var searchResults1 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                    States = new[] {TaskState.Finished}
+                    States = new[] {TaskState.Finished},
+                    Size = 20,
+                    From = 0,
                 });
             searchResults1.TotalCount.Should().Be(1);
             searchResults1.TaskMetas.Single().Name.Should().Be(typeof(AlphaTaskData).Name);
@@ -109,7 +144,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var searchResults2 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                    States = new[] {TaskState.Fatal}
+                    States = new[] {TaskState.Fatal},
+                    Size = 20,
+                    From = 0,
                 });
             searchResults2.TotalCount.Should().Be(1);
             searchResults2.TaskMetas.Single().Name.Should().Be(typeof(FailingTaskData).Name);
@@ -142,7 +179,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             remoteTaskQueueApiImpl.RerunTasksBySearchQuery(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                    Names = new[] {typeof(AlphaTaskData).Name}
+                    Names = new[] {typeof(AlphaTaskData).Name},
+                    Size = 20,
+                    From = 0,
                 });
 
             WaitForTasks(new[] {taskId[0], taskId[1]}, TimeSpan.FromSeconds(60));

@@ -8,7 +8,6 @@ using SKBKontur.Catalogue.CassandraStorageCore.GlobalTicks;
 using SKBKontur.Catalogue.CassandraStorageCore.RemoteLock;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.BusinessObjects.Schema;
 using SKBKontur.Catalogue.CassandraStorageCore.Storage.Persistent.Cassandra.Schema;
-using SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 {
@@ -26,7 +25,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Storage
 
         protected override void ConfigureBusinessObjectSchema(BusinessObjectStoringSchema schema)
         {
-            schema.DefineType<MonitoringSearchRequest>(c => c.TypeIdentifier("MonitoringSearchRequest"));
         }
 
         protected override sealed void ConfigureCassandraBasicSchema(CassandraStoringSchema schema)

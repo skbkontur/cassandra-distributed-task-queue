@@ -29,24 +29,43 @@
 {
     context.IncrementGlobalIndex();
     var currentIndex = context.GlobalIndex;
-    <tr class="treegrid-@currentIndex @(parentIndex.HasValue ? ("treegrid-parent-" + parentIndex) : "")">
-        <td>@objectModel.Name</td>
+    <tr data-tid="@objectModel.Id" class="treegrid-@currentIndex @(parentIndex.HasValue ? ("treegrid-parent-" + parentIndex) : "")">
         <td>
+            @objectModel.Name
+        </td>
+        <td data-tid="Value">
             @if (objectModel.Value != null)
             {
                 if (@objectModel.Value.IsHtml)
                 {
-                    @Html.Raw(objectModel.Value.Value)
+                    if (!string.IsNullOrWhiteSpace(objectModel.Link))
+                    {
+                        <a data-tid="GoToLink" href="@objectModel.Link">
+                            @Html.Raw(objectModel.Value.Value)
+                        </a>
+                    }
+                    else
+                    {
+                        @Html.Raw(objectModel.Value.Value)
+                    }
                 }
                 else
                 {
-                    @objectModel.Value.Value
+                    if (!string.IsNullOrWhiteSpace(objectModel.Link))
+                    {
+                        <a data-tid="GoToLink" href="@objectModel.Link">
+                            @objectModel.Value.Value
+                        </a>
+                    }
+                    else
+                    {
+                        @objectModel.Value.Value
+                    }
                 }
-
             }
         </td>
     </tr>
-    foreach(var child in objectModel.Children)
+    foreach (var child in objectModel.Children)
     {
         @DrawObjectTreeNode(child, context, currentIndex)
     }
@@ -56,7 +75,7 @@
     <div class="row">
         <div class="col-md-12">
             <div class="page-header">
-                <h1>
+                <h1 id="TaskHeader">
                     Задача @Model.TaskName
                     <small style="font-size: 14px;">
                         <a id="backLink" href="#">вернуться к поиску</a>
@@ -145,6 +164,7 @@
                         @foreach(var childTaskId in Model.ChildTaskIds.ReturnArray())
                         {
                             @Html.ActionLink(childTaskId, "Details", new {id = childTaskId})
+                            @(" ")
                         }                        
                     </td>
                 </tr>

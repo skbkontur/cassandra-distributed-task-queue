@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(FrontEndSuite)' == 'DEFAULT'">
-    <FrontEnd Include="$(MSBuildThisFileDirectory)\..\FrontEnds\Front.xml" />
   </ItemGroup>
 
 </Project>

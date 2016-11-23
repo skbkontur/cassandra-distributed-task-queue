@@ -73,15 +73,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.MvcControllers.C
             remoteTaskQueue.TryRerunTask(id, TimeSpan.FromTicks(0));
         }
 
-        private static ObjectTreeModel BuildDetailsTree(RemoteTaskInfo taskData, string taskId, UrlHelper urlHelper, bool currentUserHasAccessToTaskData)
+        private ObjectTreeModel BuildDetailsTree(RemoteTaskInfo taskData, string taskId, UrlHelper urlHelper, bool currentUserHasAccessToTaskData)
         {
             if(!currentUserHasAccessToTaskData)
                 return null;
-            var builder = new ObjectTreeViewBuilder(new TaskDataBuildersProvider());
+            var builder = new ObjectTreeViewBuilder(new TaskDataBuildersProvider(), GetHyperlinkByPath);
             var result = builder.Build(taskData.TaskData, new TaskDataBuildingContext {TaskId = taskId, UrlHelper = urlHelper});
             if(result != null)
                 result.Name = "TaskData";
             return result;
+        }
+
+        protected virtual string GetHyperlinkByPath(object rootObject, string[] path)
+        {
+            return null;
         }
 
         public TaskSearchResultsModel BuildResultsByIteratorContext(string iteratorContext, bool currentUserHasAccessToWriteAction, bool currentUserHasAccessToTaskData)

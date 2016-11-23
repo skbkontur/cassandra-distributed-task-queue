@@ -51,14 +51,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Api
 
         private TaskSearchResponse FindTasks(RemoteTaskQueueSearchRequest searchRequest)
         {
-            var result = taskSearchClient.SearchFirst(new TaskSearchRequest
+            var result = taskSearchClient.Search(new TaskSearchRequest
                 {
                     TaskStates = searchRequest.With(x => x.States).Return(z => z.Select(x => x.ToString()).ToArray(), null),
                     TaskNames = searchRequest.Return(x => x.Names, null),
                     QueryString = searchRequest.With(x => x.QueryString).Unless(string.IsNullOrWhiteSpace).Return(x => x, "*"),
                     FromTicksUtc = searchRequest.EnqueueDateTimeRange.LowerBound.Ticks,
                     ToTicksUtc = searchRequest.EnqueueDateTimeRange.UpperBound.Ticks,
-                });
+                }, searchRequest.From, searchRequest.Size);
             return result;
         }
 
