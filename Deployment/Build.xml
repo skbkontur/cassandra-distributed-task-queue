@@ -16,13 +16,4 @@
   </ItemGroup>
   <Import Project="$(CatalogueRootDirectory)\MSBuild\DeployTargets\Targets\Build.targets" />
 
-  <Target Name="BuildScripts" BeforeTargets="Build">
-    <Exec Command='mkdir %AppData%\npm' IgnoreExitCode='true'/>
-    <Exec WorkingDirectory="$(CatalogueRootDirectory)\RemoteTaskQueue\Front\" Command='"$(NodeJsPath)npm" install --production' Condition="('$(BuildMode)'=='Full') And Exists('$(CatalogueRootDirectory)\RemoteTaskQueue\Front\package.json') "/>
-    <Exec WorkingDirectory="$(CatalogueRootDirectory)\RemoteTaskQueue\Front\" Command='"$(NodeJsPath)npm" update --production' Condition="('$(BuildMode)'=='Full') And Exists('$(CatalogueRootDirectory)\RemoteTaskQueue\Front\package.json') "/>
-    <Exec WorkingDirectory="$(CatalogueRootDirectory)\RemoteTaskQueue\Front\" Command='"$(NodeJsPath)npm" run preparescripts' Condition="('$(BuildMode)'=='Full') And Exists('$(CatalogueRootDirectory)\RemoteTaskQueue\Front\package.json')" />
-    <Exec Command='$(CatalogueRootDirectory)\Build\robormdir.bat node_modules' WorkingDirectory="$(CatalogueRootDirectory)\RemoteTaskQueue\Front\" />
-
-  </Target>
-
 </Project>
