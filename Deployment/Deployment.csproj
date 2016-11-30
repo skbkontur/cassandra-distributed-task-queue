@@ -37,26 +37,7 @@
     <Content Include="Build.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="LocalFire.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Projects\Configuration\FrontEndSuites.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Projects\Configuration\ServiceSuites.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Projects\EmbeddedFronts\TaskMonitoringViewerEmbeddedFront.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Projects\EmbeddedFronts\WebWormsEmbeddedFront.xml" />
-    <Content Include="Projects\FrontEnds\CommonResources.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Projects\FrontEnds\Front.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Projects\FrontEnds\SharedResources.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Projects\Services\ExchangeService.xml">

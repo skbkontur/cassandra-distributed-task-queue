@@ -6,10 +6,6 @@
     <ServiceSuite Condition="'$(ServiceSuite)' == ''">Fake</ServiceSuite>
   </PropertyGroup>
 
-
-  <!-- Сервисы общие для всех конфигураций -->
-  <ItemGroup></ItemGroup>
-
   <ItemGroup Condition="'$(ServiceSuite)' == 'Fake'">
     <Service Include="$(MSBuildThisFileDirectory)\..\Services\ExchangeService.xml">
       <TaskGroupName>Catalogue</TaskGroupName>

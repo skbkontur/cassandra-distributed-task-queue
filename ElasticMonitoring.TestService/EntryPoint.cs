@@ -1,7 +1,5 @@
 ﻿using GroboContainer.Core;
 
-using GroboTrace;
-
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Settings;
 
