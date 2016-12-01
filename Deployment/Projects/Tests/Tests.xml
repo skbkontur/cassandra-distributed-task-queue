@@ -21,9 +21,6 @@
     <TestSolutionFileName>RemoteTaskQueue.sln</TestSolutionFileName>
     <BuildSolutionsMSBuildFile>$(MSBuildThisFileDirectory)\..\..\Build.xml</BuildSolutionsMSBuildFile>
   </PropertyGroup>
-
-  <Import Project="..\Configuration\ServiceSuites.xml" />
-  <Import Project="..\Configuration\FrontEndSuites.xml" />
   
   <ItemGroup>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
