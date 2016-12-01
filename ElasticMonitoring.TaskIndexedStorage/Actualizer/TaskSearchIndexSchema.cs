@@ -19,12 +19,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
         }
 
-        public void RemoveOldVersionTemplates()
-        {
-            //NOTE first version template. used in RosAlko
-            elasticsearchClient.IndicesDeleteTemplateForAll("monitoringsearch-template").ProcessResponse(200, 404);
-        }
-
         public void ActualizeTemplate(bool local = false)
         {
             PutDataTemplate(settings.TemplateNamePrefix + DataTemplateSuffix, settings.IndexPrefix + "*", local);
