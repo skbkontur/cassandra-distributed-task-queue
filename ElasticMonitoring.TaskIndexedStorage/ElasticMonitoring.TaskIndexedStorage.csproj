@@ -61,6 +61,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RtqElasticsearchClientFactory.cs" />
     <Compile Include="Actualizer\TaskSchemaDynamicSettings.cs" />
     <Compile Include="Actualizer\TaskSearchIndexDataTestService.cs" />
     <Compile Include="Actualizer\TaskSearchIndexSchema.cs" />

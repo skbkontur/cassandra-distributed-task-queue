@@ -11,7 +11,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class TaskSearchClient : ITaskSearchClient
     {
-        public TaskSearchClient(InternalDataElasticsearchFactory elasticsearchClientFactory, SearchIndexNameFactory searchIndexNameFactory, TaskSearchDynamicSettings taskSearchDynamicSettings)
+        public TaskSearchClient(RtqElasticsearchClientFactory elasticsearchClientFactory, SearchIndexNameFactory searchIndexNameFactory, TaskSearchDynamicSettings taskSearchDynamicSettings)
         {
             this.searchIndexNameFactory = searchIndexNameFactory;
             this.taskSearchDynamicSettings = taskSearchDynamicSettings;

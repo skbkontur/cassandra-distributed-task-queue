@@ -6,6 +6,7 @@ using log4net;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.Utils;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
@@ -14,7 +15,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 {
     public class TaskIndexCloseService
     {
-        public TaskIndexCloseService(SearchIndexNameFactory searchIndexNameFactory, InternalDataElasticsearchFactory elasticsearchClientFactory, ITaskWriteDynamicSettings taskWriteDynamicSettings)
+        public TaskIndexCloseService(SearchIndexNameFactory searchIndexNameFactory, RtqElasticsearchClientFactory elasticsearchClientFactory, ITaskWriteDynamicSettings taskWriteDynamicSettings)
         {
             this.searchIndexNameFactory = searchIndexNameFactory;
             this.taskWriteDynamicSettings = taskWriteDynamicSettings;
@@ -27,13 +28,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             if(response.HttpStatusCode == 404)
             {
                 logger.InfoFormat("Index = '{0}' not exists - creating it", index);
-                var respCreate = elasticsearchClient.IndicesCreate(index, new { }).ProcessResponse(200, 400);
-                if (!(respCreate.HttpStatusCode == 400 && respCreate.ServerError != null && respCreate.ServerError.ExceptionType == "IndexAlreadyExistsException"))
+                var respCreate = elasticsearchClient.IndicesCreate(index, new {}).ProcessResponse(200, 400);
+                if(!(respCreate.HttpStatusCode == 400 && respCreate.ServerError != null && respCreate.ServerError.ExceptionType == "IndexAlreadyExistsException"))
                     respCreate.ProcessResponse(); //note throw any other error
                 return true;
             }
             var state = response.Response;
-            return state.Trim('\r','\n',' ') == "open";
+            return state.Trim('\r', '\n', ' ') == "open";
         }
 
         public void CloseOldIndices(DateTime from, DateTime to)

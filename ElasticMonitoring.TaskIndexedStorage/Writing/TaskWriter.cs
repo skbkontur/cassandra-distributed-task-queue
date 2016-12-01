@@ -19,7 +19,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
     public class TaskWriter
     {
         public TaskWriter(
-            InternalDataElasticsearchFactory elasticsearchClientFactory,
+            RtqElasticsearchClientFactory elasticsearchClientFactory,
             IWriteIndexNameFactory indexNameFactory,
             TaskDataService taskDataService)
         {

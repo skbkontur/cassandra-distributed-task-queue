@@ -15,6 +15,7 @@ using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search;
@@ -215,7 +216,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         private readonly SearchIndexNameFactory searchIndexNameFactory;
 
         [Injected]
-        private readonly InternalDataElasticsearchFactory elasticsearchClientFactory;
+        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
 
         [Injected]
         private readonly TaskIndexCloseService service;

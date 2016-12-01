@@ -11,8 +11,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class LastReadTicksStorage
     {
-        public LastReadTicksStorage(
-            InternalDataElasticsearchFactory elasticsearchClientFactory, ITaskWriteDynamicSettings settings)
+        public LastReadTicksStorage(RtqElasticsearchClientFactory elasticsearchClientFactory, ITaskWriteDynamicSettings settings)
         {
             elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
             index = settings.LastTicksIndex;

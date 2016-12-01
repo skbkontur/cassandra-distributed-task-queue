@@ -7,7 +7,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
     public class TaskSearchIndexDataTestService
     {
         public TaskSearchIndexDataTestService(
-            InternalDataElasticsearchFactory elasticsearchClientFactory,
+            RtqElasticsearchClientFactory elasticsearchClientFactory,
             TaskSchemaDynamicSettings settings)
         {
             this.settings = settings;
