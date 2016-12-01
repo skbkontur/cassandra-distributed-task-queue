@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 using FluentAssertions;
@@ -39,11 +40,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestPaging()
         {
-            var t0 = DateTime.Now;
+            var t0 = DateTime.UtcNow;
             var taskIds = QueueTasksAndWaitForActualization(
                 Enumerable.Range(0, 20)
                           .Select(x => new AlphaTaskData()).Cast<ITaskData>().ToArray());
-            var t1 = DateTime.Now;
+            var t1 = DateTime.UtcNow;
             var searchResults1 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
@@ -64,11 +65,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestSearchByRange()
         {
-            var t0 = DateTime.Now;
+            var t0 = DateTime.UtcNow;
             var taskIds = QueueTasksAndWaitForActualization(
                 Enumerable.Range(0, 20)
                     .Select(x => new AlphaTaskData()).Cast<ITaskData>().ToArray());
-            var t1 = DateTime.Now;
+            var t1 = DateTime.UtcNow;
             var searchResults = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
@@ -82,12 +83,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestByTaskNames()
         {
-            var t0 = DateTime.Now;
+            var t0 = DateTime.UtcNow;
             QueueTasksAndWaitForActualization(
                 new AlphaTaskData(),
                 new BetaTaskData(),
                 new DeltaTaskData());
-            var t1 = DateTime.Now;
+            var t1 = DateTime.UtcNow;
             var searchResults1 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
@@ -126,11 +127,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestByTaskState()
         {
-            var t0 = DateTime.Now;
+            var t0 = DateTime.UtcNow;
             QueueTasksAndWaitForActualization(
                 new FailingTaskData(),
                 new AlphaTaskData());
-            var t1 = DateTime.Now;
+            var t1 = DateTime.UtcNow;
             var searchResults1 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = Range.OfDate(t0, t1),
@@ -165,12 +166,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestRerunTasksBySearchQuery()
         {
-            var t0 = DateTime.Now;
+            var t0 = DateTime.UtcNow;
             var taskId = QueueTasksAndWaitForActualization(
                 new AlphaTaskData(),
                 new AlphaTaskData(),
                 new BetaTaskData());
-            var t1 = DateTime.Now;
+            var t1 = DateTime.UtcNow;
 
             remoteTaskQueueApiImpl.GetTaskDetails(taskId[0]).TaskMeta.Attempts.Should().Be(1);
             remoteTaskQueueApiImpl.GetTaskDetails(taskId[1]).TaskMeta.Attempts.Should().Be(1);
