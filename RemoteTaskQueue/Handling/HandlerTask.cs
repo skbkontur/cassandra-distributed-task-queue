@@ -67,7 +67,7 @@ namespace RemoteQueue.Handling
             if(taskIndexRecord != handleTasksMetaStorage.FormatIndexRecord(taskMeta) && taskIndexRecord.MinimalStartTicks > localNow.Ticks - MaxAllowedIndexInconsistencyDuration.Ticks)
             {
                 taskShardMetrics.InconsistentIndexRecord.Mark();
-                logger.InfoFormat("taskIndexRecord != IndexRecord(taskMeta), поэтому ждем; taskMeta: {0}; taskIndexRecord: {1}; localNow: {2}", taskMeta, taskIndexRecord, localNow);
+                logger.DebugFormat("taskIndexRecord != IndexRecord(taskMeta), поэтому ждем; taskMeta: {0}; taskIndexRecord: {1}; localNow: {2}", taskMeta, taskIndexRecord, localNow);
                 return LocalTaskProcessingResult.Undefined;
             }
             return TryProcessTaskExclusively();
@@ -81,7 +81,7 @@ namespace RemoteQueue.Handling
                 if(!remoteLockCreator.TryGetLock(taskMeta.TaskGroupLock, out taskGroupRemoteLock))
                 {
                     taskShardMetrics.DidNotGetTaskGroupLock.Mark();
-                    logger.InfoFormat("Не смогли взять групповую блокировку {0} на задачу: {1}", taskMeta.TaskGroupLock, taskIndexRecord.TaskId);
+                    logger.DebugFormat("Не смогли взять групповую блокировку {0} на задачу: {1}", taskMeta.TaskGroupLock, taskIndexRecord.TaskId);
                     return LocalTaskProcessingResult.Undefined;
                 }
                 taskShardMetrics.GotTaskGroupLock.Mark();
@@ -93,7 +93,7 @@ namespace RemoteQueue.Handling
                 if(!remoteLockCreator.TryGetLock(taskIndexRecord.TaskId, out remoteLock))
                 {
                     taskShardMetrics.DidNotGetTaskLock.Mark();
-                    logger.InfoFormat("Не смогли взять блокировку на задачу, пропускаем её: {0}", taskIndexRecord);
+                    logger.DebugFormat("Не смогли взять блокировку на задачу, пропускаем её: {0}", taskIndexRecord);
                     return LocalTaskProcessingResult.Undefined;
                 }
                 taskShardMetrics.GotTaskLock.Mark();
@@ -101,8 +101,12 @@ namespace RemoteQueue.Handling
                 using(remoteLock)
                     result = ProcessTask();
                 sw.Stop();
-                logger.InfoFormat("Завершили выполнение задачи {0} с результатом {1}. Отпустили блокировку {2}. Время работы с учетом взятия лока: {3}{4}",
-                                  taskMeta.Id, result, taskIndexRecord.TaskId, sw.Elapsed, sw.Elapsed > longRunningTaskDurationThreshold ? " [LONG RUNNING]" : string.Empty);
+                var message = string.Format("Завершили выполнение задачи {0} с результатом {1}. Отпустили блокировку {2}. Время работы с учетом взятия лока: {3}{4}",
+                                       taskMeta.Id, result, taskIndexRecord.TaskId, sw.Elapsed, sw.Elapsed > longRunningTaskDurationThreshold ? " [LONG RUNNING]" : string.Empty);
+                if(sw.Elapsed < longRunningTaskDurationThreshold)
+                    logger.Debug(message);
+                else
+                    logger.Warn(message);
                 return result;
             }
             finally
@@ -110,7 +114,7 @@ namespace RemoteQueue.Handling
                 if(taskGroupRemoteLock != null)
                 {
                     taskGroupRemoteLock.Dispose();
-                    logger.InfoFormat("Отпустили групповую блокировку {0} в процессе завершения задачи {1}", taskMeta.TaskGroupLock, taskMeta.Id);
+                    logger.DebugFormat("Отпустили групповую блокировку {0} в процессе завершения задачи {1}", taskMeta.TaskGroupLock, taskMeta.Id);
                 }
             }
         }
@@ -141,7 +145,7 @@ namespace RemoteQueue.Handling
                 if(taskIndexRecord.MinimalStartTicks > localNow.Ticks - MaxAllowedIndexInconsistencyDuration.Ticks)
                 {
                     taskShardMetrics.InconsistentIndexRecord_UnderLock.Mark();
-                    logger.InfoFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta), поэтому ждем; oldMeta: {0}; taskIndexRecord: {1}; localNow: {2}", oldMeta, taskIndexRecord, localNow);
+                    logger.DebugFormat("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta), поэтому ждем; oldMeta: {0}; taskIndexRecord: {1}; localNow: {2}", oldMeta, taskIndexRecord, localNow);
                 }
                 else
                 {
@@ -165,7 +169,7 @@ namespace RemoteQueue.Handling
                 return LocalTaskProcessingResult.Undefined;
             }
 
-            logger.InfoFormat("Начинаем обрабатывать задачу {0}; Reason: {1}; taskIndexRecord: {2}", oldMeta, reason, taskIndexRecord);
+            logger.DebugFormat("Начинаем обрабатывать задачу {0}; Reason: {1}; taskIndexRecord: {2}", oldMeta, reason, taskIndexRecord);
 
             var inProcessMeta = TrySwitchToInProcessState(oldMeta);
             if(inProcessMeta == null)
@@ -181,7 +185,7 @@ namespace RemoteQueue.Handling
             var newMeta = processTaskResult.NewMeta;
             if(newMeta != null && newMeta.NeedTtlProlongation())
             {
-                logger.InfoFormat("Продлеваем время жизни задачи после обработки: {0}", newMeta);
+                logger.DebugFormat("Продлеваем время жизни задачи после обработки: {0}", newMeta);
                 try
                 {
                     newMeta.SetOrUpdateTtl(taskTtl);
@@ -307,7 +311,7 @@ namespace RemoteQueue.Handling
             try
             {
                 handleTasksMetaStorage.AddMeta(newMeta, oldTaskIndexRecord);
-                logger.InfoFormat("Changed task state. Task = {0}", newMeta);
+                logger.DebugFormat("Changed task state. Task = {0}", newMeta);
                 return newMeta;
             }
             catch(Exception e)

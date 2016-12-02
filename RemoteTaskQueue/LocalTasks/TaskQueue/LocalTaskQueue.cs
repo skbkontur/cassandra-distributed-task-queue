@@ -73,7 +73,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             if(taskMeta == null && taskIndexRecord.MinimalStartTicks > (Timestamp.Now - HandlerTask.MaxAllowedIndexInconsistencyDuration).Ticks)
             {
-                logger.InfoFormat("Мета для задачи TaskId = {0} еще не записана, ждем {1}", taskIndexRecord.TaskId, HandlerTask.MaxAllowedIndexInconsistencyDuration);
+                logger.DebugFormat("Мета для задачи TaskId = {0} еще не записана, ждем {1}", taskIndexRecord.TaskId, HandlerTask.MaxAllowedIndexInconsistencyDuration);
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             }
             if(!taskCounter.TryIncrement(taskQueueReason))
