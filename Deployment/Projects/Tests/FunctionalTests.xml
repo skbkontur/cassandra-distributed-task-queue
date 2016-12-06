@@ -14,7 +14,7 @@
     <FrontEndMode>FromDeploy</FrontEndMode>
     <ServiceRunMode>Run</ServiceRunMode>
 
-    <GlobalServices Condition="'$(GlobalServices)' == ''">Cassandra;ChromeDriver;ElasticSearch</GlobalServices>
+    <GlobalServices Condition="'$(GlobalServices)' == ''">Cassandra;ChomeDriver;ElasticSearch</GlobalServices>
   </PropertyGroup>
 
   <PropertyGroup>
