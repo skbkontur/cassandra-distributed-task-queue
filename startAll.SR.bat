@@ -1,5 +1,7 @@
 cd /d %~dp0
 
+%WinDir%\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe Deployment\ResetDatabase.xml /t:Fire 
+
 pushd ..\Assemblies\ElasticSearchVNext\Server\bin\
 start elasticsearch.bat
 popd

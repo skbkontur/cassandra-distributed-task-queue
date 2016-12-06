@@ -37,6 +37,9 @@
     <Content Include="Build.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="ResetDatabase.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Projects\Configuration\ServiceSuites.xml">
       <SubType>Designer</SubType>
     </Content>
