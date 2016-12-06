@@ -1,7 +1,5 @@
 ﻿using System;
 
-using log4net;
-
 using Newtonsoft.Json;
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;

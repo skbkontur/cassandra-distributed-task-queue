@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 using Elasticsearch.Net;
 
@@ -25,12 +26,15 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 using TestCommon;
 
+#pragma warning disable 649
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
     [EdiTestSuite("ElasticMonitoringTestSuite"), WithColumnFamilies, WithExchangeServices, WithApplicationSettings(FileName = "elasticMonitoringTests.csf")]
     public class TaskSearchTests2
     {
         [EdiSetUp]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
             TaskSearchHelpers.WaitFor(() =>
@@ -40,7 +44,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 }, TimeSpan.FromMinutes(1));
 
             elasticMonitoringServiceClient.DeleteAll();
-            taskSearchIndexSchema.ActualizeTemplate(true);
+            taskSearchIndexSchema.ActualizeTemplate(local : true);
         }
 
         [Test]
@@ -208,7 +212,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             }
         }
 
-        // ReSharper disable UnassignedReadonlyField.Compiler
         [Injected]
         private TaskSearchDynamicSettings taskSearchDynamicSettings;
 
@@ -235,7 +238,5 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         [Injected]
         private readonly TaskWriter taskWriter;
-
-        // ReSharper restore UnassignedReadonlyField.Compiler
     }
 }

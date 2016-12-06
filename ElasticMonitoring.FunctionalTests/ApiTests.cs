@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using FluentAssertions;
@@ -20,12 +20,15 @@ using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 using TestCommon;
 
+#pragma warning disable 649
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
     [EdiTestSuite("ElasticMonitoringTestSuite"), WithColumnFamilies, WithExchangeServices, WithApplicationSettings(FileName = "elasticMonitoringTests.csf")]
     public class ApiTests
     {
         [EdiSetUp]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
             TaskSearchHelpers.WaitFor(() =>
@@ -34,7 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                     return status.DistributedLockAcquired;
                 }, TimeSpan.FromMinutes(1));
             elasticMonitoringServiceClient.DeleteAll();
-            taskSearchIndexSchema.ActualizeTemplate(true);
+            taskSearchIndexSchema.ActualizeTemplate(local : true);
         }
 
         [Test]
@@ -61,14 +64,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             searchResults2.TotalCount.Should().Be(20);
             searchResults1.TaskMetas.Select(x => x.Id).Concat(searchResults2.TaskMetas.Select(x => x.Id)).ShouldAllBeEquivalentTo(taskIds);
         }
-        
+
         [Test]
         public void TestSearchByRange()
         {
             var t0 = DateTime.UtcNow;
             var taskIds = QueueTasksAndWaitForActualization(
                 Enumerable.Range(0, 20)
-                    .Select(x => new AlphaTaskData()).Cast<ITaskData>().ToArray());
+                          .Select(x => new AlphaTaskData()).Cast<ITaskData>().ToArray());
             var t1 = DateTime.UtcNow;
             var searchResults = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
                 {
@@ -162,38 +165,39 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 new AlphaTaskData());
             var t1 = DateTime.UtcNow;
             var searchResults1 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
-            {
-                EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                States = new[] { TaskState.Finished },
-                Names = new[] { typeof(AlphaTaskData).Name },
-                Size = 20,
-                From = 0,
-            });
+                {
+                    EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                    States = new[] {TaskState.Finished},
+                    Names = new[] {typeof(AlphaTaskData).Name},
+                    Size = 20,
+                    From = 0,
+                });
             searchResults1.TotalCount.Should().Be(1);
             searchResults1.TaskMetas.Single().Name.Should().Be(typeof(AlphaTaskData).Name);
 
             var searchResults2 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
-            {
-                EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                States = new[] { TaskState.Fatal },
-                Names = new[] { typeof(AlphaTaskData).Name },
-                Size = 20,
-                From = 0,
-            });
+                {
+                    EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                    States = new[] {TaskState.Fatal},
+                    Names = new[] {typeof(AlphaTaskData).Name},
+                    Size = 20,
+                    From = 0,
+                });
             searchResults2.TotalCount.Should().Be(0);
             searchResults2.TaskMetas.Should().BeEmpty();
 
             var searchResults3 = remoteTaskQueueApiImpl.Search(new RemoteTaskQueueSearchRequest
-            {
-                EnqueueDateTimeRange = Range.OfDate(t0, t1),
-                States = new[] { TaskState.Finished },
-                Names = new[] { typeof(FailingTaskData).Name },
-                Size = 20,
-                From = 0,
-            });
+                {
+                    EnqueueDateTimeRange = Range.OfDate(t0, t1),
+                    States = new[] {TaskState.Finished},
+                    Names = new[] {typeof(FailingTaskData).Name},
+                    Size = 20,
+                    From = 0,
+                });
             searchResults3.TotalCount.Should().Be(0);
             searchResults3.TaskMetas.Should().BeEmpty();
         }
+
         [Test]
         public void TestRerunTask()
         {
@@ -203,7 +207,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(60));
             remoteTaskQueueApiImpl.GetTaskDetails(taskId).TaskMeta.Attempts.Should().Be(2);
         }
-        
+
         [Test]
         public void TestRerunTasksBySearchQuery()
         {
@@ -230,7 +234,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             remoteTaskQueueApiImpl.GetTaskDetails(taskId[0]).TaskMeta.Attempts.Should().Be(2);
             remoteTaskQueueApiImpl.GetTaskDetails(taskId[1]).TaskMeta.Attempts.Should().Be(2);
-            remoteTaskQueueApiImpl.GetTaskDetails(taskId[2]).TaskMeta.Attempts.Should().Be(1);            
+            remoteTaskQueueApiImpl.GetTaskDetails(taskId[2]).TaskMeta.Attempts.Should().Be(1);
         }
 
         private string[] QueueTasksAndWaitForActualization(params ITaskData[] taskDatas)

@@ -19,7 +19,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
         }
 
-        public void ActualizeTemplate(bool local = false)
+        public void ActualizeTemplate(bool local)
         {
             PutDataTemplate(settings.TemplateNamePrefix + DataTemplateSuffix, settings.IndexPrefix + "*", local);
             PutDataTemplate(settings.TemplateNamePrefix + OldDataTemplateSuffix, settings.OldDataIndex, local);
@@ -68,7 +68,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 logger.LogInfoFormat("Index already exists");
         }
 
-        private Dictionary<string, string> IndexSettings(bool local)
+        private static Dictionary<string, string> IndexSettings(bool local)
         {
             return local ?
                        new Dictionary<string, string>() :

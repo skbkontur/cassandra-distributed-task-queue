@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using GroBuf;
@@ -20,6 +21,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.C
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 using TestCommon;
+#pragma warning disable 649
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
@@ -27,6 +29,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
     public class TaskSearchTests
     {
         [EdiSetUp]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
             TaskSearchHelpers.WaitFor(() =>
@@ -36,7 +39,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 }, TimeSpan.FromMinutes(1));
             elasticMonitoringServiceClient.DeleteAll();
 
-            taskSearchIndexSchema.ActualizeTemplate(true);
+            taskSearchIndexSchema.ActualizeTemplate(local : true);
         }
 
         [Test]

@@ -8,7 +8,7 @@ using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.C
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    internal class TaskSearchHelpers
+    internal static class TaskSearchHelpers
     {
         public static void WaitFor(Func<bool> func, TimeSpan timeout, int checkTimeout = 99)
         {
