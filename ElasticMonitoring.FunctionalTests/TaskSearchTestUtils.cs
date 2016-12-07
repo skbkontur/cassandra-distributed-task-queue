@@ -46,7 +46,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test, Ignore]
         public void TestDeleteAllIndices()
         {
-            var client = elasticsearchClientFactory.GetClient();
+            var client = elasticsearchClientFactory.DefaultClient.Value;
             client.ClearScroll("_all").ProcessResponse();
             client.IndicesDelete("_all").ProcessResponse();
         }
@@ -55,7 +55,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         public void TestCreateSomeOldIndices()
         {
             taskSearchIndexSchema.ActualizeTemplate();
-            var client = elasticsearchClientFactory.GetClient();
+            var client = elasticsearchClientFactory.DefaultClient.Value;
             for(var i = 0; i < 10; i++)
             {
                 var dt = DateTime.UtcNow.Subtract(TimeSpan.FromDays(i));

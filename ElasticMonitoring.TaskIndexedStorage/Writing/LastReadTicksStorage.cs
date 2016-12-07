@@ -14,7 +14,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         public LastReadTicksStorage(
             InternalDataElasticsearchFactory elasticsearchClientFactory, ITaskWriteDynamicSettings settings)
         {
-            elasticsearchClient = elasticsearchClientFactory.GetClient();
+            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
             index = settings.LastTicksIndex;
             calculatedIndexStartTimeTicks = settings.CalculatedIndexStartTimeTicks;
             logger.LogInfoFormat("CalculatedIndexStartTimeTicks = {0}", DateTimeFormatter.FormatWithMsAndTicks(calculatedIndexStartTimeTicks));

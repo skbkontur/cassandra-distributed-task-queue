@@ -11,7 +11,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             TaskSchemaDynamicSettings settings)
         {
             this.settings = settings;
-            elasticsearchClient = elasticsearchClientFactory.GetClient();
+            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
         }
 
         public void DeleteAll()

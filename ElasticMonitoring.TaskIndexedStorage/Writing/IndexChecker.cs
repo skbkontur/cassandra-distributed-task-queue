@@ -10,7 +10,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
     {
         public IndexChecker(InternalDataElasticsearchFactory factory)
         {
-            elasticsearchClient = factory.GetClient();
+            elasticsearchClient = factory.DefaultClient.Value;
         }
 
         public bool CheckAliasExists(string oldIndexName)

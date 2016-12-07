@@ -15,7 +15,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         {
             this.searchIndexNameFactory = searchIndexNameFactory;
             this.taskSearchDynamicSettings = taskSearchDynamicSettings;
-            elasticsearchClient = elasticsearchClientFactory.GetClient();
+            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
         }
 
         private static bool NotEmpty(string[] arr)

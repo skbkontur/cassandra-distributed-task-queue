@@ -18,7 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         {
             this.searchIndexNameFactory = searchIndexNameFactory;
             this.taskWriteDynamicSettings = taskWriteDynamicSettings;
-            elasticsearchClient = elasticsearchClientFactory.GetClient();
+            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
         }
 
         private bool AdjustIndexState(string index)

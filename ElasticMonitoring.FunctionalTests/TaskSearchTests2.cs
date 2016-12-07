@@ -94,7 +94,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestCloseIndexAndSearchInOldIndex()
         {
-            var client = elasticsearchClientFactory.GetClient();
+            var client = elasticsearchClientFactory.DefaultClient.Value;
             for(var i = 0; i < 5; i++)
             {
                 var dt = DateTime.UtcNow.Subtract(TimeSpan.FromDays(i));
@@ -155,7 +155,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         private void CheckIndicesClosed(DateTime @from, DateTime to)
         {
             var indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(@from.Ticks, to.Ticks, taskWriteDynamicSettings.CurrentIndexNameFormat);
-            var client = elasticsearchClientFactory.GetClient();
+            var client = elasticsearchClientFactory.DefaultClient.Value;
             var response = client.ClusterState("metadata", indexForTimeRange).ProcessResponse();
             foreach(var obj in response.Response["metadata"]["indices"])
                 Assert.AreEqual("close", obj.Value.state.ToString(), string.Format("index '{0}' not closed", obj.Name));
@@ -176,7 +176,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         private void CheckIndexAlias(string index, string[] expected, bool shouldInclude)
         {
-            var client = elasticsearchClientFactory.GetClient();
+            var client = elasticsearchClientFactory.DefaultClient.Value;
             var response = client.ClusterState("metadata", index).ProcessResponse();
             foreach(var obj in response.Response["metadata"]["indices"])
             {
@@ -192,7 +192,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         {
             var indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(@from.Ticks, to.Ticks, taskWriteDynamicSettings.CurrentIndexNameFormat);
 
-            var elasticsearchClient = elasticsearchClientFactory.GetClient();
+            var elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
             foreach(var index in indexForTimeRange.Split(','))
             {
                 var response = elasticsearchClient.CatIndices(index, p => p.H("status")).ProcessResponse(200, 404);

@@ -16,7 +16,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
     {
         public ElasticAvailabilityChecker(InternalDataElasticsearchFactory elasticsearchClientFactory, IApplicationSettings applicationSettings)
         {
-            elasticsearchClient = elasticsearchClientFactory.GetClient();
+            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
             if(!applicationSettings.TryGetTimeSpan("ElasticAliveCheckTimeout", out timeout))
                 timeout = TimeSpan.FromSeconds(20);
             logger.LogInfoFormat("ElasticAliveCheckTimeout is {0}", timeout);
