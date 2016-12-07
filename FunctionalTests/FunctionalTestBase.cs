@@ -1,6 +1,4 @@
-﻿using System;
-
-using RemoteQueue.Cassandra.Entities;
+﻿using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
 

@@ -2,6 +2,7 @@
 
 using NUnit.Framework;
 
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.TestCore;
 
@@ -23,9 +24,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
         [Test]
         public void TestFormatBad()
         {
-            RunMethodWithException<NotSupportedException>(() => IndexNameConverter.ConvertToDateTimeFormat("z{"), "'{}' not balanced. Missing '}'");
-            RunMethodWithException<NotSupportedException>(() => IndexNameConverter.ConvertToDateTimeFormat("z{x{}}"), "Inner '{}' not supported. position 3");
-            RunMethodWithException<NotSupportedException>(() => IndexNameConverter.ConvertToDateTimeFormat("z}{"), "'{}' not balanced. Unexpected '{'  at position 1");
+            RunMethodWithException<InvalidProgramStateException>(() => IndexNameConverter.ConvertToDateTimeFormat("z{"), "'{}' not balanced. Missing '}'");
+            RunMethodWithException<InvalidProgramStateException>(() => IndexNameConverter.ConvertToDateTimeFormat("z{x{}}"), "Inner '{}' not supported. position 3");
+            RunMethodWithException<InvalidProgramStateException>(() => IndexNameConverter.ConvertToDateTimeFormat("z}{"), "'{}' not balanced. Unexpected '{'  at position 1");
         }
 
         private static void RunMethodWithException<TE>(Action a, string msg) where TE : Exception

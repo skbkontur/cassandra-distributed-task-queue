@@ -5,14 +5,13 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using log4net;
-
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Configuration;
 
-using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
 {
@@ -24,24 +23,22 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             ITaskExceptionInfoStorage taskExceptionInfoStorage,
             TaskWriter writer,
             ISerializer serializer,
-            ICatalogueStatsDClient statsDClient, ITaskWriteDynamicSettings taskWriteDynamicSettings)
+            IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
         {
             this.taskDataRegistry = taskDataRegistry;
             this.taskDataStorage = taskDataStorage;
             this.taskExceptionInfoStorage = taskExceptionInfoStorage;
             this.writer = writer;
             this.serializer = serializer;
-            this.statsDClient = taskWriteDynamicSettings.GraphitePrefixOrNull != null ?
-                                    statsDClient.WithScope(string.Format("{0}.Actualization", taskWriteDynamicSettings.GraphitePrefixOrNull)) :
-                                    EmptyStatsDClient.Instance;
+            this.graphiteReporter = graphiteReporter;
         }
 
         public void IndexMetas([NotNull] TaskMetaInformation[] batch)
         {
             if(!batch.Any())
                 return;
-            var taskDatas = statsDClient.Timing("ReadTaskDatas", () => taskDataStorage.Read(batch));
-            var taskExceptionInfos = statsDClient.Timing("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch));
+            var taskDatas = graphiteReporter.ReportTiming("ReadTaskDatas", () => taskDataStorage.Read(batch));
+            var taskExceptionInfos = graphiteReporter.ReportTiming("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch));
             var enrichedBatch = new Tuple<TaskMetaInformation, TaskExceptionInfo[], object>[batch.Length];
             for(var i = 0; i < batch.Length; i++)
             {
@@ -56,7 +53,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 }
                 enrichedBatch[i] = Tuple.Create(taskMeta, taskExceptionInfos[taskMeta.Id], taskDataObj);
             }
-            statsDClient.Timing("Index", () => writer.IndexBatch(enrichedBatch));
+            graphiteReporter.ReportTiming("IndexBatch", () => writer.IndexBatch(enrichedBatch));
         }
 
         private object DeserializeTaskDataSafe(Type taskType, byte[] taskData, TaskMetaInformation taskMetaInformation)
@@ -67,18 +64,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             }
             catch(Exception e)
             {
-                logger.Error(string.Format("Data deserialization error. Taskmeta {0}", taskMetaInformation), e);
+                Log.For(this).LogErrorFormat(e, "Data deserialization error. Taskmeta {0}", taskMetaInformation);
                 return null;
             }
         }
-
-        private static readonly ILog logger = LogManager.GetLogger("TaskMetaProcessor");
 
         private readonly ITaskDataRegistry taskDataRegistry;
         private readonly ITaskDataStorage taskDataStorage;
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly TaskWriter writer;
         private readonly ISerializer serializer;
-        private readonly ICatalogueStatsDClient statsDClient;
+        private readonly IRtqElasticsearchIndexerGraphiteReporter graphiteReporter;
     }
 }

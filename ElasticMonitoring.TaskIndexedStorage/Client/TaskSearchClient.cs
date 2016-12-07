@@ -11,16 +11,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class TaskSearchClient : ITaskSearchClient
     {
-        public TaskSearchClient(RtqElasticsearchClientFactory elasticsearchClientFactory, SearchIndexNameFactory searchIndexNameFactory, TaskSearchDynamicSettings taskSearchDynamicSettings)
+        public TaskSearchClient(RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
-            this.searchIndexNameFactory = searchIndexNameFactory;
-            this.taskSearchDynamicSettings = taskSearchDynamicSettings;
-            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
+            this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
         public TaskSearchResponse SearchNext(string scrollId)
         {
-            var result = elasticsearchClient.Scroll<SearchResponseNoData>(scrollId, x => x.AddQueryString("scroll", scrollLiveTime)).ProcessResponse();
+            var result = elasticsearchClientFactory.DefaultClient.Value.Scroll<SearchResponseNoData>(scrollId, x => x.AddQueryString("scroll", scrollLiveTime)).ProcessResponse();
             return new TaskSearchResponse
                 {
                     Ids = result.Response.Hits.Hits.Select(x => x.Id).ToArray(),
@@ -90,12 +88,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                     must = mustClause
                                 };
 
-            var indexForTimeRange = searchIndexNameFactory.GetIndexForTimeRange(
-                taskSearchRequest.FromTicksUtc,
-                taskSearchRequest.ToTicksUtc,
-                taskSearchDynamicSettings.SearchIndexNameFormat);
-            var metaResponse =
-                elasticsearchClient
+            var indexForTimeRange = SearchIndexNameFactory.GetIndexForTimeRange(taskSearchRequest.FromTicksUtc, taskSearchRequest.ToTicksUtc);
+            var metaResponse = elasticsearchClientFactory
+                .DefaultClient.Value
                     .Search<SearchResponseNoData>(indexForTimeRange,
                                                   new
                                                       {
@@ -130,10 +125,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 };
         }
 
-        private const string scrollLiveTime = "10m";
         private const int pageSize = 100;
-        private readonly SearchIndexNameFactory searchIndexNameFactory;
-        private readonly TaskSearchDynamicSettings taskSearchDynamicSettings;
-        private readonly IElasticsearchClient elasticsearchClient;
+        private const string scrollLiveTime = "10m";
+        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }
 }

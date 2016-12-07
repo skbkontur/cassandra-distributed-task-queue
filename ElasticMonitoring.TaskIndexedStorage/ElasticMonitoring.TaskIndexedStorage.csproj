@@ -30,11 +30,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.Configuration.Settings">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.Core.ElasticsearchClientExtensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.ServiceLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
     <Reference Include="Elasticsearch.Net">
       <HintPath>..\..\Assemblies\ElasticSearch\Client\Elasticsearch.Net.dll</HintPath>
@@ -62,21 +70,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RtqElasticsearchClientFactory.cs" />
-    <Compile Include="Actualizer\TaskSchemaDynamicSettings.cs" />
-    <Compile Include="Actualizer\TaskSearchIndexDataTestService.cs" />
     <Compile Include="Actualizer\TaskSearchIndexSchema.cs" />
     <Compile Include="Client\ITaskSearchClient.cs" />
     <Compile Include="Client\TaskSearchClient.cs" />
     <Compile Include="Client\TaskSearchRequest.cs" />
     <Compile Include="Client\TaskSearchResponse.cs" />
+    <Compile Include="RtqElasticsearchConsts.cs" />
     <Compile Include="Utils\IndexNameConverter.cs" />
+    <Compile Include="Writing\IRtqElasticsearchIndexingProgressMarkerStorage.cs" />
     <Compile Include="Writing\IndexChecker.cs" />
     <Compile Include="Writing\OmitNonIndexablePropertiesContractResolver.cs" />
     <Compile Include="Writing\Contracts\TaskIndexedInfo.cs" />
-    <Compile Include="Writing\ITaskWriteDynamicSettings.cs" />
     <Compile Include="Writing\IWriteIndexNameFactory.cs" />
     <Compile Include="Search\SearchIndexNameFactory.cs" />
-    <Compile Include="Writing\LastReadTicksStorage.cs" />
+    <Compile Include="Writing\RtqElasticsearchIndexingProgressMarkerStorage.cs" />
     <Compile Include="Writing\Contracts\MetaIndexedInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Writing\Contracts\LastUpdateTicks.cs" />
@@ -84,7 +91,6 @@
     <Compile Include="Writing\StringConverter.cs" />
     <Compile Include="Writing\TaskDataService.cs" />
     <Compile Include="Writing\TaskWriter.cs" />
-    <Compile Include="Search\TaskSearchDynamicSettings.cs" />
     <Compile Include="Types\ElasticMonitoringStatus.cs" />
     <Compile Include="Utils\DateTimeFormatter.cs" />
     <Compile Include="Utils\NamedLoggerExtension.cs" />
@@ -98,7 +104,6 @@
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

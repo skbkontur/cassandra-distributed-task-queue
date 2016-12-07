@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using FluentAssertions;
@@ -10,36 +9,18 @@ using NUnit.Framework;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Ranges;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Api;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Client;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
-
-using TestCommon;
+using SKBKontur.Catalogue.TestCore.Waiting;
 
 #pragma warning disable 649
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 {
-    [EdiTestSuite("ElasticMonitoringTestSuite"), WithColumnFamilies, WithExchangeServices, WithApplicationSettings(FileName = "elasticMonitoringTests.csf")]
-    public class ApiTests
+    public class ApiTests : SearchTasksTestBase
     {
-        [EdiSetUp]
-        [SuppressMessage("ReSharper", "UnusedMember.Global")]
-        public void SetUp()
-        {
-            TaskSearchHelpers.WaitFor(() =>
-                {
-                    var status = elasticMonitoringServiceClient.GetStatus();
-                    return status.DistributedLockAcquired;
-                }, TimeSpan.FromMinutes(1));
-            elasticMonitoringServiceClient.DeleteAll();
-            taskSearchIndexSchema.ActualizeTemplate(local : true);
-        }
-
         [Test]
         public void TestPaging()
         {
@@ -253,23 +234,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         private void WaitForTasks(IEnumerable<string> taskIds, TimeSpan timeSpan)
         {
-            TaskSearchHelpers.WaitFor(() =>
+            WaitHelper.Wait(() =>
                 {
                     var tasks = remoteTaskQueue.HandleTaskCollection.GetTasks(taskIds.ToArray());
-                    return tasks.All(t => t.Meta.State == TaskState.Finished || t.Meta.State == TaskState.Fatal);
+                    return tasks.All(t => t.Meta.State == TaskState.Finished || t.Meta.State == TaskState.Fatal) ? WaitResult.StopWaiting : WaitResult.ContinueWaiting;
                 }, timeSpan);
         }
 
         [Injected]
         private IRemoteTaskQueueApiImpl remoteTaskQueueApiImpl;
-
-        [Injected]
-        private readonly IElasticMonitoringServiceClient elasticMonitoringServiceClient;
-
-        [Injected]
-        private readonly TaskSearchIndexSchema taskSearchIndexSchema;
-
-        [Injected]
-        private readonly RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue;
     }
 }

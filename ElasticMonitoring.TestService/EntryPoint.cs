@@ -9,7 +9,7 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Scheduler;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
 
@@ -30,8 +30,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             Container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<RemoteQueueTestsCassandraSettings>();
             ConfigureRemoteLock(Container);
             Container.Get<ElasticAvailabilityChecker>().WaitAlive();
-            Container.Get<LazySchemaActualizer>().ActualizeSchema(); //NOTE hack for local usage
-            Container.Get<IElasticMonitoringServiceSchedulableRunner>().Start();
+            Container.Get<TaskSearchIndexSchema>().ActualizeTemplate(local : true);
+            Container.Get<ElasticMonitoringServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();
         }
 

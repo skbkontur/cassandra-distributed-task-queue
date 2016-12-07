@@ -9,9 +9,7 @@ using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 
-using TestCommon;
-
-namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
+namespace TestCommon
 {
     [WithTestRemoteTaskQueue]
     public class WithColumnFamilies : EdiTestSuiteWrapperAttribute

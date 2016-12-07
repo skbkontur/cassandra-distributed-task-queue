@@ -1,27 +1,3 @@
-SchedulerInterval = 00:00:00.5
 ServiceName = ElasticMonitoringTestService
 LogDirectory = logs
-
 ListeningPort = 4413
-
-ElasticSearchSchema.MonitoringSearch.CurrentIndexNameFormat = monitoring-index-{yyyy.MM.dd}
-ElasticSearchSchema.MonitoringSearch.LastTicksIndex = lastupdate-monitoringsearch
-ElasticSearchSchema.MonitoringSearch.IndexStartTime = {now}-1.00:00:00
-
-ElasticSearchSchema.MonitoringSearch.EnableDestructveActions = true
-
-# schema settings
-ElasticSearchSchema.MonitoringSearch.NumberOfShards = 1
-ElasticSearchSchema.MonitoringSearch.NumberOfReplicas = 0
-
-ElasticSearchSchema.MonitoringSearch.IndexPrefix = monitoring-index-
-ElasticSearchSchema.MonitoringSearch.TemplateNamePrefix = monitoring-
-ElasticSearchSchema.MonitoringSearch.SearchAliasFormat = {index}-search
-ElasticSearchSchema.MonitoringSearch.OldDataAliasFormat = {index}-old
-ElasticSearchSchema.MonitoringSearch.OldDataIndex = old-data
-
-ActualizeElasticSchemaOnStart = true
-
-ElasticMonitoring.RemoteLockId = TaskSearch_Loading_Lock
-ElasticMonitoring.MaxBatch = 100
-#ElasticSearchSchema.MonitoringSearch.MaxTicks = 0

@@ -1,7 +1,5 @@
-SchedulerInterval = 00:00:00.5
 ServiceName = TaskCounterService
 LogDirectory = logs
-
 ListeningPort = 4410
 
 # Sql

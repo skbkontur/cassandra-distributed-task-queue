@@ -5,23 +5,19 @@ using Elasticsearch.Net;
 
 using JetBrains.Annotations;
 
-using log4net;
-
 using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Bulk;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing
 {
     public class TaskWriter
     {
-        public TaskWriter(
-            RtqElasticsearchClientFactory elasticsearchClientFactory,
-            IWriteIndexNameFactory indexNameFactory,
-            TaskDataService taskDataService)
+        public TaskWriter(RtqElasticsearchClientFactory elasticsearchClientFactory, IWriteIndexNameFactory indexNameFactory, TaskDataService taskDataService)
         {
             this.indexNameFactory = indexNameFactory;
             this.taskDataService = taskDataService;
@@ -30,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         public void IndexBatch([NotNull] Tuple<TaskMetaInformation, TaskExceptionInfo[], object>[] batch)
         {
-            logger.LogInfoFormat("IndexBatch: {0} tasks", batch.Length);
+            Log.For(this).LogInfoFormat("IndexBatch: {0} tasks", batch.Length);
             var body = new object[batch.Length * 2];
             for(var i = 0; i < batch.Length; i++)
             {
@@ -74,9 +70,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         private readonly IWriteIndexNameFactory indexNameFactory;
         private readonly TaskDataService taskDataService;
-
         private readonly IElasticsearchClient elasticsearchClient;
-
-        private static readonly ILog logger = LogManager.GetLogger("TaskWriter");
     }
 }

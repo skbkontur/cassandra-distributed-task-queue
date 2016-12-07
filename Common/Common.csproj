@@ -60,7 +60,6 @@
     <Compile Include="LockRepositoryContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteTaskQueue\RemoteQueueTestsCassandraSettings.cs" />
-    <Compile Include="RemoteTaskQueue\RemoteTaskQueuePlugin.cs" />
     <Compile Include="RemoteTaskQueue\TaskDataRegistry.cs" />
   </ItemGroup>
   <ItemGroup>

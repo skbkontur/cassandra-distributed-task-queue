@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 
 using ExchangeService.UserClasses;
 
@@ -54,18 +51,6 @@ namespace FunctionalTests
         {
         }
 
-        protected void WaitFor(Func<bool> func, TimeSpan timeout, int checkTimeout = 99)
-        {
-            var stopwatch = Stopwatch.StartNew();
-            while(stopwatch.Elapsed < timeout)
-            {
-                Thread.Sleep(checkTimeout);
-                if(func())
-                    return;
-            }
-            Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
-        }
-
         protected Container Container { get; private set; }
 
         private void ResetTaskQueueCassandraState()
@@ -86,12 +71,7 @@ namespace FunctionalTests
 
         private void ResetTaskQueueMonitoringState()
         {
-            // TODO переделать на новый мониторинг
-/*
-            var client = Container.Get<IRemoteTaskQueueMonitoringServiceClient>();
-            client.DropLocalStorage();
-            client.ActualizeDatabaseScheme();
-*/
+            Container.Get<ElasticMonitoringServiceClient>().ResetState();
         }
 
         private void ResetTicksHolderState()

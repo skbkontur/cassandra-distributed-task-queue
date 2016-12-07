@@ -1,8 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
-using GroboContainer.Infection;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
@@ -13,23 +12,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 {
     public class MetaCachedReader : IMetaCachedReader
     {
-        public MetaCachedReader(IHandleTasksMetaStorage handleTasksMetaStorage, long cacheTimeoutTicks)
+        public MetaCachedReader(IHandleTasksMetaStorage handleTasksMetaStorage)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
-            this.cacheTimeoutTicks = cacheTimeoutTicks;
-        }
-
-        [ContainerConstructor]
-        public MetaCachedReader(IHandleTasksMetaStorage handleTasksMetaStorage)
-            : this(handleTasksMetaStorage, TaskIndexSettings.MetaCacheInterval.Ticks)
-        {
         }
 
         public void CollectGarbage(long nowTicks)
         {
             lock(stateLock)
             {
-                cache.DeleteWhere(pair => nowTicks - pair.Value.LastModificationTicks.Value > cacheTimeoutTicks);
+                cache.DeleteWhere(pair => nowTicks - pair.Value.LastModificationTicks.Value > cacheTimeout.Ticks);
                 UpdateCount();
             }
         }
@@ -116,12 +108,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         }
 
         private long count;
-
         private readonly object stateLock = new object();
-
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
-
-        private readonly long cacheTimeoutTicks;
+        private readonly TimeSpan cacheTimeout = TimeSpan.FromMinutes(10);
         private readonly Dictionary<string, TaskMetaInformation> cache = new Dictionary<string, TaskMetaInformation>();
     }
 }

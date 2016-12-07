@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 
-using Elasticsearch.Net;
-
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing
 {
     public class IndexChecker
     {
-        public IndexChecker(RtqElasticsearchClientFactory factory)
+        public IndexChecker(RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
-            elasticsearchClient = factory.DefaultClient.Value;
+            this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
         public bool CheckAliasExists(string oldIndexName)
         {
             lock(lockObject)
+            {
                 if(aliasExsitsCache.Contains(oldIndexName))
                     return true;
-            if(elasticsearchClient.IndicesExistsAliasForAll(oldIndexName).ProcessResponse(200, 404).HttpStatusCode == 404)
+            }
+            if(elasticsearchClientFactory.DefaultClient.Value.IndicesExistsAliasForAll(oldIndexName).ProcessResponse(200, 404).HttpStatusCode == 404)
                 return false;
             lock(lockObject)
                 aliasExsitsCache.Add(oldIndexName);
@@ -27,6 +27,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         private readonly object lockObject = new object();
         private readonly HashSet<string> aliasExsitsCache = new HashSet<string>();
-        private readonly IElasticsearchClient elasticsearchClient;
+        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }
 }

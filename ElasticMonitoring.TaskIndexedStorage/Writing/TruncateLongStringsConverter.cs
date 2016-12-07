@@ -2,6 +2,8 @@
 
 using Newtonsoft.Json;
 
+using SKBKontur.Catalogue.Objects;
+
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing
 {
     internal class TruncateLongStringsConverter : JsonConverter
@@ -24,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            throw new NotSupportedException();
+            throw new InvalidProgramStateException("Operation is not supported");
         }
 
         public override bool CanConvert(Type objectType)

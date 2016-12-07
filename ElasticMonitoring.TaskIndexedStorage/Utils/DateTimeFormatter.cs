@@ -2,7 +2,7 @@
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils
 {
-    internal class DateTimeFormatter
+    public class DateTimeFormatter
     {
         public static string FormatWithMs(DateTime dateTime)
         {
@@ -19,11 +19,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             return FormatWithMsAndTicks(new DateTime(TicksToDateTimeRange(ticks), DateTimeKind.Utc));
         }
 
-        public static string FormatTimeSpan(TimeSpan span)
-        {
-            return span.ToString("c") + " s";
-        }
-
         public static long TicksToDateTimeRange(long ticks)
         {
             if(ticks < minTicks)
@@ -34,7 +29,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         }
 
         private const string formatWithMs = "dd.MM.yyyy HH:mm:ss.fff";
-
         private static readonly long minTicks = DateTime.MinValue.Ticks;
         private static readonly long maxTicks = DateTime.MaxValue.Ticks;
     }

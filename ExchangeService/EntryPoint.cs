@@ -1,6 +1,4 @@
-﻿using GroboTrace;
-
-using RemoteQueue.Settings;
+﻿using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;

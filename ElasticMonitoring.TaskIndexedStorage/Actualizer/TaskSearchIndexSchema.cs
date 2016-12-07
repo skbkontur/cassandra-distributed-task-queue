@@ -2,40 +2,33 @@
 
 using Elasticsearch.Net;
 
-using log4net;
+using JetBrains.Annotations;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer
 {
     public class TaskSearchIndexSchema
     {
-        public TaskSearchIndexSchema(
-            RtqElasticsearchClientFactory elasticsearchClientFactory,
-            TaskSchemaDynamicSettings settings)
+        public TaskSearchIndexSchema(RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
-            this.settings = settings;
-            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
+            this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
         public void ActualizeTemplate(bool local)
         {
-            PutDataTemplate(settings.TemplateNamePrefix + DataTemplateSuffix, settings.IndexPrefix + "*", local);
-            PutDataTemplate(settings.TemplateNamePrefix + OldDataTemplateSuffix, settings.OldDataIndex, local);
-            CreateIndexIfNotExists(settings.OldDataIndex, new {});
-            CreateLastUpdateTicksIndex(settings.LastTicksIndex);
+            PutDataTemplate(RtqElasticsearchConsts.TemplateName, RtqElasticsearchConsts.IndexPrefix + "*", local);
+            CreateIndexIfNotExists(RtqElasticsearchConsts.OldDataIndex, new {});
+            CreateIndexingProgressIndex(RtqElasticsearchConsts.IndexingProgressIndex, local);
         }
 
-        private void CreateLastUpdateTicksIndex(string indexName)
+        private void CreateIndexingProgressIndex([NotNull] string indexName, bool local)
         {
             CreateIndexIfNotExists(indexName, new
                 {
-                    settings = new
-                        {
-                            number_of_shards = settings.NumberOfShards,
-                            number_of_replicas = settings.ReplicaCount,
-                        },
+                    settings = Settings(local),
                     mappings = new
                         {
                             LastUpdateTicks = new
@@ -46,7 +39,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                             Ticks = new
                                                 {
                                                     type = "long",
-                                                    index = false,
+                                                    index = false
                                                 }
                                         }
                                 }
@@ -54,48 +47,51 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                 });
         }
 
-        private void CreateIndexIfNotExists(string indexName, object body)
+        private void CreateIndexIfNotExists([NotNull] string indexName, [NotNull] object body)
         {
-            logger.LogInfoFormat("Attempt to create Index {0}", indexName);
+            Log.For(this).LogInfoFormat("Attempt to create Index {0}", indexName);
 
+            var elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
             if(elasticsearchClient.IndicesExists(indexName).ProcessResponse(200, 404).HttpStatusCode == 404)
             {
-                logger.LogInfoFormat("Index not exists - creating {0}", indexName);
+                Log.For(this).LogInfoFormat("Index not exists - creating {0}", indexName);
                 elasticsearchClient.IndicesCreate(indexName, body).ProcessResponse();
                 elasticsearchClient.ClusterHealth(indexName, p => p.WaitForStatus(WaitForStatus.Green)).ProcessResponse();
             }
             else
-                logger.LogInfoFormat("Index already exists");
+                Log.For(this).LogInfoFormat("Index already exists");
         }
 
-        private static Dictionary<string, string> IndexSettings(bool local)
+        private static object Settings(bool local)
         {
-            return local ?
-                       new Dictionary<string, string>() :
-                       new Dictionary<string, string>
+            return local
+                       ? new
                            {
+                               number_of_shards = 1,
+                               number_of_replicas = 0,
+                               index = new Dictionary<string, string>()
+                           }
+                       : new
+                           {
+                               number_of_shards = 5,
+                               number_of_replicas = 1,
+                               index = new Dictionary<string, string>
+                                   {
                                {"routing.allocation.require._name", "edi-elastic-*"},
                                {"routing.allocation.exclude._name", "edi-elastic-*-i*"}
+                                   }
                            };
         }
 
-        private void PutDataTemplate(string templateName, string indicesPattern, bool local)
+        private void PutDataTemplate([NotNull] string templateName, [NotNull] string indicesPattern, bool local)
         {
-            logger.LogInfoFormat("Attempt to put data template name '{0}' pattern '{1}'", templateName, indicesPattern);
-            var response = elasticsearchClient.IndicesGetTemplateForAll(templateName).ProcessResponse(200, 404);
-            //if(response.HttpStatusCode == 404)
-            {
-                //logger.LogInfoFormat("Template not exists - creating");
-                elasticsearchClient
+            Log.For(this).LogInfoFormat("Attempt to put data template name '{0}' pattern '{1}'", templateName, indicesPattern);
+            elasticsearchClientFactory
+                .DefaultClient.Value
                     .IndicesPutTemplateForAll(templateName, new
                         {
                             template = indicesPattern,
-                            settings = new
-                                {
-                                    number_of_shards = settings.NumberOfShards,
-                                    number_of_replicas = settings.ReplicaCount,
-                                    index = IndexSettings(local)
-                                },
+                        settings = Settings(local),
                             mappings = new
                                 {
                                     _default_ = new
@@ -191,33 +187,31 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                                 },
                             aliases = new Dictionary<string, object>
                                 {
-                                    {settings.SearchAliasFormat, new {}},
-                                    {settings.OldDataAliasFormat, new {}},
+                                {RtqElasticsearchConsts.SearchAliasFormat, new {}},
+                                {RtqElasticsearchConsts.OldDataAliasFormat, new {}},
                                 }
                         }
                     ).ProcessResponse();
             }
-        }
 
+        [NotNull]
         private static object DateTemplate()
         {
             return new {type = "date", store = false, format = "dateOptionalTime"};
         }
 
+        [NotNull]
         private static object TextTemplate()
         {
             return new {type = "text", store = false, index = true};
         }
 
+        [NotNull]
         private static object KeywordTemplate()
         {
             return new {type = "keyword", store = false, index = true};
         }
 
-        public const string DataTemplateSuffix = "data";
-        public const string OldDataTemplateSuffix = "old-data";
-        private readonly TaskSchemaDynamicSettings settings;
-        private readonly IElasticsearchClient elasticsearchClient;
-        private static readonly ILog logger = LogManager.GetLogger("TaskSearchIndexSchema");
+        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }
 }

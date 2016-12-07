@@ -3,22 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using log4net;
-
 using MoreLinq;
-
-using Newtonsoft.Json;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
-using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.Utils;
+using SKBKontur.Catalogue.Objects.Json;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Types;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
 {
@@ -28,66 +23,27 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             IEventLogRepository eventLogRepository,
             IMetaCachedReader reader,
             ITaskMetaProcessor taskMetaProcessor,
-            LastReadTicksStorage lastReadTicksStorage,
+            IRtqElasticsearchIndexingProgressMarkerStorage indexingProgressMarkerStorage,
             IGlobalTime globalTime,
-            IRemoteLockCreator remoteLockCreator,
-            ICatalogueStatsDClient statsDClient,
-            ICatalogueGraphiteClient graphiteClient,
-            ITaskWriteDynamicSettings dynamicSettings)
+            IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
         {
             this.eventLogRepository = eventLogRepository;
             this.reader = reader;
             this.taskMetaProcessor = taskMetaProcessor;
             this.globalTime = globalTime;
-            this.remoteLockCreator = remoteLockCreator;
-            this.lastReadTicksStorage = lastReadTicksStorage;
-            maxBatch = dynamicSettings.MaxBatch;
+            this.graphiteReporter = graphiteReporter;
+            this.indexingProgressMarkerStorage = indexingProgressMarkerStorage;
             unstableZoneTicks = eventLogRepository.UnstableZoneLength.Ticks;
             unprocessedEventsMap = new EventsMap(unstableZoneTicks * 2);
             processedEventsMap = new EventsMap(unstableZoneTicks * 2);
             Interlocked.Exchange(ref lastTicks, unknownTicks);
             Interlocked.Exchange(ref snapshotTicks, unknownTicks);
-
-            graphitePrefix = dynamicSettings.GraphitePrefixOrNull;
-            if(graphitePrefix != null)
-            {
-                logger.LogInfoFormat("Graphite is ON. Prefix={0}", graphitePrefix);
-                this.graphiteClient = graphiteClient;
-                this.statsDClient = statsDClient.WithScope(string.Format("{0}.Actualization", graphitePrefix));
-            }
-            else
-                this.statsDClient = EmptyStatsDClient.Instance;
-
-            maxTicks = dynamicSettings.MaxTicks;
-            remoteLockId = dynamicSettings.RemoteLockId;
-
-            if(maxTicks.HasValue)
-                logger.LogInfoFormat("MaxTicks is {0}", DateTimeFormatter.FormatWithMsAndTicks(maxTicks.Value));
-            logger.LogInfoFormat("RemoteLockId: '{0}'", remoteLockId);
-        }
-
-        private const long unknownTicks = long.MinValue;
-
-        private long GetNow()
-        {
-            return globalTime.GetNowTicks();
-        }
-
-        public void Dispose()
-        {
-            if(distributedLock != null)
-            {
-                //NOTE close lock if shutdown by container
-                distributedLock.Dispose();
-                distributedLock = null;
-                logger.InfoFormat("Distributed lock released");
-            }
         }
 
         private TaskMetaInformation[] CutMetas(TaskMetaInformation[] metas)
         {
             //NOTE hack code for tests
-            var ticks = MinTicksHack;
+            var ticks = Interlocked.Read(ref minTicksHack);
             if(ticks <= 0)
                 return metas;
             var list = new List<TaskMetaInformation>();
@@ -103,14 +59,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         {
             lock(lockObject)
             {
-                if(!DistributedLockAcquired())
-                    return;
-                var now = GetNow();
+                var nowTicks = globalTime.GetNowTicks();
                 var fromTicks = Interlocked.Read(ref lastTicks);
 
-                if(maxTicks.HasValue && fromTicks > maxTicks) //NOTE hack
+                var indexingFinishTimestamp = indexingProgressMarkerStorage.IndexingFinishTimestamp;
+                if(indexingFinishTimestamp != null && fromTicks > indexingFinishTimestamp.Ticks) //NOTE hack
                 {
-                    logger.LogInfoFormat("MaxTicks is reached.");
+                    Log.For(this).LogInfoFormat(string.Format("IndexingFinishTimestamp is reached: {0}", indexingFinishTimestamp));
                     return;
                 }
 
@@ -121,16 +76,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                     Interlocked.Exchange(ref snapshotTicks, fromTicks);
                 }
 
-                logger.LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(fromTicks), DateTimeFormatter.FormatWithMsAndTicks(now));
+                Log.For(this).LogInfoFormat("Processing new events from {0} to {1}", DateTimeFormatter.FormatWithMsAndTicks(fromTicks), DateTimeFormatter.FormatWithMsAndTicks(nowTicks));
 
                 var hasEvents = false;
 
-                unprocessedEventsMap.CollectGarbage(now);
+                unprocessedEventsMap.CollectGarbage(nowTicks);
                 //NOTE collectGarbage before unprocessedEventsMap.GetEvents() to kill trash events that has no meta
                 var unprocessedEvents = unprocessedEventsMap.GetEvents();
 
-                processedEventsMap.CollectGarbage(now);
-                reader.CollectGarbage(now);
+                processedEventsMap.CollectGarbage(nowTicks);
+                reader.CollectGarbage(nowTicks);
                 var newEvents = GetEvents(fromTicks);
 
                 unprocessedEvents.Concat(newEvents)
@@ -138,28 +93,29 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                                  .ForEach(events =>
                                      {
                                          hasEvents = true;
-                                         ProcessEventsBatch(events, now);
+                                         ProcessEventsBatch(events, nowTicks);
                                      });
 
                 if(!hasEvents)
-                    ProcessEventsBatch(new TaskMetaUpdatedEvent[0], now);
+                    ProcessEventsBatch(new TaskMetaUpdatedEvent[0], nowTicks);
             }
         }
 
         private long GetLastTicks()
         {
-            logger.LogInfoFormat("Loading Last ticks");
-            var lastReadTicks = lastReadTicksStorage.GetLastReadTicks();
-            logger.InfoFormat("Last ticks loaded. Value={0}", DateTimeFormatter.FormatWithMsAndTicks(lastReadTicks));
+            Log.For(this).LogInfoFormat("Loading Last ticks");
+            var lastReadTicks = indexingProgressMarkerStorage.GetLastReadTicks();
+            Log.For(this).LogInfoFormat("Last ticks loaded. Value={0}", DateTimeFormatter.FormatWithMsAndTicks(lastReadTicks));
             return lastReadTicks;
         }
 
         private void ProcessEventsBatch(TaskMetaUpdatedEvent[] taskMetaUpdatedEvents, long now)
         {
-            if(maxTicks.HasValue && Interlocked.Read(ref lastTicks) > maxTicks) //NOTE hack
+            var indexingFinishTimestamp = indexingProgressMarkerStorage.IndexingFinishTimestamp;
+            if(indexingFinishTimestamp != null && Interlocked.Read(ref lastTicks) > indexingFinishTimestamp.Ticks) //NOTE hack
                 return;
-            var actualMetas = statsDClient.Timing("ReadMetas", () => ReadActualMetas(taskMetaUpdatedEvents, now));
 
+            var actualMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => ReadActualMetas(taskMetaUpdatedEvents, now));
             actualMetas = CutMetas(actualMetas);
 
             taskMetaProcessor.IndexMetas(actualMetas);
@@ -198,22 +154,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return actualMetasArray;
         }
 
-        public long MinTicksHack { get { return Interlocked.Read(ref minTicksHack); } }
-
         public void SendActualizationLagToGraphite()
         {
-            if(graphitePrefix == null)
-                return;
             var lag = GetActualizationLag();
-            if(lag != null)
-                graphiteClient.Send(string.Format("{0}.Actualization.Lag", graphitePrefix), lag.Value, DateTime.UtcNow);
+            if(lag.HasValue)
+                graphiteReporter.ReportActualizationLag(lag.Value);
         }
 
-        private long? GetActualizationLag()
+        private TimeSpan? GetActualizationLag()
         {
             var ticks = Interlocked.Read(ref snapshotTicks);
             if(ticks != unknownTicks)
-                return (long)TimeSpan.FromTicks(DateTime.UtcNow.Ticks - ticks).TotalMilliseconds;
+                return TimeSpan.FromTicks(DateTime.UtcNow.Ticks - ticks);
             return null;
         }
 
@@ -235,8 +187,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         {
             if(ticks != unknownTicks)
             {
-                logger.LogInfoFormat("Snapshot moved to {0}", DateTimeFormatter.FormatWithMsAndTicks(ticks));
-                lastReadTicksStorage.SetLastReadTicks(ticks);
+                Log.For(this).LogInfoFormat("Snapshot moved to {0}", DateTimeFormatter.FormatWithMsAndTicks(ticks));
+                indexingProgressMarkerStorage.SetLastReadTicks(ticks);
             }
         }
 
@@ -255,18 +207,17 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
 
         public void LogStatus()
         {
-            logger.InfoFormat("Status: {0}", JsonConvert.SerializeObject(GetStatus(), Formatting.Indented));
+            Log.For(this).LogInfoFormat("Status: {0}", GetStatus().ToPrettyJson());
         }
 
         public ElasticMonitoringStatus GetStatus()
         {
-            return new ElasticMonitoringStatus()
+            return new ElasticMonitoringStatus
                 {
-                    DistributedLockAcquired = IsDistributedLockAcquired(),
-                    MinTicksHack = MinTicksHack,
+                    MinTicksHack = Interlocked.Read(ref minTicksHack),
                     UnprocessedMapLength = unprocessedEventsMap.GetUnsafeCount(),
                     ProcessedMapLength = processedEventsMap.GetUnsafeCount(),
-                    ActualizationLagMs = GetActualizationLag(),
+                    ActualizationLag = GetActualizationLag(),
                     LastTicks = Interlocked.Read(ref lastTicks),
                     SnapshotTicks = Interlocked.Read(ref snapshotTicks),
                     NowTicks = DateTime.UtcNow.Ticks,
@@ -274,50 +225,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 };
         }
 
-        public bool IsDistributedLockAcquired()
-        {
-            return distributedLock != null;
-        }
-
-        private bool DistributedLockAcquired()
-        {
-            if(IsDistributedLockAcquired())
-                return true;
-            IRemoteLock @lock;
-            if(remoteLockCreator.TryGetLock(remoteLockId, out @lock))
-            {
-                distributedLock = @lock;
-                logger.InfoFormat("Distributed lock acquired.");
-                return true;
-            }
-            return false;
-        }
-
-        private readonly long? maxTicks;
-
-        private static readonly ILog logger = LogManager.GetLogger("TaskIndexController");
-
+        private const int maxBatch = 1500;
+        private const long unknownTicks = long.MinValue;
         private long minTicksHack;
         private long lastTicks;
         private long snapshotTicks;
-        private volatile IRemoteLock distributedLock;
-
+        private readonly object lockObject = new object();
+        private readonly long unstableZoneTicks;
         private readonly ITaskMetaProcessor taskMetaProcessor;
-        private readonly LastReadTicksStorage lastReadTicksStorage;
-        private readonly IRemoteLockCreator remoteLockCreator;
-        private readonly ICatalogueGraphiteClient graphiteClient;
-        private readonly ICatalogueStatsDClient statsDClient;
+        private readonly IRtqElasticsearchIndexingProgressMarkerStorage indexingProgressMarkerStorage;
+        private readonly IRtqElasticsearchIndexerGraphiteReporter graphiteReporter;
         private readonly IGlobalTime globalTime;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IMetaCachedReader reader;
         private readonly EventsMap unprocessedEventsMap;
         private readonly EventsMap processedEventsMap;
-
-        private readonly object lockObject = new object();
-
-        private readonly long unstableZoneTicks;
-        private readonly int maxBatch;
-        private readonly string graphitePrefix;
-        private readonly string remoteLockId;
     }
 }

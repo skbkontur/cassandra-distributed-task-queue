@@ -8,10 +8,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class WriteIndexNameFactory : IWriteIndexNameFactory
     {
-        public WriteIndexNameFactory(ITaskWriteDynamicSettings settings, IndexChecker indexChecker)
+        public WriteIndexNameFactory(IndexChecker indexChecker)
         {
-            currentFormat = settings.CurrentIndexNameFormat;
-            oldFormat = settings.OldIndexNameFormat;
             this.indexChecker = indexChecker;
         }
 
@@ -19,18 +17,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         {
             if(IsOldTask(taskMetaInformation))
             {
-                var indexName = BuildIndexNameForTime(taskMetaInformation.Ticks, oldFormat);
-                if(oldFormat != currentFormat && !indexChecker.CheckAliasExists(indexName))
+                var indexName = BuildIndexNameForTime(taskMetaInformation.Ticks, oldIndexNameFormat);
+                if(oldIndexNameFormat != CurrentIndexNameFormat && !indexChecker.CheckAliasExists(indexName))
+                {
                     //NOTE эта ситуация возможна если пишут сразу старую задачу в не созданный еще индекс - alias еще не создан (тк индекс еще не создали)
-                    indexName = BuildIndexNameForTime(taskMetaInformation.Ticks, currentFormat);
+                    indexName = BuildIndexNameForTime(taskMetaInformation.Ticks, CurrentIndexNameFormat);
+                }
                 return indexName;
             }
-            return BuildIndexNameForTime(taskMetaInformation.Ticks, currentFormat);
+            return BuildIndexNameForTime(taskMetaInformation.Ticks, CurrentIndexNameFormat);
         }
 
-        private bool IsOldTask(TaskMetaInformation taskMetaInformation)
+        private static bool IsOldTask(TaskMetaInformation taskMetaInformation)
         {
-            return taskMetaInformation.LastModificationTicks.Value > oldIntervalTicks + taskMetaInformation.Ticks;
+            return taskMetaInformation.LastModificationTicks.Value > OldTaskInterval.Ticks + taskMetaInformation.Ticks;
         }
 
         public static string BuildIndexNameForTime(long ticksUtc, string format)
@@ -48,12 +48,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
             return new DateTime(DateTimeFormatter.TicksToDateTimeRange(ticks), DateTimeKind.Utc);
         }
 
-        public static readonly TimeSpan OldTaskInterval = TimeSpan.FromDays(1); //todo move it
-
-        private readonly long oldIntervalTicks = OldTaskInterval.Ticks;
-
         private readonly IndexChecker indexChecker;
-        private readonly string oldFormat;
-        private readonly string currentFormat;
+        public static readonly TimeSpan OldTaskInterval = TimeSpan.FromDays(1);
+        public static readonly string CurrentIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(RtqElasticsearchConsts.CurrentIndexNameFormat);
+        private static readonly string oldIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(IndexNameConverter.FillIndexNamePlaceholder(RtqElasticsearchConsts.OldDataAliasFormat, RtqElasticsearchConsts.CurrentIndexNameFormat));
     }
 }

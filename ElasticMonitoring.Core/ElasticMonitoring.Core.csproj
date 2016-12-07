@@ -30,12 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
-      <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.Configuration.Settings, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.Core.ElasticsearchClientExtensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
@@ -49,10 +46,6 @@
     </Reference>
     <Reference Include="Elasticsearch.Net">
       <HintPath>..\..\Assemblies\ElasticSearch\Client\Elasticsearch.Net.dll</HintPath>
-    </Reference>
-    <Reference Include="GroboContainer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
     <Reference Include="GroBuf, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -82,25 +75,22 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Http\ElasticMonitoringHttpHandler.cs" />
+    <Compile Include="Implementation\RtqElasticsearchIndexerGraphiteReporterBase.cs" />
+    <Compile Include="RtqElasticsearchIndexerStatusHttpHandler.cs" />
     <Compile Include="Implementation\ElasticAvailabilityChecker.cs" />
+    <Compile Include="Implementation\RtqElasticsearchIndexerGraphiteReporter.cs" />
+    <Compile Include="Implementation\IRtqElasticsearchIndexerGraphiteReporter.cs" />
     <Compile Include="Implementation\IMetaCachedReader.cs" />
     <Compile Include="Implementation\ITaskIndexController.cs" />
     <Compile Include="Implementation\ITaskMetaProcessor.cs" />
-    <Compile Include="Implementation\LazySchemaActualizer.cs" />
     <Compile Include="Implementation\MetaCachedReader.cs" />
     <Compile Include="Implementation\TaskIndexCloseService.cs" />
-    <Compile Include="Implementation\TaskIndexSettings.cs" />
     <Compile Include="Implementation\TaskIndexController.cs" />
     <Compile Include="Implementation\TaskMetaProcessor.cs" />
-    <Compile Include="Implementation\TaskWriteDynamicSettings.cs" />
     <Compile Include="Implementation\EventsMap.cs" />
-    <Compile Include="Implementation\Utils\DateTimeFormatter.cs" />
     <Compile Include="Implementation\Utils\DictionaryHelpers.cs" />
-    <Compile Include="Implementation\Utils\NamedLoggerExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scheduler\IElasticMonitoringServiceSchedulableRunner.cs" />
-    <Compile Include="Scheduler\ElasticMonitoringServiceSchedulableRunner.cs" />
+    <Compile Include="RtqElasticsearchIndexerAuxilaryJobsRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ElasticMonitoring.TaskIndexedStorage\ElasticMonitoring.TaskIndexedStorage.csproj">
@@ -112,7 +102,6 @@
       <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

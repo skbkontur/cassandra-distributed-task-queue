@@ -1,5 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
+
+using SKBKontur.Catalogue.Objects;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils
 {
@@ -35,14 +36,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                     break;
                 default:
                     if(count > 1)
-                        throw new NotSupportedException(string.Format("Inner '{{}}' not supported. position {0}", index));
+                        throw new InvalidProgramStateException(string.Format("Inner '{{}}' not supported. position {0}", index));
                     if(count < 0)
-                        throw new NotSupportedException(string.Format("'{{}}' not balanced. Unexpected '{{'  at position {0}", index));
+                        throw new InvalidProgramStateException(string.Format("'{{}}' not balanced. Unexpected '{{'  at position {0}", index));
                     break;
                 }
             }
             if(count != 0)
-                throw new NotSupportedException(string.Format("'{{}}' not balanced. Missing '}}'"));
+                throw new InvalidProgramStateException("\'{}\' not balanced. Missing \'}\'");
             return sb.ToString();
         }
     }

@@ -13,6 +13,7 @@ using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
+using SKBKontur.Catalogue.TestCore.Waiting;
 
 namespace FunctionalTests.ExchangeTests
 {
@@ -22,7 +23,7 @@ namespace FunctionalTests.ExchangeTests
         {
             base.SetUp();
             testCounterRepository = Container.Get<ITestCounterRepository>();
-            taskQueue = Container.Get<IRemoteTaskQueue>();
+            taskQueue = Container.Get<RemoteTaskQueue>();
         }
 
         [Test]
@@ -44,26 +45,13 @@ namespace FunctionalTests.ExchangeTests
         public void TestRunMultipleTasks()
         {
             var taskIds = new List<string>();
-            Enumerable.Range(0, 42).AsParallel().ForAll((i) =>
+            Enumerable.Range(0, 42).AsParallel().ForAll(x =>
                 {
                     var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
                     lock(taskIds)
                         taskIds.Add(taskId);
-                    Thread.Sleep(2000);
-                    // TODO Переделать на новый мониторинг
-/*
-                    var monitoringServiceClient = Container.Get<IRemoteTaskQueueMonitoringServiceStorage>();
-                    WaitFor(
-                        () =>
-                            {
-                                var count = monitoringServiceClient
-                                    .GetCount(x => x.TaskId == taskId && x.State == SKBKontur.Catalogue.RemoteTaskQueue.MonitoringDataTypes.MonitoringEntities.Primitives.TaskState.Finished);
-                                Console.WriteLine(count);
-                                return count == 1;
-                            },
-                        TimeSpan.FromSeconds(50));
-*/
                 });
+            WaitForTasksToFinish(taskIds, TimeSpan.FromSeconds(10));
             Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey("SimpleTaskData", TaskState.Finished)));
         }
 
@@ -81,7 +69,7 @@ namespace FunctionalTests.ExchangeTests
                     {taskId, TaskIndexShardKey("SimpleTaskData", TaskState.Canceled)}
                 });
         }
-        
+
         [Test]
         public void TestCancel_UnknownTask()
         {
@@ -127,11 +115,8 @@ namespace FunctionalTests.ExchangeTests
         public void TestRerun_LockAcquiringFails()
         {
             var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
-            var remoteLockCreator = ((RemoteTaskQueue)taskQueue).RemoteLockCreator;
-            using (remoteLockCreator.Lock(taskId))
-            {
+            using(taskQueue.RemoteLockCreator.Lock(taskId))
                 Assert.That(taskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
-            }
         }
 
         private void Wait(string[] taskIds, int criticalValue, int ms = 5000)
@@ -151,14 +136,22 @@ namespace FunctionalTests.ExchangeTests
             }
         }
 
+        private void WaitForTasksToFinish(IEnumerable<string> taskIds, TimeSpan timeSpan)
+        {
+            WaitHelper.Wait(() =>
+                {
+                    var tasks = taskQueue.HandleTaskCollection.GetTasks(taskIds.ToArray());
+                    return tasks.All(t => t.Meta.State == TaskState.Finished) ? WaitResult.StopWaiting : WaitResult.ContinueWaiting;
+                }, timeSpan);
+        }
+
         private static string Now()
         {
             return DateTime.UtcNow.ToString("dd.MM.yyyy mm:hh:ss.ffff");
         }
 
         private const int sleepInterval = 200;
-
         private ITestCounterRepository testCounterRepository;
-        private IRemoteTaskQueue taskQueue;
+        private RemoteTaskQueue taskQueue;
     }
 }

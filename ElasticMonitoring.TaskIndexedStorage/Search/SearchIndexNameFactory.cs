@@ -7,13 +7,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
 {
     public class SearchIndexNameFactory
     {
-        public string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc, string indexNameFormat)
+        public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc)
+        {
+            return GetIndexForTimeRange(fromTicksUtc, toTicksUtc, searchIndexNameFormat);
+        }
+
+        public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc, string indexNameFormat)
         {
             var stringBuilder = new StringBuilder();
             var time = DateToBeginDate(DateFromTicks(fromTicksUtc));
             var endTime = DateToBeginDate(DateFromTicks(toTicksUtc)).Add(minimumSupportedIndexCreationInterval);
-            string dayWildcardFormat = indexNameFormat.Replace("dd", "*"); //todo yyyy.MM.*
-            string monthWildcardFormat = dayWildcardFormat.Replace("MM", "*"); //todo yyyy.*.*
+            var dayWildcardFormat = indexNameFormat.Replace("dd", "*"); //todo yyyy.MM.*
+            var monthWildcardFormat = dayWildcardFormat.Replace("MM", "*"); //todo yyyy.*.*
             while(time < endTime)
             {
                 bool moved = false;
@@ -36,7 +41,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                         moved = true;
                     }
                 }
-                if(!moved){
+                if(!moved)
+                {
                     Append(stringBuilder, time, indexNameFormat);
                     time = time.AddDays(1);
                 }
@@ -62,5 +68,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
         }
 
         private static readonly TimeSpan minimumSupportedIndexCreationInterval = TimeSpan.FromDays(1);
+        private static readonly string searchIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(IndexNameConverter.FillIndexNamePlaceholder(RtqElasticsearchConsts.SearchAliasFormat, RtqElasticsearchConsts.CurrentIndexNameFormat));
     }
 }

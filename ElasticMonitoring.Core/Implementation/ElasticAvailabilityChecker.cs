@@ -2,35 +2,29 @@
 using System.Diagnostics;
 using System.Threading;
 
-using Elasticsearch.Net;
-
-using log4net;
-
-using SKBKontur.Catalogue.Core.Configuration.Settings;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation.Utils;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
+using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation
 {
     public class ElasticAvailabilityChecker
     {
-        public ElasticAvailabilityChecker(RtqElasticsearchClientFactory elasticsearchClientFactory, IApplicationSettings applicationSettings)
+        public ElasticAvailabilityChecker(RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
-            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
-            if(!applicationSettings.TryGetTimeSpan("ElasticAliveCheckTimeout", out timeout))
-                timeout = TimeSpan.FromSeconds(20);
-            logger.LogInfoFormat("ElasticAliveCheckTimeout is {0}", timeout);
+            this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
         public void WaitAlive()
         {
-            logger.LogInfoFormat("Checking Elasticsearch is alive");
-            bool isOk = false;
+            Log.For(this).LogInfoFormat("Checking Elasticsearch is alive");
+            var isOk = false;
             var w = Stopwatch.StartNew();
             do
             {
                 if(!IsAlive())
-                    logger.LogInfoFormat("ES is dead.");
+                    Log.For(this).LogInfoFormat("ES is dead.");
                 else
                 {
                     isOk = true;
@@ -39,11 +33,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
                 Thread.Sleep(1000);
             } while(w.Elapsed < timeout);
             if(isOk)
-                logger.LogInfoFormat("Checking OK");
+                Log.For(this).LogInfoFormat("Checking OK");
             else
             {
-                logger.LogWarnFormat("Checking FAIL. Exiting");
-                throw new InvalidOperationException("Elasticsearch is dead - cannot start");
+                Log.For(this).LogWarnFormat("Checking FAIL. Exiting");
+                throw new InvalidProgramStateException("Elasticsearch is dead - cannot start");
             }
         }
 
@@ -51,7 +45,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
         {
             try
             {
-                var response = elasticsearchClient.Info();
+                var response = elasticsearchClientFactory.DefaultClient.Value.Info();
                 if(!response.Success)
                     return false;
                 var legacyStatus = response.Response["status"];
@@ -61,13 +55,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             }
             catch(Exception e)
             {
-                logger.LogWarnFormat("CRASH: {0}", e.ToString());
+                Log.For(this).LogWarnFormat("CRASH: {0}", e.ToString());
                 return false;
             }
         }
 
-        private readonly IElasticsearchClient elasticsearchClient;
-        private static readonly ILog logger = LogManager.GetLogger("ElasticAvailabilityChecker");
-        private readonly TimeSpan timeout;
+        private readonly TimeSpan timeout = TimeSpan.FromSeconds(20);
+        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }
 }

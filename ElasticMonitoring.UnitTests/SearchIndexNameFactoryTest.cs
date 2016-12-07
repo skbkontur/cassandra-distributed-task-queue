@@ -15,7 +15,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
         {
             base.SetUp();
             indexNameFormat = IndexNameConverter.ConvertToDateTimeFormat("zzz-{yyyy.MM.dd}");
-            searchIndexNameFactory = new SearchIndexNameFactory();
         }
 
         [Test]
@@ -57,12 +56,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
 
         private void Check(string exp, long start, long end)
         {
-            Assert.AreEqual(exp, searchIndexNameFactory.GetIndexForTimeRange(start, end, indexNameFormat));
-            Assert.AreEqual(exp, searchIndexNameFactory.GetIndexForTimeRange(start + TimeSpan.FromHours(1).Ticks, end, indexNameFormat));
-            Assert.AreEqual(exp, searchIndexNameFactory.GetIndexForTimeRange(start, end + TimeSpan.FromHours(1).Ticks, indexNameFormat));
+            Assert.AreEqual(exp, SearchIndexNameFactory.GetIndexForTimeRange(start, end, indexNameFormat));
+            Assert.AreEqual(exp, SearchIndexNameFactory.GetIndexForTimeRange(start + TimeSpan.FromHours(1).Ticks, end, indexNameFormat));
+            Assert.AreEqual(exp, SearchIndexNameFactory.GetIndexForTimeRange(start, end + TimeSpan.FromHours(1).Ticks, indexNameFormat));
         }
 
-        private SearchIndexNameFactory searchIndexNameFactory;
         private string indexNameFormat;
     }
 }
