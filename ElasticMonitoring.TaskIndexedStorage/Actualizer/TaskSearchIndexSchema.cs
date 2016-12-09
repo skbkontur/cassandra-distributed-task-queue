@@ -73,7 +73,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStora
                            }
                        : new
                            {
-                               number_of_shards = 5,
+                               number_of_shards = 3,
                                number_of_replicas = 1,
                                index = new Dictionary<string, string>
                                    {
