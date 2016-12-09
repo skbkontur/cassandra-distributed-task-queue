@@ -12,6 +12,7 @@ using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search;
@@ -28,14 +29,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestCloseNotExisting()
         {
-            CloseAndCheck(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddDays(-2));
+            CloseAndCheck(Timestamp.Now.AddDays(-4), Timestamp.Now.AddDays(-2));
         }
 
         [Test]
         public void TestCloseAlreadyClosed()
         {
-            var from = DateTime.UtcNow.AddDays(-4);
-            var to = DateTime.UtcNow.AddDays(-2);
+            var from = Timestamp.Now.AddDays(-4);
+            var to = Timestamp.Now.AddDays(-2);
             CloseAndCheck(from, to);
             CheckIndicesClosed(from, to);
             CloseAndCheck(from, to);
@@ -44,8 +45,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestCloseAlreadyClosedWithoutAliases()
         {
-            var from = DateTime.UtcNow.AddDays(-4);
-            var to = DateTime.UtcNow.AddDays(-4);
+            var from = Timestamp.Now.AddDays(-4);
+            var to = Timestamp.Now.AddDays(-4);
             CloseByHand(from, to);
             CheckIndicesClosed(from, to);
 
@@ -60,7 +61,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                     GetSearchAlias(from),
                 }, false);
 
-            CloseAndCheck(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddDays(-2));
+            CloseAndCheck(Timestamp.Now.AddDays(-4), Timestamp.Now.AddDays(-2));
             //NOTE check aliases moved correctly
             CheckIndexAlias(SearchIndexNameFactory.GetIndexForTimeRange(from.Ticks, from.Ticks, WriteIndexNameFactory.CurrentIndexNameFormat), new[]
                 {
@@ -80,12 +81,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             var client = elasticsearchClientFactory.DefaultClient.Value;
             for(var i = 0; i < 5; i++)
             {
-                var dt = DateTime.UtcNow.Subtract(TimeSpan.FromDays(i));
+                var dt = Timestamp.Now.Subtract(TimeSpan.FromDays(i));
                 var indexName = WriteIndexNameFactory.BuildIndexNameForTime(dt.Ticks, WriteIndexNameFactory.CurrentIndexNameFormat);
                 client.IndicesExists(indexName).ProcessResponse(404);
                 client.IndicesCreate(indexName, new {}).ProcessResponse();
             }
-            var x1 = DateTime.UtcNow.AddDays(-1);
+            var x1 = Timestamp.Now.AddDays(-1);
             var meta1 = CreateMeta(x1, false);
             taskWriter.IndexBatch(new[] {new Tuple<TaskMetaInformation, TaskExceptionInfo[], object>(meta1, new TaskExceptionInfo[0], new SlowTaskData {TimeMs = 1})});
 
@@ -94,12 +95,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             Assert.AreEqual(0, client.Search(RtqElasticsearchConsts.OldDataIndex, new {}).ProcessResponse().Response["hits"]["total"]);
 
-            CloseAndCheck(DateTime.UtcNow.AddDays(-4), DateTime.UtcNow.AddDays(-2));
+            CloseAndCheck(Timestamp.Now.AddDays(-4), Timestamp.Now.AddDays(-2));
 
-            var x2 = DateTime.UtcNow.AddDays(-2);
+            var x2 = Timestamp.Now.AddDays(-2);
             var meta2 = CreateMeta(x2, true);
 
-            var x3 = DateTime.UtcNow;
+            var x3 = Timestamp.Now;
             var meta3 = CreateMeta(x3, false);
 
             CheckSearch("Data.TimeMs:123", x2, x2); //note alias redirected to old data but it is empty now
@@ -119,23 +120,23 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             Assert.AreEqual(1, client.Search(RtqElasticsearchConsts.OldDataIndex, new {}).ProcessResponse().Response["hits"]["total"]);
         }
 
-        private void CloseAndCheck(DateTime from, DateTime to)
+        private void CloseAndCheck(Timestamp from, Timestamp to)
         {
             taskIndexCloseService.CloseOldIndices(from, to);
             CheckIndicesClosed(from, to);
         }
 
-        private static string GetOldDataAlias(DateTime dt)
+        private static string GetOldDataAlias(Timestamp timestamp)
         {
-            return IndexNameConverter.FillIndexNamePlaceholder(RtqElasticsearchConsts.OldDataAliasFormat, SearchIndexNameFactory.GetIndexForTimeRange(dt.Ticks, dt.Ticks, WriteIndexNameFactory.CurrentIndexNameFormat));
+            return IndexNameConverter.FillIndexNamePlaceholder(RtqElasticsearchConsts.OldDataAliasFormat, SearchIndexNameFactory.GetIndexForTimeRange(timestamp.Ticks, timestamp.Ticks, WriteIndexNameFactory.CurrentIndexNameFormat));
         }
 
-        private static string GetSearchAlias(DateTime dt)
+        private static string GetSearchAlias(Timestamp timestamp)
         {
-            return SearchIndexNameFactory.GetIndexForTimeRange(dt.Ticks, dt.Ticks);
+            return SearchIndexNameFactory.GetIndexForTimeRange(timestamp.Ticks, timestamp.Ticks);
         }
 
-        private void CheckIndicesClosed(DateTime from, DateTime to)
+        private void CheckIndicesClosed(Timestamp from, Timestamp to)
         {
             var indexForTimeRange = SearchIndexNameFactory.GetIndexForTimeRange(from.Ticks, to.Ticks, WriteIndexNameFactory.CurrentIndexNameFormat);
             var client = elasticsearchClientFactory.DefaultClient.Value;
@@ -144,12 +145,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 Assert.AreEqual("close", obj.Value.state.ToString(), string.Format("index '{0}' not closed", obj.Name));
         }
 
-        private static TaskMetaInformation CreateMeta(DateTime ticks, bool isOld)
+        private static TaskMetaInformation CreateMeta(Timestamp timestamp, bool isOld)
         {
-            var ticks2 = ticks.ToUniversalTime().Ticks;
-            var lastModificationTicks = isOld ? ticks.ToUniversalTime().AddDays(1.1).Ticks : ticks2;
-            Assert.That(lastModificationTicks <= DateTime.UtcNow.Ticks);
-            return new TaskMetaInformation("SlowTaskData", Guid.NewGuid().ToString()) {Ticks = ticks2, LastModificationTicks = lastModificationTicks};
+            var lastModificationTicks = isOld ? timestamp.AddDays(1.1).Ticks : timestamp.Ticks;
+            Assert.That(lastModificationTicks <= Timestamp.Now.Ticks);
+            return new TaskMetaInformation("SlowTaskData", Guid.NewGuid().ToString()) {Ticks = timestamp.Ticks, LastModificationTicks = lastModificationTicks};
         }
 
         private void CheckIndexAlias(string index, string[] expected, bool shouldInclude)
@@ -166,7 +166,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
             }
         }
 
-        private void CloseByHand(DateTime from, DateTime to)
+        private void CloseByHand(Timestamp from, Timestamp to)
         {
             var indexForTimeRange = SearchIndexNameFactory.GetIndexForTimeRange(from.Ticks, to.Ticks, WriteIndexNameFactory.CurrentIndexNameFormat);
 

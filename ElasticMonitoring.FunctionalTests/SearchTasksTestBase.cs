@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 using NUnit.Framework;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 
 using TestCommon;
@@ -17,18 +17,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
     [EdiTestSuite("SearchTasksTests"), WithColumnFamilies, WithExchangeServices, AndResetMonitoringServiceState]
     public abstract class SearchTasksTestBase
     {
-        protected void CheckSearch(string q, DateTime from, DateTime to, params string[] expectedIds)
+        protected void CheckSearch(string q, Timestamp from, Timestamp to, params string[] expectedIds)
         {
             var actualIds = Search(taskSearchClient, q, from, to);
             CollectionAssert.AreEquivalent(expectedIds, actualIds, "q=" + q);
         }
 
-        private static string[] Search(ITaskSearchClient taskSearchClient, string q, DateTime from, DateTime to)
+        private static string[] Search(ITaskSearchClient taskSearchClient, string q, Timestamp from, Timestamp to)
         {
             var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest
                 {
-                    FromTicksUtc = from.ToUniversalTime().Ticks,
-                    ToTicksUtc = to.ToUniversalTime().Ticks,
+                    FromTicksUtc = from.Ticks,
+                    ToTicksUtc = to.Ticks,
                     QueryString = q
                 });
             var result = new List<string>();

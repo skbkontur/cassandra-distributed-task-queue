@@ -12,6 +12,7 @@ using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Handling;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 using SKBKontur.Catalogue.TestCore.Waiting;
@@ -25,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestCreateNotDeserializedTaskData()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
             var taskId = QueueTask(new SlowTaskData(), TimeSpan.FromSeconds(1));
             Console.WriteLine("TaskId: {0}", taskId);
             var taskMetaInformation = handleTasksMetaStorage.GetMeta(taskId);
@@ -39,7 +40,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             WaitForTasks(new[] {taskId, taskId2}, TimeSpan.FromSeconds(5));
 
-            var t1 = DateTime.Now;
+            var t1 = Timestamp.Now;
 
             elasticMonitoringServiceClient.UpdateAndFlush();
 
@@ -50,14 +51,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestStupid()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
 
             var taskId = QueueTask(new SlowTaskData());
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
             elasticMonitoringServiceClient.UpdateAndFlush();
 
-            var t1 = DateTime.Now;
+            var t1 = Timestamp.Now;
             CheckSearch("*", t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
             CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId), t0, t1, taskId);
@@ -68,7 +69,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestSearchByExceptionSubstring()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
 
             var uniqueData = Guid.NewGuid();
             Console.WriteLine("ud={0}", uniqueData);
@@ -77,7 +78,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             elasticMonitoringServiceClient.UpdateAndFlush();
 
-            var t1 = DateTime.Now;
+            var t1 = Timestamp.Now;
             CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("ExceptionInfo:\"{0}\"", uniqueData), t0, t1, taskId);
@@ -87,28 +88,28 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestSearchByExpiration()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
 
             var taskId = QueueTask(new SlowTaskData());
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
             elasticMonitoringServiceClient.UpdateAndFlush();
 
-            var t1 = DateTime.Now;
+            var t1 = Timestamp.Now;
             var ttl = RemoteQueueTestsCassandraSettings.StandardTestTaskTtl;
-            Console.WriteLine(ToIsoTime(new DateTime(remoteTaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.ExpirationTimestampTicks.Value, DateTimeKind.Utc)));
+            Console.WriteLine(ToIsoTime(new Timestamp(remoteTaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.ExpirationTimestampTicks.Value)));
             CheckSearch(string.Format("Meta.ExpirationTime: [\"{0}\" TO \"{1}\"]", ToIsoTime(t0 + ttl), ToIsoTime(t1 + ttl + TimeSpan.FromSeconds(10))), t0, t1, taskId);
         }
 
-        private static string ToIsoTime(DateTime dateTime)
+        private static string ToIsoTime(Timestamp timestamp)
         {
-            return dateTime.ToUniversalTime().ToString("O");
+            return timestamp.ToDateTime().ToString("O");
         }
 
         [Test]
         public void TestSearchByExceptionSubstring_MultipleDifferentErrors()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
 
             var uniqueData = Guid.NewGuid();
             Console.WriteLine("ud={0}", uniqueData);
@@ -118,7 +119,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
             elasticMonitoringServiceClient.UpdateAndFlush();
 
-            var t1 = DateTime.Now;
+            var t1 = Timestamp.Now;
             CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1);
@@ -130,21 +131,21 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestUpdateAndFlush()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
             for(var i = 0; i < 100; i++)
             {
                 Console.WriteLine("Iteration: {0}", i);
                 var taskId0 = QueueTask(new SlowTaskData());
                 WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
                 elasticMonitoringServiceClient.UpdateAndFlush();
-                CheckSearch(string.Format("\"{0}\"", taskId0), t0, DateTime.Now, taskId0);
+                CheckSearch(string.Format("\"{0}\"", taskId0), t0, Timestamp.Now, taskId0);
             }
         }
 
         [Test]
         public void TestDataSearchBug()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
             for(var i = 0; i < 100; i++)
             {
                 Console.WriteLine("Iteration: {0}", i);
@@ -154,25 +155,25 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
                 //Console.WriteLine("ids: {0} {1} {2}", taskId0, taskId1, taskId2);
                 WaitForTasks(new[] {taskId0, taskId1, taskId2}, TimeSpan.FromSeconds(5));
                 elasticMonitoringServiceClient.UpdateAndFlush();
-                CheckSearch(string.Format("\"{0}\"", taskId0), t0, DateTime.Now, taskId0);
+                CheckSearch(string.Format("\"{0}\"", taskId0), t0, Timestamp.Now, taskId0);
             }
         }
 
         [Test]
         public void TestNotStupid()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
             var taskId0 = QueueTask(new SlowTaskData());
             WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
 
-            var t1 = DateTime.Now;
+            var t1 = Timestamp.Now;
 
             var taskId1 = QueueTask(new AlphaTaskData());
             WaitForTasks(new[] {taskId1}, TimeSpan.FromSeconds(5));
 
             elasticMonitoringServiceClient.UpdateAndFlush();
 
-            var t2 = DateTime.Now;
+            var t2 = Timestamp.Now;
 
             CheckSearch("*", t0, t2, taskId0, taskId1);
 
@@ -189,14 +190,14 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
         [Test]
         public void TestPaging()
         {
-            var t0 = DateTime.Now;
+            var t0 = Timestamp.Now;
             var lst = new List<string>();
             for(var i = 0; i < 200; i++)
                 lst.Add(QueueTask(new SlowTaskData()));
             WaitForTasks(lst.ToArray(), TimeSpan.FromSeconds(60));
             elasticMonitoringServiceClient.UpdateAndFlush();
 
-            var t1 = DateTime.Now;
+            var t1 = Timestamp.Now;
 
             CheckSearch("*", t0, t1, lst.ToArray());
         }

@@ -1,8 +1,9 @@
-using System;
-
 using Elasticsearch.Net;
 
+using JetBrains.Annotations;
+
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search;
 using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
@@ -18,7 +19,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
-        private bool AdjustIndexState(string index)
+        private bool AdjustIndexState([NotNull] string index)
         {
             var elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
             var response = elasticsearchClient.CatIndices(index, p => p.H("status")).ProcessResponse(200, 404);
@@ -34,13 +35,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             return state.Trim('\r', '\n', ' ') == "open";
         }
 
-        public void CloseOldIndices(DateTime from, DateTime to)
+        public void CloseOldIndices([NotNull] Timestamp from, [NotNull] Timestamp to)
         {
-            var maxTo = DateTime.UtcNow - WriteIndexNameFactory.OldTaskInterval;
+            var maxTo = Timestamp.Now - WriteIndexNameFactory.OldTaskInterval;
             if(to > maxTo)
                 to = maxTo;
-            Log.For(this).LogInfoFormat("Closing old indices. timeFrom={0} timeTo={1}", DateTimeFormatter.FormatWithMs(from), DateTimeFormatter.FormatWithMs(to));
-            var indexForTimeRange = SearchIndexNameFactory.GetIndexForTimeRange(@from.Ticks, to.Ticks, WriteIndexNameFactory.CurrentIndexNameFormat);
+            Log.For(this).LogInfoFormat("Closing old indices. timeFrom={0} timeTo={1}", from, to);
+            var indexForTimeRange = SearchIndexNameFactory.GetIndexForTimeRange(from.Ticks, to.Ticks, WriteIndexNameFactory.CurrentIndexNameFormat);
             var indexNames = indexForTimeRange.Split(',');
             Log.For(this).LogInfoFormat("Indices to process: {0}", indexNames.Length);
             foreach(var indexName in indexNames)
@@ -48,7 +49,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementat
             Log.For(this).LogInfoFormat("Closing Old indices done");
         }
 
-        private void CloseIndex(string indexName)
+        private void CloseIndex([NotNull] string indexName)
         {
             if(!AdjustIndexState(indexName))
                 Log.For(this).LogInfoFormat("Index = '{0}' already closed", indexName);
