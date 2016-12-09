@@ -41,7 +41,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void Write_NullValue_IsForbidden()
         {
-            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(NewRowKey(), NewBlobId(), null, DateTime.UtcNow.Ticks, defaultTtl));
+            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(NewRowKey(), NewBlobId(), null, Timestamp.Now.Ticks, defaultTtl));
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             var rk = NewRowKey();
             var id = NewBlobId();
-            timeBasedBlobStorage.Write(rk, id, new byte[0], DateTime.UtcNow.Ticks, defaultTtl);
+            timeBasedBlobStorage.Write(rk, id, new byte[0], Timestamp.Now.Ticks, defaultTtl);
             Assert.That(timeBasedBlobStorage.Read(rk, id), Is.EqualTo(new byte[0]));
         }
 
@@ -59,7 +59,7 @@ namespace FunctionalTests.RepositoriesTests
             var rk = NewRowKey();
             var id = NewBlobId();
             WriteByte(rk, id, 1, defaultTtl);
-            timeBasedBlobStorage.Delete(rk, id, DateTime.UtcNow.Ticks);
+            timeBasedBlobStorage.Delete(rk, id, Timestamp.Now.Ticks);
             Assert.IsNull(ReadByte(rk, id));
         }
 
@@ -109,7 +109,7 @@ namespace FunctionalTests.RepositoriesTests
 
         private void WriteByte(string rowKey, TimeGuid id, byte value, TimeSpan ttl)
         {
-            timeBasedBlobStorage.Write(rowKey, id, new[] {value}, DateTime.UtcNow.Ticks, ttl);
+            timeBasedBlobStorage.Write(rowKey, id, new[] {value}, Timestamp.Now.Ticks, ttl);
         }
 
         private byte? ReadByte(string rowKey, TimeGuid id)

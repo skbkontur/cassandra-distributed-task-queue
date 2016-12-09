@@ -10,6 +10,7 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.Objects;
 
 namespace FunctionalTests.RepositoriesTests
 {
@@ -34,7 +35,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             var id = Guid.NewGuid().ToString();
             const string field1 = "yyy";
-            blobStorage.Write(id, new Dto { Field1 = field1 }, DateTime.UtcNow.Ticks, defaultTtl);
+            blobStorage.Write(id, new Dto { Field1 = field1 }, Timestamp.Now.Ticks, defaultTtl);
             var elem = blobStorage.Read(id);
             Assert.AreEqual(field1, elem.Field1);
         }
@@ -47,12 +48,12 @@ namespace FunctionalTests.RepositoriesTests
             Assert.That(blobStorage.Read(new List<string>()).Count, Is.EqualTo(0));
             Assert.That(blobStorage.Read(new List<string> {id1, id2}).Count, Is.EqualTo(0));
 
-            blobStorage.Write(id1, new Dto { Field1 = "id1" }, DateTime.UtcNow.Ticks, defaultTtl);
+            blobStorage.Write(id1, new Dto { Field1 = "id1" }, Timestamp.Now.Ticks, defaultTtl);
             var actual = blobStorage.Read(new List<string> {id1, id2});
             Assert.That(actual.Count, Is.EqualTo(1));
             Assert.That(actual[id1].Field1, Is.EqualTo("id1"));
 
-            blobStorage.Write(id2, new Dto { Field1 = "id2" }, DateTime.UtcNow.Ticks, defaultTtl);
+            blobStorage.Write(id2, new Dto { Field1 = "id2" }, Timestamp.Now.Ticks, defaultTtl);
             actual = blobStorage.Read(new List<string> {id1, id2});
             Assert.That(actual.Count, Is.EqualTo(2));
             Assert.That(actual[id1].Field1, Is.EqualTo("id1"));
@@ -64,7 +65,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             var id = Guid.NewGuid().ToString();
             const string field1 = "yyy";
-            blobStorage.Write(id, new Dto { Field1 = field1 }, DateTime.UtcNow.Ticks, TimeSpan.FromSeconds(2));
+            blobStorage.Write(id, new Dto { Field1 = field1 }, Timestamp.Now.Ticks, TimeSpan.FromSeconds(2));
             var elem = blobStorage.Read(id);
             Assert.AreEqual(field1, elem.Field1);
             Assert.That(() => blobStorage.Read(id), Is.Null.After(10000, 100));

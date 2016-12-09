@@ -61,14 +61,14 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void Write_NullValue_IsForbidden()
         {
-            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(RegularBlobId(), null, DateTime.UtcNow.Ticks, TimeSpan.FromHours(1)));
+            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(RegularBlobId(), null, Timestamp.Now.Ticks, TimeSpan.FromHours(1)));
         }
 
         [Test]
         public void Write_EmptyValue()
         {
             var id = RegularBlobId();
-            timeBasedBlobStorage.Write(id, new byte[0], DateTime.UtcNow.Ticks, TimeSpan.FromHours(1));
+            timeBasedBlobStorage.Write(id, new byte[0], Timestamp.Now.Ticks, TimeSpan.FromHours(1));
             Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(new byte[0]));
         }
 
@@ -78,7 +78,7 @@ namespace FunctionalTests.RepositoriesTests
             var id = RegularBlobId();
             var rng = new Random();
             var value = rng.NextBytes(TimeBasedBlobStorageSettings.MaxRegularBlobSize + 1);
-            timeBasedBlobStorage.Write(id, value, DateTime.UtcNow.Ticks, TimeSpan.FromHours(1));
+            timeBasedBlobStorage.Write(id, value, Timestamp.Now.Ticks, TimeSpan.FromHours(1));
             Assert.That(timeBasedBlobStorage.Read(id), Is.EqualTo(value));
         }
 
@@ -87,7 +87,7 @@ namespace FunctionalTests.RepositoriesTests
         {
             var id = RegularBlobId();
             WriteByte(id, 1);
-            timeBasedBlobStorage.Delete(id, DateTime.UtcNow.Ticks);
+            timeBasedBlobStorage.Delete(id, Timestamp.Now.Ticks);
             Assert.IsNull(ReadByte(id));
         }
 
@@ -124,8 +124,8 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void Read_MultipleKeys_DifferentRows()
         {
-            var id1 = RegularBlobId(TimeGuid.NewGuid(new Timestamp(DateTime.UtcNow.Add(TimeSpan.FromDays(1)))));
-            var id2 = RegularBlobId(TimeGuid.NewGuid(new Timestamp(DateTime.UtcNow.Add(TimeSpan.FromDays(-1)))));
+            var id1 = RegularBlobId(TimeGuid.NewGuid(Timestamp.Now.Add(TimeSpan.FromDays(1))));
+            var id2 = RegularBlobId(TimeGuid.NewGuid(Timestamp.Now.Add(TimeSpan.FromDays(-1))));
             var id3 = LargeBlobId();
             var id4 = LargeBlobId();
             var allKeys = new[] {id1, id2, id3, id4};
@@ -147,7 +147,7 @@ namespace FunctionalTests.RepositoriesTests
             var idLarge = LargeBlobId();
             var id11 = RegularBlobId();
             var id12 = RegularBlobId();
-            var shift = new Timestamp(DateTime.UtcNow.AddDays(1));
+            var shift = Timestamp.Now.AddDays(1);
             var id21 = RegularBlobId(TimeGuid.NewGuid(shift));
             var id22 = RegularBlobId(TimeGuid.NewGuid(shift));
 
@@ -200,7 +200,7 @@ namespace FunctionalTests.RepositoriesTests
         private void WriteByte(BlobId id, byte value, TimeSpan? ttl = null)
         {
             ttl = ttl ?? TimeSpan.FromHours(1);
-            timeBasedBlobStorage.Write(id, new[] {value}, DateTime.UtcNow.Ticks, ttl.Value);
+            timeBasedBlobStorage.Write(id, new[] {value}, Timestamp.Now.Ticks, ttl.Value);
         }
 
         private byte? ReadByte(BlobId id)

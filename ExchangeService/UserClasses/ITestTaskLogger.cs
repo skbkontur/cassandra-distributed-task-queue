@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.Objects;
 
 namespace ExchangeService.UserClasses
 {
@@ -29,7 +29,7 @@ namespace ExchangeService.UserClasses
                 {
                     Name = taskId,
                     Value = new byte[] {1},
-                    Timestamp = DateTime.UtcNow.Ticks
+                    Timestamp = Timestamp.Now.Ticks
                 });
         }
 

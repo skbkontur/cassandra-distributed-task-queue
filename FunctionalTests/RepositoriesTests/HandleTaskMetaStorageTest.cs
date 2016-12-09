@@ -16,6 +16,7 @@ using RemoteQueue.Configuration;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common.RemoteTaskQueue;
@@ -54,7 +55,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void StressTest()
         {
-            var nowTicks = DateTime.UtcNow.Ticks;
+            var nowTicks = Timestamp.Now.Ticks;
             var meta = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.New, MinimalStartTicks = nowTicks + 1};
             for(var i = 0; i <= 1000; i++)
             {
@@ -68,7 +69,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void StressTest2()
         {
-            var nowTicks = DateTime.UtcNow.Ticks;
+            var nowTicks = Timestamp.Now.Ticks;
             var metas = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}.Select(x =>
                 {
                     var taskMeta = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.New, MinimalStartTicks = nowTicks + x};
@@ -90,7 +91,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void SimpleTest()
         {
-            var ticks = DateTime.UtcNow.Ticks;
+            var ticks = Timestamp.Now.Ticks;
             var id = NewTaskId();
             var taskMeta = new TaskMetaInformation("TaskName", id) {State = TaskState.New, MinimalStartTicks = ticks};
             handleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord : null);
@@ -107,7 +108,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void DifferentStatesTest()
         {
-            var ticks = DateTime.UtcNow.Ticks;
+            var ticks = Timestamp.Now.Ticks;
             var taskMeta1 = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.InProcess, MinimalStartTicks = ticks};
             handleTasksMetaStorage.AddMeta(taskMeta1, oldTaskIndexRecord : null);
             var taskMeta2 = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.Finished, MinimalStartTicks = ticks};
@@ -119,7 +120,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void DifferentNamesTest()
         {
-            var ticks = DateTime.UtcNow.Ticks;
+            var ticks = Timestamp.Now.Ticks;
             var taskMeta1 = new TaskMetaInformation("TaskName1", NewTaskId()) {State = TaskState.New, MinimalStartTicks = ticks};
             handleTasksMetaStorage.AddMeta(taskMeta1, oldTaskIndexRecord : null);
             var taskMeta2 = new TaskMetaInformation("TaskName2", NewTaskId()) {State = TaskState.New, MinimalStartTicks = ticks};
@@ -131,7 +132,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void ManyTasksTest()
         {
-            var ticks = DateTime.UtcNow.Ticks;
+            var ticks = Timestamp.Now.Ticks;
             var id1 = NewTaskId();
             var id2 = NewTaskId();
             var id3 = NewTaskId();
@@ -153,7 +154,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void TaskWithSameIdsTest()
         {
-            var ticks = DateTime.UtcNow.Ticks;
+            var ticks = Timestamp.Now.Ticks;
             var id = NewTaskId();
             var taskMeta1 = new TaskMetaInformation("TaskName", id) {State = TaskState.New, MinimalStartTicks = ticks + 10};
             handleTasksMetaStorage.AddMeta(taskMeta1, oldTaskIndexRecord : null);

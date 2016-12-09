@@ -59,7 +59,7 @@ namespace FunctionalTests.RepositoriesTests
         private void TestDelete(string taskId)
         {
             Write(taskId);
-            taskMetaStorage.Delete(taskId, DateTime.UtcNow.Ticks);
+            taskMetaStorage.Delete(taskId, Timestamp.Now.Ticks);
             Assert.IsNull(taskMetaStorage.Read(taskId));
         }
 

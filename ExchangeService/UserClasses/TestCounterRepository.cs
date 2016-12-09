@@ -7,6 +7,7 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SKBKontur.Catalogue.Objects;
 
 namespace ExchangeService.UserClasses
 {
@@ -64,7 +65,7 @@ namespace ExchangeService.UserClasses
 
         private void SetCounterInternal(string taskId, int value)
         {
-            storage.Write(taskId, value, DateTime.UtcNow.Ticks, TimeSpan.FromHours(1));
+            storage.Write(taskId, value, Timestamp.Now.Ticks, TimeSpan.FromHours(1));
         }
 
         private IRemoteLock Lock(string taskId)

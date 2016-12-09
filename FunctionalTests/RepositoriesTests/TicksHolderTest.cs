@@ -9,6 +9,8 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
+using SKBKontur.Catalogue.Objects;
+
 namespace FunctionalTests.RepositoriesTests
 {
     public class TicksHolderTest : FunctionalTestBaseWithoutServices
@@ -22,7 +24,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void UpdateMaxTicks()
         {
-            var ticks = DateTime.UtcNow.Ticks;
+            var ticks = Timestamp.Now.Ticks;
             Assert.AreEqual(ticks, UpdateMaxTicks("r", ticks));
             Assert.AreEqual(ticks + 2, UpdateMaxTicks("r1", ticks + 2));
             Assert.AreEqual(ticks + 2, UpdateMaxTicks("r1", ticks + 1));
@@ -34,7 +36,7 @@ namespace FunctionalTests.RepositoriesTests
         [Test]
         public void UpdateMinTicks()
         {
-            var ticks = DateTime.UtcNow.Ticks;
+            var ticks = Timestamp.Now.Ticks;
             Assert.AreEqual(ticks, UpdateMinTicks("r", ticks));
             Assert.AreEqual(ticks - 2, UpdateMinTicks("r1", ticks - 2));
             Assert.AreEqual(ticks - 2, UpdateMinTicks("r1", ticks - 1));
