@@ -1,3 +1,0 @@
-#Инициализация для Кассандры
-RowCacheSize = 10000
-ReplicationFactor = 1

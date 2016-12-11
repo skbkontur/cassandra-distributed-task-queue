@@ -5,6 +5,8 @@ using GroBuf;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Settings;
 
+using RemoteTaskQueue.FunctionalTests.Common;
+
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.Objects;
@@ -15,7 +17,7 @@ namespace ExchangeService.UserClasses
     {
         public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings taskQueueSettings, IRemoteLockCreator remoteLockCreator)
         {
-            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, taskQueueSettings.QueueKeyspace, CfName);
+            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, taskQueueSettings.QueueKeyspace, ColumnFamilies.TestCounterRepositoryCfName);
             this.remoteLockCreator = remoteLockCreator;
         }
 
@@ -72,8 +74,6 @@ namespace ExchangeService.UserClasses
         {
             return remoteLockCreator.Lock("TestCounterRepository_" + taskId);
         }
-
-        public const string CfName = "TestCounterRepositoryCf";
 
         private readonly LegacyBlobStorage<int> storage;
         private readonly IRemoteLockCreator remoteLockCreator;

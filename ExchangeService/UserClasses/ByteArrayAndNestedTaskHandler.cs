@@ -1,6 +1,6 @@
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas;
+using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 
 namespace ExchangeService.UserClasses
 {

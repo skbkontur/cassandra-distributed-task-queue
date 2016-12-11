@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="..\Common.vars"/>
+  <Import Project="..\Common.vars" />
 
   <PropertyGroup>
     <BuildConfiguration>Debug</BuildConfiguration>
@@ -20,13 +21,11 @@
     <TestSolutionFileName>RemoteTaskQueue.sln</TestSolutionFileName>
     <BuildSolutionsMSBuildFile>$(MSBuildThisFileDirectory)\..\..\Build.xml</BuildSolutionsMSBuildFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\RemoteTaskQueue.Tests.dll"></NUnitAssemblies>
-    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskCounter.UnitTests.dll"></NUnitAssemblies>
-    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests.dll"></NUnitAssemblies>
+    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\RemoteTaskQueue.UnitTests.dll"></NUnitAssemblies>
   </ItemGroup>
 
   <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Test_New.targets" />
-  
+
 </Project>

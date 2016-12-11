@@ -6,7 +6,7 @@ using GroBuf;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
+using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 
 namespace ExchangeService.UserClasses.MonitoringTestTaskData
 {

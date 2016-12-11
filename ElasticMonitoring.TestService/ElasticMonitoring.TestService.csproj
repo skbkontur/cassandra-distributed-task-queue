@@ -65,9 +65,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ElasticMonitoringServiceSchedulableRunner.cs" />
-    <Compile Include="ElasticMonitoringTestHelpersHttpHandler.cs" />
-    <Compile Include="EntryPoint.cs" />
+    <Compile Include="MonitoringServiceSchedulableRunner.cs" />
+    <Compile Include="MonitoringServiceHttpHandler.cs" />
+    <Compile Include="MonitoringServiceEntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -79,9 +79,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Common\Common.csproj">
-      <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
-      <Name>Common</Name>
+    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj">
+      <Project>{88F624EF-F0AD-48A3-AE05-03127126E3EC}</Project>
+      <Name>RemoteTaskQueue.FunctionalTests.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj">
       <Project>{977B80E5-2EC8-4394-BE5A-907BCA3C02EA}</Project>

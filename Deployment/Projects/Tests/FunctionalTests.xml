@@ -1,7 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <Import Project="..\Common.vars"/>
+  <Import Project="..\Common.vars" />
 
   <PropertyGroup>
     <BuildConfiguration>Debug</BuildConfiguration>
@@ -22,13 +23,11 @@
   </PropertyGroup>
 
   <Import Project="..\Configuration\ServiceSuites.xml" />
-  
+
   <ItemGroup>
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\RemoteTaskQueue.FunctionalTests.dll"></NUnitAssemblies>
-    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests.dll"></NUnitAssemblies>
-    <NUnitAssemblies Include="$(CatalogueRootDirectory)\Assemblies\Temp\Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests.dll"></NUnitAssemblies>
   </ItemGroup>
 
   <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\Test_New.targets" />
-  
+
 </Project>

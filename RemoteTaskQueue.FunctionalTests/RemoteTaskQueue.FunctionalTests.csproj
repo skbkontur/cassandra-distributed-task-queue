@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5330DA1C-BE43-4CC0-9984-565DA1AC219D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RemoteTaskQueue.FunctionalTests</RootNamespace>
+    <AssemblyName>RemoteTaskQueue.FunctionalTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>649</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>649</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Cassandra.CassandraClient">
+      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
+      <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.CassandraPrimitives.Storages">
+      <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.CassandraStorageCore">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.ClientLib">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Commons">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Core.ElasticsearchClientExtensions">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.NUnit.Extensions">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.NUnit.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.ServiceLib">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.TestCore">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
+    </Reference>
+    <Reference Include="Elasticsearch.Net">
+      <HintPath>..\..\Assemblies\ElasticSearch\Client\Elasticsearch.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\..\Assemblies\FluentAssertions\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentAssertions.Core">
+      <HintPath>..\..\Assemblies\FluentAssertions\FluentAssertions.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="GroboContainer">
+      <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
+    </Reference>
+    <Reference Include="GroBuf">
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations">
+      <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MoreLinq">
+      <HintPath>..\..\Assemblies\MoreLinq\MoreLinq.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Assemblies\json.net\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AndResetMonitoringServiceState.cs" />
+    <Compile Include="CassandraHelpers.cs" />
+    <Compile Include="MonitoringServiceClient.cs" />
+    <Compile Include="ExchangeServiceClient.cs" />
+    <Compile Include="Monitoring\ApiTests.cs" />
+    <Compile Include="Monitoring\MonitoringTestBase.cs" />
+    <Compile Include="Monitoring\TaskSearchTests.cs" />
+    <Compile Include="Monitoring\TaskSearchTests2.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\AutoParentTaskIdTest.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\ChildIndexTest.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\FailTaskTest.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\PeriodicTaskTest.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\SimpleTaskTest.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\TaskProlongationTest.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\TasksWithCounterTestBase.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\TaskTestsExtensions.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\TooLateException.cs" />
+    <Compile Include="RemoteTaskQueue\FunctionalTestBase.cs" />
+    <Compile Include="RemoteTaskQueue\FunctionalTestBaseWithoutServices.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\BlobStorageFunctionalTestBase.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\GlobalTimeTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\HandleTaskMetaStorageTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\LegacyBlobStorageTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\ReadWriteTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\SinglePartitionTimeBasedBlobStorageTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\SmallTtlRemoteTaskQueueSettings.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\Sugar.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\TaskExceptionInfoStorageTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\TaskMetaStorageTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\TicksHolderTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\TimeBasedBlobStorageTest.cs" />
+    <Compile Include="TaskCounterServiceClient.cs" />
+    <Compile Include="TaskCounter\TaskCounterTest.cs" />
+    <Compile Include="TestCassandraCoreSettings.cs" />
+    <Compile Include="WithColumnFamilies.cs" />
+    <Compile Include="WithExchangeServices.cs" />
+    <Compile Include="WithTestRemoteTaskQueue.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ExchangeService\ExchangeService.csproj">
+      <Project>{B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1}</Project>
+      <Name>ExchangeService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj">
+      <Project>{88F624EF-F0AD-48A3-AE05-03127126E3EC}</Project>
+      <Name>RemoteTaskQueue.FunctionalTests.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj">
+      <Project>{977B80E5-2EC8-4394-BE5A-907BCA3C02EA}</Project>
+      <Name>RemoteTaskQueue.Monitoring</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue.TaskCounter\RemoteTaskQueue.TaskCounter.csproj">
+      <Project>{B7C6FBDB-C9D6-42A7-BB90-3D52C91D0174}</Project>
+      <Name>RemoteTaskQueue.TaskCounter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
+      <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="Settings\dependencies.csf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Settings\monitoringServiceTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Settings\exchangeServiceTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Settings\taskCounterServiceTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
