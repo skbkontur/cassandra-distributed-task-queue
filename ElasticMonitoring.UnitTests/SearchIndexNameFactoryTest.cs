@@ -3,8 +3,9 @@ using System.Linq;
 
 using NUnit.Framework;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
+using RemoteTaskQueue.Monitoring.Storage.Search;
+using RemoteTaskQueue.Monitoring.Storage.Utils;
+
 using SKBKontur.Catalogue.TestCore;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests

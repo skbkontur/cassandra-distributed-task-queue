@@ -3,9 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 
 using NUnit.Framework;
 
+using RemoteTaskQueue.Monitoring.Storage.Client;
+
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Client;
 
 using TestCommon;
 

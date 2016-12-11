@@ -101,17 +101,9 @@
       <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
       <Name>Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ElasticMonitoring.Api\ElasticMonitoring.Api.csproj">
-      <Project>{B2B61674-6F62-4C9F-8CCC-87961B556B4F}</Project>
-      <Name>ElasticMonitoring.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ElasticMonitoring.Core\ElasticMonitoring.Core.csproj">
-      <Project>{2BF2C396-FE77-4D1C-9A1D-17F767FFC508}</Project>
-      <Name>ElasticMonitoring.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ElasticMonitoring.TaskIndexedStorage\ElasticMonitoring.TaskIndexedStorage.csproj">
-      <Project>{DB958D74-D952-4E22-B9CB-6118D8D80EA0}</Project>
-      <Name>ElasticMonitoring.TaskIndexedStorage</Name>
+    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj">
+      <Project>{977B80E5-2EC8-4394-BE5A-907BCA3C02EA}</Project>
+      <Name>RemoteTaskQueue.Monitoring</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>

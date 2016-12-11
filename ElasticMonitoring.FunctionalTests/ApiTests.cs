@@ -9,10 +9,11 @@ using NUnit.Framework;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
+using RemoteTaskQueue.Monitoring.Api;
+
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Ranges;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Api;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 using SKBKontur.Catalogue.TestCore.Waiting;
 

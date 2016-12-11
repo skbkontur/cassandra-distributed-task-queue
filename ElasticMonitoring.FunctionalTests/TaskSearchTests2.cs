@@ -10,14 +10,15 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 
+using RemoteTaskQueue.Monitoring.Indexer;
+using RemoteTaskQueue.Monitoring.Storage;
+using RemoteTaskQueue.Monitoring.Storage.Search;
+using RemoteTaskQueue.Monitoring.Storage.Utils;
+using RemoteTaskQueue.Monitoring.Storage.Writing;
+
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Search;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Utils;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 #pragma warning disable 649

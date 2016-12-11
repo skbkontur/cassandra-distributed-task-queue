@@ -2,10 +2,10 @@
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
+using RemoteTaskQueue.Monitoring.Indexer;
+using RemoteTaskQueue.Monitoring.Storage;
+
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Actualizer;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
@@ -14,13 +14,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
     {
         public ElasticMonitoringTestHelpersHttpHandler(ITaskIndexController taskIndexController,
                                                        IGlobalTime globalTime,
-                                                       TaskSearchIndexSchema taskSearchIndexSchema,
+                                                       RtqElasticsearchSchema rtqElasticsearchSchema,
                                                        ElasticMonitoringServiceSchedulableRunner schedulableRunner,
                                                        RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
             this.taskIndexController = taskIndexController;
             this.globalTime = globalTime;
-            this.taskSearchIndexSchema = taskSearchIndexSchema;
+            this.rtqElasticsearchSchema = rtqElasticsearchSchema;
             this.schedulableRunner = schedulableRunner;
             this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
@@ -41,7 +41,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             globalTime.ResetInMemoryState();
 
             DeleteAllElasticEntities();
-            taskSearchIndexSchema.ActualizeTemplate(local : true);
+            rtqElasticsearchSchema.ActualizeTemplate(local : true);
 
             schedulableRunner.Start();
         }
@@ -58,7 +58,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
         private readonly ITaskIndexController taskIndexController;
         private readonly IGlobalTime globalTime;
-        private readonly TaskSearchIndexSchema taskSearchIndexSchema;
+        private readonly RtqElasticsearchSchema rtqElasticsearchSchema;
         private readonly ElasticMonitoringServiceSchedulableRunner schedulableRunner;
         private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }

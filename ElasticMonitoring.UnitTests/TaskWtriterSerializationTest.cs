@@ -5,8 +5,9 @@ using Newtonsoft.Json;
 
 using NUnit.Framework;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing;
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TaskIndexedStorage.Writing.Contracts;
+using RemoteTaskQueue.Monitoring.Storage.Writing;
+using RemoteTaskQueue.Monitoring.Storage.Writing.Contracts;
+
 using SKBKontur.Catalogue.TestCore;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests

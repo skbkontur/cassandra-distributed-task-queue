@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{977B80E5-2EC8-4394-BE5A-907BCA3C02EA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RemoteTaskQueue.Monitoring</RootNamespace>
+    <AssemblyName>RemoteTaskQueue.Monitoring</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Core.Configuration.Settings, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Configuration.Settings.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Core.ElasticsearchClientExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Core.Graphite.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Graphite.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Core.InternalApi.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.InternalApi.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.ServiceLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.ViewPrecompilation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ViewPrecompilation.dll</HintPath>
+    </Reference>
+    <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c85685fc594512a6, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\ElasticSearch\Client\Elasticsearch.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="GrEmit, Version=2.1.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GrEmit.dll</HintPath>
+    </Reference>
+    <Reference Include="GroBuf, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=10.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.11.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MoreLinq, Version=1.0.11522.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\MoreLinq\MoreLinq.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\json.net\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SKBKontur.Graphite.Client, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GraphiteClient\SKBKontur.Graphite.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="RazorGenerator.Mvc">
+      <HintPath>..\..\Assemblies\Mvc5\RazorGenerator.Mvc.2.3.4\RazorGenerator.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Mvc5\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Mvc5\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Mvc5\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Api\IRemoteTaskQueueApiImpl.cs" />
+    <Compile Include="Api\RemoteTaskInfoModel.cs" />
+    <Compile Include="Api\RemoteTaskQueueApiController.cs" />
+    <Compile Include="Api\RemoteTaskQueueSearchRequest.cs" />
+    <Compile Include="Api\RemoteTaskQueueSearchResults.cs" />
+    <Compile Include="Api\TaskMetaInformationModel.cs" />
+    <Compile Include="Indexer\DictionaryHelpers.cs" />
+    <Compile Include="Indexer\ElasticAvailabilityChecker.cs" />
+    <Compile Include="Indexer\EventsMap.cs" />
+    <Compile Include="Indexer\IMetaCachedReader.cs" />
+    <Compile Include="Indexer\IRtqElasticsearchIndexerGraphiteReporter.cs" />
+    <Compile Include="Indexer\ITaskIndexController.cs" />
+    <Compile Include="Indexer\ITaskMetaProcessor.cs" />
+    <Compile Include="Indexer\MetaCachedReader.cs" />
+    <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporter.cs" />
+    <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporterBase.cs" />
+    <Compile Include="Indexer\TaskIndexCloseService.cs" />
+    <Compile Include="Indexer\TaskIndexController.cs" />
+    <Compile Include="Indexer\TaskMetaProcessor.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\ArraysTypesBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\Base\BuilderBase.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\Base\IBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\DateTimesBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\NestedClassTypeBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\NullValuesBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\PrimitiveTypesBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\Providers\DefaultBuildersProvider.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\Providers\IBuildersProvider.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\SubObject.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\SubObjectBuildingError.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Builders\SubObjectsResults.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Context\BuildingContext.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Context\MemberBuildingContext.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\ObjectTreeModel.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\ObjectTreeModelValue.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\ObjectTreeViewBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Rendering\ObjectTreeModelRenderContext.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Results\BuildingResult.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Results\IBuildingResult.cs" />
+    <Compile Include="MvcControllers\Controllers\ObjectTreeViewBuilding\Results\NoResult.cs" />
+    <Compile Include="MvcControllers\Controllers\TaskDetailsTreeView\ByteArrayBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\TaskDetailsTreeView\PrimitiveTypesBuilderWithSpecialValue.cs" />
+    <Compile Include="MvcControllers\Controllers\TaskDetailsTreeView\TaskDataBuildersProvider.cs" />
+    <Compile Include="MvcControllers\Controllers\TaskDetailsTreeView\TaskDataBuildingContext.cs" />
+    <Compile Include="MvcControllers\Controllers\TaskDetailsTreeView\TimeGuidBuilder.cs" />
+    <Compile Include="MvcControllers\Controllers\TasksControllerImpl.cs" />
+    <Compile Include="MvcControllers\DateTimeByTimeZoneExtensions.cs" />
+    <Compile Include="MvcControllers\Globals\ElasticTaskMonitoringPrecompiledMvcEngine.cs" />
+    <Compile Include="MvcControllers\MagicStaticsExtensions.cs" />
+    <Compile Include="MvcControllers\Models\TaskDetailsModel.cs" />
+    <Compile Include="MvcControllers\Models\TaskNotFoundModel.cs" />
+    <Compile Include="MvcControllers\Models\TasksRerunModel.cs" />
+    <Compile Include="MvcControllers\Models\TasksResultModel.cs" />
+    <Compile Include="MvcControllers\RouteValueDictionaryExtensions.cs" />
+    <Compile Include="MvcControllers\TaskStateExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Indexer\RtqElasticsearchIndexerAuxilaryJobsRunner.cs" />
+    <Compile Include="Indexer\RtqElasticsearchIndexerStatusHttpHandler.cs" />
+    <Compile Include="Storage\Client\ITaskSearchClient.cs" />
+    <Compile Include="Storage\Client\TaskSearchClient.cs" />
+    <Compile Include="Storage\Client\TaskSearchRequest.cs" />
+    <Compile Include="Storage\Client\TaskSearchResponse.cs" />
+    <Compile Include="Storage\RtqElasticsearchClientFactory.cs" />
+    <Compile Include="Storage\RtqElasticsearchConsts.cs" />
+    <Compile Include="Storage\RtqElasticsearchSchema.cs" />
+    <Compile Include="Storage\Search\SearchIndexNameFactory.cs" />
+    <Compile Include="Storage\Types\ElasticMonitoringStatus.cs" />
+    <Compile Include="Storage\Utils\DateTimeFormatter.cs" />
+    <Compile Include="Storage\Utils\IndexNameConverter.cs" />
+    <Compile Include="Storage\Utils\NamedLoggerExtension.cs" />
+    <Compile Include="Storage\Writing\Contracts\LastUpdateTicks.cs" />
+    <Compile Include="Storage\Writing\Contracts\MetaIndexedInfo.cs" />
+    <Compile Include="Storage\Writing\Contracts\TaskIndexedInfo.cs" />
+    <Compile Include="Storage\Writing\IndexChecker.cs" />
+    <Compile Include="Storage\Writing\IRtqElasticsearchIndexingProgressMarkerStorage.cs" />
+    <Compile Include="Storage\Writing\IWriteIndexNameFactory.cs" />
+    <Compile Include="Storage\Writing\OmitNonIndexablePropertiesContractResolver.cs" />
+    <Compile Include="Storage\Writing\RtqElasticsearchIndexingProgressMarkerStorage.cs" />
+    <Compile Include="Storage\Writing\StringConverter.cs" />
+    <Compile Include="Storage\Writing\TaskDataService.cs" />
+    <Compile Include="Storage\Writing\TaskWriter.cs" />
+    <Compile Include="Storage\Writing\TaskWriterJsonSettings.cs" />
+    <Compile Include="Storage\Writing\TruncateLongStringsConverter.cs" />
+    <Compile Include="Storage\Writing\TruncateLongStringsConverter2K.cs" />
+    <Compile Include="Storage\Writing\WriteIndexNameFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
+      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
+      <Name>RemoteTaskQueue</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MvcControllers\Views\Shared\HelpModal.cshtml" />
+    <None Include="MvcControllers\Views\Shared\SearchPanel.cshtml" />
+    <None Include="MvcControllers\Views\Tasks\Scroll.cshtml" />
+    <None Include="MvcControllers\Views\Tasks\SearchPage.cshtml" />
+    <None Include="MvcControllers\Views\Tasks\SearchResultsPage.cshtml" />
+    <None Include="MvcControllers\Views\Tasks\TaskDetails2.cshtml" />
+    <None Include="MvcControllers\Views\Tasks\TaskDetails_NotFound.cshtml" />
+    <None Include="MvcControllers\Views\Tasks\_LongActionsBasicDialog.cshtml" />
+    <None Include="MvcControllers\Views\_TasksLayout.cshtml" />
+    <None Include="MvcControllers\Web.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -58,6 +58,10 @@
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
+    <Reference Include="GroboContainer, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
+    </Reference>
     <Reference Include="GroboTrace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
@@ -168,6 +172,7 @@
     <Compile Include="Handling\TaskShardMetrics.cs" />
     <Compile Include="Handling\RemoteTaskQueueExtensions.cs" />
     <Compile Include="LocalTasks\TaskQueue\LocalTaskQueueingResult.cs" />
+    <Compile Include="Profiling\GraphiteRemoteTaskQueueProfiler.cs" />
     <Compile Include="Tracing\BusinessLogicTaskTraceContext.cs" />
     <Compile Include="Tracing\InfrastructureTaskTraceContext.cs" />
     <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />

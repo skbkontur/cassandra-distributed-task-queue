@@ -1,6 +1,7 @@
 using System;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Core.Implementation;
+using RemoteTaskQueue.Monitoring.Indexer;
+
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
