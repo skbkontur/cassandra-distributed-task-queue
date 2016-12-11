@@ -58,13 +58,13 @@
       <Project>{27AFC62A-6F6B-443E-A83B-20D6714D8FAF}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue.TaskCounter\RemoteTaskQueue.TaskCounter.csproj">
+      <Project>{B7C6FBDB-C9D6-42A7-BB90-3D52C91D0174}</Project>
+      <Name>RemoteTaskQueue.TaskCounter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskCounter.Core\TaskCounter.Core.csproj">
-      <Project>{E7FBDDB8-FD6F-4573-B14B-7AEDBD4044BB}</Project>
-      <Name>TaskCounter.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

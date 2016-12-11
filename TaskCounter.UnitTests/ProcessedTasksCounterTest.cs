@@ -4,8 +4,9 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
+using RemoteTaskQueue.TaskCounter;
+using RemoteTaskQueue.TaskCounter.Implementation;
+
 using SKBKontur.Catalogue.TestCore;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests

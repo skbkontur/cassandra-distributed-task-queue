@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation.OldWaitingTasksCounters;
+using RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
 {

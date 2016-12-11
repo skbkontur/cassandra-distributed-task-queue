@@ -9,10 +9,11 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
+using RemoteTaskQueue.TaskCounter;
+using RemoteTaskQueue.TaskCounter.Implementation;
+
 using Rhino.Mocks;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 using SKBKontur.Catalogue.TestCore;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests

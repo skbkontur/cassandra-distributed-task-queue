@@ -49,6 +49,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
+    <Reference Include="GroBuf, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
+    <Reference Include="JetBrains.Annotations, Version=10.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Nunit-2.6.2\nunit.framework.dll</HintPath>
@@ -61,6 +69,7 @@
     <Compile Include="AndResetMonitoringServiceState.cs" />
     <Compile Include="CassandraHelpers.cs" />
     <Compile Include="ElasticMonitoringServiceClient.cs" />
+    <Compile Include="RemoteTaskQueueTaskCounterClient.cs" />
     <Compile Include="WithColumnFamilies.cs" />
     <Compile Include="WithExchangeServices.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,6 +84,10 @@
     <ProjectReference Include="..\ExchangeService\ExchangeService.csproj">
       <Project>{B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1}</Project>
       <Name>ExchangeService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue.TaskCounter\RemoteTaskQueue.TaskCounter.csproj">
+      <Project>{B7C6FBDB-C9D6-42A7-BB90-3D52C91D0174}</Project>
+      <Name>RemoteTaskQueue.TaskCounter</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>

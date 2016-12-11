@@ -34,6 +34,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.ClientLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.NUnit.Extensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.NUnit.Extensions.dll</HintPath>
     </Reference>
@@ -66,17 +70,13 @@
       <Project>{B505AEE0-0CD1-4C54-AF2A-C7D1EE3D4EF1}</Project>
       <Name>ExchangeService</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RemoteTaskQueue.TaskCounter\RemoteTaskQueue.TaskCounter.csproj">
+      <Project>{B7C6FBDB-C9D6-42A7-BB90-3D52C91D0174}</Project>
+      <Name>RemoteTaskQueue.TaskCounter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
       <Name>RemoteTaskQueue</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskCounter.Client\TaskCounter.Client.csproj">
-      <Project>{616A6772-4E5B-4719-848B-593D3893D76B}</Project>
-      <Name>TaskCounter.Client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TaskCounter.DataTypes\TaskCounter.DataTypes.csproj">
-      <Project>{B4D49A81-6047-480C-93BF-0B1AAA5ECB52}</Project>
-      <Name>TaskCounter.DataTypes</Name>
     </ProjectReference>
     <ProjectReference Include="..\TaskDatas\TaskDatas.csproj">
       <Project>{377DD77B-2032-423F-ADBA-93E965428524}</Project>

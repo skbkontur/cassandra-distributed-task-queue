@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 using NUnit.Framework;
 
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Core.Implementation;
+using RemoteTaskQueue.TaskCounter.Implementation;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
 {

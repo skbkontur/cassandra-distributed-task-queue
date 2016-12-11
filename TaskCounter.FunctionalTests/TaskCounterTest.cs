@@ -15,11 +15,11 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
+using RemoteTaskQueue.TaskCounter;
+
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.RemoteTaskQueue.Common;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.Client;
-using SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.DataTypes;
 using SKBKontur.Catalogue.RemoteTaskQueue.TaskDatas.MonitoringTestTaskData;
 
 using TestCommon;
@@ -206,7 +206,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.FunctionalTests
         private readonly IRemoteTaskQueue taskQueue;
 
         [Injected]
-        private readonly IRemoteTaskQueueTaskCounterClient monitoring;
+        private readonly RemoteTaskQueueTaskCounterClient monitoring;
 
         [Injected]
         private readonly IEventLogRepository eventLogRepository;
