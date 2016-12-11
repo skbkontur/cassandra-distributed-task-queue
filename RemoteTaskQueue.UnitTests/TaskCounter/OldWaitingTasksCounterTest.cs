@@ -4,7 +4,7 @@ using RemoteQueue.Cassandra.Entities;
 
 using RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
+namespace RemoteTaskQueue.UnitTests.TaskCounter
 {
     public class OldWaitingTasksCounterTest
     {

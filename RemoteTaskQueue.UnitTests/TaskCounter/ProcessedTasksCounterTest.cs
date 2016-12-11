@@ -9,7 +9,7 @@ using RemoteTaskQueue.TaskCounter.Implementation;
 
 using SKBKontur.Catalogue.TestCore;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
+namespace RemoteTaskQueue.UnitTests.TaskCounter
 {
     public class ProcessedTasksCounterTest
     {

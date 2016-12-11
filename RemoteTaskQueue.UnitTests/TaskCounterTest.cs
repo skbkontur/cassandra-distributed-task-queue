@@ -2,7 +2,7 @@
 
 using RemoteQueue.Handling;
 
-namespace RemoteQueue.Tests
+namespace RemoteTaskQueue.UnitTests
 {
     [TestFixture]
     public class TaskCounterTest
@@ -10,7 +10,7 @@ namespace RemoteQueue.Tests
         [Test]
         public void TestUnlimitedAllTaskCount()
         {
-            var taskCounter = new TaskCounter(0, 0);
+            var taskCounter = new RemoteQueue.Handling.TaskCounter(0, 0);
             for(var i = 0; i < 100; i++)
             {
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.TaskContinuation));
@@ -23,7 +23,7 @@ namespace RemoteQueue.Tests
         [Test]
         public void TestUnlimitedTaskCount()
         {
-            var taskCounter = new TaskCounter(0, 10);
+            var taskCounter = new RemoteQueue.Handling.TaskCounter(0, 10);
 
             for(var i = 0; i < 100; i++)
             {
@@ -54,7 +54,7 @@ namespace RemoteQueue.Tests
         [Test]
         public void TestLimitedTaskCount()
         {
-            var taskCounter = new TaskCounter(2, 3);
+            var taskCounter = new RemoteQueue.Handling.TaskCounter(2, 3);
 
             Assert.That(taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue));
             Assert.That(taskCounter.TryIncrement(TaskQueueReason.PullFromQueue));
@@ -102,7 +102,7 @@ namespace RemoteQueue.Tests
         [Test]
         public void TestUnlimitedTaskContinuationCount()
         {
-            var taskCounter = new TaskCounter(10, 0);
+            var taskCounter = new RemoteQueue.Handling.TaskCounter(10, 0);
 
             for(var i = 0; i < 10; i++)
             {

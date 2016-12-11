@@ -10,7 +10,7 @@ using RemoteTaskQueue.Monitoring.Storage.Writing.Contracts;
 
 using SKBKontur.Catalogue.TestCore;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
+namespace RemoteTaskQueue.UnitTests.Monitoring
 {
     public class TaskWtriterSerializationTest : CoreTestBase
     {

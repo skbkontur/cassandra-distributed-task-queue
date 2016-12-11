@@ -16,7 +16,7 @@ using Rhino.Mocks;
 
 using SKBKontur.Catalogue.TestCore;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.UnitTests
+namespace RemoteTaskQueue.UnitTests.TaskCounter
 {
     public class CounterControllerTest
     {

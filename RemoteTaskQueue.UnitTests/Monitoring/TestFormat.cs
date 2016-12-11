@@ -7,7 +7,7 @@ using RemoteTaskQueue.Monitoring.Storage.Utils;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.TestCore;
 
-namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.UnitTests
+namespace RemoteTaskQueue.UnitTests.Monitoring
 {
     public class TestFormat : CoreTestBase
     {

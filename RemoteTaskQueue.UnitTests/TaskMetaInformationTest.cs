@@ -9,7 +9,7 @@ using RemoteQueue.Cassandra.Entities;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
-namespace RemoteQueue.Tests
+namespace RemoteTaskQueue.UnitTests
 {
     [TestFixture]
     public class TaskMetaInformationTest
