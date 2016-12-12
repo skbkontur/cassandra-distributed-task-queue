@@ -1,9 +1,6 @@
 ﻿using RemoteTaskQueue.FunctionalTests.Common;
-using RemoteTaskQueue.TaskCounter.Http;
-using RemoteTaskQueue.TaskCounter.Scheduler;
 
 using SKBKontur.Catalogue.ServiceLib;
-using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 using SKBKontur.Catalogue.ServiceLib.Services;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.TestService
@@ -20,8 +17,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.TestService
         private void Run()
         {
             Container.ConfigureForTestRemoteTaskQueue();
-            Container.Configurator.ForAbstraction<IHttpHandler>().UseType<TaskCounterHttpHandler>();
-            Container.Get<ITaskCounterServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();
         }
     }

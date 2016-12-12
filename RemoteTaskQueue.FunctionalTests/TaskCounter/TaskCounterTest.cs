@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 
 using ExchangeService.UserClasses;
@@ -20,19 +20,13 @@ using RemoteTaskQueue.TaskCounter;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.ServiceLib.Logging;
+using SKBKontur.Catalogue.TestCore.Waiting;
 
 namespace RemoteTaskQueue.FunctionalTests.TaskCounter
 {
-    [EdiTestSuite("TaskCounterTestSuite"), WithTestRemoteTaskQueue, AndResetExchangeServiceState]
+    [EdiTestFixture, WithTestRemoteTaskQueue, AndResetTaskCounterServiceState]
     public class TaskCounterTest
     {
-        [EdiSetUp]
-        [SuppressMessage("ReSharper", "UnusedMember.Global")]
-        public void SetUp()
-        {
-            taskCounterServiceClient.RestartProcessingTaskCounter(DateTime.UtcNow);
-        }
-
         [Test, Ignore]
         public void TestOldWaitingTaskCount()
         {
@@ -41,9 +35,7 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
             taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
             taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
             Thread.Sleep(TimeSpan.FromMinutes(6));
-            TaskCount count = null;
-            WaitFor(() => (count = taskCounterServiceClient.GetProcessingTaskCount()).OldWaitingTaskCount == 2, TimeSpan.FromSeconds(10));
-            Assert.IsNotNull(count);
+            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().OldWaitingTaskCount == 2, TimeSpan.FromSeconds(10));
 
             exchangeServiceClient.Start();
             WaitFor(() =>
@@ -59,11 +51,7 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
             exchangeServiceClient.Stop();
             taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
             taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
-            TaskCount count = null;
-            WaitFor(() => (count = taskCounterServiceClient.GetProcessingTaskCount()).Count == 2, TimeSpan.FromSeconds(10));
-            Assert.IsNotNull(count);
-            Assert.AreEqual(2, count.Counts[(int)TaskState.New]);
-
+            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Counts[(int)TaskState.New] == 2, TimeSpan.FromSeconds(10));
             exchangeServiceClient.Start();
             WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
         }
@@ -84,21 +72,14 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
                 var processingTaskCount = taskCounterServiceClient.GetProcessingTaskCount();
 
                 Log.For(this).InfoFormat("InProgress={0} Counter={1}", processedCountFromCounter, processingTaskCount.Count);
-            } while(w.ElapsedMilliseconds < 10 * 1000);
-            WaitForTasks(taskIds, TimeSpan.FromMinutes(15));
-            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(100));
+            } while(w.Elapsed < TimeSpan.FromSeconds(10));
+            WaitForTasks(taskIds, TimeSpan.FromMinutes(1));
+            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
         }
 
-        private static void WaitFor(Func<bool> func, TimeSpan timeout, int checkTimeout = 99)
+        private static void WaitFor(Func<bool> func, TimeSpan timeout)
         {
-            var stopwatch = Stopwatch.StartNew();
-            while(stopwatch.Elapsed < timeout)
-            {
-                Thread.Sleep(checkTimeout);
-                if(func())
-                    return;
-            }
-            Assert.Fail("Условия ожидания не выполнены за {0}", timeout);
+            WaitHelper.Wait(() => func() ? WaitResult.StopWaiting : WaitResult.ContinueWaiting, timeout);
         }
 
         [Test]
@@ -170,23 +151,14 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
                     Thread.Sleep(addDelay);
             } while(w.ElapsedMilliseconds < addTime);
             Log.For(this).Info("Waiting for all tasks finished");
-            //WaitFor(() => taskQueue.GetTaskInfo<SlowTaskData>(lastTaskId).Context.State == TaskState.Finished, TimeSpan.FromSeconds(3));
             WaitForTasks(taskIds, waitTasksTime);
             Log.For(this).Info("Waiting for Counter");
             WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, waitTasksTime);
         }
 
-        private void WaitForTasks(List<string> taskIds, TimeSpan timeSpan)
+        private void WaitForTasks(List<string> taskIds, TimeSpan timeout)
         {
-            WaitFor(() =>
-                {
-                    foreach(var taskId in taskIds)
-                    {
-                        if(taskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.State != TaskState.Finished)
-                            return false;
-                    }
-                    return true;
-                }, timeSpan);
+            WaitFor(() => taskIds.All(taskId => taskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.State == TaskState.Finished), timeout);
         }
 
         [Injected]

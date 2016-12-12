@@ -1,13 +1,12 @@
-using log4net;
-
 using RemoteTaskQueue.TaskCounter.Implementation;
 using RemoteTaskQueue.TaskCounter.Implementation.Utils;
 
+using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteTaskQueue.TaskCounter.Scheduler
 {
-    public class TaskCounterServiceSchedulableRunner : ITaskCounterServiceSchedulableRunner
+    public class TaskCounterServiceSchedulableRunner
     {
         public TaskCounterServiceSchedulableRunner(
             IPeriodicTaskRunner periodicTaskRunner,
@@ -30,7 +29,7 @@ namespace RemoteTaskQueue.TaskCounter.Scheduler
                         periodicTaskRunner.Unregister(counterTaskId, 15000);
                         periodicTaskRunner.Unregister(counterGraphiteTaskId, 15000);
                         started = false;
-                        logger.LogInfoFormat("Stop TaskCounterServiceSchedulableRunner");
+                        Log.For(this).LogInfoFormat("Stop TaskCounterServiceSchedulableRunner");
                     }
                 }
             }
@@ -47,7 +46,7 @@ namespace RemoteTaskQueue.TaskCounter.Scheduler
                         periodicTaskRunner.Register(new ActionPeriodicTask(counterTaskId, () => counterController.ProcessNewEvents()), CounterSettings.CounterUpdateInterval);
                         periodicTaskRunner.Register(new ActionPeriodicTask(counterGraphiteTaskId, () => graphitePoster.PostData()), CounterSettings.GraphitePostInterval);
                         started = true;
-                        logger.LogInfoFormat("Start TaskCounterServiceSchedulableRunner");
+                        Log.For(this).LogInfoFormat("Start TaskCounterServiceSchedulableRunner");
                     }
                 }
             }
@@ -62,7 +61,5 @@ namespace RemoteTaskQueue.TaskCounter.Scheduler
         private readonly GraphitePoster graphitePoster;
 
         private volatile bool started;
-
-        private readonly ILog logger = LogManager.GetLogger(typeof(TaskCounterServiceSchedulableRunner));
     }
 }

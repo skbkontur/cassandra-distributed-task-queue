@@ -24,6 +24,11 @@ namespace RemoteTaskQueue.FunctionalTests
             Method("ResetState").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
+        public void Stop()
+        {
+            Method("Stop").SendToEachReplica(DomainConsistencyLevel.All);
+        }
+
         protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
         {
             return defaultConfiguration.WithTimeout(TimeSpan.FromMinutes(1));

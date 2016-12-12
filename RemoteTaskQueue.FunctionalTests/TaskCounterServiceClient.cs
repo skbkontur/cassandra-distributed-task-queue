@@ -13,12 +13,19 @@ namespace RemoteTaskQueue.FunctionalTests
 {
     public class TaskCounterServiceClient : HttpClientBase
     {
-        public TaskCounterServiceClient(
-            [NotNull] IDomainTopologyFactory domainTopologyFactory, 
-            [NotNull] IMethodDomainFactory methodDomainFactory, 
-            [NotNull] IHttpServiceClientConfiguration configuration)
+        public TaskCounterServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration)
             : base(domainTopologyFactory, methodDomainFactory, configuration)
         {
+        }
+
+        public void Start()
+        {
+            Method("Start").SendToEachReplica(DomainConsistencyLevel.All);
+        }
+
+        public void Stop()
+        {
+            Method("Stop").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
         public TaskCount GetProcessingTaskCount()

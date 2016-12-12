@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="TaskCounterServiceEntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskCounterServiceHttpHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj">

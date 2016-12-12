@@ -26,6 +26,12 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         }
 
         [HttpMethod]
+        public void Stop()
+        {
+            schedulableRunner.Stop();
+        }
+
+        [HttpMethod]
         public void UpdateAndFlush()
         {
             taskIndexController.ProcessNewEvents();

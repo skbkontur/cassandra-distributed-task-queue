@@ -107,12 +107,12 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
                 var newEvents = GetEvents(lastTicks);
 
                 unprocessedEvents.Concat(newEvents)
-                    .Batch(maxBatch, Enumerable.ToArray)
-                    .ForEach(events => 
-                    {
-                        hasEvents = true;
-                        ProcessEventsBatch(events, now);
-                    });
+                                 .Batch(maxBatch, Enumerable.ToArray)
+                                 .ForEach(events =>
+                                     {
+                                         hasEvents = true;
+                                         ProcessEventsBatch(events, now);
+                                     });
 
                 if(!hasEvents)
                     ProcessEventsBatch(new TaskMetaUpdatedEvent[0], now);
