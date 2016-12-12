@@ -19,6 +19,7 @@ using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 using RemoteTaskQueue.TaskCounter;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
@@ -30,7 +31,6 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
         [Test]
         public void TestOldWaitingTaskCount()
         {
-            //note long test
             exchangeServiceClient.Stop();
             taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
             taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
@@ -80,7 +80,7 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
         [Test]
         public void TestRestart()
         {
-            var now = DateTime.UtcNow;
+            var now = Timestamp.Now.ToDateTime();
             taskCounterServiceClient.RestartProcessingTaskCounter(now);
             var processingTaskCount = taskCounterServiceClient.GetProcessingTaskCount();
             processingTaskCount.UpdateTicks = 0;

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Configuration;
 
 using RemoteTaskQueue.FunctionalTests.Common;
@@ -22,6 +23,7 @@ namespace RemoteTaskQueue.FunctionalTests
                     new ColumnFamily {Name = ColumnFamilies.TestCounterRepositoryCfName}
                 }).ToArray();
             suiteContext.Container.ResetCassandraState(TestRemoteTaskQueueSettings.QueueKeyspaceName, columnFamilies);
+            suiteContext.Container.Get<TicksHolder>().ResetInMemoryState();
         }
     }
 }

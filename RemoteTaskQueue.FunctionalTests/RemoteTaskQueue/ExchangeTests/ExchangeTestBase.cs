@@ -17,7 +17,7 @@ using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
-    [EdiTestSuite("ExchangeTests"), WithTestRemoteTaskQueue, AndResetExchangeServiceState, AndResetTicksHolderState]
+    [EdiTestSuite("ExchangeTests"), WithTestRemoteTaskQueue, AndResetExchangeServiceState]
     public abstract class ExchangeTestBase
     {
         protected TaskIndexShardKey TaskIndexShardKey(string taskName, TaskState taskState)

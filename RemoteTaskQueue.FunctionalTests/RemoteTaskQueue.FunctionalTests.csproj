@@ -100,7 +100,6 @@
     <Compile Include="AndResetExchangeServiceState.cs" />
     <Compile Include="AndResetMonitoringServiceState.cs" />
     <Compile Include="AndResetTaskCounterServiceState.cs" />
-    <Compile Include="AndResetTicksHolderState.cs" />
     <Compile Include="CassandraHelpers.cs" />
     <Compile Include="MonitoringServiceClient.cs" />
     <Compile Include="ExchangeServiceClient.cs" />

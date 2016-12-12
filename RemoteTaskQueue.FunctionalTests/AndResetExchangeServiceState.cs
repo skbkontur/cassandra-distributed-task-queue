@@ -10,6 +10,7 @@ namespace RemoteTaskQueue.FunctionalTests
     {
         public override sealed void SetUp(string testName, IEditableEdiTestContext suiteContext, IEditableEdiTestContext methodContext)
         {
+            suiteContext.Container.Get<RemoteQueue.Handling.RemoteTaskQueue>().ResetTicksHolderInMemoryState();
             suiteContext.Container.Get<ExchangeServiceClient>().Start();
             suiteContext.Container.Get<ExchangeServiceClient>().ChangeTaskTtl(TestRemoteTaskQueueSettings.StandardTestTaskTtl);
         }

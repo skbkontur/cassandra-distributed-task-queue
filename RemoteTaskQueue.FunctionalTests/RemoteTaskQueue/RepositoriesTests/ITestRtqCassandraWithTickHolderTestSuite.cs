@@ -4,7 +4,7 @@ using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    [WithDefaultSerializer, WithTestRemoteTaskQueueSettings, WithCassandra(TestRemoteTaskQueueSettings.QueueKeyspaceName), AndResetCassandraState, AndResetTicksHolderState]
+    [WithDefaultSerializer, WithTestRemoteTaskQueueSettings, WithCassandra(TestRemoteTaskQueueSettings.QueueKeyspaceName), AndResetCassandraState]
     public interface ITestRtqCassandraWithTickHolderTestSuite
     {
     }
