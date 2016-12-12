@@ -2,23 +2,18 @@
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
-using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    public class GlobalTimeTest : FunctionalTestBase
+    [EdiTestSuite("TicksHolderTests")]
+    public class GlobalTimeTest : ITestRtqCassandraWithTickHolderTestSuite
     {
-        public override void SetUp()
-        {
-            base.SetUp();
-            globalTime = Container.Get<GlobalTime>();
-        }
-
         [Test]
         public void UpdateNowTicks()
         {
             var lastTicks = 0L;
-            for(var i = 0; i < iterations; i++)
+            for(var i = 0; i < 1000; i++)
             {
                 var nowTicks = globalTime.UpdateNowTicks();
                 Assert.True(lastTicks <= nowTicks + PreciseTimestampGenerator.TicksPerMicrosecond);
@@ -26,7 +21,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             }
         }
 
-        private GlobalTime globalTime;
-        private const int iterations = 1000;
+        [Injected]
+        private readonly GlobalTime globalTime;
     }
 }

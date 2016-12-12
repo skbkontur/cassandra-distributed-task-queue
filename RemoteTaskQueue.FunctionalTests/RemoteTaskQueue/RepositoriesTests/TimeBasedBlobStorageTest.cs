@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
@@ -15,11 +15,13 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     public class TimeBasedBlobStorageTest : BlobStorageFunctionalTestBase
     {
-        [SetUp]
+        [EdiSetUp]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
-            var settings = new TimeBasedBlobStorageSettings(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, largeCfName, regularCfName);
-            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, Container.Get<ICassandraCluster>());
+            ResetCassandraState();
+            var settings = new TimeBasedBlobStorageSettings(QueueKeyspaceName, largeCfName, regularCfName);
+            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
@@ -172,7 +174,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         {
             DoTestTtl(RegularBlobId());
         }
-        
+
         [Test]
         public void Ttl_Large()
         {

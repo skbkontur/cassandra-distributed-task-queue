@@ -67,7 +67,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 
         private string AddTask(int attempts)
         {
-            var task = taskQueue.CreateTask(new FakeFailTaskData());
+            var task = remoteTaskQueue.CreateTask(new FakeFailTaskData());
             testCounterRepository.SetValueForCounter(task.Id, attempts);
             task.Queue();
             return task.Id;

@@ -1,10 +1,7 @@
-﻿using RemoteQueue.Settings;
-
-using RemoteTaskQueue.FunctionalTests.Common;
+﻿using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.TaskCounter.Http;
 using RemoteTaskQueue.TaskCounter.Scheduler;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 using SKBKontur.Catalogue.ServiceLib.Services;
@@ -22,8 +19,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.TaskCounter.TestService
 
         private void Run()
         {
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
-            Container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<RemoteQueueTestsCassandraSettings>();
+            Container.ConfigureForTestRemoteTaskQueue();
             Container.Configurator.ForAbstraction<IHttpHandler>().UseType<TaskCounterHttpHandler>();
             Container.Get<ITaskCounterServiceSchedulableRunner>().Start();
             Container.Get<HttpService>().Run();

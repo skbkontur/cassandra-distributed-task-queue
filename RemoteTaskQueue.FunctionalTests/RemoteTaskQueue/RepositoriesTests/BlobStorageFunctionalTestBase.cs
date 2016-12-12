@@ -1,36 +1,33 @@
-﻿using GroboContainer.Core;
-using GroboContainer.Impl;
+﻿using System.Diagnostics.CodeAnalysis;
 
 using GroBuf;
-using GroBuf.DataMembersExtracters;
-
-using NUnit.Framework;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.ServiceLib;
-using SKBKontur.Catalogue.TestCore;
+using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    [TestFixture]
+    [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
+    [EdiTestSuite("BlobStorageTests"), WithDefaultSerializer, WithTestRemoteTaskQueueSettings, WithCassandra(QueueKeyspaceName)]
     public abstract class BlobStorageFunctionalTestBase
     {
-        [SetUp]
-        public void BlobStorageFunctionalTestBase_SetUp()
+        protected void ResetCassandraState()
         {
-            Log4NetHelper.SetUpLoggingOnce("BlobStorageFunctionalTestBase");
-            Container = new Container(new ContainerConfiguration(AssembliesLoader.Load()));
-            Container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
-            Container.ConfigureRemoteTaskQueue();
-            Container.DropAndCreateDatabase(GetColumnFamilies());
+            EdiTestContext.Current.Container.ResetCassandraState(QueueKeyspaceName, GetColumnFamilies());
         }
 
         protected abstract ColumnFamily[] GetColumnFamilies();
 
-        protected Container Container { get; private set; }
+        protected const string QueueKeyspaceName = TestRemoteTaskQueueSettings.QueueKeyspaceName;
+
+        [Injected]
+        protected readonly ISerializer serializer;
+
+        [Injected]
+        protected readonly ICassandraCluster cassandraCluster;
     }
 }

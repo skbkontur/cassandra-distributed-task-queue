@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-
-using GroboContainer.Core;
 
 using NUnit.Framework;
 
@@ -12,16 +11,24 @@ using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
 
+using RemoteTaskQueue.FunctionalTests.Common;
+
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
-    public static class TaskTestsExtensions
+    [EdiTestSuite("ExchangeTests"), WithTestRemoteTaskQueue, AndResetExchangeServiceState, AndResetTicksHolderState]
+    public abstract class ExchangeTestBase
     {
-        public static void CheckTaskMinimalStartTicksIndexStates(this IContainer container, Dictionary<string, TaskIndexShardKey> expectedShardKeys)
+        protected TaskIndexShardKey TaskIndexShardKey(string taskName, TaskState taskState)
         {
-            var globalTime = container.Get<IGlobalTime>();
-            var index = container.Get<ITaskMinimalStartTicksIndex>();
+            return new TaskIndexShardKey(taskDataRegistry.GetTaskTopic(taskName), taskState);
+        }
+
+        protected void CheckTaskMinimalStartTicksIndexStates(Dictionary<string, TaskIndexShardKey> expectedShardKeys)
+        {
             var allShardKeysForTasks = new Dictionary<string, List<TaskIndexShardKey>>();
-            foreach(var taskTopic in container.Get<ITaskDataRegistry>().GetAllTaskTopics())
+            foreach(var taskTopic in taskDataRegistry.GetAllTaskTopics())
             {
                 foreach(var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
                 {
@@ -59,5 +66,18 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
                     Assert.Fail("Expected task {0} not found in index", taskId);
             }
         }
+
+        [Injected]
+        private readonly IGlobalTime globalTime;
+
+        [Injected]
+        private readonly ITaskMinimalStartTicksIndex index;
+
+        [Injected]
+        private readonly ITaskDataRegistry taskDataRegistry;
+
+        [Injected]
+        [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
+        protected readonly RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue;
     }
 }

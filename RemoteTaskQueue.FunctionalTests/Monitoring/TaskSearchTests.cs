@@ -16,6 +16,7 @@ using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
@@ -27,7 +28,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         {
             var t0 = Timestamp.Now;
             var taskId = QueueTask(new SlowTaskData(), TimeSpan.FromSeconds(1));
-            Console.WriteLine("TaskId: {0}", taskId);
+            Log.For(this).InfoFormat("TaskId: {0}", taskId);
             var taskMetaInformation = handleTasksMetaStorage.GetMeta(taskId);
 
             var badBytes = new byte[] {};
@@ -71,7 +72,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
 
             var uniqueData = Guid.NewGuid();
-            Console.WriteLine("ud={0}", uniqueData);
+            Log.For(this).InfoFormat("ud={0}", uniqueData);
             var taskId = QueueTask(new FailingTaskData {UniqueData = uniqueData, RetryCount = 0});
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
@@ -95,8 +96,8 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             monitoringServiceClient.UpdateAndFlush();
 
             var t1 = Timestamp.Now;
-            var ttl = RemoteQueueTestsCassandraSettings.StandardTestTaskTtl;
-            Console.WriteLine(ToIsoTime(new Timestamp(remoteTaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.ExpirationTimestampTicks.Value)));
+            var ttl = TestRemoteTaskQueueSettings.StandardTestTaskTtl;
+            Log.For(this).Info(ToIsoTime(new Timestamp(remoteTaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.ExpirationTimestampTicks.Value)));
             CheckSearch(string.Format("Meta.ExpirationTime: [\"{0}\" TO \"{1}\"]", ToIsoTime(t0 + ttl), ToIsoTime(t1 + ttl + TimeSpan.FromSeconds(10))), t0, t1, taskId);
         }
 
@@ -111,7 +112,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
 
             var uniqueData = Guid.NewGuid();
-            Console.WriteLine("ud={0}", uniqueData);
+            Log.For(this).InfoFormat("ud={0}", uniqueData);
             var failingTaskData = new FailingTaskData {UniqueData = uniqueData, RetryCount = 2};
             var taskId = QueueTask(failingTaskData);
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(30));
@@ -133,7 +134,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
             for(var i = 0; i < 100; i++)
             {
-                Console.WriteLine("Iteration: {0}", i);
+                Log.For(this).InfoFormat("Iteration: {0}", i);
                 var taskId0 = QueueTask(new SlowTaskData());
                 WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
                 monitoringServiceClient.UpdateAndFlush();
@@ -147,7 +148,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
             for(var i = 0; i < 100; i++)
             {
-                Console.WriteLine("Iteration: {0}", i);
+                Log.For(this).InfoFormat("Iteration: {0}", i);
                 var taskId0 = QueueTask(new SlowTaskData());
                 var taskId1 = QueueTask(new SlowTaskData());
                 var taskId2 = QueueTask(new SlowTaskData());
@@ -221,7 +222,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         private ISerializer serializer;
 
         [Injected]
-        private IHandleTasksMetaStorage handleTasksMetaStorage;
+        private HandleTasksMetaStorage handleTasksMetaStorage;
 
         [Injected]
         private TaskDataStorage taskDataStorage;

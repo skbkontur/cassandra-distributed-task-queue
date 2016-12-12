@@ -41,7 +41,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 
         private string AddTask(int attempts, string taskGroupLock = null)
         {
-            var task = taskQueue.CreateTask(new FakePeriodicTaskData(), new CreateTaskOptions
+            var task = remoteTaskQueue.CreateTask(new FakePeriodicTaskData(), new CreateTaskOptions
                 {
                     TaskGroupLock = taskGroupLock
                 });

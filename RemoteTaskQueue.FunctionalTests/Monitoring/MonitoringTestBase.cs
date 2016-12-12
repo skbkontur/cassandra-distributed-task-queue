@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using NUnit.Framework;
 
+using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.Monitoring.Storage.Client;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
@@ -11,7 +12,7 @@ using SKBKontur.Catalogue.Objects;
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
     [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
-    [EdiTestSuite("MonitoringTests"), WithColumnFamilies, WithExchangeServices, AndResetMonitoringServiceState]
+    [EdiTestSuite("MonitoringTests"), WithTestRemoteTaskQueue, AndResetMonitoringServiceState]
     public abstract class MonitoringTestBase
     {
         protected void CheckSearch(string q, Timestamp from, Timestamp to, params string[] expectedIds)

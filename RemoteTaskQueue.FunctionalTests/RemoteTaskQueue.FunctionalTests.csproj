@@ -41,9 +41,6 @@
     <Reference Include="Catalogue.CassandraPrimitives.Storages">
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.CassandraStorageCore">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.ClientLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
     </Reference>
@@ -99,7 +96,10 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AndResetCassandraState.cs" />
+    <Compile Include="AndResetExchangeServiceState.cs" />
     <Compile Include="AndResetMonitoringServiceState.cs" />
+    <Compile Include="AndResetTicksHolderState.cs" />
     <Compile Include="CassandraHelpers.cs" />
     <Compile Include="MonitoringServiceClient.cs" />
     <Compile Include="ExchangeServiceClient.cs" />
@@ -115,28 +115,23 @@
     <Compile Include="RemoteTaskQueue\ExchangeTests\SimpleTaskTest.cs" />
     <Compile Include="RemoteTaskQueue\ExchangeTests\TaskProlongationTest.cs" />
     <Compile Include="RemoteTaskQueue\ExchangeTests\TasksWithCounterTestBase.cs" />
-    <Compile Include="RemoteTaskQueue\ExchangeTests\TaskTestsExtensions.cs" />
     <Compile Include="RemoteTaskQueue\ExchangeTests\TooLateException.cs" />
-    <Compile Include="RemoteTaskQueue\FunctionalTestBase.cs" />
-    <Compile Include="RemoteTaskQueue\FunctionalTestBaseWithoutServices.cs" />
+    <Compile Include="RemoteTaskQueue\ExchangeTests\ExchangeTestBase.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\BlobStorageFunctionalTestBase.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\GlobalTimeTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\HandleTaskMetaStorageTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\LegacyBlobStorageTest.cs" />
-    <Compile Include="RemoteTaskQueue\RepositoriesTests\ReadWriteTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\SinglePartitionTimeBasedBlobStorageTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\SmallTtlRemoteTaskQueueSettings.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\Sugar.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\TaskExceptionInfoStorageTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\TaskMetaStorageTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\TicksHolderTest.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\ITestRtqCassandraWithTickHolderTestSuite.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\TimeBasedBlobStorageTest.cs" />
     <Compile Include="TaskCounterServiceClient.cs" />
     <Compile Include="TaskCounter\TaskCounterTest.cs" />
-    <Compile Include="TestCassandraCoreSettings.cs" />
-    <Compile Include="WithColumnFamilies.cs" />
-    <Compile Include="WithExchangeServices.cs" />
-    <Compile Include="WithTestRemoteTaskQueue.cs" />
+    <Compile Include="WithTestRemoteTaskQueueSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ExchangeService\ExchangeService.csproj">

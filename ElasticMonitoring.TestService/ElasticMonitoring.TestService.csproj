@@ -34,15 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cassandra.CassandraClient">
-      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
-      <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.CassandraPrimitives.Storages">
-      <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Core.ElasticsearchClientExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>

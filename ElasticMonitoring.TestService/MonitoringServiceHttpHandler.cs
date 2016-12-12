@@ -13,10 +13,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
     public class MonitoringServiceHttpHandler : IHttpHandler
     {
         public MonitoringServiceHttpHandler(ITaskIndexController taskIndexController,
-                                                       IGlobalTime globalTime,
-                                                       RtqElasticsearchSchema rtqElasticsearchSchema,
-                                                       MonitoringServiceSchedulableRunner schedulableRunner,
-                                                       RtqElasticsearchClientFactory elasticsearchClientFactory)
+                                            IGlobalTime globalTime,
+                                            RtqElasticsearchSchema rtqElasticsearchSchema,
+                                            MonitoringServiceSchedulableRunner schedulableRunner,
+                                            RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
             this.taskIndexController = taskIndexController;
             this.globalTime = globalTime;

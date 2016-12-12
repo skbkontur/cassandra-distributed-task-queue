@@ -1,14 +1,14 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
@@ -16,11 +16,13 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     public class SinglePartitionTimeBasedBlobStorageTest : BlobStorageFunctionalTestBase
     {
-        [SetUp]
+        [EdiSetUp]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
-            var cfName = new ColumnFamilyFullName(Container.Get<IRemoteTaskQueueSettings>().QueueKeyspace, timeBasedCfName);
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, Container.Get<ICassandraCluster>());
+            ResetCassandraState();
+            var cfName = new ColumnFamilyFullName(QueueKeyspaceName, timeBasedCfName);
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, cassandraCluster);
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
@@ -96,7 +98,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             Assert.That(ReadByte(rowKey, id), Is.EqualTo(10));
             Assert.That(() => ReadByte(rowKey, id), Is.Null.After(10000, 1000));
         }
-        
+
         private static string NewRowKey()
         {
             return Guid.NewGuid().ToString();

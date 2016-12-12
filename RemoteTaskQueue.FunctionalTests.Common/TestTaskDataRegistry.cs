@@ -1,13 +1,16 @@
-﻿using RemoteQueue.Configuration;
+﻿using GroboContainer.Infection;
+
+using RemoteQueue.Configuration;
 
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {
-    public class TaskDataRegistry : TaskDataRegistryBase
+    [IgnoredImplementation]
+    public class TestTaskDataRegistry : TaskDataRegistryBase
     {
-        public TaskDataRegistry()
+        public TestTaskDataRegistry()
         {
             Register<FakeFailTaskData>();
             Register<FakePeriodicTaskData>();

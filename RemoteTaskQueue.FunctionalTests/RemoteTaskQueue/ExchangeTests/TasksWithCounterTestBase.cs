@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -11,22 +12,14 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Handling;
 
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
-    public abstract class TasksWithCounterTestBase : FunctionalTestBase
+    public abstract class TasksWithCounterTestBase : ExchangeTestBase
     {
-        public override void SetUp()
-        {
-            base.SetUp();
-            testCounterRepository = Container.Get<ITestCounterRepository>();
-            taskQueue = GetRemoteTaskQueue();
-            handleTaskCollection = Container.Get<IHandleTaskCollection>();
-        }
-
         protected void WaitForTerminalState(string[] taskIds, TaskState terminalState, string taskName, TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
             var sw = Stopwatch.StartNew();
@@ -42,7 +35,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
                     Assert.That(notFinishedTaskIds, Is.Empty);
                     try
                     {
-                        Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey(taskName, terminalState)));
+                        CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey(taskName, terminalState)));
                         break;
                     }
                     catch(AssertionException e)
@@ -66,20 +59,18 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             {
                 if(handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == targetState))
                     break;
-                if (sw.Elapsed > timeout)
+                if(sw.Elapsed > timeout)
                     throw new TooLateException("Время ожидания превысило {0} мс. Tasks in another state: {1}", timeout,
-                        string.Join(", ", handleTaskCollection.GetTasks(taskIds).Where(x => x.Meta.State != targetState).Select(x => x.Meta.Id)));
+                                               string.Join(", ", handleTaskCollection.GetTasks(taskIds).Where(x => x.Meta.State != targetState).Select(x => x.Meta.Id)));
                 Thread.Sleep(sleepInterval.Value);
             }
         }
 
-        protected virtual IRemoteTaskQueue GetRemoteTaskQueue()
-        {
-            return Container.Get<IRemoteTaskQueue>();
-        }
+        [Injected]
+        private readonly IHandleTaskCollection handleTaskCollection;
 
-        protected IRemoteTaskQueue taskQueue;
-        private IHandleTaskCollection handleTaskCollection;
-        protected ITestCounterRepository testCounterRepository;
+        [Injected]
+        [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
+        protected readonly ITestCounterRepository testCounterRepository;
     }
 }

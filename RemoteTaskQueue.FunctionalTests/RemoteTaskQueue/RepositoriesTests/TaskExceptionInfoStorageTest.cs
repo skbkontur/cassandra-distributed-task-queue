@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
@@ -11,6 +12,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
@@ -18,10 +20,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     public class TaskExceptionInfoStorageTest : BlobStorageFunctionalTestBase
     {
-        [SetUp]
+        [EdiSetUp]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
-            taskExceptionInfoStorage = Container.Get<ITaskExceptionInfoStorage>();
+            ResetCassandraState();
         }
 
         [Test]
@@ -208,7 +211,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
-            
+
             meta.SetOrUpdateTtl(TimeSpan.FromHours(1));
             taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
@@ -282,7 +285,9 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             Legacy
         }
 
-        private ITaskExceptionInfoStorage taskExceptionInfoStorage;
+        [Injected]
+        private readonly TaskExceptionInfoStorage taskExceptionInfoStorage;
+
         private static readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);
     }
 }

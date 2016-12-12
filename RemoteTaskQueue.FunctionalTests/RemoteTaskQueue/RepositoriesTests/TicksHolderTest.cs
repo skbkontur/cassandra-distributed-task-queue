@@ -9,18 +9,14 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    public class TicksHolderTest : FunctionalTestBaseWithoutServices
+    [EdiTestSuite("TicksHolderTests")]
+    public class TicksHolderTest : ITestRtqCassandraWithTickHolderTestSuite
     {
-        public override void SetUp()
-        {
-            base.SetUp();
-            ticksHolder = Container.Get<ITicksHolder>();
-        }
-
         [Test]
         public void UpdateMaxTicks()
         {
@@ -90,6 +86,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             return ticksHolder.GetMinTicks(name);
         }
 
-        private ITicksHolder ticksHolder;
+        [Injected]
+        private readonly TicksHolder ticksHolder;
     }
 }

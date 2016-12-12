@@ -13,29 +13,24 @@ using RemoteQueue.Handling;
 
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
-    public class SimpleTaskTest : FunctionalTestBase
+    public class SimpleTaskTest : ExchangeTestBase
     {
-        public override void SetUp()
-        {
-            base.SetUp();
-            testCounterRepository = Container.Get<ITestCounterRepository>();
-            taskQueue = Container.Get<RemoteQueue.Handling.RemoteTaskQueue>();
-        }
-
         [Test]
         [Repeat(10)]
         public void TestRun()
         {
-            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
+            var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue();
             Wait(new[] {taskId}, 1);
             Thread.Sleep(2000);
             Assert.AreEqual(1, testCounterRepository.GetCounter(taskId));
-            Assert.AreEqual(TaskState.Finished, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskIndexShardKey>
+            Assert.AreEqual(TaskState.Finished, remoteTaskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
+            CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskIndexShardKey>
                 {
                     {taskId, TaskIndexShardKey("SimpleTaskData", TaskState.Finished)}
                 });
@@ -47,24 +42,24 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             var taskIds = new List<string>();
             Enumerable.Range(0, 42).AsParallel().ForAll(x =>
                 {
-                    var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
+                    var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue();
                     lock(taskIds)
                         taskIds.Add(taskId);
                 });
             WaitForTasksToFinish(taskIds, TimeSpan.FromSeconds(10));
-            Container.CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey("SimpleTaskData", TaskState.Finished)));
+            CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey("SimpleTaskData", TaskState.Finished)));
         }
 
         [Test]
         public void TestCancel()
         {
-            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(1));
-            Assert.That(taskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Success));
+            var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(1));
+            Assert.That(remoteTaskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Success));
             Wait(new[] {taskId}, 0);
             Thread.Sleep(2000);
             Assert.AreEqual(0, testCounterRepository.GetCounter(taskId));
-            Assert.AreEqual(TaskState.Canceled, taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskIndexShardKey>
+            Assert.AreEqual(TaskState.Canceled, remoteTaskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context.State);
+            CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskIndexShardKey>
                 {
                     {taskId, TaskIndexShardKey("SimpleTaskData", TaskState.Canceled)}
                 });
@@ -73,33 +68,31 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         [Test]
         public void TestCancel_UnknownTask()
         {
-            Assert.That(taskQueue.TryCancelTask(Guid.NewGuid().ToString()), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
+            Assert.That(remoteTaskQueue.TryCancelTask(Guid.NewGuid().ToString()), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
         }
 
         [Test]
         public void TestCancel_LockAcquiringFails()
         {
-            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
-            var remoteLockCreator = taskQueue.RemoteLockCreator;
+            var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
+            var remoteLockCreator = remoteTaskQueue.RemoteLockCreator;
             using(remoteLockCreator.Lock(taskId))
-            {
-                Assert.That(taskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
-            }
+                Assert.That(remoteTaskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
         }
 
         [Test]
         public void TestRerun()
         {
-            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue();
+            var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue();
             Wait(new[] {taskId}, 1);
-            Assert.That(taskQueue.TryRerunTask(taskId, TimeSpan.FromMilliseconds(1)), Is.EqualTo(TaskManipulationResult.Success));
+            Assert.That(remoteTaskQueue.TryRerunTask(taskId, TimeSpan.FromMilliseconds(1)), Is.EqualTo(TaskManipulationResult.Success));
             Wait(new[] {taskId}, 2);
             Thread.Sleep(2000);
             Assert.AreEqual(2, testCounterRepository.GetCounter(taskId));
-            var taskMeta = taskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context;
+            var taskMeta = remoteTaskQueue.GetTaskInfo<SimpleTaskData>(taskId).Context;
             Assert.AreEqual(TaskState.Finished, taskMeta.State);
             Assert.AreEqual(2, taskMeta.Attempts);
-            Container.CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskIndexShardKey>
+            CheckTaskMinimalStartTicksIndexStates(new Dictionary<string, TaskIndexShardKey>
                 {
                     {taskId, TaskIndexShardKey("SimpleTaskData", TaskState.Finished)}
                 });
@@ -108,15 +101,15 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         [Test]
         public void TestRerun_UnknownTask()
         {
-            Assert.That(taskQueue.TryRerunTask(Guid.NewGuid().ToString(), TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
+            Assert.That(remoteTaskQueue.TryRerunTask(Guid.NewGuid().ToString(), TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
         }
 
         [Test]
         public void TestRerun_LockAcquiringFails()
         {
-            var taskId = taskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
-            using(taskQueue.RemoteLockCreator.Lock(taskId))
-                Assert.That(taskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
+            var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
+            using(remoteTaskQueue.RemoteLockCreator.Lock(taskId))
+                Assert.That(remoteTaskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
         }
 
         private void Wait(string[] taskIds, int criticalValue, int ms = 5000)
@@ -125,7 +118,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             while(true)
             {
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
-                Console.WriteLine(Now() + " CurrentValues: " + string.Join(", ", attempts));
+                Log.For(this).Info(Now() + " CurrentValues: " + string.Join(", ", attempts));
                 var minValue = attempts.Min();
                 if(minValue >= criticalValue)
                     break;
@@ -140,7 +133,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             WaitHelper.Wait(() =>
                 {
-                    var tasks = taskQueue.HandleTaskCollection.GetTasks(taskIds.ToArray());
+                    var tasks = remoteTaskQueue.HandleTaskCollection.GetTasks(taskIds.ToArray());
                     return tasks.All(t => t.Meta.State == TaskState.Finished) ? WaitResult.StopWaiting : WaitResult.ContinueWaiting;
                 }, timeSpan);
         }
@@ -151,7 +144,8 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         }
 
         private const int sleepInterval = 200;
+
+        [Injected]
         private ITestCounterRepository testCounterRepository;
-        private RemoteQueue.Handling.RemoteTaskQueue taskQueue;
     }
 }

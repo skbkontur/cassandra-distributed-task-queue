@@ -1,8 +1,5 @@
-﻿using RemoteQueue.Settings;
+﻿using RemoteTaskQueue.FunctionalTests.Common;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
-using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
 
@@ -19,9 +16,7 @@ namespace ExchangeService
 
         private void Run()
         {
-            Container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseType<RemoteQueueTestsCassandraSettings>();
-            Container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<RemoteQueueTestsCassandraSettings>();
-            Container.ConfigureLockRepository();
+            Container.ConfigureForTestRemoteTaskQueue();
             Container.Get<HttpService>().Run();
         }
     }

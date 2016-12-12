@@ -1,14 +1,15 @@
-﻿using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
-    [AndResetExchangeServiceState]
-    public class AndResetMonitoringServiceState : EdiTestMethodWrapperAttribute
+    public class AndResetTicksHolderState : EdiTestMethodWrapperAttribute
     {
         public override sealed void SetUp(string testName, IEditableEdiTestContext suiteContext, IEditableEdiTestContext methodContext)
         {
-            suiteContext.Container.Get<MonitoringServiceClient>().ResetState();
+            suiteContext.Container.Get<TicksHolder>().ResetInMemoryState();
         }
     }
 }

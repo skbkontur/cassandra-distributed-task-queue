@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using NUnit.Framework;
@@ -7,6 +8,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
@@ -14,10 +16,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     public class TaskMetaStorageTest : BlobStorageFunctionalTestBase
     {
-        [SetUp]
+        [EdiSetUp]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
-            taskMetaStorage = Container.Get<TaskMetaStorage>();
+            ResetCassandraState();
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
@@ -134,12 +137,14 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         private void Write(string taskId, TimeSpan? ttl = null)
         {
             var now = Timestamp.Now;
-            var taskMeta = new TaskMetaInformation("TaskName", taskId) { MinimalStartTicks = now.Ticks };
+            var taskMeta = new TaskMetaInformation("TaskName", taskId) {MinimalStartTicks = now.Ticks};
             taskMeta.SetOrUpdateTtl(ttl ?? defaultTtl);
             taskMetaStorage.Write(taskMeta, now.Ticks);
         }
 
+        [Injected]
+        private readonly TaskMetaStorage taskMetaStorage;
+
         private readonly TimeSpan defaultTtl = TimeSpan.FromHours(1);
-        private TaskMetaStorage taskMetaStorage;
     }
 }

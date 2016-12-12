@@ -1,5 +1,6 @@
 ﻿using System.Linq;
-using System.Reflection;
+
+using GroboContainer.Core;
 
 using RemoteQueue.Configuration;
 
@@ -11,17 +12,21 @@ using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
-    [WithTestRemoteTaskQueue]
-    public class WithColumnFamilies : EdiTestSuiteWrapperAttribute
+    public class AndResetCassandraState : EdiTestMethodWrapperAttribute
     {
-        public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableEdiTestContext suiteContext)
+        public override sealed void SetUp(string testName, IEditableEdiTestContext suiteContext, IEditableEdiTestContext methodContext)
         {
-            var columnFamilies = suiteContext.Container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
+            ResetCassandraState(suiteContext.Container);
+        }
+
+        public static void ResetCassandraState(IContainer container)
+        {
+            var columnFamilies = container.Get<IColumnFamilyRegistry>().GetAllColumnFamilyNames().Concat(new[]
                 {
                     new ColumnFamily {Name = ColumnFamilies.TestTaskLoggerCfName},
                     new ColumnFamily {Name = ColumnFamilies.TestCounterRepositoryCfName}
                 }).ToArray();
-            suiteContext.Container.DropAndCreateDatabase(columnFamilies);
+            container.ResetCassandraState(TestRemoteTaskQueueSettings.QueueKeyspaceName, columnFamilies);
         }
     }
 }

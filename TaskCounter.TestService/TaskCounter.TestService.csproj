@@ -34,9 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cassandra.CassandraClient">
-      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
@@ -58,10 +55,6 @@
     <ProjectReference Include="..\RemoteTaskQueue.TaskCounter\RemoteTaskQueue.TaskCounter.csproj">
       <Project>{B7C6FBDB-C9D6-42A7-BB90-3D52C91D0174}</Project>
       <Name>RemoteTaskQueue.TaskCounter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
-      <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
-      <Name>RemoteTaskQueue</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

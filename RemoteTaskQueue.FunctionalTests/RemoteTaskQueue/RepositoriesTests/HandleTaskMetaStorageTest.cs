@@ -1,11 +1,8 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
-using GroboContainer.Core;
 using GroboContainer.Infection;
-
-using GroBuf;
-using GroBuf.DataMembersExtracters;
 
 using NUnit.Framework;
 
@@ -13,33 +10,23 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
-using RemoteQueue.Settings;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
-using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    public class HandleTaskMetaStorageTest : FunctionalTestBaseWithoutServices
+    [EdiTestFixture]
+    public class HandleTaskMetaStorageTest : ITestRtqCassandraWithTickHolderTestSuite
     {
-        public override void SetUp()
+        [EdiTestFixtureSetUp]
+        [SuppressMessage("ReSharper", "UnusedMember.Global")]
+        public void TestFixtureSetUp(IEditableEdiTestContext suiteContext)
         {
-            base.SetUp();
             taskDataRegistry = new DummyTaskDataRegistry();
-            Container.Configurator.ForAbstraction<ITaskDataRegistry>().UseInstances(taskDataRegistry);
-            handleTasksMetaStorage = Container.Get<IHandleTasksMetaStorage>();
-        }
-
-        protected override void ConfigureContainer(Container container)
-        {
-            container.Configurator.ForAbstraction<ISerializer>().UseInstances(new Serializer(new AllPropertiesExtractor(), null, GroBufOptions.MergeOnRead));
-            var remoteQueueTestsCassandraSettings = new RemoteQueueTestsCassandraSettings();
-            container.Configurator.ForAbstraction<ICassandraClusterSettings>().UseInstances(remoteQueueTestsCassandraSettings);
-            container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseInstances(remoteQueueTestsCassandraSettings);
-            container.ConfigureLockRepository();
+            sut = suiteContext.Container.Create<ITaskDataRegistry, HandleTasksMetaStorage>(taskDataRegistry);
         }
 
         private static string NewTaskId()
@@ -59,11 +46,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var meta = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.New, MinimalStartTicks = nowTicks + 1};
             for(var i = 0; i <= 1000; i++)
             {
-                var oldTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(meta);
+                var oldTaskIndexRecord = sut.FormatIndexRecord(meta);
                 meta.MinimalStartTicks++;
-                handleTasksMetaStorage.AddMeta(meta, oldTaskIndexRecord);
+                sut.AddMeta(meta, oldTaskIndexRecord);
             }
-            Assert.AreEqual(1, handleTasksMetaStorage.GetIndexRecords(nowTicks + 1002, new[] {TaskIndexShardKey("TaskName", TaskState.New)}).Length);
+            Assert.AreEqual(1, sut.GetIndexRecords(nowTicks + 1002, new[] {TaskIndexShardKey("TaskName", TaskState.New)}).Length);
         }
 
         [Test]
@@ -79,13 +66,13 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             {
                 foreach(var t in metas)
                 {
-                    var oldTaskIndexRecord = handleTasksMetaStorage.FormatIndexRecord(t);
+                    var oldTaskIndexRecord = sut.FormatIndexRecord(t);
                     t.MinimalStartTicks++;
                     t.State = i % 2 == 0 ? TaskState.Finished : TaskState.New;
-                    handleTasksMetaStorage.AddMeta(t, oldTaskIndexRecord);
+                    sut.AddMeta(t, oldTaskIndexRecord);
                 }
             }
-            Assert.AreEqual(10, handleTasksMetaStorage.GetIndexRecords(nowTicks + 1012, new[] {TaskIndexShardKey("TaskName", TaskState.Finished)}).Length);
+            Assert.AreEqual(10, sut.GetIndexRecords(nowTicks + 1012, new[] {TaskIndexShardKey("TaskName", TaskState.Finished)}).Length);
         }
 
         [Test]
@@ -94,14 +81,14 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var ticks = Timestamp.Now.Ticks;
             var id = NewTaskId();
             var taskMeta = new TaskMetaInformation("TaskName", id) {State = TaskState.New, MinimalStartTicks = ticks};
-            handleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord : null);
-            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
+            sut.AddMeta(taskMeta, oldTaskIndexRecord : null);
+            var tasks = sut.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(1, tasks.Length);
             Assert.AreEqual(id, tasks[0].TaskId);
-            tasks = handleTasksMetaStorage.GetIndexRecords(ticks, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
+            tasks = sut.GetIndexRecords(ticks, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(1, tasks.Length);
             Assert.AreEqual(id, tasks[0].TaskId);
-            tasks = handleTasksMetaStorage.GetIndexRecords(ticks - 1, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
+            tasks = sut.GetIndexRecords(ticks - 1, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(0, tasks.Length);
         }
 
@@ -110,10 +97,10 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         {
             var ticks = Timestamp.Now.Ticks;
             var taskMeta1 = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.InProcess, MinimalStartTicks = ticks};
-            handleTasksMetaStorage.AddMeta(taskMeta1, oldTaskIndexRecord : null);
+            sut.AddMeta(taskMeta1, oldTaskIndexRecord : null);
             var taskMeta2 = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.Finished, MinimalStartTicks = ticks};
-            handleTasksMetaStorage.AddMeta(taskMeta2, oldTaskIndexRecord : null);
-            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
+            sut.AddMeta(taskMeta2, oldTaskIndexRecord : null);
+            var tasks = sut.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
             Assert.AreEqual(1, tasks.Length);
         }
 
@@ -122,10 +109,10 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         {
             var ticks = Timestamp.Now.Ticks;
             var taskMeta1 = new TaskMetaInformation("TaskName1", NewTaskId()) {State = TaskState.New, MinimalStartTicks = ticks};
-            handleTasksMetaStorage.AddMeta(taskMeta1, oldTaskIndexRecord : null);
+            sut.AddMeta(taskMeta1, oldTaskIndexRecord : null);
             var taskMeta2 = new TaskMetaInformation("TaskName2", NewTaskId()) {State = TaskState.New, MinimalStartTicks = ticks};
-            handleTasksMetaStorage.AddMeta(taskMeta2, oldTaskIndexRecord : null);
-            var tasks = handleTasksMetaStorage.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName1", TaskState.New)});
+            sut.AddMeta(taskMeta2, oldTaskIndexRecord : null);
+            var tasks = sut.GetIndexRecords(ticks + 1, new[] {TaskIndexShardKey("TaskName1", TaskState.New)});
             Assert.AreEqual(1, tasks.Length);
         }
 
@@ -138,17 +125,17 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var id3 = NewTaskId();
             var id4 = NewTaskId();
             var taskMeta1 = new TaskMetaInformation("TaskName", id1) {State = TaskState.New, MinimalStartTicks = ticks + 10};
-            handleTasksMetaStorage.AddMeta(taskMeta1, oldTaskIndexRecord : null);
+            sut.AddMeta(taskMeta1, oldTaskIndexRecord : null);
             var taskMeta2 = new TaskMetaInformation("TaskName", id2) {State = TaskState.InProcess, MinimalStartTicks = ticks};
-            handleTasksMetaStorage.AddMeta(taskMeta2, oldTaskIndexRecord : null);
+            sut.AddMeta(taskMeta2, oldTaskIndexRecord : null);
             var taskMeta3 = new TaskMetaInformation("TaskName", id3) {State = TaskState.New, MinimalStartTicks = ticks - 5};
-            handleTasksMetaStorage.AddMeta(taskMeta3, oldTaskIndexRecord : null);
+            sut.AddMeta(taskMeta3, oldTaskIndexRecord : null);
             var taskMeta4 = new TaskMetaInformation("TaskName", id4) {State = TaskState.Unknown, MinimalStartTicks = ticks + 1};
-            handleTasksMetaStorage.AddMeta(taskMeta4, oldTaskIndexRecord : null);
+            sut.AddMeta(taskMeta4, oldTaskIndexRecord : null);
             var toTicks = ticks + 9;
             var taskIndexShardKeys = new[] {TaskIndexShardKey("TaskName", TaskState.InProcess), TaskIndexShardKey("TaskName", TaskState.New)};
-            Assert.That(handleTasksMetaStorage.GetIndexRecords(toTicks, taskIndexShardKeys).Select(x => x.TaskId).ToArray(), Is.EquivalentTo(new[] {id3, id2}));
-            Assert.That(handleTasksMetaStorage.GetIndexRecords(toTicks, taskIndexShardKeys.Reverse().ToArray()).Select(x => x.TaskId).ToArray(), Is.EquivalentTo(new[] {id3, id2}));
+            Assert.That(sut.GetIndexRecords(toTicks, taskIndexShardKeys).Select(x => x.TaskId).ToArray(), Is.EquivalentTo(new[] {id3, id2}));
+            Assert.That(sut.GetIndexRecords(toTicks, taskIndexShardKeys.Reverse().ToArray()).Select(x => x.TaskId).ToArray(), Is.EquivalentTo(new[] {id3, id2}));
         }
 
         [Test]
@@ -157,21 +144,21 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var ticks = Timestamp.Now.Ticks;
             var id = NewTaskId();
             var taskMeta1 = new TaskMetaInformation("TaskName", id) {State = TaskState.New, MinimalStartTicks = ticks + 10};
-            handleTasksMetaStorage.AddMeta(taskMeta1, oldTaskIndexRecord : null);
+            sut.AddMeta(taskMeta1, oldTaskIndexRecord : null);
             var taskMeta2 = new TaskMetaInformation("TaskName", id) {State = TaskState.InProcess, MinimalStartTicks = ticks + 15};
-            handleTasksMetaStorage.AddMeta(taskMeta2, oldTaskIndexRecord : null);
-            var newTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 12, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
+            sut.AddMeta(taskMeta2, oldTaskIndexRecord : null);
+            var newTasks = sut.GetIndexRecords(ticks + 12, new[] {TaskIndexShardKey("TaskName", TaskState.New)});
             Assert.AreEqual(1, newTasks.Length);
             Assert.AreEqual(id, newTasks[0].TaskId);
-            var inProcessTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 12, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
+            var inProcessTasks = sut.GetIndexRecords(ticks + 12, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
             Assert.AreEqual(0, inProcessTasks.Length);
-            inProcessTasks = handleTasksMetaStorage.GetIndexRecords(ticks + 16, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
+            inProcessTasks = sut.GetIndexRecords(ticks + 16, new[] {TaskIndexShardKey("TaskName", TaskState.InProcess)});
             Assert.AreEqual(1, inProcessTasks.Length);
             Assert.AreEqual(id, inProcessTasks[0].TaskId);
         }
 
-        private ITaskDataRegistry taskDataRegistry;
-        private IHandleTasksMetaStorage handleTasksMetaStorage;
+        private DummyTaskDataRegistry taskDataRegistry;
+        private HandleTasksMetaStorage sut;
 
         [IgnoredImplementation]
         private class DummyTaskDataRegistry : ITaskDataRegistry
