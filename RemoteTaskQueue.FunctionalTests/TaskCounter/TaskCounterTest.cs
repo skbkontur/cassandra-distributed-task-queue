@@ -27,7 +27,7 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
     [EdiTestFixture, WithTestRemoteTaskQueue, AndResetTaskCounterServiceState]
     public class TaskCounterTest
     {
-        [Test, Ignore]
+        [Test]
         public void TestOldWaitingTaskCount()
         {
             //note long test
@@ -75,11 +75,6 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
             } while(w.Elapsed < TimeSpan.FromSeconds(10));
             WaitForTasks(taskIds, TimeSpan.FromMinutes(1));
             WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
-        }
-
-        private static void WaitFor(Func<bool> func, TimeSpan timeout)
-        {
-            WaitHelper.Wait(() => func() ? WaitResult.StopWaiting : WaitResult.ContinueWaiting, timeout);
         }
 
         [Test]
@@ -159,6 +154,11 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
         private void WaitForTasks(List<string> taskIds, TimeSpan timeout)
         {
             WaitFor(() => taskIds.All(taskId => taskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.State == TaskState.Finished), timeout);
+        }
+
+        private static void WaitFor(Func<bool> func, TimeSpan timeout)
+        {
+            WaitHelper.Wait(() => func() ? WaitResult.StopWaiting : WaitResult.ContinueWaiting, timeout);
         }
 
         [Injected]
