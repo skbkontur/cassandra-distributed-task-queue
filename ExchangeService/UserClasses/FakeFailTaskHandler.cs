@@ -2,6 +2,7 @@
 
 using RemoteQueue.Handling;
 
+using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;

@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
-using ExchangeService.UserClasses;
-
 using FluentAssertions;
 
 using NUnit.Framework;
@@ -15,6 +13,7 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Handling;
 
 using RemoteTaskQueue.FunctionalTests.Common;
+using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 using RemoteTaskQueue.TaskCounter;
 

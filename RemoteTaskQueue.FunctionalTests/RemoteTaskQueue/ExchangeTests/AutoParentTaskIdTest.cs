@@ -3,13 +3,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
-using ExchangeService.UserClasses;
-
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
+using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;

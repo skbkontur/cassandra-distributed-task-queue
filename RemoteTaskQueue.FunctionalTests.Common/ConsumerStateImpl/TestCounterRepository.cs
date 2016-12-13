@@ -6,12 +6,10 @@ using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
-namespace ExchangeService.UserClasses
+namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
     public class TestCounterRepository : ITestCounterRepository
     {

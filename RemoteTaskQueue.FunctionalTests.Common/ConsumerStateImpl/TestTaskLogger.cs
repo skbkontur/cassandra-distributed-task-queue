@@ -3,13 +3,11 @@
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Settings;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
 
-namespace ExchangeService.UserClasses
+namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
     public class TestTaskLogger : ColumnFamilyRepositoryBase, ITestTaskLogger
     {

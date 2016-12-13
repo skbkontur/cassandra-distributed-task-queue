@@ -1,4 +1,4 @@
-﻿namespace ExchangeService.UserClasses
+﻿namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
     public interface ITestCounterRepository
     {

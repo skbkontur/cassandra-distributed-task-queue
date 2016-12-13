@@ -1,4 +1,4 @@
-namespace RemoteTaskQueue.FunctionalTests.Common
+namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
     public static class ColumnFamilies
     {

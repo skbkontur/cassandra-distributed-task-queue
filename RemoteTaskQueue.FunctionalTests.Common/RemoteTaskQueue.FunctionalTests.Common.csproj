@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cassandra.CassandraClient, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.CassandraPrimitives.RemoteLock, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
@@ -37,6 +41,10 @@
     <Reference Include="Catalogue.CassandraPrimitives.Storages, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.Storages.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.NUnit.Extensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -46,6 +54,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
+    <Reference Include="GroBuf, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+    </Reference>
     <Reference Include="JetBrains.Annotations, Version=10.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
@@ -54,7 +66,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColumnFamilies.cs" />
+    <Compile Include="ConsumerStateImpl\ColumnFamilies.cs" />
+    <Compile Include="ConsumerStateImpl\ITestCounterRepository.cs" />
+    <Compile Include="ConsumerStateImpl\ITestTaskLogger.cs" />
+    <Compile Include="ConsumerStateImpl\TestCounterRepository.cs" />
+    <Compile Include="ConsumerStateImpl\TestTaskLogger.cs" />
     <Compile Include="TestRemoteTaskQueueContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestRemoteTaskQueueSettings.cs" />

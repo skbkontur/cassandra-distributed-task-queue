@@ -4,6 +4,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Configuration;
 
 using RemoteTaskQueue.FunctionalTests.Common;
+using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;

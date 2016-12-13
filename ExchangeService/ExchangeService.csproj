@@ -36,17 +36,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cassandra.CassandraClient, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Cassandra\Cassandra.CassandraClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.CassandraPrimitives.RemoteLock">
-      <HintPath>..\..\Assemblies\CassandraPrimitives\Catalogue.CassandraPrimitives.RemoteLock.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
@@ -76,21 +65,17 @@
     <Compile Include="TaskHandlerRegistry.cs" />
     <Compile Include="UserClasses\ByteArrayAndNestedTaskHandler.cs" />
     <Compile Include="UserClasses\ByteArrayTaskDataHandler.cs" />
-    <Compile Include="UserClasses\TestTaskLogger.cs" />
     <Compile Include="UserClasses\ChainTaskHandler.cs" />
     <Compile Include="UserClasses\FakeFailTaskHandler.cs" />
     <Compile Include="UserClasses\FakeMixedPeriodicAndFailTaskHandler.cs" />
     <Compile Include="UserClasses\FakePeriodicTaskHandler.cs" />
     <Compile Include="UserClasses\FileIdTaskDataHandler.cs" />
-    <Compile Include="UserClasses\ITestTaskLogger.cs" />
-    <Compile Include="UserClasses\ITestCounterRepository.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\AlphaTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\BetaTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\FailingTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\SlowTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\DeltaTaskHandler.cs" />
     <Compile Include="UserClasses\SimpleTaskHandler.cs" />
-    <Compile Include="UserClasses\TestCounterRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj">
