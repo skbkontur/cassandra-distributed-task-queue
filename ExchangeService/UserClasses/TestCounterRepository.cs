@@ -3,22 +3,23 @@
 using GroBuf;
 
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-using SKBKontur.Catalogue.Objects;
 
 namespace ExchangeService.UserClasses
 {
     public class TestCounterRepository : ITestCounterRepository
     {
-        public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings taskQueueSettings, IRemoteLockCreator remoteLockCreator)
+        public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings taskQueueSettings, IGlobalTime globalTime, IRemoteLockCreator remoteLockCreator)
         {
-            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, taskQueueSettings.QueueKeyspace, ColumnFamilies.TestCounterRepositoryCfName);
+            this.globalTime = globalTime;
             this.remoteLockCreator = remoteLockCreator;
+            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, taskQueueSettings.QueueKeyspace, ColumnFamilies.TestCounterRepositoryCfName);
         }
 
         public int GetCounter(string taskId)
@@ -55,19 +56,12 @@ namespace ExchangeService.UserClasses
 
         private int GetCounterInternal(string taskId)
         {
-            try
-            {
-                return storage.Read(taskId);
-            }
-            catch
-            {
-                return 0;
-            }
+            return storage.Read(taskId);
         }
 
         private void SetCounterInternal(string taskId, int value)
         {
-            storage.Write(taskId, value, Timestamp.Now.Ticks, TimeSpan.FromHours(1));
+            storage.Write(taskId, value, globalTime.UpdateNowTicks(), TimeSpan.FromHours(1));
         }
 
         private IRemoteLock Lock(string taskId)
@@ -75,7 +69,8 @@ namespace ExchangeService.UserClasses
             return remoteLockCreator.Lock("TestCounterRepository_" + taskId);
         }
 
-        private readonly LegacyBlobStorage<int> storage;
+        private readonly IGlobalTime globalTime;
         private readonly IRemoteLockCreator remoteLockCreator;
+        private readonly LegacyBlobStorage<int> storage;
     }
 }
