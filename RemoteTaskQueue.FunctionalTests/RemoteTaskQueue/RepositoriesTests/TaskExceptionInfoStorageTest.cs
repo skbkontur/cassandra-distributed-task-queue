@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
@@ -15,6 +16,7 @@ using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
@@ -206,7 +208,8 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void Prolong_OneException(MetaType metaType)
         {
             var exception = new Exception("Message");
-            var meta = NewMeta(metaType, TimeSpan.FromSeconds(2));
+            var baseTtl = TimeSpan.FromSeconds(2);
+            var meta = NewMeta(metaType, baseTtl);
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
@@ -215,7 +218,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             meta.SetOrUpdateTtl(TimeSpan.FromHours(1));
             taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
-            Thread.Sleep(10000);
+            Thread.Sleep(baseTtl.Multiply(5));
             Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(1));
         }
 
@@ -225,7 +228,10 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         {
             var exception1 = new Exception("Message1");
             var exception2 = new Exception("Message2");
-            var meta = NewMeta(MetaType.TimeGuid, TimeSpan.FromSeconds(2));
+            var baseTtl = TimeSpan.FromSeconds(2);
+            var meta = NewMeta(MetaType.TimeGuid, baseTtl);
+
+            var sw = Stopwatch.StartNew();
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out ids), Is.True);
@@ -237,8 +243,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             meta.SetOrUpdateTtl(TimeSpan.FromHours(1));
             taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
-            Thread.Sleep(10000);
-            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(2));
+            sw.Stop();
+            Log.For(this).InfoFormat("sw.Elapsed: {0}", sw.Elapsed);
+
+            Thread.Sleep(baseTtl.Multiply(5));
+            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Length, Is.EqualTo(2), string.Format("sw.Elapsed: {0}", sw.Elapsed));
         }
 
         private void Check(Tuple<TaskMetaInformation, Exception[]>[] expected)

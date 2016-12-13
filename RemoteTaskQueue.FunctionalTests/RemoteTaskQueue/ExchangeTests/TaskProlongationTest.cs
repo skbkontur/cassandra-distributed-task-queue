@@ -49,7 +49,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         }
 
         [Test]
-        [Repeat(100)]
+        [Repeat(10)]
         public void Prolongation_Happened_MoreThanOnce()
         {
             SetTaskTtlOnConsumers(smallTaskTtl);
@@ -59,7 +59,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             var estimatedNumberOfRuns = (int)(smallTaskTtl.Ticks * 10 / rerunAfter.Ticks);
             Log.For(this).InfoFormat("Estimated number of runs: {0}", estimatedNumberOfRuns);
             var taskId = AddTask(estimatedNumberOfRuns, rerunAfter, null, null);
-            WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromMinutes(2), TimeSpan.FromMilliseconds(100));
+            WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromMinutes(2), TimeSpan.FromSeconds(1));
             var now = Timestamp.Now;
             var taskInfo = smallTtlRemoteTaskQueue.GetTaskInfo<FakeMixedPeriodicAndFailTaskData>(taskId);
             Assert.That(taskInfo.Context.ExpirationTimestampTicks, Is.InRange((now - smallTaskTtl).Ticks, (now + smallTaskTtl).Ticks));
