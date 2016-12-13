@@ -300,7 +300,7 @@ namespace RemoteQueue.Handling
         {
             var newMeta = GrobufSerializers.AllFieldsSerializer.Copy(oldMeta);
             if(newState == oldMeta.State)
-                newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + 1);
+                newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + PreciseTimestampGenerator.TicksPerMicrosecond);
             newMeta.MinimalStartTicks = newMinimalStartTicks;
             newMeta.StartExecutingTicks = startExecutingTicks;
             newMeta.FinishExecutingTicks = finishExecutingTicks;

@@ -1,6 +1,7 @@
 ﻿using System;
 
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
@@ -13,7 +14,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 
         public long UpdateNowTicks()
         {
-            var newNowTicks = Math.Max(ticksHolder.GetMaxTicks(globalTicksName) + 1, Timestamp.Now.Ticks);
+            var newNowTicks = Math.Max(ticksHolder.GetMaxTicks(globalTicksName) + PreciseTimestampGenerator.TicksPerMicrosecond, Timestamp.Now.Ticks);
             ticksHolder.UpdateMaxTicks(globalTicksName, newNowTicks);
             return newNowTicks;
         }
@@ -28,7 +29,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
             ticksHolder.ResetInMemoryState();
         }
 
-        private readonly ITicksHolder ticksHolder;
         private const string globalTicksName = "GlobalTicks2";
+        private readonly ITicksHolder ticksHolder;
     }
 }

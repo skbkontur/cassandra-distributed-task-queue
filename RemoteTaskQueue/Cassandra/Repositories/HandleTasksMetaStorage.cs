@@ -14,6 +14,7 @@ using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
 
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteQueue.Cassandra.Repositories
@@ -60,7 +61,7 @@ namespace RemoteQueue.Cassandra.Repositories
         public TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta, [CanBeNull] TaskIndexRecord oldTaskIndexRecord)
         {
             var globalNowTicks = globalTime.UpdateNowTicks();
-            var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + 1, globalNowTicks);
+            var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + PreciseTimestampGenerator.TicksPerMicrosecond, globalNowTicks);
             taskMeta.LastModificationTicks = nowTicks;
             eventLogRepository.AddEvent(taskMeta, nowTicks);
             var newIndexRecord = FormatIndexRecord(taskMeta);

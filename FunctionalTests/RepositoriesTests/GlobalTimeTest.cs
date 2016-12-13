@@ -2,6 +2,8 @@
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+
 namespace FunctionalTests.RepositoriesTests
 {
     public class GlobalTimeTest : FunctionalTestBase
@@ -9,7 +11,7 @@ namespace FunctionalTests.RepositoriesTests
         public override void SetUp()
         {
             base.SetUp();
-            globalTime = Container.Get<IGlobalTime>();
+            globalTime = Container.Get<GlobalTime>();
         }
 
         [Test]
@@ -19,12 +21,12 @@ namespace FunctionalTests.RepositoriesTests
             for(var i = 0; i < iterations; i++)
             {
                 var nowTicks = globalTime.UpdateNowTicks();
-                Assert.True(lastTicks < nowTicks);
+                Assert.True(lastTicks <= nowTicks + PreciseTimestampGenerator.TicksPerMicrosecond);
                 lastTicks = nowTicks;
             }
         }
 
-        private IGlobalTime globalTime;
+        private GlobalTime globalTime;
         private const int iterations = 1000;
     }
 }
