@@ -49,7 +49,6 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         }
 
         [Test]
-        [Repeat(10)]
         public void Prolongation_Happened_MoreThanOnce()
         {
             SetTaskTtlOnConsumers(smallTaskTtl);

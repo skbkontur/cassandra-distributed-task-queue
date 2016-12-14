@@ -224,7 +224,6 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         }
 
         [Test]
-        [Repeat(100)]
         public void Prolong_SeveralExceptions()
         {
             var exception1 = new Exception(string.Format("Message1-{0}", Guid.NewGuid()));
