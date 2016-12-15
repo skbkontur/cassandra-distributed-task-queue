@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 
+using RemoteTaskQueue.Monitoring.Indexer;
 using RemoteTaskQueue.Monitoring.Storage.Utils;
 using RemoteTaskQueue.Monitoring.Storage.Writing.Contracts;
 
@@ -18,10 +19,11 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
 {
     public class TaskWriter
     {
-        public TaskWriter(RtqElasticsearchClientFactory elasticsearchClientFactory, IWriteIndexNameFactory indexNameFactory, TaskDataService taskDataService)
+        public TaskWriter(RtqElasticsearchClientFactory elasticsearchClientFactory, IWriteIndexNameFactory indexNameFactory, TaskDataService taskDataService, IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
         {
             this.indexNameFactory = indexNameFactory;
             this.taskDataService = taskDataService;
+            this.graphiteReporter = graphiteReporter;
             elasticsearchClient = elasticsearchClientFactory.CreateClient(TaskWriterJsonSettings.GetSerializerSettings());
         }
 
@@ -45,7 +47,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
                     };
                 body[2 * i + 1] = BuildSavedData(meta, batch[i].Item2, taskData);
             }
-            elasticsearchClient.Bulk<BulkResponse>(body).DieIfErros();
+            graphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticsearchClient.Bulk<BulkResponse>(body).DieIfErros());
         }
 
         private object BuildSavedData([NotNull] TaskMetaInformation meta, [NotNull] TaskExceptionInfo[] exceptionInfos, [CanBeNull] object taskData)
@@ -71,6 +73,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
 
         private readonly IWriteIndexNameFactory indexNameFactory;
         private readonly TaskDataService taskDataService;
+        private readonly IRtqElasticsearchIndexerGraphiteReporter graphiteReporter;
         private readonly IElasticsearchClient elasticsearchClient;
     }
 }
