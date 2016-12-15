@@ -18,7 +18,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
             this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
-        public void ActualizeTemplate(bool local)
+        public void Actualize(bool local)
         {
             PutDataTemplate(RtqElasticsearchConsts.TemplateName, RtqElasticsearchConsts.IndexPrefix + "*", local);
             CreateIndexIfNotExists(RtqElasticsearchConsts.OldDataIndex, new {});
@@ -70,17 +70,11 @@ namespace RemoteTaskQueue.Monitoring.Storage
                            {
                                number_of_shards = 1,
                                number_of_replicas = 0,
-                               index = new Dictionary<string, string>()
                            }
                        : new
                            {
                                number_of_shards = 1,
                                number_of_replicas = 1,
-                               index = new Dictionary<string, string>
-                                   {
-                               {"routing.allocation.require._name", "edi-elastic-*"},
-                               {"routing.allocation.exclude._name", "edi-elastic-*-i*"}
-                                   }
                            };
         }
 
