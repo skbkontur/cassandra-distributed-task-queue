@@ -74,6 +74,8 @@ namespace RemoteQueue.Handling
 
         public TaskManipulationResult TryCancelTask([NotNull] string taskId)
         {
+            if(string.IsNullOrWhiteSpace(taskId))
+                throw new InvalidProgramStateException("TaskId is required");
             IRemoteLock remoteLock;
             if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
                 return TaskManipulationResult.Failure_LockAcquiringFails;
@@ -97,6 +99,8 @@ namespace RemoteQueue.Handling
 
         public TaskManipulationResult TryRerunTask([NotNull] string taskId, TimeSpan delay)
         {
+            if(string.IsNullOrWhiteSpace(taskId))
+                throw new InvalidProgramStateException("TaskId is required");
             if(delay.Ticks < 0)
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             IRemoteLock remoteLock;
@@ -142,6 +146,8 @@ namespace RemoteQueue.Handling
         [NotNull]
         public RemoteTaskInfo[] GetTaskInfos([NotNull] string[] taskIds)
         {
+            if(taskIds.Any(string.IsNullOrWhiteSpace))
+                throw new InvalidProgramStateException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
             var tasks = HandleTaskCollection.GetTasks(taskIds);
             var taskExceptionInfos = TaskExceptionInfoStorage.Read(tasks.Select(x => x.Meta).ToArray());
             return tasks.Select(task =>
@@ -192,6 +198,8 @@ namespace RemoteQueue.Handling
         [NotNull]
         public string[] GetChildrenTaskIds([NotNull] string taskId)
         {
+            if(string.IsNullOrWhiteSpace(taskId))
+                throw new InvalidProgramStateException("TaskId is required");
             return childTaskIndex.GetChildTaskIds(taskId);
         }
 
