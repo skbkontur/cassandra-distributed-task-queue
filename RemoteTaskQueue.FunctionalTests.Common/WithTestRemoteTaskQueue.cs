@@ -15,7 +15,7 @@ using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {
-    [WithDefaultSerializer, WithCassandra(TestRemoteTaskQueueSettings.QueueKeyspaceName)]
+    [WithDefaultSerializer, WithCassandra(TestRemoteTaskQueueSettings.QueueKeyspaceName), WithEmptyGraphiteClient, WithNoProfiling]
     public class WithTestRemoteTaskQueue : EdiTestSuiteWrapperAttribute
     {
         public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableEdiTestContext suiteContext)
