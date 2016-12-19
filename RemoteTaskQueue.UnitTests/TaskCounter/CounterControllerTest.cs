@@ -123,7 +123,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
         {
             ExpectNow(nowTicks);
             var allEvents = unprocessed == null ? events : unprocessed.Concat(events).ToArray();
-            eventLogRepository.Expect(m => m.GetEvents(lastTicks - unstableTicks, maxBatch)).Return(events);
+            eventLogRepository.Expect(m => m.GetEvents(lastTicks - unstableTicks, nowTicks, maxBatch)).Return(events);
             var count = 0;
             Assert.AreEqual(metaBatches.Sum(x => x.Length), allEvents.Length, "Bad batch");
             foreach(var metaBatch in metaBatches)

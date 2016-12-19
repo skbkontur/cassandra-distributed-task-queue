@@ -1,7 +1,5 @@
 using System;
 
-using RemoteTaskQueue.Monitoring.Indexer;
-
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
@@ -9,10 +7,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 {
     public class MonitoringServiceSchedulableRunner
     {
-        public MonitoringServiceSchedulableRunner(IPeriodicTaskRunner periodicTaskRunner, ITaskIndexController taskIndexController)
+        public MonitoringServiceSchedulableRunner(IPeriodicTaskRunner periodicTaskRunner, SynchronizedIndexer indexer)
         {
             this.periodicTaskRunner = periodicTaskRunner;
-            this.taskIndexController = taskIndexController;
+            this.indexer = indexer;
         }
 
         public void Stop()
@@ -39,7 +37,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
                 {
                     if(!started)
                     {
-                        periodicTaskRunner.Register(new ActionPeriodicTask(taskSearchUpdateTaskId, () => taskIndexController.ProcessNewEvents()), TimeSpan.FromSeconds(5));
+                        periodicTaskRunner.Register(new ActionPeriodicTask(taskSearchUpdateTaskId, () => indexer.ProcessNewEvents()), TimeSpan.FromSeconds(1));
                         started = true;
                         Log.For(this).Info("Start MonitoringServiceSchedulableRunner");
                     }
@@ -51,6 +49,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         private volatile bool started;
         private readonly object lockObject = new object();
         private readonly IPeriodicTaskRunner periodicTaskRunner;
-        private readonly ITaskIndexController taskIndexController;
+        private readonly SynchronizedIndexer indexer;
     }
 }

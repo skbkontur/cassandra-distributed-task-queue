@@ -19,11 +19,10 @@ namespace RemoteQueue.Cassandra.Repositories
 {
     public class EventLogRepository : ColumnFamilyRepositoryBase, IEventLogRepository
     {
-        public EventLogRepository(ISerializer serializer, IGlobalTime globalTime, ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings settings, ITicksHolder ticksHolder)
+        public EventLogRepository(ISerializer serializer, ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings settings, ITicksHolder ticksHolder)
             : base(cassandraCluster, settings, ColumnFamilyName)
         {
             this.serializer = serializer;
-            this.globalTime = globalTime;
             this.ticksHolder = ticksHolder;
             var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName).GetConnectionParameters();
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
@@ -47,7 +46,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 });
         }
 
-        public IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, int batchSize = 2000)
+        public IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, long toTicks, int batchSize)
         {
             var connection = RetrieveColumnFamilyConnection();
             var firstEventTicks = ticksHolder.GetMinTicks(firstEventTicksRowName);
@@ -55,7 +54,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 return new TaskMetaUpdatedEvent[0];
             firstEventTicks -= tickPartition; //note что это ?
             fromTicks = new[] {0, fromTicks, firstEventTicks}.Max();
-            return new GetEventLogEnumerable(serializer, connection, fromTicks, globalTime.GetNowTicks(), batchSize);
+            return new GetEventLogEnumerable(serializer, connection, fromTicks, toTicks, batchSize);
         }
 
         public TimeSpan UnstableZoneLength { get; private set; }
@@ -72,7 +71,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private const string firstEventTicksRowName = "firstEventTicksRowName";
 
         private readonly ISerializer serializer;
-        private readonly IGlobalTime globalTime;
         private readonly ITicksHolder ticksHolder;
 
         private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;

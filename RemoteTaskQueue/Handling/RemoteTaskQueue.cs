@@ -47,7 +47,7 @@ namespace RemoteQueue.Handling
             GlobalTime = new GlobalTime(ticksHolder);
             TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(ticksHolder));
             var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, taskQueueSettings);
-            var eventLongRepository = new EventLogRepository(serializer, GlobalTime, cassandraCluster, taskQueueSettings, ticksHolder);
+            var eventLongRepository = new EventLogRepository(serializer, cassandraCluster, taskQueueSettings, ticksHolder);
             childTaskIndex = new ChildTaskIndex(cassandraCluster, taskQueueSettings, serializer, taskMetaStorage);
             HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskDataRegistry);
             var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, taskQueueSettings);

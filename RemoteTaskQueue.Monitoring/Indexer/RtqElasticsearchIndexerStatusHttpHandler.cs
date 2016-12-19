@@ -1,30 +1,28 @@
-﻿using RemoteTaskQueue.Monitoring.Storage.Types;
-
-using SKBKontur.Catalogue.Objects.Json;
+﻿using SKBKontur.Catalogue.Objects.Json;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexerStatusHttpHandler : IHttpHandler
     {
-        public RtqElasticsearchIndexerStatusHttpHandler(ITaskIndexController taskIndexController)
+        public RtqElasticsearchIndexerStatusHttpHandler(IRtqElasticsearchIndexer indexer)
         {
-            this.taskIndexController = taskIndexController;
+            this.indexer = indexer;
         }
 
         [HttpMethod]
-        public ElasticMonitoringStatus GetStatus()
+        public RtqElasticsearchIndexerStatus GetStatus()
         {
-            return taskIndexController.GetStatus();
+            return indexer.GetStatus();
         }
 
         [HttpMethod]
         [JsonHttpMethod]
         public string GetStatusJson()
         {
-            return taskIndexController.GetStatus().ToJson();
+            return indexer.GetStatus().ToJson();
         }
 
-        private readonly ITaskIndexController taskIndexController;
+        private readonly IRtqElasticsearchIndexer indexer;
     }
 }

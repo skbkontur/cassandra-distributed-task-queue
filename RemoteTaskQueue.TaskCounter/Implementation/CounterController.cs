@@ -104,7 +104,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
                 var hasEvents = false;
 
                 var unprocessedEvents = unprocessedEventsMap.GetUnprocessedEvents(now);
-                var newEvents = GetEvents(lastTicks);
+                var newEvents = GetEvents(lastTicks, now);
 
                 unprocessedEvents.Concat(newEvents)
                                  .Batch(maxBatch, Enumerable.ToArray)
@@ -203,10 +203,10 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             return minTicks;
         }
 
-        private IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks)
+        private IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, long toTicks)
         {
             //todo do not read event twice
-            return eventLogRepository.GetEvents(fromTicks - unstableZoneTicks, maxBatch);
+            return eventLogRepository.GetEvents(fromTicks - unstableZoneTicks, toTicks, maxBatch);
         }
 
         private static readonly ILog logger = LogManager.GetLogger("CounterController");

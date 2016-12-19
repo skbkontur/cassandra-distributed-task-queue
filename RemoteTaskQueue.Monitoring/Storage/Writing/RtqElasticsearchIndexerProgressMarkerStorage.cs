@@ -10,9 +10,9 @@ using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Writing
 {
-    public class RtqElasticsearchIndexingProgressMarkerStorage : IRtqElasticsearchIndexingProgressMarkerStorage
+    public class RtqElasticsearchIndexerProgressMarkerStorage : IRtqElasticsearchIndexerProgressMarkerStorage
     {
-        public RtqElasticsearchIndexingProgressMarkerStorage(RtqElasticsearchClientFactory elasticsearchClientFactory)
+        public RtqElasticsearchIndexerProgressMarkerStorage(RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
             this.elasticsearchClientFactory = elasticsearchClientFactory;
             IndexingFinishTimestamp = null;
@@ -21,17 +21,18 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         [CanBeNull]
         public Timestamp IndexingFinishTimestamp { get; private set; }
 
-        public long GetLastReadTicks()
+        [NotNull]
+        public Timestamp GetIndexingStartTimestamp()
         {
             var response = elasticsearchClientFactory.DefaultClient.Value.Get<GetResponse<LastUpdateTicks>>(RtqElasticsearchConsts.IndexingProgressIndex, typeof(LastUpdateTicks).Name, id).ProcessResponse();
             if(!response.Response.Found || response.Response.Source == null)
-                return indexingStartTimestamp.Ticks;
-            return response.Response.Source.Ticks;
+                return indexingStartTimestamp;
+            return new Timestamp(response.Response.Source.Ticks);
         }
 
-        public void SetLastReadTicks(long ticks)
+        public void SetIndexingStartTimestamp([NotNull] Timestamp newIndexigStartTimestamp)
         {
-            elasticsearchClientFactory.DefaultClient.Value.Index(RtqElasticsearchConsts.IndexingProgressIndex, typeof(LastUpdateTicks).Name, id, new LastUpdateTicks {Ticks = ticks}).ProcessResponse();
+            elasticsearchClientFactory.DefaultClient.Value.Index(RtqElasticsearchConsts.IndexingProgressIndex, typeof(LastUpdateTicks).Name, id, new LastUpdateTicks {Ticks = newIndexigStartTimestamp.Ticks}).ProcessResponse();
         }
 
         private const string id = "LastUpdateTicksKey";
