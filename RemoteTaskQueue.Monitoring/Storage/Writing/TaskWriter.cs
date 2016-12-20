@@ -47,7 +47,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
                     };
                 body[2 * i + 1] = BuildSavedData(meta, batch[i].Item2, taskData);
             }
-            graphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticsearchClient.Bulk<BulkResponse>(body).DieIfErros());
+            graphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticsearchClient.Bulk<BulkResponse>(body, x => x.Timeout("5m")).DieIfErros());
         }
 
         private object BuildSavedData([NotNull] TaskMetaInformation meta, [NotNull] TaskExceptionInfo[] exceptionInfos, [CanBeNull] object taskData)

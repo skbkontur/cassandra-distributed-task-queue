@@ -10,6 +10,9 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         Timestamp IndexingFinishTimestamp { get; }
 
         [NotNull]
+        Timestamp InitialIndexingStartTimestamp { get; }
+
+        [NotNull]
         Timestamp GetIndexingStartTimestamp();
 
         void SetIndexingStartTimestamp([NotNull] Timestamp newIndexigStartTimestamp);

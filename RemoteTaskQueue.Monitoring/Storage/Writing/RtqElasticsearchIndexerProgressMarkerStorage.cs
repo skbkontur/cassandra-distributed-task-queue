@@ -16,17 +16,21 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         {
             this.elasticsearchClientFactory = elasticsearchClientFactory;
             IndexingFinishTimestamp = null;
+            InitialIndexingStartTimestamp = new Timestamp(new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc));
         }
 
         [CanBeNull]
         public Timestamp IndexingFinishTimestamp { get; private set; }
 
         [NotNull]
+        public Timestamp InitialIndexingStartTimestamp { get; private set; }
+
+        [NotNull]
         public Timestamp GetIndexingStartTimestamp()
         {
             var response = elasticsearchClientFactory.DefaultClient.Value.Get<GetResponse<LastUpdateTicks>>(RtqElasticsearchConsts.IndexingProgressIndex, typeof(LastUpdateTicks).Name, id).ProcessResponse();
             if(!response.Response.Found || response.Response.Source == null)
-                return indexingStartTimestamp;
+                return InitialIndexingStartTimestamp;
             return new Timestamp(response.Response.Source.Ticks);
         }
 
@@ -36,7 +40,6 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         }
 
         private const string id = "LastUpdateTicksKey";
-        private static readonly Timestamp indexingStartTimestamp = new Timestamp(new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc));
         private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }
 }

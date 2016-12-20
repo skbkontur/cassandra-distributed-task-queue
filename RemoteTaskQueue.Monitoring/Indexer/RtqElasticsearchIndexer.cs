@@ -58,7 +58,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 lastEventTimestamp = new Timestamp(@event.Ticks);
                 if(lastEventsBatchStartTimestamp == null)
                     lastEventsBatchStartTimestamp = lastEventTimestamp;
-                if(lastEventTimestamp - lastEventsBatchStartTimestamp > TimeSpan.FromMinutes(30))
+                if(lastEventTimestamp - lastEventsBatchStartTimestamp > TimeSpan.FromHours(6) || taskIdsToProcess.Count > 10 * 1000 * 1000)
                 {
                     ProcessTasks(taskIdsToProcess);
                     taskIdsToProcess.Clear();
@@ -78,7 +78,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             taskIdsToProcess.Batch(taskIdsProcessingBatchSize, Enumerable.ToArray).ForEach(taskIds =>
                 {
                     var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
-                    taskMetaProcessor.IndexMetas(taskMetas.Values.ToArray());
+                    var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > indexerProgressMarkerStorage.InitialIndexingStartTimestamp.Ticks).ToArray();
+                    taskMetaProcessor.IndexMetas(taskMetasToIndex);
                 });
         }
 
@@ -95,7 +96,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         }
 
         private const int eventsReadingBatchSize = 5000;
-        private const int taskIdsProcessingBatchSize = 150;
+        private const int taskIdsProcessingBatchSize = 1000;
         private readonly IGlobalTime globalTime;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
