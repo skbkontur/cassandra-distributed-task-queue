@@ -2,6 +2,7 @@
 using System.Linq;
 
 using Elasticsearch.Net;
+using Elasticsearch.Net.Connection.Configuration;
 
 using JetBrains.Annotations;
 
@@ -47,7 +48,13 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
                     };
                 body[2 * i + 1] = BuildSavedData(meta, batch[i].Item2, taskData);
             }
-            graphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticsearchClient.Bulk<BulkResponse>(body, x => x.Timeout("5m")).DieIfErros());
+            graphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticsearchClient.Bulk<BulkResponse>(body, SetRequestTimeout).DieIfErros());
+        }
+
+        [NotNull]
+        private static BulkRequestParameters SetRequestTimeout([NotNull] BulkRequestParameters requestParameters)
+        {
+            return requestParameters.Timeout("5m").RequestConfiguration(x => new RequestConfigurationDescriptor().RequestTimeout((int)TimeSpan.FromMinutes(5).TotalMilliseconds));
         }
 
         private object BuildSavedData([NotNull] TaskMetaInformation meta, [NotNull] TaskExceptionInfo[] exceptionInfos, [CanBeNull] object taskData)
