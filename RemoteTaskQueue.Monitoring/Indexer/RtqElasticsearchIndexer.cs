@@ -58,7 +58,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 lastEventTimestamp = new Timestamp(@event.Ticks);
                 if(lastEventsBatchStartTimestamp == null)
                     lastEventsBatchStartTimestamp = lastEventTimestamp;
-                if(lastEventTimestamp - lastEventsBatchStartTimestamp > TimeSpan.FromHours(6) || taskIdsToProcess.Count > 10 * 1000 * 1000)
+                if(lastEventTimestamp - lastEventsBatchStartTimestamp > TimeSpan.FromHours(24) || taskIdsToProcess.Count > 10 * 1000 * 1000)
                 {
                     ProcessTasks(taskIdsToProcess);
                     taskIdsToProcess.Clear();
