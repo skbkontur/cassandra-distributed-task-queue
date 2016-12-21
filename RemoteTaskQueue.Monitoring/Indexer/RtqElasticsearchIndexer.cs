@@ -75,7 +75,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         private void ProcessTasks([NotNull] HashSet<string> taskIdsToProcess)
         {
-            taskIdsToProcess.Batch(taskIdsProcessingBatchSize, Enumerable.ToArray).ForEach(taskIds =>
+            taskIdsToProcess.Batch(taskIdsProcessingBatchSize, Enumerable.ToArray).AsParallel().WithDegreeOfParallelism(8).WithExecutionMode(ParallelExecutionMode.ForceParallelism).ForEach(taskIds =>
                 {
                     var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
                     var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > indexerProgressMarkerStorage.InitialIndexingStartTimestamp.Ticks).ToArray();
