@@ -52,30 +52,33 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             Timestamp lastEventTimestamp = null;
             Timestamp lastEventsBatchStartTimestamp = null;
             var taskIdsToProcess = new HashSet<string>();
+            var taskIdsToProcessInChronologicalOrder = new List<string>();
             foreach(var @event in eventsToProcess)
             {
-                taskIdsToProcess.Add(@event.TaskId);
+                if(taskIdsToProcess.Add(@event.TaskId))
+                    taskIdsToProcessInChronologicalOrder.Add(@event.TaskId);
                 lastEventTimestamp = new Timestamp(@event.Ticks);
                 if(lastEventsBatchStartTimestamp == null)
                     lastEventsBatchStartTimestamp = lastEventTimestamp;
-                if(lastEventTimestamp - lastEventsBatchStartTimestamp > TimeSpan.FromHours(24) || taskIdsToProcess.Count > 10 * 1000 * 1000)
+                if(lastEventTimestamp - lastEventsBatchStartTimestamp > TimeSpan.FromHours(72) || taskIdsToProcessInChronologicalOrder.Count > 10 * 1000 * 1000)
                 {
-                    ProcessTasks(taskIdsToProcess);
+                    ProcessTasks(taskIdsToProcessInChronologicalOrder);
                     taskIdsToProcess.Clear();
+                    taskIdsToProcessInChronologicalOrder.Clear();
                     lastEventsBatchStartTimestamp = null;
                     indexerProgressMarkerStorage.SetIndexingStartTimestamp(lastEventTimestamp);
                 }
             }
 
-            if(taskIdsToProcess.Any())
-                ProcessTasks(taskIdsToProcess);
+            if(taskIdsToProcessInChronologicalOrder.Any())
+                ProcessTasks(taskIdsToProcessInChronologicalOrder);
 
             indexerProgressMarkerStorage.SetIndexingStartTimestamp(lastEventTimestamp ?? indexingFinishTimestamp);
         }
 
-        private void ProcessTasks([NotNull] HashSet<string> taskIdsToProcess)
+        private void ProcessTasks([NotNull] List<string> taskIdsToProcess)
         {
-            taskIdsToProcess.Batch(taskIdsProcessingBatchSize, Enumerable.ToArray).AsParallel().WithDegreeOfParallelism(8).WithExecutionMode(ParallelExecutionMode.ForceParallelism).ForEach(taskIds =>
+            taskIdsToProcess.Batch(taskIdsProcessingBatchSize, Enumerable.ToArray).AsParallel().WithDegreeOfParallelism(16).WithExecutionMode(ParallelExecutionMode.ForceParallelism).ForEach(taskIds =>
                 {
                     var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
                     var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > indexerProgressMarkerStorage.InitialIndexingStartTimestamp.Ticks).ToArray();
@@ -96,7 +99,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         }
 
         private const int eventsReadingBatchSize = 5000;
-        private const int taskIdsProcessingBatchSize = 1000;
+        private const int taskIdsProcessingBatchSize = 4000;
         private readonly IGlobalTime globalTime;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;

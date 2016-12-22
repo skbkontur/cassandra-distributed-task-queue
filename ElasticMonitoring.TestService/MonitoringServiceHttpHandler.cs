@@ -47,7 +47,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             schedulableRunner.Stop();
 
             DeleteAllElasticEntities();
-            rtqElasticsearchSchema.Actualize(local : true);
+            rtqElasticsearchSchema.Actualize(local : true, bulkLoad : false);
 
             globalTime.ResetInMemoryState();
             indexerProgressMarkerStorage.SetIndexingStartTimestamp(new Timestamp(globalTime.GetNowTicks()));

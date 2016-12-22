@@ -18,18 +18,18 @@ namespace RemoteTaskQueue.Monitoring.Storage
             this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
-        public void Actualize(bool local)
+        public void Actualize(bool local, bool bulkLoad)
         {
-            PutDataTemplate(RtqElasticsearchConsts.TemplateName, RtqElasticsearchConsts.IndexPrefix + "*", local);
+            PutDataTemplate(RtqElasticsearchConsts.TemplateName, RtqElasticsearchConsts.IndexPrefix + "*", local, bulkLoad);
             CreateIndexIfNotExists(RtqElasticsearchConsts.OldDataIndex, new {});
-            CreateIndexingProgressIndex(RtqElasticsearchConsts.IndexingProgressIndex, local);
+            CreateIndexingProgressIndex(RtqElasticsearchConsts.IndexingProgressIndex, local, bulkLoad);
         }
 
-        private void CreateIndexingProgressIndex([NotNull] string indexName, bool local)
+        private void CreateIndexingProgressIndex([NotNull] string indexName, bool local, bool bulkLoad)
         {
             CreateIndexIfNotExists(indexName, new
                 {
-                    settings = Settings(local),
+                    settings = Settings(local, bulkLoad),
                     mappings = new
                         {
                             LastUpdateTicks = new
@@ -63,22 +63,21 @@ namespace RemoteTaskQueue.Monitoring.Storage
                 Log.For(this).LogInfoFormat("Index already exists");
         }
 
-        private static object Settings(bool local)
+        [NotNull]
+        private static object Settings(bool local, bool bulkLoad)
         {
-            return local
-                       ? new
+            return new
                            {
-                               number_of_shards = 1,
-                               number_of_replicas = 0,
+                    index = new
+                        {
+                            number_of_shards = bulkLoad ? 3 : 1,
+                            number_of_replicas = local || bulkLoad ? 0 : 1,
+                            refresh_interval = bulkLoad ? "-1" : "1s",
                            }
-                       : new
-                           {
-                               number_of_shards = 1,
-                               number_of_replicas = 1,
                            };
         }
 
-        private void PutDataTemplate([NotNull] string templateName, [NotNull] string indicesPattern, bool local)
+        private void PutDataTemplate([NotNull] string templateName, [NotNull] string indicesPattern, bool local, bool bulkLoad)
         {
             Log.For(this).LogInfoFormat("Attempt to put data template name '{0}' pattern '{1}'", templateName, indicesPattern);
             elasticsearchClientFactory
@@ -86,7 +85,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                     .IndicesPutTemplateForAll(templateName, new
                         {
                             template = indicesPattern,
-                        settings = Settings(local),
+                        settings = Settings(local, bulkLoad),
                             mappings = new
                                 {
                                     _default_ = new

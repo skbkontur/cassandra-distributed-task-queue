@@ -20,7 +20,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
             Container.ConfigureForTestRemoteTaskQueue();
             Container.Get<ElasticAvailabilityChecker>().WaitAlive();
-            Container.Get<RtqElasticsearchSchema>().Actualize(local : true);
+            Container.Get<RtqElasticsearchSchema>().Actualize(local : true, bulkLoad : false);
             Container.Get<HttpService>().Run();
         }
     }
