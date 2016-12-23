@@ -104,6 +104,7 @@
     <Compile Include="Indexer\RtqElasticsearchIndexer.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporter.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporterBase.cs" />
+    <Compile Include="Indexer\RtqElasticsearchIndexerSettings.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerStatus.cs" />
     <Compile Include="Indexer\TaskIndexCloseService.cs" />
     <Compile Include="Indexer\TaskMetaProcessor.cs" />

@@ -16,7 +16,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         {
             this.elasticsearchClientFactory = elasticsearchClientFactory;
             IndexingFinishTimestamp = null;
-            InitialIndexingStartTimestamp = new Timestamp(new DateTime(2016, 01, 01, 0, 0, 0, DateTimeKind.Utc));
+            InitialIndexingStartTimestamp = new Timestamp(new DateTime(2016, 02, 01, 0, 0, 0, DateTimeKind.Utc));
         }
 
         [CanBeNull]

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,19 +18,22 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexer : IRtqElasticsearchIndexer
     {
-        public RtqElasticsearchIndexer(IGlobalTime globalTime,
+        public RtqElasticsearchIndexer(RtqElasticsearchIndexerSettings settings,
+                                       IGlobalTime globalTime,
                                        IEventLogRepository eventLogRepository,
                                        IHandleTasksMetaStorage handleTasksMetaStorage,
                                        ITaskMetaProcessor taskMetaProcessor,
                                        IRtqElasticsearchIndexerGraphiteReporter graphiteReporter,
                                        IRtqElasticsearchIndexerProgressMarkerStorage indexerProgressMarkerStorage)
         {
+            this.settings = settings;
             this.globalTime = globalTime;
             this.eventLogRepository = eventLogRepository;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskMetaProcessor = taskMetaProcessor;
             this.graphiteReporter = graphiteReporter;
             this.indexerProgressMarkerStorage = indexerProgressMarkerStorage;
+            Log.For(this).LogInfoFormat(string.Format("RtqElasticsearchIndexerSettings: {0}", settings));
         }
 
         public void ProcessNewEvents()
@@ -46,7 +48,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             }
             Log.For(this).LogInfoFormat("Processing events from {0} to {1}", indexingStartTimestamp, indexingFinishTimestamp);
 
-            var eventsToProcess = eventLogRepository.GetEvents(indexingStartTimestamp.Ticks - eventLogRepository.UnstableZoneLength.Ticks, indexingFinishTimestamp.Ticks, eventsReadingBatchSize)
+            var eventsToProcess = eventLogRepository.GetEvents(indexingStartTimestamp.Ticks - eventLogRepository.UnstableZoneLength.Ticks, indexingFinishTimestamp.Ticks, settings.EventsReadingBatchSize)
                                                     .TakeWhile(x => x.Ticks <= indexingFinishTimestamp.Ticks);
 
             Timestamp lastEventTimestamp = null;
@@ -60,7 +62,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 lastEventTimestamp = new Timestamp(@event.Ticks);
                 if(lastEventsBatchStartTimestamp == null)
                     lastEventsBatchStartTimestamp = lastEventTimestamp;
-                if(lastEventTimestamp - lastEventsBatchStartTimestamp > TimeSpan.FromHours(72) || taskIdsToProcessInChronologicalOrder.Count > 10 * 1000 * 1000)
+                if(lastEventTimestamp - lastEventsBatchStartTimestamp > settings.MaxEventsProcessingTimeWindow || taskIdsToProcessInChronologicalOrder.Count > settings.MaxEventsProcessingTasksCount)
                 {
                     ProcessTasks(taskIdsToProcessInChronologicalOrder);
                     taskIdsToProcess.Clear();
@@ -78,12 +80,17 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         private void ProcessTasks([NotNull] List<string> taskIdsToProcess)
         {
-            taskIdsToProcess.Batch(taskIdsProcessingBatchSize, Enumerable.ToArray).AsParallel().WithDegreeOfParallelism(16).WithExecutionMode(ParallelExecutionMode.ForceParallelism).ForEach(taskIds =>
-                {
-                    var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
-                    var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > indexerProgressMarkerStorage.InitialIndexingStartTimestamp.Ticks).ToArray();
-                    taskMetaProcessor.IndexMetas(taskMetasToIndex);
-                });
+            Log.For(this).LogInfoFormat("Processing tasks: {0}", taskIdsToProcess.Count);
+            taskIdsToProcess.Batch(settings.TaskIdsProcessingBatchSize, Enumerable.ToArray)
+                            .AsParallel()
+                            .WithDegreeOfParallelism(settings.IndexingThreadsCount)
+                            .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
+                            .ForEach(taskIds =>
+                                {
+                                    var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
+                                    var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > indexerProgressMarkerStorage.InitialIndexingStartTimestamp.Ticks).ToArray();
+                                    taskMetaProcessor.IndexMetas(taskMetasToIndex);
+                                });
         }
 
         [NotNull]
@@ -98,8 +105,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 };
         }
 
-        private const int eventsReadingBatchSize = 5000;
-        private const int taskIdsProcessingBatchSize = 4000;
+        private readonly RtqElasticsearchIndexerSettings settings;
         private readonly IGlobalTime globalTime;
         private readonly IEventLogRepository eventLogRepository;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
