@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -30,25 +29,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.FunctionalTests
 
         private static string[] Search(ITaskSearchClient taskSearchClient, string q, DateTime from, DateTime to)
         {
-            //todo kill q2 and delete all ES data
-            //var q2 = string.Format("({0}) AND (Meta.EnqueueTime:[\"{1}\" TO \"{2}\"])", q, ToIsoTime(@from), ToIsoTime(to));
-            var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest()
+            var taskSearchResponse = taskSearchClient.Search(new TaskSearchRequest()
                 {
                     FromTicksUtc = @from.ToUniversalTime().Ticks,
                     ToTicksUtc = to.ToUniversalTime().Ticks,
                     QueryString = q
-                });
-            var result = new List<string>();
-            if(taskSearchResponse.NextScrollId != null)
-            {
-                do
-                {
-                    foreach(var id in taskSearchResponse.Ids)
-                        result.Add(id);
-                    taskSearchResponse = taskSearchClient.SearchNext(taskSearchResponse.NextScrollId);
-                } while(taskSearchResponse.Ids != null && taskSearchResponse.Ids.Length > 0);
-            }
-            return result.ToArray();
+                }, 0, 1000);
+            return taskSearchResponse.Ids;
         }
     }
 }
