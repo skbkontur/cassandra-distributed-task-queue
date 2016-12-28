@@ -102,13 +102,13 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="Views\Shared\HelpModal.cshtml" />
-    <None Include="Views\Tasks\Scroll.cshtml" />
-    <None Include="Views\Tasks\SearchResultsPage.cshtml" />
-    <None Include="Views\Tasks\SearchPage.cshtml" />
+    <None Include="Views\Scroll.cshtml" />
+    <None Include="Views\SearchResultsPage.cshtml" />
+    <None Include="Views\SearchPage.cshtml" />
     <None Include="Views\Shared\SearchPanel.cshtml" />
-    <None Include="Views\Tasks\TaskDetails_NotFound.cshtml" />
-    <None Include="Views\Tasks\TaskDetails2.cshtml" />
-    <None Include="Views\Tasks\_LongActionsBasicDialog.cshtml" />
+    <None Include="Views\TaskDetails_NotFound.cshtml" />
+    <None Include="Views\TaskDetails2.cshtml" />
+    <None Include="Views\_LongActionsBasicDialog.cshtml" />
     <None Include="Views\_TasksLayout.cshtml" />
     <None Include="Web.config">
       <SubType>Designer</SubType>

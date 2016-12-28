@@ -44,25 +44,51 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Api
                     TaskMetas = remoteTaskQueue.GetTaskInfos(result.Ids)
                                                .Where(x => x != null)
                                                .Select(x => x.Context)
-                                               .Select(TaskMetaToApiModel)
+                                               .Select(taskMeta => TaskMetaToApiModel(taskMeta, null))
                                                .ToArray(),
                 };
         }
 
         private TaskSearchResponse FindTasks(RemoteTaskQueueSearchRequest searchRequest)
         {
-            var result = taskSearchClient.Search(new TaskSearchRequest
+            var result = taskSearchClient.Search(CreateTaskSearchRequest(searchRequest), searchRequest.From, searchRequest.Size);
+            return result;
+        }
+
+        private IEnumerable<string> FindAllTasks(RemoteTaskQueueSearchRequest searchRequest)
+        {
+            const int batchSize = 100;
+            
+            var taskSearchRequest = CreateTaskSearchRequest(searchRequest);
+            var currentOffset = 0;
+            while(true)
+            {
+                var result = taskSearchClient.Search(taskSearchRequest, currentOffset, batchSize);
+                if(result.Ids.Length == 0)
+                {
+                    yield break;
+                }
+                foreach(var id in result.Ids)
+                {
+                    yield return id;
+                }
+                currentOffset += batchSize;
+            }
+        }
+
+        private static TaskSearchRequest CreateTaskSearchRequest(RemoteTaskQueueSearchRequest searchRequest)
+        {
+            return new TaskSearchRequest
                 {
                     TaskStates = searchRequest.With(x => x.States).Return(z => z.Select(x => x.ToString()).ToArray(), null),
                     TaskNames = searchRequest.Return(x => x.Names, null),
                     QueryString = searchRequest.With(x => x.QueryString).Unless(string.IsNullOrWhiteSpace).Return(x => x, "*"),
                     FromTicksUtc = searchRequest.EnqueueDateTimeRange.LowerBound.Ticks,
                     ToTicksUtc = searchRequest.EnqueueDateTimeRange.UpperBound.Ticks,
-                }, searchRequest.From, searchRequest.Size);
-            return result;
+                };
         }
 
-        private TaskMetaInformationModel TaskMetaToApiModel(TaskMetaInformation taskMeta)
+        private TaskMetaInformationModel TaskMetaToApiModel(TaskMetaInformation taskMeta, string[] childrenTaskIds)
         {
             return new TaskMetaInformationModel
                 {
@@ -75,6 +101,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Api
                     LastModificationDateTime = TicksToDateTime(taskMeta.LastModificationTicks),
                     ExpirationTimestamp = TicksToDateTime(taskMeta.ExpirationTimestampTicks),
                     ExpirationModificationDateTime = TicksToDateTime(taskMeta.ExpirationModificationTicks),
+                    ChildTaskIds = childrenTaskIds,
                     State = taskMeta.State,
                     Attempts = taskMeta.Attempts,
                     ParentTaskId = taskMeta.ParentTaskId,
@@ -105,16 +132,16 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Api
             {
                 throw new NotFoundException(string.Format("Task with id {0} not found", taskId));
             }
-            return ToRemoteTaskInfoModel(result);
+            return ToRemoteTaskInfoModel(result, remoteTaskQueue.GetChildrenTaskIds(taskId));
         }
 
-        private RemoteTaskInfoModel ToRemoteTaskInfoModel(RemoteTaskInfo result)
+        private RemoteTaskInfoModel ToRemoteTaskInfoModel(RemoteTaskInfo result, string[] childrenTaskIds)
         {
             return new RemoteTaskInfoModel
                 {
                     ExceptionInfos = result.ExceptionInfos,
                     TaskData = result.TaskData,
-                    TaskMeta = TaskMetaToApiModel(result.Context),
+                    TaskMeta = TaskMetaToApiModel(result.Context, childrenTaskIds),
                 };
         }
 
@@ -143,18 +170,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Api
         public Dictionary<string, TaskManipulationResult> RerunTasksBySearchQuery(RemoteTaskQueueSearchRequest searchRequest)
         {
             var result = new Dictionary<string, TaskManipulationResult>();
-            foreach(var taskId in FindTasks(searchRequest).Ids)
+            foreach(var taskId in FindAllTasks(searchRequest).Distinct())
             {
                 var taskManipulationResult = remoteTaskQueue.TryRerunTask(taskId, TimeSpan.Zero);
                 result.Add(taskId, taskManipulationResult);
             }
             return result;
         }
-        
+
         public Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery(RemoteTaskQueueSearchRequest searchRequest)
         {
             var result = new Dictionary<string, TaskManipulationResult>();
-            foreach(var taskId in FindTasks(searchRequest).Ids)
+            foreach(var taskId in FindAllTasks(searchRequest).Distinct())
             {
                 var taskManipulationResult = remoteTaskQueue.TryCancelTask(taskId);
                 result.Add(taskId, taskManipulationResult);

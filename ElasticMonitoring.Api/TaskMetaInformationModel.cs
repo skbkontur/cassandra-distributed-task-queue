@@ -27,6 +27,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.Api
         public TaskState State { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }
+
+        [CanBeNull]
+        public string[] ChildTaskIds { get; set; }
         public string TaskGroupLock { get; set; }
         public string TraceId { get; set; }
         public bool TraceIsActive { get; set; }
