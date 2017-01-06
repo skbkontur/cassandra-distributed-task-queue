@@ -1,14 +1,12 @@
 ﻿using System;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace RemoteTaskQueue.Monitoring.Storage.Utils
 {
     public static class DateTimeFormatter
     {
-        public static string FormatWithMsAndTicks(long ticks)
+        public static DateTime DateFromTicks(long ticks)
         {
-            return new Timestamp(ticks).ToString();
+            return new DateTime(TicksToDateTimeRange(ticks), DateTimeKind.Utc).Date;
         }
 
         public static long TicksToDateTimeRange(long ticks)

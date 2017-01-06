@@ -35,17 +35,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
 
         public static string BuildIndexNameForTime(long ticksUtc, string format)
         {
-            return DateToBeginDate(DateFromTicks(ticksUtc)).ToString(format);
-        }
-
-        private static DateTime DateToBeginDate(DateTime dateTime)
-        {
-            return dateTime.Date;
-        }
-
-        private static DateTime DateFromTicks(long ticks)
-        {
-            return new DateTime(DateTimeFormatter.TicksToDateTimeRange(ticks), DateTimeKind.Utc);
+            return DateTimeFormatter.DateFromTicks(ticksUtc).ToString(format);
         }
 
         private readonly IndexChecker indexChecker;

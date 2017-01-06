@@ -15,8 +15,8 @@ namespace RemoteTaskQueue.Monitoring.Storage.Search
         public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc, string indexNameFormat)
         {
             var stringBuilder = new StringBuilder();
-            var time = DateToBeginDate(DateFromTicks(fromTicksUtc));
-            var endTime = DateToBeginDate(DateFromTicks(toTicksUtc)).Add(minimumSupportedIndexCreationInterval);
+            var time = DateTimeFormatter.DateFromTicks(fromTicksUtc);
+            var endTime = DateTimeFormatter.DateFromTicks(toTicksUtc).Add(minimumSupportedIndexCreationInterval);
             var dayWildcardFormat = indexNameFormat.Replace("dd", "*"); //todo yyyy.MM.*
             var monthWildcardFormat = dayWildcardFormat.Replace("MM", "*"); //todo yyyy.*.*
             while(time < endTime)
@@ -55,16 +55,6 @@ namespace RemoteTaskQueue.Monitoring.Storage.Search
             if(stringBuilder.Length > 0)
                 stringBuilder.Append(',');
             stringBuilder.Append(time.ToString(fmt));
-        }
-
-        private static DateTime DateToBeginDate(DateTime dateTime)
-        {
-            return dateTime.Date;
-        }
-
-        private static DateTime DateFromTicks(long ticks)
-        {
-            return new DateTime(DateTimeFormatter.TicksToDateTimeRange(ticks), DateTimeKind.Utc);
         }
 
         private static readonly TimeSpan minimumSupportedIndexCreationInterval = TimeSpan.FromDays(1);
