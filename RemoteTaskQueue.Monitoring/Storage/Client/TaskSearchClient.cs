@@ -107,7 +107,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                                                               {
                                                                   new Dictionary<string, object>
                                                                       {
-                                                                          {"Meta.MinimalStartTime", new {order = "desc", unmapped_type = "long"}}
+                                                                      {"Meta.EnqueueTime", new {order = "desc", unmapped_type = "long"}}
                                                                       }
                                                               }
                                                       }, x =>
