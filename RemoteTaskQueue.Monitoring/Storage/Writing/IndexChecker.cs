@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using JetBrains.Annotations;
+
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Writing
@@ -11,7 +13,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
             this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
-        public bool CheckAliasExists(string oldIndexName)
+        public bool CheckAliasExists([NotNull] string oldIndexName)
         {
             lock(lockObject)
             {

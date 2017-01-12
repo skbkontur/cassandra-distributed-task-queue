@@ -3,6 +3,8 @@ using System.Linq;
 
 using Elasticsearch.Net;
 
+using JetBrains.Annotations;
+
 using RemoteTaskQueue.Monitoring.Storage.Search;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
@@ -17,7 +19,8 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
             this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
-        public TaskSearchResponse SearchNext(string scrollId)
+        [NotNull]
+        public TaskSearchResponse SearchNext([NotNull] string scrollId)
         {
             var result = elasticsearchClientFactory.DefaultClient.Value.Scroll<SearchResponseNoData>(scrollId, x => x.AddQueryString("scroll", scrollLiveTime)).ProcessResponse();
             return new TaskSearchResponse
@@ -28,17 +31,20 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                 };
         }
 
-        public TaskSearchResponse SearchFirst(TaskSearchRequest taskSearchRequest)
+        [NotNull]
+        public TaskSearchResponse SearchFirst([NotNull] TaskSearchRequest taskSearchRequest)
         {
             return SearchImpl(taskSearchRequest, from : 0, size : pageSize, legacyMode : true);
         }
 
-        public TaskSearchResponse Search(TaskSearchRequest taskSearchRequest, int from, int size)
+        [NotNull]
+        public TaskSearchResponse Search([NotNull] TaskSearchRequest taskSearchRequest, int from, int size)
         {
             return SearchImpl(taskSearchRequest, from, size, legacyMode : false);
         }
 
-        private TaskSearchResponse SearchImpl(TaskSearchRequest taskSearchRequest, int from, int size, bool legacyMode)
+        [NotNull]
+        private TaskSearchResponse SearchImpl([NotNull] TaskSearchRequest taskSearchRequest, int from, int size, bool legacyMode)
         {
             var mustClause = new List<object>
                 {

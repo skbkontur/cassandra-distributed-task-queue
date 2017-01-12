@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Text;
 
+using JetBrains.Annotations;
+
 using RemoteTaskQueue.Monitoring.Storage.Utils;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Search
 {
     public class SearchIndexNameFactory
     {
+        [NotNull]
         public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc)
         {
             return GetIndexForTimeRange(fromTicksUtc, toTicksUtc, searchIndexNameFormat);
         }
 
-        public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc, string indexNameFormat)
+        [NotNull]
+        public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc, [NotNull] string indexNameFormat)
         {
             var stringBuilder = new StringBuilder();
             var time = DateTimeFormatter.DateFromTicks(fromTicksUtc);
@@ -50,7 +54,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Search
             return stringBuilder.ToString();
         }
 
-        private static void Append(StringBuilder stringBuilder, DateTime time, string fmt)
+        private static void Append([NotNull] StringBuilder stringBuilder, DateTime time, [NotNull] string fmt)
         {
             if(stringBuilder.Length > 0)
                 stringBuilder.Append(',');
