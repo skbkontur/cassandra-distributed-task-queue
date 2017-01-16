@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 using NUnit.Framework;
 
@@ -23,23 +22,13 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
         private static string[] Search(ITaskSearchClient taskSearchClient, string q, Timestamp from, Timestamp to)
         {
-            var taskSearchResponse = taskSearchClient.SearchFirst(new TaskSearchRequest
+            var taskSearchResponse = taskSearchClient.Search(new TaskSearchRequest
                 {
                     FromTicksUtc = from.Ticks,
                     ToTicksUtc = to.Ticks,
-                    QueryString = q
-                });
-            var result = new List<string>();
-            if(taskSearchResponse.NextScrollId != null)
-            {
-                do
-                {
-                    foreach(var id in taskSearchResponse.Ids)
-                        result.Add(id);
-                    taskSearchResponse = taskSearchClient.SearchNext(taskSearchResponse.NextScrollId);
-                } while(taskSearchResponse.Ids != null && taskSearchResponse.Ids.Length > 0);
-            }
-            return result.ToArray();
+                    QueryString = q,
+                }, 0, 1000);
+            return taskSearchResponse.Ids;
         }
 
         [Injected]

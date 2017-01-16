@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Elasticsearch.Net;
-
 using JetBrains.Annotations;
 
 using RemoteTaskQueue.Monitoring.Storage.Search;
@@ -20,31 +18,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
         }
 
         [NotNull]
-        public TaskSearchResponse SearchNext([NotNull] string scrollId)
-        {
-            var result = elasticsearchClientFactory.DefaultClient.Value.Scroll<SearchResponseNoData>(scrollId, x => x.AddQueryString("scroll", scrollLiveTime)).ProcessResponse();
-            return new TaskSearchResponse
-                {
-                    Ids = result.Response.Hits.Hits.Select(x => x.Id).ToArray(),
-                    TotalCount = result.Response.Hits.Total,
-                    NextScrollId = result.Response.ScrollId
-                };
-        }
-
-        [NotNull]
-        public TaskSearchResponse SearchFirst([NotNull] TaskSearchRequest taskSearchRequest)
-        {
-            return SearchImpl(taskSearchRequest, from : 0, size : pageSize, legacyMode : true);
-        }
-
-        [NotNull]
         public TaskSearchResponse Search([NotNull] TaskSearchRequest taskSearchRequest, int from, int size)
-        {
-            return SearchImpl(taskSearchRequest, from, size, legacyMode : false);
-        }
-
-        [NotNull]
-        private TaskSearchResponse SearchImpl([NotNull] TaskSearchRequest taskSearchRequest, int from, int size, bool legacyMode)
         {
             var mustClause = new List<object>
                 {
@@ -116,24 +90,15 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                                                                       {"Meta.EnqueueTime", new {order = "desc", unmapped_type = "long"}}
                                                                       }
                                                               }
-                                                      }, x =>
-                                                          {
-                                                              var searchRequestParameters = x.IgnoreUnavailable(true);
-                                                              if(legacyMode)
-                                                                  searchRequestParameters = searchRequestParameters.Scroll(scrollLiveTime).SearchType(SearchType.QueryThenFetch);
-                                                              return searchRequestParameters;
-                                                          })
+                                                  }, x => x.IgnoreUnavailable(true))
                     .ProcessResponse();
             return new TaskSearchResponse
                 {
                     Ids = metaResponse.Response.Hits.Hits.Select(x => x.Id).ToArray(),
                     TotalCount = metaResponse.Response.Hits.Total,
-                    NextScrollId = metaResponse.Response.ScrollId
                 };
         }
 
-        private const int pageSize = 100;
-        private const string scrollLiveTime = "10m";
         private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }
 }
