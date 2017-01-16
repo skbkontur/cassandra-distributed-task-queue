@@ -103,10 +103,10 @@
     <Compile Include="CassandraHelpers.cs" />
     <Compile Include="MonitoringServiceClient.cs" />
     <Compile Include="ExchangeServiceClient.cs" />
-    <Compile Include="Monitoring\ApiTests.cs" />
+    <Compile Include="Monitoring\RemoteTaskQueueApiImplTests.cs" />
     <Compile Include="Monitoring\MonitoringTestBase.cs" />
-    <Compile Include="Monitoring\TaskSearchTests.cs" />
-    <Compile Include="Monitoring\TaskSearchTests2.cs" />
+    <Compile Include="Monitoring\TaskSearchClientTests.cs" />
+    <Compile Include="Monitoring\TaskIndexCloseServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RemoteTaskQueue\ExchangeTests\AutoParentTaskIdTest.cs" />
     <Compile Include="RemoteTaskQueue\ExchangeTests\ChildIndexTest.cs" />

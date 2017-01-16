@@ -21,7 +21,7 @@ using SKBKontur.Catalogue.TestCore.Waiting;
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
-    public class TaskSearchTests : MonitoringTestBase
+    public class TaskSearchClientTests : MonitoringTestBase
     {
         [Test]
         public void TestCreateNotDeserializedTaskData()

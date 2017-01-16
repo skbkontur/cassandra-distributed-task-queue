@@ -19,7 +19,7 @@ using SKBKontur.Catalogue.TestCore.Waiting;
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
-    public class ApiTests : MonitoringTestBase
+    public class RemoteTaskQueueApiImplTests : MonitoringTestBase
     {
         [Test]
         public void TestPaging()
@@ -247,6 +247,6 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         }
 
         [Injected]
-        private IRemoteTaskQueueApiImpl remoteTaskQueueApiImpl;
+        private RemoteTaskQueueApiImpl remoteTaskQueueApiImpl;
     }
 }

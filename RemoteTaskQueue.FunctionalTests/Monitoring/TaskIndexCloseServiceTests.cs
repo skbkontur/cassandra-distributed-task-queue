@@ -23,7 +23,7 @@ using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
-    public class TaskSearchTests2 : MonitoringTestBase
+    public class TaskIndexCloseServiceTests : MonitoringTestBase
     {
         [Test]
         public void TestCloseNotExisting()
