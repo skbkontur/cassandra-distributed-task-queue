@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
@@ -38,41 +40,39 @@ namespace RemoteTaskQueue.Monitoring.Api
             if(searchRequest.EnqueueDateTimeRange.OpenType != null)
                 throw new BadRequestException("Both enqueueDateTimeRange.lowerBound and enqueueDateTimeRange.uppedBound should be specified");
 
-            var result = FindTasks(searchRequest);
+            var searchResult = FindTasks(searchRequest);
+            var taskMetas = remoteTaskQueue.GetTaskMetas(searchResult.Ids);
+            var taskListItems = new List<TaskMetaInformationModel>();
+            foreach(var taskId in searchResult.Ids)
+            {
+                TaskMetaInformation taskMeta;
+                if(taskMetas.TryGetValue(taskId, out taskMeta))
+                    taskListItems.Add(TaskMetaToApiModel(taskMeta, childrenTaskIds : null));
+            }
             return new RemoteTaskQueueSearchResults
                 {
-                    TotalCount = result.TotalCount,
-                    TaskMetas = remoteTaskQueue.GetTaskInfos(result.Ids)
-                                               .Where(x => x != null)
-                                               .Select(x => x.Context)
-                                               .Select(taskMeta => TaskMetaToApiModel(taskMeta, null))
-                                               .ToArray(),
+                    TotalCount = searchResult.TotalCount,
+                    TaskMetas = taskListItems.ToArray(),
                 };
         }
 
         private TaskSearchResponse FindTasks(RemoteTaskQueueSearchRequest searchRequest)
         {
-            var result = taskSearchClient.Search(CreateTaskSearchRequest(searchRequest), searchRequest.From, searchRequest.Size);
-            return result;
+            return taskSearchClient.Search(CreateTaskSearchRequest(searchRequest), searchRequest.From, searchRequest.Size);
         }
 
         private IEnumerable<string> FindAllTasks(RemoteTaskQueueSearchRequest searchRequest)
         {
             const int batchSize = 100;
-            
             var taskSearchRequest = CreateTaskSearchRequest(searchRequest);
             var currentOffset = 0;
             while(true)
             {
                 var result = taskSearchClient.Search(taskSearchRequest, currentOffset, batchSize);
                 if(result.Ids.Length == 0)
-                {
                     yield break;
-                }
                 foreach(var id in result.Ids)
-                {
                     yield return id;
-                }
                 currentOffset += batchSize;
             }
         }
@@ -89,7 +89,8 @@ namespace RemoteTaskQueue.Monitoring.Api
                 };
         }
 
-        private TaskMetaInformationModel TaskMetaToApiModel(TaskMetaInformation taskMeta, string[] childrenTaskIds)
+        [NotNull]
+        private static TaskMetaInformationModel TaskMetaToApiModel([NotNull] TaskMetaInformation taskMeta, [CanBeNull] string[] childrenTaskIds)
         {
             return new TaskMetaInformationModel
                 {
@@ -112,37 +113,28 @@ namespace RemoteTaskQueue.Monitoring.Api
                 };
         }
 
-        private DateTime TicksToDateTime(long ticks)
+        private static DateTime TicksToDateTime(long ticks)
         {
             return new DateTime(ticks, DateTimeKind.Utc);
         }
 
-        private DateTime? TicksToDateTime(long? ticks)
+        private static DateTime? TicksToDateTime(long? ticks)
         {
             if(ticks == null)
-            {
                 return null;
-            }
             return new DateTime(ticks.Value, DateTimeKind.Utc);
         }
 
         public RemoteTaskInfoModel GetTaskDetails(string taskId)
         {
-            var result = remoteTaskQueue.GetTaskInfos(new[] {taskId}).FirstOrDefault();
+            var result = remoteTaskQueue.TryGetTaskInfo(taskId);
             if(result == null)
-            {
                 throw new NotFoundException(string.Format("Task with id {0} not found", taskId));
-            }
-            return ToRemoteTaskInfoModel(result, remoteTaskQueue.GetChildrenTaskIds(taskId));
-        }
-
-        private RemoteTaskInfoModel ToRemoteTaskInfoModel(RemoteTaskInfo result, string[] childrenTaskIds)
-        {
             return new RemoteTaskInfoModel
                 {
                     ExceptionInfos = result.ExceptionInfos,
                     TaskData = result.TaskData,
-                    TaskMeta = TaskMetaToApiModel(result.Context, childrenTaskIds),
+                    TaskMeta = TaskMetaToApiModel(result.Context, remoteTaskQueue.GetChildrenTaskIds(taskId)),
                 };
         }
 
