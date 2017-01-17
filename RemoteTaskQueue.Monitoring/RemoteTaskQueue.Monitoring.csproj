@@ -93,7 +93,7 @@
   <ItemGroup>
     <Compile Include="Api\IRemoteTaskQueueApiImpl.cs" />
     <Compile Include="Api\RemoteTaskInfoModel.cs" />
-    <Compile Include="Api\RemoteTaskQueueApiController.cs" />
+    <Compile Include="Api\RemoteTaskQueueApiImpl.cs" />
     <Compile Include="Api\RemoteTaskQueueSearchRequest.cs" />
     <Compile Include="Api\RemoteTaskQueueSearchResults.cs" />
     <Compile Include="Api\TaskMetaInformationModel.cs" />
