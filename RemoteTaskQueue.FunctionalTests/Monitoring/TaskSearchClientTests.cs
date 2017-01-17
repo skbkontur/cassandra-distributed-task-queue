@@ -20,7 +20,6 @@ using RemoteTaskQueue.Monitoring.Storage.Client;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
