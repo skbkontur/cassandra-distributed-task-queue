@@ -56,6 +56,14 @@ export default class TaskDetailsMetaTable extends React.Component {
                 <td>ExpirationTime</td>
                 <td>{formatterDate(taskMeta.expirationTimestamp)}</td>
             </tr>,
+            <tr key='ExpirationModificationTime'>
+                <td>ExpirationModificationTime</td>
+                <td>{formatterDate(taskMeta.expirationModificationDateTime)}</td>
+            </tr>,
+            <tr key='LastModificationTime'>
+                <td>LastModificationTime</td>
+                <td>{formatterDate(taskMeta.lastModificationDateTime)}</td>
+            </tr>,
             <tr key='Attempts'>
                 <td>Attempts</td>
                 <td>{taskMeta.attempts}</td>
@@ -91,7 +99,6 @@ function formatterDate(date?: ?string): string {
     const formattedDate = moment(copyDate)
                             .utcOffset('+0300')
                             .locale('ru')
-                            .format('YYYY.MM.DD HH:mm:ss');
-    const timeStamp = copyDate.getTime();
-    return formattedDate + ' (МСК) (' + timeStamp + ')';
+                            .format('YYYY.MM.DD HH:mm:ss.SSS Z');
+    return formattedDate + ' (' + date + ')';
 }

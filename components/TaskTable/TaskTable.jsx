@@ -61,14 +61,14 @@ export default class TasksTable extends React.Component {
 
     renderHeader(): React.Element<*>[] {
         return [
-            <th key='TaskId'>Task Id</th>,
-            <th key='TaskState'>Task State</th>,
-            <th key='TaskName'>Task Name</th>,
-            <th key='EnqueueTime'>Enqueue time (МСК)</th>,
-            <th key='StartExecutingTime'>StartExecutingTime (МСК)</th>,
-            <th key='FinishExecutingTime'>FinishExecutingTime (МСК)</th>,
-            <th key='MinimalStartTime'>MinimalStartTime (МСК)</th>,
-            <th key='ExpirationTime'>ExpirationTime (МСК)</th>,
+            <th key='TaskId'>Id</th>,
+            <th key='TaskState'>State</th>,
+            <th key='TaskName'>Name</th>,
+            <th key='EnqueueTime'>EnqueueTime</th>,
+            <th key='StartExecutingTime'>StartExecutingTime</th>,
+            <th key='FinishExecutingTime'>FinishExecutingTime</th>,
+            <th key='MinimalStartTime'>MinimalStartTime</th>,
+            <th key='ExpirationTime'>ExpirationTime</th>,
             <th key='Attempts'>Attempts</th>,
             <th key='ParentTaskId'>ParentTaskId</th>,
         ];
@@ -233,7 +233,7 @@ function dateFormatter(item: TaskMetaInformationModel, column: string): React.El
     const formattedDate = moment(date)
                         .utcOffset('+0300')
                         .locale('ru')
-                        .format('YYYY.MM.DD HH:mm:ss');
+                        .format('YYYY.MM.DD HH:mm:ss.SSS Z');
 
     return (<span tid={'Date' + column}>{formattedDate}</span>);
 }
