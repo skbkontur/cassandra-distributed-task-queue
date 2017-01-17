@@ -32,7 +32,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         }
 
         [Injected]
-        private readonly TaskSearchClient taskSearchClient;
+        protected readonly TaskSearchClient taskSearchClient;
 
         [Injected]
         protected readonly MonitoringServiceClient monitoringServiceClient;

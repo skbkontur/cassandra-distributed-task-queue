@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+
+using FluentAssertions;
 
 using GroBuf;
 
@@ -13,9 +16,11 @@ using RemoteQueue.Handling;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
+using RemoteTaskQueue.Monitoring.Storage.Client;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
@@ -191,15 +196,36 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         public void TestPaging()
         {
             var t0 = Timestamp.Now;
-            var lst = new List<string>();
-            for(var i = 0; i < 200; i++)
-                lst.Add(QueueTask(new SlowTaskData()));
-            WaitForTasks(lst.ToArray(), TimeSpan.FromSeconds(60));
+            var taskIds = new List<string>();
+            const int pageSize = 5;
+            for(var i = 0; i < pageSize + pageSize / 2; i++)
+            {
+                taskIds.Add(QueueTask(new AlphaTaskData()));
+                Thread.Sleep(TimeSpan.FromMilliseconds(1)); // note: elastic stores timestamps with millisecond precision
+            }
+            taskIds.Reverse();
+            var expectedTaskIds = taskIds.ToArray();
+            WaitForTasks(expectedTaskIds, TimeSpan.FromSeconds(60));
             monitoringServiceClient.UpdateAndFlush();
-
             var t1 = Timestamp.Now;
 
-            CheckSearch("*", t0, t1, lst.ToArray());
+            var resultsPage1 = taskSearchClient.Search(new TaskSearchRequest
+            {
+                FromTicksUtc = t0.Ticks,
+                ToTicksUtc = t1.Ticks,
+                QueryString = "*",
+            }, 0, pageSize);
+            resultsPage1.TotalCount.Should().Be(expectedTaskIds.Length);
+            resultsPage1.Ids.Should().Equal(expectedTaskIds.Take(pageSize).ToArray());
+
+            var resultsPage2 = taskSearchClient.Search(new TaskSearchRequest
+            {
+                FromTicksUtc = t0.Ticks,
+                ToTicksUtc = t1.Ticks,
+                QueryString = "*",
+            }, pageSize, pageSize);
+            resultsPage2.TotalCount.Should().Be(expectedTaskIds.Length);
+            resultsPage2.Ids.Should().Equal(expectedTaskIds.Skip(pageSize).ToArray());
         }
 
         private string QueueTask<T>(T taskData, TimeSpan? delay = null) where T : ITaskData
