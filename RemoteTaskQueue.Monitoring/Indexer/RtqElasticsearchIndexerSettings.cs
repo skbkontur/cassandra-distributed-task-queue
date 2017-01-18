@@ -1,19 +1,25 @@
 using System;
 
+using JetBrains.Annotations;
+
+using SKBKontur.Catalogue.Objects;
+
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexerSettings
     {
         public RtqElasticsearchIndexerSettings()
         {
-            EventsReadingBatchSize = 5000;
+            InitialIndexingStartTimestamp = new Timestamp(new DateTime(2016, 02, 01, 0, 0, 0, DateTimeKind.Utc));
             MaxEventsProcessingTimeWindow = TimeSpan.FromHours(72);
             MaxEventsProcessingTasksCount = 10 * 1000 * 1000;
             TaskIdsProcessingBatchSize = 4000;
             IndexingThreadsCount = 16;
         }
 
-        public int EventsReadingBatchSize { get; set; }
+        [NotNull]
+        public Timestamp InitialIndexingStartTimestamp { get; private set; }
+
         public TimeSpan MaxEventsProcessingTimeWindow { get; set; }
         public int MaxEventsProcessingTasksCount { get; set; }
         public int TaskIdsProcessingBatchSize { get; set; }
@@ -21,8 +27,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         public override string ToString()
         {
-            return string.Format("EventsReadingBatchSize: {0}, MaxEventsProcessingTimeWindow: {1}, MaxEventsProcessingTasksCount: {2}, TaskIdsProcessingBatchSize: {3}, IndexingThreadsCount: {4}",
-                                 EventsReadingBatchSize, MaxEventsProcessingTimeWindow, MaxEventsProcessingTasksCount, TaskIdsProcessingBatchSize, IndexingThreadsCount);
+            return string.Format("InitialIndexingStartTimestamp: {0}, MaxEventsProcessingTimeWindow: {1}, MaxEventsProcessingTasksCount: {2}, TaskIdsProcessingBatchSize: {3}, IndexingThreadsCount: {4}",
+                                 InitialIndexingStartTimestamp, MaxEventsProcessingTimeWindow, MaxEventsProcessingTasksCount, TaskIdsProcessingBatchSize, IndexingThreadsCount);
         }
     }
 }

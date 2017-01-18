@@ -42,6 +42,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.EventFeeds, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.Graphite.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Graphite.Client.dll</HintPath>
@@ -100,12 +104,12 @@
     <Compile Include="Indexer\ElasticAvailabilityChecker.cs" />
     <Compile Include="Indexer\IRtqElasticsearchIndexer.cs" />
     <Compile Include="Indexer\IRtqElasticsearchIndexerGraphiteReporter.cs" />
-    <Compile Include="Indexer\ITaskMetaProcessor.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexer.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporter.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporterBase.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerSettings.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerStatus.cs" />
+    <Compile Include="Indexer\RtqMonitoringEventFeeder.cs" />
     <Compile Include="Indexer\TaskIndexCloseService.cs" />
     <Compile Include="Indexer\TaskMetaProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

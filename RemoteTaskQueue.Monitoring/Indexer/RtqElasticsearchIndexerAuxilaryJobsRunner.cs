@@ -10,11 +10,10 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexerAuxilaryJobsRunner
     {
-        public RtqElasticsearchIndexerAuxilaryJobsRunner(IPeriodicTaskRunner periodicTaskRunner, IRtqElasticsearchIndexer indexer, IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
+        public RtqElasticsearchIndexerAuxilaryJobsRunner(IPeriodicTaskRunner periodicTaskRunner, IRtqElasticsearchIndexer indexer)
         {
             this.periodicTaskRunner = periodicTaskRunner;
             this.indexer = indexer;
-            this.graphiteReporter = graphiteReporter;
         }
 
         public void Start()
@@ -23,7 +22,6 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 {
                     var status = indexer.GetStatus();
                     Log.For(this).LogInfoFormat("Status: {0}", status.ToPrettyJson());
-                    graphiteReporter.ReportActualizationLag(status.ActualizationLag);
                 });
         }
 
@@ -35,6 +33,5 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private const string reportIndexingProgress = "ReportIndexingProgress";
         private readonly IPeriodicTaskRunner periodicTaskRunner;
         private readonly IRtqElasticsearchIndexer indexer;
-        private readonly IRtqElasticsearchIndexerGraphiteReporter graphiteReporter;
     }
 }

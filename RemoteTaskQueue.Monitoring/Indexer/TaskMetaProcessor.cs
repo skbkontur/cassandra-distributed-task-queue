@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using GroBuf;
 
 using JetBrains.Annotations;
 
+using MoreLinq;
+
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Configuration;
 
@@ -16,9 +20,11 @@ using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
-    public class TaskMetaProcessor : ITaskMetaProcessor
+    public class TaskMetaProcessor
     {
         public TaskMetaProcessor(
+            RtqElasticsearchIndexerSettings settings,
+            IHandleTasksMetaStorage handleTasksMetaStorage,
             ITaskDataRegistry taskDataRegistry,
             ITaskDataStorage taskDataStorage,
             ITaskExceptionInfoStorage taskExceptionInfoStorage,
@@ -26,6 +32,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             ISerializer serializer,
             IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
         {
+            this.settings = settings;
+            this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskDataRegistry = taskDataRegistry;
             this.taskDataStorage = taskDataStorage;
             this.taskExceptionInfoStorage = taskExceptionInfoStorage;
@@ -34,10 +42,24 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             this.graphiteReporter = graphiteReporter;
         }
 
-        public void IndexMetas([NotNull] TaskMetaInformation[] batch)
+        public void ProcessTasks([NotNull] List<string> taskIdsToProcess)
         {
-            if(!batch.Any())
-                return;
+            Log.For(this).LogInfoFormat("Processing tasks: {0}", taskIdsToProcess.Count);
+            taskIdsToProcess.Batch(settings.TaskIdsProcessingBatchSize, Enumerable.ToArray)
+                            .AsParallel()
+                            .WithDegreeOfParallelism(settings.IndexingThreadsCount)
+                            .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
+                            .ForEach(taskIds =>
+                            {
+                                var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
+                                var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > settings.InitialIndexingStartTimestamp.Ticks).ToArray();
+                                if(taskMetasToIndex.Any())
+                                    IndexMetas(taskMetasToIndex);
+                            });
+        }
+
+        private void IndexMetas([NotNull] TaskMetaInformation[] batch)
+        {
             var taskDatas = graphiteReporter.ReportTiming("ReadTaskDatas", () => taskDataStorage.Read(batch));
             var taskExceptionInfos = graphiteReporter.ReportTiming("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch));
             var enrichedBatch = new Tuple<TaskMetaInformation, TaskExceptionInfo[], object>[batch.Length];
@@ -70,6 +92,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             }
         }
 
+        private readonly RtqElasticsearchIndexerSettings settings;
+        private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskDataRegistry taskDataRegistry;
         private readonly ITaskDataStorage taskDataStorage;
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
