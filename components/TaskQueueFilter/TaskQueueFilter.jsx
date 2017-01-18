@@ -66,7 +66,7 @@ export default class TaskQueueFilter extends React.Component {
                         data-tid={'DateTimeRangePicker'}
                         error={false}
                         // eslint-disable-next-line react/jsx-boolean-value
-                        withoutHours={true}
+                        hideTime={true}
                         value={enqueueDateTimeRange || defaultEnqueueDateTimeRange}
                         onChange={value => onChange({ enqueueDateTimeRange: value })}
                     />
