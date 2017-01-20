@@ -4,8 +4,10 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 
+using RemoteTaskQueue.Monitoring.Storage;
+using RemoteTaskQueue.Monitoring.Storage.Writing;
+
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Core.EventFeeds.OffsetStorages;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
@@ -42,14 +44,14 @@ namespace RemoteTaskQueue.Monitoring.Indexer
     public class RtqMonitoringEventFeeder
     {
         public RtqMonitoringEventFeeder(MultiRazorEventFeedFactory eventFeedFactory,
-                                        IEventSource<TaskMetaUpdatedEvent, string> eventSource, 
+                                        IEventSource<TaskMetaUpdatedEvent, string> eventSource,
                                         IEventConsumer<TaskMetaUpdatedEvent, string> eventConsumer,
-                                        ElasticsearchOffsetStorageProvider elasticsearchOffsetStorageProvider)
+                                        RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
             this.eventFeedFactory = eventFeedFactory;
             this.eventSource = eventSource;
             this.eventConsumer = eventConsumer;
-            this.elasticsearchOffsetStorageProvider = elasticsearchOffsetStorageProvider;
+            this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
         private void RunEventFeeding()
@@ -57,13 +59,11 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             const string key = "RtqMonitoring";
             eventFeedFactory
                 .Feed<TaskMetaUpdatedEvent, string>(key)
-                .WithEventSource(eventSource)
-                .WithConsumer(eventConsumer)
-                .WithOffsetStorageFactory(bladeId => elasticsearchOffsetStorageProvider
-                                                         .ClientDataStadardOffsetStorage<string>(bladeId.Key))
-                                                         //.AndRollbackIfOffsetEmpty(TimeSpan.FromHours(1).Ticks))
                 .WithBlade(key + "_Blade0", TimeSpan.FromMinutes(1))
                 .WithBlade(key + "_Blade1", TimeSpan.FromMinutes(15))
+                .WithEventSource(eventSource)
+                .WithConsumer(eventConsumer)
+                .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClientFactory, bladeId.Key))
                 .InParallel()
                 .RunFeeds(TimeSpan.FromMinutes(1));
         }
@@ -71,6 +71,6 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private readonly MultiRazorEventFeedFactory eventFeedFactory;
         private readonly IEventSource<TaskMetaUpdatedEvent, string> eventSource;
         private readonly IEventConsumer<TaskMetaUpdatedEvent, string> eventConsumer;
-        private readonly ElasticsearchOffsetStorageProvider elasticsearchOffsetStorageProvider;
+        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }
 }
