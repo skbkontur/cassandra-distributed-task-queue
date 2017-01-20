@@ -59,7 +59,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
             compositeCounter.Expect(m => m.GetSnapshotOrNull(maxSnapshotLength)).Return(null);
             DoTest(400 - maxHistoryDepthTicks, 400, null, new[] {GetEvent("a", 301)}, new[] {new[] {GetMeta("a", 10)}});
 
-            var cs0 = new CompositeCounterSnapshot() {TotalSnapshot = new ProcessedTasksCounter.CounterSnapshot(null, 12123, 2, null)};
+            var cs0 = new CompositeCounterSnapshot {TotalSnapshot = new ProcessedTasksCounter.CounterSnapshot(null, 12123, 2, null)};
             compositeCounter.Expect(m => m.GetSnapshotOrNull(maxSnapshotLength)).Return(cs0);
             var counterControllerSnapshot = new CounterControllerSnapshot
                 {
@@ -74,8 +74,8 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
         [Test]
         public void TestLoadState()
         {
-            var cs0 = new CompositeCounterSnapshot() {TotalSnapshot = new ProcessedTasksCounter.CounterSnapshot(null, 12123, 2, new [] {1})};
-            snapshotStorage.Expect(s => s.ReadSnapshotOrNull()).Return(new CounterControllerSnapshot()
+            var cs0 = new CompositeCounterSnapshot() {TotalSnapshot = new ProcessedTasksCounter.CounterSnapshot(null, 12123, 2, new[] {1})};
+            snapshotStorage.Expect(s => s.ReadSnapshotOrNull()).Return(new CounterControllerSnapshot
                 {
                     CounterSnapshot = cs0,
                     ControllerTicks = 100
@@ -131,7 +131,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
                 var eventsCopy = new TaskMetaUpdatedEvent[metaBatch.Length];
                 Array.Copy(allEvents, count, eventsCopy, 0, metaBatch.Length);
                 count += metaBatch.Length;
-                metaCachedReader.Expect(m => m.ReadActualMetasQuiet(eventsCopy, nowTicks)).Return(metaBatch);
+                metaCachedReader.Expect(m => m.ReadActualMetasQuiet(ARG.EqualsTo(eventsCopy), ARG.EqualsTo(nowTicks))).Return(metaBatch);
                 var batch2 = metaBatch.ToArray();
                 compositeCounter.Expect(c => c.ProcessMetas(ARG.EqualsTo(batch2.Where(x => x != null).ToArray()), ARG.EqualsTo(nowTicks)));
             }
@@ -165,9 +165,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
 
         private const int maxSnapshotLength = 11;
         private const int unstableTicks = 10;
-
         private const int maxHistoryDepthTicks = 200;
-
         private CounterController controller;
         private IEventLogRepository eventLogRepository;
         private IMetaCachedReader metaCachedReader;
