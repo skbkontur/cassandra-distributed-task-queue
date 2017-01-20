@@ -9,7 +9,7 @@ using SKBKontur.Catalogue.Core.EventFeeds.OffsetStorages;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
-    public class RtqMonitoringEventConsumer : IEventConsumer<TaskMetaUpdatedEvent>
+    public class RtqMonitoringEventConsumer : IEventConsumer<TaskMetaUpdatedEvent, string>
     {
         [NotNull]
         public string GetDescription()
@@ -17,21 +17,14 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             return GetType().FullName;
         }
 
-        public void Initialize()
-        {
-        }
-
-        public void Shutdown()
-        {
-        }
-
-        public void ProcessEvents([NotNull] IObjectMutationEvent<TaskMetaUpdatedEvent>[] modificationEvents)
+        [NotNull]
+        public EventsProcessingResult<string> ProcessEvents([NotNull] EventsQueryResult<TaskMetaUpdatedEvent, string> eventsQueryResult)
         {
             throw new NotImplementedException();
         }
     }
 
-    public class RtqMonitoringEventSource : IEventSource<TaskMetaUpdatedEvent>
+    public class RtqMonitoringEventSource : IEventSource<TaskMetaUpdatedEvent, string>
     {
         [NotNull]
         public string GetDescription()
@@ -40,17 +33,17 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         }
 
         [NotNull]
-        public EventsQueryResult<TaskMetaUpdatedEvent, long> GetEvents(long fromOffsetExclusive, long toOffsetInclusive, int estimatedCount)
+        public EventsQueryResult<TaskMetaUpdatedEvent, string> GetEvents(string fromOffsetExclusive, string toOffsetInclusive, int estimatedCount)
         {
-            return new EventsQueryResult<TaskMetaUpdatedEvent, long>();
+            throw new NotImplementedException();
         }
     }
 
     public class RtqMonitoringEventFeeder
     {
-        public RtqMonitoringEventFeeder(MultiRazorEventFeedFactory eventFeedFactory, 
-                                        IEventSource<TaskMetaUpdatedEvent> eventSource, 
-                                        IEventConsumer<TaskMetaUpdatedEvent> eventConsumer,
+        public RtqMonitoringEventFeeder(MultiRazorEventFeedFactory eventFeedFactory,
+                                        IEventSource<TaskMetaUpdatedEvent, string> eventSource, 
+                                        IEventConsumer<TaskMetaUpdatedEvent, string> eventConsumer,
                                         ElasticsearchOffsetStorageProvider elasticsearchOffsetStorageProvider)
         {
             this.eventFeedFactory = eventFeedFactory;
@@ -63,22 +56,21 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         {
             const string key = "RtqMonitoring";
             eventFeedFactory
-                .Feed<TaskMetaUpdatedEvent, long>(key)
+                .Feed<TaskMetaUpdatedEvent, string>(key)
                 .WithEventSource(eventSource)
                 .WithConsumer(eventConsumer)
                 .WithOffsetStorageFactory(bladeId => elasticsearchOffsetStorageProvider
-                                                         .ClientDataStadardOffsetStorage<long>(bladeId.Key)
-                                                         .AndRollbackIfOffsetEmpty(TimeSpan.FromHours(1).Ticks))
+                                                         .ClientDataStadardOffsetStorage<string>(bladeId.Key))
+                                                         //.AndRollbackIfOffsetEmpty(TimeSpan.FromHours(1).Ticks))
                 .WithBlade(key + "_Blade0", TimeSpan.FromMinutes(1))
                 .WithBlade(key + "_Blade1", TimeSpan.FromMinutes(15))
-                .WithLeaderElection()
                 .InParallel()
-                .FirePeriodicTasks(TimeSpan.FromMinutes(1));
+                .RunFeeds(TimeSpan.FromMinutes(1));
         }
 
         private readonly MultiRazorEventFeedFactory eventFeedFactory;
-        private readonly IEventSource<TaskMetaUpdatedEvent> eventSource;
-        private readonly IEventConsumer<TaskMetaUpdatedEvent> eventConsumer;
+        private readonly IEventSource<TaskMetaUpdatedEvent, string> eventSource;
+        private readonly IEventConsumer<TaskMetaUpdatedEvent, string> eventConsumer;
         private readonly ElasticsearchOffsetStorageProvider elasticsearchOffsetStorageProvider;
     }
 }
