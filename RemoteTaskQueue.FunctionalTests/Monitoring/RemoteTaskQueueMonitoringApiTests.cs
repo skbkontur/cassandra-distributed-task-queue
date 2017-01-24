@@ -233,7 +233,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 taskIds.Add(task.Id);
             }
             WaitForTasks(taskIds.ToArray(), TimeSpan.FromSeconds(60));
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
             return taskIds.ToArray();
         }
 

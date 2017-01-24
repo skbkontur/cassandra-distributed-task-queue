@@ -46,7 +46,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             var t1 = Timestamp.Now;
 
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
 
             CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId), t0, t1, taskId);
             CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId2), t0, t1, taskId2);
@@ -60,7 +60,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var taskId = QueueTask(new SlowTaskData());
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
             CheckSearch("*", t0, t1, taskId);
@@ -80,7 +80,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var taskId = QueueTask(new FailingTaskData {UniqueData = uniqueData, RetryCount = 0});
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
             CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
@@ -97,7 +97,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var taskId = QueueTask(new SlowTaskData());
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
             var ttl = TestRemoteTaskQueueSettings.StandardTestTaskTtl;
@@ -121,7 +121,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var taskId = QueueTask(failingTaskData);
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(30));
 
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
             CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
@@ -141,7 +141,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 Log.For(this).InfoFormat("Iteration: {0}", i);
                 var taskId0 = QueueTask(new SlowTaskData());
                 WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
-                monitoringServiceClient.UpdateAndFlush();
+                monitoringServiceClient.ExecuteForcedFeeding();
                 CheckSearch(string.Format("\"{0}\"", taskId0), t0, Timestamp.Now, taskId0);
             }
         }
@@ -158,7 +158,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 var taskId2 = QueueTask(new SlowTaskData());
                 //Console.WriteLine("ids: {0} {1} {2}", taskId0, taskId1, taskId2);
                 WaitForTasks(new[] {taskId0, taskId1, taskId2}, TimeSpan.FromSeconds(5));
-                monitoringServiceClient.UpdateAndFlush();
+                monitoringServiceClient.ExecuteForcedFeeding();
                 CheckSearch(string.Format("\"{0}\"", taskId0), t0, Timestamp.Now, taskId0);
             }
         }
@@ -175,7 +175,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var taskId1 = QueueTask(new AlphaTaskData());
             WaitForTasks(new[] {taskId1}, TimeSpan.FromSeconds(5));
 
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
 
             var t2 = Timestamp.Now;
 
@@ -205,7 +205,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             taskIds.Reverse();
             var expectedTaskIds = taskIds.ToArray();
             WaitForTasks(expectedTaskIds, TimeSpan.FromSeconds(60));
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
             var t1 = Timestamp.Now;
 
             var resultsPage1 = taskSearchClient.Search(new TaskSearchRequest

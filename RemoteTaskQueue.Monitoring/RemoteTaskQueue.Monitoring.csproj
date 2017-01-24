@@ -99,6 +99,7 @@
     <Compile Include="Api\TaskMetaInformationModel.cs" />
     <Compile Include="Indexer\ElasticAvailabilityChecker.cs" />
     <Compile Include="Indexer\IRtqElasticsearchIndexerGraphiteReporter.cs" />
+    <Compile Include="Indexer\RtqGlobalTimeProvider.cs" />
     <Compile Include="Indexer\RtqMonitoringEventBulkIndexer.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporter.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporterBase.cs" />

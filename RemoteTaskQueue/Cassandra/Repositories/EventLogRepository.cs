@@ -61,11 +61,13 @@ namespace RemoteQueue.Cassandra.Repositories
             var firstEventTicks = ticksHolder.GetMinTicks(firstEventTicksRowName);
             if(firstEventTicks == 0)
                 return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset : null, noMoreEventsInSource : true);
+            var exclusiveStartColumnName = GetExclusiveStartColumnName(fromOffsetExclusive, firstEventTicks);
+            if(EventPointerFormatter.GetTimestamp(exclusiveStartColumnName) >= EventPointerFormatter.GetTimestamp(toOffsetInclusive))
+                return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset: null, noMoreEventsInSource: true);
             var eventsToFetch = estimatedCount;
             if(eventsToFetch == int.MaxValue)
                 eventsToFetch--;
             var events = new List<EventWithOffset<TaskMetaUpdatedEvent, string>>();
-            var exclusiveStartColumnName = GetExclusiveStartColumnName(fromOffsetExclusive, firstEventTicks);
             var partitionKey = EventPointerFormatter.GetPartitionKey(EventPointerFormatter.GetTimestamp(exclusiveStartColumnName).Ticks);
             while(true)
             {

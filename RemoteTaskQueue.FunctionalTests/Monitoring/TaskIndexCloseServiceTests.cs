@@ -89,7 +89,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var meta1 = CreateMeta(x1, false);
             taskWriter.IndexBatch(new[] {new Tuple<TaskMetaInformation, TaskExceptionInfo[], object>(meta1, new TaskExceptionInfo[0], new SlowTaskData {TimeMs = 1})});
 
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
             CheckSearch("Data.TimeMs:1", x1, x1, meta1.Id);
 
             Assert.AreEqual(0, client.Search(RtqElasticsearchConsts.OldDataIndex, new {}).ProcessResponse().Response["hits"]["total"]);
@@ -110,7 +110,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                     new Tuple<TaskMetaInformation, TaskExceptionInfo[], object>(meta3, new TaskExceptionInfo[0], new SlowTaskData {TimeMs = 3}), //current data
                 });
 
-            monitoringServiceClient.UpdateAndFlush();
+            monitoringServiceClient.ExecuteForcedFeeding();
 
             CheckSearch("Data.TimeMs:2", x2, x2, meta2.Id);
 

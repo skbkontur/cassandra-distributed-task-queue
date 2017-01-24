@@ -1,22 +1,20 @@
-﻿using System;
-
-using SKBKontur.Catalogue.ClientLib.Domains;
-using SKBKontur.Catalogue.ClientLib.HttpClientBases;
+﻿using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.ClientLib.HttpClientBases.Configuration;
 using SKBKontur.Catalogue.ClientLib.Topology;
+using SKBKontur.Catalogue.Core.EventFeeds.HttpAccess;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
-    public class MonitoringServiceClient : HttpClientBase
+    public class MonitoringServiceClient : EventFeedHttpClientBase
     {
         public MonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration)
             : base(domainTopologyFactory, methodDomainFactory, configuration)
         {
         }
 
-        public void UpdateAndFlush()
+        public void ExecuteForcedFeeding()
         {
-            Method("UpdateAndFlush").SendToEachReplica(DomainConsistencyLevel.All);
+            Method("ExecuteForcedFeeding").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
         public void ResetState()
@@ -29,12 +27,7 @@ namespace RemoteTaskQueue.FunctionalTests
             Method("Stop").SendToEachReplica(DomainConsistencyLevel.All);
         }
 
-        protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
-        {
-            return defaultConfiguration.WithTimeout(TimeSpan.FromMinutes(1));
-        }
-
-        protected override string GetDefaultTopologyFileName()
+        protected override sealed string GetDefaultTopologyFileName()
         {
             return "monitoringService";
         }
