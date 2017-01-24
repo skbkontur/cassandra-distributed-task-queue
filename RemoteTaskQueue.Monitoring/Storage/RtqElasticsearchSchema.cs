@@ -21,46 +21,20 @@ namespace RemoteTaskQueue.Monitoring.Storage
         public void Actualize(bool local, bool bulkLoad)
         {
             PutDataTemplate(RtqElasticsearchConsts.TemplateName, RtqElasticsearchConsts.IndexPrefix + "*", local, bulkLoad);
-            CreateIndexIfNotExists(RtqElasticsearchConsts.OldDataIndex, new {});
-            CreateIndexingProgressIndex(RtqElasticsearchConsts.IndexingProgressIndex, local, bulkLoad);
+            CreateIndexIfNotExists(RtqElasticsearchConsts.OldDataIndex);
         }
 
-        private void CreateIndexingProgressIndex([NotNull] string indexName, bool local, bool bulkLoad)
+        private void CreateIndexIfNotExists([NotNull] string indexName)
         {
-            CreateIndexIfNotExists(indexName, new
-                {
-                    settings = Settings(local, bulkLoad),
-                    mappings = new
-                        {
-                            LastUpdateTicks = new
-                                {
-                                    _all = new {enabled = false},
-                                    properties = new
-                                        {
-                                            Ticks = new
-                                                {
-                                                    type = "long",
-                                                    index = false
-                                                }
-                                        }
-                                }
-                        }
-                });
-        }
-
-        private void CreateIndexIfNotExists([NotNull] string indexName, [NotNull] object body)
-        {
-            Log.For(this).LogInfoFormat("Attempt to create Index {0}", indexName);
-
             var elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
-            if(elasticsearchClient.IndicesExists(indexName).ProcessResponse(200, 404).HttpStatusCode == 404)
+            if(elasticsearchClient.IndicesExists(indexName).ProcessResponse(200, 404).HttpStatusCode != 404)
+                Log.For(this).LogInfoFormat("Index already exists: {0}", indexName);
+            else
             {
-                Log.For(this).LogInfoFormat("Index not exists - creating {0}", indexName);
-                elasticsearchClient.IndicesCreate(indexName, body).ProcessResponse();
+                Log.For(this).LogInfoFormat("Index does not exist, creating: {0}", indexName);
+                elasticsearchClient.IndicesCreate(indexName, new {}).ProcessResponse();
                 elasticsearchClient.ClusterHealth(indexName, p => p.WaitForStatus(WaitForStatus.Green)).ProcessResponse();
             }
-            else
-                Log.For(this).LogInfoFormat("Index already exists");
         }
 
         [NotNull]
@@ -70,7 +44,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                            {
                     index = new
                         {
-                            number_of_shards = bulkLoad ? 3 : 1,
+                            number_of_shards = 3,
                             number_of_replicas = local || bulkLoad ? 0 : 1,
                             refresh_interval = bulkLoad ? "-1" : "1s",
                            }

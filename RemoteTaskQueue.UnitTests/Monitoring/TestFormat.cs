@@ -5,11 +5,11 @@ using NUnit.Framework;
 using RemoteTaskQueue.Monitoring.Storage.Utils;
 
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.TestCore;
 
 namespace RemoteTaskQueue.UnitTests.Monitoring
 {
-    public class TestFormat : CoreTestBase
+    [TestFixture]
+    public class TestFormat
     {
         [Test]
         public void TestFormatSimple()

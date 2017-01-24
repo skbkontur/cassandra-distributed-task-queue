@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 
 using GroBuf;
 
@@ -9,6 +7,7 @@ using RemoteQueue.Cassandra.Entities;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Connections;
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -20,8 +19,8 @@ namespace RemoteQueue.Cassandra.Repositories
             this.connection = connection;
             this.fromTicks = fromTicks;
             this.batchSize = batchSize;
-            iFrom = fromTicks / tickPartition;
-            iTo = (toTicks + tickPartition / 3) / tickPartition;
+            iFrom = fromTicks / EventPointerFormatter.PartitionDurationTicks;
+            iTo = (toTicks + EventPointerFormatter.PartitionDurationTicks / 3) / EventPointerFormatter.PartitionDurationTicks;
             Reset();
         }
 
@@ -32,30 +31,25 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public bool MoveNext()
         {
-            while (true)
+            while(true)
             {
-                if (eventEnumerator.MoveNext()) return true;
-                if (iCur >= iTo) return false;
+                if(eventEnumerator.MoveNext())
+                    return true;
+                if(iCur >= iTo)
+                    return false;
                 iCur++;
                 string startColumnName = null;
-                var columnInfo = GetColumnInfo(iCur * tickPartition);
-                if (iCur == iFrom) startColumnName = GetColumnInfo(fromTicks).Item2;
-                eventEnumerator = connection.GetRow(columnInfo.Item1, startColumnName, batchSize).GetEnumerator();
+                if(iCur == iFrom)
+                    startColumnName = EventPointerFormatter.GetColumnName(fromTicks, GuidHelpers.MinGuid);
+                var partitionKey = EventPointerFormatter.GetPartitionKey(iCur * EventPointerFormatter.PartitionDurationTicks);
+                eventEnumerator = connection.GetRow(partitionKey, startColumnName, batchSize).GetEnumerator();
             }
-        }
-
-
-        private static Tuple<string, string> GetColumnInfo(long ticks)
-        {
-            var rowKey = (ticks / tickPartition).ToString();
-            var columnName = ticks.ToString("D20", CultureInfo.InvariantCulture);
-            return new Tuple<string, string>(rowKey, columnName);
         }
 
         public void Reset()
         {
             iCur = iFrom - 1;
-            eventEnumerator = (new List<Column>()).GetEnumerator();
+            eventEnumerator = new List<Column>().GetEnumerator();
         }
 
         public TaskMetaUpdatedEvent Current
@@ -77,6 +71,5 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly long iTo;
         private long iCur;
         private IEnumerator<Column> eventEnumerator;
-        private static readonly long tickPartition = TimeSpan.FromMinutes(6).Ticks;
     }
 }

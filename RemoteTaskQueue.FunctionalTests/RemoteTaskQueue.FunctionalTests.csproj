@@ -50,6 +50,10 @@
     <Reference Include="Catalogue.Core.ElasticsearchClientExtensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.EventFeeds, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.NUnit.Extensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.NUnit.Extensions.dll</HintPath>
     </Reference>
@@ -103,7 +107,7 @@
     <Compile Include="CassandraHelpers.cs" />
     <Compile Include="MonitoringServiceClient.cs" />
     <Compile Include="ExchangeServiceClient.cs" />
-    <Compile Include="Monitoring\RemoteTaskQueueApiImplTests.cs" />
+    <Compile Include="Monitoring\RemoteTaskQueueMonitoringApiTests.cs" />
     <Compile Include="Monitoring\MonitoringTestBase.cs" />
     <Compile Include="Monitoring\TaskSearchClientTests.cs" />
     <Compile Include="Monitoring\TaskIndexCloseServiceTests.cs" />

@@ -6,7 +6,7 @@ using RemoteQueue.Handling;
 
 namespace RemoteTaskQueue.Monitoring.Api
 {
-    public interface IRemoteTaskQueueApiImpl
+    public interface IRemoteTaskQueueMonitoringApi
     {
         string[] GetAllTaksNames();
 

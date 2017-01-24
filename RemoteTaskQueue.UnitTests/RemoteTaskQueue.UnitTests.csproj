@@ -34,6 +34,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.EventFeeds, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.TestCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
@@ -64,9 +68,13 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EnumExtensionsTest.cs" />
+    <Compile Include="Monitoring\EventPointerFormatterTest.cs" />
+    <Compile Include="Monitoring\RtqMonitoringOffsetInterpreterTest.cs" />
     <Compile Include="Monitoring\SearchIndexNameFactoryTest.cs" />
     <Compile Include="Monitoring\TaskDataServiceTest.cs" />
     <Compile Include="Monitoring\TaskWtriterSerializationTest.cs" />

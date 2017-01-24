@@ -22,15 +22,14 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class TaskMetaProcessor
     {
-        public TaskMetaProcessor(
-            RtqElasticsearchIndexerSettings settings,
-            IHandleTasksMetaStorage handleTasksMetaStorage,
-            ITaskDataRegistry taskDataRegistry,
-            ITaskDataStorage taskDataStorage,
-            ITaskExceptionInfoStorage taskExceptionInfoStorage,
-            TaskWriter writer,
-            ISerializer serializer,
-            IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
+        public TaskMetaProcessor(RtqElasticsearchIndexerSettings settings,
+                                 IHandleTasksMetaStorage handleTasksMetaStorage,
+                                 ITaskDataRegistry taskDataRegistry,
+                                 ITaskDataStorage taskDataStorage,
+                                 ITaskExceptionInfoStorage taskExceptionInfoStorage,
+                                 TaskWriter writer,
+                                 ISerializer serializer,
+                                 IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
         {
             this.settings = settings;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
@@ -50,12 +49,12 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                             .WithDegreeOfParallelism(settings.IndexingThreadsCount)
                             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
                             .ForEach(taskIds =>
-                            {
-                                var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
-                                var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > settings.InitialIndexingStartTimestamp.Ticks).ToArray();
-                                if(taskMetasToIndex.Any())
-                                    IndexMetas(taskMetasToIndex);
-                            });
+                                {
+                                    var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
+                                    var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > settings.InitialIndexingStartTimestamp.Ticks).ToArray();
+                                    if(taskMetasToIndex.Any())
+                                        IndexMetas(taskMetasToIndex);
+                                });
         }
 
         private void IndexMetas([NotNull] TaskMetaInformation[] batch)

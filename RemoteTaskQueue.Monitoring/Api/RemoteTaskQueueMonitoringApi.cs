@@ -15,13 +15,9 @@ using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring.Api
 {
-    public class RemoteTaskQueueApiImpl : IRemoteTaskQueueApiImpl
+    public class RemoteTaskQueueMonitoringApi : IRemoteTaskQueueMonitoringApi
     {
-        public RemoteTaskQueueApiImpl(
-            IRemoteTaskQueue remoteTaskQueue,
-            ITaskSearchClient taskSearchClient,
-            ITaskDataRegistry taskDataRegistry
-            )
+        public RemoteTaskQueueMonitoringApi(IRemoteTaskQueue remoteTaskQueue, ITaskSearchClient taskSearchClient, ITaskDataRegistry taskDataRegistry)
         {
             this.remoteTaskQueue = remoteTaskQueue;
             this.taskSearchClient = taskSearchClient;

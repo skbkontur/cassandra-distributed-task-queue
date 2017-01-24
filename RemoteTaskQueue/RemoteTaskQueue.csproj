@@ -44,6 +44,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.Core.EventFeeds, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.Graphite.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Graphite.Client.dll</HintPath>
@@ -111,6 +115,7 @@
     <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorageSettings.cs" />
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobType.cs" />
     <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
+    <Compile Include="Cassandra\Repositories\EventPointerFormatter.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerable.cs" />
     <Compile Include="Cassandra\Repositories\GetEventLogEnumerator.cs" />
     <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />

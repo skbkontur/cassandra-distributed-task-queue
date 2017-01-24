@@ -86,35 +86,29 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\json.net\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SKBKontur.Graphite.Client, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GraphiteClient\SKBKontur.Graphite.Client.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Api\IRemoteTaskQueueApiImpl.cs" />
+    <Compile Include="Api\IRemoteTaskQueueMonitoringApi.cs" />
     <Compile Include="Api\RemoteTaskInfoModel.cs" />
-    <Compile Include="Api\RemoteTaskQueueApiImpl.cs" />
+    <Compile Include="Api\RemoteTaskQueueMonitoringApi.cs" />
     <Compile Include="Api\RemoteTaskQueueSearchRequest.cs" />
     <Compile Include="Api\RemoteTaskQueueSearchResults.cs" />
     <Compile Include="Api\TaskMetaInformationModel.cs" />
     <Compile Include="Indexer\ElasticAvailabilityChecker.cs" />
-    <Compile Include="Indexer\IRtqElasticsearchIndexer.cs" />
     <Compile Include="Indexer\IRtqElasticsearchIndexerGraphiteReporter.cs" />
-    <Compile Include="Indexer\RtqElasticsearchIndexer.cs" />
+    <Compile Include="Indexer\RtqMonitoringEventBulkIndexer.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporter.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporterBase.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerSettings.cs" />
-    <Compile Include="Indexer\RtqElasticsearchIndexerStatus.cs" />
+    <Compile Include="Indexer\RtqMonitoringEventConsumer.cs" />
     <Compile Include="Indexer\RtqMonitoringEventFeeder.cs" />
+    <Compile Include="Indexer\RtqMonitoringOffsetInterpreter.cs" />
     <Compile Include="Indexer\TaskIndexCloseService.cs" />
     <Compile Include="Indexer\TaskMetaProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Indexer\RtqElasticsearchIndexerAuxilaryJobsRunner.cs" />
-    <Compile Include="Indexer\RtqElasticsearchIndexerStatusHttpHandler.cs" />
     <Compile Include="Storage\Client\ITaskSearchClient.cs" />
     <Compile Include="Storage\Client\TaskSearchClient.cs" />
     <Compile Include="Storage\Client\TaskSearchRequest.cs" />
@@ -130,7 +124,6 @@
     <Compile Include="Storage\Writing\Contracts\MetaIndexedInfo.cs" />
     <Compile Include="Storage\Writing\Contracts\TaskIndexedInfo.cs" />
     <Compile Include="Storage\Writing\IndexChecker.cs" />
-    <Compile Include="Storage\Writing\IRtqElasticsearchIndexerProgressMarkerStorage.cs" />
     <Compile Include="Storage\Writing\IWriteIndexNameFactory.cs" />
     <Compile Include="Storage\Writing\OmitNonIndexablePropertiesContractResolver.cs" />
     <Compile Include="Storage\Writing\RtqElasticsearchOffsetStorage.cs" />

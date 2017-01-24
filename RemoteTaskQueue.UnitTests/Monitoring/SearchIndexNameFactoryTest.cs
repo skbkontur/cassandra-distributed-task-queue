@@ -6,15 +6,14 @@ using NUnit.Framework;
 using RemoteTaskQueue.Monitoring.Storage.Search;
 using RemoteTaskQueue.Monitoring.Storage.Utils;
 
-using SKBKontur.Catalogue.TestCore;
-
 namespace RemoteTaskQueue.UnitTests.Monitoring
 {
-    public class SearchIndexNameFactoryTest : CoreTestBase
+    [TestFixture]
+    public class SearchIndexNameFactoryTest
     {
-        public override void SetUp()
+        [SetUp]
+        public void SetUp()
         {
-            base.SetUp();
             indexNameFormat = IndexNameConverter.ConvertToDateTimeFormat("zzz-{yyyy.MM.dd}");
         }
 

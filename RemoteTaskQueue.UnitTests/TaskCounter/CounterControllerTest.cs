@@ -111,7 +111,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
 
         private static TaskMetaUpdatedEvent GetEvent(string taskId, long ticks)
         {
-            return new TaskMetaUpdatedEvent {TaskId = taskId, Ticks = ticks};
+            return new TaskMetaUpdatedEvent(taskId, ticks);
         }
 
         private static TaskMetaInformation GetMeta(string taskId, long lastModificationTicks)
