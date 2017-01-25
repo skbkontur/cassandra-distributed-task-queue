@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Repositories;
@@ -38,10 +35,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 return -1;
             if(y == null)
                 return 1;
-            var tsCompareResult = Comparer<Timestamp>.Default.Compare(EventPointerFormatter.GetTimestamp(x), EventPointerFormatter.GetTimestamp(y));
-            if(tsCompareResult != 0)
-                return tsCompareResult;
-            return string.Compare(x, y, StringComparison.Ordinal); // compare offset as cassandra column names
+            return EventPointerFormatter.CompareColumnNames(x, y);
         }
     }
 }

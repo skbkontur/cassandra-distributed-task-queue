@@ -16,6 +16,22 @@ namespace RemoteTaskQueue.UnitTests.Monitoring
     public class RtqMonitoringOffsetInterpreterTest
     {
         [Test]
+        public void Compare_WithNull()
+        {
+            sut.Compare(null, null).Should().Be(0);
+            sut.Compare(null, Offset(Timestamp.MinValue, GuidHelpers.MinGuid)).Should().BeNegative();
+            sut.Compare(Offset(Timestamp.MinValue, GuidHelpers.MinGuid), null).Should().BePositive();
+        }
+
+        [Test]
+        public void Compare_EqualOffsets()
+        {
+            var ts = Timestamp.Now;
+            var eventId = Guid.NewGuid();
+            sut.Compare(Offset(ts, eventId), Offset(ts, eventId)).Should().Be(0);
+        }
+
+        [Test]
         public void Compare_DifferentTimestamps()
         {
             var ts = Timestamp.Now;

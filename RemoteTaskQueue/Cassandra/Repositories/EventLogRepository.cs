@@ -37,16 +37,15 @@ namespace RemoteQueue.Cassandra.Repositories
             return GetType().FullName;
         }
 
-        public void AddEvent([NotNull] TaskMetaInformation taskMeta, long nowTicks)
+        public void AddEvent([NotNull] TaskMetaInformation taskMeta, [NotNull] Timestamp eventTimestamp, Guid eventId)
         {
-            ticksHolder.UpdateMinTicks(firstEventTicksRowName, nowTicks);
+            ticksHolder.UpdateMinTicks(firstEventTicksRowName, eventTimestamp.Ticks);
             var ttl = taskMeta.GetTtl();
-            var @event = new TaskMetaUpdatedEvent(taskMeta.Id, nowTicks);
-            RetrieveColumnFamilyConnection().AddColumn(EventPointerFormatter.GetPartitionKey(@event.Ticks), new Column
+            RetrieveColumnFamilyConnection().AddColumn(EventPointerFormatter.GetPartitionKey(eventTimestamp.Ticks), new Column
                 {
-                    Name = EventPointerFormatter.GetColumnName(@event.Ticks, eventId : Guid.NewGuid()),
-                    Timestamp = @event.Ticks,
-                    Value = serializer.Serialize(@event),
+                    Name = EventPointerFormatter.GetColumnName(eventTimestamp.Ticks, eventId),
+                    Value = serializer.Serialize(new TaskMetaUpdatedEvent(taskMeta.Id, eventTimestamp.Ticks)),
+                    Timestamp = eventTimestamp.Ticks,
                     TTL = ttl.HasValue ? (int)ttl.Value.TotalSeconds : (int?)null,
                 });
         }
@@ -62,11 +61,11 @@ namespace RemoteQueue.Cassandra.Repositories
             if(firstEventTicks == 0)
                 return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset : null, noMoreEventsInSource : true);
             var exclusiveStartColumnName = GetExclusiveStartColumnName(fromOffsetExclusive, firstEventTicks);
-            if(EventPointerFormatter.GetTimestamp(exclusiveStartColumnName) >= EventPointerFormatter.GetTimestamp(toOffsetInclusive))
+            if(EventPointerFormatter.CompareColumnNames(exclusiveStartColumnName, toOffsetInclusive) >= 0)
                 return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset: null, noMoreEventsInSource: true);
+            if(estimatedCount == int.MaxValue)
+                estimatedCount--;
             var eventsToFetch = estimatedCount;
-            if(eventsToFetch == int.MaxValue)
-                eventsToFetch--;
             var events = new List<EventWithOffset<TaskMetaUpdatedEvent, string>>();
             var partitionKey = EventPointerFormatter.GetPartitionKey(EventPointerFormatter.GetTimestamp(exclusiveStartColumnName).Ticks);
             while(true)
@@ -74,7 +73,8 @@ namespace RemoteQueue.Cassandra.Repositories
                 var columnsToFetch = eventsToFetch + 1;
                 var columnsIncludingStartColumn = RetrieveColumnFamilyConnection().GetColumns(partitionKey, exclusiveStartColumnName, toOffsetInclusive, columnsToFetch, reversed : false);
                 events.AddRange(columnsIncludingStartColumn.SkipWhile(x => x.Name == exclusiveStartColumnName)
-                                                           .Select(x => new EventWithOffset<TaskMetaUpdatedEvent, string>(serializer.Deserialize<TaskMetaUpdatedEvent>(x.Value), x.Name)));
+                                                           .Select(x => new EventWithOffset<TaskMetaUpdatedEvent, string>(serializer.Deserialize<TaskMetaUpdatedEvent>(x.Value), x.Name))
+                                                           .Take(eventsToFetch));
                 var currentPartitionIsExhausted = columnsIncludingStartColumn.Length < columnsToFetch;
                 if(!currentPartitionIsExhausted)
                     return new EventsQueryResult<TaskMetaUpdatedEvent, string>(events, lastOffset : events.Last().Offset, noMoreEventsInSource : false);
@@ -85,7 +85,7 @@ namespace RemoteQueue.Cassandra.Repositories
                         return new EventsQueryResult<TaskMetaUpdatedEvent, string>(events, lastOffset : toOffsetInclusive, noMoreEventsInSource : true);
                     else
                     {
-                        eventsToFetch = eventsToFetch - events.Count;
+                        eventsToFetch = estimatedCount - events.Count;
                         partitionKey = EventPointerFormatter.GetPartitionKey(nextPartitionStartTicks);
                         exclusiveStartColumnName = EventPointerFormatter.GetColumnName(nextPartitionStartTicks - 1, GuidHelpers.MaxGuid);
         }

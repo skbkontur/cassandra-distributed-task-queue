@@ -20,7 +20,7 @@ using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    public class TaskExceptionInfoStorageTest : BlobStorageFunctionalTestBase
+    public class TaskExceptionInfoStorageTest : RepositoryFunctionalTestBase
     {
         [EdiSetUp]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]

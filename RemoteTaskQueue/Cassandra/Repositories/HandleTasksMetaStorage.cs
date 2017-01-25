@@ -63,7 +63,7 @@ namespace RemoteQueue.Cassandra.Repositories
             var globalNowTicks = globalTime.UpdateNowTicks();
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + PreciseTimestampGenerator.TicksPerMicrosecond, globalNowTicks);
             taskMeta.LastModificationTicks = nowTicks;
-            eventLogRepository.AddEvent(taskMeta, nowTicks);
+            eventLogRepository.AddEvent(taskMeta, eventTimestamp : new Timestamp(nowTicks), eventId : Guid.NewGuid());
             var newIndexRecord = FormatIndexRecord(taskMeta);
             minimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks, taskMeta.GetTtl());
             if(taskMeta.State == TaskState.New)

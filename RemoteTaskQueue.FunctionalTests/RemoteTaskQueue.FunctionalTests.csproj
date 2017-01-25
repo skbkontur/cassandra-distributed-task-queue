@@ -107,6 +107,7 @@
     <Compile Include="CassandraHelpers.cs" />
     <Compile Include="MonitoringServiceClient.cs" />
     <Compile Include="ExchangeServiceClient.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\EventLogRepositoryTests.cs" />
     <Compile Include="Monitoring\RemoteTaskQueueMonitoringApiTests.cs" />
     <Compile Include="Monitoring\MonitoringTestBase.cs" />
     <Compile Include="Monitoring\TaskSearchClientTests.cs" />
@@ -121,7 +122,8 @@
     <Compile Include="RemoteTaskQueue\ExchangeTests\TasksWithCounterTestBase.cs" />
     <Compile Include="RemoteTaskQueue\ExchangeTests\TooLateException.cs" />
     <Compile Include="RemoteTaskQueue\ExchangeTests\ExchangeTestBase.cs" />
-    <Compile Include="RemoteTaskQueue\RepositoriesTests\BlobStorageFunctionalTestBase.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\FluentAssertionsExtensions.cs" />
+    <Compile Include="RemoteTaskQueue\RepositoriesTests\RepositoryFunctionalTestBase.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\GlobalTimeTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\HandleTaskMetaStorageTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\LegacyBlobStorageTest.cs" />

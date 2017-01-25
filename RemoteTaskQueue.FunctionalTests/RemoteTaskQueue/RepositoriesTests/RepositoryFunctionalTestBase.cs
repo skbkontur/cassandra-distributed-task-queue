@@ -12,8 +12,8 @@ using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
-    [EdiTestSuite("BlobStorageTests"), WithDefaultSerializer, WithTestRemoteTaskQueueSettings, WithCassandra(QueueKeyspaceName)]
-    public abstract class BlobStorageFunctionalTestBase
+    [EdiTestSuite("RepositoryTests"), WithDefaultSerializer, WithTestRemoteTaskQueueSettings, WithCassandra(QueueKeyspaceName)]
+    public abstract class RepositoryFunctionalTestBase
     {
         protected void ResetCassandraState()
         {

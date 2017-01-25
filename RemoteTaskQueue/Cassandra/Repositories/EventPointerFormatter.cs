@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 using JetBrains.Annotations;
@@ -35,6 +36,14 @@ namespace RemoteQueue.Cassandra.Repositories
         public static Guid GetEventId([NotNull] string eventColumnName)
         {
             return Guid.Parse(eventColumnName.Split('_')[1]);
+        }
+
+        public static int CompareColumnNames([NotNull] string x, [NotNull] string y)
+        {
+            var tsCompareResult = Comparer<Timestamp>.Default.Compare(GetTimestamp(x), GetTimestamp(y));
+            if(tsCompareResult != 0)
+                return tsCompareResult;
+            return string.Compare(x, y, StringComparison.Ordinal); // compare as cassandra string column names
         }
 
         public static readonly long PartitionDurationTicks = TimeSpan.FromMinutes(6).Ticks;

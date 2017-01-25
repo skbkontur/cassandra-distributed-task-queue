@@ -12,7 +12,7 @@ using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    public class LegacyBlobStorageTest : BlobStorageFunctionalTestBase
+    public class LegacyBlobStorageTest : RepositoryFunctionalTestBase
     {
         [EdiSetUp]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]

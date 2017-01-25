@@ -14,7 +14,7 @@ using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    public class TaskMetaStorageTest : BlobStorageFunctionalTestBase
+    public class TaskMetaStorageTest : RepositoryFunctionalTestBase
     {
         [EdiSetUp]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
