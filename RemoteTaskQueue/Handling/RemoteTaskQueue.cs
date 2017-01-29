@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using GroBuf;
@@ -42,14 +43,14 @@ namespace RemoteQueue.Handling
             Serializer = serializer;
             TaskTtl = taskQueueSettings.TaskTtl;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
-            TicksHolder = new TicksHolder(cassandraCluster, serializer, taskQueueSettings);
-            GlobalTime = new GlobalTime(TicksHolder);
-            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(TicksHolder));
+            ticksHolder = new TicksHolder(cassandraCluster, serializer, taskQueueSettings);
+            GlobalTime = new GlobalTime(ticksHolder);
+            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(ticksHolder));
             var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, taskQueueSettings);
-            var eventLongRepository = new EventLogRepository(serializer, GlobalTime, cassandraCluster, taskQueueSettings, TicksHolder);
+            var eventLongRepository = new EventLogRepository(serializer, GlobalTime, cassandraCluster, taskQueueSettings, ticksHolder);
             childTaskIndex = new ChildTaskIndex(cassandraCluster, taskQueueSettings, serializer, taskMetaStorage);
             HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, eventLongRepository, GlobalTime, childTaskIndex, taskDataRegistry);
-            taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, taskQueueSettings);
+            var taskDataStorage = new TaskDataStorage(cassandraCluster, serializer, taskQueueSettings);
             TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, taskQueueSettings);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, taskDataStorage, TaskExceptionInfoStorage, remoteTaskQueueProfiler);
 
@@ -62,7 +63,6 @@ namespace RemoteQueue.Handling
         public TimeSpan TaskTtl { get; private set; }
 
         public ISerializer Serializer { get; private set; }
-        public ITicksHolder TicksHolder { get; private set; }
         public IGlobalTime GlobalTime { get; private set; }
         public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; private set; }
         public IHandleTasksMetaStorage HandleTasksMetaStorage { get; private set; }
@@ -82,7 +82,7 @@ namespace RemoteQueue.Handling
             using(remoteLock)
             {
                 var task = HandleTaskCollection.TryGetTask(taskId);
-                if (task == null)
+                if(task == null)
                     return TaskManipulationResult.Failure_TaskDoesNotExist;
                 var taskMeta = task.Meta;
                 if(taskMeta.State == TaskState.New || taskMeta.State == TaskState.WaitingForRerun || taskMeta.State == TaskState.WaitingForRerunAfterError || taskMeta.State == TaskState.InProcess)
@@ -109,7 +109,7 @@ namespace RemoteQueue.Handling
             using(remoteLock)
             {
                 var task = HandleTaskCollection.TryGetTask(taskId);
-                if (task == null)
+                if(task == null)
                     return TaskManipulationResult.Failure_TaskDoesNotExist;
                 var taskMeta = task.Meta;
                 var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
@@ -136,9 +136,9 @@ namespace RemoteQueue.Handling
             where T : ITaskData
         {
             var taskInfos = GetTaskInfos<T>(new[] {taskId});
-            if (taskInfos.Length == 0)
+            if(taskInfos.Length == 0)
                 throw new InvalidProgramStateException(string.Format("Task {0} does not exist", taskId));
-            if (taskInfos.Length > 1)
+            if(taskInfos.Length > 1)
                 throw new InvalidProgramStateException(string.Format("Expected exactly one task info for taskId = {0}, but found {1}", taskId, taskInfos.Length));
             return taskInfos[0];
         }
@@ -162,6 +162,14 @@ namespace RemoteQueue.Handling
         public RemoteTaskInfo<T>[] GetTaskInfos<T>([NotNull] string[] taskIds) where T : ITaskData
         {
             return GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>).ToArray();
+        }
+
+        [NotNull]
+        public Dictionary<string, TaskMetaInformation> GetTaskMetas([NotNull] string[] taskIds)
+        {
+            if(taskIds.Any(string.IsNullOrWhiteSpace))
+                throw new InvalidProgramStateException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
+            return HandleTasksMetaStorage.GetMetas(taskIds);
         }
 
         [NotNull]
@@ -205,7 +213,7 @@ namespace RemoteQueue.Handling
 
         public void ResetTicksHolderInMemoryState()
         {
-            TicksHolder.ResetInMemoryState();
+            ticksHolder.ResetInMemoryState();
         }
 
         public void ChangeTaskTtl(TimeSpan ttl)
@@ -223,8 +231,8 @@ namespace RemoteQueue.Handling
         }
 
         private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly TicksHolder ticksHolder;
         private readonly IChildTaskIndex childTaskIndex;
-        private readonly TaskDataStorage taskDataStorage;
         private readonly bool enableContinuationOptimization;
     }
 }

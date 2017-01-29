@@ -20,12 +20,12 @@ namespace RemoteQueue.Cassandra.Repositories
     public class EventLogRepository : ColumnFamilyRepositoryBase, IEventLogRepository
     {
         public EventLogRepository(ISerializer serializer, IGlobalTime globalTime, ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings settings, ITicksHolder ticksHolder)
-            : base(cassandraCluster, settings, columnFamilyName)
+            : base(cassandraCluster, settings, ColumnFamilyName)
         {
             this.serializer = serializer;
             this.globalTime = globalTime;
             this.ticksHolder = ticksHolder;
-            var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName).GetConnectionParameters();
+            var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName).GetConnectionParameters();
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
         }
 
@@ -68,7 +68,7 @@ namespace RemoteQueue.Cassandra.Repositories
             return new Tuple<string, string>(rowKey, columnName);
         }
 
-        public const string columnFamilyName = "RemoteTaskQueueEventLog";
+        public const string ColumnFamilyName = "RemoteTaskQueueEventLog";
         private const string firstEventTicksRowName = "firstEventTicksRowName";
 
         private readonly ISerializer serializer;

@@ -87,6 +87,6 @@ namespace RemoteQueue.Configuration
         private readonly Dictionary<Type, string> typeToName = new Dictionary<Type, string>();
         private readonly Dictionary<string, Type> nameToType = new Dictionary<string, Type>();
         private readonly Dictionary<string, string> nameToTopic = new Dictionary<string, string>();
-        private bool allTasksShouldHaveTopic;
+        private readonly bool allTasksShouldHaveTopic;
     }
 }

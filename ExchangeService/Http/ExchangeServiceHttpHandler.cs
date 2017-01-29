@@ -28,7 +28,9 @@ namespace ExchangeService.Http
         [HttpMethod]
         public void ChangeTaskTtl(TimeSpan ttl)
         {
+#pragma warning disable 618
             runner.RemoteTaskQueueBackdoor.ChangeTaskTtl(ttl);
+#pragma warning restore 618
         }
 
         private readonly IExchangeSchedulableRunner runner;

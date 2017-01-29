@@ -88,7 +88,9 @@ namespace RemoteQueue.Configuration
             }
         }
 
+#pragma warning disable 618
         public IRemoteTaskQueueBackdoor RemoteTaskQueueBackdoor { get; private set; }
+#pragma warning restore 618
         private volatile bool started;
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
         private readonly IPeriodicTaskRunner periodicTaskRunner;

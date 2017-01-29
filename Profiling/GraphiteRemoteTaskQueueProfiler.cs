@@ -36,13 +36,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.Profiling
             statsDClient.Increment("TasksQueued." + meta.Name);
         }
 
-        public void ProcessTaskExecutionFinished(TaskMetaInformation meta, HandleResult handleResult, TimeSpan taskExecutionTime)
+        public void ProcessTaskExecutionFinished([NotNull] TaskMetaInformation meta, [NotNull] HandleResult handleResult, TimeSpan taskExecutionTime)
         {
             statsDClient.Timing("ExecutionTime." + meta.Name, (long)taskExecutionTime.TotalMilliseconds);
             statsDClient.Increment("TasksExecuted." + meta.Name + "." + handleResult.FinishAction);
         }
 
-        public void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e, TimeSpan taskExecutionTime)
+        public void ProcessTaskExecutionFailed([NotNull] TaskMetaInformation meta, TimeSpan taskExecutionTime)
         {
             statsDClient.Timing("ExecutionTime." + meta.Name, (long)taskExecutionTime.TotalMilliseconds);
             statsDClient.Increment("TasksExecutionFailed." + meta.Name);

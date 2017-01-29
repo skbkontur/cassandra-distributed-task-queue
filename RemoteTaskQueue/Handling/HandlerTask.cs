@@ -102,7 +102,7 @@ namespace RemoteQueue.Handling
                     result = ProcessTask();
                 sw.Stop();
                 var message = string.Format("Завершили выполнение задачи {0} с результатом {1}. Отпустили блокировку {2}. Время работы с учетом взятия лока: {3}{4}",
-                                       taskMeta.Id, result, taskIndexRecord.TaskId, sw.Elapsed, sw.Elapsed > longRunningTaskDurationThreshold ? " [LONG RUNNING]" : string.Empty);
+                                            taskMeta.Id, result, taskIndexRecord.TaskId, sw.Elapsed, sw.Elapsed > longRunningTaskDurationThreshold ? " [LONG RUNNING]" : string.Empty);
                 if(sw.Elapsed < longRunningTaskDurationThreshold)
                     logger.Debug(message);
                 else
@@ -226,7 +226,7 @@ namespace RemoteQueue.Handling
                 }
                 catch(Exception e)
                 {
-                    remoteTaskQueueProfiler.ProcessTaskExecutionFailed(inProcessMeta, e, sw.Elapsed);
+                    remoteTaskQueueProfiler.ProcessTaskExecutionFailed(inProcessMeta, sw.Elapsed);
                     var taskExceptionInfoId = TryLogError(e, inProcessMeta);
                     return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, taskExceptionInfoId));
                 }

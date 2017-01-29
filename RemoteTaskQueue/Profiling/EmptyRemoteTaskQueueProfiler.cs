@@ -1,5 +1,7 @@
 ﻿using System;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
@@ -7,15 +9,15 @@ namespace RemoteQueue.Profiling
 {
     public class EmptyRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
-        public void ProcessTaskCreation(TaskMetaInformation meta)
+        public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)
         {
         }
 
-        public void ProcessTaskExecutionFinished(TaskMetaInformation meta, HandleResult handleResult, TimeSpan taskExecutionTime)
+        public void ProcessTaskExecutionFinished([NotNull] TaskMetaInformation meta, [NotNull] HandleResult handleResult, TimeSpan taskExecutionTime)
         {
         }
 
-        public void ProcessTaskExecutionFailed(TaskMetaInformation meta, Exception e, TimeSpan taskExecutionTime)
+        public void ProcessTaskExecutionFailed([NotNull] TaskMetaInformation meta, TimeSpan taskExecutionTime)
         {
         }
     }

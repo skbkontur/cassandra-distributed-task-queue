@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using JetBrains.Annotations;
+
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
@@ -25,16 +27,14 @@ namespace RemoteQueue.Configuration
             cfNames.Add(RemoteTaskQueueLockConstants.LockColumnFamily);
             cfNames.Add(TicksHolder.ColumnFamilyName);
             cfNames.Add(TaskMinimalStartTicksIndex.ColumnFamilyName);
-            cfNames.Add(EventLogRepository.columnFamilyName);
-            cfNames.Add(ChildTaskIndex.columnFamilyName);
+            cfNames.Add(EventLogRepository.ColumnFamilyName);
+            cfNames.Add(ChildTaskIndex.ColumnFamilyName);
         }
 
+        [NotNull]
         public ColumnFamily[] GetAllColumnFamilyNames()
         {
-            return cfNames.Select(cfName => new ColumnFamily
-                {
-                    Name = cfName
-                }).ToArray();
+            return cfNames.Select(cfName => new ColumnFamily {Name = cfName}).ToArray();
         }
 
         private readonly HashSet<string> cfNames = new HashSet<string>();

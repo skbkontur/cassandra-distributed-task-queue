@@ -28,7 +28,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
             if(string.IsNullOrEmpty(taskMeta.ParentTaskId))
                 return;
             var ttl = taskMeta.GetTtl();
-            cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName).AddColumn(taskMeta.ParentTaskId, new Column
+            cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName).AddColumn(taskMeta.ParentTaskId, new Column
                 {
                     Name = taskMeta.Id,
                     Timestamp = timestamp,
@@ -40,13 +40,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
         [NotNull]
         public string[] GetChildTaskIds([NotNull] string taskId)
         {
-            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, columnFamilyName);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName);
             var indexedChildren = connection.GetRow(taskId).Select(column => serializer.Deserialize<string>(column.Value)).ToArray();
             return taskMetaStorage.Read(indexedChildren).Keys.ToArray();
         }
 
-        public const string columnFamilyName = "childTaskIndex";
-
+        public const string ColumnFamilyName = "childTaskIndex";
         private readonly ICassandraCluster cassandraCluster;
         private readonly IRemoteTaskQueueSettings settings;
         private readonly ISerializer serializer;

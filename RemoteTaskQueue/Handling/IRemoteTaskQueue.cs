@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using JetBrains.Annotations;
+
+using RemoteQueue.Cassandra.Entities;
 
 namespace RemoteQueue.Handling
 {
@@ -20,6 +23,9 @@ namespace RemoteQueue.Handling
 
         [NotNull]
         RemoteTaskInfo<T>[] GetTaskInfos<T>([NotNull] string[] taskIds) where T : ITaskData;
+
+        [NotNull]
+        Dictionary<string, TaskMetaInformation> GetTaskMetas([NotNull] string[] taskIds);
 
         [NotNull]
         IRemoteTask CreateTask<T>([NotNull] T taskData, [CanBeNull] CreateTaskOptions createTaskOptions = null) where T : ITaskData;
