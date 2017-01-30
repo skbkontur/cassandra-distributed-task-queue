@@ -62,7 +62,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset : null, noMoreEventsInSource : true);
             var exclusiveStartColumnName = GetExclusiveStartColumnName(fromOffsetExclusive, firstEventTicks);
             if(EventPointerFormatter.CompareColumnNames(exclusiveStartColumnName, toOffsetInclusive) >= 0)
-                return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset: null, noMoreEventsInSource: true);
+                return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset : null, noMoreEventsInSource : true);
             if(estimatedCount == int.MaxValue)
                 estimatedCount--;
             var eventsToFetch = estimatedCount;
@@ -88,7 +88,7 @@ namespace RemoteQueue.Cassandra.Repositories
                         eventsToFetch = estimatedCount - events.Count;
                         partitionKey = EventPointerFormatter.GetPartitionKey(nextPartitionStartTicks);
                         exclusiveStartColumnName = EventPointerFormatter.GetColumnName(nextPartitionStartTicks - 1, GuidHelpers.MaxGuid);
-        }
+                    }
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 var fromTimestampExclusive = EventPointerFormatter.GetTimestamp(fromOffsetExclusive);
                 if(fromTimestampExclusive.Ticks >= firstEventTicks)
                     return fromOffsetExclusive;
-        }
+            }
             return EventPointerFormatter.GetColumnName(firstEventTicks - 1, GuidHelpers.MaxGuid);
         }
 

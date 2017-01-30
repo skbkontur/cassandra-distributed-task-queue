@@ -72,26 +72,26 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
             var indexForTimeRange = SearchIndexNameFactory.GetIndexForTimeRange(taskSearchRequest.FromTicksUtc, taskSearchRequest.ToTicksUtc);
             var metaResponse = elasticsearchClientFactory
                 .DefaultClient.Value
-                    .Search<SearchResponseNoData>(indexForTimeRange,
-                                                  new
-                                                      {
-                                                          from,
-                                                          size,
-                                                          version = true,
-                                                          _source = false,
-                                                          query = new
-                                                              {
-                                                                  @bool = query
-                                                              },
-                                                          sort = new[]
-                                                              {
-                                                                  new Dictionary<string, object>
-                                                                      {
+                .Search<SearchResponseNoData>(indexForTimeRange,
+                                              new
+                                                  {
+                                                      from,
+                                                      size,
+                                                      version = true,
+                                                      _source = false,
+                                                      query = new
+                                                          {
+                                                              @bool = query
+                                                          },
+                                                      sort = new[]
+                                                          {
+                                                              new Dictionary<string, object>
+                                                                  {
                                                                       {"Meta.EnqueueTime", new {order = "desc", unmapped_type = "long"}}
-                                                                      }
-                                                              }
+                                                                  }
+                                                          }
                                                   }, x => x.IgnoreUnavailable(true))
-                    .ProcessResponse();
+                .ProcessResponse();
             return new TaskSearchResponse
                 {
                     Ids = metaResponse.Response.Hits.Hits.Select(x => x.Id).ToArray(),
