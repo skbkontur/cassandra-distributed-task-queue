@@ -20,7 +20,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         [NotNull]
         protected override sealed string GetDefaultOffset()
         {
-            return offsetInterpreter.GetMaxOffsetForTimestamp(Timestamp.Now - TimeSpan.FromDays(42));
+            return offsetInterpreter.GetMaxOffsetForTimestamp(Timestamp.Now - TimeSpan.FromDays(3));
         }
 
         private readonly RtqMonitoringOffsetInterpreter offsetInterpreter;

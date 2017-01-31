@@ -43,7 +43,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Utils
                 }
             }
             if(count != 0)
-                throw new InvalidProgramStateException("\'{}\' not balanced. Missing \'}\'");
+                throw new InvalidProgramStateException("'{}' not balanced. Missing '}'");
             return sb.ToString();
         }
     }
