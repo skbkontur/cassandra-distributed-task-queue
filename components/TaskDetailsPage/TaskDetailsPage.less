@@ -1,0 +1,64 @@
+@import '~ui/styles/variables.less';
+
+:local {
+    .page-wrapper {
+        padding: 3 * @base-size;
+    }
+
+    .header {
+        margin: 2 * @base-size 0 4 * @base-size;
+        padding-bottom: 4 * @base-size;
+        border-bottom: @table-cell-border;
+        width: 100%;
+    }
+
+    .header-title {
+        display: inline-block;
+        margin-right: 3 * @base-size;
+    }
+
+    .header-id {
+        font-size: 1.5 * @base-font-size;
+        line-height: 1.2;
+    }
+
+    .accordion-wrapper {
+        margin-top: 4 * @base-size;
+        max-width: 100%;
+        width: 600px;
+    }
+
+    .action-result-wrapper {
+        margin-bottom: 3 * @base-size;
+    }
+
+    .exceptions-wrapper {
+        margin-top: 4 * @base-size;
+        max-width: 100%;
+        min-width: 600px;
+        width: 66%;
+    }
+
+    .exception {
+        background: @warning-panel-background;
+        border: 1px solid darken(@warning-panel-background, 10%);
+        display: block;
+        padding: 3 * @base-size;
+        overflow-x: auto;
+        border-radius: @base-size;
+    }
+
+    .exception + .exception {
+        margin-top: 10px;
+    }
+
+    .error {
+        background: @error-panel-background;
+        border: 1px solid darken(@error-panel-background, 10%);
+        display: block;
+        width: 600px;
+        padding: 3 * @base-size;
+        overflow-x: auto;
+        border-radius: @base-size;
+    }
+}

@@ -1,0 +1,29 @@
+@import '~ui/styles/variables.less';
+
+:local {
+    .error {
+        background: @error-panel-background;
+        border: 1px solid darken(@error-panel-background, 10%);
+        display: block;
+        width: 600px;
+        padding: 3 * @base-size;
+        overflow-x: auto;
+        border-radius: @base-size;
+        box-sizing: border-box;
+    }
+
+    .success {
+        background: lighten(@success-text, 50%);
+        border: 1px solid lighten(@success-text, 10%);
+        display: block;
+        width: 600px;
+        padding: 3 * @base-size;
+        overflow-x: auto;
+        border-radius: @base-size;
+        box-sizing: border-box;
+    }
+
+    .error + .success {
+        margin-top: 3 * @base-size;
+    }
+}

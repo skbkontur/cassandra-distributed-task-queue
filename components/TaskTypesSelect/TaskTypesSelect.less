@@ -1,0 +1,30 @@
+@import '~ui/styles/variables.less';
+
+:local {
+    .button-text {
+        display: inline-block;
+        width: 138px;
+    }
+
+    .tooltip-columns {
+        //Все хорошо с колонками, он обманывает :-)
+        // stylelint-disable no-unsupported-browser-features
+        columns: 2 250px;
+        column-gap: 30px;
+        max-width: 800px;
+
+        label {
+            padding-bottom: 2 * @base-size;
+            display: block;
+            word-break: break-all;
+            margin-left: 1px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+    }
+
+    .tooltip-columns-wrapper {
+        max-height: 650px;
+        overflow: auto;
+    }
+}

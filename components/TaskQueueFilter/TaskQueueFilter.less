@@ -1,0 +1,35 @@
+@import '~ui/styles/variables.less';
+@code-background: #f9f2f4;
+@code-color: #c7254e;
+
+:local {
+    .modal-button {
+        border: none;
+        background: none;
+        color: @link-color;
+        cursor: pointer;
+
+        &:hover {
+            color: @link-hover-color;
+            text-decoration: underline;
+        }
+    }
+
+    .modal-list {
+        list-style: decimal;
+        padding: 2 * @base-size 3 * @base-size 0;
+    }
+
+    .modal-footer {
+        text-align: right;
+    }
+
+    code {
+        padding: 2px 4px;
+        font-size: 90%;
+        color: @code-color;
+        background-color: @code-background;
+        border-radius: 4px;
+        font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace;
+    }
+}

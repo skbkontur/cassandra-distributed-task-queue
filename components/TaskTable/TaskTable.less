@@ -1,0 +1,41 @@
+@import '~ui/styles/variables.less';
+
+:local {
+    .table {
+        max-width: 100%;
+
+        th {
+            padding: @base-size;
+            border: @table-header-border;
+            color: @table-header-text;
+        }
+
+        td {
+            padding: @base-size;
+            border: @table-cell-border;
+            min-width: 60px;
+        }
+    }
+
+    .break-text {
+        word-break: break-all;
+    }
+
+    tr {
+        &.green td {
+            background-color: fadeout(@success-text, 80%);
+        }
+
+        &.red td {
+            background-color: fadeout(@danger-text, 80%);
+        }
+
+        &.gray td {
+            background-color: fadeout(@muted-text, 90%);
+        }
+
+        &:hover {
+            background-color: @menu-panel-background;
+        }
+    }
+}
