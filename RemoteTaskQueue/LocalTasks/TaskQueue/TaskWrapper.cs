@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
 
 using GroboTrace;
 
@@ -9,8 +7,7 @@ using JetBrains.Annotations;
 using log4net;
 
 using RemoteQueue.Handling;
-
-using SKBKontur.Catalogue.ServiceLib.Tracing;
+using RemoteQueue.Profiling;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
@@ -31,12 +28,11 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public void Run()
         {
-            TracingAnalyzer.ClearStats();
-            var sw = Stopwatch.StartNew();
             LocalTaskProcessingResult result;
             try
             {
-                result = handlerTask.RunTask();
+                using(Profiler.Profile(groboTraceKey, new RtqGroboTraceProfilerSink(taskId)))
+                    result = handlerTask.RunTask();
             }
             catch(Exception e)
             {
@@ -45,12 +41,8 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
             try
             {
-                sw.Stop();
                 finished = true;
                 localTaskQueue.TaskFinished(taskId, taskQueueReason, taskIsBeingTraced, result);
-                double quantile;
-                if(timeStatistics.GetOrAdd(groboTraceKey, s => new TimeStatistics(s)).AddTime(sw.ElapsedMilliseconds, out quantile))
-                    ProfileLogger.Instance.Info(string.Format("GroboTraceKey: {0}, TaskId: {1}, TracingStats: {2}", groboTraceKey, taskId, TracingAnalyzerStatsFormatter.Format(TracingAnalyzer.GetStats(), sw.ElapsedMilliseconds, quantile)));
             }
             catch(Exception e)
             {
@@ -66,6 +58,5 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         private readonly LocalTaskQueue localTaskQueue;
         private volatile bool finished;
         private readonly ILog logger = LogManager.GetLogger(typeof(LocalTaskQueue));
-        private static readonly ConcurrentDictionary<string, TimeStatistics> timeStatistics = new ConcurrentDictionary<string, TimeStatistics>();
     }
 }

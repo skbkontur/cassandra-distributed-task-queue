@@ -178,6 +178,7 @@
     <Compile Include="Handling\RemoteTaskQueueExtensions.cs" />
     <Compile Include="LocalTasks\TaskQueue\LocalTaskQueueingResult.cs" />
     <Compile Include="Profiling\GraphiteRemoteTaskQueueProfiler.cs" />
+    <Compile Include="Profiling\RtqGroboTraceProfilerSink.cs" />
     <Compile Include="Tracing\BusinessLogicTaskTraceContext.cs" />
     <Compile Include="Tracing\InfrastructureTaskTraceContext.cs" />
     <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />
