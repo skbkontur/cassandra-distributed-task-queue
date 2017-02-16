@@ -129,8 +129,8 @@ export default class TasksPage extends React.Component {
                             }
                             </span>
                         </ColumnStack.Fit>
-                    {counter > 100 &&
-                        [<ColumnStack.Fit key='text'>
+                    {counter > 100 && [
+                        <ColumnStack.Fit key='text'>
                             <span data-tid='ModalManyTasksText'>
                                 Это действие может задеть больше 100 тасок, если это точно надо сделать,
                                 то напиши прописью количество тасок (их { counter }):
@@ -142,8 +142,8 @@ export default class TasksPage extends React.Component {
                                 value={manyTaskConfirm}
                                 onChange={(e, val) => this.setState({ manyTaskConfirm: val })}
                             />
-                        </ColumnStack.Fit>]
-                    }
+                        </ColumnStack.Fit>,
+                    ]}
                     </ColumnStack>
                 </Modal.Body>
                 <Modal.Footer>
