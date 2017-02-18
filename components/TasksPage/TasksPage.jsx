@@ -45,7 +45,7 @@ export default class TasksPage extends React.Component {
         const { openedModal } = this.state;
         return (
             <div className={cn('page-wrapper')}>
-                <Loader type='big' active={loading} tid={'Loader'}>
+                <Loader type='big' active={loading} data-tid={'Loader'}>
                     <header className={cn('header')}>
                         <h1 className={cn('header-title')}>Список задач</h1>
                         <a href='/AdminTools'>вернуться к инструментам администратора</a>
@@ -65,24 +65,24 @@ export default class TasksPage extends React.Component {
                     </div>
                     }
                     { counter > 0 && (
-                        <div tid={'ResultsWrapper'}>
-                            <p className={cn('counter')} tid={'ResultCount'}>
+                        <div data-tid={'ResultsWrapper'}>
+                            <p className={cn('counter')} data-tid={'ResultCount'}>
                                 Всего результатов: {counter}
                             </p>
                             {allowRerunOrCancel && <RowStack
                                 gap={2}
-                                tid={'ButtonsWrapper'}
+                                data-tid={'ButtonsWrapper'}
                                 className={cn('button-wrapper')}>
                                 <RowStack.Fit>
                                     <Button
                                         use='danger'
-                                        tid={'CancelAllButton'}
+                                        data-tid={'CancelAllButton'}
                                         onClick={() => this.clickCancelAll()}>Cancel All</Button>
                                 </RowStack.Fit>
                                 <RowStack.Fit>
                                     <Button
                                         use='success'
-                                        tid={'RerunAllButton'}
+                                        data-tid={'RerunAllButton'}
                                         onClick={() => this.clickRerunAll()}>Rerun All</Button>
                                 </RowStack.Fit>
                             </RowStack>}
@@ -103,7 +103,7 @@ export default class TasksPage extends React.Component {
         const { error } = this.props;
 
         return (
-            <div className={cn('error')} tid='Error'>
+            <div className={cn('error')} data-tid='Error'>
                 {error}
             </div>
         );
@@ -115,14 +115,14 @@ export default class TasksPage extends React.Component {
         const confirmedRegExp = /б.*л.*я/i;
 
         return (
-            <Modal onClose={() => this.closeModal()} width={500} tid='Modal'>
+            <Modal onClose={() => this.closeModal()} width={500} data-tid='Modal'>
                 <Modal.Header>
                     Нужно подтверждение
                 </Modal.Header>
                 <Modal.Body>
                     <ColumnStack gap={2}>
                         <ColumnStack.Fit>
-                            <span tid='ModalText'>
+                            <span data-tid='ModalText'>
                             {modalType === 'Rerun'
                                 ? 'Уверен, что все эти таски надо перезапустить?'
                                 : 'Уверен, что все эти таски надо остановить?'
@@ -131,14 +131,14 @@ export default class TasksPage extends React.Component {
                         </ColumnStack.Fit>
                     {counter > 100 &&
                         [<ColumnStack.Fit key='text'>
-                            <span tid='ModalManyTasksText'>
+                            <span data-tid='ModalManyTasksText'>
                                 Это действие может задеть больше 100 тасок, если это точно надо сделать,
                                 то напиши прописью количество тасок (их { counter }):
                             </span>
                         </ColumnStack.Fit>,
                         <ColumnStack.Fit key='input'>
                             <Input
-                                tid='ModalInput'
+                                data-tid='ModalInput'
                                 value={manyTaskConfirm}
                                 onChange={(e, val) => this.setState({ manyTaskConfirm: val })}
                             />
@@ -151,7 +151,7 @@ export default class TasksPage extends React.Component {
                         <RowStack.Fit>
                             {modalType === 'Rerun'
                                 ? <Button
-                                    tid='ModalRerunButton'
+                                    data-tid='ModalRerunButton'
                                     use='success'
                                     disabled={counter > 100 &&
                                         (!confirmedRegExp.test(manyTaskConfirm) &&
@@ -161,7 +161,7 @@ export default class TasksPage extends React.Component {
                                         this.closeModal();
                                     }}>Перезапустить все</Button>
                                 : <Button
-                                    tid='ModalCancelButton'
+                                    data-tid='ModalCancelButton'
                                     use='danger'
                                     disabled={counter > 100 &&
                                         (!confirmedRegExp.test(manyTaskConfirm) &&

@@ -31,18 +31,18 @@ export default class TaskActionResult extends React.Component {
         return (
             <div>
                 {showErrors &&
-                    <div className={cn('error')} tid='Error'>
+                    <div className={cn('error')} data-tid='Error'>
                         {showTasks
-                            ? <div tid='ErrorText'>Ошибки: {this.filteredResults(false)}</div>
-                            : <div tid='ErrorText'>Не вышло!</div>
+                            ? <div data-tid='ErrorText'>Ошибки: {this.filteredResults(false)}</div>
+                            : <div data-tid='ErrorText'>Не вышло!</div>
                         }
                     </div>
                 }
                 {showSuccess &&
-                    <div className={cn('success')} tid='Success'>
+                    <div className={cn('success')} data-tid='Success'>
                         {showTasks
-                            ? <div tid='SuccessText'>Успешно: {this.filteredResults(true)}</div>
-                            : <div tid='SuccessText'>Успех!</div>
+                            ? <div data-tid='SuccessText'>Успешно: {this.filteredResults(true)}</div>
+                            : <div data-tid='SuccessText'>Успех!</div>
                         }
                     </div>
                 }

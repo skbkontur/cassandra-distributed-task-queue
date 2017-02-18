@@ -45,7 +45,7 @@ export default class TaskQueueFilter extends React.Component {
                         <ColumnStack.Fit>
                             <Input
                                 width={300}
-                                tid={'SearchStringInput'}
+                                data-tid={'SearchStringInput'}
                                 value={queryString || ''}
                                 onChange={(e, value) => onChange({ queryString: value })}
                             />
@@ -53,7 +53,7 @@ export default class TaskQueueFilter extends React.Component {
                         <ColumnStack.Fit>
                             <button
                                 onClick={() => this.openModal()}
-                                tid='OpenModalButton'
+                                data-tid='OpenModalButton'
                                 className={cn('modal-button')}>
                                 Что можно ввести в строку поиска
                             </button>
@@ -63,7 +63,7 @@ export default class TaskQueueFilter extends React.Component {
                 </RowStack.Fill>
                 <RowStack.Fit>
                     <DateTimeRangePicker
-                        tid={'DateTimeRangePicker'}
+                        data-tid={'DateTimeRangePicker'}
                         error={false}
                         // eslint-disable-next-line react/jsx-boolean-value
                         withoutHours={true}
@@ -73,7 +73,7 @@ export default class TaskQueueFilter extends React.Component {
                 </RowStack.Fit>
                 <RowStack.Fit>
                     <TaskTypesSelect
-                        tid={'TaskTypesSelect'}
+                        data-tid={'TaskTypesSelect'}
                         value={names || []}
                         availableTaskTypes={availableTaskTypes}
                         onChange={selectedTypes => onChange({ names: selectedTypes })}
@@ -81,14 +81,14 @@ export default class TaskQueueFilter extends React.Component {
                 </RowStack.Fit>
                 <RowStack.Fit>
                     <TaskStatesSelect
-                        tid={'TaskStatesSelect'}
+                        data-tid={'TaskStatesSelect'}
                         value={taskState || []}
                         onChange={selectedStates => onChange({ taskState: selectedStates })}
                     />
                 </RowStack.Fit>
                 <RowStack.Fit>
                     <Button
-                        tid={'SearchButton'}
+                        data-tid={'SearchButton'}
                         onClick={onSearchButtonClick}
                         use='primary'>Найти</Button>
                 </RowStack.Fit>
@@ -100,7 +100,7 @@ export default class TaskQueueFilter extends React.Component {
     renderModal(): React.Element<*> {
         return (
             <Modal
-                tid='Modal'
+                data-tid='Modal'
                 onClose={() => this.closeModal()}
                 width={900}>
                 <Modal.Header>

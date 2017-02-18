@@ -37,7 +37,7 @@ export default class TaskStatesSelect extends React.Component {
         return (
             <Tooltip render={() => this.renderTooltip()} trigger='click' pos='bottom left'>
                 <Button>
-                    <span tid='ButtonText' className={cn('button-text')}>
+                    <span data-tid='ButtonText' className={cn('button-text')}>
                         {value.length ? `Выбрано состояний: ${value.length}` : 'Выбрать состояние'}
                     </span>
                     <Icon name='caret-bottom'/>

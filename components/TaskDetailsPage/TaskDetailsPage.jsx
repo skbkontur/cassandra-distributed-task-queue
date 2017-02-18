@@ -47,7 +47,7 @@ export default class TaskDetailsPage extends React.Component {
 
         return (
             <div className={cn('page-wrapper')}>
-                <Loader type='big' active={loading} tid={'Loader'}>
+                <Loader type='big' active={loading} data-tid={'Loader'}>
                     {taskDetails && this.renderHeader()}
                     {error && this.renderError()}
                     {actionsOnTaskResult &&
@@ -113,14 +113,14 @@ export default class TaskDetailsPage extends React.Component {
                         <RowStack.Fit>
                             <Button
                                 use='danger'
-                                tid={'CancelButton'}
+                                data-tid={'CancelButton'}
                                 onClick={() => this.cancel()}>Cancel</Button>
                         </RowStack.Fit>}
                     {isRerunable &&
                         <RowStack.Fit>
                             <Button
                                 use='success'
-                                tid={'RerunButton'}
+                                data-tid={'RerunButton'}
                                 onClick={() => this.rerun()}>Rerun</Button>
                         </RowStack.Fit>}
                 </RowStack>
@@ -132,7 +132,7 @@ export default class TaskDetailsPage extends React.Component {
         const { error } = this.props;
 
         return (
-            <div className={cn('error')} tid='Error'>
+            <div className={cn('error')} data-tid='Error'>
                 {error}
             </div>
         );
@@ -143,12 +143,12 @@ export default class TaskDetailsPage extends React.Component {
         const { modalType } = this.state;
 
         return (
-            <Modal onClose={() => this.closeModal()} width={500} tid='Modal'>
+            <Modal onClose={() => this.closeModal()} width={500} data-tid='Modal'>
                 <Modal.Header>
                     Нужно подтверждение
                 </Modal.Header>
                 <Modal.Body>
-                    <span tid='ModalText'>
+                    <span data-tid='ModalText'>
                     {modalType === 'Rerun'
                         ? 'Уверен, что таску надо перезапустить?'
                         : 'Уверен, что таску надо остановить?'
@@ -160,14 +160,14 @@ export default class TaskDetailsPage extends React.Component {
                         <RowStack.Fit>
                             {modalType === 'Rerun'
                                 ? <Button
-                                    tid='ModalRerunButton'
+                                    data-tid='ModalRerunButton'
                                     use='success'
                                     onClick={() => {
                                         onRerun(taskDetails.taskMeta.id);
                                         this.closeModal();
                                     }}>Перезапустить</Button>
                                 : <Button
-                                    tid='ModalCancelButton'
+                                    data-tid='ModalCancelButton'
                                     use='danger'
                                     onClick={() => {
                                         onCancel(taskDetails.taskMeta.id);

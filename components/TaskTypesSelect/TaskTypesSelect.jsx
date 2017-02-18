@@ -32,7 +32,7 @@ export default class TaskTypesSelect extends React.Component {
         return (
             <Tooltip render={() => this.renderTooltip()} trigger='click' pos='bottom left'>
                 <Button>
-                    <span tid='ButtonText' className={cn('button-text')}>
+                    <span data-tid='ButtonText' className={cn('button-text')}>
                         {value.length ? `Выбрано задач: ${value.length}` : 'Выбрать тип задач'}
                     </span>
                     <Icon name='caret-bottom'/>

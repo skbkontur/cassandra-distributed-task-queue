@@ -21,7 +21,7 @@ export default class TasksPaginator extends React.Component {
             <div>
                 { hasPrevLink &&
                     <button
-                        tid='PrevLink'
+                        data-tid='PrevLink'
                         className={cn('button')}
                         onClick={onPrevPage}>
                         <Icon name='arrow-left' /> Предыдущая
@@ -29,7 +29,7 @@ export default class TasksPaginator extends React.Component {
                 }
                 { hasNextLink &&
                     <button
-                        tid='NextLink'
+                        data-tid='NextLink'
                         className={cn('button')}
                         onClick={onNextPage}>
                         Следующая <Icon name='arrow-right' />

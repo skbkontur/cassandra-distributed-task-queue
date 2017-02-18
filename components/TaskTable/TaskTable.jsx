@@ -50,7 +50,7 @@ export default class TasksTable extends React.Component {
                         {this.renderHeader()}
                     </tr>
                     </thead>
-                    <tbody tid='Rows'>
+                    <tbody data-tid='Rows'>
                     {taskInfos.map(item => this.renderRow(item))}
                     </tbody>
                 </table>
@@ -76,7 +76,7 @@ export default class TasksTable extends React.Component {
 
     renderRow(item: TaskMetaInformationModel): React.Element<*> {
         return (
-            <tr key={item.id} tid={'Row'} className={cn(this.chooseRowColor(item.state))}>
+            <tr key={item.id} data-tid={'Row'} className={cn(this.chooseRowColor(item.state))}>
                 <td>{this.renderFirstCol(item)}</td>
                 <td>{TaskStates[item.state]}</td>
                 <td><span className={cn('break-text')}>{item.name}</span></td>
@@ -96,12 +96,12 @@ export default class TasksTable extends React.Component {
         const { modalType, actionTask } = this.state;
 
         return (
-            <Modal onClose={() => this.closeModal()} width={500} tid='Modal'>
+            <Modal onClose={() => this.closeModal()} width={500} data-tid='Modal'>
                 <Modal.Header>
                     Нужно подтверждение
                 </Modal.Header>
                 <Modal.Body>
-                    <span tid='ModalText'>
+                    <span data-tid='ModalText'>
                     {modalType === 'Rerun'
                         ? 'Уверен, что таску надо перезапустить?'
                         : 'Уверен, что таску надо остановить?'
@@ -113,14 +113,14 @@ export default class TasksTable extends React.Component {
                         <RowStack.Fit>
                             {modalType === 'Rerun'
                                 ? <Button
-                                    tid='ModalRerunButton'
+                                    data-tid='ModalRerunButton'
                                     use='success'
                                     onClick={() => {
                                         onRerun(actionTask);
                                         this.closeModal();
                                     }}>Перезапустить</Button>
                                 : <Button
-                                    tid='ModalCancelButton'
+                                    data-tid='ModalCancelButton'
                                     use='danger'
                                     onClick={() => {
                                         onCancel(actionTask);
@@ -144,7 +144,7 @@ export default class TasksTable extends React.Component {
                 <ColumnStack.Fit>
                     <a
                         href={`${TasksPath}/${item.id}`}
-                        tid={'Link'}
+                        data-tid={'Link'}
                         onClick={() => this.addLinkInLocalStorage(item.id)}>
                         {item.id}
                     </a>
@@ -155,7 +155,7 @@ export default class TasksTable extends React.Component {
                             <RowStack.Fit>
                                 <Button
                                     use='danger'
-                                    tid={'CancelButton'}
+                                    data-tid={'CancelButton'}
                                     onClick={() => this.cancel(item.id)}>Cancel</Button>
                             </RowStack.Fit>
                         )}
@@ -163,7 +163,7 @@ export default class TasksTable extends React.Component {
                             <RowStack.Fit>
                                 <Button
                                     use='success'
-                                    tid={'RerunButton'}
+                                    data-tid={'RerunButton'}
                                     onClick={() => this.rerun(item.id)}>Rerun</Button>
                             </RowStack.Fit>
                         )}
@@ -235,5 +235,5 @@ function dateFormatter(item: TaskMetaInformationModel, column: string): React.El
                         .locale('ru')
                         .format('YYYY.MM.DD HH:mm:ss.SSS Z');
 
-    return (<span tid={'Date' + column}>{formattedDate}</span>);
+    return (<span data-tid={'Date' + column}>{formattedDate}</span>);
 }

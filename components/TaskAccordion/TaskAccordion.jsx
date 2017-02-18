@@ -37,12 +37,12 @@ export default class TaskAccordion extends React.Component {
             <div className={cn('value-wrapper')}>
                 {title &&
                     <button
-                        tid='ToggleButton'
+                        data-tid='ToggleButton'
                         className={cn('toggle-button')}
                         onClick={() => this.setState({ collapsed: !collapsed })}>
                         <Icon name={collapsed ? 'caret-right' : 'caret-bottom'} />
                         <span
-                            tid='ToggleButtonText'
+                            data-tid='ToggleButtonText'
                             className={cn('toggle-button-text')}>{title}</span>
                     </button>}
                 {value && !collapsed && this.renderValue()}
@@ -60,7 +60,7 @@ export default class TaskAccordion extends React.Component {
                 const newCustomRender = customRender ? (target, path) => customRender(value, [key, ...path]) : null;
                 return (
                     <TaskAccordion
-                        tid='InnerAccordion'
+                        data-tid='InnerAccordion'
                         customRender={newCustomRender}
                         key={key}
                         value={value[key]}
@@ -72,9 +72,9 @@ export default class TaskAccordion extends React.Component {
             return (
                 <div key={key} className={cn('string-wrapper')} data-tid={[...pathPrefix, key].join('_')}>
                     <span
-                        tid='Key'
+                        data-tid='Key'
                         className={cn('title')}>{key}: </span>
-                    <span tid='Value' data-tid='Value'>
+                    <span data-tid='Value'>
                         {(customRender && customRender(value, [key])) ||
                             (Array.isArray(value[key]) ? value[key].join(', ') : String(value[key]))
                         }
