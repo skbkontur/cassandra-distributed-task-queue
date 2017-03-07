@@ -92,7 +92,7 @@ namespace RemoteQueue.Cassandra.Entities
         {
             var now = Timestamp.Now;
             var minimalStartTimestamp = GetMinimalStartTimestamp();
-            if (now > minimalStartTimestamp)
+            if(now > minimalStartTimestamp)
             {
                 ExpirationTimestampTicks = (now + ttl).Ticks;
                 ExpirationModificationTicks = now.Ticks;
@@ -121,7 +121,7 @@ namespace RemoteQueue.Cassandra.Entities
         [NotNull]
         private Timestamp GetMinimalStartTimestamp()
         {
-            if (MinimalStartTicks > Timestamp.MaxValue.Ticks)
+            if(MinimalStartTicks > Timestamp.MaxValue.Ticks)
                 throw new InvalidProgramStateException(string.Format("Invalid MinimalStartTicks: {0}, impossible to construct Timestamp", MinimalStartTicks));
             return MinimalStartTicks < Timestamp.MinValue.Ticks ? Timestamp.MinValue : new Timestamp(MinimalStartTicks);
         }
