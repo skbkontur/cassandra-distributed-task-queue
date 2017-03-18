@@ -1,39 +1,35 @@
 // @flow
 import React from 'react';
-import {
-    Icon,
-} from 'ui';
-import cn from './TasksPaginator.less';
+import { RouterLink } from 'ui';
+import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 
 export type TasksPaginatorProps = {
-    hasNextLink: boolean;
-    hasPrevLink: boolean;
-    onPrevPage: () => any;
-    onNextPage: () => any;
+    nextPageLocation: RouterLocationDescriptor | null;
+    prevPageLocation: RouterLocationDescriptor | null;
 };
 
 export default class TasksPaginator extends React.Component {
     props: TasksPaginatorProps;
 
     render(): React.Element<*> {
-        const { hasNextLink, hasPrevLink, onNextPage, onPrevPage } = this.props;
+        const { nextPageLocation, prevPageLocation } = this.props;
         return (
             <div>
-                { hasPrevLink &&
-                    <button
-                        data-tid='PrevLink'
-                        className={cn('button')}
-                        onClick={onPrevPage}>
-                        <Icon name='arrow-left' /> Предыдущая
-                    </button>
+                {prevPageLocation &&
+                    <RouterLink
+                        to={prevPageLocation}
+                        icon='arrow-left'
+                        data-tid='PrevLink'>
+                        Предыдущая
+                    </RouterLink>
                 }
-                { hasNextLink &&
-                    <button
-                        data-tid='NextLink'
-                        className={cn('button')}
-                        onClick={onNextPage}>
-                        Следующая <Icon name='arrow-right' />
-                    </button>
+                {nextPageLocation &&
+                    <RouterLink
+                        to={nextPageLocation}
+                        icon='arrow-right'
+                        data-tid='NextLink'>
+                        Следующая
+                    </RouterLink>
                 }
             </div>
         );

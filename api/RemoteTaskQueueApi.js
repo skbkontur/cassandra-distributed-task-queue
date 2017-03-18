@@ -1,6 +1,7 @@
 // @flow
 import type { TaskState } from '../Domain/TaskState';
 import type { DateTimeRange } from '../../Commons/DataTypes/DateTimeRange';
+import moment from 'moment';
 
 export type RemoteTaskQueueSearchResults = {
     totalCount: number;
@@ -13,6 +14,52 @@ export type RemoteTaskQueueSearchRequest = {
     taskState: ?TaskState[];
     names: ?string[];
 };
+
+function isDateTimeRangeEmpty(range: ?DateTimeRange): boolean {
+    return !(range && (range.lowerBound || range.upperBound));
+}
+
+export function createDefaultRemoteTaskQueueSearchRequest(): RemoteTaskQueueSearchRequest {
+    return {
+        enqueueDateTimeRange: {
+            lowerBound: moment()
+                .hour(0)
+                .minute(0)
+                .toDate(),
+            upperBound: moment()
+                .hour(23)
+                .minute(59)
+                .toDate(),
+        },
+        queryString: '',
+        taskState: null,
+        names: null,
+    };
+}
+
+export function isRemoteTaskQueueSearchRequestEmpty(searchRequest: ?RemoteTaskQueueSearchRequest): boolean {
+    if (searchRequest === null || searchRequest === undefined) {
+        return true;
+    }
+    return (
+        isDateTimeRangeEmpty(searchRequest.enqueueDateTimeRange) &&
+        (
+            searchRequest.queryString === null ||
+            searchRequest.queryString === undefined ||
+            searchRequest.queryString.trim() === ''
+        ) &&
+        (
+            searchRequest.taskState === null ||
+            searchRequest.taskState === undefined ||
+            searchRequest.taskState.length === 0
+        ) &&
+        (
+            searchRequest.names === null ||
+            searchRequest.names === undefined ||
+            searchRequest.names.length === 0
+        )
+    );
+}
 
 export type TaskMetaInformationModel = {
     name: string;

@@ -52,7 +52,9 @@ export default class TaskStatesSelect extends React.Component {
                 {getAllTaskStates().map((item, index) => {
                     return (
                     <ColumnStack.Fit key={index}>
-                        <Checkbox checked={this.isItemSelected(item)}
+                        <Checkbox
+                            data-tid={item}
+                            checked={this.isItemSelected(item)}
                             onChange={(e, val) => this.selectItem(val, item)}>
                             {TaskStateCaptions[item]}
                         </Checkbox>

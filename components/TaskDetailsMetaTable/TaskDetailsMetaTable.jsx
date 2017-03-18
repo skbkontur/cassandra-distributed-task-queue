@@ -26,51 +26,51 @@ export default class TaskDetailsMetaTable extends React.Component {
         return [
             <tr key='TaskId'>
                 <td>TaskId</td>
-                <td>{taskMeta.id}</td>
+                <td data-tid='TaskId'>{taskMeta.id}</td>
             </tr>,
             <tr key='TaskState'>
                 <td>TaskState</td>
-                <td>{taskMeta.state}</td>
+                <td data-tid='TaskState'>{taskMeta.state}</td>
             </tr>,
             <tr key='Name'>
                 <td>Name</td>
-                <td>{taskMeta.name}</td>
+                <td data-tid='Name'>{taskMeta.name}</td>
             </tr>,
             <tr key='EnqueueTime'>
                 <td>EnqueueTime</td>
-                <td>{formatterDate(taskMeta.enqueueDateTime)}</td>
+                <td data-tid='EnqueueTime'>{formatterDate(taskMeta.enqueueDateTime)}</td>
             </tr>,
             <tr key='StartExecutedTime'>
                 <td>StartExecutedTime</td>
-                <td>{formatterDate(taskMeta.startExecutingDateTime)}</td>
+                <td data-tid='StartExecutedTime'>{formatterDate(taskMeta.startExecutingDateTime)}</td>
             </tr>,
             <tr key='FinishExecutedTime'>
                 <td>FinishExecutedTime</td>
-                <td>{formatterDate(taskMeta.finishExecutingDateTime)}</td>
+                <td data-tid='FinishExecutedTime'>{formatterDate(taskMeta.finishExecutingDateTime)}</td>
             </tr>,
             <tr key='MinimalStartTime'>
                 <td>MinimalStartTime</td>
-                <td>{formatterDate(taskMeta.minimalStartDateTime)}</td>
+                <td data-tid='MinimalStartTime'>{formatterDate(taskMeta.minimalStartDateTime)}</td>
             </tr>,
             <tr key='ExpirationTime'>
                 <td>ExpirationTime</td>
-                <td>{formatterDate(taskMeta.expirationTimestamp)}</td>
+                <td data-tid='ExpirationTime'>{formatterDate(taskMeta.expirationTimestamp)}</td>
             </tr>,
             <tr key='ExpirationModificationTime'>
                 <td>ExpirationModificationTime</td>
-                <td>{formatterDate(taskMeta.expirationModificationDateTime)}</td>
+                <td data-tid='ExpirationModificationTime'>{formatterDate(taskMeta.expirationModificationDateTime)}</td>
             </tr>,
             <tr key='LastModificationTime'>
                 <td>LastModificationTime</td>
-                <td>{formatterDate(taskMeta.lastModificationDateTime)}</td>
+                <td data-tid='LastModificationTime'>{formatterDate(taskMeta.lastModificationDateTime)}</td>
             </tr>,
             <tr key='Attempts'>
                 <td>Attempts</td>
-                <td>{taskMeta.attempts}</td>
+                <td data-tid='Attempts'>{taskMeta.attempts}</td>
             </tr>,
             <tr key='ParentTaskId'>
                 <td>ParentTaskId</td>
-                <td>
+                <td data-tid='ParentTaskId'>
                     {taskMeta.parentTaskId &&
                     <a href={'/AdminTools/Tasks/' + taskMeta.parentTaskId}>{taskMeta.parentTaskId}</a>
                     }
@@ -78,7 +78,7 @@ export default class TaskDetailsMetaTable extends React.Component {
             </tr>,
             <tr key='ChildTaskIds'>
                 <td>ChildTaskIds</td>
-                <td>{taskMeta.childTaskIds && taskMeta.childTaskIds.map(item => {
+                <td data-tid='ChildTaskIds'>{taskMeta.childTaskIds && taskMeta.childTaskIds.map(item => {
                     return (
                         <span key={item}>
                             <a href={'/AdminTools/Tasks/' + item}>{item}</a><br/>

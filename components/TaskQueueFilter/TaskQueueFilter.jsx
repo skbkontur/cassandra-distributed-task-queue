@@ -7,6 +7,7 @@ import {
     Button,
     Input,
     Modal,
+    ButtonLink,
 } from 'ui';
 import DateTimeRangePicker from '../../../Commons/DateTimeRangePicker/DateTimeRangePicker';
 
@@ -15,7 +16,7 @@ import cn from './TaskQueueFilter.less';
 
 export type TaskQueueFilterProps = {
     value: RemoteTaskQueueSearchRequest;
-    availableTaskTypes: string[];
+    availableTaskTypes: string[] | null;
     onChange: (filterParams: $Shape<RemoteTaskQueueSearchRequest>) => any;
     onSearchButtonClick: () => any;
 };
@@ -39,24 +40,24 @@ export default class TaskQueueFilter extends React.Component {
             upperBound: null,
         };
         return (
-            <RowStack gap={1}>
+            <RowStack block gap={1}>
                 <RowStack.Fill>
-                    <ColumnStack gap={1}>
+                    <ColumnStack stretch block gap={1}>
                         <ColumnStack.Fit>
                             <Input
-                                width={300}
+                                width='100%'
                                 data-tid={'SearchStringInput'}
                                 value={queryString || ''}
                                 onChange={(e, value) => onChange({ queryString: value })}
                             />
                         </ColumnStack.Fit>
                         <ColumnStack.Fit>
-                            <button
+                            <ButtonLink
                                 onClick={() => this.openModal()}
                                 data-tid='OpenModalButton'
                                 className={cn('modal-button')}>
                                 Что можно ввести в строку поиска
-                            </button>
+                            </ButtonLink>
                             { openedModal && this.renderModal() }
                         </ColumnStack.Fit>
                     </ColumnStack>
@@ -73,9 +74,10 @@ export default class TaskQueueFilter extends React.Component {
                 </RowStack.Fit>
                 <RowStack.Fit>
                     <TaskTypesSelect
-                        data-tid={'TaskTypesSelect'}
+                        data-tid='TaskTypesSelect'
                         value={names || []}
-                        availableTaskTypes={availableTaskTypes}
+                        disabled={availableTaskTypes === null}
+                        availableTaskTypes={availableTaskTypes || []}
                         onChange={selectedTypes => onChange({ names: selectedTypes })}
                     />
                 </RowStack.Fit>

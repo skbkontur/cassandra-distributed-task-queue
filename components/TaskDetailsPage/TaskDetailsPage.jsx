@@ -7,17 +7,19 @@ import {
     Modal,
 } from 'ui';
 import { RowStack, ColumnStack } from 'ui/layout';
+import CommonLayout from '../../../Commons/Layouts';
 import { cancelableStates, rerunableStates } from '../../Domain/TaskState';
 import TaskDetailsMetaTable from '../TaskDetailsMetaTable/TaskDetailsMetaTable';
 import TaskAccordion from '../TaskAccordion/TaskAccordion';
 import TaskActionResult from '../TaskActionResult/TaskActionResult';
-import { TasksPath } from '../../reducers/RemoteTaskQueueReducer';
 import customRender from '../../Domain/CustomRender';
 import type { RemoteTaskInfoModel } from '../../api/RemoteTaskQueueApi';
+import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 
 export type TaskDetailsPageProps = {
+    parentLocation: RouterLocationDescriptor;
+    taskDetails: ?RemoteTaskInfoModel;
     loading: boolean;
-    taskDetails: RemoteTaskInfoModel;
     error?: string;
     actionsOnTaskResult?: any;
     allowRerunOrCancel: boolean;
@@ -42,61 +44,74 @@ export default class TaskDetailsPage extends React.Component {
     }
 
     render(): React.Element<*> {
-        const { loading, taskDetails, error, actionsOnTaskResult } = this.props;
+        const { allowRerunOrCancel, loading, taskDetails, error, actionsOnTaskResult, parentLocation } = this.props;
         const { openedModal } = this.state;
 
         return (
-            <div className={cn('page-wrapper')}>
-                <Loader type='big' active={loading} data-tid={'Loader'}>
-                    {taskDetails && this.renderHeader()}
-                    {error && this.renderError()}
-                    {actionsOnTaskResult &&
-                        <div className={cn('action-result-wrapper')}>
-                            <TaskActionResult actionResult={actionsOnTaskResult} showTasks={false} />
-                        </div>
-                    }
-                    {taskDetails && <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />}
-                    {taskDetails &&
-                        <div className={cn('accordion-wrapper')}>
-                            <TaskAccordion
-                                customRender={customRender}
-                                value={taskDetails.taskData}
-                                title='TaskData'
-                            />
-                        </div>
-                    }
-                    {taskDetails && taskDetails.exceptionInfos &&
-                        <div className={cn('exceptions-wrapper')}>
-                            {taskDetails.exceptionInfos.map((exception, index) => {
-                                return (
-                                    <pre key={index} className={cn('exception')}>{exception.exceptionMessageInfo}</pre>
-                                );
-                            })}
-                        </div>}
-                    { openedModal && this.renderModal() }
-                </Loader>
-            </div>
-        );
-    }
-
-    renderHeader(): React.Element<*> {
-        const { taskDetails, allowRerunOrCancel } = this.props;
-        return (
-            <ColumnStack gap={3} className={cn('header')}>
-                <ColumnStack.Fit>
-                    <h1 data-tid='Header' className={cn('header-title')}>Задача {taskDetails.taskMeta.name}</h1>
-                    <a href={this.createBackUrl()}>вернуться к поиску</a>
-                </ColumnStack.Fit>
-                <ColumnStack.Fit>
-                    <p className={cn('header-id')}>Id: {taskDetails.taskMeta.id}</p>
-                </ColumnStack.Fit>
-                {allowRerunOrCancel && this.renderButton()}
-            </ColumnStack>
+            <Loader type='big' active={loading} data-tid={'Loader'}>
+                <CommonLayout>
+                    {taskDetails && <CommonLayout.GoBack to={parentLocation}>
+                        Вернуться к поиску задач
+                    </CommonLayout.GoBack>}
+                    {taskDetails && (
+                        <CommonLayout.GreyLineHeader
+                            data-tid='Header'
+                            title={`Задача ${taskDetails.taskMeta.name}`}
+                        />
+                    )}
+                    <CommonLayout.Content>
+                        <ColumnStack block streach gap={2}>
+                            {taskDetails && allowRerunOrCancel && (
+                                <ColumnStack.Fit>
+                                    {this.renderButton()}
+                                </ColumnStack.Fit>
+                            )}
+                            {error && <ColumnStack.Fit>{this.renderError()}</ColumnStack.Fit>}
+                            {actionsOnTaskResult &&
+                                <ColumnStack.Fit>
+                                    <TaskActionResult actionResult={actionsOnTaskResult} showTasks={false} />
+                                </ColumnStack.Fit>}
+                            {taskDetails && (
+                                <ColumnStack.Fit>
+                                    <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />
+                                </ColumnStack.Fit>
+                            )}
+                            {taskDetails &&
+                                <ColumnStack.Fit>
+                                    <TaskAccordion
+                                        customRender={customRender}
+                                        value={taskDetails.taskData}
+                                        title='TaskData'
+                                    />
+                                </ColumnStack.Fit>
+                            }
+                            {taskDetails && taskDetails.exceptionInfos && (
+                                <ColumnStack.Fit data-tid='Exceptions'>
+                                    {taskDetails.exceptionInfos.map((exception, index) => {
+                                        return (
+                                            <pre
+                                                data-tid='Exception'
+                                                key={index}
+                                                className={cn('exception')}>
+                                                {exception.exceptionMessageInfo}
+                                            </pre>
+                                        );
+                                    })}
+                                </ColumnStack.Fit>
+                            )}
+                        </ColumnStack>
+                    </CommonLayout.Content>
+                </CommonLayout>
+                { openedModal && this.renderModal() }
+            </Loader>
         );
     }
 
     renderButton(): React.Element<*> | null {
         const { taskDetails } = this.props;
+        if (!taskDetails) {
+            return null;
+        }
         const isCancelable = cancelableStates.includes(taskDetails.taskMeta.state);
         const isRerunable = rerunableStates.includes(taskDetails.taskMeta.state);
 
@@ -105,26 +120,22 @@ export default class TaskDetailsPage extends React.Component {
         }
 
         return (
-            <ColumnStack.Fit>
-                <RowStack
-                    gap={2}
-                    className={cn('button-wrapper')}>
-                    {isCancelable &&
-                        <RowStack.Fit>
-                            <Button
-                                use='danger'
-                                data-tid={'CancelButton'}
-                                onClick={() => this.cancel()}>Cancel</Button>
-                        </RowStack.Fit>}
-                    {isRerunable &&
-                        <RowStack.Fit>
-                            <Button
-                                use='success'
-                                data-tid={'RerunButton'}
-                                onClick={() => this.rerun()}>Rerun</Button>
-                        </RowStack.Fit>}
-                </RowStack>
-            </ColumnStack.Fit>
+            <RowStack gap={2}>
+                {isCancelable &&
+                    <RowStack.Fit>
+                        <Button
+                            use='danger'
+                            data-tid={'CancelButton'}
+                            onClick={() => this.cancel()}>Cancel</Button>
+                    </RowStack.Fit>}
+                {isRerunable &&
+                    <RowStack.Fit>
+                        <Button
+                            use='success'
+                            data-tid={'RerunButton'}
+                            onClick={() => this.rerun()}>Rerun</Button>
+                    </RowStack.Fit>}
+            </RowStack>
         );
     }
 
@@ -138,12 +149,14 @@ export default class TaskDetailsPage extends React.Component {
         );
     }
 
-    renderModal(): React.Element<*> {
+    renderModal(): React.Element<*> | null {
         const { onCancel, onRerun, taskDetails } = this.props;
         const { modalType } = this.state;
-
+        if (!taskDetails) {
+            return null;
+        }
         return (
-            <Modal onClose={() => this.closeModal()} width={500} data-tid='Modal'>
+            <Modal onClose={() => this.closeModal()} width={500} data-tid='ConfirmOperationModal'>
                 <Modal.Header>
                     Нужно подтверждение
                 </Modal.Header>
@@ -160,14 +173,14 @@ export default class TaskDetailsPage extends React.Component {
                         <RowStack.Fit>
                             {modalType === 'Rerun'
                                 ? <Button
-                                    data-tid='ModalRerunButton'
+                                    data-tid='RerunButton'
                                     use='success'
                                     onClick={() => {
                                         onRerun(taskDetails.taskMeta.id);
                                         this.closeModal();
                                     }}>Перезапустить</Button>
                                 : <Button
-                                    data-tid='ModalCancelButton'
+                                    data-tid='CancelButton'
                                     use='danger'
                                     onClick={() => {
                                         onCancel(taskDetails.taskMeta.id);
@@ -176,22 +189,12 @@ export default class TaskDetailsPage extends React.Component {
                             }
                         </RowStack.Fit>
                         <RowStack.Fit>
-                            <Button onClick={() => this.closeModal()}>Закрыть</Button>
+                            <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
                         </RowStack.Fit>
                     </RowStack>
                 </Modal.Footer>
             </Modal>
         );
-    }
-
-    createBackUrl(): string {
-        const { taskDetails } = this.props;
-        const inStorage = window.localStorage && window.localStorage.getItem('taskQueueLinks');
-        if (!inStorage) {
-            return TasksPath;
-        }
-        const storageLinksObj = JSON.parse(inStorage);
-        return storageLinksObj[taskDetails.taskMeta.id] || TasksPath;
     }
 
     rerun(): any {

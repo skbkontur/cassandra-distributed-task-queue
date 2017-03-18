@@ -13,6 +13,7 @@ import cn from './TaskTypesSelect.less';
 export type TaskTypesSelectProps = {
     availableTaskTypes: string[];
     value: string[];
+    disabled?: boolean;
     onChange: (selectedTaskTypes: string[]) => any;
 };
 
@@ -28,11 +29,15 @@ export default class TaskTypesSelect extends React.Component {
     };
 
     render(): React.Element<*> {
-        const { value } = this.props;
+        const { disabled, value } = this.props;
         return (
-            <Tooltip render={() => this.renderTooltip()} trigger='click' pos='bottom left'>
-                <Button>
-                    <span data-tid='ButtonText' className={cn('button-text')}>
+            <Tooltip
+                render={() => this.renderTooltip()}
+                trigger={disabled ? 'closed' : 'click'}
+                pos='bottom left'
+                data-tid='Tooltip'>
+                <Button disabled={disabled}>
+                    <span className={cn('button-text')}>
                         {value.length ? `Выбрано задач: ${value.length}` : 'Выбрать тип задач'}
                     </span>
                     <Icon name='caret-bottom'/>
@@ -78,6 +83,7 @@ export default class TaskTypesSelect extends React.Component {
                             {filteredTaskTypes.map((item, index) => {
                                 return (
                                     <Checkbox
+                                        data-tid={item}
                                         checked={this.isItemSelected(item)} key={index}
                                         onChange={(e, val) => this.selectItem(val, item)}>
                                         {item}

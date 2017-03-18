@@ -1,0 +1,75 @@
+@import '~ui/styles/variables.less';
+
+//DDDBF1
+@yellow: rgba(255, 239, 191, 0.6);
+@red: rgba(255, 210, 210, 0.5);
+@grey: #f5f5f5;
+@white: #ffffff;
+
+:local {
+    .task-details {
+        padding: 5px;
+        border-radius: 2px;
+
+        .info-block-1 {
+            min-width: 280px;
+        }
+
+        .state(@color) {
+            background-color: @color;
+            border: 1px solid darken(@color, 5%);
+        }
+
+        &.state-unknown { .state(@yellow); }
+        &.state-new { .state(@grey); }
+        &.state-waiting-for-rerun { .state(@grey); }
+        &.state-waiting-for-rerun-after-error { .state(@red); }
+        &.state-finished { .state(@white); }
+        &.state-in-process { .state(@grey); }
+        &.state-fatal { .state(@red); }
+        &.state-canceled { .state(@red); }
+
+        .name {
+            font-size: 16px;
+        }
+
+        .id {
+            font-size: 12px;
+            color: @muted-text;
+        }
+
+        .attempts {
+            margin-left: 10px;
+        }
+
+        .dates {
+            font-size: 12px;
+            color: @muted-text;
+
+            .date {
+                .caption {
+                    display: inline-block;
+                    width: 70px;
+                    color: @double-muted-text;
+                }
+            }
+        }
+
+        .state {
+            .state-name {
+                font-size: 12px;
+                color: @muted-text;
+            }
+
+            .attempts {
+                font-size: 12px;
+                color: @muted-text;
+            }
+        }
+
+        .parent-task {
+            font-size: 12px;
+            color: @muted-text;
+        }
+    }
+}

@@ -10,9 +10,19 @@ import type {
 import { delay } from 'utils';
 import { TaskStates } from '../Domain/TaskState';
 
+let requestCount = 1;
+function emulateErrors() {
+    requestCount++;
+    if (requestCount % 3 === 0) {
+        throw new Error();
+    }
+}
+
 export default class FakeRemoteTaskQueueApi {
     async search(searchRequest: RemoteTaskQueueSearchRequest,
         from: number, size: number): Promise<RemoteTaskQueueSearchResults> {
+        emulateErrors();
+        await delay(1000);
         return {
             totalCount: 100500,
             taskMetas: [
@@ -81,17 +91,22 @@ export default class FakeRemoteTaskQueueApi {
     }
 
     async getAllTasksNames(): Promise<string[]> {
-        await delay(300);
+        await delay(1300);
+        emulateErrors();
         return ['Name1', 'Name2', 'Name3', 'Name4', 'Name5'];
     }
 
     async cancelTasks(ids: string[]): Promise<TaskManupulationResultMap> {
+        await delay(1000);
+        emulateErrors();
         return {
             '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
         };
     }
 
     async rerunTasks(ids: string[]): Promise<TaskManupulationResultMap> {
+        await delay(1000);
+        emulateErrors();
         return {
             '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
         };
@@ -99,18 +114,23 @@ export default class FakeRemoteTaskQueueApi {
 
     async cancelTasksByRequest(searchRequest: RemoteTaskQueueSearchRequest): Promise<TaskManupulationResultMap> {
         await delay(1000);
+        emulateErrors();
         return {
             '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
         };
     }
 
     async rerunTasksByRequest(searchRequest: RemoteTaskQueueSearchRequest): Promise<TaskManupulationResultMap> {
+        await delay(1000);
+        emulateErrors();
         return {
             '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
         };
     }
 
     async getTaskDetails(id: string): Promise<RemoteTaskInfoModel> {
+        await delay(1000);
+        emulateErrors();
         return {
             taskMeta: {
                 name: 'SynchronizeUserPartiesToPortalTaskData',
