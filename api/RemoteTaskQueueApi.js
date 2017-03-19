@@ -1,7 +1,8 @@
 // @flow
 import type { TaskState } from '../Domain/TaskState';
 import type { DateTimeRange } from '../../Commons/DataTypes/DateTimeRange';
-import moment from 'moment';
+import { TimeZones } from '../../Commons/DataTypes/Time';
+import RangeSelector from '../../Commons/DateTimeRangePicker/RangeSelector';
 
 export type RemoteTaskQueueSearchResults = {
     totalCount: number;
@@ -20,17 +21,9 @@ function isDateTimeRangeEmpty(range: ?DateTimeRange): boolean {
 }
 
 export function createDefaultRemoteTaskQueueSearchRequest(): RemoteTaskQueueSearchRequest {
+    const rangeSelector = new RangeSelector(TimeZones.UTC);
     return {
-        enqueueDateTimeRange: {
-            lowerBound: moment()
-                .hour(0)
-                .minute(0)
-                .toDate(),
-            upperBound: moment()
-                .hour(23)
-                .minute(59)
-                .toDate(),
-        },
+        enqueueDateTimeRange: rangeSelector.getToday(),
         queryString: '',
         taskState: null,
         names: null,

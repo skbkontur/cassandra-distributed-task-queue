@@ -2,6 +2,7 @@
 import React from 'react';
 import TaskTypesSelect from '../TaskTypesSelect/TaskTypesSelect';
 import TaskStatesSelect from '../TaskStatesSelect/TaskStatesSelect';
+import { TimeZones } from '../../../Commons/DataTypes/Time';
 import type { RemoteTaskQueueSearchRequest } from '../../api/RemoteTaskQueueApi';
 import {
     Button,
@@ -64,10 +65,9 @@ export default class TaskQueueFilter extends React.Component {
                 </RowStack.Fill>
                 <RowStack.Fit>
                     <DateTimeRangePicker
+                        timeZone={TimeZones.UTC}
                         data-tid={'DateTimeRangePicker'}
-                        error={false}
-                        // eslint-disable-next-line react/jsx-boolean-value
-                        hideTime={true}
+                        hideTime
                         value={enqueueDateTimeRange || defaultEnqueueDateTimeRange}
                         onChange={value => onChange({ enqueueDateTimeRange: value })}
                     />
