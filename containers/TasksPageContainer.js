@@ -66,6 +66,9 @@ class TasksPageContainer extends React.Component {
         modalType: 'Rerun',
         manyTaskConfirm: '',
     };
+    searchTasks = takeLastAndRejectPrevious(
+        this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
+    );
 
     isSearchRequestEmpty(searchQuery: ?string): boolean {
         const request = mapping.parse(searchQuery);
@@ -115,7 +118,7 @@ class TasksPageContainer extends React.Component {
 
         this.setState({ loading: true });
         try {
-            const results = await this.props.remoteTaskQueueApi.search(request, from || 0, size || 20);
+            const results = await this.searchTasks(request, (from || 0), (size || 20));
             router.replace({
                 pathname: '/AdminTools/Tasks',
                 search: searchQuery,
