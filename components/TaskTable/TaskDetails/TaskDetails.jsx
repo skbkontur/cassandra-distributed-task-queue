@@ -1,11 +1,11 @@
 // @flow
 import React from 'react';
-import moment from 'moment';
 import { Link, RouterLink, Checkbox } from 'ui';
-import copy from 'copy-to-clipboard';
 import { RowStack, ColumnStack } from 'ui/layout';
 import { TaskStates } from '../../../Domain/TaskState';
 import { cancelableStates, rerunableStates } from '../../../Domain/TaskState';
+import AllowCopyToClipboard from '../../../../Commons/AllowCopyToClipboard';
+import DateTimeView from '../../DateTimeView/DateTimeView';
 import type { RouterLocationDescriptor } from '../../../../Commons/DataTypes/Routing';
 import type { TaskMetaInformationModel } from '../../../api/RemoteTaskQueueApi';
 import type { TaskState } from '../../../Domain/TaskState';
@@ -20,17 +20,8 @@ type TaskDetailsProps = {
     getTaskLocation: (id: string) => RouterLocationDescriptor;
 };
 
-function dateFormatter(item: TaskMetaInformationModel, column: string): React.Element<*> | string {
-    if (typeof item[column] === 'undefined') {
-        return '';
-    }
-    const date = new Date(item[column]);
-    const formattedDate = moment(date)
-                        .utcOffset('+0300')
-                        .locale('ru')
-                        .format('YYYY.MM.DD HH:mm:ss.SSS Z');
-
-    return (<span data-tid={'Date' + column}>{formattedDate}</span>);
+function dateFormatter(item: TaskMetaInformationModel, column: string): React.Element<*> {
+    return <DateTimeView value={item[column]} />;
 }
 
 function taskDate(taskInfo: TaskMetaInformationModel, caption: string, path: string): React.Element<*> {
@@ -81,8 +72,9 @@ export default function TaskDetails(props: TaskDetailsProps): React.Element<*> {
                         <RowStack verticalAlign='stretch' block gap={2}>
                             <RowStack.Fit tag={ColumnStack} className={cn('info-block-1')}>
                                 <ColumnStack.Fit className={cn('id')}>
-                                    <span data-tid='TaskId'>{taskInfo.id}</span>
-                                    <Link icon='copy' onClick={() => copy(taskInfo.id)} />
+                                    <AllowCopyToClipboard>
+                                        <span data-tid='TaskId'>{taskInfo.id}</span>
+                                    </AllowCopyToClipboard>
                                 </ColumnStack.Fit>
                                 <ColumnStack.Fit className={cn('state')}>
                                     <span className={cn('state-name')} data-tid='State'>
@@ -93,11 +85,9 @@ export default function TaskDetails(props: TaskDetailsProps): React.Element<*> {
                                     </span>
                                 </ColumnStack.Fit>
                                 <ColumnStack.Fill className={cn('parent-task')}>
-                                    <div>Parent: {taskInfo.parentTaskId ? taskInfo.parentTaskId : '-'}
-                                    {' '}
-                                    {taskInfo.parentTaskId && (
-                                        <Link icon='copy' onClick={() => copy(taskInfo.parentTaskId)} />
-                                    )}
+                                    <div>Parent: {taskInfo.parentTaskId
+                                        ? <AllowCopyToClipboard>{taskInfo.parentTaskId}</AllowCopyToClipboard>
+                                        : '-'}
                                     </div>
                                 </ColumnStack.Fill>
                                 {allowRerunOrCancel && <ColumnStack.Fit className={cn('actions')}>

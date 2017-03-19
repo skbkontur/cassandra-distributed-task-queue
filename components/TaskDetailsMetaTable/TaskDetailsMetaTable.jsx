@@ -1,8 +1,9 @@
 // @flow
 import React from 'react';
-import moment from 'moment';
 import cn from './TaskDetailsMetaTable.less';
+import AllowCopyToClipboard from '../../../Commons/AllowCopyToClipboard';
 import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
+import DateTimeView from '../DateTimeView/DateTimeView';
 
 export type TaskDetailsMetaTableProps = {
     taskMeta: TaskMetaInformationModel;
@@ -26,7 +27,11 @@ export default class TaskDetailsMetaTable extends React.Component {
         return [
             <tr key='TaskId'>
                 <td>TaskId</td>
-                <td data-tid='TaskId'>{taskMeta.id}</td>
+                <td data-tid='TaskId'>
+                    <AllowCopyToClipboard>
+                        {taskMeta.id}
+                    </AllowCopyToClipboard>
+                </td>
             </tr>,
             <tr key='TaskState'>
                 <td>TaskState</td>
@@ -90,15 +95,6 @@ export default class TaskDetailsMetaTable extends React.Component {
     }
 }
 
-function formatterDate(date?: ?string): string {
-    if (!date) {
-        return '';
-    }
-
-    const copyDate = new Date(date);
-    const formattedDate = moment(copyDate)
-                            .utcOffset('+0300')
-                            .locale('ru')
-                            .format('YYYY.MM.DD HH:mm:ss.SSS Z');
-    return formattedDate + ' (' + date + ')';
+function formatterDate(date?: ?string): React.Element<*> {
+    return <DateTimeView value={date} />;
 }

@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
-import moment from 'moment';
 import { RouterLink } from 'ui';
 import cn from './TaskTimeLine.less';
 import TimeLine from './TimeLine/TimeLine';
+import DateTimeView from '../DateTimeView/DateTimeView';
 import { TaskStates } from '../../Domain/TaskState';
 import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
@@ -47,7 +47,7 @@ export default class TaskTimeLine extends React.Component {
                 <div className={cn('entry', severity)}>
                     <div className={cn('title')}>{entry.title}</div>
                     {entry.date && <div className={cn('date')}>
-                        {moment(entry.date).utc().format('YYYY-MM-DD HH:mm:ss.SSS')} (UTC)
+                        <DateTimeView value={entry.date} />
                     </div>}
                 </div>
             </TimeLine.Entry>

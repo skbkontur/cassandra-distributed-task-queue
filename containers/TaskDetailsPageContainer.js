@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import $c from 'property-chain';
-import { Loader } from 'ui';
+import DelayedLoader from '../../Commons/DelayedLoader/DelayedLoader';
 import TaskDetailsPage from '../components/TaskDetailsPage/TaskDetailsPage';
 import { SuperUserAccessLevels } from '../../Domain/Globals';
 import type { RemoteTaskInfoModel, IRemoteTaskQueueApi } from '../api/RemoteTaskQueueApi';
@@ -100,7 +100,7 @@ class TaskDetailsPageContainer extends React.Component {
         const currentUser = getCurrentUserInfo();
 
         return (
-            <Loader active={loading} type='big'>
+            <DelayedLoader active={loading} type='big' simulateHeightToEnablePageScroll>
                 {taskDetails && (
                     <TaskDetailsPage
                         getTaskLocation={id => this.getTaskLocation(id)}
@@ -111,14 +111,11 @@ class TaskDetailsPageContainer extends React.Component {
                                 .with(x => [SuperUserAccessLevels.God, SuperUserAccessLevels.Developer].includes(x))
                                 .return(false)}
                         taskDetails={taskDetails}
-                        loading={false}
-                        actionsOnTaskResult={null}
-                        error={''}
                         onRerun={() => this.handlerRerun()}
                         onCancel={() => this.handlerCancel()}
                     />
                 )}
-            </Loader>
+            </DelayedLoader>
         );
     }
 }

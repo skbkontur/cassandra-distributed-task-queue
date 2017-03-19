@@ -2,9 +2,9 @@
 import React from 'react';
 import cn from './TaskDetailsPage.less';
 import {
-    Loader,
     Button,
     Modal,
+    ButtonLink,
 } from 'ui';
 import { RowStack, ColumnStack } from 'ui/layout';
 import CommonLayout from '../../../Commons/Layouts';
@@ -20,7 +20,6 @@ export type TaskDetailsPageProps = {
     parentLocation: RouterLocationDescriptor;
     taskDetails: ?RemoteTaskInfoModel;
     getTaskLocation: (id: string) => RouterLocationDescriptor;
-    loading: boolean;
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => any;
     onCancel: (id: string) => any;
@@ -43,11 +42,11 @@ export default class TaskDetailsPage extends React.Component {
     }
 
     render(): React.Element<*> {
-        const { allowRerunOrCancel, loading, getTaskLocation, taskDetails, parentLocation } = this.props;
+        const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation } = this.props;
         const { openedModal } = this.state;
 
         return (
-            <Loader type='big' active={loading} data-tid={'Loader'}>
+            <div>
                 <CommonLayout>
                     {taskDetails && <CommonLayout.GoBack to={parentLocation}>
                         Вернуться к поиску задач
@@ -55,7 +54,8 @@ export default class TaskDetailsPage extends React.Component {
                     {taskDetails && (
                         <CommonLayout.GreyLineHeader
                             data-tid='Header'
-                            title={`Задача ${taskDetails.taskMeta.name}`}>
+                            title={`Задача ${taskDetails.taskMeta.name}`}
+                            tools={(taskDetails && allowRerunOrCancel) && this.renderButtons()}>
                             <TaskTimeLine
                                 getHrefToTask={getTaskLocation}
                                 taskMeta={taskDetails.taskMeta}
@@ -64,11 +64,6 @@ export default class TaskDetailsPage extends React.Component {
                     )}
                     <CommonLayout.Content>
                         <ColumnStack block streach gap={2}>
-                            {taskDetails && allowRerunOrCancel && (
-                                <ColumnStack.Fit>
-                                    {this.renderButton()}
-                                </ColumnStack.Fit>
-                            )}
                             {taskDetails && (
                                 <ColumnStack.Fit>
                                     <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />
@@ -101,11 +96,11 @@ export default class TaskDetailsPage extends React.Component {
                     </CommonLayout.Content>
                 </CommonLayout>
                 { openedModal && this.renderModal() }
-            </Loader>
+            </div>
         );
     }
 
-    renderButton(): React.Element<*> | null {
+    renderButtons(): React.Element<*> | null {
         const { taskDetails } = this.props;
         if (!taskDetails) {
             return null;
@@ -118,20 +113,26 @@ export default class TaskDetailsPage extends React.Component {
         }
 
         return (
-            <RowStack gap={2}>
+            <RowStack baseline block gap={2}>
+                <RowStack.Fill />
                 {isCancelable &&
                     <RowStack.Fit>
-                        <Button
+                        <ButtonLink
+                            icon='remove'
                             use='danger'
                             data-tid={'CancelButton'}
-                            onClick={() => this.cancel()}>Cancel</Button>
+                            onClick={() => this.cancel()}>
+                            Cancel task
+                        </ButtonLink>
                     </RowStack.Fit>}
                 {isRerunable &&
                     <RowStack.Fit>
-                        <Button
-                            use='success'
+                        <ButtonLink
+                            icon='refresh'
                             data-tid={'RerunButton'}
-                            onClick={() => this.rerun()}>Rerun</Button>
+                            onClick={() => this.rerun()}>
+                            Rerun task
+                        </ButtonLink>
                     </RowStack.Fit>}
             </RowStack>
         );
