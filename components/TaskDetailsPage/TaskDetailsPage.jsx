@@ -11,17 +11,16 @@ import CommonLayout from '../../../Commons/Layouts';
 import { cancelableStates, rerunableStates } from '../../Domain/TaskState';
 import TaskDetailsMetaTable from '../TaskDetailsMetaTable/TaskDetailsMetaTable';
 import TaskAccordion from '../TaskAccordion/TaskAccordion';
-import TaskActionResult from '../TaskActionResult/TaskActionResult';
 import customRender from '../../Domain/CustomRender';
+import TaskTimeLine from '../TaskTimeLine/TaskTimeLine';
 import type { RemoteTaskInfoModel } from '../../api/RemoteTaskQueueApi';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 
 export type TaskDetailsPageProps = {
     parentLocation: RouterLocationDescriptor;
     taskDetails: ?RemoteTaskInfoModel;
+    getTaskLocation: (id: string) => RouterLocationDescriptor;
     loading: boolean;
-    error?: string;
-    actionsOnTaskResult?: any;
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => any;
     onCancel: (id: string) => any;
@@ -44,7 +43,7 @@ export default class TaskDetailsPage extends React.Component {
     }
 
     render(): React.Element<*> {
-        const { allowRerunOrCancel, loading, taskDetails, error, actionsOnTaskResult, parentLocation } = this.props;
+        const { allowRerunOrCancel, loading, getTaskLocation, taskDetails, parentLocation } = this.props;
         const { openedModal } = this.state;
 
         return (
@@ -56,8 +55,12 @@ export default class TaskDetailsPage extends React.Component {
                     {taskDetails && (
                         <CommonLayout.GreyLineHeader
                             data-tid='Header'
-                            title={`Задача ${taskDetails.taskMeta.name}`}
-                        />
+                            title={`Задача ${taskDetails.taskMeta.name}`}>
+                            <TaskTimeLine
+                                getHrefToTask={getTaskLocation}
+                                taskMeta={taskDetails.taskMeta}
+                            />
+                        </CommonLayout.GreyLineHeader>
                     )}
                     <CommonLayout.Content>
                         <ColumnStack block streach gap={2}>
@@ -66,11 +69,6 @@ export default class TaskDetailsPage extends React.Component {
                                     {this.renderButton()}
                                 </ColumnStack.Fit>
                             )}
-                            {error && <ColumnStack.Fit>{this.renderError()}</ColumnStack.Fit>}
-                            {actionsOnTaskResult &&
-                                <ColumnStack.Fit>
-                                    <TaskActionResult actionResult={actionsOnTaskResult} showTasks={false} />
-                                </ColumnStack.Fit>}
                             {taskDetails && (
                                 <ColumnStack.Fit>
                                     <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />
@@ -136,16 +134,6 @@ export default class TaskDetailsPage extends React.Component {
                             onClick={() => this.rerun()}>Rerun</Button>
                     </RowStack.Fit>}
             </RowStack>
-        );
-    }
-
-    renderError(): React.Element<*> {
-        const { error } = this.props;
-
-        return (
-            <div className={cn('error')} data-tid='Error'>
-                {error}
-            </div>
         );
     }
 

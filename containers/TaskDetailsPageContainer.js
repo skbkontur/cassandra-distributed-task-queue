@@ -42,6 +42,15 @@ class TaskDetailsPageContainer extends React.Component {
         }
     }
 
+    getTaskLocation(id: string): RouterLocationDescriptor {
+        const { parentLocation } = this.props;
+
+        return {
+            pathname: `/AdminTools/Tasks/${id}`,
+            state: { parentLocation: parentLocation },
+        };
+    }
+
     async loadData(id: string): Promise<void> {
         this.setState({ loading: true });
         try {
@@ -94,6 +103,7 @@ class TaskDetailsPageContainer extends React.Component {
             <Loader active={loading} type='big'>
                 {taskDetails && (
                     <TaskDetailsPage
+                        getTaskLocation={id => this.getTaskLocation(id)}
                         parentLocation={parentLocation || this.getDefaultParetnLocation()}
                         allowRerunOrCancel={
                             $c(currentUser)
