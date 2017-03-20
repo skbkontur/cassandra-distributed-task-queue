@@ -27,5 +27,6 @@ namespace RemoteTaskQueue.Monitoring.Api
         [NotNull]
         Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery(RemoteTaskQueueSearchRequest searchRequest);
 
+        void ResetTicksHolderInMemoryState();
     }
 }

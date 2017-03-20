@@ -178,6 +178,11 @@ namespace RemoteTaskQueue.Monitoring.Api
             return result;
         }
 
+        public void ResetTicksHolderInMemoryState()
+        {
+            (remoteTaskQueue as RemoteQueue.Handling.RemoteTaskQueue).ResetTicksHolderInMemoryState();
+        }
+
         private readonly IRemoteTaskQueue remoteTaskQueue;
         private readonly ITaskSearchClient taskSearchClient;
         private readonly ITaskDataRegistry taskDataRegistry;
