@@ -5,6 +5,7 @@ import { IndexRoute, Router, Route, browserHistory } from 'react-router';
 
 import TasksPage from './containers/TasksPageContainer';
 import TaskDetailsPage from './containers/TaskDetailsPageContainer';
+import TaskChainsTreeContainer from './containers/TaskChainsTreeContainer';
 import Layout from './components/Layout/Layout';
 
 import 'ui/styles/reset.less';
@@ -31,6 +32,16 @@ ReactDom.render(
                             <TasksPage
                                 searchQuery={location.search}
                                 {...location.state}
+                            />
+                        )}
+                    />
+                    <Route
+                        path='Tree'
+                        component={({ location }) => (
+                            <TaskChainsTreeContainer
+                                searchQuery={location.search}
+                                {...location.state}
+                                parentLocation={(location.state && location.state.parentLocation) || null}
                             />
                         )}
                     />

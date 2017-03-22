@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import { Icon } from 'ui';
+import TimeLineCycled from './TimeLineCycled';
 import cn from './TimeLine.less';
 
 type TimeLineProps = {
@@ -21,6 +22,50 @@ type TimeLineEntryProps = {
     iconColor?: ?string;
 };
 
+TimeLine.Branch = function TimeLine({ children }: TimeLineProps): React.Element<*> {
+    return (
+        <div className={cn('root', 'branch')}>
+            <div className={cn('line-up')} />
+            {children}
+        </div>
+    );
+};
+
+TimeLine.BranchNode = class TimeLineBranchNode extends React.Component {
+    props: TimeLineProps;
+
+    componentDidUpdate() {
+        this.updateLinesHeight();
+    }
+
+    componentDidMount() {
+        this.updateLinesHeight();
+    }
+
+    updateLinesHeight() {
+        if (this.refs.branches) {
+            const branches = this.refs.branches.children;
+            const lastEntry = branches[branches.length - 1];
+            const lastEntryWidth = lastEntry.clientWidth;
+            if (!isNaN(lastEntryWidth)) {
+                this.refs.line.style.marginRight = (lastEntryWidth - 7).toString() + 'px';
+            }
+        }
+    }
+
+    render(): React.Element<*> {
+        const { children } = this.props;
+        return (
+            <div className={cn('branch-node')}>
+                <div className={cn('hor-line')} ref='line' />
+                <div className={cn('branch-nodes')} ref='branches'>
+                    {children}
+                </div>
+            </div>
+        );
+    }
+};
+
 TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineEntryProps): React.Element<*> {
     return (
         <div className={cn('entry')}>
@@ -35,59 +80,4 @@ TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineE
     );
 };
 
-type TimeLineCycledProps = {
-    children?: any;
-    content?: ?any;
-    icon?: ?string;
-};
-
-TimeLine.Cycled = class TimeLineCycled extends React.Component {
-    props: TimeLineCycledProps;
-
-    componentDidUpdate() {
-        this.updateLinesHeight();
-    }
-
-    componentDidMount() {
-        this.updateLinesHeight();
-    }
-
-    updateLinesHeight() {
-        if (this.refs.entries) {
-            const entries = this.refs.entries.children;
-            const lastEntry = entries[entries.length - 1];
-            const lastEntryHeight = lastEntry.clientHeight;
-            if (!isNaN(lastEntryHeight)) {
-                this.refs.lines.style.marginBottom = (lastEntryHeight - 22).toString() + 'px';
-            }
-        }
-    }
-
-    render(): React.Element<*> {
-        const { children, content, icon } = this.props;
-
-        return (
-            <div className={cn('cycle')}>
-                <div ref='entries' className={cn('entries')}>
-                    {children}
-                </div>
-                <div className={cn('lines')} ref='lines'>
-                    <div className={cn('line-1')} />
-                    <div className={cn('line-2')} />
-                    <div className={cn('line-3')} />
-                </div>
-                {icon &&
-                    <div className={cn('icon')}>
-                        <Icon name={icon} />
-                    </div>
-                }
-                {content &&
-                    <div className={cn('info')}>
-                        {content}
-                    </div>
-                }
-            </div>
-        );
-    }
-};
-
+TimeLine.Cycled = TimeLineCycled;

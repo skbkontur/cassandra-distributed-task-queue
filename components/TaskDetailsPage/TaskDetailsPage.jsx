@@ -5,6 +5,7 @@ import {
     Button,
     Modal,
     ButtonLink,
+    RouterLink,
 } from 'ui';
 import { RowStack, ColumnStack } from 'ui/layout';
 import CommonLayout from '../../../Commons/Layouts';
@@ -15,6 +16,9 @@ import customRender from '../../Domain/CustomRender';
 import TaskTimeLine from '../TaskTimeLine/TaskTimeLine';
 import type { RemoteTaskInfoModel } from '../../api/RemoteTaskQueueApi';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
+import { buildSearchQueryForRequest } from '../../containers/TasksPageContainer';
+import RangeSelector from '../../../Commons/DateTimeRangePicker/RangeSelector';
+import { TimeZones } from '../../../Commons/DataTypes/Time';
 
 export type TaskDetailsPageProps = {
     parentLocation: RouterLocationDescriptor;
@@ -100,6 +104,26 @@ export default class TaskDetailsPage extends React.Component {
         );
     }
 
+    getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): ?RouterLocationDescriptor {
+        if (taskDetails.taskData &&
+            taskDetails.taskData.documentCirculationId && taskDetails.taskMeta.enqueueDateTime) {
+            const rangeSelector = new RangeSelector(TimeZones.UTC);
+
+            return {
+                pathname: '/AdminTools/Tasks/Tree',
+                search: buildSearchQueryForRequest({
+                    enqueueDateTimeRange: rangeSelector.getMonthOf(taskDetails.taskMeta.enqueueDateTime),
+                    queryString:
+                        'Data.DocumentCirculationId:' +
+                        `"${taskDetails.taskData && taskDetails.taskData.documentCirculationId || ''}"`,
+                    names: [],
+                    taskState: [],
+                }),
+            };
+        }
+        return null;
+    }
+
     renderButtons(): React.Element<*> | null {
         const { taskDetails } = this.props;
         if (!taskDetails) {
@@ -107,7 +131,7 @@ export default class TaskDetailsPage extends React.Component {
         }
         const isCancelable = cancelableStates.includes(taskDetails.taskMeta.state);
         const isRerunable = rerunableStates.includes(taskDetails.taskMeta.state);
-
+        const relatedTasksLocation = this.getRelatedTasksLocation(taskDetails);
         if (!isCancelable && !isRerunable) {
             return null;
         }
@@ -115,6 +139,14 @@ export default class TaskDetailsPage extends React.Component {
         return (
             <RowStack baseline block gap={2}>
                 <RowStack.Fill />
+                {relatedTasksLocation &&
+                    <RowStack.Fit>
+                        <RouterLink
+                            icon='list'
+                            to={relatedTasksLocation}>
+                            View related tasks tree
+                        </RouterLink>
+                    </RowStack.Fit>}
                 {isCancelable &&
                     <RowStack.Fit>
                         <ButtonLink

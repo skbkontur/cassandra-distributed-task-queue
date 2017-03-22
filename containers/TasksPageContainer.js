@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import $c from 'property-chain';
-import { Modal, Input, Button } from 'ui';
+import { RouterLink, Modal, Input, Button } from 'ui';
 import { RowStack, ColumnStack } from 'ui/layout';
 import { withRouter } from 'react-router';
 import { Loader } from 'ui';
@@ -55,6 +55,9 @@ const pagingMapping: QueryStringMapping<{ from: ?number; size: ?number }> = quer
     .mapToInteger(x => x.size, 'to')
     .build();
 
+export function buildSearchQueryForRequest(request: RemoteTaskQueueSearchRequest): string {
+    return mapping.stringify(request);
+}
 
 class TasksPageContainer extends React.Component {
     props: TasksPageContainerProps;
@@ -354,7 +357,7 @@ class TasksPageContainer extends React.Component {
             .return(false);
 
         const { availableTaskNames, request, loading } = this.state;
-        const { results } = this.props;
+        const { searchQuery, results } = this.props;
         const counter = (results && results.totalCount) || 0;
 
         return (
@@ -378,7 +381,22 @@ class TasksPageContainer extends React.Component {
                                 {results && <ColumnStack block stretch gap={2}>
                                     {counter > 0 && (
                                         <ColumnStack.Fit>
-                                            Всего результатов: {counter}
+                                            <RowStack baseline block gap={2}>
+                                                <RowStack.Fit>
+                                                    Всего результатов: {counter}
+                                                </RowStack.Fit>
+                                                <RowStack.Fit>
+                                                    <RouterLink
+                                                        icon='list'
+                                                        to={{
+                                                            pathname: '/AdminTools/Tasks/Tree',
+                                                            search: mapping.stringify(mapping.parse(searchQuery)),
+                                                        }}>
+                                                        Просмотреть дерево задач
+                                                    </RouterLink>
+                                                </RowStack.Fit>
+                                            </RowStack>
+
                                         </ColumnStack.Fit>
                                     )}
                                     {counter > 0 && allowRerunOrCancel && (

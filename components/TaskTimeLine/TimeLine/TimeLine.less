@@ -1,6 +1,44 @@
 @import '~ui/styles/variables.less';
 
 :local {
+    .branch-node {
+        position: relative;
+        display: inline-block;
+
+        .hor-line {
+            position: absolute;
+            top: 0;
+            left: 6px;
+            right: 0;
+            height: 1px;
+            background-color: @primary-divider-color;
+        }
+
+        .branch-nodes {
+            display: flex;
+            flex-direction: row;
+
+            .branch + .branch {
+                margin-left: 10px;
+            }
+        }
+    }
+
+    .branch {
+        padding-top: 10px;
+        position: relative;
+
+        .line-up {
+            position: absolute;
+            top: 0;
+            left: 6px;
+            bottom: 0;
+            height: 10px;
+            width: 1px;
+            background-color: @primary-divider-color;
+        }
+    }
+
     .cycle {
         display: flex;
         flex-direction: row;
