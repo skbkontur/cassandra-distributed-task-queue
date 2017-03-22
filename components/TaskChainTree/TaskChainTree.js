@@ -1,7 +1,8 @@
+// @flow
 import React from 'react';
 import { RouterLink } from 'ui';
 import { ColumnStack } from 'ui/layout';
-import { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
+import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 import TimeLine from '../TaskTimeLine/TimeLine/TimeLine';
 import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
 import { TaskStates } from '../../Domain/TaskState';
@@ -137,7 +138,7 @@ export default class TaskChainTree extends React.Component {
     findMostParentTask(
         taskMetaHashSet: { [key: string]: TaskMetaInformationModel },
         startTaskMeta: TaskMetaInformationModel
-    ): TaskMetaInformationModel[] {
+    ): TaskMetaInformationModel {
         let result = startTaskMeta;
         while (result.parentTaskId) {
             if (!taskMetaHashSet[result.parentTaskId]) {
