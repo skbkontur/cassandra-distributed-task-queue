@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import $c from 'property-chain';
-import { RouterLink, Modal, Input, Button } from 'ui';
+import { Modal, Input, Button } from 'ui';
 import { RowStack, ColumnStack } from 'ui/layout';
 import { withRouter } from 'react-router';
 import { Loader } from 'ui';
@@ -43,12 +43,26 @@ type TasksPageContainerState = {
 //     size: ?number;
 // };
 
-const mapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping()
+const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping()
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
     .mapToString(x => x.queryString, 'q')
     .mapToStringArray(x => x.names, 'types')
     .mapToSet(x => x.taskState, 'states', TaskStates)
     .build();
+
+function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMapping<RemoteTaskQueueSearchRequest> {
+    const availableTaskNamesMap = availableTaskNames.reduce((result, name) => {
+        result[name] = name;
+        return result;
+    }, {});
+    return queryStringMapping()
+        .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
+        .mapToString(x => x.queryString, 'q')
+        .mapToSet(x => x.names, 'types', availableTaskNamesMap, true)
+        .mapToSet(x => x.taskState, 'states', TaskStates)
+        .build();
+}
+
 
 const pagingMapping: QueryStringMapping<{ from: ?number; size: ?number }> = queryStringMapping()
     .mapToInteger(x => x.from, 'from')
@@ -56,7 +70,10 @@ const pagingMapping: QueryStringMapping<{ from: ?number; size: ?number }> = quer
     .build();
 
 export function buildSearchQueryForRequest(request: RemoteTaskQueueSearchRequest): string {
-    return mapping.stringify(request);
+    if (request.names && request.names.length > 0) {
+        throw new Error('Cannot build search request with names.');
+    }
+    return provisionalMapping.stringify(request);
 }
 
 class TasksPageContainer extends React.Component {
@@ -74,24 +91,33 @@ class TasksPageContainer extends React.Component {
     );
 
     isSearchRequestEmpty(searchQuery: ?string): boolean {
-        const request = mapping.parse(searchQuery);
+        const request = provisionalMapping.parse(searchQuery);
         return isRemoteTaskQueueSearchRequestEmpty(request);
     }
 
+    getSearchRequestMapping(): QueryStringMapping<RemoteTaskQueueSearchRequest> {
+        const { availableTaskNames } = this.state;
+        if (!availableTaskNames) {
+            throw new Error('InvalidProgramState');
+        }
+        return createSearchRequestMapping(availableTaskNames);
+    }
+
     getRequestBySearchQuery(searchQuery: ?string): RemoteTaskQueueSearchRequest {
-        const request = mapping.parse(searchQuery);
+        const request = this.getSearchRequestMapping().parse(searchQuery);
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
             return createDefaultRemoteTaskQueueSearchRequest();
         }
         return request;
     }
 
-    componentWillMount() {
+    async componentWillMount(): any {
         const { searchQuery, results } = this.props;
-        const request = this.getRequestBySearchQuery(searchQuery);
+        await this.updateAvailableTaskNamesIfNeed();
 
+        const request = this.getRequestBySearchQuery(searchQuery);
         this.setState({ request: request });
-        this.updateAvailableTaskNamesIfNeed();
+
         if (!this.isSearchRequestEmpty(searchQuery) && !results) {
             this.loadData(searchQuery, request);
         }
@@ -142,7 +168,7 @@ class TasksPageContainer extends React.Component {
         router.push({
             pathname: '/AdminTools/Tasks',
             search: SearchQuery.combine(
-                mapping.stringify(request),
+                this.getSearchRequestMapping().stringify(request),
                 pagingMapping.stringify({ from: 0, size: 20 })
             ),
             state: null,
@@ -160,7 +186,7 @@ class TasksPageContainer extends React.Component {
                 parentLocation: {
                     pathname: '/AdminTools/Tasks',
                     search: SearchQuery.combine(
-                        mapping.stringify(request),
+                        this.getSearchRequestMapping().stringify(request),
                         pagingMapping.stringify({ from: from, size: size })
                     ),
                     state: {
@@ -185,7 +211,7 @@ class TasksPageContainer extends React.Component {
         return {
             pathname: '/AdminTools/Tasks',
             search: SearchQuery.combine(
-                mapping.stringify(request),
+                this.getSearchRequestMapping().stringify(request),
                 pagingMapping.stringify({ from: (from || 0) + (size || 20), size: (size || 20) })
             ),
         };
@@ -202,7 +228,7 @@ class TasksPageContainer extends React.Component {
         return {
             pathname: '/AdminTools/Tasks',
             search: SearchQuery.combine(
-                mapping.stringify(request),
+                this.getSearchRequestMapping().stringify(request),
                 pagingMapping.stringify({ from: Math.max(0, (from || 0) - (size || 20)), size: (size || 20) })
             ),
         };
@@ -357,7 +383,7 @@ class TasksPageContainer extends React.Component {
             .return(false);
 
         const { availableTaskNames, request, loading } = this.state;
-        const { searchQuery, results } = this.props;
+        const { results } = this.props;
         const counter = (results && results.totalCount) || 0;
 
         return (
@@ -381,22 +407,7 @@ class TasksPageContainer extends React.Component {
                                 {results && <ColumnStack block stretch gap={2}>
                                     {counter > 0 && (
                                         <ColumnStack.Fit>
-                                            <RowStack baseline block gap={2}>
-                                                <RowStack.Fit>
-                                                    Всего результатов: {counter}
-                                                </RowStack.Fit>
-                                                <RowStack.Fit>
-                                                    <RouterLink
-                                                        icon='list'
-                                                        to={{
-                                                            pathname: '/AdminTools/Tasks/Tree',
-                                                            search: mapping.stringify(mapping.parse(searchQuery)),
-                                                        }}>
-                                                        Просмотреть дерево задач
-                                                    </RouterLink>
-                                                </RowStack.Fit>
-                                            </RowStack>
-
+                                            Всего результатов: {counter}
                                         </ColumnStack.Fit>
                                     )}
                                     {counter > 0 && allowRerunOrCancel && (
