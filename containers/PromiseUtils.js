@@ -19,12 +19,19 @@ type TakeLastAndRejectPrevious =
 
 function takeLastAndRejectPreviousImpl(func: any): any {
     const result = (...args) => {
-        return new Promise(async resolve => {
+        return new Promise(async (resolve, reject) => {
             const currentRequest = result.requestIncrement++;
             result.lastRequestId = currentRequest;
-            const functionResult = await func(...args);
-            if (result.lastRequestId === currentRequest) {
-                resolve(functionResult);
+            try {
+                const functionResult = await func(...args);
+                if (result.lastRequestId === currentRequest) {
+                    resolve(functionResult);
+                }
+            }
+            catch (e) {
+                if (result.lastRequestId === currentRequest) {
+                    reject(e);
+                }
             }
         });
     };
