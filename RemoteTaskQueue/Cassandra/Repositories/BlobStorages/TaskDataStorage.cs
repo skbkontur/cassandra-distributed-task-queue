@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using GroBuf;
-
 using JetBrains.Annotations;
 
 using MoreLinq;
@@ -17,7 +15,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskDataStorage : ITaskDataStorage
     {
-        public TaskDataStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings)
+        public TaskDataStorage(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings remoteTaskQueueSettings)
         {
             var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
