@@ -132,7 +132,6 @@
     <Compile Include="Cassandra\Entities\EnumExtensions.cs" />
     <Compile Include="Cassandra\Entities\TaskState.cs" />
     <Compile Include="Cassandra\Entities\TimedObject.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\LegacyBlobStorage.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\ITicksHolder.cs" />
     <Compile Include="Cassandra\Repositories\GlobalTicksHolder\TicksHolder.cs" />
     <Compile Include="Cassandra\Repositories\HandleTaskCollection.cs" />

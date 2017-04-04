@@ -2,11 +2,12 @@
 
 using GroBuf;
 
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
+using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
@@ -15,9 +16,10 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
     {
         public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings taskQueueSettings, IGlobalTime globalTime, IRemoteLockCreator remoteLockCreator)
         {
+            this.serializer = serializer;
             this.globalTime = globalTime;
             this.remoteLockCreator = remoteLockCreator;
-            storage = new LegacyBlobStorage<int>(cassandraCluster, serializer, taskQueueSettings.QueueKeyspace, ColumnFamilies.TestCounterRepositoryCfName);
+            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(taskQueueSettings.QueueKeyspace, ColumnFamilies.TestCounterRepositoryCfName);
         }
 
         public int GetCounter(string taskId)
@@ -54,12 +56,21 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 
         private int GetCounterInternal(string taskId)
         {
-            return storage.Read(taskId);
+            Column column;
+            if(cfConnection.TryGetColumn(taskId, dataColumnName, out column))
+                return serializer.Deserialize<int>(column.Value);
+            return 0;
         }
 
         private void SetCounterInternal(string taskId, int value)
         {
-            storage.Write(taskId, value, globalTime.UpdateNowTicks(), TimeSpan.FromHours(1));
+            cfConnection.AddColumn(taskId, new Column
+                {
+                    Name = dataColumnName,
+                    Timestamp = globalTime.UpdateNowTicks(),
+                    Value = serializer.Serialize(value),
+                    TTL = (int)TimeSpan.FromHours(1).TotalSeconds,
+                });
         }
 
         private IRemoteLock Lock(string taskId)
@@ -67,8 +78,10 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
             return remoteLockCreator.Lock("TestCounterRepository_" + taskId);
         }
 
+        private const string dataColumnName = "X";
+        private readonly ISerializer serializer;
         private readonly IGlobalTime globalTime;
         private readonly IRemoteLockCreator remoteLockCreator;
-        private readonly LegacyBlobStorage<int> storage;
+        private readonly IColumnFamilyConnection cfConnection;
     }
 }

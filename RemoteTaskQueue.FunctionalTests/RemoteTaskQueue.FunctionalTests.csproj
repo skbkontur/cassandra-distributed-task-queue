@@ -126,7 +126,6 @@
     <Compile Include="RemoteTaskQueue\RepositoriesTests\RepositoryFunctionalTestBase.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\GlobalTimeTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\HandleTaskMetaStorageTest.cs" />
-    <Compile Include="RemoteTaskQueue\RepositoriesTests\LegacyBlobStorageTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\SinglePartitionTimeBasedBlobStorageTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\SmallTtlRemoteTaskQueueSettings.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\Sugar.cs" />
