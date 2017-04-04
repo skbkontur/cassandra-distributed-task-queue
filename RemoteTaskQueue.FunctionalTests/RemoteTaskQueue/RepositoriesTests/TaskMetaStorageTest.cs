@@ -29,38 +29,18 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         }
 
         [Test]
-        public void Write_TimeBasedMeta()
+        public void Write()
         {
-            TestWrite(TimeBasedTaskId());
-        }
-
-        [Test]
-        public void Write_LegacyMeta()
-        {
-            TestWrite(LegacyTaskId());
-        }
-
-        private void TestWrite(string taskId)
-        {
+            var taskId = TaskId();
             Assert.IsNull(taskMetaStorage.Read(taskId));
             Write(taskId);
             Assert.That(taskMetaStorage.Read(taskId).Id, Is.EqualTo(taskId));
         }
 
         [Test]
-        public void Delete_TimeBasedMeta()
+        public void Delete()
         {
-            TestDelete(TimeBasedTaskId());
-        }
-
-        [Test]
-        public void Delete_LegacyMeta()
-        {
-            TestDelete(LegacyTaskId());
-        }
-
-        private void TestDelete(string taskId)
-        {
+            var taskId = TaskId();
             Write(taskId);
             taskMetaStorage.Delete(taskId, Timestamp.Now.Ticks);
             Assert.IsNull(taskMetaStorage.Read(taskId));
@@ -69,8 +49,8 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void Read_MultipleTaskIds()
         {
-            var taskId1 = TimeBasedTaskId();
-            var taskId2 = LegacyTaskId();
+            var taskId1 = TaskId();
+            var taskId2 = TaskId();
             var allTaskIds = new[] {taskId1, taskId2};
 
             Assert.That(taskMetaStorage.Read(new string[0]), Is.Empty);
@@ -91,8 +71,8 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void ReadAll()
         {
-            var taskId1 = TimeBasedTaskId();
-            var taskId2 = LegacyTaskId();
+            var taskId1 = TaskId();
+            var taskId2 = TaskId();
             Write(taskId1);
             Write(taskId2);
             Assert.That(taskMetaStorage.ReadAll(1).Select(x => Tuple.Create(x.Item1, x.Item2.Id)).ToArray(), Is.EquivalentTo(new[]
@@ -105,17 +85,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void Ttl_TimeBased()
         {
-            DoTestTtl(TimeBasedTaskId());
-        }
-
-        [Test]
-        public void Ttl_Legacy()
-        {
-            DoTestTtl(LegacyTaskId());
-        }
-
-        private void DoTestTtl(string taskId)
-        {
+            var taskId = TaskId();
             Assert.IsNull(taskMetaStorage.Read(taskId));
             var ttl = TimeSpan.FromSeconds(2);
             Write(taskId, ttl);
@@ -124,12 +94,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             Assert.That(() => taskMetaStorage.Read(taskId), Is.Null.After(10000, 100));
         }
 
-        private static string LegacyTaskId()
-        {
-            return Guid.NewGuid().ToString();
-        }
-
-        private static string TimeBasedTaskId()
+        private static string TaskId()
         {
             return TimeGuid.NowGuid().ToGuid().ToString();
         }

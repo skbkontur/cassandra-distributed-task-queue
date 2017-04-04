@@ -36,26 +36,23 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
                 {
                     TimeGuidMeta(),
                     TimeGuidMeta().With(x => x.TaskExceptionInfoIds = new List<TimeGuid>()),
-                    TimeGuidMeta().With(x => x.TaskExceptionInfoIds = new List<TimeGuid> {TimeGuid.NowGuid()}),
-                    LegacyMeta()
+                    TimeGuidMeta().With(x => x.TaskExceptionInfoIds = new List<TimeGuid> {TimeGuid.NowGuid()})
                 };
 
             Check(new[]
                 {
                     new Tuple<TaskMetaInformation, Exception[]>(taskMetas[0], new Exception[0]),
                     new Tuple<TaskMetaInformation, Exception[]>(taskMetas[1], new Exception[0]),
-                    new Tuple<TaskMetaInformation, Exception[]>(taskMetas[2], new Exception[0]),
-                    new Tuple<TaskMetaInformation, Exception[]>(taskMetas[3], new Exception[0])
+                    new Tuple<TaskMetaInformation, Exception[]>(taskMetas[2], new Exception[0])
                 });
         }
 
-        [TestCase(MetaType.TimeGuid)]
-        [TestCase(MetaType.Legacy)]
-        public void TryAddDuplicate(MetaType metaType)
+        [Test]
+        public void TryAddDuplicate()
         {
             var exception = new Exception("Message");
             var duplicate = new Exception("Message");
-            var meta = NewMeta(metaType);
+            var meta = NewMeta();
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
@@ -68,14 +65,13 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             Check(new[] {new Tuple<TaskMetaInformation, Exception[]>(meta, new[] {exception})});
         }
 
-        [TestCase(MetaType.TimeGuid)]
-        [TestCase(MetaType.Legacy)]
-        public void TryAddDuplicate_OnlyLastExceptionConsidered(MetaType metaType)
+        [Test]
+        public void TryAddDuplicate_OnlyLastExceptionConsidered()
         {
             var exception1 = new Exception("Message");
             var exception2 = new Exception("Message-2");
             var exception3 = new Exception("Message");
-            var meta = NewMeta(metaType);
+            var meta = NewMeta();
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out ids), Is.True);
@@ -91,21 +87,17 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 
             Check(new[]
                 {
-                    new Tuple<TaskMetaInformation, Exception[]>(meta.With(x => x.TaskExceptionInfoIds = ids3),
-                                                                metaType == MetaType.TimeGuid ? new[] {exception1, exception2, exception3} : new[] {exception3})
+                    new Tuple<TaskMetaInformation, Exception[]>(meta.With(x => x.TaskExceptionInfoIds = ids3), new[] {exception1, exception2, exception3})
                 });
         }
 
         [Test]
         public void Read_Normal()
         {
-            var random = new Random(Guid.NewGuid().GetHashCode());
-
             var metasWithExceptions = new List<Tuple<TaskMetaInformation, Exception[]>>();
             for(var i = 0; i < 100; i++)
             {
-                var randomValue = random.Next(0, 2);
-                var meta = randomValue == 0 ? TimeGuidMeta() : LegacyMeta();
+                var meta = TimeGuidMeta();
                 var exceptions = new List<Exception>();
                 for(var j = 0; j < 20; j++)
                 {
@@ -115,18 +107,17 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
                     exceptions.Add(e);
                     meta.TaskExceptionInfoIds = ids;
                 }
-                metasWithExceptions.Add(new Tuple<TaskMetaInformation, Exception[]>(meta, randomValue == 0 ? exceptions.ToArray() : new[] {exceptions.Last()}));
+                metasWithExceptions.Add(new Tuple<TaskMetaInformation, Exception[]>(meta, exceptions.ToArray()));
             }
 
             Check(metasWithExceptions.ToArray());
         }
 
-        [TestCase(MetaType.TimeGuid)]
-        [TestCase(MetaType.Legacy)]
-        public void Read_DuplicateMetas(MetaType metaType)
+        [Test]
+        public void Read_DuplicateMetas()
         {
             var exception = new Exception("Message");
-            var meta = NewMeta(metaType);
+            var meta = NewMeta();
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
@@ -140,13 +131,12 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
                 });
         }
 
-        [TestCase(MetaType.TimeGuid)]
-        [TestCase(MetaType.Legacy)]
-        public void Delete(MetaType metaType)
+        [Test]
+        public void Delete()
         {
             var exception1 = new Exception("Message");
             var exception2 = new Exception("Message-2");
-            var meta = NewMeta(metaType);
+            var meta = NewMeta();
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out ids), Is.True);
@@ -156,7 +146,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 
             Check(new[]
                 {
-                    new Tuple<TaskMetaInformation, Exception[]>(meta, metaType == MetaType.TimeGuid ? new[] {exception1, exception2} : new[] {exception2})
+                    new Tuple<TaskMetaInformation, Exception[]>(meta, new[] {exception1, exception2})
                 });
 
             taskExceptionInfoStorage.Delete(meta);
@@ -188,13 +178,12 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
                 });
         }
 
-        [TestCase(MetaType.TimeGuid)]
-        [TestCase(MetaType.Legacy)]
-        public void Ttl(MetaType metaType)
+        [Test]
+        public void Ttl()
         {
             var exception = new Exception(Guid.NewGuid().ToString());
             var metaTtl = TimeSpan.FromSeconds(5);
-            var meta = NewMeta(metaType, metaTtl);
+            var meta = NewMeta(metaTtl);
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
@@ -204,13 +193,12 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id], Is.Empty.After((int)metaTtl.Multiply(2).TotalMilliseconds, 500));
         }
 
-        [TestCase(MetaType.TimeGuid)]
-        [TestCase(MetaType.Legacy)]
-        public void Prolong_OneException(MetaType metaType)
+        [Test]
+        public void Prolong_OneException()
         {
             var exception = new Exception(Guid.NewGuid().ToString());
             var metaTtl = TimeSpan.FromSeconds(5);
-            var meta = NewMeta(metaType, metaTtl);
+            var meta = NewMeta(metaTtl);
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
@@ -231,7 +219,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var metaTtl = TimeSpan.FromSeconds(5);
 
             var sw = Stopwatch.StartNew();
-            var meta = NewMeta(MetaType.TimeGuid, metaTtl);
+            var meta = NewMeta(metaTtl);
 
             List<TimeGuid> ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out ids), Is.True);
@@ -268,11 +256,6 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             return TaskMeta(TimeGuid.NowGuid().ToGuid().ToString(), ttl);
         }
 
-        private static TaskMetaInformation LegacyMeta(TimeSpan? ttl = null)
-        {
-            return TaskMeta(Guid.NewGuid().ToString(), ttl);
-        }
-
         private static TaskMetaInformation TaskMeta(string taskId, TimeSpan? ttl)
         {
             var taskMeta = new TaskMetaInformation(string.Format("Name-{0:N}", Guid.NewGuid()), taskId) {MinimalStartTicks = Timestamp.Now.Ticks};
@@ -280,20 +263,14 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             return taskMeta;
         }
 
-        private static TaskMetaInformation NewMeta(MetaType metaType, TimeSpan? ttl = null)
+        private static TaskMetaInformation NewMeta(TimeSpan? ttl = null)
         {
-            return metaType == MetaType.TimeGuid ? TimeGuidMeta(ttl) : LegacyMeta(ttl);
+            return TimeGuidMeta(ttl);
         }
 
         protected override ColumnFamily[] GetColumnFamilies()
         {
             return TaskExceptionInfoStorage.GetColumnFamilyNames().Select(x => new ColumnFamily {Name = x}).ToArray();
-        }
-
-        public enum MetaType
-        {
-            TimeGuid,
-            Legacy
         }
 
         [Injected]

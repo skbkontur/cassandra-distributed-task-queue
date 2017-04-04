@@ -13,6 +13,7 @@ using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
@@ -67,7 +68,8 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         [Test]
         public void TestCancel_UnknownTask()
         {
-            Assert.That(remoteTaskQueue.TryCancelTask(Guid.NewGuid().ToString()), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
+            var taskId = TimeGuid.NowGuid().ToGuid().ToString();
+            Assert.That(remoteTaskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
         }
 
         [Test]
@@ -100,7 +102,8 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         [Test]
         public void TestRerun_UnknownTask()
         {
-            Assert.That(remoteTaskQueue.TryRerunTask(Guid.NewGuid().ToString(), TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
+            var taskId = TimeGuid.NowGuid().ToGuid().ToString();
+            Assert.That(remoteTaskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_TaskDoesNotExist));
         }
 
         [Test]
