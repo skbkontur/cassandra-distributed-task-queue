@@ -2,36 +2,52 @@
 import React from 'react';
 import _ from 'lodash';
 
+const endsWith = (ending: string, str: string): boolean => str.slice(-ending.length) === ending;
+
 export default function customRender(target: any, path: string[]): React.Element<*> | null {
-    if (_.isEqual(path, ['transportBox', 'id'])) {
+    const pathTop = path[path.length - 1];
+
+    if (pathTop === 'boxId' || endsWith('BoxId', pathTop)) {
+        const boxId = _.get(target, path);
         return (
             <a
                 data-tid='GoToLink'
-                href={'/AdminTools/TablesView/TransportBoxStorageElement/' +
-                    `${target.transportBox.id}/${target.transportBox.id}`}>
-                {target.transportBox.id}
+                href={`/AdminTools/TablesView/BoxStorageElement/${boxId}/${boxId}`}>
+                {boxId}
             </a>
         );
     }
 
-    if (_.isEqual(path, ['transportBox', 'primaryKey', 'forBoxId'])) {
-        return (
-            <a
-                data-tid='GoToLink'
-                href={'/AdminTools/TablesView/BoxStorageElement/' +
-                    `${target.transportBox.primaryKey.forBoxId}/${target.transportBox.primaryKey.forBoxId}`}>
-                {target.transportBox.primaryKey.forBoxId}
-            </a>
-        );
+    if (pathTop === 'id') {
+        const id = _.get(target, path);
+        if (['deliveryBox', 'transportBox'].includes(path[path.length - 2])) {
+            return (
+                <a
+                    data-tid='GoToLink'
+                    href={`/AdminTools/TablesView/TransportBoxStorageElement/${id}/${id}`}>
+                    {id}
+                </a>
+            );
+        }
+
+        if (['inbox', 'outbox', 'box'].includes(path[path.length - 2])) {
+            return (
+                <a
+                    data-tid='GoToLink'
+                    href={`/AdminTools/TablesView/BoxStorageElement/${id}/${id}`}>
+                    {id}
+                </a>
+            );
+        }
     }
 
-    if (_.isEqual(path, ['transportBox', 'partyId'])) {
+    if (pathTop === 'partyId') {
+        const partyId = _.get(target, path);
         return (
             <a
                 data-tid='GoToLink'
-                href={'/AdminTools/TablesView/Party2/' +
-                    `${target.transportBox.partyId}/${target.transportBox.partyId}`}>
-                {target.transportBox.partyId}
+                href={`/AdminTools/TablesView/Party2/${partyId}/${partyId}`}>
+                {partyId}
             </a>
         );
     }
@@ -95,6 +111,16 @@ export default function customRender(target: any, path: string[]): React.Element
                 data-tid='GoToLink'
                 href={`https://diadoc.kontur.ru/${id}/Document/Show?letterId=${letterId}&documentId=${documentId}`}>
                 {documentId}
+            </a>
+        );
+    }
+
+    if (_.isEqual(path, ['documentCirculationId'])) {
+        return (
+            <a
+                data-tid='GoToLink'
+                href={`/Monitoring/AdminTaskChainDetails?id=${target.documentCirculationId}`}>
+                {target.documentCirculationId}
             </a>
         );
     }

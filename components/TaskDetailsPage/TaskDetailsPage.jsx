@@ -83,7 +83,9 @@ export default class TaskDetailsPage extends React.Component {
                                 </ColumnStack.Fit>
                             }
                             {taskDetails && taskDetails.exceptionInfos && (
-                                <ColumnStack.Fit data-tid='Exceptions'>
+                                <ColumnStack.Fit
+                                    className={cn('exception-container')}
+                                    data-tid='Exceptions'>
                                     {taskDetails.exceptionInfos.map((exception, index) => {
                                         return (
                                             <pre
