@@ -89,6 +89,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Mvc5\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\IRemoteTaskQueueMonitoringApi.cs" />
@@ -96,7 +100,6 @@
     <Compile Include="Api\RemoteTaskQueueMonitoringApi.cs" />
     <Compile Include="Api\RemoteTaskQueueSearchRequest.cs" />
     <Compile Include="Api\RemoteTaskQueueSearchResults.cs" />
-    <Compile Include="Api\TaskMetaInformationModel.cs" />
     <Compile Include="Indexer\ElasticAvailabilityChecker.cs" />
     <Compile Include="Indexer\IRtqElasticsearchIndexerGraphiteReporter.cs" />
     <Compile Include="Indexer\RtqGlobalTimeProvider.cs" />

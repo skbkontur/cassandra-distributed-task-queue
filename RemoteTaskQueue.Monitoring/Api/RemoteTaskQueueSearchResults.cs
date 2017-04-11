@@ -1,3 +1,5 @@
+using RemoteQueue.Cassandra.Entities;
+
 using SKBKontur.Catalogue.Core.InternalApi.Core;
 
 namespace RemoteTaskQueue.Monitoring.Api
@@ -7,6 +9,6 @@ namespace RemoteTaskQueue.Monitoring.Api
     {
         public long TotalCount { get; set; }
 
-        public TaskMetaInformationModel[] TaskMetas { get; set; }
+        public TaskMetaInformation[] TaskMetas { get; set; }
     }
 }

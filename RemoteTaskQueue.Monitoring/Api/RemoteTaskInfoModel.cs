@@ -7,11 +7,16 @@ using SKBKontur.Catalogue.Core.InternalApi.Core;
 
 namespace RemoteTaskQueue.Monitoring.Api
 {
+    public class TaskMetaInformationChildTasks
+    {
+        public string[] ChildTaskIds { get; set; }
+    }
+
     [InternalAPI]
     public class RemoteTaskInfoModel
     {
         [NotNull]
-        public TaskMetaInformationModel TaskMeta { get; set; }
+        public Merged<TaskMetaInformation, TaskMetaInformationChildTasks> TaskMeta { get; set; }
 
         [NotNull]
         public ITaskData TaskData { get; set; }
