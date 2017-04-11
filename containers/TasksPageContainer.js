@@ -112,13 +112,13 @@ class TasksPageContainer extends React.Component {
     }
 
     async componentWillMount(): any {
-        const { searchQuery, results } = this.props;
+        const { searchQuery } = this.props;
         await this.updateAvailableTaskNamesIfNeed();
 
         const request = this.getRequestBySearchQuery(searchQuery);
         this.setState({ request: request });
 
-        if (!this.isSearchRequestEmpty(searchQuery) && !results) {
+        if (!this.isSearchRequestEmpty(searchQuery)) {
             this.loadData(searchQuery, request);
         }
     }
@@ -130,12 +130,12 @@ class TasksPageContainer extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps: TasksPageContainerProps) {
+    async componentWillReceiveProps(nextProps: TasksPageContainerProps): any {
         const { searchQuery, results } = nextProps;
+        await this.updateAvailableTaskNamesIfNeed();
         const request = this.getRequestBySearchQuery(searchQuery);
 
         this.setState({ request: request });
-        this.updateAvailableTaskNamesIfNeed();
         if (!this.isSearchRequestEmpty(searchQuery) && !results) {
             this.loadData(searchQuery, request);
         }
@@ -384,6 +384,7 @@ class TasksPageContainer extends React.Component {
 
         const { availableTaskNames, request, loading } = this.state;
         const { results } = this.props;
+        const isStateCompletelyLoaded = results && availableTaskNames;
         const counter = (results && results.totalCount) || 0;
 
         return (
@@ -404,7 +405,7 @@ class TasksPageContainer extends React.Component {
                         </ColumnStack.Fit>
                         <ColumnStack.Fit>
                             <Loader type='big' active={loading} data-tid={'Loader'}>
-                                {results && <ColumnStack block stretch gap={2}>
+                                {(results && isStateCompletelyLoaded) && <ColumnStack block stretch gap={2}>
                                     {counter > 0 && (
                                         <ColumnStack.Fit>
                                             Всего результатов: {counter}

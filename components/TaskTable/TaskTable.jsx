@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import { Button, Modal } from 'ui';
+import _ from 'lodash';
 import { RowStack } from 'ui/layout';
 import TaskDetails from './TaskDetails/TaskDetails';
 import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
@@ -10,7 +11,6 @@ import cn from './TaskTable.less';
 export type TaskTableProps = {
     taskInfos: TaskMetaInformationModel[];
     allowRerunOrCancel: boolean;
-    currentUrl?: string;
     onRerun: (id: string) => any;
     onCancel: (id: string) => any;
     getTaskLocation: (id: string) => RouterLocationDescriptor;
@@ -29,6 +29,16 @@ export default class TasksTable extends React.Component {
         modalType: 'Cancel',
         actionTask: '',
     };
+
+    shouldComponentUpdate(nextProps: TaskTableProps, nextState: TasksTableState): boolean {
+        return (
+            !_.isEqual(this.props.taskInfos, nextProps.taskInfos) ||
+            !_.isEqual(this.props.allowRerunOrCancel, nextProps.allowRerunOrCancel) ||
+            !_.isEqual(this.state.openedModal, nextState.openedModal) ||
+            !_.isEqual(this.state.modalType, nextState.modalType) ||
+            !_.isEqual(this.state.actionTask, nextState.actionTask)
+        );
+    }
 
     render(): React.Element<*> {
         const { taskInfos } = this.props;
