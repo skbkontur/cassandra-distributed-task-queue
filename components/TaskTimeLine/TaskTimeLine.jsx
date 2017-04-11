@@ -5,6 +5,8 @@ import cn from './TaskTimeLine.less';
 import TimeLine from './TimeLine/TimeLine';
 import DateTimeView from '../DateTimeView/DateTimeView';
 import { TaskStates } from '../../Domain/TaskState';
+import { ticksToDate } from '../../../Commons/DataTypes/Time';
+import type { Ticks } from '../../../Commons/DataTypes/Time';
 import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 import AllowCopyToClipboard from '../../../Commons/AllowCopyToClipboard';
@@ -23,6 +25,13 @@ type TaskTimeLineProps = {
 export default class TaskTimeLine extends React.Component {
     props: TaskTimeLineProps;
 
+    ticksToDate(ticks: ?Ticks): ?Date {
+        if (!ticks) {
+            return null;
+        }
+        return ticksToDate(ticks);
+    }
+
     getIconColor(severity: string): ?string {
         switch (severity) {
             case 'error':
@@ -36,7 +45,7 @@ export default class TaskTimeLine extends React.Component {
         }
     }
 
-    createSimpleEntry(entry: { title: string; severity?: string; icon: string; date?: ?Date | ?string }): any {
+    createSimpleEntry(entry: { title: string; severity?: string; icon: string; date?: ?Ticks }): any {
         const severity = entry.severity || 'info';
 
         return (
@@ -57,13 +66,13 @@ export default class TaskTimeLine extends React.Component {
     getStartedEntry(): any {
         const { taskMeta } = this.props;
 
-        if (!taskMeta.startExecutingDateTime) {
+        if (!taskMeta.startExecutingTicks) {
             return null;
         }
         return this.createSimpleEntry({
             title: 'Started',
             icon: 'enter',
-            date: taskMeta.startExecutingDateTime,
+            date: taskMeta.startExecutingTicks,
         });
     }
 
@@ -83,7 +92,7 @@ export default class TaskTimeLine extends React.Component {
                 this.createSimpleEntry({
                     title: 'Finished',
                     icon: 'ok',
-                    date: taskMeta.finishExecutingDateTime,
+                    date: taskMeta.finishExecutingTicks,
                 }));
         }
         else if (taskMeta.state === TaskStates.WaitingForRerunAfterError) {
@@ -93,7 +102,7 @@ export default class TaskTimeLine extends React.Component {
                     title: 'Failed',
                     icon: 'clear',
                     severity: 'error',
-                    date: taskMeta.finishExecutingDateTime,
+                    date: taskMeta.finishExecutingTicks,
                 }));
         }
         else {
@@ -123,7 +132,7 @@ export default class TaskTimeLine extends React.Component {
         return this.createSimpleEntry({
             title: 'Start scheduled',
             icon: 'wait',
-            date: taskMeta.minimalStartDateTime,
+            date: taskMeta.minimalStartTicks,
         });
     }
 
@@ -135,7 +144,7 @@ export default class TaskTimeLine extends React.Component {
                 title: 'Finished',
                 icon: 'ok',
                 severity: 'success',
-                date: taskMeta.finishExecutingDateTime,
+                date: taskMeta.finishExecutingTicks,
             })];
         }
         if (taskMeta.state === TaskStates.Fatal) {
@@ -143,7 +152,7 @@ export default class TaskTimeLine extends React.Component {
                 title: 'Failed',
                 icon: 'clear',
                 severity: 'error',
-                date: taskMeta.finishExecutingDateTime,
+                date: taskMeta.finishExecutingTicks,
             })];
         }
         if (taskMeta.state === TaskStates.Canceled) {
@@ -151,7 +160,7 @@ export default class TaskTimeLine extends React.Component {
                 title: 'Canceled',
                 icon: 'remove',
                 severity: 'error',
-                date: taskMeta.finishExecutingDateTime || taskMeta.lastModificationDateTime,
+                date: taskMeta.finishExecutingTicks || taskMeta.lastModificationTicks,
             })];
         }
         if (taskMeta.state === TaskStates.WaitingForRerun || taskMeta.state === TaskStates.WaitingForRerunAfterError) {
@@ -189,7 +198,7 @@ export default class TaskTimeLine extends React.Component {
         return this.createSimpleEntry({
             title: 'Enqueued',
             icon: 'download',
-            date: taskMeta.enqueueDateTime,
+            date: taskMeta.ticks,
         });
     }
 

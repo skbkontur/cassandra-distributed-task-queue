@@ -54,16 +54,18 @@ export function isRemoteTaskQueueSearchRequestEmpty(searchRequest: ?RemoteTaskQu
     );
 }
 
+export type Ticks = string;
+
 export type TaskMetaInformationModel = {
     name: string;
     id: string;
-    enqueueDateTime?: ?string;
-    minimalStartDateTime?: ?string;
-    startExecutingDateTime?: ?string;
-    finishExecutingDateTime?: ?string;
-    lastModificationDateTime?: ?string;
-    expirationTimestamp?: ?string;
-    expirationModificationDateTime?: ?string;
+    ticks: Ticks;
+    minimalStartTicks: Ticks;
+    startExecutingTicks?: ?Ticks;
+    finishExecutingTicks?: ?Ticks;
+    lastModificationTicks?: ?Ticks;
+    expirationTimestampTicks?: ?Ticks;
+    expirationModificationTicks?: ?Ticks;
     state: TaskState;
     attempts?: number;
     parentTaskId?: string;

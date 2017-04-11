@@ -9,6 +9,7 @@ import DateTimeView from '../../DateTimeView/DateTimeView';
 import type { RouterLocationDescriptor } from '../../../../Commons/DataTypes/Routing';
 import type { TaskMetaInformationModel } from '../../../api/RemoteTaskQueueApi';
 import type { TaskState } from '../../../Domain/TaskState';
+import type { Ticks } from '../../../../Commons/DataTypes/Time';
 
 import cn from './TaskDetails.less';
 
@@ -20,18 +21,25 @@ type TaskDetailsProps = {
     getTaskLocation: (id: string) => RouterLocationDescriptor;
 };
 
-function dateFormatter(item: TaskMetaInformationModel, column: string): React.Element<*> {
-    return <DateTimeView value={item[column]} />;
+function dateFormatter(
+    item: TaskMetaInformationModel,
+    selector: (obj: TaskMetaInformationModel) => ?Ticks
+): React.Element<*> {
+    return <DateTimeView value={selector(item)} />;
 }
 
-function taskDate(taskInfo: TaskMetaInformationModel, caption: string, path: string): React.Element<*> {
+function taskDate(
+    taskInfo: TaskMetaInformationModel,
+    caption: string,
+    selector: (obj: TaskMetaInformationModel) => ?Ticks
+): React.Element<*> {
     return (
         <div className={cn('date')}>
             <span className={cn('caption')}>
                 {caption}
             </span>
             <span className={cn('value')}>
-                {dateFormatter(taskInfo, path)}
+                {dateFormatter(taskInfo, selector)}
             </span>
         </div>
     );
@@ -114,11 +122,11 @@ export default function TaskDetails(props: TaskDetailsProps): React.Element<*> {
                                 </ColumnStack.Fit>}
                             </RowStack.Fit>
                             <RowStack.Fit className={cn('dates')}>
-                                {taskDate(taskInfo, 'Enqueued', 'enqueueDateTime')}
-                                {taskDate(taskInfo, 'Started', 'startExecutingDateTime')}
-                                {taskDate(taskInfo, 'Finished', 'finishExecutingDateTime')}
-                                {taskDate(taskInfo, 'StateTime', 'minimalStartDateTime')}
-                                {taskDate(taskInfo, 'Expiration', 'expirationTimestamp')}
+                                {taskDate(taskInfo, 'Enqueued', x => x.ticks)}
+                                {taskDate(taskInfo, 'Started', x => x.startExecutingTicks)}
+                                {taskDate(taskInfo, 'Finished', x => x.finishExecutingTicks)}
+                                {taskDate(taskInfo, 'StateTime', x => x.minimalStartTicks)}
+                                {taskDate(taskInfo, 'Expiration', x => x.expirationTimestampTicks)}
                             </RowStack.Fit>
                         </RowStack>
                     </ColumnStack.Fit>

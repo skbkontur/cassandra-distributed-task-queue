@@ -3,11 +3,11 @@ import React from 'react';
 import { Button, RadioGroup, Tooltip } from 'ui';
 import moment from 'moment';
 import cn from './DateTimeView.less';
-import { TimeZones } from '../../../Commons/DataTypes/Time';
-import type { TimeZone } from '../../../Commons/DataTypes/Time';
+import { ticksToDate, TimeZones } from '../../../Commons/DataTypes/Time';
+import type { Ticks, TimeZone } from '../../../Commons/DataTypes/Time';
 
 type DateTimeViewProps = {
-    value: ?string | ?Date;
+    value: ?Ticks;
 };
 
 type DateTimeViewState = {
@@ -97,7 +97,7 @@ export default class DateTimeView extends React.Component {
 
     renderWithTimeZone(timezone: TimeZone): React.Element<*> {
         const { value } = this.props;
-        return moment(value).utcOffset(timezone).format('DD.MM.YYYY HH:mm:ss.SSS');
+        return moment(value ? ticksToDate(value) : null).utcOffset(timezone).format('DD.MM.YYYY HH:mm:ss.SSS');
     }
 
     handleChangeDefault() {

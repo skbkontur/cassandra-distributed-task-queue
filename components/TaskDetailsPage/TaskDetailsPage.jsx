@@ -18,7 +18,7 @@ import type { RemoteTaskInfoModel } from '../../api/RemoteTaskQueueApi';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 import { buildSearchQueryForRequest } from '../../containers/TasksPageContainer';
 import RangeSelector from '../../../Commons/DateTimeRangePicker/RangeSelector';
-import { TimeZones } from '../../../Commons/DataTypes/Time';
+import { TimeZones, ticksToDate } from '../../../Commons/DataTypes/Time';
 
 export type TaskDetailsPageProps = {
     parentLocation: RouterLocationDescriptor;
@@ -114,7 +114,7 @@ export default class TaskDetailsPage extends React.Component {
             return {
                 pathname: '/AdminTools/Tasks/Tree',
                 search: buildSearchQueryForRequest({
-                    enqueueDateTimeRange: rangeSelector.getMonthOf(taskDetails.taskMeta.enqueueDateTime),
+                    enqueueDateTimeRange: rangeSelector.getMonthOf(ticksToDate(taskDetails.taskMeta.ticks)),
                     queryString:
                         'Data.DocumentCirculationId:' +
                         `"${taskDetails.taskData && taskDetails.taskData.documentCirculationId || ''}"`,
