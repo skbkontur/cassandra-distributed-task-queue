@@ -47,7 +47,7 @@ const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = que
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
     .mapToString(x => x.queryString, 'q')
     .mapToStringArray(x => x.names, 'types')
-    .mapToSet(x => x.taskState, 'states', TaskStates)
+    .mapToSet(x => x.states, 'states', TaskStates)
     .build();
 
 function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMapping<RemoteTaskQueueSearchRequest> {
@@ -59,7 +59,7 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
         .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
         .mapToString(x => x.queryString, 'q')
         .mapToSet(x => x.names, 'types', availableTaskNamesMap, true)
-        .mapToSet(x => x.taskState, 'states', TaskStates)
+        .mapToSet(x => x.states, 'states', TaskStates)
         .build();
 }
 
@@ -125,7 +125,7 @@ class TasksPageContainer extends React.Component {
 
     async updateAvailableTaskNamesIfNeed(): Promise<void> {
         if (this.state.availableTaskNames === null) {
-            const availableTaskNames = await this.props.remoteTaskQueueApi.getAllTasksNames();
+            const availableTaskNames = await this.props.remoteTaskQueueApi.getAllTaskNames();
             this.setState({ availableTaskNames: availableTaskNames });
         }
     }
@@ -262,7 +262,7 @@ class TasksPageContainer extends React.Component {
 
         this.setState({ loading: true });
         try {
-            await remoteTaskQueueApi.rerunTasksByRequest(request);
+            await remoteTaskQueueApi.rerunTasksBySearchQuery(request);
         }
         finally {
             this.setState({ loading: false });
@@ -275,7 +275,7 @@ class TasksPageContainer extends React.Component {
 
         this.setState({ loading: true });
         try {
-            await remoteTaskQueueApi.cancelTasksByRequest(request);
+            await remoteTaskQueueApi.cancelTasksBySearchQuery(request);
         }
         finally {
             this.setState({ loading: false });
@@ -287,7 +287,7 @@ class TasksPageContainer extends React.Component {
         const { results } = this.props;
         const { modalType, manyTaskConfirm } = this.state;
         const confirmedRegExp = /б.*л.*я/i;
-        const counter = (results && results.totalCount) || 0;
+        const counter = (results && parseInt(results.totalCount, 10)) || 0;
 
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid='ConfirmMultipleOperationModal'>

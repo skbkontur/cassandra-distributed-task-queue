@@ -7,7 +7,7 @@ import DateTimeView from '../DateTimeView/DateTimeView';
 import { TaskStates } from '../../Domain/TaskState';
 import { ticksToDate } from '../../../Commons/DataTypes/Time';
 import type { Ticks } from '../../../Commons/DataTypes/Time';
-import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
+import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from '../../api/RemoteTaskQueueApi';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 import AllowCopyToClipboard from '../../../Commons/AllowCopyToClipboard';
 
@@ -18,7 +18,7 @@ const IconColors = {
 };
 
 type TaskTimeLineProps = {
-    taskMeta: TaskMetaInformationModel;
+    taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
     getHrefToTask: (id: string) => RouterLocationDescriptor;
 };
 
@@ -173,7 +173,7 @@ export default class TaskTimeLine extends React.Component {
                 }),
             ];
         }
-        if (taskMeta.state === TaskStates.Inprocess) {
+        if (taskMeta.state === TaskStates.InProcess) {
             return [this.createSimpleEntry({
                 title: 'Waiting for complete',
                 icon: 'wait',

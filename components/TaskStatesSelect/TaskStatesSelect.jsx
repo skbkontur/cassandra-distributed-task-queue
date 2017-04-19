@@ -24,7 +24,7 @@ const TaskStateCaptions = {
     [TaskStates.WaitingForRerun]: 'Waiting for rerun',
     [TaskStates.WaitingForRerunAfterError]: 'Waiting for rerun after error',
     [TaskStates.Finished]: 'Finished',
-    [TaskStates.Inprocess]: 'In process',
+    [TaskStates.InProcess]: 'In process',
     [TaskStates.Fatal]: 'Fatal',
     [TaskStates.Canceled]: 'Canceled',
 };

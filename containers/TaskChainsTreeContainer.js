@@ -33,7 +33,7 @@ const mapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMap
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
     .mapToString(x => x.queryString, 'q')
     .mapToStringArray(x => x.names, 'types')
-    .mapToSet(x => x.taskState, 'states', TaskStates)
+    .mapToSet(x => x.states, 'states', TaskStates)
     .build();
 
 class TaskChainsTreeContainer extends React.Component {

@@ -2,12 +2,12 @@
 import React from 'react';
 import cn from './TaskDetailsMetaTable.less';
 import AllowCopyToClipboard from '../../../Commons/AllowCopyToClipboard';
-import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
+import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from '../../api/RemoteTaskQueueApi';
 import DateTimeView from '../DateTimeView/DateTimeView';
 import type { Ticks } from '../../../Commons/DataTypes/Time';
 
 export type TaskDetailsMetaTableProps = {
-    taskMeta: TaskMetaInformationModel;
+    taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
 };
 
 export default class TaskDetailsMetaTable extends React.Component {

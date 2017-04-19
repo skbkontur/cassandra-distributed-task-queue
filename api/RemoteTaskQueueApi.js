@@ -1,19 +1,21 @@
 // @flow
-import type { TaskState } from '../Domain/TaskState';
-import type { DateTimeRange } from '../../Commons/DataTypes/DateTimeRange';
+import type { DateTimeRange } from '../../Domain/DataTypes/DateTimeRange';
 import { TimeZones } from '../../Commons/DataTypes/Time';
 import RangeSelector from '../../Commons/DateTimeRangePicker/RangeSelector';
+import type { TaskMetaInformation } from '../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation';
+import type { RemoteTaskQueueSearchRequest } from '../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest';
+import type { RemoteTaskQueueSearchResults } from '../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults';
+import type { IRemoteTaskQueueApi } from '../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue';
+import type { RemoteTaskInfoModel } from '../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel';
+import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from '../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks';
 
-export type RemoteTaskQueueSearchResults = {
-    totalCount: number;
-    taskMetas: TaskMetaInformationModel[];
-};
-
-export type RemoteTaskQueueSearchRequest = {
-    enqueueDateTimeRange: DateTimeRange;
-    queryString: ?string;
-    taskState: ?TaskState[];
-    names: ?string[];
+export type {
+    IRemoteTaskQueueApi,
+    TaskMetaInformation,
+    RemoteTaskQueueSearchRequest,
+    RemoteTaskQueueSearchResults,
+    RemoteTaskInfoModel,
+    TaskMetaInformationAndTaskMetaInformationChildTasks,
 };
 
 function isDateTimeRangeEmpty(range: ?DateTimeRange): boolean {
@@ -25,8 +27,10 @@ export function createDefaultRemoteTaskQueueSearchRequest(): RemoteTaskQueueSear
     return {
         enqueueDateTimeRange: rangeSelector.getToday(),
         queryString: '',
-        taskState: null,
+        states: null,
         names: null,
+        from: 0,
+        size: 20,
     };
 }
 
@@ -52,186 +56,4 @@ export function isRemoteTaskQueueSearchRequestEmpty(searchRequest: ?RemoteTaskQu
             searchRequest.names.length === 0
         )
     );
-}
-
-export type Ticks = string;
-
-export type TaskMetaInformationModel = {
-    name: string;
-    id: string;
-    ticks: Ticks;
-    minimalStartTicks: Ticks;
-    startExecutingTicks?: ?Ticks;
-    finishExecutingTicks?: ?Ticks;
-    lastModificationTicks?: ?Ticks;
-    expirationTimestampTicks?: ?Ticks;
-    expirationModificationTicks?: ?Ticks;
-    state: TaskState;
-    attempts?: number;
-    parentTaskId?: string;
-    childTaskIds?: string[];
-    taskGroupLock?: string;
-    traceId?: string;
-    traceIsActive?: boolean;
-};
-
-type TaskExceptionInfo = {
-    exceptionMessageInfo: string;
-};
-
-export type RemoteTaskInfoModel = {
-    taskMeta: TaskMetaInformationModel;
-    taskData?: any;
-    exceptionInfos?: TaskExceptionInfo[];
-};
-
-type TaskManipulationResult =
-    'Success' |
-    'Failure_LockAcquiringFails' |
-    'Failure_InvalidTaskState' |
-    'Failure_TaskDoesNotExist';
-
-export type TaskManupulationResultMap = {
-    [taskId: string]: TaskManipulationResult;
-};
-
-export type IRemoteTaskQueueApi = {
-    getAllTasksNames(): Promise<string[]>;
-
-    search(searchRequest: RemoteTaskQueueSearchRequest, from: number, size: number):
-        Promise<RemoteTaskQueueSearchResults>;
-
-    getTaskDetails(id: string): Promise<RemoteTaskInfoModel>;
-
-    cancelTasks(ids: string[]): Promise<TaskManupulationResultMap>;
-    rerunTasks(ids: string[]): Promise<TaskManupulationResultMap>;
-    cancelTasksByRequest(searchRequest: RemoteTaskQueueSearchRequest): Promise<TaskManupulationResultMap>;
-    rerunTasksByRequest(searchRequest: RemoteTaskQueueSearchRequest): Promise<TaskManupulationResultMap>;
-};
-
-
-export default class RemoteTaskQueueApi {
-    static additionalHeaders = {
-        ['Cache-Control']: 'no-cache, no-store',
-        ['Pragma']: 'no-cache',
-        ['Expires']: 0,
-        ['credentials']: 'same-origin',
-    };
-
-    async checkStatus(response: Response): Promise<void> {
-        if (!(response.status >= 200 && response.status < 300)) {
-            const errorText = await response.text();
-            throw new Error(errorText);
-        }
-    }
-
-    async search(searchRequest: RemoteTaskQueueSearchRequest,
-                 from: number, size: number): Promise<RemoteTaskQueueSearchResults> {
-        const rightSearchRequest = createRightSearchRequest(searchRequest);
-        const response = await fetch('/internal-api/remote-task-queue/tasks/search', {
-            ...RemoteTaskQueueApi.additionalHeaders,
-            method: 'POST',
-            body: JSON.stringify({
-                from: from,
-                size: size,
-                ...rightSearchRequest,
-            }),
-        });
-        await this.checkStatus(response);
-        const result = await response.json();
-        return result;
-    }
-
-    async getAllTasksNames(): Promise<string[]> {
-        const response = await fetch('/internal-api/remote-task-queue/available-task-names', {
-            ...RemoteTaskQueueApi.additionalHeaders,
-            method: 'GET',
-        });
-        await this.checkStatus(response);
-        const result = await response.json();
-        return result;
-    }
-
-    async cancelTasks(ids: string[]): Promise<TaskManupulationResultMap> {
-        const response = await fetch('/internal-api/remote-task-queue/tasks/cancel', {
-            ...RemoteTaskQueueApi.additionalHeaders,
-            method: 'POST',
-            body: JSON.stringify({
-                ids: ids,
-            }),
-        });
-        await this.checkStatus(response);
-        const result = await response.json();
-        return result;
-    }
-
-    async rerunTasks(ids: string[]): Promise<TaskManupulationResultMap> {
-        const response = await fetch('/internal-api/remote-task-queue/tasks/rerun', {
-            ...RemoteTaskQueueApi.additionalHeaders,
-            method: 'POST',
-            body: JSON.stringify({
-                ids: ids,
-            }),
-        });
-        await this.checkStatus(response);
-        const result = await response.json();
-        return result;
-    }
-
-    async cancelTasksByRequest(searchRequest: RemoteTaskQueueSearchRequest): Promise<TaskManupulationResultMap> {
-        const rightSearchRequest = createRightSearchRequest(searchRequest);
-        const response = await fetch('/internal-api/remote-task-queue/tasks/cancel-by-request', {
-            ...RemoteTaskQueueApi.additionalHeaders,
-            method: 'POST',
-            body: JSON.stringify({
-                ...rightSearchRequest,
-            }),
-        });
-        await this.checkStatus(response);
-        const result = await response.json();
-        return result;
-    }
-
-    async rerunTasksByRequest(searchRequest: RemoteTaskQueueSearchRequest): Promise<TaskManupulationResultMap> {
-        const rightSearchRequest = createRightSearchRequest(searchRequest);
-        const response = await fetch('/internal-api/remote-task-queue/tasks/rerun-by-request', {
-            ...RemoteTaskQueueApi.additionalHeaders,
-            method: 'POST',
-            body: JSON.stringify({
-                ...rightSearchRequest,
-            }),
-        });
-        await this.checkStatus(response);
-        const result = await response.json();
-        return result;
-    }
-
-    async getTaskDetails(id: string): Promise<RemoteTaskInfoModel> {
-        const response = await fetch(`/internal-api/remote-task-queue/tasks/${id}`, {
-            ...RemoteTaskQueueApi.additionalHeaders,
-            method: 'GET',
-        });
-        await this.checkStatus(response);
-        const result = await response.json();
-        return result;
-    }
-}
-
-type RightRemoteTaskQueueSearchRequest = {
-    enqueueDateTimeRange: DateTimeRange;
-    queryString: ?string;
-    states: ?TaskState[];
-    names: ?string[];
-};
-//TODO: Поправить модель RemoteTaskQueueSearchRequest
-function createRightSearchRequest(searchRequest: RemoteTaskQueueSearchRequest): RightRemoteTaskQueueSearchRequest {
-    return {
-        enqueueDateTimeRange: {
-            lowerBound: searchRequest.enqueueDateTimeRange.lowerBound,
-            upperBound: searchRequest.enqueueDateTimeRange.upperBound,
-        },
-        queryString: searchRequest.queryString,
-        states: searchRequest.taskState,
-        names: searchRequest.names,
-    };
 }

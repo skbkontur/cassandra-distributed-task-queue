@@ -4,7 +4,7 @@ import { RouterLink } from 'ui';
 import { ColumnStack } from 'ui/layout';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 import TimeLine from '../TaskTimeLine/TimeLine/TimeLine';
-import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
+import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from '../../api/RemoteTaskQueueApi';
 import { TaskStates } from '../../Domain/TaskState';
 import _ from 'lodash';
 import AllowCopyToClipboard from '../../../Commons/AllowCopyToClipboard';
@@ -18,14 +18,14 @@ const IconColors = {
 };
 
 type TaskChainTreeProps = {
-    taskMetas: TaskMetaInformationModel[];
+    taskMetas: TaskMetaInformationAndTaskMetaInformationChildTasks[];
     getTaskLocation: (id: string) => RouterLocationDescriptor;
 };
 
 export default class TaskChainTree extends React.Component {
     props: TaskChainTreeProps;
 
-    buildTaskTimeLineEntry(taskMeta: TaskMetaInformationModel): any {
+    buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): any {
         const { getTaskLocation } = this.props;
 
         let iconAndColorProps = {
@@ -63,7 +63,7 @@ export default class TaskChainTree extends React.Component {
                     iconColor: IconColors.green,
                 };
                 break;
-            case TaskStates.Inprocess:
+            case TaskStates.InProcess:
                 iconAndColorProps = {
                     icon: 'wait',
                     iconColor: IconColors.grey,
@@ -102,8 +102,8 @@ export default class TaskChainTree extends React.Component {
     }
 
     buildChildEntries(
-        taskMeta: TaskMetaInformationModel,
-        taskMetaHashSet: { [key: string]: TaskMetaInformationModel }
+        taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
+        taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
     ): any {
         if (!taskMeta.childTaskIds || taskMeta.childTaskIds.length === 0) {
             return [];
@@ -126,8 +126,8 @@ export default class TaskChainTree extends React.Component {
     }
 
     buildTaskTimeLine(
-        taskMeta: TaskMetaInformationModel,
-        taskMetaHashSet: { [key: string]: TaskMetaInformationModel }
+        taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
+        taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
     ): any[] {
         return [
             this.buildTaskTimeLineEntry(taskMeta),
@@ -136,9 +136,9 @@ export default class TaskChainTree extends React.Component {
     }
 
     findMostParentTask(
-        taskMetaHashSet: { [key: string]: TaskMetaInformationModel },
-        startTaskMeta: TaskMetaInformationModel
-    ): TaskMetaInformationModel {
+        taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks },
+        startTaskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks
+    ): TaskMetaInformationAndTaskMetaInformationChildTasks {
         let result = startTaskMeta;
         while (result.parentTaskId) {
             if (!taskMetaHashSet[result.parentTaskId]) {
@@ -149,7 +149,9 @@ export default class TaskChainTree extends React.Component {
         return result;
     }
 
-    findAllMostParents(taskMetaHashSet: { [key: string]: TaskMetaInformationModel }): [TaskMetaInformationModel] {
+    findAllMostParents(
+        taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
+    ): [TaskMetaInformationAndTaskMetaInformationChildTasks] {
         return _.chain(taskMetaHashSet)
             .values()
             .map(x => this.findMostParentTask(taskMetaHashSet, x))

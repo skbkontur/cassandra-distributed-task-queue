@@ -1,14 +1,15 @@
 // @flow
-/* eslint-disable no-unused-vars */
-import type {
-    RemoteTaskInfoModel,
-    RemoteTaskQueueSearchRequest,
-    RemoteTaskQueueSearchResults,
-    TaskManupulationResultMap,
-} from './RemoteTaskQueueApi';
-
+// FlowTypeContractGenerator's generated content
+import type { RemoteTaskQueueSearchResults } from './../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults';
+import type { RemoteTaskQueueSearchRequest } from './../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest';
+import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from './../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks';
+import type { RemoteTaskInfoModel } from './../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel';
+import type { IRemoteTaskQueueApi } from './RemoteTaskQueueApi';
+import type { TaskManipulationResult } from './../../Domain/EDI/Api/RemoteTaskQueue/TaskManipulationResult';
+import moment from 'moment';
+import { dateToTicks } from '../../Commons/DataTypes/Time';
 import { delay } from 'utils';
-import { TaskStates } from '../Domain/TaskState';
+import { TaskStates } from '../../Domain/EDI/Api/RemoteTaskQueue/TaskState';
 
 let requestCount = 1;
 function emulateErrors() {
@@ -18,9 +19,47 @@ function emulateErrors() {
     }
 }
 
-export default class FakeRemoteTaskQueueApi {
-    async search(searchRequest: RemoteTaskQueueSearchRequest,
-        from: number, size: number): Promise<RemoteTaskQueueSearchResults> {
+export function createTask(
+    override: $Shape<TaskMetaInformationAndTaskMetaInformationChildTasks>
+): TaskMetaInformationAndTaskMetaInformationChildTasks {
+    const defaultTaskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks = {
+        name: 'Task',
+        id: 'Id',
+        taskDataId: null,
+        taskExceptionInfoIds: null,
+        ticks: dateToTicks(moment().toDate()),
+        minimalStartTicks: dateToTicks(moment().toDate()),
+        startExecutingTicks: dateToTicks(moment().toDate()),
+        finishExecutingTicks: dateToTicks(moment().toDate()),
+        lastModificationTicks: dateToTicks(moment().toDate()),
+        expirationTimestampTicks: dateToTicks(moment().toDate()),
+        expirationModificationTicks: dateToTicks(moment().toDate()),
+        state: TaskStates.Finished,
+        attempts: 1,
+        parentTaskId: 'ParentTaskId',
+        childTaskIds: [],
+        taskGroupLock: '',
+        traceId: '',
+        traceIsActive: false,
+    };
+    const result = {
+        ...defaultTaskMeta,
+        ...override,
+    };
+    return result;
+}
+
+
+export class RemoteTaskQueueApi implements IRemoteTaskQueueApi {
+    async getAllTaskNames(): Promise<string[]> {
+        await delay(1300);
+        emulateErrors();
+        return ['Name1', 'Name2', 'Name3', 'Name4', 'Name5'];
+    }
+
+    async search(
+        _searchRequest: RemoteTaskQueueSearchRequest, _from: number, _size: number
+    ): Promise<RemoteTaskQueueSearchResults> {
         emulateErrors();
         await delay(1000);
         return {
@@ -86,55 +125,18 @@ export default class FakeRemoteTaskQueueApi {
                     state: 'Finished',
                     attempts: 1,
                 },
-            ],
+            ].map(x => createTask(x)),
         };
     }
 
-    async getAllTasksNames(): Promise<string[]> {
-        await delay(1300);
-        emulateErrors();
-        return ['Name1', 'Name2', 'Name3', 'Name4', 'Name5'];
-    }
 
-    async cancelTasks(ids: string[]): Promise<TaskManupulationResultMap> {
+    async getTaskDetails(taskId: string): Promise<RemoteTaskInfoModel> {
         await delay(1000);
         emulateErrors();
         return {
-            '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
-        };
-    }
-
-    async rerunTasks(ids: string[]): Promise<TaskManupulationResultMap> {
-        await delay(1000);
-        emulateErrors();
-        return {
-            '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
-        };
-    }
-
-    async cancelTasksByRequest(searchRequest: RemoteTaskQueueSearchRequest): Promise<TaskManupulationResultMap> {
-        await delay(1000);
-        emulateErrors();
-        return {
-            '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
-        };
-    }
-
-    async rerunTasksByRequest(searchRequest: RemoteTaskQueueSearchRequest): Promise<TaskManupulationResultMap> {
-        await delay(1000);
-        emulateErrors();
-        return {
-            '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
-        };
-    }
-
-    async getTaskDetails(id: string): Promise<RemoteTaskInfoModel> {
-        await delay(1000);
-        emulateErrors();
-        return {
-            taskMeta: {
+            taskMeta: createTask({
                 name: 'SynchronizeUserPartiesToPortalTaskData',
-                id: id,
+                id: taskId,
                 ticks: '636275120594815095',
                 minimalStartTicks: '636275120594815095',
                 startExecutingTicks: '636275120594815095',
@@ -142,7 +144,7 @@ export default class FakeRemoteTaskQueueApi {
                 state: TaskStates.Finished,
                 attempts: 1,
                 childTaskIds: ['1e813176-a672-11e6-8c67-1218c2e5c7a5', '1e813176-a672-11e6-8c67-1218c2e5cwew'],
-            },
+            }),
             taskData: {
                 documentType: {
                     title: 'Orders',
@@ -174,6 +176,44 @@ export default class FakeRemoteTaskQueueApi {
                 computedConnectorBoxId: '98c827e1-d146-4c5b-a88f-6af4180cbfe8',
             },
             exceptionInfos: [],
+        };
+    }
+
+    async cancelTasks(_ids: string[]): Promise<{ [key: string]: TaskManipulationResult }> {
+        await delay(1000);
+        emulateErrors();
+        return {
+            '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
+        };
+    }
+
+    async rerunTasks(
+        _ids: string[]
+    ): Promise<{ [key: string]: TaskManipulationResult }> {
+        await delay(1000);
+        emulateErrors();
+        return {
+            '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
+        };
+    }
+
+    async rerunTasksBySearchQuery(
+        _searchRequest: RemoteTaskQueueSearchRequest
+    ): Promise<{ [key: string]: TaskManipulationResult }> {
+        await delay(1000);
+        emulateErrors();
+        return {
+            '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
+        };
+    }
+
+    async cancelTasksBySearchQuery(
+        _searchRequest: RemoteTaskQueueSearchRequest
+    ): Promise<{ [key: string]: TaskManipulationResult }> {
+        await delay(1000);
+        emulateErrors();
+        return {
+            '1e813176-a672-11e6-8c67-1218c2e5c7a2': 'Success',
         };
     }
 }

@@ -33,7 +33,7 @@ export default class TaskQueueFilter extends React.Component {
     };
 
     render(): React.Element<*> {
-        const { enqueueDateTimeRange, queryString, taskState, names } = this.props.value;
+        const { enqueueDateTimeRange, queryString, states, names } = this.props.value;
         const { availableTaskTypes, onChange, onSearchButtonClick } = this.props;
         const { openedModal } = this.state;
         const defaultEnqueueDateTimeRange = {
@@ -84,8 +84,8 @@ export default class TaskQueueFilter extends React.Component {
                 <RowStack.Fit>
                     <TaskStatesSelect
                         data-tid={'TaskStatesSelect'}
-                        value={taskState || []}
-                        onChange={selectedStates => onChange({ taskState: selectedStates })}
+                        value={states || []}
+                        onChange={selectedStates => onChange({ states: selectedStates })}
                     />
                 </RowStack.Fit>
                 <RowStack.Fit>

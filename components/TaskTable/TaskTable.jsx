@@ -4,12 +4,12 @@ import { Button, Modal } from 'ui';
 import _ from 'lodash';
 import { RowStack } from 'ui/layout';
 import TaskDetails from './TaskDetails/TaskDetails';
-import type { TaskMetaInformationModel } from '../../api/RemoteTaskQueueApi';
+import type { TaskMetaInformation } from '../../api/RemoteTaskQueueApi';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 import cn from './TaskTable.less';
 
 export type TaskTableProps = {
-    taskInfos: TaskMetaInformationModel[];
+    taskInfos: TaskMetaInformation[];
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => any;
     onCancel: (id: string) => any;
@@ -53,7 +53,7 @@ export default class TasksTable extends React.Component {
         );
     }
 
-    renderRow(item: TaskMetaInformationModel): React.Element<*> {
+    renderRow(item: TaskMetaInformation): React.Element<*> {
         const { allowRerunOrCancel, getTaskLocation } = this.props;
         return (
             <div key={item.id} className={cn('task-details-row')}>

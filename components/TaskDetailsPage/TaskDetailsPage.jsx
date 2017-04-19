@@ -107,8 +107,11 @@ export default class TaskDetailsPage extends React.Component {
     }
 
     getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): ?RouterLocationDescriptor {
-        if (taskDetails.taskData &&
-            taskDetails.taskData.documentCirculationId && taskDetails.taskMeta.enqueueDateTime) {
+        const documentCirculationId =
+            (taskDetails.taskData && (typeof taskDetails.taskData.documentCirculationId === 'string'))
+                ? taskDetails.taskData.documentCirculationId
+                : null;
+        if (documentCirculationId && taskDetails.taskMeta.enqueueDateTime) {
             const rangeSelector = new RangeSelector(TimeZones.UTC);
 
             return {
@@ -117,9 +120,9 @@ export default class TaskDetailsPage extends React.Component {
                     enqueueDateTimeRange: rangeSelector.getMonthOf(ticksToDate(taskDetails.taskMeta.ticks)),
                     queryString:
                         'Data.DocumentCirculationId:' +
-                        `"${taskDetails.taskData && taskDetails.taskData.documentCirculationId || ''}"`,
+                        `"${documentCirculationId || ''}"`,
                     names: [],
-                    taskState: [],
+                    states: [],
                 }),
             };
         }

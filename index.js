@@ -11,15 +11,15 @@ import Layout from './components/Layout/Layout';
 import 'ui/styles/reset.less';
 import 'ui/styles/typography.less';
 
-import RealApi from './api/RemoteTaskQueueApi';
-import FakeApi from './api/FakeRemoteTaskQueueApi';
+import { RemoteTaskQueueApi } from '../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue';
+//import FakeApi from './api/FakeRemoteTaskQueueApi';
 import { ApiProvider } from './api/RemoteTaskQueueApiInjection';
 import { ErrorHandlingContainer } from '../Commons/ErrorHandling';
 
-const api = process.env.API === 'fake'
-    ? new FakeApi()
-    : new RealApi();
-
+// const api = process.env.API === 'fake'
+//     ? new FakeApi()
+//     : new RealApi();
+const api = new RemoteTaskQueueApi('/internal-api/remote-task-queue/');
 const TasksPath = '/AdminTools/Tasks';
 
 ReactDom.render(

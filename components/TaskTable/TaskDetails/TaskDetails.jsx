@@ -7,14 +7,14 @@ import { cancelableStates, rerunableStates } from '../../../Domain/TaskState';
 import AllowCopyToClipboard from '../../../../Commons/AllowCopyToClipboard';
 import DateTimeView from '../../DateTimeView/DateTimeView';
 import type { RouterLocationDescriptor } from '../../../../Commons/DataTypes/Routing';
-import type { TaskMetaInformationModel } from '../../../api/RemoteTaskQueueApi';
+import type { TaskMetaInformation } from '../../../api/RemoteTaskQueueApi';
 import type { TaskState } from '../../../Domain/TaskState';
 import type { Ticks } from '../../../../Commons/DataTypes/Time';
 
 import cn from './TaskDetails.less';
 
 type TaskDetailsProps = {
-    taskInfo: TaskMetaInformationModel;
+    taskInfo: TaskMetaInformation;
     allowRerunOrCancel: boolean;
     onRerun: () => any;
     onCancel: () => any;
@@ -22,16 +22,16 @@ type TaskDetailsProps = {
 };
 
 function dateFormatter(
-    item: TaskMetaInformationModel,
-    selector: (obj: TaskMetaInformationModel) => ?Ticks
+    item: TaskMetaInformation,
+    selector: (obj: TaskMetaInformation) => ?Ticks
 ): React.Element<*> {
     return <DateTimeView value={selector(item)} />;
 }
 
 function taskDate(
-    taskInfo: TaskMetaInformationModel,
+    taskInfo: TaskMetaInformation,
     caption: string,
-    selector: (obj: TaskMetaInformationModel) => ?Ticks
+    selector: (obj: TaskMetaInformation) => ?Ticks
 ): React.Element<*> {
     return (
         <div className={cn('date')}>
@@ -51,7 +51,7 @@ const stateClassNames = {
     WaitingForRerun: 'state-waiting-for-rerun',
     WaitingForRerunAfterError: 'state-waiting-for-rerun-after-error',
     Finished: 'state-finished',
-    Inprocess: 'state-in-process',
+    InProcess: 'state-in-process',
     Fatal: 'state-fatal',
     Canceled: 'state-canceled',
 };

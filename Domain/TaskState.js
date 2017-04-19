@@ -1,22 +1,12 @@
 // @flow
-
-export const TaskStates = {
-    Unknown: 'Unknown',
-    New: 'New',
-    WaitingForRerun: 'WaitingForRerun',
-    WaitingForRerunAfterError: 'WaitingForRerunAfterError',
-    Finished: 'Finished',
-    Inprocess: 'Inprocess',
-    Fatal: 'Fatal',
-    Canceled: 'Canceled',
-};
+import { TaskStates } from '../../Domain/EDI/Api/RemoteTaskQueue/TaskState';
+export { TaskStates };
+import type { TaskState } from '../../Domain/EDI/Api/RemoteTaskQueue/TaskState';
+export type { TaskState };
 
 export function getAllTaskStates(): TaskState[] {
     return Object.keys(TaskStates);
 }
-
-export type TaskState = $Keys<typeof TaskStates>;
-
 
 export const cancelableStates = [
     TaskStates.New,
