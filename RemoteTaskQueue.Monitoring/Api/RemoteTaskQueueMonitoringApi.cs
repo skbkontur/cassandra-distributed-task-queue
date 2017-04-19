@@ -28,14 +28,14 @@ namespace RemoteTaskQueue.Monitoring.Api
             return taskDataRegistry.GetAllTaskNames();
         }
 
-        public RemoteTaskQueueSearchResults Search(RemoteTaskQueueSearchRequest searchRequest)
+        public RemoteTaskQueueSearchResults Search(RemoteTaskQueueSearchRequest searchRequest, int from, int size)
         {
             if(searchRequest.EnqueueDateTimeRange == null)
                 throw new BadRequestException("enqueueDateTimeRange should be specified");
             if(searchRequest.EnqueueDateTimeRange.OpenType != null)
                 throw new BadRequestException("Both enqueueDateTimeRange.lowerBound and enqueueDateTimeRange.uppedBound should be specified");
 
-            var searchResult = FindTasks(searchRequest);
+            var searchResult = FindTasks(searchRequest, from, size);
             var taskMetas = remoteTaskQueue.GetTaskMetas(searchResult.Ids);
             var taskListItems = new List<TaskMetaInformation>();
             foreach(var taskId in searchResult.Ids)
@@ -51,9 +51,9 @@ namespace RemoteTaskQueue.Monitoring.Api
                 };
         }
 
-        private TaskSearchResponse FindTasks(RemoteTaskQueueSearchRequest searchRequest)
+        private TaskSearchResponse FindTasks(RemoteTaskQueueSearchRequest searchRequest, int from, int size)
         {
-            return taskSearchClient.Search(CreateTaskSearchRequest(searchRequest), searchRequest.From, searchRequest.Size);
+            return taskSearchClient.Search(CreateTaskSearchRequest(searchRequest), from, size);
         }
 
         private IEnumerable<string> FindAllTasks(RemoteTaskQueueSearchRequest searchRequest)

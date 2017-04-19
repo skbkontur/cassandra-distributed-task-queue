@@ -12,9 +12,6 @@ namespace RemoteTaskQueue.Monitoring.Api
     [InternalAPI]
     public class RemoteTaskQueueSearchRequest
     {
-        public int From { get; set; }
-        public int Size { get; set; }
-
         [NotNull]
         public Range<DateTime> EnqueueDateTimeRange { get; set; }
 

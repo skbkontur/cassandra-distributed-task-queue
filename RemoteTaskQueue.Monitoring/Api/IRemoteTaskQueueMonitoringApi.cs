@@ -10,7 +10,7 @@ namespace RemoteTaskQueue.Monitoring.Api
     {
         string[] GetAllTaksNames();
 
-        RemoteTaskQueueSearchResults Search(RemoteTaskQueueSearchRequest searchRequest);
+        RemoteTaskQueueSearchResults Search(RemoteTaskQueueSearchRequest searchRequest, int from, int size);
 
         [NotNull]
         RemoteTaskInfoModel GetTaskDetails(string taskId);
