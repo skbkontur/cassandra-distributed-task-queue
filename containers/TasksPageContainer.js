@@ -9,7 +9,7 @@ import TasksTable from '../components/TaskTable/TaskTable';
 import TasksPaginator from '../components/TasksPaginator/TasksPaginator';
 import TaskQueueFilter from '../components/TaskQueueFilter/TaskQueueFilter';
 import { withRemoteTaskQueueApi } from '../api/RemoteTaskQueueApiInjection';
-import { takeLastAndRejectPrevious } from './PromiseUtils';
+import { takeLastAndRejectPrevious } from 'PromiseUtils';
 import { SuperUserAccessLevels } from '../../Domain/Globals';
 import { getCurrentUserInfo } from '../../Domain/Globals';
 import { createDefaultRemoteTaskQueueSearchRequest, isRemoteTaskQueueSearchRequestEmpty } from '../api/RemoteTaskQueueApi';

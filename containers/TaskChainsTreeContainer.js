@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { withRouter } from 'react-router';
 import DelayedLoader from '../../Commons/DelayedLoader/DelayedLoader';
 import { withRemoteTaskQueueApi } from '../api/RemoteTaskQueueApiInjection';
-import { takeLastAndRejectPrevious } from './PromiseUtils';
+import { takeLastAndRejectPrevious } from 'PromiseUtils';
 import { createDefaultRemoteTaskQueueSearchRequest, isRemoteTaskQueueSearchRequestEmpty } from '../api/RemoteTaskQueueApi';
 import { TaskStates } from '../Domain/TaskState';
 import { queryStringMapping } from '../../Commons/QueryStringMapping';

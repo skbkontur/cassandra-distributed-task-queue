@@ -6,7 +6,7 @@ import TaskDetailsPage from '../components/TaskDetailsPage/TaskDetailsPage';
 import { SuperUserAccessLevels } from '../../Domain/Globals';
 import type { RemoteTaskInfoModel, IRemoteTaskQueueApi } from '../api/RemoteTaskQueueApi';
 import { withRemoteTaskQueueApi } from '../api/RemoteTaskQueueApiInjection';
-import { takeLastAndRejectPrevious } from './PromiseUtils';
+import { takeLastAndRejectPrevious } from 'PromiseUtils';
 import { getCurrentUserInfo } from '../../Domain/Globals';
 import type { RouterLocationDescriptor } from '../../Commons/DataTypes/Routing';
 
