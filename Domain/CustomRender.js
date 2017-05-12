@@ -4,6 +4,8 @@ import _ from 'lodash';
 
 const endsWith = (ending: string, str: string): boolean => str.slice(-ending.length) === ending;
 
+// TODO эж, переписать бы функцию...
+// eslint-disable-next-line max-statements
 export default function customRender(target: any, path: string[]): React.Element<*> | null {
     const pathTop = path[path.length - 1];
 
@@ -14,6 +16,28 @@ export default function customRender(target: any, path: string[]): React.Element
                 data-tid='GoToLink'
                 href={`/AdminTools/TablesView/BoxStorageElement/${boxId}/${boxId}`}>
                 {boxId}
+            </a>
+        );
+    }
+
+    if (endsWith('PartyId', pathTop)) {
+        const partyId = _.get(target, path);
+        return (
+            <a
+                data-tid='GoToLink'
+                href={`/AdminTools/PartyEdit?partyId=${partyId}`}>
+                {partyId}
+            </a>
+        );
+    }
+
+    if (pathTop === 'connectorBoxId' || endsWith('connectorBoxId', pathTop) || endsWith('ConnectorBoxId', pathTop)) {
+        const connectorBoxId = _.get(target, path);
+        return (
+            <a
+                data-tid='GoToLink'
+                href={`/AdminTools/TablesView/BoxStorageElement/${connectorBoxId}/${connectorBoxId}`}>
+                {connectorBoxId}
             </a>
         );
     }
