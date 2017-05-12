@@ -9,17 +9,6 @@ const endsWith = (ending: string, str: string): boolean => str.slice(-ending.len
 export default function customRender(target: any, path: string[]): React.Element<*> | null {
     const pathTop = path[path.length - 1];
 
-    if (pathTop === 'boxId' || endsWith('BoxId', pathTop)) {
-        const boxId = _.get(target, path);
-        return (
-            <a
-                data-tid='GoToLink'
-                href={`/AdminTools/TablesView/BoxStorageElement/${boxId}/${boxId}`}>
-                {boxId}
-            </a>
-        );
-    }
-
     if (endsWith('PartyId', pathTop)) {
         const partyId = _.get(target, path);
         return (
@@ -36,8 +25,19 @@ export default function customRender(target: any, path: string[]): React.Element
         return (
             <a
                 data-tid='GoToLink'
-                href={`/AdminTools/TablesView/BoxStorageElement/${connectorBoxId}/${connectorBoxId}`}>
+                href={`/AdminTools/TablesView/ConnectorBoxStorageElement/${connectorBoxId}/${connectorBoxId}`}>
                 {connectorBoxId}
+            </a>
+        );
+    }
+
+    if (pathTop === 'boxId' || endsWith('BoxId', pathTop)) {
+        const boxId = _.get(target, path);
+        return (
+            <a
+                data-tid='GoToLink'
+                href={`/AdminTools/TablesView/BoxStorageElement/${boxId}/${boxId}`}>
+                {boxId}
             </a>
         );
     }
