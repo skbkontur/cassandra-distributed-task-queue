@@ -111,7 +111,7 @@ export default class TaskDetailsPage extends React.Component {
             (taskDetails.taskData && (typeof taskDetails.taskData.documentCirculationId === 'string'))
                 ? taskDetails.taskData.documentCirculationId
                 : null;
-        if (documentCirculationId && taskDetails.taskMeta.enqueueDateTime) {
+        if (documentCirculationId != null && taskDetails.taskMeta.ticks != null) {
             const rangeSelector = new RangeSelector(TimeZones.UTC);
 
             return {
