@@ -137,7 +137,7 @@ export default class TaskDetailsPage extends React.Component {
         const isCancelable = cancelableStates.includes(taskDetails.taskMeta.state);
         const isRerunable = rerunableStates.includes(taskDetails.taskMeta.state);
         const relatedTasksLocation = this.getRelatedTasksLocation(taskDetails);
-        if (!isCancelable && !isRerunable) {
+        if (!isCancelable && !isRerunable && relatedTasksLocation == null) {
             return null;
         }
 
