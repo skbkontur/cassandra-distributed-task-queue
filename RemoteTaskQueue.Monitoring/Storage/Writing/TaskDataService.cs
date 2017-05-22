@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections;
 
 using GrEmit;
@@ -40,7 +40,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
                 }
             }
 
-            //NOTE TaskIndexedInfo<T> нужно для OmitNonIndexablePropertiesContractResolver. !!! не переделывать в object
+            //NOTE TaskIndexedInfo<T> РЅСѓР¶РЅРѕ РґР»СЏ OmitNonIndexablePropertiesContractResolver. !!! РЅРµ РїРµСЂРµРґРµР»С‹РІР°С‚СЊ РІ object
             //BUG taskData can be null
             return data.constructorFunc(metaIndexedInfo, exceptionInfo, taskData);
             //return Activator.CreateInstance(typeof(TaskIndexedInfo<>).MakeGenericType(taskData.GetType()), new[] { metaIndexedInfo, taskData });

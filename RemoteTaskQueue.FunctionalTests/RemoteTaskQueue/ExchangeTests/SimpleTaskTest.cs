@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -127,7 +127,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
                 Thread.Sleep(sleepInterval);
                 current += sleepInterval;
                 if(current > ms)
-                    throw new TooLateException("Время ожидания превысило {0} мс.", ms);
+                    throw new TooLateException("Р’СЂРµРјСЏ РѕР¶РёРґР°РЅРёСЏ РїСЂРµРІС‹СЃРёР»Рѕ {0} РјСЃ.", ms);
             }
         }
 

@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 
 using GroboTrace;
 
@@ -37,7 +37,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             catch(Exception e)
             {
                 result = LocalTaskProcessingResult.Undefined;
-                logger.Error("Ошибка во время обработки асинхронной задачи.", e);
+                logger.Error("РћС€РёР±РєР° РІРѕ РІСЂРµРјСЏ РѕР±СЂР°Р±РѕС‚РєРё Р°СЃРёРЅС…СЂРѕРЅРЅРѕР№ Р·Р°РґР°С‡Рё.", e);
             }
             try
             {
@@ -46,7 +46,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
             catch(Exception e)
             {
-                logger.Warn("Ошибка во время окончания задачи.", e);
+                logger.Warn("РћС€РёР±РєР° РІРѕ РІСЂРµРјСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Р·Р°РґР°С‡Рё.", e);
             }
         }
 

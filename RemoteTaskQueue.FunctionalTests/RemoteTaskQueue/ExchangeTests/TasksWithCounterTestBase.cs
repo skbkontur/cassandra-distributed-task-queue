@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -46,7 +46,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
                     }
                 }
                 if(sw.Elapsed > timeout)
-                    throw new TooLateException("Âðåìÿ îæèäàíèÿ ïðåâûñèëî {0} ìñ. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
+                    throw new TooLateException("Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð¶Ð¸Ð´Ð°Ð½Ð¸Ñ Ð¿Ñ€ÐµÐ²Ñ‹ÑÐ¸Ð»Ð¾ {0} Ð¼Ñ. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
                 Thread.Sleep(sleepInterval.Value);
             }
         }
@@ -60,7 +60,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
                 if(handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == targetState))
                     break;
                 if(sw.Elapsed > timeout)
-                    throw new TooLateException("Âðåìÿ îæèäàíèÿ ïðåâûñèëî {0} ìñ. Tasks in another state: {1}", timeout,
+                    throw new TooLateException("Ð’Ñ€ÐµÐ¼Ñ Ð¾Ð¶Ð¸Ð´Ð°Ð½Ð¸Ñ Ð¿Ñ€ÐµÐ²Ñ‹ÑÐ¸Ð»Ð¾ {0} Ð¼Ñ. Tasks in another state: {1}", timeout,
                                                string.Join(", ", handleTaskCollection.GetTasks(taskIds).Where(x => x.Meta.State != targetState).Select(x => x.Meta.Id)));
                 Thread.Sleep(sleepInterval.Value);
             }

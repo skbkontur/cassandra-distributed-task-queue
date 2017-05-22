@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -110,7 +110,7 @@ namespace RemoteQueue.Cassandra.Repositories
             var firstEventTicks = ticksHolder.GetMinTicks(firstEventTicksRowName);
             if(firstEventTicks == 0)
                 return new TaskMetaUpdatedEvent[0];
-            firstEventTicks -= EventPointerFormatter.PartitionDurationTicks; //note ˜ÚÓ ˝ÚÓ ?
+            firstEventTicks -= EventPointerFormatter.PartitionDurationTicks; //note —á—Ç–æ —ç—Ç–æ ?
             fromTicks = new[] {0, fromTicks, firstEventTicks}.Max();
             return new GetEventLogEnumerable(serializer, RetrieveColumnFamilyConnection(), fromTicks, toTicks, batchSize);
         }

@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Concurrent;
 
 using GroBuf;
@@ -13,8 +13,8 @@ using SKBKontur.Cassandra.CassandraClient.Connections;
 
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
-    // todo (maybe-optimize): по-хорошему надо распилить на две CF
-    // здесь реализуется не очень хороший паттерн - в одной CF метки времени для записи выбираются разными способами: ticks и long.MaxValue - ticks
+    // todo (maybe-optimize): РїРѕ-С…РѕСЂРѕС€РµРјСѓ РЅР°РґРѕ СЂР°СЃРїРёР»РёС‚СЊ РЅР° РґРІРµ CF
+    // Р·РґРµСЃСЊ СЂРµР°Р»РёР·СѓРµС‚СЃСЏ РЅРµ РѕС‡РµРЅСЊ С…РѕСЂРѕС€РёР№ РїР°С‚С‚РµСЂРЅ - РІ РѕРґРЅРѕР№ CF РјРµС‚РєРё РІСЂРµРјРµРЅРё РґР»СЏ Р·Р°РїРёСЃРё РІС‹Р±РёСЂР°СЋС‚СЃСЏ СЂР°Р·РЅС‹РјРё СЃРїРѕСЃРѕР±Р°РјРё: ticks Рё long.MaxValue - ticks
     public class TicksHolder : ITicksHolder
     {
         public TicksHolder(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings settings)
