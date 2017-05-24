@@ -10,4 +10,4 @@ pushd ..\Assemblies\Cassandra\Server\bin\
 start cassandra.bat
 popd
 
-start "ServiceRunner" "..\Tools\ServiceRunner\ServiceRunner.exe" "_StartAllConfigs\startAll.SR.yaml" "-startAllServices"
+start "ServiceRunner" "..\Tools.Compiled\ServiceRunner\ServiceRunner.exe" "_StartAllConfigs\startAll.SR.yaml" "-startAllServices"
