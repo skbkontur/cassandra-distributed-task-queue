@@ -24,6 +24,6 @@
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\RemoteTaskQueue\RemoteTaskQueue.FunctionalTests\bin\RemoteTaskQueue.FunctionalTests.dll"></NUnitAssemblies>
   </ItemGroup>
 
-  <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\TestWithCakeBuild.targets" />
+  <Import Project="$(CatalogueRootDirectory)\MSBuild\DeployTargets\Targets\TestWithCakeBuild.targets" />
 
 </Project>

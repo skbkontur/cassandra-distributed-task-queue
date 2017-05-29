@@ -22,6 +22,6 @@
     <NUnitAssemblies Include="$(CatalogueRootDirectory)\RemoteTaskQueue\RemoteTaskQueue.UnitTests\bin\RemoteTaskQueue.UnitTests.dll"></NUnitAssemblies>
   </ItemGroup>
 
-  <Import Project="..\..\..\..\MSBuild\DeployTargets\Targets\TestWithCakeBuild.targets" />
+  <Import Project="$(CatalogueRootDirectory)\MSBuild\DeployTargets\Targets\TestWithCakeBuild.targets" />
 
 </Project>
