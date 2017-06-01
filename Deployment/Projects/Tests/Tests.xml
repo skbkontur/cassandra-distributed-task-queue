@@ -6,7 +6,7 @@
 
   <PropertyGroup>
     <CakeBuildTarget>RebuildRtq</CakeBuildTarget>
-    <CakeBuildConfig>Debug</CakeBuildConfig>
+    <CakeBuildConfig>Release</CakeBuildConfig>
 
     <ServiceSuite>Fake</ServiceSuite>
     <SettingsSuffix></SettingsSuffix>
