@@ -46,9 +46,9 @@ export function isRemoteTaskQueueSearchRequestEmpty(searchRequest: ?RemoteTaskQu
             searchRequest.queryString.trim() === ''
         ) &&
         (
-            searchRequest.taskState === null ||
-            searchRequest.taskState === undefined ||
-            searchRequest.taskState.length === 0
+            searchRequest.states === null ||
+            searchRequest.states === undefined ||
+            searchRequest.states.length === 0
         ) &&
         (
             searchRequest.names === null ||
