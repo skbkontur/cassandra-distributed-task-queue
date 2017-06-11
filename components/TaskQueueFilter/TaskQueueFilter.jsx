@@ -4,22 +4,16 @@ import TaskTypesSelect from '../TaskTypesSelect/TaskTypesSelect';
 import TaskStatesSelect from '../TaskStatesSelect/TaskStatesSelect';
 import { TimeZones } from '../../../Commons/DataTypes/Time';
 import type { RemoteTaskQueueSearchRequest } from '../../api/RemoteTaskQueueApi';
-import {
-    Button,
-    Input,
-    Modal,
-    ButtonLink,
-} from 'ui';
+import { Button, Input, Modal, ButtonLink } from 'ui';
 import DateTimeRangePicker from '../../../Commons/DateTimeRangePicker/DateTimeRangePicker';
-
-import { RowStack, ColumnStack } from 'ui/layout';
+import { RowStack, ColumnStack, Fit, Fill } from 'ui/layout';
 import cn from './TaskQueueFilter.less';
 
 export type TaskQueueFilterProps = {
     value: RemoteTaskQueueSearchRequest;
     availableTaskTypes: string[] | null;
-    onChange: (filterParams: $Shape<RemoteTaskQueueSearchRequest>) => any;
-    onSearchButtonClick: () => any;
+    onChange: (filterParams: $Shape<RemoteTaskQueueSearchRequest>) => void;
+    onSearchButtonClick: () => void;
 };
 
 type TaskQueueFilterState = {
@@ -42,28 +36,27 @@ export default class TaskQueueFilter extends React.Component {
         };
         return (
             <RowStack block gap={1}>
-                <RowStack.Fill>
+                <Fill>
                     <ColumnStack stretch block gap={1}>
-                        <ColumnStack.Fit>
+                        <Fit>
                             <Input
                                 width='100%'
                                 data-tid={'SearchStringInput'}
                                 value={queryString || ''}
                                 onChange={(e, value) => onChange({ queryString: value })}
                             />
-                        </ColumnStack.Fit>
-                        <ColumnStack.Fit>
+                        </Fit>
+                        <Fit>
                             <ButtonLink
                                 onClick={() => this.openModal()}
-                                data-tid='OpenModalButton'
-                                className={cn('modal-button')}>
+                                data-tid='OpenModalButton'>
                                 Что можно ввести в строку поиска
                             </ButtonLink>
-                            { openedModal && this.renderModal() }
-                        </ColumnStack.Fit>
+                            {openedModal && this.renderModal()}
+                        </Fit>
                     </ColumnStack>
-                </RowStack.Fill>
-                <RowStack.Fit>
+                </Fill>
+                <Fit>
                     <DateTimeRangePicker
                         timeZone={TimeZones.UTC}
                         data-tid={'DateTimeRangePicker'}
@@ -71,8 +64,8 @@ export default class TaskQueueFilter extends React.Component {
                         value={enqueueDateTimeRange || defaultEnqueueDateTimeRange}
                         onChange={value => onChange({ enqueueDateTimeRange: value })}
                     />
-                </RowStack.Fit>
-                <RowStack.Fit>
+                </Fit>
+                <Fit>
                     <TaskTypesSelect
                         data-tid='TaskTypesSelect'
                         value={names || []}
@@ -80,41 +73,36 @@ export default class TaskQueueFilter extends React.Component {
                         availableTaskTypes={availableTaskTypes || []}
                         onChange={selectedTypes => onChange({ names: selectedTypes })}
                     />
-                </RowStack.Fit>
-                <RowStack.Fit>
+                </Fit>
+                <Fit>
                     <TaskStatesSelect
                         data-tid={'TaskStatesSelect'}
                         value={states || []}
                         onChange={selectedStates => onChange({ states: selectedStates })}
                     />
-                </RowStack.Fit>
-                <RowStack.Fit>
-                    <Button
-                        data-tid={'SearchButton'}
-                        onClick={onSearchButtonClick}
-                        use='primary'>Найти</Button>
-                </RowStack.Fit>
+                </Fit>
+                <Fit>
+                    <Button data-tid={'SearchButton'} onClick={onSearchButtonClick} use='primary'>Найти</Button>
+                </Fit>
             </RowStack>
-
         );
     }
 
     renderModal(): React.Element<*> {
         return (
-            <Modal
-                data-tid='Modal'
-                onClose={() => this.closeModal()}
-                width={900}>
+            <Modal data-tid='Modal' onClose={() => this.closeModal()} width={900}>
                 <Modal.Header>
                     Справка
                 </Modal.Header>
                 <Modal.Body>
                     При поиске задач можно пользоваться следующими инструментами поиска:
                     <ol className={cn('modal-list')}>
-                        <li>Ввод значения без дополнительных указаний. В этом случае найдутся все задачи,
+                        <li>
+                            Ввод значения без дополнительных указаний. В этом случае найдутся все задачи,
                             в полях которых встречается это значение.
                         </li>
-                        <li>Операторы AND, OR, NOT, скобки между ними. Например:
+                        <li>
+                            Операторы AND, OR, NOT, скобки между ними. Например:
                             <code>(value1 OR value2) AND NOT value3</code>.
                         </li>
                         <li>

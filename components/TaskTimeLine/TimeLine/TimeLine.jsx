@@ -33,6 +33,10 @@ TimeLine.Branch = function TimeLine({ children }: TimeLineProps): React.Element<
 
 TimeLine.BranchNode = class TimeLineBranchNode extends React.Component {
     props: TimeLineProps;
+    refs: {
+        branches: ?HTMLElement;
+        line: ?HTMLElement;
+    };
 
     componentDidUpdate() {
         this.updateLinesHeight();
@@ -43,12 +47,13 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component {
     }
 
     updateLinesHeight() {
-        if (this.refs.branches) {
+        if (this.refs.branches != null) {
             const branches = this.refs.branches.children;
             const lastEntry = branches[branches.length - 1];
             const lastEntryWidth = lastEntry.clientWidth;
-            if (!isNaN(lastEntryWidth)) {
-                this.refs.line.style.marginRight = (lastEntryWidth - 7).toString() + 'px';
+            const line = this.refs.line;
+            if (!isNaN(lastEntryWidth) && line != null) {
+                line.style.marginRight = (lastEntryWidth - 7).toString() + 'px';
             }
         }
     }

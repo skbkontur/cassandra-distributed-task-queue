@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, RadioGroup, Tooltip } from 'ui';
 import moment from 'moment';
 import cn from './DateTimeView.less';
-import { ticksToDate, TimeZones } from '../../../Commons/DataTypes/Time';
+import { ticksToDate, TimeZones, getAllTimeZones } from '../../../Commons/DataTypes/Time';
 import type { Ticks, TimeZone } from '../../../Commons/DataTypes/Time';
 
 type DateTimeViewProps = {
@@ -15,6 +15,26 @@ type DateTimeViewState = {
     defaultTimezone: TimeZone;
 };
 
+class LocalStorageUtils {
+    static getNumberOrDefault(key: string, defaultValue: number): number {
+        try {
+            const value = localStorage.getItem(key);
+            if (value == null) {
+                return defaultValue;
+            }
+            // @flow-coverage-ignore-next-line
+            const result: mixed = JSON.parse(value);
+            if (result != null && typeof result === 'number') {
+                return result;
+            }
+            return defaultValue;
+        }
+        catch (e) { // @flow-coverage-ignore-line
+            return defaultValue;
+        }
+    }
+}
+
 class DateTimeViewStorage {
     callbacks = [];
     timezone: TimeZone | null = null;
@@ -22,11 +42,10 @@ class DateTimeViewStorage {
     set(timezone: TimeZone) {
         this.timezone = timezone;
         try {
-            window.localStorage.setItem(
-                'RemoteTaskQueueMonitoring.DateTimeView.TimeZone', JSON.stringify(timezone));
+            localStorage.setItem('RemoteTaskQueueMonitoring.DateTimeView.TimeZone', JSON.stringify(timezone));
         }
-        catch (e) { // eslint-disable-line
-
+        catch (e) {  // @flow-coverage-ignore-line
+            // eslint-disable-line
         }
         for (const callback of this.callbacks) {
             callback();
@@ -34,16 +53,19 @@ class DateTimeViewStorage {
     }
 
     get(): TimeZone {
-        if (this.timezone === null) {
-            try {
-                this.timezone = JSON.parse(
-                    window.localStorage.getItem('RemoteTaskQueueMonitoring.DateTimeView.TimeZone'));
+        if (this.timezone == null) {
+            const result = LocalStorageUtils.getNumberOrDefault(
+                'RemoteTaskQueueMonitoring.DateTimeView.TimeZone',
+                TimeZones.UTC
+            );
+            if (result === 0 || result === 180 || result === 300) {
+                this.timezone = result;
+                return result;
             }
-            catch (e) {
-                this.timezone = TimeZones.UTC;
-            }
+            this.timezone = TimeZones.UTC;
+            return TimeZones.UTC;
         }
-        return this.timezone || TimeZones.UTC;
+        return this.timezone;
     }
 
     subscribe(callback: () => void) {
@@ -72,7 +94,7 @@ export default class DateTimeView extends React.Component {
             defaultTimezone: storage.get(),
             timezone: storage.get(),
         });
-    }
+    };
 
     componentWillMount() {
         storage.subscribe(this.handleUpdateGlobalTimeZone);
@@ -91,11 +113,11 @@ export default class DateTimeView extends React.Component {
             case 300:
                 return 'ЕКБ';
             default:
-                return timezone.toString();
+                throw new Error('OutOfRange');
         }
     }
 
-    renderWithTimeZone(timezone: TimeZone): React.Element<*> {
+    renderWithTimeZone(timezone: TimeZone): string {
         const { value } = this.props;
         return moment(value ? ticksToDate(value) : null).utcOffset(timezone).format('DD.MM.YYYY HH:mm:ss.SSS');
     }
@@ -109,18 +131,15 @@ export default class DateTimeView extends React.Component {
             <div>
                 <div>
                     <RadioGroup
-                        items={Object.values(TimeZones)}
+                        items={getAllTimeZones()}
                         value={this.state.timezone}
                         onChange={(e, value) => this.setState({ timezone: value })}
-                        renderItem={value => {
-                            return (
-                                <span>
-                                    {this.renderWithTimeZone(value)}
-                                    {' '}
-                                    ({this.getTimeZoneShortName(value)})
-                                </span>
-                            );
-                        }}
+                        renderItem={value =>
+                            <span>
+                                {this.renderWithTimeZone(value)}
+                                {' '}
+                                ({this.getTimeZoneShortName(value)})
+                            </span>}
                     />
                 </div>
                 <div>
@@ -141,11 +160,11 @@ export default class DateTimeView extends React.Component {
                 {this.renderWithTimeZone(defaultTimezone)}
                 {' '}
                 (
-                    <Tooltip render={() => this.selectTimeZone()} trigger='click' pos='right top'>
-                        <span className={cn('timezone')}>
-                            {this.getTimeZoneShortName(defaultTimezone)}
-                        </span>
-                    </Tooltip>
+                <Tooltip render={() => this.selectTimeZone()} trigger='click' pos='right top'>
+                    <span className={cn('timezone')}>
+                        {this.getTimeZoneShortName(defaultTimezone)}
+                    </span>
+                </Tooltip>
                 )
             </span>
         );

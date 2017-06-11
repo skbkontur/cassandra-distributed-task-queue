@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import { Link, RouterLink, Checkbox } from 'ui';
-import { RowStack, ColumnStack } from 'ui/layout';
+import { RowStack, ColumnStack, Fit, Fill } from 'ui/layout';
 import { TaskStates } from '../../../Domain/TaskState';
 import { cancelableStates, rerunableStates } from '../../../Domain/TaskState';
 import AllowCopyToClipboard from '../../../../Commons/AllowCopyToClipboard';
@@ -21,10 +21,7 @@ type TaskDetailsProps = {
     getTaskLocation: (id: string) => RouterLocationDescriptor;
 };
 
-function dateFormatter(
-    item: TaskMetaInformation,
-    selector: (obj: TaskMetaInformation) => ?Ticks
-): React.Element<*> {
+function dateFormatter(item: TaskMetaInformation, selector: (obj: TaskMetaInformation) => ?Ticks): React.Element<*> {
     return <DateTimeView value={selector(item)} />;
 }
 
@@ -64,74 +61,75 @@ export default function TaskDetails(props: TaskDetailsProps): React.Element<*> {
     const { allowRerunOrCancel, taskInfo, onCancel, onRerun, getTaskLocation } = props;
     return (
         <RowStack baseline block gap={1} className={cn('task-details', getStateClassName(taskInfo.state))}>
-            <RowStack.Fit className={cn('checkbox')}>
+            <Fit className={cn('checkbox')}>
                 <Checkbox disabled checked={false} />
-            </RowStack.Fit>
-            <RowStack.Fit>
+            </Fit>
+            <Fit>
                 <ColumnStack block gap={1}>
-                    <ColumnStack.Fit className={cn('name')}>
-                        <RouterLink
-                            data-tid='Name'
-                            to={getTaskLocation(taskInfo.id)}>
+                    <Fit className={cn('name')}>
+                        <RouterLink data-tid='Name' to={getTaskLocation(taskInfo.id)}>
                             {taskInfo.name}
                         </RouterLink>
-                    </ColumnStack.Fit>
-                    <ColumnStack.Fit>
+                    </Fit>
+                    <Fit>
                         <RowStack verticalAlign='stretch' block gap={2}>
-                            <RowStack.Fit tag={ColumnStack} className={cn('info-block-1')}>
-                                <ColumnStack.Fit className={cn('id')}>
+                            <Fit tag={ColumnStack} className={cn('info-block-1')}>
+                                <Fit className={cn('id')}>
                                     <AllowCopyToClipboard>
                                         <span data-tid='TaskId'>{taskInfo.id}</span>
                                     </AllowCopyToClipboard>
-                                </ColumnStack.Fit>
-                                <ColumnStack.Fit className={cn('state')}>
+                                </Fit>
+                                <Fit className={cn('state')}>
                                     <span className={cn('state-name')} data-tid='State'>
                                         {TaskStates[taskInfo.state]}
                                     </span>
                                     <span className={cn('attempts')}>
                                         Attempts: <span data-tid='Attempts'>{taskInfo.attempts}</span>
                                     </span>
-                                </ColumnStack.Fit>
-                                <ColumnStack.Fill className={cn('parent-task')}>
-                                    <div>Parent: {taskInfo.parentTaskId
-                                        ? <AllowCopyToClipboard>{taskInfo.parentTaskId}</AllowCopyToClipboard>
-                                        : '-'}
+                                </Fit>
+                                <Fill className={cn('parent-task')}>
+                                    <div>
+                                        Parent:
+                                        {' '}{taskInfo.parentTaskId
+                                            ? <AllowCopyToClipboard>{taskInfo.parentTaskId}</AllowCopyToClipboard>
+                                            : '-'}
                                     </div>
-                                </ColumnStack.Fill>
-                                {allowRerunOrCancel && <ColumnStack.Fit className={cn('actions')}>
-                                    <RowStack baseline block gap={2}>
-                                        <RowStack.Fit>
-                                            <Link
-                                                data-tid='Cancel'
-                                                disabled={!cancelableStates.includes(taskInfo.state)}
-                                                onClick={onCancel}
-                                                icon='remove'>
-                                                Cancel
-                                            </Link>
-                                        </RowStack.Fit>
-                                        <RowStack.Fit>
-                                            <Link
-                                                data-tid='Rerun'
-                                                disabled={!rerunableStates.includes(taskInfo.state)}
-                                                onClick={onRerun}
-                                                icon='refresh'>
-                                                Rerun
-                                            </Link>
-                                        </RowStack.Fit>
-                                    </RowStack>
-                                </ColumnStack.Fit>}
-                            </RowStack.Fit>
-                            <RowStack.Fit className={cn('dates')}>
+                                </Fill>
+                                {allowRerunOrCancel &&
+                                    <Fit className={cn('actions')}>
+                                        <RowStack baseline block gap={2}>
+                                            <Fit>
+                                                <Link
+                                                    data-tid='Cancel'
+                                                    disabled={!cancelableStates.includes(taskInfo.state)}
+                                                    onClick={onCancel}
+                                                    icon='remove'>
+                                                    Cancel
+                                                </Link>
+                                            </Fit>
+                                            <Fit>
+                                                <Link
+                                                    data-tid='Rerun'
+                                                    disabled={!rerunableStates.includes(taskInfo.state)}
+                                                    onClick={onRerun}
+                                                    icon='refresh'>
+                                                    Rerun
+                                                </Link>
+                                            </Fit>
+                                        </RowStack>
+                                    </Fit>}
+                            </Fit>
+                            <Fit className={cn('dates')}>
                                 {taskDate(taskInfo, 'Enqueued', x => x.ticks)}
                                 {taskDate(taskInfo, 'Started', x => x.startExecutingTicks)}
                                 {taskDate(taskInfo, 'Finished', x => x.finishExecutingTicks)}
                                 {taskDate(taskInfo, 'StateTime', x => x.minimalStartTicks)}
                                 {taskDate(taskInfo, 'Expiration', x => x.expirationTimestampTicks)}
-                            </RowStack.Fit>
+                            </Fit>
                         </RowStack>
-                    </ColumnStack.Fit>
+                    </Fit>
                 </ColumnStack>
-            </RowStack.Fit>
+            </Fit>
         </RowStack>
     );
 }

@@ -1,14 +1,13 @@
 // @flow
 import React from 'react';
 import cn from './TaskDetailsPage.less';
-import {
-    Button,
-    Modal,
-    ButtonLink,
-    RouterLink,
-} from 'ui';
-import { RowStack, ColumnStack } from 'ui/layout';
-import CommonLayout from '../../../Commons/Layouts';
+import { Button, Modal, ButtonLink, RouterLink } from 'ui';
+import { RowStack, ColumnStack, Fill, Fit } from 'ui/layout';
+import CommonLayout, {
+    CommonLayoutGoBack,
+    CommonLayoutGreyLineHeader,
+    CommonLayoutContent,
+} from '../../../Commons/Layouts';
 import { cancelableStates, rerunableStates } from '../../Domain/TaskState';
 import TaskDetailsMetaTable from '../TaskDetailsMetaTable/TaskDetailsMetaTable';
 import TaskAccordion from '../TaskAccordion/TaskAccordion';
@@ -25,8 +24,8 @@ export type TaskDetailsPageProps = {
     taskDetails: ?RemoteTaskInfoModel;
     getTaskLocation: (id: string) => RouterLocationDescriptor;
     allowRerunOrCancel: boolean;
-    onRerun: (id: string) => any;
-    onCancel: (id: string) => any;
+    onRerun: (id: string) => void;
+    onCancel: (id: string) => void;
 };
 
 type TaskDetailsPageState = {
@@ -52,65 +51,55 @@ export default class TaskDetailsPage extends React.Component {
         return (
             <div>
                 <CommonLayout>
-                    {taskDetails && <CommonLayout.GoBack to={parentLocation}>
-                        Вернуться к поиску задач
-                    </CommonLayout.GoBack>}
-                    {taskDetails && (
-                        <CommonLayout.GreyLineHeader
+                    {taskDetails &&
+                        <CommonLayoutGoBack to={parentLocation}>
+                            Вернуться к поиску задач
+                        </CommonLayoutGoBack>}
+                    {taskDetails &&
+                        <CommonLayoutGreyLineHeader
                             data-tid='Header'
                             title={`Задача ${taskDetails.taskMeta.name}`}
-                            tools={(taskDetails && allowRerunOrCancel) && this.renderButtons()}>
-                            <TaskTimeLine
-                                getHrefToTask={getTaskLocation}
-                                taskMeta={taskDetails.taskMeta}
-                            />
-                        </CommonLayout.GreyLineHeader>
-                    )}
-                    <CommonLayout.Content>
+                            tools={(taskDetails && allowRerunOrCancel) ? this.renderButtons() : null}>
+                            <TaskTimeLine getHrefToTask={getTaskLocation} taskMeta={taskDetails.taskMeta} />
+                        </CommonLayoutGreyLineHeader>}
+                    <CommonLayoutContent>
                         <ColumnStack block streach gap={2}>
-                            {taskDetails && (
-                                <ColumnStack.Fit>
-                                    <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />
-                                </ColumnStack.Fit>
-                            )}
                             {taskDetails &&
-                                <ColumnStack.Fit>
+                                <Fit>
+                                    <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />
+                                </Fit>}
+                            {taskDetails &&
+                                <Fit>
                                     <TaskAccordion
                                         customRender={customRender}
                                         value={taskDetails.taskData}
                                         title='TaskData'
                                     />
-                                </ColumnStack.Fit>
-                            }
-                            {taskDetails && taskDetails.exceptionInfos && (
-                                <ColumnStack.Fit
-                                    className={cn('exception-container')}
-                                    data-tid='Exceptions'>
+                                </Fit>}
+                            {taskDetails &&
+                                taskDetails.exceptionInfos &&
+                                <Fit className={cn('exception-container')} data-tid='Exceptions'>
                                     {taskDetails.exceptionInfos.map((exception, index) => {
                                         return (
-                                            <pre
-                                                data-tid='Exception'
-                                                key={index}
-                                                className={cn('exception')}>
+                                            <pre data-tid='Exception' key={index} className={cn('exception')}>
                                                 {exception.exceptionMessageInfo}
                                             </pre>
                                         );
                                     })}
-                                </ColumnStack.Fit>
-                            )}
+                                </Fit>}
                         </ColumnStack>
-                    </CommonLayout.Content>
+                    </CommonLayoutContent>
                 </CommonLayout>
-                { openedModal && this.renderModal() }
+                {openedModal && this.renderModal()}
             </div>
         );
     }
 
     getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): ?RouterLocationDescriptor {
-        const documentCirculationId =
-            (taskDetails.taskData && (typeof taskDetails.taskData.documentCirculationId === 'string'))
-                ? taskDetails.taskData.documentCirculationId
-                : null;
+        const documentCirculationId = taskDetails.taskData &&
+            typeof taskDetails.taskData.documentCirculationId === 'string'
+            ? taskDetails.taskData.documentCirculationId
+            : null;
         if (documentCirculationId != null && taskDetails.taskMeta.ticks != null) {
             const rangeSelector = new RangeSelector(TimeZones.UTC);
 
@@ -118,9 +107,7 @@ export default class TaskDetailsPage extends React.Component {
                 pathname: '/AdminTools/Tasks/Tree',
                 search: buildSearchQueryForRequest({
                     enqueueDateTimeRange: rangeSelector.getMonthOf(ticksToDate(taskDetails.taskMeta.ticks)),
-                    queryString:
-                        'Data.DocumentCirculationId:' +
-                        `"${documentCirculationId || ''}"`,
+                    queryString: `Data.DocumentCirculationId:"${documentCirculationId || ''}"`,
                     names: [],
                     states: [],
                 }),
@@ -143,34 +130,25 @@ export default class TaskDetailsPage extends React.Component {
 
         return (
             <RowStack baseline block gap={2}>
-                <RowStack.Fill />
+                <Fill />
                 {relatedTasksLocation &&
-                    <RowStack.Fit>
-                        <RouterLink
-                            icon='list'
-                            to={relatedTasksLocation}>
+                    <Fit>
+                        <RouterLink icon='list' to={relatedTasksLocation}>
                             View related tasks tree
                         </RouterLink>
-                    </RowStack.Fit>}
+                    </Fit>}
                 {isCancelable &&
-                    <RowStack.Fit>
-                        <ButtonLink
-                            icon='remove'
-                            use='danger'
-                            data-tid={'CancelButton'}
-                            onClick={() => this.cancel()}>
+                    <Fit>
+                        <ButtonLink icon='remove' use='danger' data-tid={'CancelButton'} onClick={() => this.cancel()}>
                             Cancel task
                         </ButtonLink>
-                    </RowStack.Fit>}
+                    </Fit>}
                 {isRerunable &&
-                    <RowStack.Fit>
-                        <ButtonLink
-                            icon='refresh'
-                            data-tid={'RerunButton'}
-                            onClick={() => this.rerun()}>
+                    <Fit>
+                        <ButtonLink icon='refresh' data-tid={'RerunButton'} onClick={() => this.rerun()}>
                             Rerun task
                         </ButtonLink>
-                    </RowStack.Fit>}
+                    </Fit>}
             </RowStack>
         );
     }
@@ -188,15 +166,14 @@ export default class TaskDetailsPage extends React.Component {
                 </Modal.Header>
                 <Modal.Body>
                     <span data-tid='ModalText'>
-                    {modalType === 'Rerun'
-                        ? 'Уверен, что таску надо перезапустить?'
-                        : 'Уверен, что таску надо остановить?'
-                    }
+                        {modalType === 'Rerun'
+                            ? 'Уверен, что таску надо перезапустить?'
+                            : 'Уверен, что таску надо остановить?'}
                     </span>
                 </Modal.Body>
                 <Modal.Footer>
                     <RowStack gap={2}>
-                        <RowStack.Fit>
+                        <Fit>
                             {modalType === 'Rerun'
                                 ? <Button
                                     data-tid='RerunButton'
@@ -204,44 +181,45 @@ export default class TaskDetailsPage extends React.Component {
                                     onClick={() => {
                                         onRerun(taskDetails.taskMeta.id);
                                         this.closeModal();
-                                    }}>Перезапустить</Button>
+                                    }}>
+                                      Перезапустить
+                                  </Button>
                                 : <Button
                                     data-tid='CancelButton'
                                     use='danger'
                                     onClick={() => {
                                         onCancel(taskDetails.taskMeta.id);
                                         this.closeModal();
-                                    }}>Остановить</Button>
-                            }
-                        </RowStack.Fit>
-                        <RowStack.Fit>
+                                    }}>
+                                      Остановить
+                                  </Button>}
+                        </Fit>
+                        <Fit>
                             <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
-                        </RowStack.Fit>
+                        </Fit>
                     </RowStack>
                 </Modal.Footer>
             </Modal>
         );
     }
 
-    rerun(): any {
+    rerun() {
         this.setState({
             openedModal: true,
             modalType: 'Rerun',
         });
     }
 
-    cancel(): any {
+    cancel() {
         this.setState({
             openedModal: true,
             modalType: 'Cancel',
         });
     }
 
-    closeModal(): any {
+    closeModal() {
         this.setState({
             openedModal: false,
         });
     }
 }
-
-

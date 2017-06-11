@@ -1,5 +1,4 @@
 // @flow
-// FlowTypeContractGenerator's generated content
 import type { RemoteTaskQueueSearchResults } from './../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults';
 import type { RemoteTaskQueueSearchRequest } from './../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest';
 import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from './../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks';

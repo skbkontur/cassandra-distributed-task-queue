@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button, Modal } from 'ui';
 import _ from 'lodash';
-import { RowStack } from 'ui/layout';
+import { RowStack, Fit } from 'ui/layout';
 import TaskDetails from './TaskDetails/TaskDetails';
 import type { TaskMetaInformation } from '../../api/RemoteTaskQueueApi';
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
@@ -11,9 +11,9 @@ import cn from './TaskTable.less';
 export type TaskTableProps = {
     taskInfos: TaskMetaInformation[];
     allowRerunOrCancel: boolean;
-    onRerun: (id: string) => any;
-    onCancel: (id: string) => any;
-    getTaskLocation: (id: string) => RouterLocationDescriptor;
+    onRerun: (string) => void;
+    onCancel: (string) => void;
+    getTaskLocation: (string) => RouterLocationDescriptor;
 };
 
 type TasksTableState = {
@@ -80,15 +80,14 @@ export default class TasksTable extends React.Component {
                 </Modal.Header>
                 <Modal.Body>
                     <span data-tid='ModalText'>
-                    {modalType === 'Rerun'
-                        ? 'Уверен, что таску надо перезапустить?'
-                        : 'Уверен, что таску надо остановить?'
-                    }
+                        {modalType === 'Rerun'
+                            ? 'Уверен, что таску надо перезапустить?'
+                            : 'Уверен, что таску надо остановить?'}
                     </span>
                 </Modal.Body>
                 <Modal.Footer>
                     <RowStack gap={2}>
-                        <RowStack.Fit>
+                        <Fit>
                             {modalType === 'Rerun'
                                 ? <Button
                                     data-tid='RerunButton'
@@ -96,26 +95,29 @@ export default class TasksTable extends React.Component {
                                     onClick={() => {
                                         onRerun(actionTask);
                                         this.closeModal();
-                                    }}>Перезапустить</Button>
+                                    }}>
+                                      Перезапустить
+                                  </Button>
                                 : <Button
                                     data-tid='CancelButton'
                                     use='danger'
                                     onClick={() => {
                                         onCancel(actionTask);
                                         this.closeModal();
-                                    }}>Остановить</Button>
-                            }
-                        </RowStack.Fit>
-                        <RowStack.Fit>
+                                    }}>
+                                      Остановить
+                                  </Button>}
+                        </Fit>
+                        <Fit>
                             <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
-                        </RowStack.Fit>
+                        </Fit>
                     </RowStack>
                 </Modal.Footer>
             </Modal>
         );
     }
 
-    rerun(id: string): any {
+    rerun(id: string) {
         this.setState({
             openedModal: true,
             modalType: 'Rerun',
@@ -123,7 +125,7 @@ export default class TasksTable extends React.Component {
         });
     }
 
-    cancel(id: string): any {
+    cancel(id: string) {
         this.setState({
             openedModal: true,
             modalType: 'Cancel',
@@ -131,10 +133,9 @@ export default class TasksTable extends React.Component {
         });
     }
 
-    closeModal(): any {
+    closeModal() {
         this.setState({
             openedModal: false,
         });
     }
 }
-

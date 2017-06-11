@@ -111,8 +111,12 @@ class TaskDetailsPageContainer extends React.Component {
                                 .with(x => [SuperUserAccessLevels.God, SuperUserAccessLevels.Developer].includes(x))
                                 .return(false)}
                         taskDetails={taskDetails}
-                        onRerun={() => this.handlerRerun()}
-                        onCancel={() => this.handlerCancel()}
+                        onRerun={() => {
+                            this.handlerRerun();
+                        }}
+                        onCancel={() => {
+                            this.handlerCancel();
+                        }}
                     />
                 )}
             </DelayedLoader>

@@ -1,26 +1,19 @@
 // @flow
 import React from 'react';
-import {
-    Button,
-    Icon,
-    Tooltip,
-    Checkbox,
-    Input,
-} from 'ui';
-import { ColumnStack, RowStack } from 'ui/layout';
+import { Button, Icon, Tooltip, Checkbox, Input } from 'ui';
+import { ColumnStack, RowStack, Fit } from 'ui/layout';
 import cn from './TaskTypesSelect.less';
 
 export type TaskTypesSelectProps = {
     availableTaskTypes: string[];
     value: string[];
     disabled?: boolean;
-    onChange: (selectedTaskTypes: string[]) => any;
+    onChange: (selectedTaskTypes: string[]) => void;
 };
 
 type TaskTypesSelectState = {
     query: string;
 };
-
 
 export default class TaskTypesSelect extends React.Component {
     props: TaskTypesSelectProps;
@@ -40,7 +33,7 @@ export default class TaskTypesSelect extends React.Component {
                     <span className={cn('button-text')}>
                         {value.length ? `Выбрано задач: ${value.length}` : 'Выбрать тип задач'}
                     </span>
-                    <Icon name='caret-bottom'/>
+                    <Icon name='caret-bottom' />
                 </Button>
             </Tooltip>
         );
@@ -53,38 +46,39 @@ export default class TaskTypesSelect extends React.Component {
             return null;
         }
         const filteredTaskTypes = query
-                    ? availableTaskTypes.filter(item => {
-                        return item.search(new RegExp(query, 'i')) !== -1;
-                    })
-                    : availableTaskTypes;
+            ? availableTaskTypes.filter(item => {
+                return item.search(new RegExp(query, 'i')) !== -1;
+            })
+            : availableTaskTypes;
         return (
             <ColumnStack gap={3}>
-                <ColumnStack.Fit>
+                <Fit>
                     <RowStack gap={2}>
-                        <RowStack.Fit>
+                        <Fit>
                             <Input
                                 value={query}
                                 rightIcon={<Icon name='search' />}
                                 onChange={(e, val) => this.setState({ query: val })}
                             />
-                        </RowStack.Fit>
-                        <RowStack.Fit>
+                        </Fit>
+                        <Fit>
                             <Button onClick={() => this.clear()}>Очистить все</Button>
-                        </RowStack.Fit>
-                        <RowStack.Fit>
+                        </Fit>
+                        <Fit>
                             <Button onClick={() => this.invert()}>Инвертировать</Button>
-                        </RowStack.Fit>
+                        </Fit>
                     </RowStack>
 
-                </ColumnStack.Fit>
-                <ColumnStack.Fit>
+                </Fit>
+                <Fit>
                     <div className={cn('tooltip-columns-wrapper')}>
                         <div className={cn('tooltip-columns')}>
                             {filteredTaskTypes.map((item, index) => {
                                 return (
                                     <Checkbox
                                         data-tid={item}
-                                        checked={this.isItemSelected(item)} key={index}
+                                        checked={this.isItemSelected(item)}
+                                        key={index}
                                         onChange={(e, val) => this.selectItem(val, item)}>
                                         {item}
                                     </Checkbox>
@@ -92,9 +86,8 @@ export default class TaskTypesSelect extends React.Component {
                             })}
                         </div>
                     </div>
-                </ColumnStack.Fit>
+                </Fit>
             </ColumnStack>
-
         );
     }
 

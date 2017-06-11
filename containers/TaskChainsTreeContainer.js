@@ -2,6 +2,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { withRouter } from 'react-router';
+import type { ReactRouter } from 'react-router';
 import DelayedLoader from '../../Commons/DelayedLoader/DelayedLoader';
 import { withRemoteTaskQueueApi } from '../api/RemoteTaskQueueApiInjection';
 import { takeLastAndRejectPrevious } from 'PromiseUtils';
@@ -17,7 +18,7 @@ import TaskChainTree from '../components/TaskChainTree/TaskChainTree';
 
 type TaskChainsTreeContainerProps = {
     searchQuery: string;
-    router: any;
+    router: ReactRouter;
     remoteTaskQueueApi: IRemoteTaskQueueApi;
     taskDetails: ?(RemoteTaskInfoModel[]);
     parentLocation: RouterLocationDescriptor;
@@ -87,12 +88,11 @@ class TaskChainsTreeContainer extends React.Component {
     }
 
     getParentAndChildrenTaskIds(taskMetas: RemoteTaskInfoModel[]): string[] {
-        return _.chain(taskMetas)
+        const linkedIds = taskMetas
             .map(x => [x.taskMeta.parentTaskId, ...(x.taskMeta.childTaskIds || [])])
             .reduce((result, x) => [...result, ...x], [])
-            .filter(x => x)
-            .uniq()
-            .value();
+            .filter(Boolean);
+        return _.uniq(linkedIds);
     }
 
     async loadData(searchQuery: ?string, request: RemoteTaskQueueSearchRequest): Promise<void> {

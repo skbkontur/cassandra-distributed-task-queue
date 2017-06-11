@@ -3,19 +3,13 @@ import React from 'react';
 import { getAllTaskStates } from '../../Domain/TaskState';
 import type { TaskState } from '../../Domain/TaskState';
 import { TaskStates } from '../../Domain/TaskState';
-
-import {
-    Button,
-    Icon,
-    Tooltip,
-    Checkbox,
-} from 'ui';
-import { ColumnStack } from 'ui/layout';
+import { Button, Icon, Tooltip, Checkbox } from 'ui';
+import { ColumnStack, Fit } from 'ui/layout';
 import cn from './TaskStatesSelect.less';
 
 export type TaskStatesSelectProps = {
     value: TaskState[];
-    onChange: (selectedTaskStates: TaskState[]) => any;
+    onChange: (selectedTaskStates: TaskState[]) => void;
 };
 
 const TaskStateCaptions = {
@@ -40,7 +34,7 @@ export default class TaskStatesSelect extends React.Component {
                     <span data-tid='ButtonText' className={cn('button-text')}>
                         {value.length ? `Выбрано состояний: ${value.length}` : 'Выбрать состояние'}
                     </span>
-                    <Icon name='caret-bottom'/>
+                    <Icon name='caret-bottom' />
                 </Button>
             </Tooltip>
         );
@@ -51,14 +45,14 @@ export default class TaskStatesSelect extends React.Component {
             <ColumnStack block gap={2}>
                 {getAllTaskStates().map((item, index) => {
                     return (
-                    <ColumnStack.Fit key={index}>
-                        <Checkbox
-                            data-tid={item}
-                            checked={this.isItemSelected(item)}
-                            onChange={(e, val) => this.selectItem(val, item)}>
-                            {TaskStateCaptions[item]}
-                        </Checkbox>
-                    </ColumnStack.Fit>
+                        <Fit key={index}>
+                            <Checkbox
+                                data-tid={item}
+                                checked={this.isItemSelected(item)}
+                                onChange={(e, val) => this.selectItem(val, item)}>
+                                {TaskStateCaptions[item]}
+                            </Checkbox>
+                        </Fit>
                     );
                 })}
             </ColumnStack>
@@ -71,7 +65,7 @@ export default class TaskStatesSelect extends React.Component {
     }
 
     selectItem(val: boolean, taskState: TaskState) {
-        const { value } = this.props;
+        const { value, onChange } = this.props;
         const newSelectedArray = value.slice();
 
         if (val) {
@@ -81,6 +75,6 @@ export default class TaskStatesSelect extends React.Component {
             const index = newSelectedArray.findIndex(i => i === taskState);
             newSelectedArray.splice(index, 1);
         }
-        this.props.onChange(newSelectedArray);
+        onChange(newSelectedArray);
     }
 }

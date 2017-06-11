@@ -2,8 +2,9 @@
 import React from 'react';
 import $c from 'property-chain';
 import { Modal, Input, Button } from 'ui';
-import { RowStack, ColumnStack } from 'ui/layout';
+import { RowStack, ColumnStack, Fit } from 'ui/layout';
 import { withRouter } from 'react-router';
+import type { ReactRouter } from 'react-router';
 import { Loader } from 'ui';
 import TasksTable from '../components/TaskTable/TaskTable';
 import TasksPaginator from '../components/TasksPaginator/TasksPaginator';
@@ -24,7 +25,7 @@ import numberToString from '../Domain/numberToString';
 
 type TasksPageContainerProps = {
     searchQuery: string;
-    router: any;
+    router: ReactRouter;
     remoteTaskQueueApi: IRemoteTaskQueueApi;
     results: ?RemoteTaskQueueSearchResults;
 };
@@ -37,11 +38,6 @@ type TasksPageContainerState = {
     modalType: 'Rerun' | 'Cancel';
     manyTaskConfirm: string;
 };
-
-// type Paging = {
-//     from: ?number;
-//     size: ?number;
-// };
 
 const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping()
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
@@ -296,32 +292,32 @@ class TasksPageContainer extends React.Component {
                 </Modal.Header>
                 <Modal.Body>
                     <ColumnStack gap={2}>
-                        <ColumnStack.Fit>
+                        <Fit>
                             <span data-tid='ModalText'>
                             {modalType === 'Rerun'
                                 ? 'Уверен, что все эти таски надо перезапустить?'
                                 : 'Уверен, что все эти таски надо остановить?'
                             }
                             </span>
-                        </ColumnStack.Fit>
+                        </Fit>
                     {counter > 100 && [
-                        <ColumnStack.Fit key='text'>
+                        <Fit key='text'>
                             Это действие может задеть больше 100 тасок, если это точно надо сделать,
                             то напиши прописью количество тасок (их { counter }):
-                        </ColumnStack.Fit>,
-                        <ColumnStack.Fit key='input'>
+                        </Fit>,
+                        <Fit key='input'>
                             <Input
                                 data-tid='ConfirmationInput'
                                 value={manyTaskConfirm}
                                 onChange={(e, val) => this.setState({ manyTaskConfirm: val })}
                             />
-                        </ColumnStack.Fit>,
+                        </Fit>,
                     ]}
                     </ColumnStack>
                 </Modal.Body>
                 <Modal.Footer>
                     <RowStack gap={2}>
-                        <RowStack.Fit>
+                        <Fit>
                             {modalType === 'Rerun'
                                 ? <Button
                                     data-tid='RerunButton'
@@ -344,31 +340,31 @@ class TasksPageContainer extends React.Component {
                                         this.closeModal();
                                     }}>Остановить все</Button>
                             }
-                        </RowStack.Fit>
-                        <RowStack.Fit>
+                        </Fit>
+                        <Fit>
                             <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
-                        </RowStack.Fit>
+                        </Fit>
                     </RowStack>
                 </Modal.Footer>
             </Modal>
         );
     }
 
-    clickRerunAll(): any {
+    clickRerunAll() {
         this.setState({
             confirmMultipleModalOpened: true,
             modalType: 'Rerun',
         });
     }
 
-    clickCancelAll(): any {
+    clickCancelAll() {
         this.setState({
             confirmMultipleModalOpened: true,
             modalType: 'Cancel',
         });
     }
 
-    closeModal(): any {
+    closeModal() {
         this.setState({
             confirmMultipleModalOpened: false,
         });
@@ -395,58 +391,62 @@ class TasksPageContainer extends React.Component {
                 <CommonLayout.Header data-tid='Header' title='Список задач' />
                 <CommonLayout.Content>
                     <ColumnStack block stretch gap={2}>
-                        <ColumnStack.Fit>
+                        <Fit>
                             <TaskQueueFilter
                                 value={request}
                                 availableTaskTypes={availableTaskNames}
                                 onChange={value => this.setState({ request: { ...this.state.request, ...value } })}
                                 onSearchButtonClick={() => this.handleSearch()}
                             />
-                        </ColumnStack.Fit>
-                        <ColumnStack.Fit>
+                        </Fit>
+                        <Fit>
                             <Loader type='big' active={loading} data-tid={'Loader'}>
                                 {(results && isStateCompletelyLoaded) && <ColumnStack block stretch gap={2}>
                                     {counter > 0 && (
-                                        <ColumnStack.Fit>
+                                        <Fit>
                                             Всего результатов: {counter}
-                                        </ColumnStack.Fit>
+                                        </Fit>
                                     )}
                                     {counter > 0 && allowRerunOrCancel && (
-                                        <ColumnStack.Fit>
+                                        <Fit>
                                             <RowStack gap={2} data-tid={'ButtonsWrapper'}>
-                                                <RowStack.Fit>
+                                                <Fit>
                                                     <Button
                                                         use='danger'
                                                         data-tid={'CancelAllButton'}
                                                         onClick={() => this.clickCancelAll()}>Cancel All</Button>
-                                                </RowStack.Fit>
-                                                <RowStack.Fit>
+                                                </Fit>
+                                                <Fit>
                                                     <Button
                                                         use='success'
                                                         data-tid={'RerunAllButton'}
                                                         onClick={() => this.clickRerunAll()}>Rerun All</Button>
-                                                </RowStack.Fit>
+                                                </Fit>
                                             </RowStack>
-                                        </ColumnStack.Fit>
+                                        </Fit>
                                     )}
-                                    <ColumnStack.Fit>
+                                    <Fit>
                                         <TasksTable
                                             getTaskLocation={id => this.getTaskLocation(id)}
                                             allowRerunOrCancel={allowRerunOrCancel}
                                             taskInfos={results.taskMetas}
-                                            onRerun={id => this.handleRerunTask(id)}
-                                            onCancel={id => this.handleCancelTask(id)}
+                                            onRerun={id => {
+                                                this.handleRerunTask(id);
+                                            }}
+                                            onCancel={id => {
+                                                this.handleCancelTask(id);
+                                            }}
                                         />
-                                    </ColumnStack.Fit>
-                                    <ColumnStack.Fit>
+                                    </Fit>
+                                    <Fit>
                                         <TasksPaginator
                                             nextPageLocation={this.getNextPageLocation()}
                                             prevPageLocation={this.getPrevPageLocation()}
                                         />
-                                    </ColumnStack.Fit>
+                                    </Fit>
                                 </ColumnStack>}
                             </Loader>
-                        </ColumnStack.Fit>
+                        </Fit>
                     </ColumnStack>
                     {this.state.confirmMultipleModalOpened && this.renderModal()}
                 </CommonLayout.Content>

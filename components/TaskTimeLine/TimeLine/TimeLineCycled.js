@@ -5,12 +5,16 @@ import cn from './TimeLine.less';
 
 type TimeLineCycledProps = {
     children?: any;
-    content?: ?any;
+    content?: ?React.Element<*> | ?string;
     icon?: ?string;
 };
 
 export default class TimeLineCycled extends React.Component {
     props: TimeLineCycledProps;
+    refs: {
+        entries: ?HTMLElement;
+        lines: ?HTMLElement;
+    };
 
     componentDidUpdate() {
         this.updateLinesHeight();
@@ -21,12 +25,13 @@ export default class TimeLineCycled extends React.Component {
     }
 
     updateLinesHeight() {
-        if (this.refs.entries) {
+        if (this.refs.entries != null) {
             const entries = this.refs.entries.children;
             const lastEntry = entries[entries.length - 1];
             const lastEntryHeight = lastEntry.clientHeight;
-            if (!isNaN(lastEntryHeight)) {
-                this.refs.lines.style.marginBottom = (lastEntryHeight - 22).toString() + 'px';
+            const lines = this.refs.lines;
+            if (!isNaN(lastEntryHeight) && lines != null) {
+                lines.style.marginBottom = (lastEntryHeight - 22).toString() + 'px';
             }
         }
     }

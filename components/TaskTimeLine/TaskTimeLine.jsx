@@ -11,6 +11,8 @@ import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from '../../
 import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
 import AllowCopyToClipboard from '../../../Commons/AllowCopyToClipboard';
 
+const TimeLineEntry = TimeLine.Entry;
+
 const IconColors = {
     red: '#d43517',
     green: '#3F9726',
@@ -45,11 +47,11 @@ export default class TaskTimeLine extends React.Component {
         }
     }
 
-    createSimpleEntry(entry: { title: string; severity?: string; icon: string; date?: ?Ticks }): any {
+    createSimpleEntry(entry: { title: string; severity?: string; icon: string; date?: ?Ticks }): React.Element<any> {
         const severity = entry.severity || 'info';
 
         return (
-            <TimeLine.Entry
+            <TimeLineEntry
                 key={entry.title}
                 icon={entry.icon}
                 iconColor={this.getIconColor(severity)}>
@@ -59,11 +61,11 @@ export default class TaskTimeLine extends React.Component {
                         <DateTimeView value={entry.date} />
                     </div>}
                 </div>
-            </TimeLine.Entry>
+            </TimeLineEntry>
         );
     }
 
-    getStartedEntry(): any {
+    getStartedEntry(): null | React.Element<any> {
         const { taskMeta } = this.props;
 
         if (!taskMeta.startExecutingTicks) {
@@ -76,7 +78,7 @@ export default class TaskTimeLine extends React.Component {
         });
     }
 
-    getExectionEntries(): (?any)[] {
+    getExectionEntries(): (null | React.Element<any>)[] {
         const { taskMeta } = this.props;
         if (taskMeta.attempts === undefined || taskMeta.attempts === null || taskMeta.attempts === 0) {
             return [
@@ -113,21 +115,22 @@ export default class TaskTimeLine extends React.Component {
         }
 
         if (taskMeta.attempts !== undefined && taskMeta.attempts !== null && taskMeta.attempts > 1) {
+            const TimeLineCycled = TimeLine.Cycled;
             return [
-                <TimeLine.Cycled
+                <TimeLineCycled
                     key='FewAttempts'
                     icon='refresh'
                     content={
                         `Restarted for ${taskMeta.attempts} times`
                     }>
                     {shouldStartAndStartEntries}
-                </TimeLine.Cycled>,
+                </TimeLineCycled>,
             ];
         }
         return shouldStartAndStartEntries;
     }
 
-    getShouldStartedEntry(): ?any {
+    getShouldStartedEntry(): null | React.Element<any> {
         const { taskMeta } = this.props;
         return this.createSimpleEntry({
             title: 'Start scheduled',
@@ -136,7 +139,7 @@ export default class TaskTimeLine extends React.Component {
         });
     }
 
-    getCurrentStateEntries(): (?any)[] {
+    getCurrentStateEntries(): (null | React.Element<any>)[] {
         const { taskMeta } = this.props;
 
         if (taskMeta.state === TaskStates.Finished) {
@@ -193,7 +196,7 @@ export default class TaskTimeLine extends React.Component {
         return [];
     }
 
-    getEnqueuedEntry(): ?any {
+    getEnqueuedEntry(): null | React.Element<any> {
         const { taskMeta } = this.props;
         return this.createSimpleEntry({
             title: 'Enqueued',
@@ -202,11 +205,11 @@ export default class TaskTimeLine extends React.Component {
         });
     }
 
-    getChildrenTaskIdsEntry(): ?any {
+    getChildrenTaskIdsEntry(): null | React.Element<any> {
         const { taskMeta, getHrefToTask } = this.props;
         if (taskMeta.childTaskIds && taskMeta.childTaskIds.length > 0) {
             return (
-                <TimeLine.Entry
+                <TimeLineEntry
                     key='Children'
                     icon='arrow-bottom'
                     iconColor={IconColors.grey}>
@@ -222,19 +225,19 @@ export default class TaskTimeLine extends React.Component {
                         {(taskMeta.childTaskIds && taskMeta.childTaskIds.length > 3) &&
                             <div>...and {taskMeta.childTaskIds.length - 3} more</div>}
                     </div>
-                </TimeLine.Entry>
+                </TimeLineEntry>
             );
         }
         return null;
     }
 
-    getParentTaskIdEntry(): ?any {
+    getParentTaskIdEntry(): null | React.Element<any> {
         const { taskMeta, getHrefToTask } = this.props;
         if (!taskMeta.parentTaskId) {
             return null;
         }
         return (
-            <TimeLine.Entry
+            <TimeLineEntry
                 key='Parent'
                 icon='arrow-top'
                 iconColor={IconColors.grey}>
@@ -244,11 +247,11 @@ export default class TaskTimeLine extends React.Component {
                         <RouterLink to={getHrefToTask(taskMeta.parentTaskId)}>{taskMeta.parentTaskId}</RouterLink>
                     </AllowCopyToClipboard>
                 </div>
-            </TimeLine.Entry>
+            </TimeLineEntry>
         );
     }
 
-    getTaskTimeLineEntries(): any[] {
+    getTaskTimeLineEntries(): React.Element<any>[] {
         return (
             [
                 this.getParentTaskIdEntry(),
@@ -256,7 +259,7 @@ export default class TaskTimeLine extends React.Component {
                 ...this.getExectionEntries(),
                 ...this.getCurrentStateEntries(),
                 this.getChildrenTaskIdsEntry(),
-            ].filter(x => x)
+            ].filter(Boolean)
         );
     }
 

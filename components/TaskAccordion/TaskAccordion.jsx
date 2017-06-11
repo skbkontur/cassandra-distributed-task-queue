@@ -1,13 +1,11 @@
 // @flow
 import React from 'react';
-import {
-    Icon,
-} from 'ui';
+import { Icon } from 'ui';
 import cn from './TaskAccordion.less';
 
 export type TaskAccordionProps = {
-    customRender?: ?((target: any, path: string[]) => React.Element<*> | null);
-    value: any;
+    customRender?: ?(target: { [key: string]: mixed }, path: string[]) => React.Element<*> | null;
+    value: { [key: string]: mixed };
     title: string;
     pathPrefix: string[];
 };
@@ -41,9 +39,7 @@ export default class TaskAccordion extends React.Component {
                         className={cn('toggle-button')}
                         onClick={() => this.setState({ collapsed: !collapsed })}>
                         <Icon name={collapsed ? 'caret-right' : 'caret-bottom'} />
-                        <span
-                            data-tid='ToggleButtonText'
-                            className={cn('toggle-button-text')}>{title}</span>
+                        <span data-tid='ToggleButtonText' className={cn('toggle-button-text')}>{title}</span>
                     </button>}
                 {value && !collapsed && this.renderValue()}
             </div>
@@ -55,15 +51,15 @@ export default class TaskAccordion extends React.Component {
         const keys = Object.keys(value);
 
         return keys.map(key => {
-            const isObjectValue = isObject(value[key]);
-            if (isObjectValue) {
+            const valueToRender = value[key];
+            if (typeof valueToRender === 'object' && valueToRender != null && !Array.isArray(valueToRender)) {
                 const newCustomRender = customRender ? (target, path) => customRender(value, [key, ...path]) : null;
                 return (
                     <TaskAccordion
                         data-tid='InnerAccordion'
                         customRender={newCustomRender}
                         key={key}
-                        value={value[key]}
+                        value={valueToRender}
                         title={key}
                         pathPrefix={[...pathPrefix, key]}
                     />
@@ -71,20 +67,13 @@ export default class TaskAccordion extends React.Component {
             }
             return (
                 <div key={key} className={cn('string-wrapper')} data-tid={[...pathPrefix, key].join('_')}>
-                    <span
-                        data-tid='Key'
-                        className={cn('title')}>{key}: </span>
+                    <span data-tid='Key' className={cn('title')}>{key}: </span>
                     <span data-tid='Value'>
                         {(customRender && customRender(value, [key])) ||
-                            (Array.isArray(value[key]) ? value[key].join(', ') : String(value[key]))
-                        }
+                            (Array.isArray(value[key]) ? value[key].join(', ') : String(value[key]))}
                     </span>
                 </div>
             );
         });
     }
-}
-
-function isObject(maybeObj: any): boolean {
-    return (typeof maybeObj === 'object') && (maybeObj !== null) && !Array.isArray(maybeObj);
 }
