@@ -4,7 +4,7 @@ import TaskTypesSelect from '../TaskTypesSelect/TaskTypesSelect';
 import TaskStatesSelect from '../TaskStatesSelect/TaskStatesSelect';
 import { TimeZones } from '../../../Commons/DataTypes/Time';
 import type { RemoteTaskQueueSearchRequest } from '../../api/RemoteTaskQueueApi';
-import { Button, Input, Modal, ButtonLink } from 'ui';
+import { Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink } from 'ui';
 import DateTimeRangePicker from '../../../Commons/DateTimeRangePicker/DateTimeRangePicker';
 import { RowStack, ColumnStack, Fit, Fill } from 'ui/layout';
 import cn from './TaskQueueFilter.less';
@@ -47,9 +47,7 @@ export default class TaskQueueFilter extends React.Component {
                             />
                         </Fit>
                         <Fit>
-                            <ButtonLink
-                                onClick={() => this.openModal()}
-                                data-tid='OpenModalButton'>
+                            <ButtonLink onClick={() => this.openModal()} data-tid='OpenModalButton'>
                                 Что можно ввести в строку поиска
                             </ButtonLink>
                             {openedModal && this.renderModal()}
@@ -91,10 +89,10 @@ export default class TaskQueueFilter extends React.Component {
     renderModal(): React.Element<*> {
         return (
             <Modal data-tid='Modal' onClose={() => this.closeModal()} width={900}>
-                <Modal.Header>
+                <ModalHeader>
                     Справка
-                </Modal.Header>
-                <Modal.Body>
+                </ModalHeader>
+                <ModalBody>
                     При поиске задач можно пользоваться следующими инструментами поиска:
                     <ol className={cn('modal-list')}>
                         <li>
@@ -140,12 +138,12 @@ export default class TaskQueueFilter extends React.Component {
                             - поле пусто, <code>_exists_:Data.Value</code> - поле заполнено.
                         </li>
                     </ol>
-                </Modal.Body>
-                <Modal.Footer>
+                </ModalBody>
+                <ModalFooter>
                     <div className={cn('modal-footer')}>
                         <Button onClick={() => this.closeModal()}>Закрыть</Button>
                     </div>
-                </Modal.Footer>
+                </ModalFooter>
             </Modal>
         );
     }

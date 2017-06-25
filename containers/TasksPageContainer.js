@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import $c from 'property-chain';
-import { Modal, Input, Button } from 'ui';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from 'ui';
 import { RowStack, ColumnStack, Fit } from 'ui/layout';
 import { withRouter } from 'react-router';
 import type { ReactRouter } from 'react-router';
@@ -287,10 +287,10 @@ class TasksPageContainer extends React.Component {
 
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid='ConfirmMultipleOperationModal'>
-                <Modal.Header>
+                <ModalHeader>
                     Нужно подтверждение
-                </Modal.Header>
-                <Modal.Body>
+                </ModalHeader>
+                <ModalBody>
                     <ColumnStack gap={2}>
                         <Fit>
                             <span data-tid='ModalText'>
@@ -314,8 +314,8 @@ class TasksPageContainer extends React.Component {
                         </Fit>,
                     ]}
                     </ColumnStack>
-                </Modal.Body>
-                <Modal.Footer>
+                </ModalBody>
+                <ModalFooter>
                     <RowStack gap={2}>
                         <Fit>
                             {modalType === 'Rerun'
@@ -345,7 +345,7 @@ class TasksPageContainer extends React.Component {
                             <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
                         </Fit>
                     </RowStack>
-                </Modal.Footer>
+                </ModalFooter>
             </Modal>
         );
     }

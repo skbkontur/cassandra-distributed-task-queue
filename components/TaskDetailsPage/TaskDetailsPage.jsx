@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import cn from './TaskDetailsPage.less';
-import { Button, Modal, ButtonLink, RouterLink } from 'ui';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink, RouterLink } from 'ui';
 import { RowStack, ColumnStack, Fill, Fit } from 'ui/layout';
 import CommonLayout, {
     CommonLayoutGoBack,
@@ -59,7 +59,7 @@ export default class TaskDetailsPage extends React.Component {
                         <CommonLayoutGreyLineHeader
                             data-tid='Header'
                             title={`Задача ${taskDetails.taskMeta.name}`}
-                            tools={(taskDetails && allowRerunOrCancel) ? this.renderButtons() : null}>
+                            tools={taskDetails && allowRerunOrCancel ? this.renderButtons() : null}>
                             <TaskTimeLine getHrefToTask={getTaskLocation} taskMeta={taskDetails.taskMeta} />
                         </CommonLayoutGreyLineHeader>}
                     <CommonLayoutContent>
@@ -161,17 +161,17 @@ export default class TaskDetailsPage extends React.Component {
         }
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid='ConfirmOperationModal'>
-                <Modal.Header>
+                <ModalHeader>
                     Нужно подтверждение
-                </Modal.Header>
-                <Modal.Body>
+                </ModalHeader>
+                <ModalBody>
                     <span data-tid='ModalText'>
                         {modalType === 'Rerun'
                             ? 'Уверен, что таску надо перезапустить?'
                             : 'Уверен, что таску надо остановить?'}
                     </span>
-                </Modal.Body>
-                <Modal.Footer>
+                </ModalBody>
+                <ModalFooter>
                     <RowStack gap={2}>
                         <Fit>
                             {modalType === 'Rerun'
@@ -198,7 +198,7 @@ export default class TaskDetailsPage extends React.Component {
                             <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
                         </Fit>
                     </RowStack>
-                </Modal.Footer>
+                </ModalFooter>
             </Modal>
         );
     }

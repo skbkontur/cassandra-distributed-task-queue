@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { Button, Modal } from 'ui';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'ui';
 import _ from 'lodash';
 import { RowStack, Fit } from 'ui/layout';
 import TaskDetails from './TaskDetails/TaskDetails';
@@ -75,17 +75,17 @@ export default class TasksTable extends React.Component {
 
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid='ConfirmOperationModal'>
-                <Modal.Header>
+                <ModalHeader>
                     Нужно подтверждение
-                </Modal.Header>
-                <Modal.Body>
+                </ModalHeader>
+                <ModalBody>
                     <span data-tid='ModalText'>
                         {modalType === 'Rerun'
                             ? 'Уверен, что таску надо перезапустить?'
                             : 'Уверен, что таску надо остановить?'}
                     </span>
-                </Modal.Body>
-                <Modal.Footer>
+                </ModalBody>
+                <ModalFooter>
                     <RowStack gap={2}>
                         <Fit>
                             {modalType === 'Rerun'
@@ -112,7 +112,7 @@ export default class TasksTable extends React.Component {
                             <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
                         </Fit>
                     </RowStack>
-                </Modal.Footer>
+                </ModalFooter>
             </Modal>
         );
     }
