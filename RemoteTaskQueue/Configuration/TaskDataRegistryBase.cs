@@ -7,8 +7,8 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.Core.Sharding.Hashes;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Strings;
 
 namespace RemoteQueue.Configuration
 {
