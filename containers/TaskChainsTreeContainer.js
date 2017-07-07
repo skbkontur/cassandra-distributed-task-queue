@@ -7,7 +7,7 @@ import DelayedLoader from '../../Commons/DelayedLoader/DelayedLoader';
 import { withRemoteTaskQueueApi } from '../api/RemoteTaskQueueApiInjection';
 import { takeLastAndRejectPrevious } from 'PromiseUtils';
 import { createDefaultRemoteTaskQueueSearchRequest, isRemoteTaskQueueSearchRequestEmpty } from '../api/RemoteTaskQueueApi';
-import { TaskStates } from '../Domain/TaskState';
+import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
 import { queryStringMapping } from '../../Commons/QueryStringMapping';
 import CommonLayout from '../../Commons/Layouts';
 import type { RemoteTaskQueueSearchRequest, RemoteTaskInfoModel } from '../api/RemoteTaskQueueApi';

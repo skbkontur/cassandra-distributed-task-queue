@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
-import { getAllTaskStates } from '../../Domain/TaskState';
-import type { TaskState } from '../../Domain/TaskState';
-import { TaskStates } from '../../Domain/TaskState';
+import { getAllTaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions';
+import type { TaskState } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
+import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
 import { Button, Icon, Tooltip, Checkbox } from 'ui';
 import { ColumnStack, Fit } from 'ui/layout';
 import cn from './TaskStatesSelect.less';

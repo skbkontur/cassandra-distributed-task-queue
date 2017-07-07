@@ -1,15 +1,32 @@
 // @flow
+const arrNumbers = [
+    [
+        '',
+        'один',
+        'два',
+        'три',
+        'четыре',
+        'пять',
+        'шесть',
+        'семь',
+        'восемь',
+        'девять',
+        'десять',
+        'одиннадцать',
+        'двенадцать',
+        'тринадцать',
+        'четырнадцать',
+        'пятнадцать',
+        'шестнадцать',
+        'семнадцать',
+        'восемнадцать',
+        'девятнадцать',
+    ],
+    ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'],
+    ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'],
+];
 
-export default function(number: number | string): string | false {
-    const arrNumbers = [];
-    arrNumbers[1] = ['', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять',
-        'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать',
-        'семнадцать', 'восемнадцать', 'девятнадцать'];
-    arrNumbers[2] = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят',
-        'восемьдесят', 'девяносто'];
-    arrNumbers[3] = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот',
-        'восемьсот', 'девятьсот'];
-
+export default function numberToString(number: number | string): string | false {
     function numberParser(num: string, desc: number): string {
         let newNum: string = num;
         let string = '';
@@ -17,16 +34,16 @@ export default function(number: number | string): string | false {
         if (newNum.length === 3) {
             newNumHundred = Number(newNum.substr(0, 1));
             newNum = newNum.substr(1, 3);
-            string = arrNumbers[3][newNumHundred] + ' ';
+            string = arrNumbers[2][newNumHundred] + ' ';
         }
 
         if (Number(newNum) < 20) {
-            string += arrNumbers[1][Number(newNum)] + ' ';
+            string += arrNumbers[0][Number(newNum)] + ' ';
         }
         else {
             const firstNum = Number(newNum.substr(0, 1));
             const secondNum = Number(newNum.substr(1, 2));
-            string += arrNumbers[2][firstNum] + ' ' + arrNumbers[1][secondNum] + ' ';
+            string += arrNumbers[1][firstNum] + ' ' + arrNumbers[0][secondNum] + ' ';
         }
         const lastNum = parseFloat(newNum.substr(-1));
         switch (desc) {
@@ -89,7 +106,7 @@ export default function(number: number | string): string | false {
     let string = '';
     let numParser = '';
     let count = 0;
-    for (let i = (numberLength - 1); i >= 0; i--) {
+    for (let i = numberLength - 1; i >= 0; i--) {
         const numDigit = copyNumber.substr(i, 1);
         numParser = numDigit + numParser;
         if ((numParser.length === 3 || i === 0) && !isNaN(parseInt(numParser, 10))) {

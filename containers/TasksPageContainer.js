@@ -14,7 +14,7 @@ import { takeLastAndRejectPrevious } from 'PromiseUtils';
 import { SuperUserAccessLevels } from '../../Domain/Globals';
 import { getCurrentUserInfo } from '../../Domain/Globals';
 import { createDefaultRemoteTaskQueueSearchRequest, isRemoteTaskQueueSearchRequestEmpty } from '../api/RemoteTaskQueueApi';
-import { TaskStates } from '../Domain/TaskState';
+import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
 import { SearchQuery, queryStringMapping } from '../../Commons/QueryStringMapping';
 import CommonLayout from '../../Commons/Layouts';
 import type { RemoteTaskQueueSearchRequest, RemoteTaskQueueSearchResults } from '../api/RemoteTaskQueueApi';

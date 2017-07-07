@@ -2,13 +2,13 @@
 import React from 'react';
 import { Link, RouterLink, Checkbox } from 'ui';
 import { RowStack, ColumnStack, Fit, Fill } from 'ui/layout';
-import { TaskStates } from '../../../Domain/TaskState';
-import { cancelableStates, rerunableStates } from '../../../Domain/TaskState';
+import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
+import { cancelableStates, rerunableStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions';
 import AllowCopyToClipboard from '../../../../Commons/AllowCopyToClipboard';
 import DateTimeView from '../../DateTimeView/DateTimeView';
 import type { RouterLocationDescriptor } from '../../../../Commons/DataTypes/Routing';
 import type { TaskMetaInformation } from '../../../api/RemoteTaskQueueApi';
-import type { TaskState } from '../../../Domain/TaskState';
+import type { TaskState } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
 import type { Ticks } from '../../../../Commons/DataTypes/Time';
 
 import cn from './TaskDetails.less';

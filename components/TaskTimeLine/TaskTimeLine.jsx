@@ -4,7 +4,7 @@ import { RouterLink } from 'ui';
 import cn from './TaskTimeLine.less';
 import TimeLine from './TimeLine/TimeLine';
 import DateTimeView from '../DateTimeView/DateTimeView';
-import { TaskStates } from '../../Domain/TaskState';
+import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
 import { ticksToDate } from '../../../Commons/DataTypes/Time';
 import type { Ticks } from '../../../Commons/DataTypes/Time';
 import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from '../../api/RemoteTaskQueueApi';

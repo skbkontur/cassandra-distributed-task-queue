@@ -8,7 +8,7 @@ import CommonLayout, {
     CommonLayoutGreyLineHeader,
     CommonLayoutContent,
 } from '../../../Commons/Layouts';
-import { cancelableStates, rerunableStates } from '../../Domain/TaskState';
+import { cancelableStates, rerunableStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions';
 import TaskDetailsMetaTable from '../TaskDetailsMetaTable/TaskDetailsMetaTable';
 import TaskAccordion from '../TaskAccordion/TaskAccordion';
 import customRender from '../../Domain/CustomRender';
