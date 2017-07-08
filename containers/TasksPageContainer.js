@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import _ from 'lodash';
 import $c from 'property-chain';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from 'ui';
 import { RowStack, ColumnStack, Fit } from 'ui/layout';
@@ -37,6 +38,7 @@ type TasksPageContainerState = {
     confirmMultipleModalOpened: boolean;
     modalType: 'Rerun' | 'Cancel';
     manyTaskConfirm: string;
+    searchRequested: boolean;
 };
 
 const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping()
@@ -81,6 +83,7 @@ class TasksPageContainer extends React.Component {
         confirmMultipleModalOpened: false,
         modalType: 'Rerun',
         manyTaskConfirm: '',
+        searchRequested: false,
     };
     searchTasks = takeLastAndRejectPrevious(
         this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
@@ -108,6 +111,7 @@ class TasksPageContainer extends React.Component {
     }
 
     async componentWillMount(): any {
+        console.log('componentWillMount');
         const { searchQuery } = this.props;
         await this.updateAvailableTaskNamesIfNeed();
 
@@ -132,7 +136,7 @@ class TasksPageContainer extends React.Component {
         const request = this.getRequestBySearchQuery(searchQuery);
 
         this.setState({ request: request });
-        if (!this.isSearchRequestEmpty(searchQuery) && !results) {
+        if (this.state.searchRequested && !this.isSearchRequestEmpty(searchQuery) && !results) {
             this.loadData(searchQuery, request);
         }
     }
@@ -140,7 +144,6 @@ class TasksPageContainer extends React.Component {
     async loadData(searchQuery: ?string, request: RemoteTaskQueueSearchRequest): Promise<void> {
         const { from, size } = pagingMapping.parse(searchQuery);
         const { router } = this.props;
-
         this.setState({ loading: true });
         try {
             const results = await this.searchTasks(request, (from || 0), (size || 20));
@@ -153,21 +156,23 @@ class TasksPageContainer extends React.Component {
             });
         }
         finally {
-            this.setState({ loading: false });
+            this.setState({ loading: false, searchRequested: false });
         }
     }
 
     handleSearch() {
         const { router } = this.props;
         const { request } = this.state;
+        this.setState({ searchRequested: true }, () => {
+            router.push({
+                pathname: '/AdminTools/Tasks',
+                search: SearchQuery.combine(
+                    this.getSearchRequestMapping().stringify(request),
+                    pagingMapping.stringify({ from: 0, size: 20 })
+                ),
+                state: null,
+            });
 
-        router.push({
-            pathname: '/AdminTools/Tasks',
-            search: SearchQuery.combine(
-                this.getSearchRequestMapping().stringify(request),
-                pagingMapping.stringify({ from: 0, size: 20 })
-            ),
-            state: null,
         });
     }
 

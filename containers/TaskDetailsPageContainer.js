@@ -3,13 +3,14 @@ import React from 'react';
 import $c from 'property-chain';
 import DelayedLoader from '../../Commons/DelayedLoader/DelayedLoader';
 import TaskDetailsPage from '../components/TaskDetailsPage/TaskDetailsPage';
+import TaskNotFoundPage from '../components/TaskNotFoundPage/TaskNotFoundPage';
 import { SuperUserAccessLevels } from '../../Domain/Globals';
 import type { RemoteTaskInfoModel, IRemoteTaskQueueApi } from '../api/RemoteTaskQueueApi';
 import { withRemoteTaskQueueApi } from '../api/RemoteTaskQueueApiInjection';
 import { takeLastAndRejectPrevious } from 'PromiseUtils';
 import { getCurrentUserInfo } from '../../Domain/Globals';
 import type { RouterLocationDescriptor } from '../../Commons/DataTypes/Routing';
-
+import { ApiError } from 'Domain/ApiBase/ApiBase';
 
 type TaskDetailsPageContainerProps = {
     id: string;
@@ -20,6 +21,7 @@ type TaskDetailsPageContainerProps = {
 type TaskDetailsPageContainerState = {
     taskDetails: ?RemoteTaskInfoModel;
     loading: boolean;
+    notFoundError: boolean;
 };
 
 class TaskDetailsPageContainer extends React.Component {
@@ -27,6 +29,7 @@ class TaskDetailsPageContainer extends React.Component {
     state: TaskDetailsPageContainerState = {
         loading: false,
         taskDetails: null,
+        notFoundError: false,
     };
     getTaskDetails = takeLastAndRejectPrevious(
         this.props.remoteTaskQueueApi.getTaskDetails.bind(this.props.remoteTaskQueueApi)
@@ -52,10 +55,21 @@ class TaskDetailsPageContainer extends React.Component {
     }
 
     async loadData(id: string): Promise<void> {
-        this.setState({ loading: true });
+        this.setState({ loading: true, notFoundError: false });
         try {
-            const taskDetails = await this.getTaskDetails(id);
-            this.setState({ taskDetails: taskDetails });
+            try {
+                const taskDetails = await this.getTaskDetails(id);
+                this.setState({ taskDetails: taskDetails });
+            }
+            catch (e) {
+                if (e instanceof ApiError) {
+                    if (e.statusCode === 404) {
+                        this.setState({ notFoundError: true });
+                        return;
+                    }
+                }
+                throw e;
+            }
         }
         finally {
             this.setState({ loading: false });
@@ -95,12 +109,16 @@ class TaskDetailsPageContainer extends React.Component {
     }
 
     render(): React.Element<*> {
-        const { taskDetails, loading } = this.state;
+        const { taskDetails, loading, notFoundError } = this.state;
         const { parentLocation } = this.props;
         const currentUser = getCurrentUserInfo();
 
         return (
             <DelayedLoader active={loading} type='big' simulateHeightToEnablePageScroll>
+                {notFoundError &&
+                    <TaskNotFoundPage
+                        parentLocation={parentLocation || this.getDefaultParetnLocation()}
+                    />}
                 {taskDetails && (
                     <TaskDetailsPage
                         getTaskLocation={id => this.getTaskLocation(id)}

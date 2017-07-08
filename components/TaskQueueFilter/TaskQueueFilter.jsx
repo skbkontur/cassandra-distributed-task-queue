@@ -44,6 +44,11 @@ export default class TaskQueueFilter extends React.Component {
                                 data-tid={'SearchStringInput'}
                                 value={queryString || ''}
                                 onChange={(e, value) => onChange({ queryString: value })}
+                                onKeyPress={e => {
+                                    if (e.key === 'Enter') {
+                                        onSearchButtonClick();
+                                    }
+                                }}
                             />
                         </Fit>
                         <Fit>
