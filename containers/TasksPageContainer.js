@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import _ from 'lodash';
 import $c from 'property-chain';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from 'ui';
 import { RowStack, ColumnStack, Fit } from 'ui/layout';
@@ -111,7 +110,6 @@ class TasksPageContainer extends React.Component {
     }
 
     async componentWillMount(): any {
-        console.log('componentWillMount');
         const { searchQuery } = this.props;
         await this.updateAvailableTaskNamesIfNeed();
 
@@ -172,7 +170,6 @@ class TasksPageContainer extends React.Component {
                 ),
                 state: null,
             });
-
         });
     }
 
