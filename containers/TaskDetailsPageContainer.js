@@ -60,18 +60,16 @@ class TaskDetailsPageContainer extends React.Component {
             try {
                 const taskDetails = await this.getTaskDetails(id);
                 this.setState({ taskDetails: taskDetails });
-                // @flow-coverage-ignore-next-line
             } catch (e) {
-                // @flow-coverage-ignore-next-line
-                const error: mixed = e;
-                if (typeof error === "object" && error instanceof ApiError) {
-                    // @flow-coverage-ignore-next-line
-                    if (error.statusCode === 404) {
+                if (e instanceof ApiError) {
+                    // @flow-coverage-ignore-line
+                    if (e.statusCode === 404) {
+                        // @flow-coverage-ignore-line
                         this.setState({ notFoundError: true });
                         return;
                     }
                 }
-                throw error;
+                throw e; // @flow-coverage-ignore-line
             }
         } finally {
             this.setState({ loading: false });
