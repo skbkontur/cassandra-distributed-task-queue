@@ -94,8 +94,8 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                 .ProcessResponse();
             return new TaskSearchResponse
                 {
-                    Ids = metaResponse.Response.Hits.Select(x => x.Id).ToArray(),
-                    TotalCount = metaResponse.Response.TotalCount
+                    Ids = metaResponse.Response.Hits.Hits.Select(x => x.Id).ToArray(),
+                    TotalCount = metaResponse.Response.Hits.TotalCount
                 };
         }
 
