@@ -72,7 +72,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
             var indexForTimeRange = SearchIndexNameFactory.GetIndexForTimeRange(taskSearchRequest.FromTicksUtc, taskSearchRequest.ToTicksUtc);
             var metaResponse = elasticsearchClientFactory
                 .DefaultClient.Value
-                .Search<SearchResponseNoData>(indexForTimeRange,
+                .Search<SearchResponse>(indexForTimeRange,
                                               new
                                                   {
                                                       from,
