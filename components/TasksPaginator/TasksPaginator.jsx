@@ -1,11 +1,11 @@
 // @flow
-import React from 'react';
-import { RouterLink } from 'ui';
-import type { RouterLocationDescriptor } from 'react-router';
+import React from "react";
+import { RouterLink } from "ui";
+import type { RouterLocationDescriptor } from "react-router";
 
 export type TasksPaginatorProps = {
-    nextPageLocation: RouterLocationDescriptor | null;
-    prevPageLocation: RouterLocationDescriptor | null;
+    nextPageLocation: RouterLocationDescriptor | null,
+    prevPageLocation: RouterLocationDescriptor | null,
 };
 
 export default class TasksPaginator extends React.Component {
@@ -16,21 +16,13 @@ export default class TasksPaginator extends React.Component {
         return (
             <div>
                 {prevPageLocation &&
-                    <RouterLink
-                        to={prevPageLocation}
-                        icon='arrow-left'
-                        data-tid='PrevLink'>
+                    <RouterLink to={prevPageLocation} icon="arrow-left" data-tid="PrevLink">
                         Предыдущая
-                    </RouterLink>
-                }
+                    </RouterLink>}
                 {nextPageLocation &&
-                    <RouterLink
-                        to={nextPageLocation}
-                        icon='arrow-right'
-                        data-tid='NextLink'>
+                    <RouterLink to={nextPageLocation} icon="arrow-right" data-tid="NextLink">
                         Следующая
-                    </RouterLink>
-                }
+                    </RouterLink>}
             </div>
         );
     }

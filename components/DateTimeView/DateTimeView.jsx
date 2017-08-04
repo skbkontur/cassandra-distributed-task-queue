@@ -1,18 +1,18 @@
 // @flow
-import React from 'react';
-import { Button, RadioGroup, Tooltip } from 'ui';
-import moment from 'moment';
-import cn from './DateTimeView.less';
-import { ticksToDate, TimeZones, getAllTimeZones } from '../../../Commons/DataTypes/Time';
-import type { Ticks, TimeZone } from '../../../Commons/DataTypes/Time';
+import React from "react";
+import { Button, RadioGroup, Tooltip } from "ui";
+import moment from "moment";
+import cn from "./DateTimeView.less";
+import { ticksToDate, TimeZones, getAllTimeZones } from "../../../Commons/DataTypes/Time";
+import type { Ticks, TimeZone } from "../../../Commons/DataTypes/Time";
 
 type DateTimeViewProps = {
-    value: ?Ticks;
+    value: ?Ticks,
 };
 
 type DateTimeViewState = {
-    timezone: TimeZone;
-    defaultTimezone: TimeZone;
+    timezone: TimeZone,
+    defaultTimezone: TimeZone,
 };
 
 class LocalStorageUtils {
@@ -24,12 +24,12 @@ class LocalStorageUtils {
             }
             // @flow-coverage-ignore-next-line
             const result: mixed = JSON.parse(value);
-            if (result != null && typeof result === 'number') {
+            if (result != null && typeof result === "number") {
                 return result;
             }
             return defaultValue;
-        }
-        catch (e) { // @flow-coverage-ignore-line
+            // @flow-coverage-ignore-next-line
+        } catch (e) {
             return defaultValue;
         }
     }
@@ -42,10 +42,10 @@ class DateTimeViewStorage {
     set(timezone: TimeZone) {
         this.timezone = timezone;
         try {
-            localStorage.setItem('RemoteTaskQueueMonitoring.DateTimeView.TimeZone', JSON.stringify(timezone));
-        }
-        catch (e) {  // @flow-coverage-ignore-line
-            // eslint-disable-line
+            localStorage.setItem("RemoteTaskQueueMonitoring.DateTimeView.TimeZone", JSON.stringify(timezone));
+            // @flow-coverage-ignore-next-line
+        } catch (e) {
+            // Если ничего не вышло, то и ладно
         }
         for (const callback of this.callbacks) {
             callback();
@@ -55,7 +55,7 @@ class DateTimeViewStorage {
     get(): TimeZone {
         if (this.timezone == null) {
             const result = LocalStorageUtils.getNumberOrDefault(
-                'RemoteTaskQueueMonitoring.DateTimeView.TimeZone',
+                "RemoteTaskQueueMonitoring.DateTimeView.TimeZone",
                 TimeZones.UTC
             );
             if (result === 0 || result === 180 || result === 300) {
@@ -107,19 +107,19 @@ export default class DateTimeView extends React.Component {
     getTimeZoneShortName(timezone: TimeZone): string {
         switch (timezone) {
             case 0:
-                return 'UTC';
+                return "UTC";
             case 180:
-                return 'МСК';
+                return "МСК";
             case 300:
-                return 'ЕКБ';
+                return "ЕКБ";
             default:
-                throw new Error('OutOfRange');
+                throw new Error("OutOfRange");
         }
     }
 
     renderWithTimeZone(timezone: TimeZone): string {
         const { value } = this.props;
-        return moment(value ? ticksToDate(value) : null).utcOffset(timezone).format('DD.MM.YYYY HH:mm:ss.SSS');
+        return moment(value ? ticksToDate(value) : null).utcOffset(timezone).format("DD.MM.YYYY HH:mm:ss.SSS");
     }
 
     handleChangeDefault() {
@@ -136,9 +136,7 @@ export default class DateTimeView extends React.Component {
                         onChange={(e, value) => this.setState({ timezone: value })}
                         renderItem={value =>
                             <span>
-                                {this.renderWithTimeZone(value)}
-                                {' '}
-                                ({this.getTimeZoneShortName(value)})
+                                {this.renderWithTimeZone(value)} ({this.getTimeZoneShortName(value)})
                             </span>}
                     />
                 </div>
@@ -157,11 +155,9 @@ export default class DateTimeView extends React.Component {
         }
         return (
             <span>
-                {this.renderWithTimeZone(defaultTimezone)}
-                {' '}
-                (
-                <Tooltip render={() => this.selectTimeZone()} trigger='click' pos='right top'>
-                    <span className={cn('timezone')}>
+                {this.renderWithTimeZone(defaultTimezone)} (
+                <Tooltip render={() => this.selectTimeZone()} trigger="click" pos="right top">
+                    <span className={cn("timezone")}>
                         {this.getTimeZoneShortName(defaultTimezone)}
                     </span>
                 </Tooltip>

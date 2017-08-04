@@ -1,50 +1,53 @@
 // @flow
-import React from 'react';
-import $c from 'property-chain';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from 'ui';
-import { RowStack, ColumnStack, Fit } from 'ui/layout';
-import { withRouter } from 'react-router';
-import type { ReactRouter } from 'react-router';
-import { Loader } from 'ui';
-import TasksTable from '../components/TaskTable/TaskTable';
-import TasksPaginator from '../components/TasksPaginator/TasksPaginator';
-import TaskQueueFilter from '../components/TaskQueueFilter/TaskQueueFilter';
-import { withRemoteTaskQueueApi } from '../api/RemoteTaskQueueApiInjection';
-import { takeLastAndRejectPrevious } from 'PromiseUtils';
-import { SuperUserAccessLevels } from '../../Domain/Globals';
-import { getCurrentUserInfo } from '../../Domain/Globals';
-import { createDefaultRemoteTaskQueueSearchRequest, isRemoteTaskQueueSearchRequestEmpty } from '../api/RemoteTaskQueueApi';
-import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
-import { SearchQuery, queryStringMapping } from '../../Commons/QueryStringMapping';
-import CommonLayout from '../../Commons/Layouts';
-import type { RemoteTaskQueueSearchRequest, RemoteTaskQueueSearchResults } from '../api/RemoteTaskQueueApi';
-import type { IRemoteTaskQueueApi } from '../api/RemoteTaskQueueApi';
-import type { QueryStringMapping } from '../../Commons/QueryStringMapping';
-import type { RouterLocationDescriptor } from '../../Commons/DataTypes/Routing';
-import numberToString from '../Domain/numberToString';
+import React from "react";
+import $c from "property-chain";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from "ui";
+import { RowStack, ColumnStack, Fit } from "ui/layout";
+import { withRouter } from "react-router";
+import type { ReactRouter } from "react-router";
+import { Loader } from "ui";
+import TasksTable from "../components/TaskTable/TaskTable";
+import TasksPaginator from "../components/TasksPaginator/TasksPaginator";
+import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
+import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
+import { takeLastAndRejectPrevious } from "PromiseUtils";
+import { SuperUserAccessLevels } from "../../Domain/Globals";
+import { getCurrentUserInfo } from "../../Domain/Globals";
+import {
+    createDefaultRemoteTaskQueueSearchRequest,
+    isRemoteTaskQueueSearchRequestEmpty,
+} from "../api/RemoteTaskQueueApi";
+import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { SearchQuery, queryStringMapping } from "../../Commons/QueryStringMapping";
+import CommonLayout from "../../Commons/Layouts";
+import type { RemoteTaskQueueSearchRequest, RemoteTaskQueueSearchResults } from "../api/RemoteTaskQueueApi";
+import type { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
+import type { QueryStringMapping } from "../../Commons/QueryStringMapping";
+import type { RouterLocationDescriptor } from "../../Commons/DataTypes/Routing";
+import numberToString from "../Domain/numberToString";
 
 type TasksPageContainerProps = {
-    searchQuery: string;
-    router: ReactRouter;
-    remoteTaskQueueApi: IRemoteTaskQueueApi;
-    results: ?RemoteTaskQueueSearchResults;
+    searchQuery: string,
+    router: ReactRouter,
+    remoteTaskQueueApi: IRemoteTaskQueueApi,
+    results: ?RemoteTaskQueueSearchResults,
 };
 
 type TasksPageContainerState = {
-    loading: boolean;
-    request: RemoteTaskQueueSearchRequest;
-    availableTaskNames: string[] | null;
-    confirmMultipleModalOpened: boolean;
-    modalType: 'Rerun' | 'Cancel';
-    manyTaskConfirm: string;
-    searchRequested: boolean;
+    loading: boolean,
+    request: RemoteTaskQueueSearchRequest,
+    availableTaskNames: string[] | null,
+    confirmMultipleModalOpened: boolean,
+    modalType: "Rerun" | "Cancel",
+    manyTaskConfirm: string,
+    searchRequested: boolean,
 };
 
 const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping()
-    .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
-    .mapToString(x => x.queryString, 'q')
-    .mapToStringArray(x => x.names, 'types')
-    .mapToSet(x => x.states, 'states', TaskStates)
+    .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
+    .mapToString(x => x.queryString, "q")
+    .mapToStringArray(x => x.names, "types")
+    .mapToSet(x => x.states, "states", TaskStates)
     .build();
 
 function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMapping<RemoteTaskQueueSearchRequest> {
@@ -53,22 +56,21 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
         return result;
     }, {});
     return queryStringMapping()
-        .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
-        .mapToString(x => x.queryString, 'q')
-        .mapToSet(x => x.names, 'types', availableTaskNamesMap, true)
-        .mapToSet(x => x.states, 'states', TaskStates)
+        .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
+        .mapToString(x => x.queryString, "q")
+        .mapToSet(x => x.names, "types", availableTaskNamesMap, true)
+        .mapToSet(x => x.states, "states", TaskStates)
         .build();
 }
 
-
-const pagingMapping: QueryStringMapping<{ from: ?number; size: ?number }> = queryStringMapping()
-    .mapToInteger(x => x.from, 'from')
-    .mapToInteger(x => x.size, 'to')
+const pagingMapping: QueryStringMapping<{ from: ?number, size: ?number }> = queryStringMapping()
+    .mapToInteger(x => x.from, "from")
+    .mapToInteger(x => x.size, "to")
     .build();
 
 export function buildSearchQueryForRequest(request: RemoteTaskQueueSearchRequest): string {
     if (request.names && request.names.length > 0) {
-        throw new Error('Cannot build search request with names.');
+        throw new Error("Cannot build search request with names.");
     }
     return provisionalMapping.stringify(request);
 }
@@ -80,13 +82,11 @@ class TasksPageContainer extends React.Component {
         request: createDefaultRemoteTaskQueueSearchRequest(),
         availableTaskNames: null,
         confirmMultipleModalOpened: false,
-        modalType: 'Rerun',
-        manyTaskConfirm: '',
+        modalType: "Rerun",
+        manyTaskConfirm: "",
         searchRequested: false,
     };
-    searchTasks = takeLastAndRejectPrevious(
-        this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
-    );
+    searchTasks = takeLastAndRejectPrevious(this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi));
 
     isSearchRequestEmpty(searchQuery: ?string): boolean {
         const request = provisionalMapping.parse(searchQuery);
@@ -96,7 +96,7 @@ class TasksPageContainer extends React.Component {
     getSearchRequestMapping(): QueryStringMapping<RemoteTaskQueueSearchRequest> {
         const { availableTaskNames } = this.state;
         if (!availableTaskNames) {
-            throw new Error('InvalidProgramState');
+            throw new Error("InvalidProgramState");
         }
         return createSearchRequestMapping(availableTaskNames);
     }
@@ -144,16 +144,15 @@ class TasksPageContainer extends React.Component {
         const { router } = this.props;
         this.setState({ loading: true });
         try {
-            const results = await this.searchTasks(request, (from || 0), (size || 20));
+            const results = await this.searchTasks(request, from || 0, size || 20);
             router.replace({
-                pathname: '/AdminTools/Tasks',
+                pathname: "/AdminTools/Tasks",
                 search: searchQuery,
                 state: {
                     results: results,
                 },
             });
-        }
-        finally {
+        } finally {
             this.setState({ loading: false, searchRequested: false });
         }
     }
@@ -163,7 +162,7 @@ class TasksPageContainer extends React.Component {
         const { request } = this.state;
         this.setState({ searchRequested: true }, () => {
             router.push({
-                pathname: '/AdminTools/Tasks',
+                pathname: "/AdminTools/Tasks",
                 search: SearchQuery.combine(
                     this.getSearchRequestMapping().stringify(request),
                     pagingMapping.stringify({ from: 0, size: 20 })
@@ -182,7 +181,7 @@ class TasksPageContainer extends React.Component {
             pathname: `/AdminTools/Tasks/${id}`,
             state: {
                 parentLocation: {
-                    pathname: '/AdminTools/Tasks',
+                    pathname: "/AdminTools/Tasks",
                     search: SearchQuery.combine(
                         this.getSearchRequestMapping().stringify(request),
                         pagingMapping.stringify({ from: from, size: size })
@@ -207,10 +206,10 @@ class TasksPageContainer extends React.Component {
             return null;
         }
         return {
-            pathname: '/AdminTools/Tasks',
+            pathname: "/AdminTools/Tasks",
             search: SearchQuery.combine(
                 this.getSearchRequestMapping().stringify(request),
-                pagingMapping.stringify({ from: (from || 0) + (size || 20), size: (size || 20) })
+                pagingMapping.stringify({ from: (from || 0) + (size || 20), size: size || 20 })
             ),
         };
     }
@@ -224,10 +223,10 @@ class TasksPageContainer extends React.Component {
             return null;
         }
         return {
-            pathname: '/AdminTools/Tasks',
+            pathname: "/AdminTools/Tasks",
             search: SearchQuery.combine(
                 this.getSearchRequestMapping().stringify(request),
-                pagingMapping.stringify({ from: Math.max(0, (from || 0) - (size || 20)), size: (size || 20) })
+                pagingMapping.stringify({ from: Math.max(0, (from || 0) - (size || 20)), size: size || 20 })
             ),
         };
     }
@@ -237,8 +236,7 @@ class TasksPageContainer extends React.Component {
         this.setState({ loading: true });
         try {
             await remoteTaskQueueApi.rerunTasks([id]);
-        }
-        finally {
+        } finally {
             this.setState({ loading: false });
         }
     }
@@ -248,8 +246,7 @@ class TasksPageContainer extends React.Component {
         this.setState({ loading: true });
         try {
             await remoteTaskQueueApi.cancelTasks([id]);
-        }
-        finally {
+        } finally {
             this.setState({ loading: false });
         }
     }
@@ -261,8 +258,7 @@ class TasksPageContainer extends React.Component {
         this.setState({ loading: true });
         try {
             await remoteTaskQueueApi.rerunTasksBySearchQuery(request);
-        }
-        finally {
+        } finally {
             this.setState({ loading: false });
         }
     }
@@ -274,12 +270,10 @@ class TasksPageContainer extends React.Component {
         this.setState({ loading: true });
         try {
             await remoteTaskQueueApi.cancelTasksBySearchQuery(request);
-        }
-        finally {
+        } finally {
             this.setState({ loading: false });
         }
     }
-
 
     renderModal(): React.Element<*> {
         const { results } = this.props;
@@ -288,63 +282,69 @@ class TasksPageContainer extends React.Component {
         const counter = (results && parseInt(results.totalCount, 10)) || 0;
 
         return (
-            <Modal onClose={() => this.closeModal()} width={500} data-tid='ConfirmMultipleOperationModal'>
-                <ModalHeader>
-                    Нужно подтверждение
-                </ModalHeader>
+            <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmMultipleOperationModal">
+                <ModalHeader>Нужно подтверждение</ModalHeader>
                 <ModalBody>
                     <ColumnStack gap={2}>
                         <Fit>
-                            <span data-tid='ModalText'>
-                            {modalType === 'Rerun'
-                                ? 'Уверен, что все эти таски надо перезапустить?'
-                                : 'Уверен, что все эти таски надо остановить?'
-                            }
+                            <span data-tid="ModalText">
+                                {modalType === "Rerun"
+                                    ? "Уверен, что все эти таски надо перезапустить?"
+                                    : "Уверен, что все эти таски надо остановить?"}
                             </span>
                         </Fit>
-                    {counter > 100 && [
-                        <Fit key='text'>
-                            Это действие может задеть больше 100 тасок, если это точно надо сделать,
-                            то напиши прописью количество тасок (их { counter }):
-                        </Fit>,
-                        <Fit key='input'>
-                            <Input
-                                data-tid='ConfirmationInput'
-                                value={manyTaskConfirm}
-                                onChange={(e, val) => this.setState({ manyTaskConfirm: val })}
-                            />
-                        </Fit>,
-                    ]}
+                        {counter > 100 && [
+                            <Fit key="text">
+                                Это действие может задеть больше 100 тасок, если это точно надо сделать, то напиши
+                                прописью количество тасок (их {counter}):
+                            </Fit>,
+                            <Fit key="input">
+                                <Input
+                                    data-tid="ConfirmationInput"
+                                    value={manyTaskConfirm}
+                                    onChange={(e, val) => this.setState({ manyTaskConfirm: val })}
+                                />
+                            </Fit>,
+                        ]}
                     </ColumnStack>
                 </ModalBody>
                 <ModalFooter>
                     <RowStack gap={2}>
                         <Fit>
-                            {modalType === 'Rerun'
+                            {modalType === "Rerun"
                                 ? <Button
-                                    data-tid='RerunButton'
-                                    use='success'
-                                    disabled={counter > 100 &&
-                                        (!confirmedRegExp.test(manyTaskConfirm) &&
-                                         manyTaskConfirm !== numberToString(counter))}
-                                    onClick={() => {
-                                        this.handleRerunAll();
-                                        this.closeModal();
-                                    }}>Перезапустить все</Button>
+                                      data-tid="RerunButton"
+                                      use="success"
+                                      disabled={
+                                          counter > 100 &&
+                                          (!confirmedRegExp.test(manyTaskConfirm) &&
+                                              manyTaskConfirm !== numberToString(counter))
+                                      }
+                                      onClick={() => {
+                                          this.handleRerunAll();
+                                          this.closeModal();
+                                      }}>
+                                      Перезапустить все
+                                  </Button>
                                 : <Button
-                                    data-tid='CancelButton'
-                                    use='danger'
-                                    disabled={counter > 100 &&
-                                        (!confirmedRegExp.test(manyTaskConfirm) &&
-                                         manyTaskConfirm !== numberToString(counter))}
-                                    onClick={() => {
-                                        this.handleCancelAll();
-                                        this.closeModal();
-                                    }}>Остановить все</Button>
-                            }
+                                      data-tid="CancelButton"
+                                      use="danger"
+                                      disabled={
+                                          counter > 100 &&
+                                          (!confirmedRegExp.test(manyTaskConfirm) &&
+                                              manyTaskConfirm !== numberToString(counter))
+                                      }
+                                      onClick={() => {
+                                          this.handleCancelAll();
+                                          this.closeModal();
+                                      }}>
+                                      Остановить все
+                                  </Button>}
                         </Fit>
                         <Fit>
-                            <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
+                            <Button data-tid="CloseButton" onClick={() => this.closeModal()}>
+                                Закрыть
+                            </Button>
                         </Fit>
                     </RowStack>
                 </ModalFooter>
@@ -355,14 +355,14 @@ class TasksPageContainer extends React.Component {
     clickRerunAll() {
         this.setState({
             confirmMultipleModalOpened: true,
-            modalType: 'Rerun',
+            modalType: "Rerun",
         });
     }
 
     clickCancelAll() {
         this.setState({
             confirmMultipleModalOpened: true,
-            modalType: 'Cancel',
+            modalType: "Cancel",
         });
     }
 
@@ -371,7 +371,6 @@ class TasksPageContainer extends React.Component {
             confirmMultipleModalOpened: false,
         });
     }
-
 
     render(): React.Element<*> {
         const currentUser = getCurrentUserInfo();
@@ -387,10 +386,8 @@ class TasksPageContainer extends React.Component {
 
         return (
             <CommonLayout>
-                <CommonLayout.GoBack href='/AdminTools'>
-                    Вернуться к инструментам администратора
-                </CommonLayout.GoBack>
-                <CommonLayout.Header data-tid='Header' title='Список задач' />
+                <CommonLayout.GoBack href="/AdminTools">Вернуться к инструментам администратора</CommonLayout.GoBack>
+                <CommonLayout.Header data-tid="Header" title="Список задач" />
                 <CommonLayout.Content>
                     <ColumnStack block stretch gap={2}>
                         <Fit>
@@ -402,51 +399,56 @@ class TasksPageContainer extends React.Component {
                             />
                         </Fit>
                         <Fit>
-                            <Loader type='big' active={loading} data-tid={'Loader'}>
-                                {(results && isStateCompletelyLoaded) && <ColumnStack block stretch gap={2}>
-                                    {counter > 0 && (
+                            <Loader type="big" active={loading} data-tid={"Loader"}>
+                                {results &&
+                                    isStateCompletelyLoaded &&
+                                    <ColumnStack block stretch gap={2}>
+                                        {counter > 0 &&
+                                            <Fit>
+                                                Всего результатов: {counter}
+                                            </Fit>}
+                                        {counter > 0 &&
+                                            allowRerunOrCancel &&
+                                            <Fit>
+                                                <RowStack gap={2} data-tid={"ButtonsWrapper"}>
+                                                    <Fit>
+                                                        <Button
+                                                            use="danger"
+                                                            data-tid={"CancelAllButton"}
+                                                            onClick={() => this.clickCancelAll()}>
+                                                            Cancel All
+                                                        </Button>
+                                                    </Fit>
+                                                    <Fit>
+                                                        <Button
+                                                            use="success"
+                                                            data-tid={"RerunAllButton"}
+                                                            onClick={() => this.clickRerunAll()}>
+                                                            Rerun All
+                                                        </Button>
+                                                    </Fit>
+                                                </RowStack>
+                                            </Fit>}
                                         <Fit>
-                                            Всего результатов: {counter}
+                                            <TasksTable
+                                                getTaskLocation={id => this.getTaskLocation(id)}
+                                                allowRerunOrCancel={allowRerunOrCancel}
+                                                taskInfos={results.taskMetas}
+                                                onRerun={id => {
+                                                    this.handleRerunTask(id);
+                                                }}
+                                                onCancel={id => {
+                                                    this.handleCancelTask(id);
+                                                }}
+                                            />
                                         </Fit>
-                                    )}
-                                    {counter > 0 && allowRerunOrCancel && (
                                         <Fit>
-                                            <RowStack gap={2} data-tid={'ButtonsWrapper'}>
-                                                <Fit>
-                                                    <Button
-                                                        use='danger'
-                                                        data-tid={'CancelAllButton'}
-                                                        onClick={() => this.clickCancelAll()}>Cancel All</Button>
-                                                </Fit>
-                                                <Fit>
-                                                    <Button
-                                                        use='success'
-                                                        data-tid={'RerunAllButton'}
-                                                        onClick={() => this.clickRerunAll()}>Rerun All</Button>
-                                                </Fit>
-                                            </RowStack>
+                                            <TasksPaginator
+                                                nextPageLocation={this.getNextPageLocation()}
+                                                prevPageLocation={this.getPrevPageLocation()}
+                                            />
                                         </Fit>
-                                    )}
-                                    <Fit>
-                                        <TasksTable
-                                            getTaskLocation={id => this.getTaskLocation(id)}
-                                            allowRerunOrCancel={allowRerunOrCancel}
-                                            taskInfos={results.taskMetas}
-                                            onRerun={id => {
-                                                this.handleRerunTask(id);
-                                            }}
-                                            onCancel={id => {
-                                                this.handleCancelTask(id);
-                                            }}
-                                        />
-                                    </Fit>
-                                    <Fit>
-                                        <TasksPaginator
-                                            nextPageLocation={this.getNextPageLocation()}
-                                            prevPageLocation={this.getPrevPageLocation()}
-                                        />
-                                    </Fit>
-                                </ColumnStack>}
+                                    </ColumnStack>}
                             </Loader>
                         </Fit>
                     </ColumnStack>

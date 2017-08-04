@@ -1,24 +1,24 @@
 // @flow
-import React from 'react';
-import { Button, Icon, Tooltip, Checkbox, Input } from 'ui';
-import { ColumnStack, RowStack, Fit } from 'ui/layout';
-import cn from './TaskTypesSelect.less';
+import React from "react";
+import { Button, Icon, Tooltip, Checkbox, Input } from "ui";
+import { ColumnStack, RowStack, Fit } from "ui/layout";
+import cn from "./TaskTypesSelect.less";
 
 export type TaskTypesSelectProps = {
-    availableTaskTypes: string[];
-    value: string[];
-    disabled?: boolean;
-    onChange: (selectedTaskTypes: string[]) => void;
+    availableTaskTypes: string[],
+    value: string[],
+    disabled?: boolean,
+    onChange: (selectedTaskTypes: string[]) => void,
 };
 
 type TaskTypesSelectState = {
-    query: string;
+    query: string,
 };
 
 export default class TaskTypesSelect extends React.Component {
     props: TaskTypesSelectProps;
     state: TaskTypesSelectState = {
-        query: '',
+        query: "",
     };
 
     render(): React.Element<*> {
@@ -26,14 +26,14 @@ export default class TaskTypesSelect extends React.Component {
         return (
             <Tooltip
                 render={() => this.renderTooltip()}
-                trigger={disabled ? 'closed' : 'click'}
-                pos='bottom left'
-                data-tid='Tooltip'>
+                trigger={disabled ? "closed" : "click"}
+                pos="bottom left"
+                data-tid="Tooltip">
                 <Button disabled={disabled}>
-                    <span className={cn('button-text')}>
-                        {value.length ? `Выбрано задач: ${value.length}` : 'Выбрать тип задач'}
+                    <span className={cn("button-text")}>
+                        {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
                     </span>
-                    <Icon name='caret-bottom' />
+                    <Icon name="caret-bottom" />
                 </Button>
             </Tooltip>
         );
@@ -47,8 +47,8 @@ export default class TaskTypesSelect extends React.Component {
         }
         const filteredTaskTypes = query
             ? availableTaskTypes.filter(item => {
-                return item.search(new RegExp(query, 'i')) !== -1;
-            })
+                  return item.search(new RegExp(query, "i")) !== -1;
+              })
             : availableTaskTypes;
         return (
             <ColumnStack gap={3}>
@@ -57,7 +57,7 @@ export default class TaskTypesSelect extends React.Component {
                         <Fit>
                             <Input
                                 value={query}
-                                rightIcon={<Icon name='search' />}
+                                rightIcon={<Icon name="search" />}
                                 onChange={(e, val) => this.setState({ query: val })}
                             />
                         </Fit>
@@ -68,11 +68,10 @@ export default class TaskTypesSelect extends React.Component {
                             <Button onClick={() => this.invert()}>Инвертировать</Button>
                         </Fit>
                     </RowStack>
-
                 </Fit>
                 <Fit>
-                    <div className={cn('tooltip-columns-wrapper')}>
-                        <div className={cn('tooltip-columns')}>
+                    <div className={cn("tooltip-columns-wrapper")}>
+                        <div className={cn("tooltip-columns")}>
                             {filteredTaskTypes.map((item, index) => {
                                 return (
                                     <Checkbox
@@ -96,8 +95,7 @@ export default class TaskTypesSelect extends React.Component {
         const newSelectedArray = value.slice();
         if (val) {
             newSelectedArray.push(taskType);
-        }
-        else {
+        } else {
             const index = newSelectedArray.findIndex(i => i === taskType);
             newSelectedArray.splice(index, 1);
         }
@@ -107,12 +105,12 @@ export default class TaskTypesSelect extends React.Component {
     clear() {
         const { onChange } = this.props;
         onChange([]);
-        this.setState({ query: '' });
+        this.setState({ query: "" });
     }
 
     invert() {
         const { onChange, availableTaskTypes, value } = this.props;
-        this.setState({ query: '' });
+        this.setState({ query: "" });
         const inverseValues = availableTaskTypes.filter(item => !value.includes(item));
         onChange(inverseValues);
     }

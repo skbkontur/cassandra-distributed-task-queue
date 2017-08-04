@@ -1,25 +1,25 @@
 // @flow
-import React from 'react';
-import { RouterLink } from 'ui';
-import { ColumnStack, Fit } from 'ui/layout';
-import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
-import TimeLine from '../TaskTimeLine/TimeLine/TimeLine';
-import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from '../../api/RemoteTaskQueueApi';
-import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
-import _ from 'lodash';
-import AllowCopyToClipboard from '../../../Commons/AllowCopyToClipboard';
-import cn from './TaskChainTree.less';
+import React from "react";
+import { RouterLink } from "ui";
+import { ColumnStack, Fit } from "ui/layout";
+import type { RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+import TimeLine from "../TaskTimeLine/TimeLine/TimeLine";
+import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
+import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import _ from "lodash";
+import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
+import cn from "./TaskChainTree.less";
 
 const IconColors = {
-    red: '#d43517',
-    green: '#3F9726',
-    grey: '#a0a0a0',
-    warning: '#ff9900',
+    red: "#d43517",
+    green: "#3F9726",
+    grey: "#a0a0a0",
+    warning: "#ff9900",
 };
 
 type TaskChainTreeProps = {
-    taskMetas: TaskMetaInformationAndTaskMetaInformationChildTasks[];
-    getTaskLocation: (id: string) => RouterLocationDescriptor;
+    taskMetas: TaskMetaInformationAndTaskMetaInformationChildTasks[],
+    getTaskLocation: (id: string) => RouterLocationDescriptor,
 };
 
 export default class TaskChainTree extends React.Component {
@@ -29,55 +29,55 @@ export default class TaskChainTree extends React.Component {
         const { getTaskLocation } = this.props;
 
         let iconAndColorProps = {
-            icon: 'ok',
+            icon: "ok",
             iconColor: undefined,
         };
         switch (taskMeta.state) {
             case TaskStates.Unknown:
                 iconAndColorProps = {
-                    icon: 'help-o',
+                    icon: "help-o",
                     iconColor: IconColors.warning,
                 };
                 break;
             case TaskStates.New:
                 iconAndColorProps = {
-                    icon: 'wait',
+                    icon: "wait",
                     iconColor: IconColors.grey,
                 };
                 break;
             case TaskStates.WaitingForRerun:
                 iconAndColorProps = {
-                    icon: 'wait',
+                    icon: "wait",
                     iconColor: IconColors.grey,
                 };
                 break;
             case TaskStates.WaitingForRerunAfterError:
                 iconAndColorProps = {
-                    icon: 'wait',
+                    icon: "wait",
                     iconColor: IconColors.red,
                 };
                 break;
             case TaskStates.Finished:
                 iconAndColorProps = {
-                    icon: 'ok',
+                    icon: "ok",
                     iconColor: IconColors.green,
                 };
                 break;
             case TaskStates.InProcess:
                 iconAndColorProps = {
-                    icon: 'wait',
+                    icon: "wait",
                     iconColor: IconColors.grey,
                 };
                 break;
             case TaskStates.Fatal:
                 iconAndColorProps = {
-                    icon: 'clear',
+                    icon: "clear",
                     iconColor: IconColors.red,
                 };
                 break;
             case TaskStates.Canceled:
                 iconAndColorProps = {
-                    icon: 'remove',
+                    icon: "remove",
                     iconColor: IconColors.red,
                 };
                 break;
@@ -87,12 +87,12 @@ export default class TaskChainTree extends React.Component {
         const TimeLineEntry = TimeLine.Entry;
         return (
             <TimeLineEntry {...iconAndColorProps} key={taskMeta.id}>
-                <div className={cn('task-name')}>
+                <div className={cn("task-name")}>
                     <RouterLink to={getTaskLocation(taskMeta.id)}>
                         {taskMeta.name}
                     </RouterLink>
                 </div>
-                <div className={cn('task-id')}>
+                <div className={cn("task-id")}>
                     <AllowCopyToClipboard>
                         {taskMeta.id}
                     </AllowCopyToClipboard>
@@ -146,7 +146,7 @@ export default class TaskChainTree extends React.Component {
     }
 
     findAllMostParents(taskMetaHashSet: {
-        [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks;
+        [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks,
     }): TaskMetaInformationAndTaskMetaInformationChildTasks[] {
         let mostParentTasks = Object.getOwnPropertyNames(taskMetaHashSet)
             .map(x => taskMetaHashSet[x])

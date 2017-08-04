@@ -1,17 +1,17 @@
 // @flow
-import React from 'react';
-import { Icon } from 'ui';
-import cn from './TaskAccordion.less';
+import React from "react";
+import { Icon } from "ui";
+import cn from "./TaskAccordion.less";
 
 export type TaskAccordionProps = {
-    customRender?: ?(target: { [key: string]: mixed }, path: string[]) => React.Element<*> | null;
-    value: { [key: string]: mixed };
-    title: string;
-    pathPrefix: string[];
+    customRender?: ?(target: { [key: string]: mixed }, path: string[]) => React.Element<*> | null,
+    value: { [key: string]: mixed },
+    title: string,
+    pathPrefix: string[],
 };
 
 type TaskAccordionState = {
-    collapsed: boolean;
+    collapsed: boolean,
 };
 
 export default class TaskAccordion extends React.Component {
@@ -32,14 +32,16 @@ export default class TaskAccordion extends React.Component {
         const { collapsed } = this.state;
 
         return (
-            <div className={cn('value-wrapper')}>
+            <div className={cn("value-wrapper")}>
                 {title &&
                     <button
-                        data-tid='ToggleButton'
-                        className={cn('toggle-button')}
+                        data-tid="ToggleButton"
+                        className={cn("toggle-button")}
                         onClick={() => this.setState({ collapsed: !collapsed })}>
-                        <Icon name={collapsed ? 'caret-right' : 'caret-bottom'} />
-                        <span data-tid='ToggleButtonText' className={cn('toggle-button-text')}>{title}</span>
+                        <Icon name={collapsed ? "caret-right" : "caret-bottom"} />
+                        <span data-tid="ToggleButtonText" className={cn("toggle-button-text")}>
+                            {title}
+                        </span>
                     </button>}
                 {value && !collapsed && this.renderValue()}
             </div>
@@ -52,11 +54,11 @@ export default class TaskAccordion extends React.Component {
 
         return keys.map(key => {
             const valueToRender = value[key];
-            if (typeof valueToRender === 'object' && valueToRender != null && !Array.isArray(valueToRender)) {
+            if (typeof valueToRender === "object" && valueToRender != null && !Array.isArray(valueToRender)) {
                 const newCustomRender = customRender ? (target, path) => customRender(value, [key, ...path]) : null;
                 return (
                     <TaskAccordion
-                        data-tid='InnerAccordion'
+                        data-tid="InnerAccordion"
                         customRender={newCustomRender}
                         key={key}
                         value={valueToRender}
@@ -66,11 +68,13 @@ export default class TaskAccordion extends React.Component {
                 );
             }
             return (
-                <div key={key} className={cn('string-wrapper')} data-tid={[...pathPrefix, key].join('_')}>
-                    <span data-tid='Key' className={cn('title')}>{key}: </span>
-                    <span data-tid='Value'>
+                <div key={key} className={cn("string-wrapper")} data-tid={[...pathPrefix, key].join("_")}>
+                    <span data-tid="Key" className={cn("title")}>
+                        {key}:{" "}
+                    </span>
+                    <span data-tid="Value">
                         {(customRender && customRender(value, [key])) ||
-                            (Array.isArray(value[key]) ? value[key].join(', ') : String(value[key]))}
+                            (Array.isArray(value[key]) ? value[key].join(", ") : String(value[key]))}
                     </span>
                 </div>
             );

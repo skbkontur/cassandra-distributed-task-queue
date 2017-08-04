@@ -1,36 +1,36 @@
 // @flow
-import React from 'react';
-import cn from './TaskDetailsPage.less';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink, RouterLink } from 'ui';
-import { RowStack, ColumnStack, Fill, Fit } from 'ui/layout';
+import React from "react";
+import cn from "./TaskDetailsPage.less";
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink, RouterLink } from "ui";
+import { RowStack, ColumnStack, Fill, Fit } from "ui/layout";
 import CommonLayout, {
     CommonLayoutGoBack,
     CommonLayoutGreyLineHeader,
     CommonLayoutContent,
-} from '../../../Commons/Layouts';
-import { cancelableStates, rerunableStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions';
-import TaskDetailsMetaTable from '../TaskDetailsMetaTable/TaskDetailsMetaTable';
-import TaskAccordion from '../TaskAccordion/TaskAccordion';
-import customRender from '../../Domain/CustomRender';
-import TaskTimeLine from '../TaskTimeLine/TaskTimeLine';
-import type { RemoteTaskInfoModel } from '../../api/RemoteTaskQueueApi';
-import type { RouterLocationDescriptor } from '../../../Commons/DataTypes/Routing';
-import { buildSearchQueryForRequest } from '../../containers/TasksPageContainer';
-import RangeSelector from '../../../Commons/DateTimeRangePicker/RangeSelector';
-import { TimeZones, ticksToDate } from '../../../Commons/DataTypes/Time';
+} from "../../../Commons/Layouts";
+import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
+import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
+import TaskAccordion from "../TaskAccordion/TaskAccordion";
+import customRender from "../../Domain/CustomRender";
+import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
+import type { RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
+import type { RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
+import RangeSelector from "../../../Commons/DateTimeRangePicker/RangeSelector";
+import { TimeZones, ticksToDate } from "../../../Commons/DataTypes/Time";
 
 export type TaskDetailsPageProps = {
-    parentLocation: RouterLocationDescriptor;
-    taskDetails: ?RemoteTaskInfoModel;
-    getTaskLocation: (id: string) => RouterLocationDescriptor;
-    allowRerunOrCancel: boolean;
-    onRerun: (id: string) => void;
-    onCancel: (id: string) => void;
+    parentLocation: RouterLocationDescriptor,
+    taskDetails: ?RemoteTaskInfoModel,
+    getTaskLocation: (id: string) => RouterLocationDescriptor,
+    allowRerunOrCancel: boolean,
+    onRerun: (id: string) => void,
+    onCancel: (id: string) => void,
 };
 
 type TaskDetailsPageState = {
-    openedModal: boolean;
-    modalType: 'Cancel' | 'Rerun';
+    openedModal: boolean,
+    modalType: "Cancel" | "Rerun",
 };
 
 export default class TaskDetailsPage extends React.Component {
@@ -40,7 +40,7 @@ export default class TaskDetailsPage extends React.Component {
     componentWillMount() {
         this.state = {
             openedModal: false,
-            modalType: 'Cancel',
+            modalType: "Cancel",
         };
     }
 
@@ -52,12 +52,10 @@ export default class TaskDetailsPage extends React.Component {
             <div>
                 <CommonLayout>
                     {taskDetails &&
-                        <CommonLayoutGoBack to={parentLocation}>
-                            Вернуться к поиску задач
-                        </CommonLayoutGoBack>}
+                        <CommonLayoutGoBack to={parentLocation}>Вернуться к поиску задач</CommonLayoutGoBack>}
                     {taskDetails &&
                         <CommonLayoutGreyLineHeader
-                            data-tid='Header'
+                            data-tid="Header"
                             title={`Задача ${taskDetails.taskMeta.name}`}
                             tools={taskDetails && allowRerunOrCancel ? this.renderButtons() : null}>
                             <TaskTimeLine getHrefToTask={getTaskLocation} taskMeta={taskDetails.taskMeta} />
@@ -73,15 +71,15 @@ export default class TaskDetailsPage extends React.Component {
                                     <TaskAccordion
                                         customRender={customRender}
                                         value={taskDetails.taskData}
-                                        title='TaskData'
+                                        title="TaskData"
                                     />
                                 </Fit>}
                             {taskDetails &&
                                 taskDetails.exceptionInfos &&
-                                <Fit className={cn('exception-container')} data-tid='Exceptions'>
+                                <Fit className={cn("exception-container")} data-tid="Exceptions">
                                     {taskDetails.exceptionInfos.map((exception, index) => {
                                         return (
-                                            <pre data-tid='Exception' key={index} className={cn('exception')}>
+                                            <pre data-tid="Exception" key={index} className={cn("exception")}>
                                                 {exception.exceptionMessageInfo}
                                             </pre>
                                         );
@@ -96,18 +94,18 @@ export default class TaskDetailsPage extends React.Component {
     }
 
     getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): ?RouterLocationDescriptor {
-        const documentCirculationId = taskDetails.taskData &&
-            typeof taskDetails.taskData.documentCirculationId === 'string'
-            ? taskDetails.taskData.documentCirculationId
-            : null;
+        const documentCirculationId =
+            taskDetails.taskData && typeof taskDetails.taskData.documentCirculationId === "string"
+                ? taskDetails.taskData.documentCirculationId
+                : null;
         if (documentCirculationId != null && taskDetails.taskMeta.ticks != null) {
             const rangeSelector = new RangeSelector(TimeZones.UTC);
 
             return {
-                pathname: '/AdminTools/Tasks/Tree',
+                pathname: "/AdminTools/Tasks/Tree",
                 search: buildSearchQueryForRequest({
                     enqueueDateTimeRange: rangeSelector.getMonthOf(ticksToDate(taskDetails.taskMeta.ticks)),
-                    queryString: `Data.DocumentCirculationId:"${documentCirculationId || ''}"`,
+                    queryString: `Data.DocumentCirculationId:"${documentCirculationId || ""}"`,
                     names: [],
                     states: [],
                 }),
@@ -133,19 +131,19 @@ export default class TaskDetailsPage extends React.Component {
                 <Fill />
                 {relatedTasksLocation &&
                     <Fit>
-                        <RouterLink icon='list' to={relatedTasksLocation}>
+                        <RouterLink icon="list" to={relatedTasksLocation}>
                             View related tasks tree
                         </RouterLink>
                     </Fit>}
                 {isCancelable &&
                     <Fit>
-                        <ButtonLink icon='remove' use='danger' data-tid={'CancelButton'} onClick={() => this.cancel()}>
+                        <ButtonLink icon="remove" use="danger" data-tid={"CancelButton"} onClick={() => this.cancel()}>
                             Cancel task
                         </ButtonLink>
                     </Fit>}
                 {isRerunable &&
                     <Fit>
-                        <ButtonLink icon='refresh' data-tid={'RerunButton'} onClick={() => this.rerun()}>
+                        <ButtonLink icon="refresh" data-tid={"RerunButton"} onClick={() => this.rerun()}>
                             Rerun task
                         </ButtonLink>
                     </Fit>}
@@ -160,42 +158,42 @@ export default class TaskDetailsPage extends React.Component {
             return null;
         }
         return (
-            <Modal onClose={() => this.closeModal()} width={500} data-tid='ConfirmOperationModal'>
-                <ModalHeader>
-                    Нужно подтверждение
-                </ModalHeader>
+            <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmOperationModal">
+                <ModalHeader>Нужно подтверждение</ModalHeader>
                 <ModalBody>
-                    <span data-tid='ModalText'>
-                        {modalType === 'Rerun'
-                            ? 'Уверен, что таску надо перезапустить?'
-                            : 'Уверен, что таску надо остановить?'}
+                    <span data-tid="ModalText">
+                        {modalType === "Rerun"
+                            ? "Уверен, что таску надо перезапустить?"
+                            : "Уверен, что таску надо остановить?"}
                     </span>
                 </ModalBody>
                 <ModalFooter>
                     <RowStack gap={2}>
                         <Fit>
-                            {modalType === 'Rerun'
+                            {modalType === "Rerun"
                                 ? <Button
-                                    data-tid='RerunButton'
-                                    use='success'
-                                    onClick={() => {
-                                        onRerun(taskDetails.taskMeta.id);
-                                        this.closeModal();
-                                    }}>
+                                      data-tid="RerunButton"
+                                      use="success"
+                                      onClick={() => {
+                                          onRerun(taskDetails.taskMeta.id);
+                                          this.closeModal();
+                                      }}>
                                       Перезапустить
                                   </Button>
                                 : <Button
-                                    data-tid='CancelButton'
-                                    use='danger'
-                                    onClick={() => {
-                                        onCancel(taskDetails.taskMeta.id);
-                                        this.closeModal();
-                                    }}>
+                                      data-tid="CancelButton"
+                                      use="danger"
+                                      onClick={() => {
+                                          onCancel(taskDetails.taskMeta.id);
+                                          this.closeModal();
+                                      }}>
                                       Остановить
                                   </Button>}
                         </Fit>
                         <Fit>
-                            <Button data-tid='CloseButton' onClick={() => this.closeModal()}>Закрыть</Button>
+                            <Button data-tid="CloseButton" onClick={() => this.closeModal()}>
+                                Закрыть
+                            </Button>
                         </Fit>
                     </RowStack>
                 </ModalFooter>
@@ -206,14 +204,14 @@ export default class TaskDetailsPage extends React.Component {
     rerun() {
         this.setState({
             openedModal: true,
-            modalType: 'Rerun',
+            modalType: "Rerun",
         });
     }
 
     cancel() {
         this.setState({
             openedModal: true,
-            modalType: 'Cancel',
+            modalType: "Cancel",
         });
     }
 

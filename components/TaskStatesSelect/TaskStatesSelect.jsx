@@ -1,26 +1,26 @@
 // @flow
-import React from 'react';
-import { getAllTaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions';
-import type { TaskState } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
-import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
-import { Button, Icon, Tooltip, Checkbox } from 'ui';
-import { ColumnStack, Fit } from 'ui/layout';
-import cn from './TaskStatesSelect.less';
+import React from "react";
+import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
+import type { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { Button, Icon, Tooltip, Checkbox } from "ui";
+import { ColumnStack, Fit } from "ui/layout";
+import cn from "./TaskStatesSelect.less";
 
 export type TaskStatesSelectProps = {
-    value: TaskState[];
-    onChange: (selectedTaskStates: TaskState[]) => void;
+    value: TaskState[],
+    onChange: (selectedTaskStates: TaskState[]) => void,
 };
 
 const TaskStateCaptions = {
-    [TaskStates.Unknown]: 'Unknown',
-    [TaskStates.New]: 'New',
-    [TaskStates.WaitingForRerun]: 'Waiting for rerun',
-    [TaskStates.WaitingForRerunAfterError]: 'Waiting for rerun after error',
-    [TaskStates.Finished]: 'Finished',
-    [TaskStates.InProcess]: 'In process',
-    [TaskStates.Fatal]: 'Fatal',
-    [TaskStates.Canceled]: 'Canceled',
+    [TaskStates.Unknown]: "Unknown",
+    [TaskStates.New]: "New",
+    [TaskStates.WaitingForRerun]: "Waiting for rerun",
+    [TaskStates.WaitingForRerunAfterError]: "Waiting for rerun after error",
+    [TaskStates.Finished]: "Finished",
+    [TaskStates.InProcess]: "In process",
+    [TaskStates.Fatal]: "Fatal",
+    [TaskStates.Canceled]: "Canceled",
 };
 
 export default class TaskStatesSelect extends React.Component {
@@ -29,12 +29,12 @@ export default class TaskStatesSelect extends React.Component {
     render(): React.Element<*> {
         const { value } = this.props;
         return (
-            <Tooltip render={() => this.renderTooltip()} trigger='click' pos='bottom left'>
+            <Tooltip render={() => this.renderTooltip()} trigger="click" pos="bottom left">
                 <Button>
-                    <span data-tid='ButtonText' className={cn('button-text')}>
-                        {value.length ? `Выбрано состояний: ${value.length}` : 'Выбрать состояние'}
+                    <span data-tid="ButtonText" className={cn("button-text")}>
+                        {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
                     </span>
-                    <Icon name='caret-bottom' />
+                    <Icon name="caret-bottom" />
                 </Button>
             </Tooltip>
         );
@@ -70,8 +70,7 @@ export default class TaskStatesSelect extends React.Component {
 
         if (val) {
             newSelectedArray.push(taskState);
-        }
-        else {
+        } else {
             const index = newSelectedArray.findIndex(i => i === taskState);
             newSelectedArray.splice(index, 1);
         }

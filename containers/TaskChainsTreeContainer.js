@@ -1,58 +1,57 @@
 // @flow
-import React from 'react';
-import _ from 'lodash';
-import { withRouter } from 'react-router';
-import type { ReactRouter } from 'react-router';
-import DelayedLoader from '../../Commons/DelayedLoader/DelayedLoader';
-import { withRemoteTaskQueueApi } from '../api/RemoteTaskQueueApiInjection';
-import { takeLastAndRejectPrevious } from 'PromiseUtils';
-import { createDefaultRemoteTaskQueueSearchRequest, isRemoteTaskQueueSearchRequestEmpty } from '../api/RemoteTaskQueueApi';
-import { TaskStates } from 'Domain/EDI/Api/RemoteTaskQueue/TaskState';
-import { queryStringMapping } from '../../Commons/QueryStringMapping';
-import CommonLayout from '../../Commons/Layouts';
-import type { RemoteTaskQueueSearchRequest, RemoteTaskInfoModel } from '../api/RemoteTaskQueueApi';
-import type { IRemoteTaskQueueApi } from '../api/RemoteTaskQueueApi';
-import type { QueryStringMapping } from '../../Commons/QueryStringMapping';
-import type { RouterLocationDescriptor } from '../../Commons/DataTypes/Routing';
-import TaskChainTree from '../components/TaskChainTree/TaskChainTree';
+import React from "react";
+import _ from "lodash";
+import { withRouter } from "react-router";
+import type { ReactRouter } from "react-router";
+import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
+import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
+import { takeLastAndRejectPrevious } from "PromiseUtils";
+import {
+    createDefaultRemoteTaskQueueSearchRequest,
+    isRemoteTaskQueueSearchRequestEmpty,
+} from "../api/RemoteTaskQueueApi";
+import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { queryStringMapping } from "../../Commons/QueryStringMapping";
+import CommonLayout from "../../Commons/Layouts";
+import type { RemoteTaskQueueSearchRequest, RemoteTaskInfoModel } from "../api/RemoteTaskQueueApi";
+import type { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
+import type { QueryStringMapping } from "../../Commons/QueryStringMapping";
+import type { RouterLocationDescriptor } from "../../Commons/DataTypes/Routing";
+import TaskChainTree from "../components/TaskChainTree/TaskChainTree";
 
 type TaskChainsTreeContainerProps = {
-    searchQuery: string;
-    router: ReactRouter;
-    remoteTaskQueueApi: IRemoteTaskQueueApi;
-    taskDetails: ?(RemoteTaskInfoModel[]);
-    parentLocation: RouterLocationDescriptor;
+    searchQuery: string,
+    router: ReactRouter,
+    remoteTaskQueueApi: IRemoteTaskQueueApi,
+    taskDetails: ?(RemoteTaskInfoModel[]),
+    parentLocation: RouterLocationDescriptor,
 };
 
 type TaskChainsTreeContainerState = {
-    loading: boolean;
-    loaderText: string;
-    request: RemoteTaskQueueSearchRequest;
+    loading: boolean,
+    loaderText: string,
+    request: RemoteTaskQueueSearchRequest,
 };
 
 const mapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping()
-    .mapToDateTimeRange(x => x.enqueueDateTimeRange, 'enqueue')
-    .mapToString(x => x.queryString, 'q')
-    .mapToStringArray(x => x.names, 'types')
-    .mapToSet(x => x.states, 'states', TaskStates)
+    .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
+    .mapToString(x => x.queryString, "q")
+    .mapToStringArray(x => x.names, "types")
+    .mapToSet(x => x.states, "states", TaskStates)
     .build();
 
 class TaskChainsTreeContainer extends React.Component {
     props: TaskChainsTreeContainerProps;
     state: TaskChainsTreeContainerState = {
         loading: false,
-        loaderText: '',
+        loaderText: "",
         request: createDefaultRemoteTaskQueueSearchRequest(),
     };
-    searchTasks = takeLastAndRejectPrevious(
-        this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
-    );
-    getTaskByIds = takeLastAndRejectPrevious(
-        async (ids: string[]): Promise<RemoteTaskInfoModel[]> => {
-            const result = await Promise.all(ids.map(id => this.props.remoteTaskQueueApi.getTaskDetails(id)));
-            return result;
-        }
-    );
+    searchTasks = takeLastAndRejectPrevious(this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi));
+    getTaskByIds = takeLastAndRejectPrevious(async (ids: string[]): Promise<RemoteTaskInfoModel[]> => {
+        const result = await Promise.all(ids.map(id => this.props.remoteTaskQueueApi.getTaskDetails(id)));
+        return result;
+    });
 
     isSearchRequestEmpty(searchQuery: ?string): boolean {
         const request = mapping.parse(searchQuery);
@@ -99,7 +98,7 @@ class TaskChainsTreeContainer extends React.Component {
         const { router } = this.props;
         let iterationCount = 0;
 
-        this.setState({ loading: true, loaderText: 'Загрузка задач: 0' });
+        this.setState({ loading: true, loaderText: "Загрузка задач: 0" });
         try {
             let taskDetails = [];
             let allTaskIds = [];
@@ -108,7 +107,7 @@ class TaskChainsTreeContainer extends React.Component {
             while (taskIdsToLoad.length > 0) {
                 iterationCount++;
                 if (taskIdsToLoad.length > 100) {
-                    throw new Error('Количство задач в дереве превысило допустимый предел: 100 зачад');
+                    throw new Error("Количство задач в дереве превысило допустимый предел: 100 зачад");
                 }
                 const loadedtaskDetails = await this.getTaskByIds(taskIdsToLoad);
                 allTaskIds = [...allTaskIds, ...taskIdsToLoad];
@@ -121,14 +120,13 @@ class TaskChainsTreeContainer extends React.Component {
                 }
             }
             router.replace({
-                pathname: '/AdminTools/Tasks/Tree',
+                pathname: "/AdminTools/Tasks/Tree",
                 search: searchQuery,
                 state: {
                     taskDetails: taskDetails,
                 },
             });
-        }
-        finally {
+        } finally {
             this.setState({ loading: false });
         }
     }
@@ -148,22 +146,24 @@ class TaskChainsTreeContainer extends React.Component {
         //console.log(taskMetas);
         return (
             <CommonLayout>
-                <CommonLayout.GoBack to={parentLocation || {
-                    pathname: '/AdminTools/Tasks',
-                    search: searchQuery,
-                }}>
+                <CommonLayout.GoBack
+                    to={
+                        parentLocation || {
+                            pathname: "/AdminTools/Tasks",
+                            search: searchQuery,
+                        }
+                    }>
                     Вернуться к поиску задач
                 </CommonLayout.GoBack>
-                <CommonLayout.Header title='Дерево задач' />
+                <CommonLayout.Header title="Дерево задач" />
                 <CommonLayout.Content>
-                    <DelayedLoader type='big' active={loading} caption={loaderText}>
-                        <div style={{ overflowX: 'auto' }}>
-                            {taskDetails && (
+                    <DelayedLoader type="big" active={loading} caption={loaderText}>
+                        <div style={{ overflowX: "auto" }}>
+                            {taskDetails &&
                                 <TaskChainTree
                                     getTaskLocation={id => this.getTaskLocation(id)}
                                     taskMetas={taskDetails.map(x => x.taskMeta)}
-                                />
-                            )}
+                                />}
                         </div>
                     </DelayedLoader>
                 </CommonLayout.Content>

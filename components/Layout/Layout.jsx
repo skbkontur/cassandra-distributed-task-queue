@@ -1,9 +1,9 @@
 // @flow
-import React from 'react';
-import ServiceHeader from '../../../ServiceHeader/components/ServiceHeader';
+import React from "react";
+import ServiceHeader from "../../../ServiceHeader/components/ServiceHeader";
 
 type LayoutProps = {
-    children?: any;
+    children?: any,
 };
 
 export default function Layout({ children }: LayoutProps): React.Element<*> {
