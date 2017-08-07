@@ -18,32 +18,31 @@ const TasksPath = "/AdminTools/Tasks";
 
 ReactDom.render(
     <ApiProvider remoteTaskQueueApi={api}>
-        <ErrorHandlingContainer>
-            <Router history={browserHistory}>
-                <Route path={TasksPath} component={Layout}>
-                    <IndexRoute
-                        component={({ location }) => <TasksPage searchQuery={location.search} {...location.state} />}
-                    />
-                    <Route
-                        path="Tree"
-                        component={({ location }) =>
-                            <TaskChainsTreeContainer
-                                searchQuery={location.search}
-                                {...location.state}
-                                parentLocation={(location.state && location.state.parentLocation) || null}
-                            />}
-                    />
-                    <Route
-                        path=":id"
-                        component={({ location, params }) =>
-                            <TaskDetailsPageContainer
-                                id={params.id || ""}
-                                parentLocation={(location.state && location.state.parentLocation) || null}
-                            />}
-                    />
-                </Route>
-            </Router>
-        </ErrorHandlingContainer>
+        <ErrorHandlingContainer />
+        <Router history={browserHistory}>
+            <Route path={TasksPath} component={Layout}>
+                <IndexRoute
+                    component={({ location }) => <TasksPage searchQuery={location.search} {...location.state} />}
+                />
+                <Route
+                    path="Tree"
+                    component={({ location }) =>
+                        <TaskChainsTreeContainer
+                            searchQuery={location.search}
+                            {...location.state}
+                            parentLocation={(location.state && location.state.parentLocation) || null}
+                        />}
+                />
+                <Route
+                    path=":id"
+                    component={({ location, params }) =>
+                        <TaskDetailsPageContainer
+                            id={params.id || ""}
+                            parentLocation={(location.state && location.state.parentLocation) || null}
+                        />}
+                />
+            </Route>
+        </Router>
     </ApiProvider>,
     document.getElementById("content")
 );
