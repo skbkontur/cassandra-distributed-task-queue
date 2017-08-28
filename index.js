@@ -8,7 +8,6 @@ import TaskChainsTreeContainer from "./containers/TaskChainsTreeContainer";
 import Layout from "./components/Layout/Layout";
 import { RemoteTaskQueueApi } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { ApiProvider } from "./api/RemoteTaskQueueApiInjection";
-import { ErrorHandlingContainer } from "../Commons/ErrorHandling";
 
 import "ui/styles/reset.less";
 import "ui/styles/typography.less";
@@ -18,7 +17,6 @@ const TasksPath = "/AdminTools/Tasks";
 
 ReactDom.render(
     <ApiProvider remoteTaskQueueApi={api}>
-        <ErrorHandlingContainer />
         <Router history={browserHistory}>
             <Route path={TasksPath} component={Layout}>
                 <IndexRoute

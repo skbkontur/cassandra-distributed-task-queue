@@ -18,6 +18,7 @@ import type { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
 import type { QueryStringMapping } from "../../Commons/QueryStringMapping";
 import type { RouterLocationDescriptor } from "../../Commons/DataTypes/Routing";
 import TaskChainTree from "../components/TaskChainTree/TaskChainTree";
+import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 
 type TaskChainsTreeContainerProps = {
     searchQuery: string,
@@ -166,6 +167,7 @@ class TaskChainsTreeContainer extends React.Component {
                                 />}
                         </div>
                     </DelayedLoader>
+                    <ErrorHandlingContainer />
                 </CommonLayout.Content>
             </CommonLayout>
         );

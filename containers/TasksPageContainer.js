@@ -11,19 +11,20 @@ import TasksPaginator from "../components/TasksPaginator/TasksPaginator";
 import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
 import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
-import { SuperUserAccessLevels } from "../../Domain/Globals";
-import { getCurrentUserInfo } from "../../Domain/Globals";
+import { SuperUserAccessLevels } from "Domain/Globals";
+import { getCurrentUserInfo } from "Domain/Globals";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../api/RemoteTaskQueueApi";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { SearchQuery, queryStringMapping } from "../../Commons/QueryStringMapping";
-import CommonLayout from "../../Commons/Layouts";
+import { SearchQuery, queryStringMapping } from "Commons/QueryStringMapping";
+import CommonLayout from "Commons/Layouts";
 import type { RemoteTaskQueueSearchRequest, RemoteTaskQueueSearchResults } from "../api/RemoteTaskQueueApi";
 import type { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
-import type { QueryStringMapping } from "../../Commons/QueryStringMapping";
-import type { RouterLocationDescriptor } from "../../Commons/DataTypes/Routing";
+import type { QueryStringMapping } from "Commons/QueryStringMapping";
+import type { RouterLocationDescriptor } from "Commons/DataTypes/Routing";
+import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import numberToString from "../Domain/numberToString";
 
 type TasksPageContainerProps = {
@@ -389,6 +390,7 @@ class TasksPageContainer extends React.Component {
                 <CommonLayout.GoBack href="/AdminTools">Вернуться к инструментам администратора</CommonLayout.GoBack>
                 <CommonLayout.Header data-tid="Header" title="Список задач" />
                 <CommonLayout.Content>
+                    <ErrorHandlingContainer />
                     <ColumnStack block stretch gap={2}>
                         <Fit>
                             <TaskQueueFilter

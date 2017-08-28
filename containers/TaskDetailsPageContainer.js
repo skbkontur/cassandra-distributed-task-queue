@@ -11,6 +11,7 @@ import { takeLastAndRejectPrevious } from "PromiseUtils";
 import { getCurrentUserInfo } from "../../Domain/Globals";
 import type { RouterLocationDescriptor } from "../../Commons/DataTypes/Routing";
 import { ApiError } from "Domain/ApiBase/ApiBase";
+import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 
 type TaskDetailsPageContainerProps = {
     id: string,
@@ -131,6 +132,7 @@ class TaskDetailsPageContainer extends React.Component {
                             this.handlerCancel();
                         }}
                     />}
+                <ErrorHandlingContainer />
             </DelayedLoader>
         );
     }
