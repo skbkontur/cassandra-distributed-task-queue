@@ -10,7 +10,7 @@ import CommonLayout, {
 } from "../../../Commons/Layouts";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
-import TaskAccordion from "../TaskAccordion/TaskAccordion";
+import Accordion from "../../../Commons/Accordion/Accordion";
 import customRender from "../../Domain/CustomRender";
 import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
 import type { RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
@@ -68,7 +68,7 @@ export default class TaskDetailsPage extends React.Component {
                                 </Fit>}
                             {taskDetails &&
                                 <Fit>
-                                    <TaskAccordion
+                                    <Accordion
                                         customRender={customRender}
                                         value={taskDetails.taskData}
                                         title="TaskData"

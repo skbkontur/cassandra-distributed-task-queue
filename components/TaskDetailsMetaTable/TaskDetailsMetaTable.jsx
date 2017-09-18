@@ -3,7 +3,7 @@ import React from "react";
 import cn from "./TaskDetailsMetaTable.less";
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
 import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
-import DateTimeView from "../DateTimeView/DateTimeView";
+import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
 import type { Ticks } from "../../../Commons/DataTypes/Time";
 
 export type TaskDetailsMetaTableProps = {

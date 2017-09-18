@@ -5,11 +5,11 @@ import { RowStack, ColumnStack, Fit, Fill } from "ui/layout";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 import AllowCopyToClipboard from "../../../../Commons/AllowCopyToClipboard";
-import DateTimeView from "../../DateTimeView/DateTimeView";
 import type { RouterLocationDescriptor } from "../../../../Commons/DataTypes/Routing";
 import type { TaskMetaInformation } from "../../../api/RemoteTaskQueueApi";
 import type { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import type { Ticks } from "../../../../Commons/DataTypes/Time";
+import DateTimeView from "../../../../Commons/DateTimeView/DateTimeView";
 
 import cn from "./TaskDetails.less";
 
