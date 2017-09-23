@@ -137,14 +137,8 @@ class TaskChainsTreeContainer extends React.Component {
     }
 
     render(): React.Element<*> {
-        // const currentUser = getCurrentUserInfo();
-        // const allowRerunOrCancel = $c(currentUser)
-        //     .with(x => x.superUserAccessLevel)
-        //     .with(x => [SuperUserAccessLevels.God, SuperUserAccessLevels.Developer].includes(x))
-        //     .return(false);
         const { taskDetails, searchQuery, parentLocation } = this.props;
         const { loaderText, loading } = this.state;
-        //console.log(taskMetas);
         return (
             <CommonLayout>
                 <CommonLayout.GoBack
