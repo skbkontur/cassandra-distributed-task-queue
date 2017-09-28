@@ -115,7 +115,7 @@ class TaskDetailsPageContainer extends React.Component {
         const currentUser = getCurrentUserInfo();
 
         return (
-            <DelayedLoader active={loading} type="big" simulateHeightToEnablePageScroll>
+            <DelayedLoader active={loading} type="big" simulateHeightToEnablePageScroll data-tid="Loader">
                 {notFoundError &&
                     <TaskNotFoundPage parentLocation={parentLocation || this.getDefaultParetnLocation()} />}
                 {taskDetails &&
