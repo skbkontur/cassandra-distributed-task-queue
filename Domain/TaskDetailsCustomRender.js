@@ -18,13 +18,26 @@ export default function customRender(target: mixed, path: string[]): React.Eleme
     if (target == null) {
         return null;
     }
-    if (endsWith("PartyId", pathTop) && typeof target === "object") {
+    if ((endsWith("PartyId", pathTop) || pathTop === "partyId") && typeof target === "object") {
         const partyId = getByPath(target, path);
         if (typeof partyId === "string") {
             return (
-                <Link data-tid="GoToLink" href={`/AdminTools/PartyEdit?partyId=${partyId}`}>
-                    {partyId}
-                </Link>
+                <LinkDropdown renderTitle={partyId} data-tid="GoToLink">
+                    <LinkMenuItem href={`/AdminTools/PartyEdit?partyId=${partyId}`} data-tid="GoToPartyEdit">
+                        <Icon name="Card" /> Открыть карточку организации
+                    </LinkMenuItem>
+                    <LinkMenuItem
+                        href={`/AdminTools/TablesView/Party2/${partyId}/${partyId}`}
+                        data-tid="GoToPartyBusinessObject">
+                        <Icon name="Info" /> Открыть бизнес-объект
+                    </LinkMenuItem>
+                    <LinkMenuItem href={`/${partyId}/Supplier`}>
+                        <Icon name="Export" /> Открыть интерфейс поставщика
+                    </LinkMenuItem>
+                    <LinkMenuItem href={`/${partyId}/Monitoring`}>
+                        <Icon name="Export" /> Открыть мониторинг сообщений
+                    </LinkMenuItem>
+                </LinkDropdown>
             );
         }
     }
@@ -74,17 +87,6 @@ export default function customRender(target: mixed, path: string[]): React.Eleme
                     </Link>
                 );
             }
-        }
-    }
-
-    if (pathTop === "partyId" && typeof target === "object") {
-        const partyId = getByPath(target, path);
-        if (typeof partyId === "string") {
-            return (
-                <Link data-tid="GoToLink" href={`/AdminTools/TablesView/Party2/${partyId}/${partyId}`}>
-                    {partyId}
-                </Link>
-            );
         }
     }
 
@@ -192,8 +194,21 @@ export default function customRender(target: mixed, path: string[]): React.Eleme
     if (_.isEqual(path, ["documentCirculationId"]) && typeof target === "object") {
         if (typeof target.documentCirculationId === "string") {
             return (
-                <Link data-tid="GoToLink" href={`/Monitoring/AdminTaskChainDetails?id=${target.documentCirculationId}`}>
+                <Link
+                    data-tid="GoToLink"
+                    href={`/NewMonitoring/TaskChainList/Document/${target.documentCirculationId}`}>
                     {target.documentCirculationId}
+                </Link>
+            );
+        }
+    }
+
+    if (pathTop === "documentCirculationId" && typeof target === "object") {
+        const documentCirculationId = getByPath(target, path);
+        if (typeof documentCirculationId === "string") {
+            return (
+                <Link data-tid="GoToLink" href={`/NewMonitoring/TaskChainList/Document/${documentCirculationId}`}>
+                    {documentCirculationId}
                 </Link>
             );
         }

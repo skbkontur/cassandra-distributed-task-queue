@@ -11,7 +11,7 @@ import CommonLayout, {
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import Accordion from "../../../Commons/Accordion/Accordion";
-import customRender from "../../Domain/CustomRender";
+import taskDetailsCustomRender from "../../Domain/TaskDetailsCustomRender";
 import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
 import type { RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
 import type { RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
@@ -69,7 +69,7 @@ export default class TaskDetailsPage extends React.Component {
                             {taskDetails &&
                                 <Fit>
                                     <Accordion
-                                        customRender={customRender}
+                                        customRender={taskDetailsCustomRender}
                                         value={taskDetails.taskData}
                                         title="TaskData"
                                     />
