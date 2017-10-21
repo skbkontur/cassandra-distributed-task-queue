@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 using JetBrains.Annotations;
 
@@ -110,7 +109,7 @@ namespace RemoteQueue.Cassandra.Repositories
         {
             for(var i = 0; i < array.Length; i++)
             {
-                var r = i + (int)(random.Value.NextDouble() * (array.Length - i));
+                var r = i + (int)(ThreadLocalRandom.Instance.NextDouble() * (array.Length - i));
                 var t = array[r];
                 array[r] = array[i];
                 array[i] = t;
@@ -124,6 +123,5 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IGlobalTime globalTime;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly ITaskDataRegistry taskDataRegistry;
-        private readonly ThreadLocal<Random> random = new ThreadLocal<Random>(() => new Random(Guid.NewGuid().GetHashCode()));
     }
 }
