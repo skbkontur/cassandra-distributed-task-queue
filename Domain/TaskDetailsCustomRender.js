@@ -31,10 +31,10 @@ export default function customRender(target: mixed, path: string[]): React.Eleme
                         data-tid="GoToPartyBusinessObject">
                         <Icon name="Info" /> Открыть бизнес-объект
                     </LinkMenuItem>
-                    <LinkMenuItem href={`/${partyId}/Supplier`}>
+                    <LinkMenuItem href={`/${partyId}/Supplier`} data-tid="GoToPartySupplierInterface">
                         <Icon name="Export" /> Открыть интерфейс поставщика
                     </LinkMenuItem>
-                    <LinkMenuItem href={`/${partyId}/Monitoring`}>
+                    <LinkMenuItem href={`/${partyId}/Monitoring`} data-tid="GoToPartyMonitoring">
                         <Icon name="Export" /> Открыть мониторинг сообщений
                     </LinkMenuItem>
                 </LinkDropdown>
