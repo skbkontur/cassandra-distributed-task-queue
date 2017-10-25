@@ -34,7 +34,7 @@ export default function customRender(target: mixed, path: string[]): React.Eleme
                     <LinkMenuItem href={`/${partyId}/Supplier`} data-tid="GoToPartySupplierInterface">
                         <Icon name="Export" /> Открыть интерфейс поставщика
                     </LinkMenuItem>
-                    <LinkMenuItem href={`/${partyId}/Monitoring`} data-tid="GoToPartyMonitoring">
+                    <LinkMenuItem href={`/${partyId}/Monitoring/TaskChainList`} data-tid="GoToPartyMonitoring">
                         <Icon name="Export" /> Открыть мониторинг сообщений
                     </LinkMenuItem>
                 </LinkDropdown>
@@ -196,7 +196,7 @@ export default function customRender(target: mixed, path: string[]): React.Eleme
             return (
                 <Link
                     data-tid="GoToLink"
-                    href={`/NewMonitoring/TaskChainList/Document/${target.documentCirculationId}`}>
+                    href={`/Monitoring/TaskChainList/Document/${target.documentCirculationId}`}>
                     {target.documentCirculationId}
                 </Link>
             );
@@ -207,7 +207,7 @@ export default function customRender(target: mixed, path: string[]): React.Eleme
         const documentCirculationId = getByPath(target, path);
         if (typeof documentCirculationId === "string") {
             return (
-                <Link data-tid="GoToLink" href={`/NewMonitoring/TaskChainList/Document/${documentCirculationId}`}>
+                <Link data-tid="GoToLink" href={`/Monitoring/TaskChainList/Document/${documentCirculationId}`}>
                     {documentCirculationId}
                 </Link>
             );
