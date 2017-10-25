@@ -194,9 +194,7 @@ export default function customRender(target: mixed, path: string[]): React.Eleme
     if (_.isEqual(path, ["documentCirculationId"]) && typeof target === "object") {
         if (typeof target.documentCirculationId === "string") {
             return (
-                <Link
-                    data-tid="GoToLink"
-                    href={`/Monitoring/TaskChainList/Document/${target.documentCirculationId}`}>
+                <Link data-tid="GoToLink" href={`/Monitoring/TaskChainList/Document/${target.documentCirculationId}`}>
                     {target.documentCirculationId}
                 </Link>
             );
