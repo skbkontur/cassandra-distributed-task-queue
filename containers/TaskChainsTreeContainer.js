@@ -154,11 +154,12 @@ class TaskChainsTreeContainer extends React.Component {
                 <CommonLayout.Content>
                     <DelayedLoader type="big" active={loading} caption={loaderText}>
                         <div style={{ overflowX: "auto" }}>
-                            {taskDetails &&
+                            {taskDetails && (
                                 <TaskChainTree
                                     getTaskLocation={id => this.getTaskLocation(id)}
                                     taskMetas={taskDetails.map(x => x.taskMeta)}
-                                />}
+                                />
+                            )}
                         </div>
                     </DelayedLoader>
                     <ErrorHandlingContainer />

@@ -7,9 +7,5 @@ type LayoutProps = {
 };
 
 export default function Layout({ children }: LayoutProps): React.Element<*> {
-    return (
-        <ServiceHeader currentInterfaceType={null}>
-            {children}
-        </ServiceHeader>
-    );
+    return <ServiceHeader currentInterfaceType={null}>{children}</ServiceHeader>;
 }

@@ -9,11 +9,7 @@ type TimeLineProps = {
 };
 
 export default function TimeLine({ children }: TimeLineProps): React.Element<*> {
-    return (
-        <div className={cn("root")}>
-            {children}
-        </div>
-    );
+    return <div className={cn("root")}>{children}</div>;
 }
 
 type TimeLineEntryProps = {
@@ -78,9 +74,7 @@ TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineE
                 <Icon name={icon} color={iconColor} />
                 <div className={cn("line")} />
             </div>
-            <div className={cn("content")}>
-                {children}
-            </div>
+            <div className={cn("content")}>{children}</div>
         </div>
     );
 };

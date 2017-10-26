@@ -45,9 +45,7 @@ export default class TasksTable extends React.Component {
         const { openedModal } = this.state;
         return (
             <div>
-                <div data-tid="Tasks">
-                    {taskInfos.map(item => this.renderRow(item))}
-                </div>
+                <div data-tid="Tasks">{taskInfos.map(item => this.renderRow(item))}</div>
                 {openedModal && this.renderModal()}
             </div>
         );
@@ -86,25 +84,27 @@ export default class TasksTable extends React.Component {
                 <ModalFooter>
                     <RowStack gap={2}>
                         <Fit>
-                            {modalType === "Rerun"
-                                ? <Button
-                                      data-tid="RerunButton"
-                                      use="success"
-                                      onClick={() => {
-                                          onRerun(actionTask);
-                                          this.closeModal();
-                                      }}>
-                                      Перезапустить
-                                  </Button>
-                                : <Button
-                                      data-tid="CancelButton"
-                                      use="danger"
-                                      onClick={() => {
-                                          onCancel(actionTask);
-                                          this.closeModal();
-                                      }}>
-                                      Остановить
-                                  </Button>}
+                            {modalType === "Rerun" ? (
+                                <Button
+                                    data-tid="RerunButton"
+                                    use="success"
+                                    onClick={() => {
+                                        onRerun(actionTask);
+                                        this.closeModal();
+                                    }}>
+                                    Перезапустить
+                                </Button>
+                            ) : (
+                                <Button
+                                    data-tid="CancelButton"
+                                    use="danger"
+                                    onClick={() => {
+                                        onCancel(actionTask);
+                                        this.closeModal();
+                                    }}>
+                                    Остановить
+                                </Button>
+                            )}
                         </Fit>
                         <Fit>
                             <Button data-tid="CloseButton" onClick={() => this.closeModal()}>

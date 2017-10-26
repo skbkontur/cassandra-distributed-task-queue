@@ -116,9 +116,10 @@ class TaskDetailsPageContainer extends React.Component {
 
         return (
             <DelayedLoader active={loading} type="big" simulateHeightToEnablePageScroll data-tid="Loader">
-                {notFoundError &&
-                    <TaskNotFoundPage parentLocation={parentLocation || this.getDefaultParetnLocation()} />}
-                {taskDetails &&
+                {notFoundError && (
+                    <TaskNotFoundPage parentLocation={parentLocation || this.getDefaultParetnLocation()} />
+                )}
+                {taskDetails && (
                     <TaskDetailsPage
                         getTaskLocation={id => this.getTaskLocation(id)}
                         parentLocation={parentLocation || this.getDefaultParetnLocation()}
@@ -133,7 +134,8 @@ class TaskDetailsPageContainer extends React.Component {
                         onCancel={() => {
                             this.handlerCancel();
                         }}
-                    />}
+                    />
+                )}
                 <ErrorHandlingContainer />
             </DelayedLoader>
         );

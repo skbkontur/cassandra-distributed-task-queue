@@ -53,13 +53,12 @@ export default class TaskTimeLine extends React.Component {
         return (
             <TimeLineEntry key={entry.title} icon={entry.icon} iconColor={this.getIconColor(severity)}>
                 <div className={cn("entry", severity)}>
-                    <div className={cn("title")}>
-                        {entry.title}
-                    </div>
-                    {entry.date &&
+                    <div className={cn("title")}>{entry.title}</div>
+                    {entry.date && (
                         <div className={cn("date")}>
                             <DateTimeView value={entry.date} />
-                        </div>}
+                        </div>
+                    )}
                 </div>
             </TimeLineEntry>
         );
@@ -211,20 +210,17 @@ export default class TaskTimeLine extends React.Component {
                 <TimeLineEntry key="Children" icon="arrow-bottom" iconColor={IconColors.grey}>
                     <div className={cn("entry", "waiting")}>
                         <div>Enqueued tasks:</div>
-                        {taskMeta.childTaskIds.slice(0, 3).map(x =>
+                        {taskMeta.childTaskIds.slice(0, 3).map(x => (
                             <div key={x}>
                                 <AllowCopyToClipboard>
-                                    <RouterLink to={getHrefToTask(x)}>
-                                        {x}
-                                    </RouterLink>
+                                    <RouterLink to={getHrefToTask(x)}>{x}</RouterLink>
                                 </AllowCopyToClipboard>
                             </div>
-                        )}
+                        ))}
                         {taskMeta.childTaskIds &&
-                            taskMeta.childTaskIds.length > 3 &&
-                            <div>
-                                ...and {taskMeta.childTaskIds.length - 3} more
-                            </div>}
+                            taskMeta.childTaskIds.length > 3 && (
+                                <div>...and {taskMeta.childTaskIds.length - 3} more</div>
+                            )}
                     </div>
                 </TimeLineEntry>
             );
@@ -242,9 +238,7 @@ export default class TaskTimeLine extends React.Component {
                 <div className={cn("entry", "waiting")}>
                     Parent:{" "}
                     <AllowCopyToClipboard>
-                        <RouterLink to={getHrefToTask(taskMeta.parentTaskId)}>
-                            {taskMeta.parentTaskId}
-                        </RouterLink>
+                        <RouterLink to={getHrefToTask(taskMeta.parentTaskId)}>{taskMeta.parentTaskId}</RouterLink>
                     </AllowCopyToClipboard>
                 </div>
             </TimeLineEntry>
@@ -262,10 +256,6 @@ export default class TaskTimeLine extends React.Component {
     }
 
     render(): React.Element<*> {
-        return (
-            <TimeLine>
-                {this.getTaskTimeLineEntries()}
-            </TimeLine>
-        );
+        return <TimeLine>{this.getTaskTimeLineEntries()}</TimeLine>;
     }
 }

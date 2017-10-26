@@ -312,35 +312,37 @@ class TasksPageContainer extends React.Component {
                 <ModalFooter>
                     <RowStack gap={2}>
                         <Fit>
-                            {modalType === "Rerun"
-                                ? <Button
-                                      data-tid="RerunButton"
-                                      use="success"
-                                      disabled={
-                                          counter > 100 &&
-                                          (!confirmedRegExp.test(manyTaskConfirm) &&
-                                              manyTaskConfirm !== numberToString(counter))
-                                      }
-                                      onClick={() => {
-                                          this.handleRerunAll();
-                                          this.closeModal();
-                                      }}>
-                                      Перезапустить все
-                                  </Button>
-                                : <Button
-                                      data-tid="CancelButton"
-                                      use="danger"
-                                      disabled={
-                                          counter > 100 &&
-                                          (!confirmedRegExp.test(manyTaskConfirm) &&
-                                              manyTaskConfirm !== numberToString(counter))
-                                      }
-                                      onClick={() => {
-                                          this.handleCancelAll();
-                                          this.closeModal();
-                                      }}>
-                                      Остановить все
-                                  </Button>}
+                            {modalType === "Rerun" ? (
+                                <Button
+                                    data-tid="RerunButton"
+                                    use="success"
+                                    disabled={
+                                        counter > 100 &&
+                                        (!confirmedRegExp.test(manyTaskConfirm) &&
+                                            manyTaskConfirm !== numberToString(counter))
+                                    }
+                                    onClick={() => {
+                                        this.handleRerunAll();
+                                        this.closeModal();
+                                    }}>
+                                    Перезапустить все
+                                </Button>
+                            ) : (
+                                <Button
+                                    data-tid="CancelButton"
+                                    use="danger"
+                                    disabled={
+                                        counter > 100 &&
+                                        (!confirmedRegExp.test(manyTaskConfirm) &&
+                                            manyTaskConfirm !== numberToString(counter))
+                                    }
+                                    onClick={() => {
+                                        this.handleCancelAll();
+                                        this.closeModal();
+                                    }}>
+                                    Остановить все
+                                </Button>
+                            )}
                         </Fit>
                         <Fit>
                             <Button data-tid="CloseButton" onClick={() => this.closeModal()}>
@@ -403,54 +405,53 @@ class TasksPageContainer extends React.Component {
                         <Fit>
                             <Loader type="big" active={loading} data-tid={"Loader"}>
                                 {results &&
-                                    isStateCompletelyLoaded &&
-                                    <ColumnStack block stretch gap={2}>
-                                        {counter > 0 &&
-                                            <Fit>
-                                                Всего результатов: {counter}
-                                            </Fit>}
-                                        {counter > 0 &&
-                                            allowRerunOrCancel &&
-                                            <Fit>
-                                                <RowStack gap={2} data-tid={"ButtonsWrapper"}>
+                                    isStateCompletelyLoaded && (
+                                        <ColumnStack block stretch gap={2}>
+                                            {counter > 0 && <Fit>Всего результатов: {counter}</Fit>}
+                                            {counter > 0 &&
+                                                allowRerunOrCancel && (
                                                     <Fit>
-                                                        <Button
-                                                            use="danger"
-                                                            data-tid={"CancelAllButton"}
-                                                            onClick={() => this.clickCancelAll()}>
-                                                            Cancel All
-                                                        </Button>
+                                                        <RowStack gap={2} data-tid={"ButtonsWrapper"}>
+                                                            <Fit>
+                                                                <Button
+                                                                    use="danger"
+                                                                    data-tid={"CancelAllButton"}
+                                                                    onClick={() => this.clickCancelAll()}>
+                                                                    Cancel All
+                                                                </Button>
+                                                            </Fit>
+                                                            <Fit>
+                                                                <Button
+                                                                    use="success"
+                                                                    data-tid={"RerunAllButton"}
+                                                                    onClick={() => this.clickRerunAll()}>
+                                                                    Rerun All
+                                                                </Button>
+                                                            </Fit>
+                                                        </RowStack>
                                                     </Fit>
-                                                    <Fit>
-                                                        <Button
-                                                            use="success"
-                                                            data-tid={"RerunAllButton"}
-                                                            onClick={() => this.clickRerunAll()}>
-                                                            Rerun All
-                                                        </Button>
-                                                    </Fit>
-                                                </RowStack>
-                                            </Fit>}
-                                        <Fit>
-                                            <TasksTable
-                                                getTaskLocation={id => this.getTaskLocation(id)}
-                                                allowRerunOrCancel={allowRerunOrCancel}
-                                                taskInfos={results.taskMetas}
-                                                onRerun={id => {
-                                                    this.handleRerunTask(id);
-                                                }}
-                                                onCancel={id => {
-                                                    this.handleCancelTask(id);
-                                                }}
-                                            />
-                                        </Fit>
-                                        <Fit>
-                                            <TasksPaginator
-                                                nextPageLocation={this.getNextPageLocation()}
-                                                prevPageLocation={this.getPrevPageLocation()}
-                                            />
-                                        </Fit>
-                                    </ColumnStack>}
+                                                )}
+                                            <Fit>
+                                                <TasksTable
+                                                    getTaskLocation={id => this.getTaskLocation(id)}
+                                                    allowRerunOrCancel={allowRerunOrCancel}
+                                                    taskInfos={results.taskMetas}
+                                                    onRerun={id => {
+                                                        this.handleRerunTask(id);
+                                                    }}
+                                                    onCancel={id => {
+                                                        this.handleCancelTask(id);
+                                                    }}
+                                                />
+                                            </Fit>
+                                            <Fit>
+                                                <TasksPaginator
+                                                    nextPageLocation={this.getNextPageLocation()}
+                                                    prevPageLocation={this.getPrevPageLocation()}
+                                                />
+                                            </Fit>
+                                        </ColumnStack>
+                                    )}
                             </Loader>
                         </Fit>
                     </ColumnStack>

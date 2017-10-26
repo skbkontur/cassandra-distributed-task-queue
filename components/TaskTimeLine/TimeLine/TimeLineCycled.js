@@ -49,14 +49,12 @@ export default class TimeLineCycled extends React.Component {
                     <div className={cn("line-2")} />
                     <div className={cn("line-3")} />
                 </div>
-                {icon &&
+                {icon && (
                     <div className={cn("icon")}>
                         <Icon name={icon} />
-                    </div>}
-                {content &&
-                    <div className={cn("info")}>
-                        {content}
-                    </div>}
+                    </div>
+                )}
+                {content && <div className={cn("info")}>{content}</div>}
             </div>
         );
     }

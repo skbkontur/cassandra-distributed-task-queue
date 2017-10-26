@@ -24,20 +24,22 @@ ReactDom.render(
                 />
                 <Route
                     path="Tree"
-                    component={({ location }) =>
+                    component={({ location }) => (
                         <TaskChainsTreeContainer
                             searchQuery={location.search}
                             {...location.state}
                             parentLocation={(location.state && location.state.parentLocation) || null}
-                        />}
+                        />
+                    )}
                 />
                 <Route
                     path=":id"
-                    component={({ location, params }) =>
+                    component={({ location, params }) => (
                         <TaskDetailsPageContainer
                             id={params.id || ""}
                             parentLocation={(location.state && location.state.parentLocation) || null}
-                        />}
+                        />
+                    )}
                 />
             </Route>
         </Router>

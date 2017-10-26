@@ -88,14 +88,10 @@ export default class TaskChainTree extends React.Component {
         return (
             <TimeLineEntry {...iconAndColorProps} key={taskMeta.id}>
                 <div className={cn("task-name")}>
-                    <RouterLink to={getTaskLocation(taskMeta.id)}>
-                        {taskMeta.name}
-                    </RouterLink>
+                    <RouterLink to={getTaskLocation(taskMeta.id)}>{taskMeta.name}</RouterLink>
                 </div>
                 <div className={cn("task-id")}>
-                    <AllowCopyToClipboard>
-                        {taskMeta.id}
-                    </AllowCopyToClipboard>
+                    <AllowCopyToClipboard>{taskMeta.id}</AllowCopyToClipboard>
                 </div>
             </TimeLineEntry>
         );
@@ -115,11 +111,12 @@ export default class TaskChainTree extends React.Component {
         const TimeLineBranchNode = TimeLine.BranchNode;
         return [
             <TimeLineBranchNode key={`${taskMeta.id}-branches`}>
-                {taskMeta.childTaskIds.map(x => taskMetaHashSet[x]).filter(x => x).map((x, i) =>
-                    <TimeLineBranch key={i}>
-                        {this.buildTaskTimeLine(x, taskMetaHashSet)}
-                    </TimeLineBranch>
-                )}
+                {taskMeta.childTaskIds
+                    .map(x => taskMetaHashSet[x])
+                    .filter(x => x)
+                    .map((x, i) => (
+                        <TimeLineBranch key={i}>{this.buildTaskTimeLine(x, taskMetaHashSet)}</TimeLineBranch>
+                    ))}
             </TimeLineBranchNode>,
         ];
     }
@@ -168,13 +165,11 @@ export default class TaskChainTree extends React.Component {
 
         return (
             <ColumnStack block stretch gap={8}>
-                {mostParentTasks.map((x, i) =>
+                {mostParentTasks.map((x, i) => (
                     <Fit key={i}>
-                        <TimeLine>
-                            {this.buildTaskTimeLine(x, taskMetaHashSet)}
-                        </TimeLine>
+                        <TimeLine>{this.buildTaskTimeLine(x, taskMetaHashSet)}</TimeLine>
                     </Fit>
-                )}
+                ))}
             </ColumnStack>
         );
     }

@@ -32,12 +32,8 @@ function taskDate(
 ): React.Element<*> {
     return (
         <div className={cn("date")}>
-            <span className={cn("caption")}>
-                {caption}
-            </span>
-            <span className={cn("value")}>
-                {dateFormatter(taskInfo, selector)}
-            </span>
+            <span className={cn("caption")}>{caption}</span>
+            <span className={cn("value")}>{dateFormatter(taskInfo, selector)}</span>
         </div>
     );
 }
@@ -76,9 +72,7 @@ export default function TaskDetails(props: TaskDetailsProps): React.Element<*> {
                             <Fit tag={ColumnStack} className={cn("info-block-1")}>
                                 <Fit className={cn("id")}>
                                     <AllowCopyToClipboard>
-                                        <span data-tid="TaskId">
-                                            {taskInfo.id}
-                                        </span>
+                                        <span data-tid="TaskId">{taskInfo.id}</span>
                                     </AllowCopyToClipboard>
                                 </Fit>
                                 <Fit className={cn("state")}>
@@ -92,14 +86,14 @@ export default function TaskDetails(props: TaskDetailsProps): React.Element<*> {
                                 <Fill className={cn("parent-task")}>
                                     <div>
                                         Parent:{" "}
-                                        {taskInfo.parentTaskId
-                                            ? <AllowCopyToClipboard>
-                                                  {taskInfo.parentTaskId}
-                                              </AllowCopyToClipboard>
-                                            : "-"}
+                                        {taskInfo.parentTaskId ? (
+                                            <AllowCopyToClipboard>{taskInfo.parentTaskId}</AllowCopyToClipboard>
+                                        ) : (
+                                            "-"
+                                        )}
                                     </div>
                                 </Fill>
-                                {allowRerunOrCancel &&
+                                {allowRerunOrCancel && (
                                     <Fit className={cn("actions")}>
                                         <RowStack baseline block gap={2}>
                                             <Fit>
@@ -121,7 +115,8 @@ export default function TaskDetails(props: TaskDetailsProps): React.Element<*> {
                                                 </Link>
                                             </Fit>
                                         </RowStack>
-                                    </Fit>}
+                                    </Fit>
+                                )}
                             </Fit>
                             <Fit className={cn("dates")}>
                                 {taskDate(taskInfo, "Enqueued", x => x.ticks)}

@@ -38,10 +38,10 @@ export default class TaskDetailsPage extends React.Component {
     state: TaskDetailsPageState;
 
     componentWillMount() {
-        this.state = {
+        this.setState({
             openedModal: false,
             modalType: "Cancel",
-        };
+        });
     }
 
     render(): React.Element<*> {
@@ -51,40 +51,45 @@ export default class TaskDetailsPage extends React.Component {
         return (
             <div>
                 <CommonLayout>
-                    {taskDetails &&
-                        <CommonLayoutGoBack to={parentLocation}>Вернуться к поиску задач</CommonLayoutGoBack>}
-                    {taskDetails &&
+                    {taskDetails && (
+                        <CommonLayoutGoBack to={parentLocation}>Вернуться к поиску задач</CommonLayoutGoBack>
+                    )}
+                    {taskDetails && (
                         <CommonLayoutGreyLineHeader
                             data-tid="Header"
                             title={`Задача ${taskDetails.taskMeta.name}`}
                             tools={taskDetails && allowRerunOrCancel ? this.renderButtons() : null}>
                             <TaskTimeLine getHrefToTask={getTaskLocation} taskMeta={taskDetails.taskMeta} />
-                        </CommonLayoutGreyLineHeader>}
+                        </CommonLayoutGreyLineHeader>
+                    )}
                     <CommonLayoutContent>
                         <ColumnStack block streach gap={2}>
-                            {taskDetails &&
+                            {taskDetails && (
                                 <Fit>
                                     <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />
-                                </Fit>}
-                            {taskDetails &&
+                                </Fit>
+                            )}
+                            {taskDetails && (
                                 <Fit>
                                     <Accordion
                                         customRender={taskDetailsCustomRender}
                                         value={taskDetails.taskData}
                                         title="TaskData"
                                     />
-                                </Fit>}
+                                </Fit>
+                            )}
                             {taskDetails &&
-                                taskDetails.exceptionInfos &&
-                                <Fit className={cn("exception-container")} data-tid="Exceptions">
-                                    {taskDetails.exceptionInfos.map((exception, index) => {
-                                        return (
-                                            <pre data-tid="Exception" key={index} className={cn("exception")}>
-                                                {exception.exceptionMessageInfo}
-                                            </pre>
-                                        );
-                                    })}
-                                </Fit>}
+                                taskDetails.exceptionInfos && (
+                                    <Fit className={cn("exception-container")} data-tid="Exceptions">
+                                        {taskDetails.exceptionInfos.map((exception, index) => {
+                                            return (
+                                                <pre data-tid="Exception" key={index} className={cn("exception")}>
+                                                    {exception.exceptionMessageInfo}
+                                                </pre>
+                                            );
+                                        })}
+                                    </Fit>
+                                )}
                         </ColumnStack>
                     </CommonLayoutContent>
                 </CommonLayout>
@@ -129,24 +134,27 @@ export default class TaskDetailsPage extends React.Component {
         return (
             <RowStack baseline block gap={2}>
                 <Fill />
-                {relatedTasksLocation &&
+                {relatedTasksLocation && (
                     <Fit>
                         <RouterLink icon="list" to={relatedTasksLocation}>
                             View related tasks tree
                         </RouterLink>
-                    </Fit>}
-                {isCancelable &&
+                    </Fit>
+                )}
+                {isCancelable && (
                     <Fit>
                         <ButtonLink icon="remove" use="danger" data-tid={"CancelButton"} onClick={() => this.cancel()}>
                             Cancel task
                         </ButtonLink>
-                    </Fit>}
-                {isRerunable &&
+                    </Fit>
+                )}
+                {isRerunable && (
                     <Fit>
                         <ButtonLink icon="refresh" data-tid={"RerunButton"} onClick={() => this.rerun()}>
                             Rerun task
                         </ButtonLink>
-                    </Fit>}
+                    </Fit>
+                )}
             </RowStack>
         );
     }
@@ -170,25 +178,27 @@ export default class TaskDetailsPage extends React.Component {
                 <ModalFooter>
                     <RowStack gap={2}>
                         <Fit>
-                            {modalType === "Rerun"
-                                ? <Button
-                                      data-tid="RerunButton"
-                                      use="success"
-                                      onClick={() => {
-                                          onRerun(taskDetails.taskMeta.id);
-                                          this.closeModal();
-                                      }}>
-                                      Перезапустить
-                                  </Button>
-                                : <Button
-                                      data-tid="CancelButton"
-                                      use="danger"
-                                      onClick={() => {
-                                          onCancel(taskDetails.taskMeta.id);
-                                          this.closeModal();
-                                      }}>
-                                      Остановить
-                                  </Button>}
+                            {modalType === "Rerun" ? (
+                                <Button
+                                    data-tid="RerunButton"
+                                    use="success"
+                                    onClick={() => {
+                                        onRerun(taskDetails.taskMeta.id);
+                                        this.closeModal();
+                                    }}>
+                                    Перезапустить
+                                </Button>
+                            ) : (
+                                <Button
+                                    data-tid="CancelButton"
+                                    use="danger"
+                                    onClick={() => {
+                                        onCancel(taskDetails.taskMeta.id);
+                                        this.closeModal();
+                                    }}>
+                                    Остановить
+                                </Button>
+                            )}
                         </Fit>
                         <Fit>
                             <Button data-tid="CloseButton" onClick={() => this.closeModal()}>
