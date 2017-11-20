@@ -9,6 +9,7 @@ using RemoteTaskQueue.Monitoring.Storage;
 using RemoteTaskQueue.Monitoring.Storage.Writing;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
+using SKBKontur.Catalogue.Core.EventFeeds.Building;
 using SKBKontur.Catalogue.Core.EventFeeds.Firing;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
@@ -35,12 +36,11 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         {
             const string key = "RtqMonitoring";
             return eventFeedFactory
-                .Feed<TaskMetaUpdatedEvent, string>(key)
-                .WithBlade(key + "_Blade0", delay : TimeSpan.FromMinutes(1))
-                .WithBlade(key + "_Blade1", delay : TimeSpan.FromMinutes(15))
+                .CompositeFeed<TaskMetaUpdatedEvent, string>(key)
+                .WithComponentFeed(new CompositeEventFeedsComponentBuilder<TaskMetaUpdatedEvent, string>(eventLogRepository, eventConsumer)
+                                       .WithBlade(key + "_Blade0", delay : TimeSpan.FromMinutes(1))
+                                       .WithBlade(key + "_Blade1", delay : TimeSpan.FromMinutes(15)))
                 .WithGlobalTimeProvider(globalTimeProvider)
-                .WithEventSource(eventLogRepository)
-                .WithConsumer(eventConsumer)
                 .WithOffsetInterpreter(offsetInterpreter)
                 .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClientFactory, offsetInterpreter, bladeId.Key))
                 .InParallel()
