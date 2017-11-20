@@ -1,6 +1,7 @@
 // @flow
 import React from "react";
 import $c from "property-chain";
+import _ from "lodash";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from "ui";
 import { RowStack, ColumnStack, Fit } from "ui/layout";
 import { withRouter } from "react-router";
@@ -66,7 +67,7 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
 
 const pagingMapping: QueryStringMapping<{ from: ?number, size: ?number }> = queryStringMapping()
     .mapToInteger(x => x.from, "from")
-    .mapToInteger(x => x.size, "to")
+    .mapToInteger(x => x.size, "size")
     .build();
 
 export function buildSearchQueryForRequest(request: RemoteTaskQueueSearchRequest): string {
@@ -131,11 +132,17 @@ class TasksPageContainer extends React.Component {
 
     async componentWillReceiveProps(nextProps: TasksPageContainerProps): any {
         const { searchQuery, results } = nextProps;
+        const prevPaging = pagingMapping.parse(this.props.searchQuery);
+        const nextPaging = pagingMapping.parse(searchQuery);
+
         await this.updateAvailableTaskNamesIfNeed();
         const request = this.getRequestBySearchQuery(searchQuery);
 
         this.setState({ request: request });
-        if (this.state.searchRequested && !this.isSearchRequestEmpty(searchQuery) && !results) {
+        if (
+            (this.state.searchRequested && !this.isSearchRequestEmpty(searchQuery) && !results) ||
+            !_.isEqual(prevPaging, nextPaging)
+        ) {
             this.loadData(searchQuery, request);
         }
     }
