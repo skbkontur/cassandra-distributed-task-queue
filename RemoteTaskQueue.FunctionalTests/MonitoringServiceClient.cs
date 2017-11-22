@@ -1,11 +1,13 @@
-﻿using SKBKontur.Catalogue.ClientLib.Domains;
+﻿using System;
+
+using SKBKontur.Catalogue.ClientLib.Domains;
+using SKBKontur.Catalogue.ClientLib.HttpClientBases;
 using SKBKontur.Catalogue.ClientLib.HttpClientBases.Configuration;
 using SKBKontur.Catalogue.ClientLib.Topology;
-using SKBKontur.Catalogue.Core.EventFeeds.HttpAccess;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
-    public class MonitoringServiceClient : EventFeedHttpClientBase
+    public class MonitoringServiceClient : HttpClientBase
     {
         public MonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration)
             : base(domainTopologyFactory, methodDomainFactory, configuration)
@@ -30,6 +32,11 @@ namespace RemoteTaskQueue.FunctionalTests
         protected override sealed string GetDefaultTopologyFileName()
         {
             return "monitoringService";
+        }
+
+        protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
+        {
+            return defaultConfiguration.WithTimeout(TimeSpan.FromMinutes(1));
         }
     }
 }

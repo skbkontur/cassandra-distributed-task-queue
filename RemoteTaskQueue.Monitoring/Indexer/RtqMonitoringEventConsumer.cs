@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -20,6 +21,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         }
 
         [NotNull]
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
         public string GetDescription()
         {
             return GetType().FullName;

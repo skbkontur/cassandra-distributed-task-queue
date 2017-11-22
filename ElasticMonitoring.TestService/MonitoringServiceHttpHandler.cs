@@ -9,7 +9,6 @@ using RemoteTaskQueue.Monitoring.Storage;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Core.EventFeeds.Firing;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
@@ -36,10 +35,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         [HttpMethod]
         public void ExecuteForcedFeeding()
         {
-            foreach(var feed in EventFeedsRegistry.GetAll())
+            foreach(var feed in feedsRunner.RunningFeeds)
             {
                 feed.ResetLocalState();
-                feed.ExecuteForcedFeeding(TimeSpan.MaxValue);
+                feed.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
             }
             elasticsearchClientFactory.DefaultClient.Value.IndicesRefresh("_all");
         }
@@ -60,7 +59,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
             if(feedsRunner != null)
             {
-                feedsRunner.StopFeed();
+                feedsRunner.Stop();
                 feedsRunner = null;
             }
         }

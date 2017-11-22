@@ -10,13 +10,12 @@ using RemoteTaskQueue.Monitoring.Storage.Writing;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;
-using SKBKontur.Catalogue.Core.EventFeeds.Firing;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqMonitoringEventFeeder
     {
-        public RtqMonitoringEventFeeder(MultiRazorEventFeedFactory eventFeedFactory,
+        public RtqMonitoringEventFeeder(EventFeedFactory eventFeedFactory,
                                         RtqGlobalTimeProvider globalTimeProvider,
                                         EventLogRepository eventLogRepository,
                                         RtqMonitoringEventConsumer eventConsumer,
@@ -38,16 +37,16 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             return eventFeedFactory
                 .CompositeFeed<TaskMetaUpdatedEvent, string>(key)
                 .WithComponentFeed(new CompositeEventFeedsComponentBuilder<TaskMetaUpdatedEvent, string>(eventLogRepository, eventConsumer)
-                                       .WithBlade(key + "_Blade0", delay : TimeSpan.FromMinutes(1))
-                                       .WithBlade(key + "_Blade1", delay : TimeSpan.FromMinutes(15)))
+                                       .WithBlade($"{key}_Blade0", delay : TimeSpan.FromMinutes(1))
+                                       .WithBlade($"{key}_Blade1", delay : TimeSpan.FromMinutes(15)))
                 .WithGlobalTimeProvider(globalTimeProvider)
                 .WithOffsetInterpreter(offsetInterpreter)
-                .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClientFactory, offsetInterpreter, bladeId.Key))
+                .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClientFactory, offsetInterpreter, bladeId.BladeKey))
                 .InParallel()
                 .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
         }
 
-        private readonly MultiRazorEventFeedFactory eventFeedFactory;
+        private readonly EventFeedFactory eventFeedFactory;
         private readonly RtqGlobalTimeProvider globalTimeProvider;
         private readonly EventLogRepository eventLogRepository;
         private readonly RtqMonitoringEventConsumer eventConsumer;
