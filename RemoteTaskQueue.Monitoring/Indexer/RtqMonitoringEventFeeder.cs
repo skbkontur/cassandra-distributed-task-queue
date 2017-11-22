@@ -2,7 +2,6 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 
 using RemoteTaskQueue.Monitoring.Storage;
@@ -35,14 +34,13 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         {
             const string key = "RtqMonitoring";
             return eventFeedFactory
-                .CompositeFeed<TaskMetaUpdatedEvent, string>(key)
-                .WithComponentFeed(new CompositeEventFeedsComponentBuilder<TaskMetaUpdatedEvent, string>(eventLogRepository, eventConsumer)
-                                       .WithBlade($"{key}_Blade0", delay : TimeSpan.FromMinutes(1))
-                                       .WithBlade($"{key}_Blade1", delay : TimeSpan.FromMinutes(15)))
+                .WithOffsetType<string>()
+                .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer)
+                                            .WithBlade($"{key}_Blade0", delay : TimeSpan.FromMinutes(1))
+                                            .WithBlade($"{key}_Blade1", delay : TimeSpan.FromMinutes(15)))
                 .WithGlobalTimeProvider(globalTimeProvider)
                 .WithOffsetInterpreter(offsetInterpreter)
                 .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClientFactory, offsetInterpreter, bladeId.BladeKey))
-                .InParallel()
                 .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
         }
 
