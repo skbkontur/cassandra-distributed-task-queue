@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -13,7 +13,7 @@ namespace RemoteQueue.Cassandra.Entities
         [NotNull]
         public static string GetCassandraName(this Enum value)
         {
-            return cassandraNames.GetOrAdd(value, DoGetCassandraName);
+            return cassandraNames.GetOrAddThreadSafely(value, DoGetCassandraName);
         }
 
         [NotNull]
@@ -26,9 +26,9 @@ namespace RemoteQueue.Cassandra.Entities
                 if(attrs.Any())
                     return ((CassandraNameAttribute)attrs.Single()).Name;
             }
-            throw new InvalidProgramStateException(string.Format("Не найдено значение CassandraNameAttribute для '{0}'", value));
+            throw new InvalidProgramStateException($"Не найдено значение CassandraNameAttribute для '{value}'");
         }
 
-        private static readonly ConcurrentDictionary<Enum, string> cassandraNames = new ConcurrentDictionary<Enum, string>();
+        private static readonly Hashtable cassandraNames = new Hashtable();
     }
 }

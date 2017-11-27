@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 
@@ -26,12 +26,25 @@ namespace RemoteTaskQueue.UnitTests
             Assert.That((int)AnotherEnum.Whatever, Is.EqualTo((int)TaskState.Unknown));
             Assert.That(TaskState.Unknown.GetCassandraName(), Is.EqualTo("Unknown"));
             Assert.That(AnotherEnum.Whatever.GetCassandraName(), Is.EqualTo("Whatever"));
+            Assert.That(TaskState.Unknown.GetCassandraName(), Is.EqualTo("Unknown"));
+        }
+
+        [Test]
+        public void GetCassandraName_EnumsWithTheSameNames()
+        {
+            Assert.That((int)AnotherEnum.Canceled, Is.Not.EqualTo((int)TaskState.Canceled));
+            Assert.That(TaskState.Canceled.GetCassandraName(), Is.EqualTo("Canceled"));
+            Assert.That(AnotherEnum.Canceled.GetCassandraName(), Is.EqualTo("AnotherCanceled"));
+            Assert.That(TaskState.Canceled.GetCassandraName(), Is.EqualTo("Canceled"));
         }
 
         private enum AnotherEnum
         {
             [CassandraName("Whatever")]
             Whatever = 0,
+
+            [CassandraName("AnotherCanceled")]
+            Canceled = 1,
         }
     }
 }

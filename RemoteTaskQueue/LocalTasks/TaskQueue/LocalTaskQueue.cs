@@ -10,6 +10,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
+using RemoteQueue.Profiling;
 using RemoteQueue.Tracing;
 
 using SKBKontur.Catalogue.Objects;
@@ -73,7 +74,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             if(taskMeta == null && taskIndexRecord.MinimalStartTicks > (Timestamp.Now - HandlerTask.MaxAllowedIndexInconsistencyDuration).Ticks)
             {
-                logger.DebugFormat("Мета для задачи TaskId = {0} еще не записана, ждем {1}", taskIndexRecord.TaskId, HandlerTask.MaxAllowedIndexInconsistencyDuration);
+                logger.Debug($"Мета для задачи TaskId = {taskIndexRecord.TaskId} еще не записана, ждем {HandlerTask.MaxAllowedIndexInconsistencyDuration}");
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             }
             if(!taskCounter.TryIncrement(taskQueueReason))
@@ -91,6 +92,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                     var taskWrapper = new TaskWrapper(taskIndexRecord.TaskId, groboTraceKey, taskQueueReason, taskIsBeingTraced, handlerTask, this);
                     var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
                     taskIsSentToThreadPool = true;
+                    metricsContext.Meter("TaskIsSentToThreadPool").Mark();
                     if(!taskWrapper.Finished)
                         hashtable.Add(taskIndexRecord.TaskId, asyncTask);
                 }
@@ -108,6 +110,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             lock(lockObject)
                 hashtable.Remove(taskId);
             taskCounter.Decrement(taskQueueReason);
+            metricsContext.Meter("TaskIsFinished").Mark();
             if(taskIsBeingTraced)
             {
                 InfrastructureTaskTraceContext.Finish();
@@ -122,5 +125,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         private readonly object lockObject = new object();
         private volatile bool stopped;
         private readonly ILog logger = LogManager.GetLogger(typeof(LocalTaskQueue));
+        private readonly MetricsContext metricsContext = MetricsContext.For(nameof(LocalTaskQueue));
     }
 }

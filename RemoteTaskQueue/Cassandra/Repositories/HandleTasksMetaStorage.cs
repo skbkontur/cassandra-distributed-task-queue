@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,6 +11,7 @@ using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
+using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
@@ -51,7 +52,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 var liveRecords = minimalStartTicksIndex.GetRecords(taskIndexShardKey, toTicks, batchSize : 2000).Take(10000).ToArray();
                 liveRecordsByKey.Add(taskIndexShardKey, liveRecords);
                 if(liveRecords.Any())
-                    Log.For(this).InfoFormat("Got {0} live minimalStartTicksIndex records for taskIndexShardKey: {1}; Oldest live record: {2}", liveRecords.Length, taskIndexShardKey, liveRecords.First());
+                    Log.For(this).Info($"Got {liveRecords.Length} live minimalStartTicksIndex records for taskIndexShardKey: {taskIndexShardKey}; Oldest live record: {liveRecords.First()}");
             }
             return Shuffle(liveRecordsByKey.SelectMany(x => x.Value).ToArray());
         }
@@ -59,17 +60,27 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta, [CanBeNull] TaskIndexRecord oldTaskIndexRecord)
         {
+            var metricsContext = MetricsContext.For(taskMeta.Name).SubContext("HandleTasksMetaStorage.AddMeta");
             var globalNowTicks = globalTime.UpdateNowTicks();
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + PreciseTimestampGenerator.TicksPerMicrosecond, globalNowTicks);
             taskMeta.LastModificationTicks = nowTicks;
-            eventLogRepository.AddEvent(taskMeta, eventTimestamp : new Timestamp(nowTicks), eventId : Guid.NewGuid());
+            using(metricsContext.Timer("EventLogRepository_AddEvent").NewContext())
+                eventLogRepository.AddEvent(taskMeta, eventTimestamp : new Timestamp(nowTicks), eventId : Guid.NewGuid());
             var newIndexRecord = FormatIndexRecord(taskMeta);
-            minimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks, taskMeta.GetTtl());
+            using(metricsContext.Timer("MinimalStartTicksIndex_AddRecord").NewContext())
+                minimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks, taskMeta.GetTtl());
             if(taskMeta.State == TaskState.New)
-                childTaskIndex.WriteIndexRecord(taskMeta, globalNowTicks);
-            taskMetaStorage.Write(taskMeta, globalNowTicks);
+            {
+                using(metricsContext.Timer("ChildTaskIndex_WriteIndexRecord").NewContext())
+                    childTaskIndex.WriteIndexRecord(taskMeta, globalNowTicks);
+            }
+            using(metricsContext.Timer("TaskMetaStorage_Write").NewContext())
+                taskMetaStorage.Write(taskMeta, globalNowTicks);
             if(oldTaskIndexRecord != null)
-                minimalStartTicksIndex.RemoveRecord(oldTaskIndexRecord, globalNowTicks);
+            {
+                using(metricsContext.Timer("MinimalStartTicksIndex_RemoveRecord").NewContext())
+                    minimalStartTicksIndex.RemoveRecord(oldTaskIndexRecord, globalNowTicks);
+            }
             return newIndexRecord;
         }
 
@@ -94,7 +105,7 @@ namespace RemoteQueue.Cassandra.Repositories
         {
             var meta = taskMetaStorage.Read(taskId);
             if(meta == null)
-                throw new InvalidProgramStateException(string.Format("TaskMeta not found for: {0}", taskId));
+                throw new InvalidProgramStateException($"TaskMeta not found for: {taskId}");
             return meta;
         }
 
@@ -105,7 +116,7 @@ namespace RemoteQueue.Cassandra.Repositories
         }
 
         [NotNull]
-        private T[] Shuffle<T>([NotNull] T[] array)
+        private static T[] Shuffle<T>([NotNull] T[] array)
         {
             for(var i = 0; i < array.Length; i++)
             {

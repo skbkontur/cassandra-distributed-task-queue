@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -25,11 +25,17 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public TaskIndexRecord AddTask([NotNull] Task task)
         {
+            var metricsContextForTaskName = MetricsContext.For(task.Meta.Name);
             if(task.Meta.Attempts == 0)
+            {
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
-
-            task.Meta.TaskDataId = taskDataStorage.Write(task.Meta, task.Data);
-            return handleTasksMetaStorage.AddMeta(task.Meta, oldTaskIndexRecord : null);
+                metricsContextForTaskName.Meter("TasksQueued").Mark();
+            }
+            using(metricsContextForTaskName.Timer("CreationTime").NewContext())
+            {
+                task.Meta.TaskDataId = taskDataStorage.Write(task.Meta, task.Data);
+                return handleTasksMetaStorage.AddMeta(task.Meta, oldTaskIndexRecord : null);
+            }
         }
 
         public void ProlongTaskTtl([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData)
@@ -45,7 +51,7 @@ namespace RemoteQueue.Cassandra.Repositories
             var taskMeta = handleTasksMetaStorage.GetMeta(taskId);
             var taskData = taskDataStorage.Read(taskMeta);
             if(taskData == null)
-                throw new InvalidProgramStateException(string.Format("TaskData not found for: {0}", taskId));
+                throw new InvalidProgramStateException($"TaskData not found for: {taskId}");
             return new Task(taskMeta, taskData);
         }
 
@@ -63,8 +69,7 @@ namespace RemoteQueue.Cassandra.Repositories
             var tasks = new List<Task>();
             foreach(var taskMeta in taskMetas.Values)
             {
-                byte[] taskData;
-                if(taskDatas.TryGetValue(taskMeta.Id, out taskData))
+                if(taskDatas.TryGetValue(taskMeta.Id, out var taskData))
                     tasks.Add(new Task(taskMeta, taskData));
             }
             return tasks;

@@ -162,11 +162,12 @@
     <Compile Include="Handling\ITaskCounter.cs" />
     <Compile Include="Handling\ITaskData.cs" />
     <Compile Include="Handling\ITaskHandler.cs" />
+    <Compile Include="Profiling\MetricsContext.cs" />
+    <Compile Include="Profiling\ProfilingMetrics.cs" />
     <Compile Include="Handling\RemoteTask.cs" />
     <Compile Include="Handling\RemoteTaskInfo.cs" />
     <Compile Include="Handling\RemoteTaskQueue.cs" />
     <Compile Include="Handling\TaskManipulationResult.cs" />
-    <Compile Include="Handling\TaskShardMetrics.cs" />
     <Compile Include="Handling\RemoteTaskQueueExtensions.cs" />
     <Compile Include="LocalTasks\TaskQueue\LocalTaskQueueingResult.cs" />
     <Compile Include="Profiling\GraphiteRemoteTaskQueueProfiler.cs" />

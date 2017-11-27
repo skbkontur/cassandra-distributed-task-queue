@@ -24,7 +24,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             finished = false;
         }
 
-        public bool Finished { get { return finished; } }
+        public bool Finished => finished;
 
         public void Run()
         {

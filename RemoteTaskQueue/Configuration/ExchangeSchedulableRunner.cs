@@ -62,7 +62,8 @@ namespace RemoteQueue.Configuration
                             periodicTaskRunner.Register(handlerManager, runnerSettings.PeriodicInterval);
                         periodicTaskRunner.Register(reportConsumerStateToGraphiteTask, TimeSpan.FromMinutes(1));
                         started = true;
-                        Log.For(this).InfoFormat("Start ExchangeSchedulableRunner: schedule handlerManagers[{0}] with period {1}:\r\n{2}", handlerManagers.Count, runnerSettings.PeriodicInterval, string.Join("\r\n", handlerManagers.Select(x => x.Id)));
+                        var handlerManagerIds = string.Join("\r\n", handlerManagers.Select(x => x.Id));
+                        Log.For(this).Info($"Start ExchangeSchedulableRunner: schedule handlerManagers[{handlerManagers.Count}] with period {runnerSettings.PeriodicInterval}:\r\n{handlerManagerIds}");
                     }
                 }
             }
@@ -89,7 +90,7 @@ namespace RemoteQueue.Configuration
         }
 
 #pragma warning disable 618
-        public IRemoteTaskQueueBackdoor RemoteTaskQueueBackdoor { get; private set; }
+        public IRemoteTaskQueueBackdoor RemoteTaskQueueBackdoor { get; }
 #pragma warning restore 618
         private volatile bool started;
         private readonly IExchangeSchedulableRunnerSettings runnerSettings;
