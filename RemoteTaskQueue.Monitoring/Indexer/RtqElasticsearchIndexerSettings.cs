@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 using JetBrains.Annotations;
 
@@ -11,8 +11,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         public RtqElasticsearchIndexerSettings()
         {
             InitialIndexingStartTimestamp = new Timestamp(new DateTime(2016, 02, 01, 0, 0, 0, DateTimeKind.Utc));
-            MaxEventsProcessingTimeWindow = TimeSpan.FromHours(72);
-            MaxEventsProcessingTasksCount = 10 * 1000 * 1000;
+            MaxEventsProcessingTimeWindow = TimeSpan.FromHours(1);
+            MaxEventsProcessingTasksCount = 60000; // slightly less than TaskIdsProcessingBatchSize * IndexingThreadsCount
             TaskIdsProcessingBatchSize = 4000;
             IndexingThreadsCount = 16;
         }
