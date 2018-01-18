@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { Icon, Link, LinkDropdown } from "ui";
 import _ from "lodash";
 const LinkMenuItem = LinkDropdown.MenuItem;

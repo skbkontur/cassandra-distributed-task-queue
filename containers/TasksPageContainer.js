@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import $c from "property-chain";
 import _ from "lodash";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from "ui";
@@ -77,8 +77,7 @@ export function buildSearchQueryForRequest(request: RemoteTaskQueueSearchRequest
     return provisionalMapping.stringify(request);
 }
 
-class TasksPageContainer extends React.Component {
-    props: TasksPageContainerProps;
+class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksPageContainerState> {
     state: TasksPageContainerState = {
         loading: false,
         request: createDefaultRemoteTaskQueueSearchRequest(),
@@ -283,7 +282,7 @@ class TasksPageContainer extends React.Component {
         }
     }
 
-    renderModal(): React.Element<*> {
+    renderModal(): React.Element<any> {
         const { results } = this.props;
         const { modalType, manyTaskConfirm } = this.state;
         const confirmedRegExp = /б.*л.*я/i;
@@ -382,7 +381,7 @@ class TasksPageContainer extends React.Component {
         });
     }
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const currentUser = getCurrentUserInfo();
         const allowRerunOrCancel = $c(currentUser)
             .with(x => x.superUserAccessLevel)

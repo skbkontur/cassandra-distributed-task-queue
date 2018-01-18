@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import $c from "property-chain";
 import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
 import TaskDetailsPage from "../components/TaskDetailsPage/TaskDetailsPage";
@@ -25,8 +25,7 @@ type TaskDetailsPageContainerState = {
     notFoundError: boolean,
 };
 
-class TaskDetailsPageContainer extends React.Component {
-    props: TaskDetailsPageContainerProps;
+class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerProps, TaskDetailsPageContainerState> {
     state: TaskDetailsPageContainerState = {
         loading: false,
         taskDetails: null,
@@ -109,7 +108,7 @@ class TaskDetailsPageContainer extends React.Component {
         };
     }
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const { taskDetails, loading, notFoundError } = this.state;
         const { parentLocation } = this.props;
         const currentUser = getCurrentUserInfo();

@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { RouterLink } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
 import type { RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
@@ -22,9 +22,7 @@ type TaskChainTreeProps = {
     getTaskLocation: (id: string) => RouterLocationDescriptor,
 };
 
-export default class TaskChainTree extends React.Component {
-    props: TaskChainTreeProps;
-
+export default class TaskChainTree extends React.Component<TaskChainTreeProps, $FlowFixMeState> {
     buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): React.Element<any> {
         const { getTaskLocation } = this.props;
 
@@ -154,7 +152,7 @@ export default class TaskChainTree extends React.Component {
         return mostParentTasks;
     }
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const { taskMetas } = this.props;
         const taskMetaHashSet = taskMetas.reduce((result, taskMeta) => {
             result[taskMeta.id] = taskMeta;

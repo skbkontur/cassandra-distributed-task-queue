@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { Link } from "ui";
 import CommonLayout, { CommonLayoutGoBack, CommonLayoutHeader, CommonLayoutContent } from "../../../Commons/Layouts";
 import type { RouterLocationDescriptor } from "react-router";
@@ -10,10 +10,8 @@ type TaskNotFoundPageProps = {
     parentLocation: RouterLocationDescriptor,
 };
 
-export default class TaskNotFoundPage extends React.Component {
-    props: TaskNotFoundPageProps;
-
-    render(): React.Element<*> {
+export default class TaskNotFoundPage extends React.Component<TaskNotFoundPageProps> {
+    render(): React.Node {
         const { parentLocation } = this.props;
 
         return (

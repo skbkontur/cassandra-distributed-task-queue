@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import _ from "lodash";
 import { withRouter } from "react-router";
 import type { ReactRouter } from "react-router";
@@ -41,8 +41,7 @@ const mapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMap
     .mapToSet(x => x.states, "states", TaskStates)
     .build();
 
-class TaskChainsTreeContainer extends React.Component {
-    props: TaskChainsTreeContainerProps;
+class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerProps, TaskChainsTreeContainerState> {
     state: TaskChainsTreeContainerState = {
         loading: false,
         loaderText: "",
@@ -136,7 +135,7 @@ class TaskChainsTreeContainer extends React.Component {
         return { pathname: `/AdminTools/Tasks/${id}` };
     }
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const { taskDetails, searchQuery, parentLocation } = this.props;
         const { loaderText, loading } = this.state;
         return (

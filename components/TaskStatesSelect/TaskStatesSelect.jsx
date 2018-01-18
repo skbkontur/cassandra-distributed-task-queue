@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 import type { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
@@ -23,10 +23,8 @@ const TaskStateCaptions = {
     [TaskStates.Canceled]: "Canceled",
 };
 
-export default class TaskStatesSelect extends React.Component {
-    props: TaskStatesSelectProps;
-
-    render(): React.Element<*> {
+export default class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
+    render(): React.Node {
         const { value } = this.props;
         return (
             <Tooltip render={() => this.renderTooltip()} trigger="click" pos="bottom left">
@@ -40,7 +38,7 @@ export default class TaskStatesSelect extends React.Component {
         );
     }
 
-    renderTooltip(): React.Element<*> {
+    renderTooltip(): React.Element<any> {
         return (
             <ColumnStack block gap={2}>
                 {getAllTaskStates().map((item, index) => {

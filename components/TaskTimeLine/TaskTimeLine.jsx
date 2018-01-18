@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { RouterLink } from "ui";
 import cn from "./TaskTimeLine.less";
 import TimeLine from "./TimeLine/TimeLine";
@@ -24,9 +24,7 @@ type TaskTimeLineProps = {
     getHrefToTask: (id: string) => RouterLocationDescriptor,
 };
 
-export default class TaskTimeLine extends React.Component {
-    props: TaskTimeLineProps;
-
+export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $FlowFixMeState> {
     ticksToDate(ticks: ?Ticks): ?Date {
         if (!ticks) {
             return null;
@@ -255,7 +253,7 @@ export default class TaskTimeLine extends React.Component {
         ].filter(Boolean);
     }
 
-    render(): React.Element<*> {
+    render(): React.Node {
         return <TimeLine>{this.getTaskTimeLineEntries()}</TimeLine>;
     }
 }

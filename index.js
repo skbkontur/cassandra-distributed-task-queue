@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import ReactDom from "react-dom";
 import { IndexRoute, Router, Route, browserHistory } from "react-router";
 import TasksPage from "./containers/TasksPageContainer";

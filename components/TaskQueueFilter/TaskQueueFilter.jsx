@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import TaskTypesSelect from "../TaskTypesSelect/TaskTypesSelect";
 import TaskStatesSelect from "../TaskStatesSelect/TaskStatesSelect";
 import { TimeZones } from "../../../Commons/DataTypes/Time";
@@ -20,13 +20,12 @@ type TaskQueueFilterState = {
     openedModal: boolean,
 };
 
-export default class TaskQueueFilter extends React.Component {
-    props: TaskQueueFilterProps;
+export default class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQueueFilterState> {
     state: TaskQueueFilterState = {
         openedModal: false,
     };
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const { enqueueDateTimeRange, queryString, states, names } = this.props.value;
         const { availableTaskTypes, onChange, onSearchButtonClick } = this.props;
         const { openedModal } = this.state;
@@ -93,7 +92,7 @@ export default class TaskQueueFilter extends React.Component {
         );
     }
 
-    renderModal(): React.Element<*> {
+    renderModal(): React.Element<any> {
         return (
             <Modal data-tid="Modal" onClose={() => this.closeModal()} width={900}>
                 <ModalHeader>Справка</ModalHeader>

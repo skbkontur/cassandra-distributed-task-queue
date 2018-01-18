@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "ui";
 import _ from "lodash";
 import { RowStack, Fit } from "ui/layout";
@@ -22,8 +22,7 @@ type TasksTableState = {
     actionTask: string,
 };
 
-export default class TasksTable extends React.Component {
-    props: TaskTableProps;
+export default class TasksTable extends React.Component<TaskTableProps, TasksTableState> {
     state: TasksTableState = {
         openedModal: false,
         modalType: "Cancel",
@@ -40,7 +39,7 @@ export default class TasksTable extends React.Component {
         );
     }
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const { taskInfos } = this.props;
         const { openedModal } = this.state;
         return (
@@ -51,7 +50,7 @@ export default class TasksTable extends React.Component {
         );
     }
 
-    renderRow(item: TaskMetaInformation): React.Element<*> {
+    renderRow(item: TaskMetaInformation): React.Element<any> {
         const { allowRerunOrCancel, getTaskLocation } = this.props;
         return (
             <div key={item.id} className={cn("task-details-row")}>
@@ -67,7 +66,7 @@ export default class TasksTable extends React.Component {
         );
     }
 
-    renderModal(): React.Element<*> {
+    renderModal(): React.Element<any> {
         const { onCancel, onRerun } = this.props;
         const { modalType, actionTask } = this.state;
 

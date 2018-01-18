@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { Icon } from "ui";
 import TimeLineCycled from "./TimeLineCycled";
 import cn from "./TimeLine.less";
@@ -8,7 +8,7 @@ type TimeLineProps = {
     children?: any,
 };
 
-export default function TimeLine({ children }: TimeLineProps): React.Element<*> {
+export default function TimeLine({ children }: TimeLineProps): React.Element<any> {
     return <div className={cn("root")}>{children}</div>;
 }
 
@@ -18,7 +18,7 @@ type TimeLineEntryProps = {
     iconColor?: ?string,
 };
 
-TimeLine.Branch = function TimeLine({ children }: TimeLineProps): React.Element<*> {
+TimeLine.Branch = function TimeLine({ children }: TimeLineProps): React.Element<any> {
     return (
         <div className={cn("root", "branch")}>
             <div className={cn("line-up")} />
@@ -27,8 +27,7 @@ TimeLine.Branch = function TimeLine({ children }: TimeLineProps): React.Element<
     );
 };
 
-TimeLine.BranchNode = class TimeLineBranchNode extends React.Component {
-    props: TimeLineProps;
+TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineProps> {
     refs: {
         branches: ?HTMLElement,
         line: ?HTMLElement,
@@ -54,7 +53,7 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component {
         }
     }
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const { children } = this.props;
         return (
             <div className={cn("branch-node")}>
@@ -67,7 +66,7 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component {
     }
 };
 
-TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineEntryProps): React.Element<*> {
+TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineEntryProps): React.Element<any> {
     return (
         <div className={cn("entry")}>
             <div className={cn("icon")}>

@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import cn from "./TaskDetailsPage.less";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink, RouterLink } from "ui";
 import { RowStack, ColumnStack, Fill, Fit } from "ui/layout";
@@ -33,10 +33,7 @@ type TaskDetailsPageState = {
     modalType: "Cancel" | "Rerun",
 };
 
-export default class TaskDetailsPage extends React.Component {
-    props: TaskDetailsPageProps;
-    state: TaskDetailsPageState;
-
+export default class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskDetailsPageState> {
     componentWillMount() {
         this.setState({
             openedModal: false,
@@ -44,7 +41,7 @@ export default class TaskDetailsPage extends React.Component {
         });
     }
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation } = this.props;
         const { openedModal } = this.state;
 
@@ -119,7 +116,7 @@ export default class TaskDetailsPage extends React.Component {
         return null;
     }
 
-    renderButtons(): React.Element<*> | null {
+    renderButtons(): React.Element<any> | null {
         const { taskDetails } = this.props;
         if (!taskDetails) {
             return null;
@@ -159,7 +156,7 @@ export default class TaskDetailsPage extends React.Component {
         );
     }
 
-    renderModal(): React.Element<*> | null {
+    renderModal(): React.Element<any> | null {
         const { onCancel, onRerun, taskDetails } = this.props;
         const { modalType } = this.state;
         if (!taskDetails) {

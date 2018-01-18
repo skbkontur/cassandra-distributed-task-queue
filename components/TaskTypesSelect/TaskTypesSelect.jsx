@@ -1,5 +1,5 @@
 // @flow
-import React from "react";
+import * as React from "react";
 import { Button, Icon, Tooltip, Checkbox, Input } from "ui";
 import { ColumnStack, RowStack, Fit } from "ui/layout";
 import cn from "./TaskTypesSelect.less";
@@ -15,13 +15,12 @@ type TaskTypesSelectState = {
     query: string,
 };
 
-export default class TaskTypesSelect extends React.Component {
-    props: TaskTypesSelectProps;
+export default class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskTypesSelectState> {
     state: TaskTypesSelectState = {
         query: "",
     };
 
-    render(): React.Element<*> {
+    render(): React.Node {
         const { disabled, value } = this.props;
         return (
             <Tooltip
@@ -39,7 +38,7 @@ export default class TaskTypesSelect extends React.Component {
         );
     }
 
-    renderTooltip(): ?React.Element<*> {
+    renderTooltip(): ?React.Element<any> {
         const { availableTaskTypes } = this.props;
         const { query } = this.state;
         if (availableTaskTypes.length === 0) {
