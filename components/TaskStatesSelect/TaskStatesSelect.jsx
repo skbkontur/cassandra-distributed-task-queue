@@ -38,7 +38,7 @@ export default class TaskStatesSelect extends React.Component<TaskStatesSelectPr
         );
     }
 
-    renderTooltip(): React.Element<any> {
+    renderTooltip(): React.Node {
         return (
             <ColumnStack block gap={2}>
                 {getAllTaskStates().map((item, index) => {

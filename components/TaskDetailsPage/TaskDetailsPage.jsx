@@ -116,7 +116,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         return null;
     }
 
-    renderButtons(): React.Element<any> | null {
+    renderButtons(): React.Node | null {
         const { taskDetails } = this.props;
         if (!taskDetails) {
             return null;
@@ -156,7 +156,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         );
     }
 
-    renderModal(): React.Element<any> | null {
+    renderModal(): React.Node | null {
         const { onCancel, onRerun, taskDetails } = this.props;
         const { modalType } = this.state;
         if (!taskDetails) {

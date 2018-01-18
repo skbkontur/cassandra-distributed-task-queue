@@ -38,7 +38,7 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
         );
     }
 
-    renderTooltip(): ?React.Element<any> {
+    renderTooltip(): ?React.Node {
         const { availableTaskTypes } = this.props;
         const { query } = this.state;
         if (availableTaskTypes.length === 0) {

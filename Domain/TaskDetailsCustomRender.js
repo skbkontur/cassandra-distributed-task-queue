@@ -13,7 +13,7 @@ function getByPath(target: ?Object, path: string[]): mixed {
 }
 
 // eslint-disable-next-line max-statements
-export default function customRender(target: mixed, path: string[]): React.Element<any> | null {
+export default function customRender(target: mixed, path: string[]): React.Node | null {
     const pathTop = path[path.length - 1];
     if (target == null) {
         return null;

@@ -92,7 +92,7 @@ export default class TaskQueueFilter extends React.Component<TaskQueueFilterProp
         );
     }
 
-    renderModal(): React.Element<any> {
+    renderModal(): React.Node {
         return (
             <Modal data-tid="Modal" onClose={() => this.closeModal()} width={900}>
                 <ModalHeader>Справка</ModalHeader>

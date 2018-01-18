@@ -19,7 +19,7 @@ export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMet
         );
     }
 
-    renderMetaInfo(): React.Element<any>[] {
+    renderMetaInfo(): React.Node[] {
         const { taskMeta } = this.props;
         return [
             <tr key="TaskId">
@@ -94,7 +94,7 @@ export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMet
     }
 }
 
-function renderDate(date?: ?Ticks): React.Element<any> {
+function renderDate(date?: ?Ticks): React.Node {
     return (
         <span>
             <DateTimeView value={date} />{" "}

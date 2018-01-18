@@ -23,7 +23,7 @@ type TaskChainTreeProps = {
 };
 
 export default class TaskChainTree extends React.Component<TaskChainTreeProps, $FlowFixMeState> {
-    buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): React.Element<any> {
+    buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): React.Node {
         const { getTaskLocation } = this.props;
 
         let iconAndColorProps = {
@@ -98,7 +98,7 @@ export default class TaskChainTree extends React.Component<TaskChainTreeProps, $
     buildChildEntries(
         taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
         taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
-    ): React.Element<any>[] {
+    ): React.Node[] {
         if (!taskMeta.childTaskIds || taskMeta.childTaskIds.length === 0) {
             return [];
         }
@@ -122,7 +122,7 @@ export default class TaskChainTree extends React.Component<TaskChainTreeProps, $
     buildTaskTimeLine(
         taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
         taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
-    ): React.Element<any>[] {
+    ): React.Node[] {
         return [this.buildTaskTimeLineEntry(taskMeta), ...this.buildChildEntries(taskMeta, taskMetaHashSet)];
     }
 

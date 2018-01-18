@@ -21,7 +21,7 @@ type TaskDetailsProps = {
     getTaskLocation: (id: string) => RouterLocationDescriptor,
 };
 
-function dateFormatter(item: TaskMetaInformation, selector: (obj: TaskMetaInformation) => ?Ticks): React.Element<any> {
+function dateFormatter(item: TaskMetaInformation, selector: (obj: TaskMetaInformation) => ?Ticks): React.Node {
     return <DateTimeView value={selector(item)} />;
 }
 
@@ -29,7 +29,7 @@ function taskDate(
     taskInfo: TaskMetaInformation,
     caption: string,
     selector: (obj: TaskMetaInformation) => ?Ticks
-): React.Element<any> {
+): React.Node {
     return (
         <div className={cn("date")}>
             <span className={cn("caption")}>{caption}</span>
@@ -53,7 +53,7 @@ function getStateClassName(taskState: TaskState): string {
     return stateClassNames[taskState];
 }
 
-export default function TaskDetails(props: TaskDetailsProps): React.Element<any> {
+export default function TaskDetails(props: TaskDetailsProps): React.Node {
     const { allowRerunOrCancel, taskInfo, onCancel, onRerun, getTaskLocation } = props;
     return (
         <RowStack baseline block gap={1} className={cn("task-details", getStateClassName(taskInfo.state))}>

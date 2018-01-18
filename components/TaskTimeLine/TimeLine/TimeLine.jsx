@@ -8,7 +8,7 @@ type TimeLineProps = {
     children?: any,
 };
 
-export default function TimeLine({ children }: TimeLineProps): React.Element<any> {
+export default function TimeLine({ children }: TimeLineProps): React.Node {
     return <div className={cn("root")}>{children}</div>;
 }
 
@@ -18,7 +18,7 @@ type TimeLineEntryProps = {
     iconColor?: ?string,
 };
 
-TimeLine.Branch = function TimeLine({ children }: TimeLineProps): React.Element<any> {
+TimeLine.Branch = function TimeLine({ children }: TimeLineProps): React.Node {
     return (
         <div className={cn("root", "branch")}>
             <div className={cn("line-up")} />
@@ -66,7 +66,7 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineP
     }
 };
 
-TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineEntryProps): React.Element<any> {
+TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineEntryProps): React.Node {
     return (
         <div className={cn("entry")}>
             <div className={cn("icon")}>

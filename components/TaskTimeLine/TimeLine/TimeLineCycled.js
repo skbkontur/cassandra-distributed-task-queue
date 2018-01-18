@@ -5,7 +5,7 @@ import cn from "./TimeLine.less";
 
 type TimeLineCycledProps = {
     children?: any,
-    content?: ?React.Element<any> | ?string,
+    content?: ?React.Node | ?string,
     icon?: ?string,
 };
 

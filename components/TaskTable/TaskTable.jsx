@@ -50,7 +50,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    renderRow(item: TaskMetaInformation): React.Element<any> {
+    renderRow(item: TaskMetaInformation): React.Node {
         const { allowRerunOrCancel, getTaskLocation } = this.props;
         return (
             <div key={item.id} className={cn("task-details-row")}>
@@ -66,7 +66,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    renderModal(): React.Element<any> {
+    renderModal(): React.Node {
         const { onCancel, onRerun } = this.props;
         const { modalType, actionTask } = this.state;
 

@@ -282,7 +282,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    renderModal(): React.Element<any> {
+    renderModal(): React.Node {
         const { results } = this.props;
         const { modalType, manyTaskConfirm } = this.state;
         const confirmedRegExp = /б.*л.*я/i;
