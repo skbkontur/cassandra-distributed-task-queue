@@ -64,11 +64,11 @@
     </Reference>
     <Reference Include="GrEmit, Version=2.1.4.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GrEmit.dll</HintPath>
+      <HintPath>..\..\Assemblies\Temp\GrEmit.dll</HintPath>
     </Reference>
     <Reference Include="GroBuf, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+      <HintPath>..\..\Assemblies\Temp\GroBuf.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Annotations, Version=10.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

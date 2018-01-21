@@ -80,7 +80,7 @@
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
     <Reference Include="GroBuf">
-      <HintPath>..\..\Assemblies\GroBuf.dll</HintPath>
+      <HintPath>..\..\Assemblies\Temp\GroBuf.dll</HintPath>
     </Reference>
     <Reference Include="JetBrains.Annotations">
       <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
