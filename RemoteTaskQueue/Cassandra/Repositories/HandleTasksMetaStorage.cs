@@ -60,7 +60,7 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta, [CanBeNull] TaskIndexRecord oldTaskIndexRecord)
         {
-            var metricsContext = MetricsContext.For(taskMeta.Name).SubContext("HandleTasksMetaStorage.AddMeta");
+            var metricsContext = MetricsContext.For(taskMeta).SubContext("HandleTasksMetaStorage.AddMeta");
             var globalNowTicks = globalTime.UpdateNowTicks();
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + PreciseTimestampGenerator.TicksPerMicrosecond, globalNowTicks);
             taskMeta.LastModificationTicks = nowTicks;

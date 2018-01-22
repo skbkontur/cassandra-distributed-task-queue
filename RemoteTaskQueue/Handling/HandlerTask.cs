@@ -74,7 +74,7 @@ namespace RemoteQueue.Handling
                 logger.Debug($"taskIndexRecord != IndexRecord(taskMeta), поэтому ждем; taskMeta: {taskMeta}; taskIndexRecord: {taskIndexRecord}; localNow: {localNow}");
                 return LocalTaskProcessingResult.Undefined;
             }
-            var metricsContext = MetricsContext.For(taskMeta.Name).SubContext(nameof(HandlerTask));
+            var metricsContext = MetricsContext.For(taskMeta).SubContext(nameof(HandlerTask));
             return TryProcessTaskExclusively(metricsContext);
         }
 
@@ -192,7 +192,7 @@ namespace RemoteQueue.Handling
                     return LocalTaskProcessingResult.Undefined;
                 }
 
-                var metricsContextForTaskName = MetricsContext.For(oldMeta.Name);
+                var metricsContextForTaskName = MetricsContext.For(oldMeta);
                 if(oldMeta.Attempts > 0)
                     metricsContextForTaskName.Meter("RerunTask").Mark();
                 var waitedInQueue = Timestamp.Now - new Timestamp(oldMeta.FinishExecutingTicks ?? oldMeta.Ticks);
@@ -263,14 +263,14 @@ namespace RemoteQueue.Handling
                         using(metricsContext.Timer("HandleTask").NewContext())
                             handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
                         remoteTaskQueueProfiler.ProcessTaskExecutionFinished(inProcessMeta, handleResult, sw.Elapsed);
-                        MetricsContext.For(inProcessMeta.Name).Meter("TasksExecuted").Mark();
+                        MetricsContext.For(inProcessMeta).Meter("TasksExecuted").Mark();
                         using(metricsContext.Timer("UpdateTaskMetaByHandleResult").NewContext())
                             return UpdateTaskMetaByHandleResult(inProcessMeta, handleResult);
                     }
                     catch(Exception e)
                     {
                         remoteTaskQueueProfiler.ProcessTaskExecutionFailed(inProcessMeta, sw.Elapsed);
-                        MetricsContext.For(inProcessMeta.Name).Meter("TasksExecutionFailed").Mark();
+                        MetricsContext.For(inProcessMeta).Meter("TasksExecutionFailed").Mark();
                         var taskExceptionInfoId = TryLogError(e, inProcessMeta);
                         using(metricsContext.Timer("TrySwitchToTerminalState").NewContext())
                             return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, taskExceptionInfoId));

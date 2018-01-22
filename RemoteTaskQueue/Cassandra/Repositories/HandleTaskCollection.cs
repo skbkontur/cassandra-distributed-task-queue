@@ -25,7 +25,7 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public TaskIndexRecord AddTask([NotNull] Task task)
         {
-            var metricsContextForTaskName = MetricsContext.For(task.Meta.Name);
+            var metricsContextForTaskName = MetricsContext.For(task.Meta);
             if(task.Meta.Attempts == 0)
             {
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);

@@ -1,5 +1,7 @@
 ﻿using JetBrains.Annotations;
 
+using RemoteQueue.Cassandra.Entities;
+
 namespace RemoteQueue.Profiling
 {
     internal class MetricsContext
@@ -22,6 +24,12 @@ namespace RemoteQueue.Profiling
         public static MetricsContext For([NotNull] string contextName)
         {
             return new MetricsContext(contextName);
+        }
+
+        [NotNull]
+        public static MetricsContext For([NotNull] TaskMetaInformation taskMeta)
+        {
+            return For("Tasks").SubContext(taskMeta.Name);
         }
     }
 }
