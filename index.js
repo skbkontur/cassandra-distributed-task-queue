@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import ReactDom from "react-dom";
+import { WindowUtils } from "Commons/DomUtils";
 import { IndexRoute, Router, Route, browserHistory } from "react-router";
 import TasksPage from "./containers/TasksPageContainer";
 import TaskDetailsPageContainer from "./containers/TaskDetailsPageContainer";
@@ -44,5 +45,5 @@ ReactDom.render(
             </Route>
         </Router>
     </ApiProvider>,
-    document.getElementById("content")
+    WindowUtils.getElementByIdToRenderApp("content")
 );
