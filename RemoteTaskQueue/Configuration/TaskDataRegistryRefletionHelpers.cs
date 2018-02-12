@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +15,7 @@ namespace RemoteQueue.Configuration
         {
             var taskNameAttribute = GetAttributesForType<TaskNameAttribute>(taskDataType).SingleOrDefault();
             if(taskNameAttribute == null)
-                throw new InvalidProgramStateException(string.Format("TaskName attribute not found for: {0}", taskDataType.FullName));
+                throw new InvalidProgramStateException($"TaskName attribute not found for: {taskDataType.FullName}");
             return taskNameAttribute.TaskName;
         }
 
@@ -24,8 +24,8 @@ namespace RemoteQueue.Configuration
         {
             var taskTopicAttribute = GetAllTypesToSearchForAttributes(taskDataType).SelectMany(GetAttributesForType<TaskTopicAttribute>).SingleOrDefault();
             if(taskTopicIsRequired && taskTopicAttribute == null)
-                throw new InvalidProgramStateException(string.Format("TaskTopic attribute not found for: {0}", taskDataType.FullName));
-            return taskTopicAttribute.With(x => x.TaskTopic);
+                throw new InvalidProgramStateException($"TaskTopic attribute not found for: {taskDataType.FullName}");
+            return taskTopicAttribute?.TaskTopic;
         }
 
         [NotNull]

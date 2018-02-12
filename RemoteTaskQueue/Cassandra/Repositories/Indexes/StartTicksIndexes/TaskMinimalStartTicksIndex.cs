@@ -28,7 +28,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         [CanBeNull]
         public LiveRecordTicksMarkerState TryGetCurrentLiveRecordTicksMarker([NotNull] TaskIndexShardKey taskIndexShardKey)
         {
-            return oldestLiveRecordTicksHolder.TryGetCurrentMarkerValue(taskIndexShardKey).With(x => x.State);
+            return oldestLiveRecordTicksHolder.TryGetCurrentMarkerValue(taskIndexShardKey)?.State;
         }
 
         public void AddRecord([NotNull] TaskIndexRecord taskIndexRecord, long timestamp, TimeSpan? ttl)
@@ -65,8 +65,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         [NotNull]
         public IEnumerable<TaskIndexRecord> GetRecords([NotNull] TaskIndexShardKey taskIndexShardKey, long toTicks, int batchSize)
         {
-            ILiveRecordTicksMarker liveRecordTicksMarker;
-            var fromTicks = TryGetFromTicks(taskIndexShardKey, out liveRecordTicksMarker);
+            var fromTicks = TryGetFromTicks(taskIndexShardKey, out var liveRecordTicksMarker);
             if(!fromTicks.HasValue)
                 return new TaskIndexRecord[0];
             return new GetEventsEnumerable(liveRecordTicksMarker, serializer, RetrieveColumnFamilyConnection(), fromTicks.Value, toTicks, batchSize);
@@ -93,8 +92,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             lock(locker)
             {
                 var now = Timestamp.Now;
-                Timestamp lastBigOverlapMoment;
-                if(!lastBigOverlapMomentsByShardKey.TryGetValue(taskIndexShardKey, out lastBigOverlapMoment) || now - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
+                if(!lastBigOverlapMomentsByShardKey.TryGetValue(taskIndexShardKey, out var lastBigOverlapMoment) || now - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
                 {
                     lastBigOverlapMomentsByShardKey[taskIndexShardKey] = now;
                     //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,

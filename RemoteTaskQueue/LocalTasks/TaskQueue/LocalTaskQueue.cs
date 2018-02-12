@@ -88,7 +88,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                         return LocalTaskQueueingResult.QueueIsStoppedResult;
                     if(hashtable.ContainsKey(taskIndexRecord.TaskId))
                         return LocalTaskQueueingResult.TaskIsSkippedResult;
-                    var groboTraceKey = taskMeta.With(x => x.Name) ?? "TaskMetaIsNotAvailable";
+                    var groboTraceKey = taskMeta?.Name ?? "TaskMetaIsNotAvailable";
                     var taskWrapper = new TaskWrapper(taskIndexRecord.TaskId, groboTraceKey, taskQueueReason, taskIsBeingTraced, handlerTask, this);
                     var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
                     taskIsSentToThreadPool = true;

@@ -10,7 +10,6 @@ using RemoteTaskQueue.Monitoring.Storage.Client;
 
 using SKBKontur.Catalogue.Core.InternalApi.Core;
 using SKBKontur.Catalogue.Core.InternalApi.Core.Exceptions;
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring.Api
 {
@@ -40,8 +39,7 @@ namespace RemoteTaskQueue.Monitoring.Api
             var taskListItems = new List<TaskMetaInformation>();
             foreach(var taskId in searchResult.Ids)
             {
-                TaskMetaInformation taskMeta;
-                if(taskMetas.TryGetValue(taskId, out taskMeta))
+                if(taskMetas.TryGetValue(taskId, out var taskMeta))
                     taskListItems.Add(taskMeta);
             }
             return new RemoteTaskQueueSearchResults
@@ -76,9 +74,9 @@ namespace RemoteTaskQueue.Monitoring.Api
         {
             return new TaskSearchRequest
                 {
-                    TaskStates = searchRequest.With(x => x.States).Return(z => z.Select(x => x.ToString()).ToArray(), null),
-                    TaskNames = searchRequest.Return(x => x.Names, null),
-                    QueryString = searchRequest.With(x => x.QueryString).Unless(string.IsNullOrWhiteSpace).Return(x => x, "*"),
+                    TaskStates = searchRequest.States?.Select(x => x.ToString()).ToArray(),
+                    TaskNames = searchRequest.Names,
+                    QueryString = string.IsNullOrWhiteSpace(searchRequest.QueryString) ? "*" : searchRequest.QueryString,
                     FromTicksUtc = searchRequest.EnqueueDateTimeRange.LowerBound.Ticks,
                     ToTicksUtc = searchRequest.EnqueueDateTimeRange.UpperBound.Ticks,
                 };
@@ -112,7 +110,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         {
             var result = remoteTaskQueue.TryGetTaskInfo(taskId);
             if(result == null)
-                throw new NotFoundException(string.Format("Task with id {0} not found", taskId));
+                throw new NotFoundException($"Task with id {taskId} not found");
             return new RemoteTaskInfoModel
                 {
                     ExceptionInfos = result.ExceptionInfos,
