@@ -35,11 +35,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         [HttpMethod]
         public void ExecuteForcedFeeding()
         {
-            foreach(var feed in feedsRunner.RunningFeeds)
-            {
-                feed.ResetLocalState();
-                feed.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
-            }
+            feedsRunner.ResetLocalState();
+            feedsRunner.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
             elasticsearchClientFactory.DefaultClient.Value.IndicesRefresh("_all");
         }
 
