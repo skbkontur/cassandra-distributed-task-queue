@@ -21,7 +21,7 @@ export default class TaskNotFoundPage extends React.Component<TaskNotFoundPagePr
                 <CommonLayoutContent>
                     Это могло произойти по двум причинам:
                     <ul className={cn("list")}>
-                        <li>Непроавильный URL. Возможно вы не полностью скопировали ссылку.</li>
+                        <li>Неправильный URL. Возможно вы не полностью скопировали ссылку.</li>
                         <li>
                             Задача удалена, потому что она старше 200 дней. Если вам нужна информация из этой задачи,
                             напишите дежурному аналитику на{" "}

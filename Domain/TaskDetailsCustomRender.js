@@ -4,12 +4,39 @@ import { Icon, Link, LinkDropdown } from "ui";
 import _ from "lodash";
 const LinkMenuItem = LinkDropdown.MenuItem;
 
-const endsWith = (ending: string, str: string): boolean => str.slice(-ending.length) === ending;
+export const endsWith = (ending: string, str: string): boolean => str.slice(-ending.length) === ending;
 
 // eslint-disable-next-line flowtype/no-weak-types
 function getByPath(target: ?Object, path: string[]): mixed {
     // @flow-coverage-ignore-next-line
     return _.get(target, path);
+}
+
+export function OrganizationLinkDropdown({
+    partyId,
+    caption,
+}: {
+    partyId: string,
+    caption?: ?string,
+}): React.Element<*> {
+    return (
+        <LinkDropdown renderTitle={caption != null ? caption : partyId} data-tid="GoToLink">
+            <LinkMenuItem href={`/AdminTools/PartyEdit?partyId=${partyId}`} data-tid="GoToPartyEdit">
+                <Icon name="Card" /> Открыть карточку организации
+            </LinkMenuItem>
+            <LinkMenuItem
+                href={`/AdminTools/TablesView/Party2/${partyId}/${partyId}`}
+                data-tid="GoToPartyBusinessObject">
+                <Icon name="Info" /> Открыть бизнес-объект
+            </LinkMenuItem>
+            <LinkMenuItem href={`/${partyId}/Supplier`} data-tid="GoToPartySupplierInterface">
+                <Icon name="Export" /> Открыть интерфейс поставщика
+            </LinkMenuItem>
+            <LinkMenuItem href={`/${partyId}/Monitoring/TaskChainList`} data-tid="GoToPartyMonitoring">
+                <Icon name="Export" /> Открыть мониторинг сообщений
+            </LinkMenuItem>
+        </LinkDropdown>
+    );
 }
 
 // eslint-disable-next-line max-statements
@@ -21,24 +48,7 @@ export default function customRender(target: mixed, path: string[]): React.Node 
     if ((endsWith("PartyId", pathTop) || pathTop === "partyId") && typeof target === "object") {
         const partyId = getByPath(target, path);
         if (typeof partyId === "string") {
-            return (
-                <LinkDropdown renderTitle={partyId} data-tid="GoToLink">
-                    <LinkMenuItem href={`/AdminTools/PartyEdit?partyId=${partyId}`} data-tid="GoToPartyEdit">
-                        <Icon name="Card" /> Открыть карточку организации
-                    </LinkMenuItem>
-                    <LinkMenuItem
-                        href={`/AdminTools/TablesView/Party2/${partyId}/${partyId}`}
-                        data-tid="GoToPartyBusinessObject">
-                        <Icon name="Info" /> Открыть бизнес-объект
-                    </LinkMenuItem>
-                    <LinkMenuItem href={`/${partyId}/Supplier`} data-tid="GoToPartySupplierInterface">
-                        <Icon name="Export" /> Открыть интерфейс поставщика
-                    </LinkMenuItem>
-                    <LinkMenuItem href={`/${partyId}/Monitoring/TaskChainList`} data-tid="GoToPartyMonitoring">
-                        <Icon name="Export" /> Открыть мониторинг сообщений
-                    </LinkMenuItem>
-                </LinkDropdown>
-            );
+            return <OrganizationLinkDropdown partyId={partyId} />;
         }
     }
 
