@@ -46,7 +46,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                         {
                             number_of_shards = 3,
                             number_of_replicas = local || bulkLoad ? 0 : 1,
-                            refresh_interval = bulkLoad ? "-1" : "1s",
+                            refresh_interval = bulkLoad ? "-1" : (local ? "1s" : "10s"),
                         }
                 };
         }
