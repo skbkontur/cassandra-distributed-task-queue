@@ -47,6 +47,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                             number_of_shards = 6,
                             number_of_replicas = local || bulkLoad ? 0 : 1,
                             refresh_interval = bulkLoad ? "-1" : (local ? "1s" : "10s"),
+                            merge = new {scheduler = new {max_thread_count = 1}}, // see https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules-merge.html
                         }
                 };
         }
