@@ -38,6 +38,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         /// </summary>
         public const int SplittingFactor = 10;
 
+        // Note! There is hard limit on mutation size in cassandra (see commitlog_segment_size_in_mb setting explanation)
+        public const int MaxBlobSize = 4 * 1024 * 1024;
+
         public static readonly long TickPartition = TimeSpan.FromMinutes(6).Ticks;
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -10,6 +10,7 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
@@ -25,6 +26,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             if(value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", columnId));
+            if(value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
+                Log.For(this).WarnFormat("Writing extra large blob with rowKey={0} and columnId={1} of size={2} into cf: {3}", rowKey, columnId, value.Length, cfName);
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(cfName.KeyspaceName, cfName.ColumnFamilyName);
             connection.AddColumn(rowKey, new Column
                 {

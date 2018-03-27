@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -36,6 +36,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", id));
             if(id.Type == BlobType.Regular && value.Length > TimeBasedBlobStorageSettings.MaxRegularBlobSize)
                 Log.For(this).ErrorFormat("Writing large blob with id={0} of size={1} into time-based cf: {2}", id.Id, value.Length, settings.RegularBlobsCfName);
+            if(value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
+                Log.For(this).WarnFormat("Writing extra large blob with id={0} of size={1} into time-based cf: {2}", id.Id, value.Length, settings.LargeBlobsCfName);
             var columnAddress = GetColumnAddress(id);
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, columnAddress.CfName);
             connection.AddColumn(columnAddress.RowKey, new Column
