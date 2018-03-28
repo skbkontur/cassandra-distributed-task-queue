@@ -64,7 +64,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         private void DeleteAllElasticEntities()
         {
             var elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
-            elasticsearchClient.IndicesDelete(RtqElasticsearchConsts.IndexPrefix + "*").ProcessResponse(200, 404);
+            elasticsearchClient.IndicesDelete(RtqElasticsearchConsts.AllIndicesWildcard).ProcessResponse(200, 404);
             elasticsearchClient.IndicesDeleteTemplateForAll(RtqElasticsearchConsts.TemplateName).ProcessResponse(200, 404);
             elasticsearchClient.ClusterHealth(p => p.WaitForStatus(WaitForStatus.Green)).ProcessResponse();
         }

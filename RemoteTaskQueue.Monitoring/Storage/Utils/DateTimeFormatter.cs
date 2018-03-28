@@ -9,7 +9,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Utils
             return new DateTime(TicksToDateTimeRange(ticks), DateTimeKind.Utc).Date;
         }
 
-        public static long TicksToDateTimeRange(long ticks)
+        private static long TicksToDateTimeRange(long ticks)
         {
             if(ticks < minTicks)
                 ticks = minTicks;

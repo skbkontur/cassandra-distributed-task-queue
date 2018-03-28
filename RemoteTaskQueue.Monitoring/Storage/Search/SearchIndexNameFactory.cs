@@ -12,20 +12,14 @@ namespace RemoteTaskQueue.Monitoring.Storage.Search
         [NotNull]
         public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc)
         {
-            return GetIndexForTimeRange(fromTicksUtc, toTicksUtc, searchIndexNameFormat);
-        }
-
-        [NotNull]
-        public static string GetIndexForTimeRange(long fromTicksUtc, long toTicksUtc, [NotNull] string indexNameFormat)
-        {
             var stringBuilder = new StringBuilder();
             var time = DateTimeFormatter.DateFromTicks(fromTicksUtc);
             var endTime = DateTimeFormatter.DateFromTicks(toTicksUtc).Add(minimumSupportedIndexCreationInterval);
-            var dayWildcardFormat = indexNameFormat.Replace("dd", "*"); //todo yyyy.MM.*
-            var monthWildcardFormat = dayWildcardFormat.Replace("MM", "*"); //todo yyyy.*.*
+            var dayWildcardFormat = RtqElasticsearchConsts.DataIndexNameFormat.Replace("dd", "*");
+            var monthWildcardFormat = dayWildcardFormat.Replace("MM", "*");
             while(time < endTime)
             {
-                bool moved = false;
+                var moved = false;
                 if(time.Day == 1)
                 {
                     DateTime nextTime;
@@ -47,7 +41,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Search
                 }
                 if(!moved)
                 {
-                    Append(stringBuilder, time, indexNameFormat);
+                    Append(stringBuilder, time, RtqElasticsearchConsts.DataIndexNameFormat);
                     time = time.AddDays(1);
                 }
             }
@@ -62,6 +56,5 @@ namespace RemoteTaskQueue.Monitoring.Storage.Search
         }
 
         private static readonly TimeSpan minimumSupportedIndexCreationInterval = TimeSpan.FromDays(1);
-        private static readonly string searchIndexNameFormat = IndexNameConverter.ConvertToDateTimeFormat(IndexNameConverter.FillIndexNamePlaceholder(RtqElasticsearchConsts.SearchAliasFormat, RtqElasticsearchConsts.CurrentIndexNameFormat));
     }
 }

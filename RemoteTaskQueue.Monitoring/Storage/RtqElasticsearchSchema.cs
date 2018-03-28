@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-
-using Elasticsearch.Net;
-
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using RemoteTaskQueue.Monitoring.Storage.Utils;
 
@@ -20,21 +16,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
 
         public void Actualize(bool local, bool bulkLoad)
         {
-            PutDataTemplate(RtqElasticsearchConsts.TemplateName, RtqElasticsearchConsts.IndexPrefix + "*", local, bulkLoad);
-            CreateIndexIfNotExists(RtqElasticsearchConsts.OldDataIndex);
-        }
-
-        private void CreateIndexIfNotExists([NotNull] string indexName)
-        {
-            var elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
-            if(elasticsearchClient.IndicesExists(indexName).ProcessResponse(200, 404).HttpStatusCode != 404)
-                Log.For(this).LogInfoFormat("Index already exists: {0}", indexName);
-            else
-            {
-                Log.For(this).LogInfoFormat("Index does not exist, creating: {0}", indexName);
-                elasticsearchClient.IndicesCreate(indexName, new {}).ProcessResponse();
-                elasticsearchClient.ClusterHealth(indexName, p => p.WaitForStatus(WaitForStatus.Green)).ProcessResponse();
-            }
+            PutDataTemplate(RtqElasticsearchConsts.TemplateName, RtqElasticsearchConsts.AllIndicesWildcard, local, bulkLoad);
         }
 
         [NotNull]
@@ -153,11 +135,6 @@ namespace RemoteTaskQueue.Monitoring.Storage
                                                     }
                                             }
                                     }
-                            },
-                        aliases = new Dictionary<string, object>
-                            {
-                                {RtqElasticsearchConsts.SearchAliasFormat, new {}},
-                                {RtqElasticsearchConsts.OldDataAliasFormat, new {}},
                             }
                     }
                 ).ProcessResponse();

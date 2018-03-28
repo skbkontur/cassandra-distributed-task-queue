@@ -20,9 +20,8 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
 {
     public class TaskWriter
     {
-        public TaskWriter(RtqElasticsearchClientFactory elasticsearchClientFactory, IWriteIndexNameFactory indexNameFactory, TaskDataService taskDataService, IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
+        public TaskWriter(RtqElasticsearchClientFactory elasticsearchClientFactory, TaskDataService taskDataService, IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
         {
-            this.indexNameFactory = indexNameFactory;
             this.taskDataService = taskDataService;
             this.graphiteReporter = graphiteReporter;
             elasticsearchClient = elasticsearchClientFactory.CreateClient(TaskWriterJsonSettings.GetSerializerSettings());
@@ -36,7 +35,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
             {
                 var meta = batch[i].Item1;
                 var taskData = batch[i].Item3;
-                var indexName = indexNameFactory.GetIndexForTask(meta);
+                var indexName = DateTimeFormatter.DateFromTicks(meta.Ticks).ToString(RtqElasticsearchConsts.DataIndexNameFormat);
                 body[2 * i] = new
                     {
                         index = new
@@ -78,7 +77,6 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
             return taskDataService.CreateTaskIndexedInfo(metaIndexedInfo, exceptionInfo, taskData);
         }
 
-        private readonly IWriteIndexNameFactory indexNameFactory;
         private readonly TaskDataService taskDataService;
         private readonly IRtqElasticsearchIndexerGraphiteReporter graphiteReporter;
         private readonly IElasticsearchClient elasticsearchClient;

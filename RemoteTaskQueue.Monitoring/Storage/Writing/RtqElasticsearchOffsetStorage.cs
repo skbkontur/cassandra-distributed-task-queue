@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 using JetBrains.Annotations;
 
@@ -12,7 +12,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
     public class RtqElasticsearchOffsetStorage : ElasticsearchOffsetStorage<string>
     {
         public RtqElasticsearchOffsetStorage(RtqElasticsearchClientFactory elasticsearchClientFactory, RtqMonitoringOffsetInterpreter offsetInterpreter, [NotNull] string bladeKey)
-            : base(elasticsearchClientFactory.DefaultClient.Value, key : bladeKey, indexName : RtqElasticsearchConsts.IndexingProgressIndex)
+            : base(elasticsearchClientFactory.DefaultClient.Value, key : bladeKey, indexName : RtqElasticsearchConsts.IndexingProgressIndexName)
         {
             this.offsetInterpreter = offsetInterpreter;
         }
