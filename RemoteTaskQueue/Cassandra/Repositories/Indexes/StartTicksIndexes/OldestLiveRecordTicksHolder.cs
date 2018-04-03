@@ -19,10 +19,10 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public ILiveRecordTicksMarker TryGetCurrentMarkerValue([NotNull] TaskIndexShardKey taskIndexShardKey)
         {
             var currentMarkerValue = DoTryGetCurrentMarkerValue(taskIndexShardKey);
-            if(currentMarkerValue != null)
+            if (currentMarkerValue != null)
                 return currentMarkerValue;
             var persistedTicks = ticksHolder.GetMinTicks(taskIndexShardKey.ToCassandraKey());
-            if(persistedTicks == 0)
+            if (persistedTicks == 0)
                 return null;
             return DoGetCurrentMarkerValue(taskIndexShardKey, persistedTicks);
         }
@@ -30,10 +30,10 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         [CanBeNull]
         private ILiveRecordTicksMarker DoTryGetCurrentMarkerValue([NotNull] TaskIndexShardKey taskIndexShardKey)
         {
-            lock(locker)
+            lock (locker)
             {
                 long currentTicks;
-                if(!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
+                if (!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
                     return null;
                 return new LiveRecordTicksMarker(new LiveRecordTicksMarkerState(taskIndexShardKey, currentTicks), this);
             }
@@ -42,17 +42,17 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         [NotNull]
         private ILiveRecordTicksMarker DoGetCurrentMarkerValue([NotNull] TaskIndexShardKey taskIndexShardKey, long persistedTicks)
         {
-            lock(locker)
+            lock (locker)
             {
                 long currentTicks;
-                if(!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
+                if (!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
                 {
                     currentTicks = persistedTicks;
                     ticksByShardKey.Add(taskIndexShardKey, currentTicks);
                 }
                 else
                 {
-                    if(persistedTicks < currentTicks)
+                    if (persistedTicks < currentTicks)
                     {
                         currentTicks = persistedTicks;
                         ticksByShardKey[taskIndexShardKey] = currentTicks;
@@ -64,12 +64,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public bool TryMoveForward([NotNull] TaskIndexShardKey taskIndexShardKey, long oldTicks, long newTicks)
         {
-            lock(locker)
+            lock (locker)
             {
                 long currentTicks;
-                if(!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
+                if (!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
                     throw new InvalidProgramStateException(string.Format("Not found CurrentTicks for: {0}", taskIndexShardKey));
-                if(currentTicks < oldTicks)
+                if (currentTicks < oldTicks)
                     return false;
                 ticksByShardKey[taskIndexShardKey] = newTicks;
                 return true;
@@ -84,14 +84,14 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         private void DoMoveBackwardIfNecessary([NotNull] TaskIndexShardKey taskIndexShardKey, long newTicks)
         {
-            lock(locker)
+            lock (locker)
             {
                 long currentTicks;
-                if(!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
+                if (!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
                     ticksByShardKey.Add(taskIndexShardKey, newTicks);
                 else
                 {
-                    if(newTicks < currentTicks)
+                    if (newTicks < currentTicks)
                         ticksByShardKey[taskIndexShardKey] = newTicks;
                 }
             }

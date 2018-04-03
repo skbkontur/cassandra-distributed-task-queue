@@ -28,7 +28,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
 
         private static void NewMetainformationAvailable(ProcessedTasksCounter c, TaskMetaInformation[] metas, long nowTime)
         {
-            foreach(var meta in metas)
+            foreach (var meta in metas)
                 c.Process(meta);
         }
 

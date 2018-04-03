@@ -14,7 +14,7 @@ namespace RemoteQueue.Configuration
         public static string GetTaskName([NotNull] this Type taskDataType)
         {
             var taskNameAttribute = GetAttributesForType<TaskNameAttribute>(taskDataType).SingleOrDefault();
-            if(taskNameAttribute == null)
+            if (taskNameAttribute == null)
                 throw new InvalidProgramStateException($"TaskName attribute not found for: {taskDataType.FullName}");
             return taskNameAttribute.TaskName;
         }
@@ -23,7 +23,7 @@ namespace RemoteQueue.Configuration
         public static string TryGetTaskTopic([NotNull] this Type taskDataType, bool taskTopicIsRequired)
         {
             var taskTopicAttribute = GetAllTypesToSearchForAttributes(taskDataType).SelectMany(GetAttributesForType<TaskTopicAttribute>).SingleOrDefault();
-            if(taskTopicIsRequired && taskTopicAttribute == null)
+            if (taskTopicIsRequired && taskTopicAttribute == null)
                 throw new InvalidProgramStateException($"TaskTopic attribute not found for: {taskDataType.FullName}");
             return taskTopicAttribute?.TaskTopic;
         }
@@ -31,7 +31,7 @@ namespace RemoteQueue.Configuration
         [NotNull]
         private static List<Type> GetAllTypesToSearchForAttributes([CanBeNull] Type type)
         {
-            if(type == null)
+            if (type == null)
                 return new List<Type>();
             return new[] {type}
                 .Union(type.GetInterfaces())

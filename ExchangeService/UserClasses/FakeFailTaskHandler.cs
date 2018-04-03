@@ -19,7 +19,7 @@ namespace ExchangeService.UserClasses
         protected override HandleResult HandleTask(FakeFailTaskData taskData)
         {
             var counter = testCounterRepository.DecrementCounter(Context.Id);
-            if(counter == 0)
+            if (counter == 0)
             {
                 Log.For(this).InfoFormat("Finished task: {0}", Context.Id);
                 return Fatal(new Exception());

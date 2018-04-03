@@ -74,18 +74,18 @@ namespace RemoteQueue.Handling
 
         public TaskManipulationResult TryCancelTask([NotNull] string taskId)
         {
-            if(string.IsNullOrWhiteSpace(taskId))
+            if (string.IsNullOrWhiteSpace(taskId))
                 throw new InvalidProgramStateException("TaskId is required");
             IRemoteLock remoteLock;
-            if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
+            if (!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
                 return TaskManipulationResult.Failure_LockAcquiringFails;
-            using(remoteLock)
+            using (remoteLock)
             {
                 var task = HandleTaskCollection.TryGetTask(taskId);
-                if(task == null)
+                if (task == null)
                     return TaskManipulationResult.Failure_TaskDoesNotExist;
                 var taskMeta = task.Meta;
-                if(taskMeta.State == TaskState.New || taskMeta.State == TaskState.WaitingForRerun || taskMeta.State == TaskState.WaitingForRerunAfterError || taskMeta.State == TaskState.InProcess)
+                if (taskMeta.State == TaskState.New || taskMeta.State == TaskState.WaitingForRerun || taskMeta.State == TaskState.WaitingForRerunAfterError || taskMeta.State == TaskState.InProcess)
                 {
                     var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
                     taskMeta.State = TaskState.Canceled;
@@ -99,24 +99,24 @@ namespace RemoteQueue.Handling
 
         public TaskManipulationResult TryRerunTask([NotNull] string taskId, TimeSpan delay)
         {
-            if(string.IsNullOrWhiteSpace(taskId))
+            if (string.IsNullOrWhiteSpace(taskId))
                 throw new InvalidProgramStateException("TaskId is required");
-            if(delay.Ticks < 0)
+            if (delay.Ticks < 0)
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             IRemoteLock remoteLock;
-            if(!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
+            if (!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
                 return TaskManipulationResult.Failure_LockAcquiringFails;
-            using(remoteLock)
+            using (remoteLock)
             {
                 var task = HandleTaskCollection.TryGetTask(taskId);
-                if(task == null)
+                if (task == null)
                     return TaskManipulationResult.Failure_TaskDoesNotExist;
                 var taskMeta = task.Meta;
                 var oldTaskIndexRecord = HandleTasksMetaStorage.FormatIndexRecord(taskMeta);
                 taskMeta.State = TaskState.WaitingForRerun;
                 taskMeta.MinimalStartTicks = (Timestamp.Now + delay).Ticks;
                 HandleTasksMetaStorage.AddMeta(taskMeta, oldTaskIndexRecord);
-                if(taskMeta.NeedTtlProlongation())
+                if (taskMeta.NeedTtlProlongation())
                 {
                     taskMeta.SetOrUpdateTtl(TaskTtl);
                     HandleTaskCollection.ProlongTaskTtl(taskMeta, task.Data);
@@ -136,9 +136,9 @@ namespace RemoteQueue.Handling
             where T : ITaskData
         {
             var taskInfos = GetTaskInfos<T>(new[] {taskId});
-            if(taskInfos.Length == 0)
+            if (taskInfos.Length == 0)
                 throw new InvalidProgramStateException(string.Format("Task {0} does not exist", taskId));
-            if(taskInfos.Length > 1)
+            if (taskInfos.Length > 1)
                 throw new InvalidProgramStateException(string.Format("Expected exactly one task info for taskId = {0}, but found {1}", taskId, taskInfos.Length));
             return taskInfos[0];
         }
@@ -146,7 +146,7 @@ namespace RemoteQueue.Handling
         [NotNull]
         public RemoteTaskInfo[] GetTaskInfos([NotNull] string[] taskIds)
         {
-            if(taskIds.Any(string.IsNullOrWhiteSpace))
+            if (taskIds.Any(string.IsNullOrWhiteSpace))
                 throw new InvalidProgramStateException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
             var tasks = HandleTaskCollection.GetTasks(taskIds);
             var taskExceptionInfos = TaskExceptionInfoStorage.Read(tasks.Select(x => x.Meta).ToArray());
@@ -167,7 +167,7 @@ namespace RemoteQueue.Handling
         [NotNull]
         public Dictionary<string, TaskMetaInformation> GetTaskMetas([NotNull] string[] taskIds)
         {
-            if(taskIds.Any(string.IsNullOrWhiteSpace))
+            if (taskIds.Any(string.IsNullOrWhiteSpace))
                 throw new InvalidProgramStateException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
             return HandleTasksMetaStorage.GetMetas(taskIds);
         }
@@ -198,7 +198,7 @@ namespace RemoteQueue.Handling
         private static string GetCurrentExecutingTaskId()
         {
             var context = TaskExecutionContext.Current;
-            if(context == null)
+            if (context == null)
                 return null;
             return context.CurrentTask.Meta.Id;
         }
@@ -206,7 +206,7 @@ namespace RemoteQueue.Handling
         [NotNull]
         public string[] GetChildrenTaskIds([NotNull] string taskId)
         {
-            if(string.IsNullOrWhiteSpace(taskId))
+            if (string.IsNullOrWhiteSpace(taskId))
                 throw new InvalidProgramStateException("TaskId is required");
             return childTaskIndex.GetChildTaskIds(taskId);
         }
@@ -225,7 +225,7 @@ namespace RemoteQueue.Handling
         private static RemoteTaskInfo<T> ConvertRemoteTaskInfo<T>([NotNull] RemoteTaskInfo task) where T : ITaskData
         {
             var taskType = task.TaskData.GetType();
-            if(!typeof(T).IsAssignableFrom(taskType))
+            if (!typeof(T).IsAssignableFrom(taskType))
                 throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
             return new RemoteTaskInfo<T>(task.Context, (T)task.TaskData, task.ExceptionInfos);
         }

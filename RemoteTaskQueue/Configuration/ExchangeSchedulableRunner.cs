@@ -37,7 +37,7 @@ namespace RemoteQueue.Configuration
             var taskCounter = new TaskCounter(runnerSettings.MaxRunningTasksCount, runnerSettings.MaxRunningContinuationsCount);
             var remoteTaskQueue = new RemoteTaskQueue(serializer, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
             localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
-            foreach(var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
+            foreach (var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
                 handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
             reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, graphitePathPrefixProvider, handlerManagers);
             RemoteTaskQueueBackdoor = remoteTaskQueue;
@@ -50,15 +50,15 @@ namespace RemoteQueue.Configuration
 
         public void Start()
         {
-            if(!started)
+            if (!started)
             {
-                lock(lockObject)
+                lock (lockObject)
                 {
-                    if(!started)
+                    if (!started)
                     {
                         RemoteTaskQueueBackdoor.ResetTicksHolderInMemoryState();
                         localTaskQueue.Start();
-                        foreach(var handlerManager in handlerManagers)
+                        foreach (var handlerManager in handlerManagers)
                             periodicTaskRunner.Register(handlerManager, runnerSettings.PeriodicInterval);
                         periodicTaskRunner.Register(reportConsumerStateToGraphiteTask, TimeSpan.FromMinutes(1));
                         started = true;
@@ -71,11 +71,11 @@ namespace RemoteQueue.Configuration
 
         public void Stop()
         {
-            if(started)
+            if (started)
             {
-                lock(lockObject)
+                lock (lockObject)
                 {
-                    if(started)
+                    if (started)
                     {
                         Log.For(this).Info("Stopping ExchangeSchedulableRunner");
                         periodicTaskRunner.Unregister(reportConsumerStateToGraphiteTask.Id, 15000);

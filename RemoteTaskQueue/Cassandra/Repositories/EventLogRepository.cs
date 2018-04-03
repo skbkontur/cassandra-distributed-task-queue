@@ -53,22 +53,22 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public EventsQueryResult<TaskMetaUpdatedEvent, string> GetEvents([CanBeNull] string fromOffsetExclusive, [NotNull] string toOffsetInclusive, int estimatedCount)
         {
-            if(estimatedCount <= 0)
+            if (estimatedCount <= 0)
                 throw new InvalidProgramStateException("estimatedCount <= 0");
-            if(string.IsNullOrEmpty(toOffsetInclusive))
+            if (string.IsNullOrEmpty(toOffsetInclusive))
                 throw new InvalidProgramStateException("toOffsetInclusive is not set");
             var firstEventTicks = ticksHolder.GetMinTicks(firstEventTicksRowName);
-            if(firstEventTicks == 0)
+            if (firstEventTicks == 0)
                 return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset : null, noMoreEventsInSource : true);
             var exclusiveStartColumnName = GetExclusiveStartColumnName(fromOffsetExclusive, firstEventTicks);
-            if(EventPointerFormatter.CompareColumnNames(exclusiveStartColumnName, toOffsetInclusive) >= 0)
+            if (EventPointerFormatter.CompareColumnNames(exclusiveStartColumnName, toOffsetInclusive) >= 0)
                 return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset : null, noMoreEventsInSource : true);
-            if(estimatedCount == int.MaxValue)
+            if (estimatedCount == int.MaxValue)
                 estimatedCount--;
             var eventsToFetch = estimatedCount;
             var events = new List<EventWithOffset<TaskMetaUpdatedEvent, string>>();
             var partitionKey = EventPointerFormatter.GetPartitionKey(EventPointerFormatter.GetTimestamp(exclusiveStartColumnName).Ticks);
-            while(true)
+            while (true)
             {
                 var columnsToFetch = eventsToFetch + 1;
                 var columnsIncludingStartColumn = RetrieveColumnFamilyConnection().GetColumns(partitionKey, exclusiveStartColumnName, toOffsetInclusive, columnsToFetch, reversed : false);
@@ -76,12 +76,12 @@ namespace RemoteQueue.Cassandra.Repositories
                                                            .Select(x => new EventWithOffset<TaskMetaUpdatedEvent, string>(serializer.Deserialize<TaskMetaUpdatedEvent>(x.Value), x.Name))
                                                            .Take(eventsToFetch));
                 var currentPartitionIsExhausted = columnsIncludingStartColumn.Length < columnsToFetch;
-                if(!currentPartitionIsExhausted)
+                if (!currentPartitionIsExhausted)
                     return new EventsQueryResult<TaskMetaUpdatedEvent, string>(events, lastOffset : events.Last().Offset, noMoreEventsInSource : false);
                 else
                 {
                     var nextPartitionStartTicks = (EventPointerFormatter.ParsePartitionKey(partitionKey) + 1) * EventPointerFormatter.PartitionDurationTicks;
-                    if(nextPartitionStartTicks > EventPointerFormatter.GetTimestamp(toOffsetInclusive).Ticks)
+                    if (nextPartitionStartTicks > EventPointerFormatter.GetTimestamp(toOffsetInclusive).Ticks)
                         return new EventsQueryResult<TaskMetaUpdatedEvent, string>(events, lastOffset : toOffsetInclusive, noMoreEventsInSource : true);
                     else
                     {
@@ -96,10 +96,10 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         private static string GetExclusiveStartColumnName([CanBeNull] string fromOffsetExclusive, long firstEventTicks)
         {
-            if(!string.IsNullOrEmpty(fromOffsetExclusive))
+            if (!string.IsNullOrEmpty(fromOffsetExclusive))
             {
                 var fromTimestampExclusive = EventPointerFormatter.GetTimestamp(fromOffsetExclusive);
-                if(fromTimestampExclusive.Ticks >= firstEventTicks)
+                if (fromTimestampExclusive.Ticks >= firstEventTicks)
                     return fromOffsetExclusive;
             }
             return EventPointerFormatter.GetColumnName(firstEventTicks - 1, GuidHelpers.MaxGuid);
@@ -108,7 +108,7 @@ namespace RemoteQueue.Cassandra.Repositories
         public IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, long toTicks, int batchSize)
         {
             var firstEventTicks = ticksHolder.GetMinTicks(firstEventTicksRowName);
-            if(firstEventTicks == 0)
+            if (firstEventTicks == 0)
                 return new TaskMetaUpdatedEvent[0];
             firstEventTicks -= EventPointerFormatter.PartitionDurationTicks; //note что это ?
             fromTicks = new[] {0, fromTicks, firstEventTicks}.Max();

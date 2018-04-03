@@ -24,7 +24,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             var w = Stopwatch.StartNew();
             do
             {
-                if(!IsAlive())
+                if (!IsAlive())
                     Log.For(this).LogInfoFormat("ES is dead.");
                 else
                 {
@@ -32,8 +32,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                     break;
                 }
                 Thread.Sleep(1000);
-            } while(w.Elapsed < timeout);
-            if(isOk)
+            } while (w.Elapsed < timeout);
+            if (isOk)
                 Log.For(this).LogInfoFormat("Checking OK");
             else
             {
@@ -47,14 +47,14 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             try
             {
                 var response = elasticsearchClientFactory.DefaultClient.Value.Info();
-                if(!response.Success)
+                if (!response.Success)
                     return false;
                 var legacyStatus = response.Response["status"];
-                if(legacyStatus != null)
+                if (legacyStatus != null)
                     return (int)legacyStatus == 200;
                 return response.HttpStatusCode == 200;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.For(this).LogWarnFormat("CRASH: {0}", e.ToString());
                 return false;

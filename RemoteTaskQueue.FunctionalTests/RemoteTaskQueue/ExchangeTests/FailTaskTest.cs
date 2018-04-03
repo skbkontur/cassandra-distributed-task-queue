@@ -19,7 +19,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
                 WaitForFatalState(new[] {taskId}, TimeSpan.FromSeconds(1));
                 throw new Exception("Wait не должен отработать");
             }
-            catch(TooLateException)
+            catch (TooLateException)
             {
                 var count = testCounterRepository.GetCounter(taskId);
                 Assert.That(count < 9 && count >= 1);
@@ -31,7 +31,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             const int count = 5;
             var ids = new string[count];
-            for(var i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 ids[i] = AddTask(7);
             WaitForFatalState(ids, TimeSpan.FromSeconds(60));
         }
@@ -49,7 +49,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             const int count = 2;
             var ids = new string[count];
-            for(var i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 ids[i] = AddTask(3);
             WaitForFatalState(ids, TimeSpan.FromSeconds(15));
         }
@@ -60,7 +60,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             const int count = 100;
             var ids = new string[count];
-            for(var j = 0; j < count; j++)
+            for (var j = 0; j < count; j++)
                 ids[j] = AddTask(10);
             WaitForFatalState(ids, TimeSpan.FromSeconds(90));
         }

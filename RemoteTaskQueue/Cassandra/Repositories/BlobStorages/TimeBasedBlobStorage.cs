@@ -32,11 +32,11 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public void Write([NotNull] BlobId id, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)
         {
-            if(value == null)
+            if (value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", id));
-            if(id.Type == BlobType.Regular && value.Length > TimeBasedBlobStorageSettings.MaxRegularBlobSize)
+            if (id.Type == BlobType.Regular && value.Length > TimeBasedBlobStorageSettings.MaxRegularBlobSize)
                 Log.For(this).ErrorFormat("Writing large blob with id={0} of size={1} into time-based cf: {2}", id.Id, value.Length, settings.RegularBlobsCfName);
-            if(value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
+            if (value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
                 Log.For(this).WarnFormat("Writing extra large blob with id={0} of size={1} into time-based cf: {2}", id.Id, value.Length, settings.LargeBlobsCfName);
             var columnAddress = GetColumnAddress(id);
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, columnAddress.CfName);
@@ -62,7 +62,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             var columnAddress = GetColumnAddress(id);
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, columnAddress.CfName);
             Column column;
-            if(!connection.TryGetColumn(columnAddress.RowKey, columnAddress.ColumnName, out column) || column.Value == null)
+            if (!connection.TryGetColumn(columnAddress.RowKey, columnAddress.ColumnName, out column) || column.Value == null)
                 return null;
             return column.Value;
         }
@@ -124,22 +124,22 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, settings.RegularBlobsCfName);
             string exclusiveStartKey = null;
-            while(true)
+            while (true)
             {
                 var keys = connection.GetKeys(exclusiveStartKey, count : batchSize);
-                if(keys.Length == 0)
+                if (keys.Length == 0)
                     yield break;
-                foreach(var key in keys)
+                foreach (var key in keys)
                 {
                     string exclusiveStartColumnName = null;
-                    while(true)
+                    while (true)
                     {
                         var columns = connection.GetColumns(key, exclusiveStartColumnName, count : batchSize);
-                        if(columns.Length == 0)
+                        if (columns.Length == 0)
                             break;
-                        foreach(var column in columns)
+                        foreach (var column in columns)
                         {
-                            if(column.Value != null)
+                            if (column.Value != null)
                                 yield return Tuple.Create(new BlobId(GetTimeGuidFromColumnName(column.Name), BlobType.Regular), column.Value);
                         }
                         exclusiveStartColumnName = columns.Last().Name;
@@ -154,15 +154,15 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, settings.LargeBlobsCfName);
             string exclusiveStartKey = null;
-            while(true)
+            while (true)
             {
                 var keys = connection.GetKeys(exclusiveStartKey, count : batchSize);
-                if(keys.Length == 0)
+                if (keys.Length == 0)
                     yield break;
                 var blobIds = keys.Select(x => new BlobId(GetTimeGuidFromRowKey(x), BlobType.Large)).ToArray();
-                foreach(var columnWithId in ReadLarge(blobIds, batchSize))
+                foreach (var columnWithId in ReadLarge(blobIds, batchSize))
                 {
-                    if(columnWithId.Column.Value != null)
+                    if (columnWithId.Column.Value != null)
                         yield return Tuple.Create(columnWithId.BlobId, columnWithId.Column.Value);
                 }
                 exclusiveStartKey = keys.Last();
@@ -173,7 +173,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         private ColumnAddress GetColumnAddress([NotNull] BlobId id)
         {
             var timeGuid = id.Id;
-            switch(id.Type)
+            switch (id.Type)
             {
             case BlobType.Regular:
                 var ticks = timeGuid.GetTimestamp().Ticks;
@@ -199,7 +199,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         private static TimeGuid GetTimeGuidFromColumnName([NotNull] string columnName)
         {
             TimeGuid timeGuid;
-            if(!TimeGuid.TryParse(columnName.Split('_')[1], out timeGuid))
+            if (!TimeGuid.TryParse(columnName.Split('_')[1], out timeGuid))
                 throw new InvalidProgramStateException(string.Format("Invalid regular column name: {0}", columnName));
             return timeGuid;
         }
@@ -208,7 +208,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         private static TimeGuid GetTimeGuidFromRowKey([NotNull] string rowKey)
         {
             TimeGuid timeGuid;
-            if(!TimeGuid.TryParse(rowKey, out timeGuid))
+            if (!TimeGuid.TryParse(rowKey, out timeGuid))
                 throw new InvalidProgramStateException(string.Format("Invalid rowKey: {0}", rowKey));
             return timeGuid;
         }

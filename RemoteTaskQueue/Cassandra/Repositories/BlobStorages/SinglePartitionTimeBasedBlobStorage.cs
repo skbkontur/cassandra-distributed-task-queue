@@ -24,9 +24,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)
         {
-            if(value == null)
+            if (value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", columnId));
-            if(value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
+            if (value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
                 Log.For(this).WarnFormat("Writing extra large blob with rowKey={0} and columnId={1} of size={2} into cf: {3}", rowKey, columnId, value.Length, cfName);
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(cfName.KeyspaceName, cfName.ColumnFamilyName);
             connection.AddColumn(rowKey, new Column
@@ -49,7 +49,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(cfName.KeyspaceName, cfName.ColumnFamilyName);
             Column column;
-            if(!connection.TryGetColumn(rowKey, FormatColumnName(columnId), out column) || column.Value == null)
+            if (!connection.TryGetColumn(rowKey, FormatColumnName(columnId), out column) || column.Value == null)
                 return null;
             return column.Value;
         }

@@ -39,18 +39,18 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public bool MoveNext()
         {
-            while(true)
+            while (true)
             {
-                if(eventEnumerator.MoveNext())
+                if (eventEnumerator.MoveNext())
                 {
                     var currentLiveRecordTicks = CassandraNameHelper.GetTicksFromColumnName(eventEnumerator.Current.Name);
-                    if(currentLiveRecordTicks > toTicks)
+                    if (currentLiveRecordTicks > toTicks)
                     {
                         liveRecordTicksMarker.TryMoveForward(toTicks);
                         return false;
                     }
                     liveRecordTicksMarker.TryMoveForward(currentLiveRecordTicks);
-                    if(!loggedTooOldIndexRecord && currentLiveRecordTicks < (Timestamp.Now - TimeSpan.FromHours(1)).Ticks)
+                    if (!loggedTooOldIndexRecord && currentLiveRecordTicks < (Timestamp.Now - TimeSpan.FromHours(1)).Ticks)
                     {
                         logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
                                           Current.TaskId, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
@@ -58,7 +58,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     }
                     return true;
                 }
-                if(iCur >= iTo)
+                if (iCur >= iTo)
                 {
                     liveRecordTicksMarker.TryMoveForward(toTicks);
                     return false;
@@ -66,7 +66,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                 iCur++;
                 var rowKey = CassandraNameHelper.GetRowKey(liveRecordTicksMarker.State.TaskIndexShardKey, CassandraNameHelper.GetMinimalTicksForRow(iCur));
                 string exclusiveStartColumnName = null;
-                if(iCur == iFrom)
+                if (iCur == iFrom)
                     exclusiveStartColumnName = CassandraNameHelper.GetColumnName(fromTicks, string.Empty);
                 eventEnumerator = connection.GetRow(rowKey, exclusiveStartColumnName, batchSize).GetEnumerator();
             }
@@ -93,15 +93,15 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         private void LogFromToCountStatistics()
         {
-            lock(statisticsLockObject)
+            lock (statisticsLockObject)
             {
-                if(statistics == null)
+                if (statistics == null)
                     statistics = new Dictionary<TaskIndexShardKey, TaskStateStatistics>();
                 var taskIndexShardKey = liveRecordTicksMarker.State.TaskIndexShardKey;
-                if(!statistics.ContainsKey(taskIndexShardKey))
+                if (!statistics.ContainsKey(taskIndexShardKey))
                     statistics[taskIndexShardKey] = new TaskStateStatistics();
                 statistics[taskIndexShardKey].Update(iTo - iFrom);
-                if(lastStatisticsLogMoment <= Timestamp.Now - TimeSpan.FromMinutes(1))
+                if (lastStatisticsLogMoment <= Timestamp.Now - TimeSpan.FromMinutes(1))
                 {
                     PrintStatistics();
                     statistics = new Dictionary<TaskIndexShardKey, TaskStateStatistics>();
@@ -114,7 +114,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         {
             var result = new StringBuilder();
             result.AppendLine("Statistics about a number of requested rows:");
-            foreach(var statistic in statistics)
+            foreach (var statistic in statistics)
                 result.AppendLine(string.Format(" {0} {1}", statistic.Key, (double)statistic.Value.TotalProcessedRows / (statistic.Value.TotalCount + 1)));
             logger.InfoFormat(result.ToString());
         }

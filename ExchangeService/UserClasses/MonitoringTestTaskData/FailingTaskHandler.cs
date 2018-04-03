@@ -10,7 +10,7 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
     {
         protected override HandleResult HandleTask(FailingTaskData taskData)
         {
-            if(Context.Attempts - 1 >= taskData.RetryCount)
+            if (Context.Attempts - 1 >= taskData.RetryCount)
             {
                 return new HandleResult
                     {

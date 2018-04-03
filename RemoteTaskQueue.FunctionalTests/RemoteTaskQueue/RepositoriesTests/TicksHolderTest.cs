@@ -53,13 +53,13 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var valuesByThread = values.Batch(countPerThread, Enumerable.ToArray).ToArray();
             var threads = new List<Thread>();
             var startSignal = new ManualResetEvent(false);
-            for(var i = 0; i < threadsCount; i++)
+            for (var i = 0; i < threadsCount; i++)
             {
                 var threadIndex = i;
                 var thread = new Thread(() =>
                     {
                         startSignal.WaitOne();
-                        foreach(var value in valuesByThread[threadIndex])
+                        foreach (var value in valuesByThread[threadIndex])
                         {
                             ticksHolder.UpdateMinTicks(key, value);
                             ticksHolder.UpdateMaxTicks(key, value);

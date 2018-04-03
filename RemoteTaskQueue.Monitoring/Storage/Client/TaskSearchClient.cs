@@ -34,7 +34,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                 };
             var matchByName = false;
             var shouldClauses = new List<object>();
-            foreach(var taskName in taskSearchRequest.TaskNames ?? new string[0])
+            foreach (var taskName in taskSearchRequest.TaskNames ?? new string[0])
             {
                 matchByName = true;
                 shouldClauses.Add(new
@@ -46,7 +46,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                     });
             }
             var matchByState = false;
-            foreach(var taskState in taskSearchRequest.TaskStates ?? new string[0])
+            foreach (var taskState in taskSearchRequest.TaskStates ?? new string[0])
             {
                 matchByState = true;
                 shouldClauses.Add(new
@@ -73,24 +73,24 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
             var metaResponse = elasticsearchClientFactory
                 .DefaultClient.Value
                 .Search<SearchResponse>(indexForTimeRange,
-                                              new
-                                                  {
-                                                      from,
-                                                      size,
-                                                      version = true,
-                                                      _source = false,
-                                                      query = new
-                                                          {
-                                                              @bool = query
-                                                          },
-                                                      sort = new[]
-                                                          {
-                                                              new Dictionary<string, object>
-                                                                  {
-                                                                      {"Meta.EnqueueTime", new {order = "desc", unmapped_type = "long"}}
-                                                                  }
-                                                          }
-                                                  }, x => x.IgnoreUnavailable(true))
+                                        new
+                                            {
+                                                from,
+                                                size,
+                                                version = true,
+                                                _source = false,
+                                                query = new
+                                                    {
+                                                        @bool = query
+                                                    },
+                                                sort = new[]
+                                                    {
+                                                        new Dictionary<string, object>
+                                                            {
+                                                                {"Meta.EnqueueTime", new {order = "desc", unmapped_type = "long"}}
+                                                            }
+                                                    }
+                                            }, x => x.IgnoreUnavailable(true))
                 .ProcessResponse();
             return new TaskSearchResponse
                 {

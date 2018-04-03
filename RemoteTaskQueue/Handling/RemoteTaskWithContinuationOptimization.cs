@@ -20,10 +20,10 @@ namespace RemoteQueue.Handling
         [NotNull]
         public override sealed string Queue(TimeSpan delay)
         {
-            using(new RemoteTaskInitialTraceContext(task.Meta))
+            using (new RemoteTaskInitialTraceContext(task.Meta))
             {
                 var taskIndexRecord = Publish(delay);
-                if(delay == TimeSpan.Zero)
+                if (delay == TimeSpan.Zero)
                     localTaskQueue.TryQueueTask(taskIndexRecord, task.Meta, TaskQueueReason.TaskContinuation, taskIsBeingTraced : true);
                 return Id;
             }

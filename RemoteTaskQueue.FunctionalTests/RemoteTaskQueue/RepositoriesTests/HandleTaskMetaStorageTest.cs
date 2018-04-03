@@ -44,7 +44,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         {
             var nowTicks = Timestamp.Now.Ticks;
             var meta = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.New, MinimalStartTicks = nowTicks + 1};
-            for(var i = 0; i <= 1000; i++)
+            for (var i = 0; i <= 1000; i++)
             {
                 var oldTaskIndexRecord = sut.FormatIndexRecord(meta);
                 meta.MinimalStartTicks++;
@@ -62,9 +62,9 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
                     var taskMeta = new TaskMetaInformation("TaskName", NewTaskId()) {State = TaskState.New, MinimalStartTicks = nowTicks + x};
                     return taskMeta;
                 }).ToArray();
-            for(var i = 0; i <= 100; i++)
+            for (var i = 0; i <= 100; i++)
             {
-                foreach(var t in metas)
+                foreach (var t in metas)
                 {
                     var oldTaskIndexRecord = sut.FormatIndexRecord(t);
                     t.MinimalStartTicks++;

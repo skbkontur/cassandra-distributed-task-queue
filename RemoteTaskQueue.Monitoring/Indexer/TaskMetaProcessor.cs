@@ -52,7 +52,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                 {
                                     var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
                                     var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > settings.InitialIndexingStartTimestamp.Ticks).ToArray();
-                                    if(taskMetasToIndex.Any())
+                                    if (taskMetasToIndex.Any())
                                         IndexMetas(taskMetasToIndex);
                                 });
         }
@@ -62,15 +62,15 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             var taskDatas = graphiteReporter.ReportTiming("ReadTaskDatas", () => taskDataStorage.Read(batch));
             var taskExceptionInfos = graphiteReporter.ReportTiming("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch));
             var enrichedBatch = new Tuple<TaskMetaInformation, TaskExceptionInfo[], object>[batch.Length];
-            for(var i = 0; i < batch.Length; i++)
+            for (var i = 0; i < batch.Length; i++)
             {
                 var taskMeta = batch[i];
                 byte[] taskData;
                 object taskDataObj = null;
-                if(taskDatas.TryGetValue(taskMeta.Id, out taskData))
+                if (taskDatas.TryGetValue(taskMeta.Id, out taskData))
                 {
                     Type taskType;
-                    if(taskDataRegistry.TryGetTaskType(taskMeta.Name, out taskType))
+                    if (taskDataRegistry.TryGetTaskType(taskMeta.Name, out taskType))
                         taskDataObj = DeserializeTaskDataSafe(taskType, taskData, taskMeta);
                 }
                 enrichedBatch[i] = Tuple.Create(taskMeta, taskExceptionInfos[taskMeta.Id], taskDataObj);
@@ -84,7 +84,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             {
                 return serializer.Deserialize(taskType, taskData);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.For(this).LogErrorFormat(e, "Data deserialization error. Taskmeta {0}", taskMetaInformation);
                 return null;

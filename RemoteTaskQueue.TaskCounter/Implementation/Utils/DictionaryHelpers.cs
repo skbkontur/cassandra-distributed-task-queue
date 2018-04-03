@@ -14,7 +14,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.Utils
 
         private static void DeleteByKeys<TK, TV>(this IDictionary<TK, TV> d, IEnumerable<TK> keys)
         {
-            foreach(var key in keys)
+            foreach (var key in keys)
                 d.Remove(key);
         }
     }

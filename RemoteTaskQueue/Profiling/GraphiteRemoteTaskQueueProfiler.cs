@@ -17,7 +17,7 @@ namespace RemoteQueue.Profiling
     {
         public GraphiteRemoteTaskQueueProfiler([NotNull] IProjectWideGraphitePathPrefixProvider graphitePathPrefixProvider, [NotNull] ICatalogueStatsDClient statsDClient)
         {
-            if(string.IsNullOrWhiteSpace(graphitePathPrefixProvider.ProjectWideGraphitePathPrefix))
+            if (string.IsNullOrWhiteSpace(graphitePathPrefixProvider.ProjectWideGraphitePathPrefix))
                 this.statsDClient = EmptyStatsDClient.Instance;
             else
             {

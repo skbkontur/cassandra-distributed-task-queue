@@ -38,11 +38,11 @@ namespace RemoteQueue.Configuration
         public override sealed void Run()
         {
             var now = Timestamp.Now;
-            if(now - startupTimestamp < TimeSpan.FromMinutes(3))
+            if (now - startupTimestamp < TimeSpan.FromMinutes(3))
                 return;
-            foreach(var handlerManager in handlerManagers)
+            foreach (var handlerManager in handlerManagers)
             {
-                foreach(var marker in handlerManager.GetCurrentLiveRecordTicksMarkers())
+                foreach (var marker in handlerManager.GetCurrentLiveRecordTicksMarkers())
                 {
                     var lag = TimeSpan.FromTicks(now.Ticks - marker.CurrentTicks);
                     var graphitePath = string.Format("{0}.LiveRecordTicksMarkerLag.{1}.{2}", graphitePathPrefix, marker.TaskIndexShardKey.TaskState, marker.TaskIndexShardKey.TaskTopic);

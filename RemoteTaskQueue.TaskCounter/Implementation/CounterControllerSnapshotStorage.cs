@@ -21,7 +21,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             this.serializer = serializer;
             this.snaphotConverter = snaphotConverter;
             string path;
-            if(!applicationSettings.TryGetString("SnapshotStoragePath", out path))
+            if (!applicationSettings.TryGetString("SnapshotStoragePath", out path))
                 path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Storage");
             logger.InfoFormat("Path: {0}", path);
             fileStorage = createPersistentFileStorage(path, maxSize);
@@ -40,12 +40,12 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         public CounterControllerSnapshot ReadSnapshotOrNull()
         {
             SnapshotData result;
-            if(!fileStorage.TryRead(out result))
+            if (!fileStorage.TryRead(out result))
             {
                 logger.LogWarnFormat("No snapshot found");
                 return null;
             }
-            if(result.Version == currentVersion)
+            if (result.Version == currentVersion)
             {
                 logger.LogWarnFormat("Snapshot ok. version={0}", result.Version);
                 var decompress = SnapshotStorageUtils.Decompress(result.Data);
@@ -53,7 +53,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             }
             logger.LogWarnFormat("Snapshot has old version. version={0}", result.Version);
             CounterControllerSnapshot snapshot;
-            if(snaphotConverter.TryConvert(result, out snapshot))
+            if (snaphotConverter.TryConvert(result, out snapshot))
             {
                 logger.LogInfoFormat("Snapshot converted from version={0} to {1}", result.Version, currentVersion);
                 return snapshot;
