@@ -31,7 +31,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         {
             Log.For(this).LogInfoFormat("IndexBatch: {0} tasks", batch.Length);
             var body = new object[batch.Length * 2];
-            for (var i = 0; i < batch.Length; i++)
+            for(var i = 0; i < batch.Length; i++)
             {
                 var meta = batch[i].Item1;
                 var taskData = batch[i].Item3;

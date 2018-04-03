@@ -42,7 +42,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             var blobId = GetBlobId(taskId);
             var taskMetaBytes = timeBasedBlobStorage.Read(blobId);
-            if (taskMetaBytes == null)
+            if(taskMetaBytes == null)
                 return null;
             return serializer.Deserialize<TaskMetaInformation>(taskMetaBytes);
         }
@@ -60,7 +60,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         private static BlobId GetBlobId([NotNull] string taskId)
         {
             TimeGuid timeGuid;
-            if (!TimeGuid.TryParse(taskId, out timeGuid))
+            if(!TimeGuid.TryParse(taskId, out timeGuid))
                 throw new InvalidProgramStateException(string.Format("Task is not time-based: {0}", taskId));
             return new BlobId(timeGuid, BlobType.Regular);
         }

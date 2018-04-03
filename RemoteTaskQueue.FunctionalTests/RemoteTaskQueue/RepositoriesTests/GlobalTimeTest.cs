@@ -14,7 +14,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void UpdateNowTicks()
         {
             var lastTicks = 0L;
-            for (var i = 0; i < 1000; i++)
+            for(var i = 0; i < 1000; i++)
             {
                 var nowTicks = globalTime.UpdateNowTicks();
                 Assert.True(lastTicks <= nowTicks + PreciseTimestampGenerator.TicksPerMicrosecond);

@@ -31,10 +31,10 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             LocalTaskProcessingResult result;
             try
             {
-                using (Profiler.Profile(groboTraceKey, new RtqGroboTraceProfilerSink(taskId)))
+                using(Profiler.Profile(groboTraceKey, new RtqGroboTraceProfilerSink(taskId)))
                     result = handlerTask.RunTask();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 result = LocalTaskProcessingResult.Undefined;
                 logger.Error("Ошибка во время обработки асинхронной задачи.", e);
@@ -44,7 +44,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 finished = true;
                 localTaskQueue.TaskFinished(taskId, taskQueueReason, taskIsBeingTraced, result);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 logger.Warn("Ошибка во время окончания задачи.", e);
             }

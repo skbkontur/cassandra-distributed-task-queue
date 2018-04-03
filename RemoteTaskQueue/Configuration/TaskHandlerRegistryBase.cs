@@ -22,10 +22,10 @@ namespace RemoteQueue.Configuration
         {
             var handlerType = typeof(THandler);
             var taskDataType = TryGetTaskDataType(handlerType);
-            if (taskDataType == null)
+            if(taskDataType == null)
                 throw new InvalidProgramStateException(string.Format("Type '{0}' doesn't implement 'TaskHander<TTaskData>'", handlerType.FullName));
             var taskName = taskDataRegistry.GetTaskName(taskDataType);
-            if (taskHandlerCreatorsByTaskName.ContainsKey(taskName))
+            if(taskHandlerCreatorsByTaskName.ContainsKey(taskName))
                 throw new InvalidProgramStateException(string.Format("There are at least two handlers for task '{0}': '{1}' and '{2}'", taskName, taskHandlerCreatorsByTaskName[taskName].HandlerType, handlerType));
             var taskHandlerCreator = new TaskHandlerCreator(handlerType, () => (ITaskHandler)createTaskHandler());
             taskHandlerCreatorsByTaskName.Add(taskName, taskHandlerCreator);
@@ -46,7 +46,7 @@ namespace RemoteQueue.Configuration
         public ITaskHandler CreateHandlerFor([NotNull] string taskName)
         {
             TaskHandlerCreator taskHandlerCreator;
-            if (!taskHandlerCreatorsByTaskName.TryGetValue(taskName, out taskHandlerCreator))
+            if(!taskHandlerCreatorsByTaskName.TryGetValue(taskName, out taskHandlerCreator))
                 throw new InvalidProgramStateException(string.Format("Handler not found for taskName: {0}", taskName));
             return taskHandlerCreator.CreateTaskHandler();
         }
@@ -54,12 +54,12 @@ namespace RemoteQueue.Configuration
         [CanBeNull]
         private static Type TryGetTaskDataType([CanBeNull] Type handlerType)
         {
-            if (handlerType == null)
+            if(handlerType == null)
                 return null;
-            if (handlerType.IsGenericType && handlerType.GetGenericTypeDefinition() == typeof(TaskHandler<>))
+            if(handlerType.IsGenericType && handlerType.GetGenericTypeDefinition() == typeof(TaskHandler<>))
             {
                 var taskDataType = handlerType.GetGenericArguments().Single();
-                if (!typeof(ITaskData).IsAssignableFrom(taskDataType))
+                if(!typeof(ITaskData).IsAssignableFrom(taskDataType))
                     throw new InvalidProgramStateException(string.Format("Generic argument of type '{0}' does not implement ITaskData", handlerType.FullName));
                 return taskDataType;
             }

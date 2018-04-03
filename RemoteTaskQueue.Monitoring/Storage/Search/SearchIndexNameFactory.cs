@@ -17,29 +17,29 @@ namespace RemoteTaskQueue.Monitoring.Storage.Search
             var endTime = DateTimeFormatter.DateFromTicks(toTicksUtc).Add(minimumSupportedIndexCreationInterval);
             var dayWildcardFormat = RtqElasticsearchConsts.DataIndexNameFormat.Replace("dd", "*");
             var monthWildcardFormat = dayWildcardFormat.Replace("MM", "*");
-            while (time < endTime)
+            while(time < endTime)
             {
                 var moved = false;
-                if (time.Day == 1)
+                if(time.Day == 1)
                 {
                     DateTime nextTime;
-                    if (time.Month == 1)
+                    if(time.Month == 1)
                     {
-                        if ((nextTime = time.AddYears(1)) <= endTime)
+                        if((nextTime = time.AddYears(1)) <= endTime)
                         {
                             Append(stringBuilder, time, monthWildcardFormat);
                             time = nextTime;
                             moved = true;
                         }
                     }
-                    if (!moved && (nextTime = time.AddMonths(1)) <= endTime)
+                    if(!moved && (nextTime = time.AddMonths(1)) <= endTime)
                     {
                         Append(stringBuilder, time, dayWildcardFormat);
                         time = nextTime;
                         moved = true;
                     }
                 }
-                if (!moved)
+                if(!moved)
                 {
                     Append(stringBuilder, time, RtqElasticsearchConsts.DataIndexNameFormat);
                     time = time.AddDays(1);
@@ -50,7 +50,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Search
 
         private static void Append([NotNull] StringBuilder stringBuilder, DateTime time, [NotNull] string fmt)
         {
-            if (stringBuilder.Length > 0)
+            if(stringBuilder.Length > 0)
                 stringBuilder.Append(',');
             stringBuilder.Append(time.ToString(fmt));
         }

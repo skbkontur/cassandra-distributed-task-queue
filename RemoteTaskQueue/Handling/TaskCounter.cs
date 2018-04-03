@@ -12,17 +12,17 @@ namespace RemoteQueue.Handling
 
         public bool CanQueueTask(TaskQueueReason reason)
         {
-            if (reason == TaskQueueReason.TaskContinuation)
+            if(reason == TaskQueueReason.TaskContinuation)
             {
-                if (maxRunningContinuationsCount == 0)
+                if(maxRunningContinuationsCount == 0)
                     return true;
                 return continuationsCount < maxRunningContinuationsCount;
             }
-            if (reason == TaskQueueReason.PullFromQueue)
+            if(reason == TaskQueueReason.PullFromQueue)
             {
-                if (maxRunningTasksCount == 0)
+                if(maxRunningTasksCount == 0)
                     return true;
-                if (maxRunningContinuationsCount == 0)
+                if(maxRunningContinuationsCount == 0)
                     return (continuationsCount + tasksCount) < (maxRunningTasksCount);
                 else
                     return (tasksCount) < (maxRunningTasksCount);
@@ -32,11 +32,11 @@ namespace RemoteQueue.Handling
 
         public bool TryIncrement(TaskQueueReason reason)
         {
-            if (reason == TaskQueueReason.TaskContinuation)
+            if(reason == TaskQueueReason.TaskContinuation)
             {
-                lock (lockObject)
+                lock(lockObject)
                 {
-                    if (CanQueueTask(reason))
+                    if(CanQueueTask(reason))
                     {
                         continuationsCount++;
                         return true;
@@ -44,11 +44,11 @@ namespace RemoteQueue.Handling
                     return maxRunningContinuationsCount == 0;
                 }
             }
-            else if (reason == TaskQueueReason.PullFromQueue)
+            else if(reason == TaskQueueReason.PullFromQueue)
             {
-                lock (lockObject)
+                lock(lockObject)
                 {
-                    if (CanQueueTask(reason))
+                    if(CanQueueTask(reason))
                     {
                         tasksCount++;
                         return true;
@@ -61,16 +61,16 @@ namespace RemoteQueue.Handling
 
         public void Decrement(TaskQueueReason reason)
         {
-            if (reason == TaskQueueReason.TaskContinuation)
+            if(reason == TaskQueueReason.TaskContinuation)
             {
-                lock (lockObject)
+                lock(lockObject)
                 {
                     continuationsCount--;
                 }
             }
-            else if (reason == TaskQueueReason.PullFromQueue)
+            else if(reason == TaskQueueReason.PullFromQueue)
             {
-                lock (lockObject)
+                lock(lockObject)
                 {
                     tasksCount--;
                 }

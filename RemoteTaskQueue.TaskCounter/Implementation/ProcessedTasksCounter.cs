@@ -45,7 +45,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         public void Reset()
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 stateMap.Clear();
                 Interlocked.Exchange(ref lastCalculationTime, 0);
@@ -56,9 +56,9 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         public CounterSnapshot GetSnapshotOrNull(int maxLength)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
-                if (stateMap.Count > maxLength)
+                if(stateMap.Count > maxLength)
                     return null;
                 return new CounterSnapshot(stateMap, Interlocked.Read(ref lastCalculationTime), Interlocked.CompareExchange(ref count, 0, 0), counts);
             }
@@ -66,22 +66,22 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         public void LoadSnapshot(CounterSnapshot snapshot)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 stateMap = snapshot.BuildMap();
                 Interlocked.Exchange(ref lastCalculationTime, snapshot.CountCalculatedTime);
                 Interlocked.Exchange(ref count, snapshot.Count);
                 counts = SafeClone(snapshot.Counts);
-                if (counts == null)
+                if(counts == null)
                     SetEmptyCounts();
-                if (counts.Length != TaskStateHelpers.statesCount)
+                if(counts.Length != TaskStateHelpers.statesCount)
                     throw new InvalidOperationException("Snaphot corrupted");
             }
         }
 
         public int GetNotFinishedTasksCount()
         {
-            lock (lockObject)
+            lock(lockObject)
                 return stateMap.Count;
         }
 
@@ -100,9 +100,9 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             TaskState oldState;
             var isRunning = stateMap.TryGetValue(taskId, out oldState);
             var newIsTerm = IsTerminalState(newState);
-            if (isRunning)
+            if(isRunning)
             {
-                if (newIsTerm)
+                if(newIsTerm)
                 {
                     Decrement();
                     AddCounter(oldState, -1);
@@ -115,13 +115,13 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             }
             else
             {
-                if (!newIsTerm)
+                if(!newIsTerm)
                 {
                     Increment();
                     AddCounter(newState, 1);
                 }
             }
-            if (newIsTerm)
+            if(newIsTerm)
                 stateMap.Remove(taskId);
             else
                 stateMap[taskId] = newState;
@@ -139,26 +139,36 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         private static int[] SafeClone(int[] src)
         {
-            if (src == null) return null;
+            if(src == null) return null;
             var length = src.Length;
             var res = new int[length];
-            for (var i = 0; i < length; i++)
+            for(var i = 0; i < length; i++)
                 res[i] = Interlocked.CompareExchange(ref src[i], 0, 0);
             return res;
         }
 
         private readonly object lockObject = new object();
 
+        #region state
+
+        //note решили не ограничивать количество задач, если станет много можно сбросить счетчик
+        private volatile int[] counts;
+        private volatile Dictionary<string, TaskState> stateMap;
+        private long lastCalculationTime = 0;
+        private int count = 0;
+
+        #endregion
+
         public class CounterSnapshot
         {
             public CounterSnapshot(Dictionary<string, TaskState> map, long countCalculatedTime, int count, int[] counts)
             {
-                if (map != null)
+                if(map != null)
                 {
                     var i = 0;
                     TaskIds = new string[map.Count];
                     TaskStates = new TaskState[map.Count];
-                    foreach (var kvp in map)
+                    foreach(var kvp in map)
                     {
                         TaskIds[i] = kvp.Key;
                         TaskStates[i] = kvp.Value;
@@ -173,11 +183,11 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             public Dictionary<string, TaskState> BuildMap()
             {
                 var res = new Dictionary<string, TaskState>();
-                if (TaskIds != null && TaskStates != null)
+                if(TaskIds != null && TaskStates != null)
                 {
-                    if (TaskIds.Length != TaskStates.Length)
+                    if(TaskIds.Length != TaskStates.Length)
                         throw new InvalidOperationException("Snaphot currupted. Lengths are not same");
-                    for (var i = 0; i < TaskIds.Length; i++)
+                    for(var i = 0; i < TaskIds.Length; i++)
                         res.Add(TaskIds[i], TaskStates[i]);
                 }
                 return res;
@@ -190,15 +200,5 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             public int Count { get; private set; }
             public int[] Counts { get; set; }
         }
-
-        #region state
-
-        //note решили не ограничивать количество задач, если станет много можно сбросить счетчик
-        private volatile int[] counts;
-        private volatile Dictionary<string, TaskState> stateMap;
-        private long lastCalculationTime = 0;
-        private int count = 0;
-
-        #endregion
     }
 }

@@ -71,7 +71,7 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
                 var processingTaskCount = taskCounterServiceClient.GetProcessingTaskCount();
 
                 Log.For(this).InfoFormat("InProgress={0} Counter={1}", processedCountFromCounter, processingTaskCount.Count);
-            } while (w.Elapsed < TimeSpan.FromSeconds(10));
+            } while(w.Elapsed < TimeSpan.FromSeconds(10));
             WaitForTasks(taskIds, TimeSpan.FromMinutes(1));
             WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
         }
@@ -105,7 +105,7 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
             var w = Stopwatch.StartNew();
             var taskIds = new List<string>();
             const int count = 200;
-            for (var i = 0; i < count; i++)
+            for(var i = 0; i < count; i++)
             {
                 var remoteTask = taskQueue.CreateTask(new SlowTaskData {TimeMs = 1000, UseCounter = false});
                 taskIds.Add(remoteTask.Id);
@@ -117,11 +117,11 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
             var addRate = 1000.0 * count / addTime; //tasks / s
             var consumeRate = 1000.0 * count / totalTime; //NOTE consumeRate занижен тк задачи добавляются последовательно
             Log.For(this).InfoFormat("{0:F0} : {1:F0}", addRate, consumeRate);
-            if (addRate < consumeRate * 2)
+            if(addRate < consumeRate * 2)
                 Log.For(this).Warn("WARN: Slow");
             //Assert.That(addRate > consumeRate * 2);
             var delayMs = (int)((1 / consumeRate - 1 / addRate) * 1000) / 2;
-            if (delayMs < 0)
+            if(delayMs < 0)
                 delayMs = 0;
             Log.For(this).InfoFormat("Calculated delay {0} ms", delayMs);
 
@@ -141,9 +141,9 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
                 var remoteTask = taskQueue.CreateTask(new SlowTaskData {TimeMs = 1000, UseCounter = useTaskCounter});
                 taskIds.Add(remoteTask.Id);
                 remoteTask.Queue();
-                if (addDelay > 0)
+                if(addDelay > 0)
                     Thread.Sleep(addDelay);
-            } while (w.ElapsedMilliseconds < addTime);
+            } while(w.ElapsedMilliseconds < addTime);
             Log.For(this).Info("Waiting for all tasks finished");
             WaitForTasks(taskIds, waitTasksTime);
             Log.For(this).Info("Waiting for Counter");

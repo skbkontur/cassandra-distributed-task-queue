@@ -27,7 +27,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
         public void UpdateMaxTicks([NotNull] string name, long ticks)
         {
             long maxTicks;
-            if (persistedMaxTicks.TryGetValue(name, out maxTicks) && ticks <= maxTicks)
+            if(persistedMaxTicks.TryGetValue(name, out maxTicks) && ticks <= maxTicks)
                 return;
             RetrieveColumnFamilyConnection().AddColumn(name, new Column
                 {
@@ -42,7 +42,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
         public long GetMaxTicks([NotNull] string name)
         {
             Column column;
-            if (!RetrieveColumnFamilyConnection().TryGetColumn(name, maxTicksColumnName, out column))
+            if(!RetrieveColumnFamilyConnection().TryGetColumn(name, maxTicksColumnName, out column))
                 return 0;
             return serializer.Deserialize<long>(column.Value);
         }
@@ -50,7 +50,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
         public void UpdateMinTicks([NotNull] string name, long ticks)
         {
             long minTicks;
-            if (persistedMinTicks.TryGetValue(name, out minTicks) && ticks >= minTicks)
+            if(persistedMinTicks.TryGetValue(name, out minTicks) && ticks >= minTicks)
                 return;
             RetrieveColumnFamilyConnection().AddColumn(name, new Column
                 {
@@ -65,7 +65,7 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
         public long GetMinTicks([NotNull] string name)
         {
             Column column;
-            if (!RetrieveColumnFamilyConnection().TryGetColumn(name, minTicksColumnName, out column))
+            if(!RetrieveColumnFamilyConnection().TryGetColumn(name, minTicksColumnName, out column))
                 return 0;
             return long.MaxValue - serializer.Deserialize<long>(column.Value);
         }

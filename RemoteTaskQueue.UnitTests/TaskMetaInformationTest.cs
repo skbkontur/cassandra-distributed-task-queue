@@ -21,7 +21,7 @@ namespace RemoteTaskQueue.UnitTests
             var meta = new TaskMetaInformation("TaskName", Guid.NewGuid().ToString());
             List<TimeGuid> newExceptionInfoIds;
             TimeGuid newExceptionInfoId, oldExceptionInfoId;
-            for (ushort i = 0; i < 201; i++)
+            for(ushort i = 0; i < 201; i++)
             {
                 newExceptionInfoId = NewExceptionInfoId(i);
                 newExceptionInfoIds = meta.AddExceptionInfoId(newExceptionInfoId, out oldExceptionInfoId);
@@ -32,7 +32,7 @@ namespace RemoteTaskQueue.UnitTests
             newExceptionInfoId = NewExceptionInfoId(999);
             newExceptionInfoIds = meta.AddExceptionInfoId(newExceptionInfoId, out oldExceptionInfoId);
             Assert.That(oldExceptionInfoId.GetClockSequence(), Is.EqualTo(100));
-            Assert.That(newExceptionInfoIds.Select(x => (int)x.GetClockSequence()).ToArray(), Is.EqualTo(Enumerable.Range(0, 100).Concat(Enumerable.Range(101, 100)).Concat(new[] {999}).ToArray()));
+            Assert.That(newExceptionInfoIds.Select(x => (int)x.GetClockSequence()).ToArray(), Is.EqualTo(Enumerable.Range(0, 100).Concat(Enumerable.Range(101, 100)).Concat(new []{999}).ToArray()));
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace RemoteTaskQueue.UnitTests
         {
             var minimalStart = Timestamp.Now + TimeSpan.FromHours(1);
             var ttl = TimeSpan.FromMilliseconds(3342);
-            var meta = new TaskMetaInformation("Test_name", "Test-id") {MinimalStartTicks = minimalStart.Ticks};
+            var meta = new TaskMetaInformation("Test_name", "Test-id"){MinimalStartTicks = minimalStart.Ticks};
             meta.SetOrUpdateTtl(ttl);
             Assert.That(meta.GetTtl(), Is.InRange(TimeSpan.FromHours(1) - ttl, TimeSpan.FromHours(1) + ttl));
             Assert.That(meta.ExpirationTimestampTicks, Is.GreaterThanOrEqualTo((minimalStart + ttl).Ticks));

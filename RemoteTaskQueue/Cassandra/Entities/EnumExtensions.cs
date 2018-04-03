@@ -20,10 +20,10 @@ namespace RemoteQueue.Cassandra.Entities
         private static string DoGetCassandraName(Enum value)
         {
             var memberInfos = value.GetType().GetMember(value.ToString());
-            if (memberInfos.Any())
+            if(memberInfos.Any())
             {
                 var attrs = memberInfos.Single().GetCustomAttributes(typeof(CassandraNameAttribute), false);
-                if (attrs.Any())
+                if(attrs.Any())
                     return ((CassandraNameAttribute)attrs.Single()).Name;
             }
             throw new InvalidProgramStateException($"Не найдено значение CassandraNameAttribute для '{value}'");

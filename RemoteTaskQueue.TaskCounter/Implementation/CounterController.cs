@@ -68,7 +68,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         public void Restart(long? newStartTicks)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 InternalRestart(newStartTicks, GetNow());
             }
@@ -94,11 +94,11 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         public void ProcessNewEvents()
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 var now = GetNow();
 
-                if (lastTicks == long.MinValue)
+                if(lastTicks == long.MinValue)
                     LoadLastState(now);
 
                 var hasEvents = false;
@@ -114,7 +114,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
                                          ProcessEventsBatch(events, now);
                                      });
 
-                if (!hasEvents)
+                if(!hasEvents)
                     ProcessEventsBatch(new TaskMetaUpdatedEvent[0], now);
 
                 lastTicks = now;
@@ -125,7 +125,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         {
             logger.LogInfoFormat("Loading saved state");
             var snapshot = counterControllerSnapshotStorage.ReadSnapshotOrNull();
-            if (snapshot != null)
+            if(snapshot != null)
             {
                 lastTicks = snapshot.ControllerTicks;
                 lastSnapshotSavedTime = lastTicks - snapshotSaveIntervalTicks;
@@ -152,10 +152,10 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         {
             var taskMetaInformations = reader.ReadActualMetasQuiet(taskMetaUpdatedEvents, now);
             var actualMetas = new List<TaskMetaInformation>();
-            for (var i = 0; i < taskMetaInformations.Length; i++)
+            for(var i = 0; i < taskMetaInformations.Length; i++)
             {
                 var taskMetaInformation = taskMetaInformations[i];
-                if (taskMetaInformation != null)
+                if(taskMetaInformation != null)
                 {
                     actualMetas.Add(taskMetaInformation);
                     unprocessedEventsMap.RemoveEvent(taskMetaUpdatedEvents[i]);
@@ -172,17 +172,17 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         {
             var lastTicksEstimation = GetMinTicks(taskMetaInformations, now);
             var oldestEventTime = unprocessedEventsMap.GetOldestEventTime();
-            if (oldestEventTime != null)
+            if(oldestEventTime != null)
                 lastTicksEstimation = Math.Min(lastTicksEstimation, oldestEventTime.Value);
             return lastTicksEstimation;
         }
 
         private void TrySaveSnapshot(long ticks, long now)
         {
-            if (now - lastSnapshotSavedTime < snapshotSaveIntervalTicks)
+            if(now - lastSnapshotSavedTime < snapshotSaveIntervalTicks)
                 return;
             var counterSnapshot = compositeCounter.GetSnapshotOrNull(maxSnapshotLength);
-            if (counterSnapshot != null)
+            if(counterSnapshot != null)
             {
                 lastSnapshotSavedTime = now;
                 counterControllerSnapshotStorage.SaveSnapshot(new CounterControllerSnapshot()
@@ -197,7 +197,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         private static long GetMinTicks(TaskMetaInformation[] taskMetaInformations, long now)
         {
-            if (taskMetaInformations.Length <= 0)
+            if(taskMetaInformations.Length <= 0)
                 return now;
             var minTicks = taskMetaInformations.Min(x => x.LastModificationTicks.Value);
             return minTicks;

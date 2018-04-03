@@ -26,7 +26,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         public void ProcessEvents([NotNull] Timestamp indexingStartTimestamp, [NotNull] Timestamp indexingFinishTimestamp)
         {
-            if (indexingStartTimestamp >= indexingFinishTimestamp)
+            if(indexingStartTimestamp >= indexingFinishTimestamp)
             {
                 Log.For(this).LogInfoFormat(string.Format("IndexingFinishTimestamp is reached: {0}", indexingFinishTimestamp));
                 return;
@@ -41,14 +41,14 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             do
             {
                 eventsQueryResult = eventLogRepository.GetEvents(fromOffsetExclusive, toOffsetInclusive, estimatedCount : 10000);
-                foreach (var @event in eventsQueryResult.Events)
+                foreach(var @event in eventsQueryResult.Events)
                 {
-                    if (taskIdsToProcess.Add(@event.Event.TaskId))
+                    if(taskIdsToProcess.Add(@event.Event.TaskId))
                         taskIdsToProcessInChronologicalOrder.Add(@event.Event.TaskId);
                     var eventTimestamp = new Timestamp(@event.Event.Ticks);
-                    if (lastEventsBatchStartTimestamp == null)
+                    if(lastEventsBatchStartTimestamp == null)
                         lastEventsBatchStartTimestamp = eventTimestamp;
-                    if (eventTimestamp - lastEventsBatchStartTimestamp > settings.MaxEventsProcessingTimeWindow || taskIdsToProcessInChronologicalOrder.Count > settings.MaxEventsProcessingTasksCount)
+                    if(eventTimestamp - lastEventsBatchStartTimestamp > settings.MaxEventsProcessingTimeWindow || taskIdsToProcessInChronologicalOrder.Count > settings.MaxEventsProcessingTasksCount)
                     {
                         taskMetaProcessor.ProcessTasks(taskIdsToProcessInChronologicalOrder);
                         taskIdsToProcess.Clear();
@@ -57,8 +57,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                     }
                 }
                 fromOffsetExclusive = eventsQueryResult.LastOffset;
-            } while (!eventsQueryResult.NoMoreEventsInSource);
-            if (taskIdsToProcessInChronologicalOrder.Any())
+            } while(!eventsQueryResult.NoMoreEventsInSource);
+            if(taskIdsToProcessInChronologicalOrder.Any())
                 taskMetaProcessor.ProcessTasks(taskIdsToProcessInChronologicalOrder);
         }
 

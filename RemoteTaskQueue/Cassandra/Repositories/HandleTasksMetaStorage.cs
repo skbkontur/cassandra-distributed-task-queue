@@ -47,11 +47,11 @@ namespace RemoteQueue.Cassandra.Repositories
         public TaskIndexRecord[] GetIndexRecords(long toTicks, [NotNull] TaskIndexShardKey[] taskIndexShardKeys)
         {
             var liveRecordsByKey = new Dictionary<TaskIndexShardKey, TaskIndexRecord[]>();
-            foreach (var taskIndexShardKey in taskIndexShardKeys)
+            foreach(var taskIndexShardKey in taskIndexShardKeys)
             {
                 var liveRecords = minimalStartTicksIndex.GetRecords(taskIndexShardKey, toTicks, batchSize : 2000).Take(10000).ToArray();
                 liveRecordsByKey.Add(taskIndexShardKey, liveRecords);
-                if (liveRecords.Any())
+                if(liveRecords.Any())
                     Log.For(this).Info($"Got {liveRecords.Length} live minimalStartTicksIndex records for taskIndexShardKey: {taskIndexShardKey}; Oldest live record: {liveRecords.First()}");
             }
             return Shuffle(liveRecordsByKey.SelectMany(x => x.Value).ToArray());
@@ -64,21 +64,21 @@ namespace RemoteQueue.Cassandra.Repositories
             var globalNowTicks = globalTime.UpdateNowTicks();
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + PreciseTimestampGenerator.TicksPerMicrosecond, globalNowTicks);
             taskMeta.LastModificationTicks = nowTicks;
-            using (metricsContext.Timer("EventLogRepository_AddEvent").NewContext())
+            using(metricsContext.Timer("EventLogRepository_AddEvent").NewContext())
                 eventLogRepository.AddEvent(taskMeta, eventTimestamp : new Timestamp(nowTicks), eventId : Guid.NewGuid());
             var newIndexRecord = FormatIndexRecord(taskMeta);
-            using (metricsContext.Timer("MinimalStartTicksIndex_AddRecord").NewContext())
+            using(metricsContext.Timer("MinimalStartTicksIndex_AddRecord").NewContext())
                 minimalStartTicksIndex.AddRecord(newIndexRecord, globalNowTicks, taskMeta.GetTtl());
-            if (taskMeta.State == TaskState.New)
+            if(taskMeta.State == TaskState.New)
             {
-                using (metricsContext.Timer("ChildTaskIndex_WriteIndexRecord").NewContext())
+                using(metricsContext.Timer("ChildTaskIndex_WriteIndexRecord").NewContext())
                     childTaskIndex.WriteIndexRecord(taskMeta, globalNowTicks);
             }
-            using (metricsContext.Timer("TaskMetaStorage_Write").NewContext())
+            using(metricsContext.Timer("TaskMetaStorage_Write").NewContext())
                 taskMetaStorage.Write(taskMeta, globalNowTicks);
-            if (oldTaskIndexRecord != null)
+            if(oldTaskIndexRecord != null)
             {
-                using (metricsContext.Timer("MinimalStartTicksIndex_RemoveRecord").NewContext())
+                using(metricsContext.Timer("MinimalStartTicksIndex_RemoveRecord").NewContext())
                     minimalStartTicksIndex.RemoveRecord(oldTaskIndexRecord, globalNowTicks);
             }
             return newIndexRecord;
@@ -104,7 +104,7 @@ namespace RemoteQueue.Cassandra.Repositories
         public TaskMetaInformation GetMeta([NotNull] string taskId)
         {
             var meta = taskMetaStorage.Read(taskId);
-            if (meta == null)
+            if(meta == null)
                 throw new InvalidProgramStateException($"TaskMeta not found for: {taskId}");
             return meta;
         }
@@ -118,7 +118,7 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         private static T[] Shuffle<T>([NotNull] T[] array)
         {
-            for (var i = 0; i < array.Length; i++)
+            for(var i = 0; i < array.Length; i++)
             {
                 var r = i + (int)(ThreadLocalRandom.Instance.NextDouble() * (array.Length - i));
                 var t = array[r];

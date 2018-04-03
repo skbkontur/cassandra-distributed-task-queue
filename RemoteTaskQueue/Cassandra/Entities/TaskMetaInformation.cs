@@ -54,7 +54,7 @@ namespace RemoteQueue.Cassandra.Entities
         [NotNull]
         internal BlobId GetTaskDataId()
         {
-            if (TaskDataId == null)
+            if(TaskDataId == null)
                 throw new InvalidProgramStateException(string.Format("TaskDataId is not set for: {0}", this));
             return TaskDataId;
         }
@@ -69,7 +69,7 @@ namespace RemoteQueue.Cassandra.Entities
         internal List<TimeGuid> AddExceptionInfoId([NotNull] TimeGuid newExceptionInfoId, [CanBeNull] out TimeGuid oldExceptionInfoId)
         {
             var taskExceptionInfoIds = GetTaskExceptionInfoIds();
-            if (taskExceptionInfoIds.Count < TaskExceptionIfoIdsLimit)
+            if(taskExceptionInfoIds.Count < TaskExceptionIfoIdsLimit)
                 oldExceptionInfoId = null;
             else
             {
@@ -83,7 +83,7 @@ namespace RemoteQueue.Cassandra.Entities
 
         internal TimeSpan? GetTtl()
         {
-            if (!ExpirationTimestampTicks.HasValue)
+            if(!ExpirationTimestampTicks.HasValue)
                 return null;
             return TimeSpan.FromTicks(Math.Max(ExpirationTimestampTicks.Value - Timestamp.Now.Ticks, TimeSpan.TicksPerSecond));
         }
@@ -92,7 +92,7 @@ namespace RemoteQueue.Cassandra.Entities
         {
             var now = Timestamp.Now;
             var minimalStartTimestamp = GetMinimalStartTimestamp();
-            if (now > minimalStartTimestamp)
+            if(now > minimalStartTimestamp)
             {
                 ExpirationTimestampTicks = (now + ttl).Ticks;
                 ExpirationModificationTicks = now.Ticks;
@@ -106,7 +106,7 @@ namespace RemoteQueue.Cassandra.Entities
 
         internal bool NeedTtlProlongation()
         {
-            if (!ExpirationTimestampTicks.HasValue || !ExpirationModificationTicks.HasValue)
+            if(!ExpirationTimestampTicks.HasValue || !ExpirationModificationTicks.HasValue)
                 return false;
             var halfOfGivenTtl = TimeSpan.FromTicks((ExpirationTimestampTicks.Value - ExpirationModificationTicks.Value + 1) / 2);
             return Max(Timestamp.Now, GetMinimalStartTimestamp()) + halfOfGivenTtl > GetExpirationTimestamp();
@@ -121,7 +121,7 @@ namespace RemoteQueue.Cassandra.Entities
         [NotNull]
         private Timestamp GetMinimalStartTimestamp()
         {
-            if (MinimalStartTicks > Timestamp.MaxValue.Ticks)
+            if(MinimalStartTicks > Timestamp.MaxValue.Ticks)
                 throw new InvalidProgramStateException(string.Format("Invalid MinimalStartTicks: {0}, impossible to construct Timestamp", MinimalStartTicks));
             return MinimalStartTicks < Timestamp.MinValue.Ticks ? Timestamp.MinValue : new Timestamp(MinimalStartTicks);
         }
@@ -135,9 +135,9 @@ namespace RemoteQueue.Cassandra.Entities
         public override string ToString()
         {
             string taskExceptionInfoIds;
-            if (TaskExceptionInfoIds == null)
+            if(TaskExceptionInfoIds == null)
                 taskExceptionInfoIds = "NONE";
-            else if (TaskExceptionInfoIds.Count == 1)
+            else if(TaskExceptionInfoIds.Count == 1)
                 taskExceptionInfoIds = string.Format("SingleExceptionId = {0}", TaskExceptionInfoIds.Single());
             else
                 taskExceptionInfoIds = string.Format("FirstExceptionId = {0}, LastExceptionId = {1}, Count = {2}", TaskExceptionInfoIds.First(), TaskExceptionInfoIds.Last(), TaskExceptionInfoIds.Count);

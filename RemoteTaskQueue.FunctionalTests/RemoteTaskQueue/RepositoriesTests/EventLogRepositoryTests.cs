@@ -386,7 +386,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 
         private void WriteEvents(params EventWithOffset<TaskMetaUpdatedEvent, string>[] events)
         {
-            foreach (var eventWithOffset in events)
+            foreach(var eventWithOffset in events)
             {
                 var taskMeta = new TaskMetaInformation("taskName", eventWithOffset.Event.TaskId);
                 sut.AddEvent(taskMeta, GetTimestamp(eventWithOffset), GetEventId(eventWithOffset));

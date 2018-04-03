@@ -26,12 +26,12 @@ namespace RemoteQueue.Cassandra.Repositories
         public TaskIndexRecord AddTask([NotNull] Task task)
         {
             var metricsContextForTaskName = MetricsContext.For(task.Meta);
-            if (task.Meta.Attempts == 0)
+            if(task.Meta.Attempts == 0)
             {
                 remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
                 metricsContextForTaskName.Meter("TasksQueued").Mark();
             }
-            using (metricsContextForTaskName.Timer("CreationTime").NewContext())
+            using(metricsContextForTaskName.Timer("CreationTime").NewContext())
             {
                 task.Meta.TaskDataId = taskDataStorage.Write(task.Meta, task.Data);
                 return handleTasksMetaStorage.AddMeta(task.Meta, oldTaskIndexRecord : null);
@@ -50,7 +50,7 @@ namespace RemoteQueue.Cassandra.Repositories
         {
             var taskMeta = handleTasksMetaStorage.GetMeta(taskId);
             var taskData = taskDataStorage.Read(taskMeta);
-            if (taskData == null)
+            if(taskData == null)
                 throw new InvalidProgramStateException($"TaskData not found for: {taskId}");
             return new Task(taskMeta, taskData);
         }
@@ -67,9 +67,9 @@ namespace RemoteQueue.Cassandra.Repositories
             var taskMetas = handleTasksMetaStorage.GetMetas(taskIds);
             var taskDatas = taskDataStorage.Read(taskMetas.Values.ToArray());
             var tasks = new List<Task>();
-            foreach (var taskMeta in taskMetas.Values)
+            foreach(var taskMeta in taskMetas.Values)
             {
-                if (taskDatas.TryGetValue(taskMeta.Id, out var taskData))
+                if(taskDatas.TryGetValue(taskMeta.Id, out var taskData))
                     tasks.Add(new Task(taskMeta, taskData));
             }
             return tasks;

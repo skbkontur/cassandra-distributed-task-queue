@@ -126,7 +126,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
             eventLogRepository.Expect(m => m.GetEvents(lastTicks - unstableTicks, nowTicks, maxBatch)).Return(events);
             var count = 0;
             Assert.AreEqual(metaBatches.Sum(x => x.Length), allEvents.Length, "Bad batch");
-            foreach (var metaBatch in metaBatches)
+            foreach(var metaBatch in metaBatches)
             {
                 var eventsCopy = new TaskMetaUpdatedEvent[metaBatch.Length];
                 Array.Copy(allEvents, count, eventsCopy, 0, metaBatch.Length);
@@ -136,7 +136,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
                 compositeCounter.Expect(c => c.ProcessMetas(ARG.EqualsTo(batch2.Where(x => x != null).ToArray()), ARG.EqualsTo(nowTicks)));
             }
 
-            if (allEvents.Length == 0)
+            if(allEvents.Length == 0)
                 compositeCounter.Expect(c => c.ProcessMetas(ARG.EqualsTo(new TaskMetaInformation[0]), ARG.EqualsTo(nowTicks)));
 
             controller.ProcessNewEvents();

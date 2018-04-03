@@ -11,15 +11,15 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var propertyInfo = member as PropertyInfo;
-            if (propertyInfo != null)
+            if(propertyInfo != null)
             {
-                if (propertyInfo.PropertyType.IsArray)
+                if(propertyInfo.PropertyType.IsArray)
                 {
                     var elementType = propertyInfo.PropertyType.GetElementType();
-                    if (IsBadType(elementType))
+                    if(IsBadType(elementType))
                         return null;
                 }
-                if (IsBadType(propertyInfo.PropertyType))
+                if(IsBadType(propertyInfo.PropertyType))
                     return null;
             }
             return base.CreateProperty(member, memberSerialization);

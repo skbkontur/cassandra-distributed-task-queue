@@ -128,7 +128,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
             CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1);
 
-            for (var attempts = 1; attempts <= 3; attempts++)
+            for(var attempts = 1; attempts <= 3; attempts++)
                 CheckSearch(string.Format("\"FailingTask failed: {0}. Attempts = {1}\"", failingTaskData, attempts), t0, t1, taskId);
         }
 
@@ -136,7 +136,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         public void TestUpdateAndFlush()
         {
             var t0 = Timestamp.Now;
-            for (var i = 0; i < 100; i++)
+            for(var i = 0; i < 100; i++)
             {
                 Log.For(this).InfoFormat("Iteration: {0}", i);
                 var taskId0 = QueueTask(new SlowTaskData());
@@ -150,7 +150,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         public void TestDataSearchBug()
         {
             var t0 = Timestamp.Now;
-            for (var i = 0; i < 100; i++)
+            for(var i = 0; i < 100; i++)
             {
                 Log.For(this).InfoFormat("Iteration: {0}", i);
                 var taskId0 = QueueTask(new SlowTaskData());
@@ -197,7 +197,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
             var taskIds = new List<string>();
             const int pageSize = 5;
-            for (var i = 0; i < pageSize + pageSize / 2; i++)
+            for(var i = 0; i < pageSize + pageSize / 2; i++)
             {
                 taskIds.Add(QueueTask(new AlphaTaskData()));
                 Thread.Sleep(TimeSpan.FromMilliseconds(1)); // note: elastic stores timestamps with millisecond precision
@@ -209,20 +209,20 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t1 = Timestamp.Now;
 
             var resultsPage1 = taskSearchClient.Search(new TaskSearchRequest
-                {
-                    FromTicksUtc = t0.Ticks,
-                    ToTicksUtc = t1.Ticks,
-                    QueryString = "*",
-                }, 0, pageSize);
+            {
+                FromTicksUtc = t0.Ticks,
+                ToTicksUtc = t1.Ticks,
+                QueryString = "*",
+            }, 0, pageSize);
             resultsPage1.TotalCount.Should().Be(expectedTaskIds.Length);
             resultsPage1.Ids.Should().Equal(expectedTaskIds.Take(pageSize).ToArray());
 
             var resultsPage2 = taskSearchClient.Search(new TaskSearchRequest
-                {
-                    FromTicksUtc = t0.Ticks,
-                    ToTicksUtc = t1.Ticks,
-                    QueryString = "*",
-                }, pageSize, pageSize);
+            {
+                FromTicksUtc = t0.Ticks,
+                ToTicksUtc = t1.Ticks,
+                QueryString = "*",
+            }, pageSize, pageSize);
             resultsPage2.TotalCount.Should().Be(expectedTaskIds.Length);
             resultsPage2.Ids.Should().Equal(expectedTaskIds.Skip(pageSize).ToArray());
         }

@@ -17,7 +17,7 @@ namespace RemoteQueue.Handling
             taskQueue = queue;
             Context = task.Meta;
             var taskData = serializer.Deserialize<T>(task.Data);
-            using (new BusinessLogicTaskTraceContext())
+            using(new BusinessLogicTaskTraceContext())
                 return HandleTask(taskData);
         }
 
@@ -38,7 +38,7 @@ namespace RemoteQueue.Handling
 
         protected string ContinueWith(ITaskData data, TimeSpan delay)
         {
-            if (delay.Ticks < 0)
+            if(delay.Ticks < 0)
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
             return CreateNextTask(data).Queue(delay);
         }
@@ -53,7 +53,7 @@ namespace RemoteQueue.Handling
 
         protected HandleResult Rerun(TimeSpan rerunDelay)
         {
-            if (rerunDelay.Ticks < 0)
+            if(rerunDelay.Ticks < 0)
                 throw new InvalidProgramStateException(string.Format("Invalid rerun delay: {0}", rerunDelay));
             return new HandleResult
                 {
@@ -64,7 +64,7 @@ namespace RemoteQueue.Handling
 
         protected HandleResult RerunAfterError(Exception e, TimeSpan rerunDelay)
         {
-            if (rerunDelay.Ticks < 0)
+            if(rerunDelay.Ticks < 0)
                 throw new InvalidProgramStateException(string.Format("Invalid rerun delay: {0}", rerunDelay));
             return new HandleResult
                 {

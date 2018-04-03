@@ -11,7 +11,7 @@ namespace RemoteTaskQueue.UnitTests
         public void TestUnlimitedAllTaskCount()
         {
             var taskCounter = new RemoteQueue.Handling.TaskCounter(0, 0);
-            for (var i = 0; i < 100; i++)
+            for(var i = 0; i < 100; i++)
             {
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.TaskContinuation));
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.PullFromQueue));
@@ -25,13 +25,13 @@ namespace RemoteTaskQueue.UnitTests
         {
             var taskCounter = new RemoteQueue.Handling.TaskCounter(0, 10);
 
-            for (var i = 0; i < 100; i++)
+            for(var i = 0; i < 100; i++)
             {
                 Assert.That(taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue));
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.PullFromQueue));
             }
 
-            for (var i = 0; i < 10; i++)
+            for(var i = 0; i < 10; i++)
             {
                 Assert.That(taskCounter.CanQueueTask(TaskQueueReason.TaskContinuation));
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.TaskContinuation));
@@ -39,7 +39,7 @@ namespace RemoteTaskQueue.UnitTests
             Assert.That(taskCounter.CanQueueTask(TaskQueueReason.TaskContinuation), Is.False);
             Assert.That(taskCounter.TryIncrement(TaskQueueReason.TaskContinuation), Is.False);
 
-            for (var i = 0; i < 100; i++)
+            for(var i = 0; i < 100; i++)
                 taskCounter.Decrement(TaskQueueReason.PullFromQueue);
 
             Assert.That(taskCounter.CanQueueTask(TaskQueueReason.TaskContinuation), Is.False);
@@ -104,7 +104,7 @@ namespace RemoteTaskQueue.UnitTests
         {
             var taskCounter = new RemoteQueue.Handling.TaskCounter(10, 0);
 
-            for (var i = 0; i < 10; i++)
+            for(var i = 0; i < 10; i++)
             {
                 Assert.That(taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue));
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.PullFromQueue));
@@ -115,16 +115,16 @@ namespace RemoteTaskQueue.UnitTests
             Assert.That(taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue), Is.True);
             Assert.That(taskCounter.TryIncrement(TaskQueueReason.PullFromQueue), Is.True);
 
-            for (var i = 0; i < 100; i++)
+            for(var i = 0; i < 100; i++)
             {
                 Assert.That(taskCounter.CanQueueTask(TaskQueueReason.TaskContinuation));
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.TaskContinuation));
             }
 
-            for (var i = 0; i < 10; i++)
+            for(var i = 0; i < 10; i++)
                 taskCounter.Decrement(TaskQueueReason.PullFromQueue);
 
-            for (var i = 0; i < 90; i++)
+            for(var i = 0; i < 90; i++)
                 taskCounter.Decrement(TaskQueueReason.TaskContinuation);
 
             Assert.That(taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue), Is.False);

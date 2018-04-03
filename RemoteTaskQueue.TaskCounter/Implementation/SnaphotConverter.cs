@@ -16,7 +16,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         public bool TryConvert(CounterControllerSnapshotStorage.SnapshotData snapshotData, out CounterControllerSnapshot result)
         {
-            if (snapshotData.Version == 1)
+            if(snapshotData.Version == 1)
             {
                 var decompress = SnapshotStorageUtils.Decompress(snapshotData.Data);
                 var snapshotV1 = serializer.Deserialize<CounterControllerSnapshotV1>(decompress);
@@ -31,7 +31,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         private static CounterControllerSnapshot HackConvert(CounterControllerSnapshotV1 snapshotV1)
         {
-            if (snapshotV1 == null)
+            if(snapshotV1 == null)
                 return null;
 
             var result = new CounterControllerSnapshot()
@@ -39,13 +39,13 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
                     ControllerTicks = snapshotV1.CountollerTicks
                 };
             var counterSnapshotV1 = snapshotV1.CounterSnapshot;
-            if (counterSnapshotV1 != null)
+            if(counterSnapshotV1 != null)
             {
                 result.CounterSnapshot = new CompositeCounterSnapshot()
                     {
                         TotalSnapshot = HackConvert(counterSnapshotV1.TotalSnapshot)
                     };
-                if (counterSnapshotV1.Snapshots != null)
+                if(counterSnapshotV1.Snapshots != null)
                     result.CounterSnapshot.Snapshots = counterSnapshotV1.Snapshots.ToDictionary(pair => pair.Key, pair => HackConvert(pair.Value));
             }
             return null;
@@ -53,14 +53,14 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         private static ProcessedTasksCounter.CounterSnapshot HackConvert(CounterSnapshotV1 totalSnapshot)
         {
-            if (totalSnapshot == null)
+            if(totalSnapshot == null)
                 return null;
             var map = new Dictionary<string, TaskState>();
             var counts = new int[TaskStateHelpers.statesCount];
             const TaskState fakeState = TaskState.InProcess;
-            if (totalSnapshot.NotFinishedTasks != null)
+            if(totalSnapshot.NotFinishedTasks != null)
             {
-                foreach (var notFinishedTask in totalSnapshot.NotFinishedTasks)
+                foreach(var notFinishedTask in totalSnapshot.NotFinishedTasks)
                     map[notFinishedTask] = fakeState; //NOTE hack. we do not know exact state
             }
             counts[(int)fakeState] = map.Count;

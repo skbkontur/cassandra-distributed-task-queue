@@ -16,7 +16,7 @@ namespace RemoteQueue.Tracing
         public RemoteTaskHandlingTraceContext([CanBeNull] TaskMetaInformation taskMeta)
         {
             TaskIsBeingTraced = taskMeta != null;
-            if (taskMeta != null)
+            if(taskMeta != null)
             {
                 traceContext = Trace.ContinueContext(taskMeta.TraceId, taskMeta.Id, taskMeta.TraceIsActive, isRoot : true);
                 traceContext.RecordTimepoint(Timepoint.Start, new DateTime(taskMeta.Ticks, DateTimeKind.Utc));
@@ -27,10 +27,10 @@ namespace RemoteQueue.Tracing
 
         public void Finish(bool taskIsSentToThreadPool, Func<long> getGlobalNowTicks)
         {
-            if (traceContext != null)
+            if(traceContext != null)
             {
                 var flush = !taskIsSentToThreadPool;
-                if (flush)
+                if(flush)
                     traceContext.RecordTimepoint(Timepoint.Finish, new DateTime(getGlobalNowTicks(), DateTimeKind.Utc));
                 traceContext.Dispose(flush);
             }
@@ -38,13 +38,13 @@ namespace RemoteQueue.Tracing
 
         public void Dispose()
         {
-            if (traceContext != null)
+            if(traceContext != null)
                 traceContext.Dispose();
         }
 
         public static void Finish(LocalTaskProcessingResult result, long finishTaskProcessingTicks)
         {
-            switch (result)
+            switch(result)
             {
             case LocalTaskProcessingResult.Success:
                 TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "200");

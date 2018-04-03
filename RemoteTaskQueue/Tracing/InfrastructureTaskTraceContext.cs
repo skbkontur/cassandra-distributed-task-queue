@@ -8,7 +8,7 @@ namespace RemoteQueue.Tracing
     {
         public InfrastructureTaskTraceContext(bool taskIsBeingTraced)
         {
-            if (taskIsBeingTraced)
+            if(taskIsBeingTraced)
             {
                 traceContext = Trace.CreateChildContext("Handle.Infrastructure");
                 traceContext.RecordTimepoint(Timepoint.Start);
@@ -17,10 +17,10 @@ namespace RemoteQueue.Tracing
 
         public void Finish(bool taskIsSentToThreadPool)
         {
-            if (traceContext != null)
+            if(traceContext != null)
             {
                 var flush = !taskIsSentToThreadPool;
-                if (flush)
+                if(flush)
                     traceContext.RecordTimepoint(Timepoint.Finish);
                 traceContext.Dispose(flush);
             }
@@ -28,7 +28,7 @@ namespace RemoteQueue.Tracing
 
         public void Dispose()
         {
-            if (traceContext != null)
+            if(traceContext != null)
                 traceContext.Dispose();
         }
 

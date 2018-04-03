@@ -53,7 +53,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var searchResults = remoteTaskQueueMonitoringApi.Search(new RemoteTaskQueueSearchRequest
                 {
                     EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
-                }, 0, 20);
+                },0 , 20);
             searchResults.TotalCount.Should().Be(20);
             searchResults.TaskMetas.Select(x => x.Id).ShouldAllBeEquivalentTo(taskIds);
         }
@@ -202,7 +202,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         private string[] QueueTasksAndWaitForActualization(params ITaskData[] taskDatas)
         {
             var taskIds = new List<string>();
-            foreach (var taskData in taskDatas)
+            foreach(var taskData in taskDatas)
             {
                 var task = remoteTaskQueue.CreateTask(taskData);
                 task.Queue(TimeSpan.Zero);

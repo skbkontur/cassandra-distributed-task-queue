@@ -25,7 +25,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             var loggingId = Guid.NewGuid().ToString();
             Log.For(this).InfoFormat("Start test. LoggingId = {0}", loggingId);
-            for (var i = 0; i < chainsCount; i++)
+            for(var i = 0; i < chainsCount; i++)
             {
                 remoteTaskQueue.CreateTask(new ChainTaskData
                     {
@@ -47,7 +47,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             Assert.That(chains.Length, Is.EqualTo(infos.Length / tasksInChain),
                         string.Format("Количество цепочек должно быть равно общему числу тасков, деленному на {0}", tasksInChain));
             Log.For(this).InfoFormat("Found {0} chains, as expected", chains.Length);
-            foreach (var grouping in chains)
+            foreach(var grouping in chains)
                 CheckChain(grouping.Key, grouping.ToArray());
             Log.For(this).Info("Checking chains success");
         }
@@ -58,7 +58,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             Assert.That(chain.Length, Is.EqualTo(tasksInChain), string.Format("Количество задач в цепочке должно быть равно {0}", tasksInChain));
             var ordered = chain.OrderBy(info => info.TaskData.ChainPosition).ToArray();
             string previousTaskId = null;
-            foreach (var taskInfo in ordered)
+            foreach(var taskInfo in ordered)
             {
                 Assert.That(taskInfo.Context.ParentTaskId, Is.EqualTo(previousTaskId), string.Format("Не выполнилось ожидание правильного ParentTaskId для таски {0}", taskInfo.Context.Id));
                 previousTaskId = taskInfo.Context.Id;
@@ -70,24 +70,24 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             const int sleepInterval = 5000;
             var stopwatch = Stopwatch.StartNew();
-            while (true)
+            while(true)
             {
-                if (stopwatch.Elapsed > timeout)
+                if(stopwatch.Elapsed > timeout)
                     throw new TooLateException("Время ожидания превысило {0} мс.", timeout);
                 var ids = testTaskLogger.GetAll(loggingId);
-                if (ids.Length < expectedTasks)
+                if(ids.Length < expectedTasks)
                 {
                     Log.For(this).InfoFormat("Read {0} tasks, expected {1} tasks. Sleep", ids.Length, expectedTasks);
                     Thread.Sleep(sleepInterval);
                     continue;
                 }
-                if (ids.Length > expectedTasks)
+                if(ids.Length > expectedTasks)
                     throw new Exception(string.Format("Found {0} tasks, when expected {1} tasks", ids.Length, expectedTasks));
                 Log.For(this).InfoFormat("Found {0} tasks, as expected", ids.Length);
                 var taskInfos = remoteTaskQueue.GetTaskInfos<ChainTaskData>(ids);
                 var finished = taskInfos.Where(info => info.Context.State == TaskState.Finished).ToArray();
                 var notFinished = taskInfos.Where(info => info.Context.State != TaskState.Finished).ToArray();
-                if (notFinished.Length != 0)
+                if(notFinished.Length != 0)
                 {
                     Log.For(this).InfoFormat("Found {0} finished tasks, but {1} not finished. Sleep", finished.Length, notFinished.Length);
                     Thread.Sleep(sleepInterval);

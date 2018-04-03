@@ -21,21 +21,21 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         {
             oldWaitingTasksCounter.NewMetainformationAvailable(metas, readTicks);
             var processedNames = new HashSet<string>();
-            foreach (var taskMetaInformation in metas)
+            foreach(var taskMetaInformation in metas)
             {
-                if (!string.IsNullOrEmpty(taskMetaInformation.Name))
+                if(!string.IsNullOrEmpty(taskMetaInformation.Name))
                 {
                     totalCounter.Process(taskMetaInformation);
                     processedNames.Add(taskMetaInformation.Name);
                     GetCounter(taskMetaInformation.Name).Process(taskMetaInformation);
                 }
             }
-            foreach (var kvp in counters)
+            foreach(var kvp in counters)
             {
-                if (!processedNames.Contains(kvp.Key))
+                if(!processedNames.Contains(kvp.Key))
                     kvp.Value.NoMeta(readTicks);
             }
-            if (metas.Length <= 0)
+            if(metas.Length <= 0)
                 totalCounter.NoMeta(readTicks);
         }
 
@@ -53,7 +53,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         public Dictionary<string, TaskCount> GetAllCounts()
         {
             var result = new Dictionary<string, TaskCount>();
-            foreach (var kvp in counters)
+            foreach(var kvp in counters)
             {
                 var taskCount = kvp.Value.GetCount();
                 result.Add(kvp.Key, taskCount);
@@ -78,11 +78,11 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         public CompositeCounterSnapshot GetSnapshotOrNull(int maxLength)
         {
             var snapshots = new Dictionary<string, ProcessedTasksCounter.CounterSnapshot>();
-            foreach (var kvp in counters)
+            foreach(var kvp in counters)
             {
                 var counter = kvp.Value;
                 var snapshot = counter.GetSnapshotOrNull(maxLength);
-                if (snapshot == null)
+                if(snapshot == null)
                 {
                     logger.LogWarnFormat("Snapshot for TaskName={0} is big", kvp.Key);
                     return null;
@@ -90,7 +90,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
                 snapshots.Add(kvp.Key, snapshot);
             }
             var totalSnapshot = totalCounter.GetSnapshotOrNull(maxLength);
-            if (totalSnapshot == null)
+            if(totalSnapshot == null)
             {
                 logger.LogWarnFormat("Total snapshot is big");
                 return null;
@@ -110,15 +110,15 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             Reset();
             oldWaitingTasksCounter.Reset();
             totalCounter.Reset();
-            if (snapshot == null)
+            if(snapshot == null)
             {
                 logger.LogWarnFormat("Snapshot is empty");
                 return;
             }
 
-            if (snapshot.Snapshots != null && snapshot.Snapshots.Count != 0)
+            if(snapshot.Snapshots != null && snapshot.Snapshots.Count != 0)
             {
-                foreach (var kvp in snapshot.Snapshots)
+                foreach(var kvp in snapshot.Snapshots)
                 {
                     var name = kvp.Key;
                     GetCounter(name).LoadSnapshot(kvp.Value);
@@ -126,12 +126,12 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             }
             else
                 logger.LogWarnFormat("Per-counter snapshots are empty");
-            if (snapshot.TotalSnapshot != null)
+            if(snapshot.TotalSnapshot != null)
                 totalCounter.LoadSnapshot(snapshot.TotalSnapshot);
             else
                 logger.LogWarnFormat("totalCounter snapshot is empty");
 
-            if (snapshot.OldWaitingCounterSnapshot != null)
+            if(snapshot.OldWaitingCounterSnapshot != null)
                 oldWaitingTasksCounter.LoadSnapshot(snapshot.OldWaitingCounterSnapshot);
             else
                 logger.LogWarnFormat("oldWaitingTasksCounter snapshot is empty");

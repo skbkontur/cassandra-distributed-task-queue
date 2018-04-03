@@ -20,11 +20,11 @@ namespace RemoteTaskQueue.TaskCounter.Scheduler
 
         public void Stop()
         {
-            if (started)
+            if(started)
             {
-                lock (lockObject)
+                lock(lockObject)
                 {
-                    if (started)
+                    if(started)
                     {
                         periodicTaskRunner.Unregister(counterTaskId, 15000);
                         periodicTaskRunner.Unregister(counterGraphiteTaskId, 15000);
@@ -37,11 +37,11 @@ namespace RemoteTaskQueue.TaskCounter.Scheduler
 
         public void Start()
         {
-            if (!started)
+            if(!started)
             {
-                lock (lockObject)
+                lock(lockObject)
                 {
-                    if (!started)
+                    if(!started)
                     {
                         periodicTaskRunner.Register(new ActionPeriodicTask(counterTaskId, () => counterController.ProcessNewEvents()), CounterSettings.CounterUpdateInterval);
                         periodicTaskRunner.Register(new ActionPeriodicTask(counterGraphiteTaskId, () => graphitePoster.PostData()), CounterSettings.GraphitePostInterval);

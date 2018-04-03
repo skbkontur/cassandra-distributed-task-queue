@@ -117,7 +117,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         private byte? ReadByte(string rowKey, TimeGuid id)
         {
             var bytes = timeBasedBlobStorage.Read(rowKey, id);
-            if (bytes == null)
+            if(bytes == null)
                 return null;
             return bytes.Single();
         }

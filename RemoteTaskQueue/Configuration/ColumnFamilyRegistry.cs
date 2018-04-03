@@ -18,11 +18,11 @@ namespace RemoteQueue.Configuration
     {
         public ColumnFamilyRegistry()
         {
-            foreach (var cfName in TaskMetaStorage.GetColumnFamilyNames())
+            foreach(var cfName in TaskMetaStorage.GetColumnFamilyNames())
                 cfNames.Add(cfName);
-            foreach (var cfName in TaskDataStorage.GetColumnFamilyNames())
+            foreach(var cfName in TaskDataStorage.GetColumnFamilyNames())
                 cfNames.Add(cfName);
-            foreach (var cfName in TaskExceptionInfoStorage.GetColumnFamilyNames())
+            foreach(var cfName in TaskExceptionInfoStorage.GetColumnFamilyNames())
                 cfNames.Add(cfName);
             cfNames.Add(RemoteTaskQueueLockConstants.LockColumnFamily);
             cfNames.Add(TicksHolder.ColumnFamilyName);

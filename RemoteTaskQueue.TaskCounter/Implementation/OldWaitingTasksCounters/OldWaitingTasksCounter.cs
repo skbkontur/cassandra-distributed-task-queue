@@ -23,7 +23,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
             this.watchInterval = watchInterval;
             value = 0;
         }
-
+        
         [ContainerConstructor]
         public OldWaitingTasksCounter()
             : this(CounterSettings.NewEventsWatchInterval.Ticks)
@@ -37,7 +37,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
 
         public void Reset()
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 logger.LogInfoFormat("Reset");
                 tasks.Clear();
@@ -48,17 +48,17 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
 
         public void LoadSnapshot(OldWaitingCounterSnapshot snapshot)
         {
-            if (snapshot == null || snapshot.Tasks == null)
+            if(snapshot == null || snapshot.Tasks == null)
             {
                 logger.LogInfoFormat("Snapshot is empty");
                 return;
             }
-            lock (lockObject)
+            lock(lockObject)
             {
                 Reset();
-                foreach (var task in snapshot.Tasks)
+                foreach(var task in snapshot.Tasks)
                     tasks.Add(task);
-                if (snapshot.NotCountedNewTasks != null)
+                if(snapshot.NotCountedNewTasks != null)
                     notCountedNewTasks = new Dictionary<string, long>(snapshot.NotCountedNewTasks);
                 SetValue(tasks.Count);
             }
@@ -66,9 +66,9 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
 
         public OldWaitingCounterSnapshot GetSnapshot(int maxLength)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
-                if (tasks.Count > maxLength)
+                if(tasks.Count > maxLength)
                     return null;
                 return new OldWaitingCounterSnapshot() {Tasks = tasks.ToArray(), NotCountedNewTasks = new Dictionary<string, long>(notCountedNewTasks)};
             }
@@ -76,13 +76,13 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
 
         public void NewMetainformationAvailable(TaskMetaInformation[] metas, long now)
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 var borderTicks = now - watchInterval;
 
                 notCountedNewTasks.DeleteWhere(pair =>
                     {
-                        if (pair.Value < borderTicks)
+                        if(pair.Value < borderTicks)
                         {
                             CountTask(pair.Key, true);
                             return true;
@@ -90,13 +90,13 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
                         return false;
                     });
                 //note metas sorted by LastModificationTicks
-                foreach (var taskMetaInformation in metas)
+                foreach(var taskMetaInformation in metas)
                 {
                     var taskId = taskMetaInformation.Id;
                     var minimalStartTicks = taskMetaInformation.MinimalStartTicks;
-                    if (minimalStartTicks >= borderTicks)
+                    if(minimalStartTicks >= borderTicks)
                     {
-                        if (IsWaitingState(taskMetaInformation))
+                        if(IsWaitingState(taskMetaInformation))
                         {
                             notCountedNewTasks[taskId] = minimalStartTicks;
                             CountTask(taskId, false);
@@ -116,7 +116,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
 
         public string[] GetOldWaitingTaskIds()
         {
-            lock (lockObject)
+            lock(lockObject)
             {
                 return tasks.ToArray();
             }
@@ -124,19 +124,19 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
 
         private void CountTask(string taskId, bool isWaitingState)
         {
-            if (tasks.Contains(taskId))
+            if(tasks.Contains(taskId))
             {
-                if (!isWaitingState)
+                if(!isWaitingState)
                 {
-                    if (tasks.Remove(taskId))
+                    if(tasks.Remove(taskId))
                         lostLogger.InfoFormat("Task {0} is removed", taskId);
                 }
             }
             else
             {
-                if (isWaitingState)
+                if(isWaitingState)
                 {
-                    if (tasks.Add(taskId))
+                    if(tasks.Add(taskId))
                         lostLogger.InfoFormat("Task {0} is added", taskId);
                 }
             }
@@ -144,7 +144,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
 
         public Status GetStatus()
         {
-            lock (lockObject)
+            lock(lockObject)
                 return new Status()
                     {
                         NotCountedNewTasksCount = notCountedNewTasks.Count
@@ -164,12 +164,12 @@ namespace RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters
 
         private void LogTasks()
         {
-            if (DateTime.UtcNow - lastLogTasksDateTime <= TimeSpan.FromMinutes(1))
+            if(DateTime.UtcNow - lastLogTasksDateTime <= TimeSpan.FromMinutes(1))
                 return;
-            lock (lockObject)
+            lock(lockObject)
             {
                 var taskIds = tasks.ToArray();
-                if (taskIds.Length > 0)
+                if(taskIds.Length > 0)
                 {
                     logger.WarnFormat("Probably lost tasks: {0}", string.Join(",", taskIds.Take(100)));
                     lastLogTasksDateTime = DateTime.UtcNow;

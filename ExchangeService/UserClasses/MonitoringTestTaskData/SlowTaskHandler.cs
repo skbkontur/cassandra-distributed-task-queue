@@ -16,13 +16,13 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
 
         protected override HandleResult HandleTask(SlowTaskData taskData)
         {
-            if (taskData.UseCounter)
+            if(taskData.UseCounter)
                 testCounterRepository.IncrementCounter("SlowTaskHandler_Started");
 
             Thread.Sleep(taskData.TimeMs);
             var handleResult = Finish();
 
-            if (taskData.UseCounter)
+            if(taskData.UseCounter)
                 testCounterRepository.IncrementCounter("SlowTaskHandler_Finished");
             return handleResult;
         }

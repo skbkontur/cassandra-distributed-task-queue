@@ -24,13 +24,13 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             var sw = Stopwatch.StartNew();
             sleepInterval = sleepInterval ?? TimeSpan.FromMilliseconds(Math.Max(500, (int)timeout.TotalMilliseconds / 10));
-            while (true)
+            while(true)
             {
                 var allTasksAreFinished = handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == terminalState);
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
                 Log.For(this).InfoFormat("CurrentCounterValues: {0}", string.Join(", ", attempts));
                 var notFinishedTaskIds = taskIds.EquiZip(attempts, (taskId, attempt) => new {taskId, attempt}).Where(x => x.attempt > 0).Select(x => x.taskId).ToArray();
-                if (allTasksAreFinished)
+                if(allTasksAreFinished)
                 {
                     Assert.That(notFinishedTaskIds, Is.Empty);
                     try
@@ -38,14 +38,14 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
                         CheckTaskMinimalStartTicksIndexStates(taskIds.ToDictionary(s => s, s => TaskIndexShardKey(taskName, terminalState)));
                         break;
                     }
-                    catch (AssertionException e)
+                    catch(AssertionException e)
                     {
-                        if (sw.Elapsed > timeout)
+                        if(sw.Elapsed > timeout)
                             throw;
                         Log.For(this).Warn("Maybe we have a stability issue because index records are being removed after new task meta has been written. Will keep waiting.", e);
                     }
                 }
-                if (sw.Elapsed > timeout)
+                if(sw.Elapsed > timeout)
                     throw new TooLateException("Время ожидания превысило {0} мс. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
                 Thread.Sleep(sleepInterval.Value);
             }
@@ -55,11 +55,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             var sw = Stopwatch.StartNew();
             sleepInterval = sleepInterval ?? TimeSpan.FromMilliseconds(Math.Max(500, (int)timeout.TotalMilliseconds / 10));
-            while (true)
+            while(true)
             {
-                if (handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == targetState))
+                if(handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == targetState))
                     break;
-                if (sw.Elapsed > timeout)
+                if(sw.Elapsed > timeout)
                     throw new TooLateException("Время ожидания превысило {0} мс. Tasks in another state: {1}", timeout,
                                                string.Join(", ", handleTaskCollection.GetTasks(taskIds).Where(x => x.Meta.State != targetState).Select(x => x.Meta.Id)));
                 Thread.Sleep(sleepInterval.Value);

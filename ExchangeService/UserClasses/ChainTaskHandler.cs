@@ -16,7 +16,7 @@ namespace ExchangeService.UserClasses
         protected override HandleResult HandleTask(ChainTaskData taskData)
         {
             logger.Log(taskData.LoggingTaskIdKey, Context.Id);
-            if (taskData.ChainPosition == 9)
+            if(taskData.ChainPosition == 9)
                 return Finish();
             remoteTaskQueue.CreateTask(new ChainTaskData
                 {

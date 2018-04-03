@@ -29,17 +29,17 @@ namespace RemoteTaskQueue.Monitoring.Api
 
         public RemoteTaskQueueSearchResults Search(RemoteTaskQueueSearchRequest searchRequest, int from, int size)
         {
-            if (searchRequest.EnqueueDateTimeRange == null)
+            if(searchRequest.EnqueueDateTimeRange == null)
                 throw new BadRequestException("enqueueDateTimeRange should be specified");
-            if (searchRequest.EnqueueDateTimeRange.OpenType != null)
+            if(searchRequest.EnqueueDateTimeRange.OpenType != null)
                 throw new BadRequestException("Both enqueueDateTimeRange.lowerBound and enqueueDateTimeRange.uppedBound should be specified");
 
             var searchResult = FindTasks(searchRequest, from, size);
             var taskMetas = remoteTaskQueue.GetTaskMetas(searchResult.Ids);
             var taskListItems = new List<TaskMetaInformation>();
-            foreach (var taskId in searchResult.Ids)
+            foreach(var taskId in searchResult.Ids)
             {
-                if (taskMetas.TryGetValue(taskId, out var taskMeta))
+                if(taskMetas.TryGetValue(taskId, out var taskMeta))
                     taskListItems.Add(taskMeta);
             }
             return new RemoteTaskQueueSearchResults
@@ -59,12 +59,12 @@ namespace RemoteTaskQueue.Monitoring.Api
             const int batchSize = 100;
             var taskSearchRequest = CreateTaskSearchRequest(searchRequest);
             var currentOffset = 0;
-            while (true)
+            while(true)
             {
                 var result = taskSearchClient.Search(taskSearchRequest, currentOffset, batchSize);
-                if (result.Ids.Length == 0)
+                if(result.Ids.Length == 0)
                     yield break;
-                foreach (var id in result.Ids)
+                foreach(var id in result.Ids)
                     yield return id;
                 currentOffset += batchSize;
             }
@@ -109,7 +109,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         public RemoteTaskInfoModel GetTaskDetails(string taskId)
         {
             var result = remoteTaskQueue.TryGetTaskInfo(taskId);
-            if (result == null)
+            if(result == null)
                 throw new NotFoundException($"Task with id {taskId} not found");
             return new RemoteTaskInfoModel
                 {
@@ -128,7 +128,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         public Dictionary<string, TaskManipulationResult> CancelTasks(string[] ids)
         {
             var result = new Dictionary<string, TaskManipulationResult>();
-            foreach (var taskId in ids.Distinct())
+            foreach(var taskId in ids.Distinct())
             {
                 var taskManipulationResult = remoteTaskQueue.TryCancelTask(taskId);
                 result.Add(taskId, taskManipulationResult);
@@ -139,7 +139,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         public Dictionary<string, TaskManipulationResult> RerunTasks(string[] ids)
         {
             var result = new Dictionary<string, TaskManipulationResult>();
-            foreach (var taskId in ids.Distinct())
+            foreach(var taskId in ids.Distinct())
             {
                 var taskManipulationResult = remoteTaskQueue.TryRerunTask(taskId, TimeSpan.Zero);
                 result.Add(taskId, taskManipulationResult);
@@ -150,7 +150,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         public Dictionary<string, TaskManipulationResult> RerunTasksBySearchQuery(RemoteTaskQueueSearchRequest searchRequest)
         {
             var result = new Dictionary<string, TaskManipulationResult>();
-            foreach (var taskId in FindAllTasks(searchRequest).Distinct())
+            foreach(var taskId in FindAllTasks(searchRequest).Distinct())
             {
                 var taskManipulationResult = remoteTaskQueue.TryRerunTask(taskId, TimeSpan.Zero);
                 result.Add(taskId, taskManipulationResult);
@@ -161,7 +161,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         public Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery(RemoteTaskQueueSearchRequest searchRequest)
         {
             var result = new Dictionary<string, TaskManipulationResult>();
-            foreach (var taskId in FindAllTasks(searchRequest).Distinct())
+            foreach(var taskId in FindAllTasks(searchRequest).Distinct())
             {
                 var taskManipulationResult = remoteTaskQueue.TryCancelTask(taskId);
                 result.Add(taskId, taskManipulationResult);

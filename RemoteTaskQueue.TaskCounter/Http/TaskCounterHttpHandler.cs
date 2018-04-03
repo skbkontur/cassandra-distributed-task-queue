@@ -33,7 +33,7 @@ namespace RemoteTaskQueue.TaskCounter.Http
         [HttpMethod]
         public void RestartProcessingTaskCounter(DateTime? fromTime)
         {
-            if (fromTime.HasValue)
+            if(fromTime.HasValue)
                 counterController.Restart(fromTime.Value.ToUniversalTime().Ticks);
             else
                 counterController.Restart(null);

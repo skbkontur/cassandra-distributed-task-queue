@@ -95,11 +95,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void Read_Normal()
         {
             var metasWithExceptions = new List<Tuple<TaskMetaInformation, Exception[]>>();
-            for (var i = 0; i < 100; i++)
+            for(var i = 0; i < 100; i++)
             {
                 var meta = TimeGuidMeta();
                 var exceptions = new List<Exception>();
-                for (var j = 0; j < 20; j++)
+                for(var j = 0; j < 20; j++)
                 {
                     var e = new Exception("Message-" + Guid.NewGuid().ToString("N"));
                     List<TimeGuid> ids;
@@ -163,7 +163,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var meta = TimeGuidMeta();
             var exceptions = new List<Exception>();
 
-            for (var i = 0; i < 300; i++)
+            for(var i = 0; i < 300; i++)
             {
                 var e = new Exception("Message-" + Guid.NewGuid().ToString("N"));
                 List<TimeGuid> ids;
@@ -244,7 +244,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var taskExceptionInfos = taskExceptionInfoStorage.Read(expected.Select(x => x.Item1).ToArray());
 
             Assert.That(taskExceptionInfos.Count, Is.EqualTo(expected.DistinctBy(x => x.Item1.Id).Count()));
-            foreach (var tuple in expected)
+            foreach(var tuple in expected)
             {
                 Assert.That(taskExceptionInfos[tuple.Item1.Id].Select(info => info.ExceptionMessageInfo).ToArray(),
                             Is.EqualTo(tuple.Item2.Select(exception => exception.ToString()).ToArray()));

@@ -24,7 +24,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             const int count = 10;
             var keys = new string[count];
-            for (var i = 0; i < count; i++)
+            for(var i = 0; i < count; i++)
                 keys[i] = AddTask(3);
             WaitForFinishedState(keys);
         }
@@ -34,7 +34,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             const int count = 10;
             var keys = new string[count];
-            for (var i = 0; i < count; i++)
+            for(var i = 0; i < count; i++)
                 keys[i] = AddTask(3, "Lock" + (i % 3));
             WaitForFinishedState(keys);
         }

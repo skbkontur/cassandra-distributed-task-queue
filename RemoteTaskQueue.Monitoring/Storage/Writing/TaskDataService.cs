@@ -23,15 +23,15 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         {
             var typeName = metaIndexedInfo.Name;
             var data = (Data)map[typeName];
-            if (data == null)
+            if(data == null)
             {
                 Type taskType;
-                if (!taskDataRegistry.TryGetTaskType(typeName, out taskType))
+                if(!taskDataRegistry.TryGetTaskType(typeName, out taskType))
                     return new TaskIndexedInfo<UnknownData>(metaIndexedInfo, exceptionInfo, null); //NOTE hack. Type can be unknown
 
-                lock (lockObject)
+                lock(lockObject)
                 {
-                    if ((data = (Data)map[typeName]) == null)
+                    if((data = (Data)map[typeName]) == null)
                     {
                         var constructorFunc = EmitHelpers.EmitDynamicMethod<ConstructorDelegate>(string.Format("EmitConstruction_{0}_{1}", typeName, Guid.NewGuid()), GetType().Module, il => EmitCode(il, taskType));
                         data = new Data(constructorFunc);

@@ -27,7 +27,7 @@ namespace RemoteQueue.Handling
         [Obsolete("For FakeRemoteTaskQueue impl only")]
         public void SetExceptionInfo([NotNull] TaskExceptionInfo taskExceptionInfo)
         {
-            ExceptionInfos = new[] {taskExceptionInfo};
+            ExceptionInfos = new[]{taskExceptionInfo};
         }
     }
 

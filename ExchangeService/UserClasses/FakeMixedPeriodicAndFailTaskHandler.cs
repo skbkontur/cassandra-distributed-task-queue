@@ -18,9 +18,9 @@ namespace ExchangeService.UserClasses
         protected override HandleResult HandleTask(FakeMixedPeriodicAndFailTaskData taskData)
         {
             var decrementCounter = testCounterRepository.DecrementCounter(Context.Id);
-            if (decrementCounter == 0)
+            if(decrementCounter == 0)
                 return Finish();
-            if (taskData.FailCounterValues != null && taskData.FailCounterValues.Contains(decrementCounter + 1))
+            if(taskData.FailCounterValues != null && taskData.FailCounterValues.Contains(decrementCounter + 1))
                 return RerunAfterError(new Exception("Exception-" + Guid.NewGuid()), taskData.RerunAfter);
             else
                 return Rerun(taskData.RerunAfter);
