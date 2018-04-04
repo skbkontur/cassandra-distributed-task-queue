@@ -41,7 +41,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
                         index = new
                             {
                                 _index = indexName,
-                                _type = meta.Name,
+                                _type = "doc_type_is_deprecated", // see https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
                                 _id = meta.Id
                             }
                     };
