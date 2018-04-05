@@ -24,7 +24,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         [NotNull]
         public BlobId Write([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData)
         {
-            if(!taskMeta.IsTimeBased())
+            if (!taskMeta.IsTimeBased())
                 throw new InvalidProgramStateException(string.Format("TaskId is not time-based: {0}", taskMeta.Id));
             var blobId = TimeBasedBlobStorage.GenerateNewBlobId(taskData.Length);
             var timestamp = blobId.Id.GetTimestamp().Ticks;
@@ -34,14 +34,14 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public void Delete([NotNull] TaskMetaInformation taskMeta)
         {
-            if(!taskMeta.IsTimeBased())
+            if (!taskMeta.IsTimeBased())
                 throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             timeBasedBlobStorage.Delete(taskMeta.GetTaskDataId(), timestamp : Timestamp.Now.Ticks);
         }
 
         public void Overwrite([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData)
         {
-            if(!taskMeta.IsTimeBased())
+            if (!taskMeta.IsTimeBased())
                 throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             timeBasedBlobStorage.Write(taskMeta.GetTaskDataId(), taskData, timestamp : Timestamp.Now.Ticks, ttl : taskMeta.GetTtl());
         }
@@ -49,7 +49,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         [CanBeNull]
         public byte[] Read([NotNull] TaskMetaInformation taskMeta)
         {
-            if(!taskMeta.IsTimeBased())
+            if (!taskMeta.IsTimeBased())
                 throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             return timeBasedBlobStorage.Read(taskMeta.GetTaskDataId());
         }
@@ -58,9 +58,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public Dictionary<string, byte[]> Read([NotNull] TaskMetaInformation[] taskMetas)
         {
             var blobIdToTaskIdMap = new Dictionary<BlobId, string>();
-            foreach(var taskMeta in taskMetas.DistinctBy(x => x.Id))
+            foreach (var taskMeta in taskMetas.DistinctBy(x => x.Id))
             {
-                if(!taskMeta.IsTimeBased())
+                if (!taskMeta.IsTimeBased())
                     throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
                 blobIdToTaskIdMap.Add(taskMeta.GetTaskDataId(), taskMeta.Id);
             }

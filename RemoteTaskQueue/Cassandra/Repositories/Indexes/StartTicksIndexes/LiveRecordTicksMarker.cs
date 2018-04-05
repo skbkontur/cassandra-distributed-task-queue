@@ -15,13 +15,13 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void TryMoveForward(long newTicks)
         {
-            if(!minimalNewTicks.HasValue || newTicks < minimalNewTicks.Value)
+            if (!minimalNewTicks.HasValue || newTicks < minimalNewTicks.Value)
                 minimalNewTicks = newTicks;
         }
 
         public void CommitChanges()
         {
-            if(minimalNewTicks.HasValue)
+            if (minimalNewTicks.HasValue)
                 ticksHolder.TryMoveForward(State.TaskIndexShardKey, State.CurrentTicks, minimalNewTicks.Value);
         }
 

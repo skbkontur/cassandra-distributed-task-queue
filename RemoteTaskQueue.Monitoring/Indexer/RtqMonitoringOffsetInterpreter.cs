@@ -29,11 +29,11 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         public int Compare([CanBeNull] string x, [CanBeNull] string y)
         {
-            if(x == null && y == null)
+            if (x == null && y == null)
                 return 0;
-            if(x == null)
+            if (x == null)
                 return -1;
-            if(y == null)
+            if (y == null)
                 return 1;
             return EventPointerFormatter.CompareColumnNames(x, y);
         }

@@ -16,7 +16,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 
         public long? GetOldestEventTime()
         {
-            if(map.Count <= 0)
+            if (map.Count <= 0)
                 return null;
             var min = map.Min(pair => pair.Value.Ticks);
             return min;
@@ -41,9 +41,9 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         public void AddEvent(TaskMetaUpdatedEvent e)
         {
             TaskMetaUpdatedEvent existingEvent;
-            if(map.TryGetValue(e.TaskId, out existingEvent))
+            if (map.TryGetValue(e.TaskId, out existingEvent))
             {
-                if(existingEvent.Ticks >= e.Ticks)
+                if (existingEvent.Ticks >= e.Ticks)
                     return;
             }
             map[e.TaskId] = e;
@@ -52,9 +52,9 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         public void RemoveEvent(TaskMetaUpdatedEvent e)
         {
             TaskMetaUpdatedEvent existingEvent;
-            if(map.TryGetValue(e.TaskId, out existingEvent))
+            if (map.TryGetValue(e.TaskId, out existingEvent))
             {
-                if(existingEvent.Ticks > e.Ticks)
+                if (existingEvent.Ticks > e.Ticks)
                     return;
             }
             map.Remove(e.TaskId);

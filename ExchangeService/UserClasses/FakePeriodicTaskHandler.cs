@@ -17,7 +17,7 @@ namespace ExchangeService.UserClasses
         protected override HandleResult HandleTask(FakePeriodicTaskData taskData)
         {
             var decrementCounter = testCounterRepository.DecrementCounter(Context.Id);
-            if(decrementCounter == 0)
+            if (decrementCounter == 0)
                 return Finish();
             return Rerun(TimeSpan.FromMilliseconds(100));
         }

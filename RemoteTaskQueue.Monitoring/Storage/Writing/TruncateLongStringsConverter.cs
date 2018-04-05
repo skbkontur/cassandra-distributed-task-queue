@@ -18,7 +18,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var str = value as string;
-            if(str == null || str.Length <= maxStringLength)
+            if (str == null || str.Length <= maxStringLength)
                 writer.WriteValue(str);
             else
                 writer.WriteValue(str.Substring(0, maxStringLength));

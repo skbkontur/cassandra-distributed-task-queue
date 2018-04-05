@@ -35,7 +35,7 @@ namespace RemoteQueue.Handling
         [NotNull]
         public virtual string Queue(TimeSpan delay)
         {
-            using(new RemoteTaskInitialTraceContext(task.Meta))
+            using (new RemoteTaskInitialTraceContext(task.Meta))
             {
                 Publish(delay);
                 return Id;
@@ -45,9 +45,9 @@ namespace RemoteQueue.Handling
         [NotNull]
         protected TaskIndexRecord Publish(TimeSpan delay)
         {
-            if(delay.Ticks < 0)
+            if (delay.Ticks < 0)
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
-            using(new PublishTaskTraceContext())
+            using (new PublishTaskTraceContext())
             {
                 task.Meta.MinimalStartTicks = (Timestamp.Now + delay).Ticks;
                 task.Meta.SetOrUpdateTtl(taskTtl);

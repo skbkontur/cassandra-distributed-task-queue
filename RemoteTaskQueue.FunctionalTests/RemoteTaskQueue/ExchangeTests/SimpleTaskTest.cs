@@ -43,7 +43,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             Enumerable.Range(0, 42).AsParallel().ForAll(x =>
                 {
                     var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue();
-                    lock(taskIds)
+                    lock (taskIds)
                         taskIds.Add(taskId);
                 });
             WaitForTasksToFinish(taskIds, TimeSpan.FromSeconds(10));
@@ -77,7 +77,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         {
             var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
             var remoteLockCreator = remoteTaskQueue.RemoteLockCreator;
-            using(remoteLockCreator.Lock(taskId))
+            using (remoteLockCreator.Lock(taskId))
                 Assert.That(remoteTaskQueue.TryCancelTask(taskId), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
         }
 
@@ -110,23 +110,23 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         public void TestRerun_LockAcquiringFails()
         {
             var taskId = remoteTaskQueue.CreateTask(new SimpleTaskData()).Queue(TimeSpan.FromSeconds(5));
-            using(remoteTaskQueue.RemoteLockCreator.Lock(taskId))
+            using (remoteTaskQueue.RemoteLockCreator.Lock(taskId))
                 Assert.That(remoteTaskQueue.TryRerunTask(taskId, TimeSpan.Zero), Is.EqualTo(TaskManipulationResult.Failure_LockAcquiringFails));
         }
 
         private void Wait(string[] taskIds, int criticalValue, int ms = 5000)
         {
             var current = 0;
-            while(true)
+            while (true)
             {
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
                 Log.For(this).Info(Now() + " CurrentValues: " + string.Join(", ", attempts));
                 var minValue = attempts.Min();
-                if(minValue >= criticalValue)
+                if (minValue >= criticalValue)
                     break;
                 Thread.Sleep(sleepInterval);
                 current += sleepInterval;
-                if(current > ms)
+                if (current > ms)
                     throw new TooLateException("Время ожидания превысило {0} мс.", ms);
             }
         }

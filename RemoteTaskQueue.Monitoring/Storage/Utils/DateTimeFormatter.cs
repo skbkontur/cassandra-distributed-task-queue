@@ -11,9 +11,9 @@ namespace RemoteTaskQueue.Monitoring.Storage.Utils
 
         private static long TicksToDateTimeRange(long ticks)
         {
-            if(ticks < minTicks)
+            if (ticks < minTicks)
                 ticks = minTicks;
-            if(ticks > maxTicks)
+            if (ticks > maxTicks)
                 ticks = maxTicks;
             return ticks;
         }

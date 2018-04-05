@@ -23,7 +23,7 @@ namespace RemoteTaskQueue.FunctionalTests
                                 },
                         },
                 });
-            foreach(var columnFamily in columnFamilies)
+            foreach (var columnFamily in columnFamilies)
                 cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamily.Name).Truncate();
         }
     }

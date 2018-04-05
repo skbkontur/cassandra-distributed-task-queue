@@ -43,31 +43,31 @@ namespace RemoteQueue.Handling
         {
             var toTicks = Timestamp.Now.Ticks;
             TaskIndexRecord[] taskIndexRecords;
-            using(metricsContext.Timer("GetIndexRecords").NewContext())
+            using (metricsContext.Timer("GetIndexRecords").NewContext())
                 taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(toTicks, allTaskIndexShardKeysToRead);
             Log.For(this).Info($"Number of live minimalStartTicksIndex records for topic '{taskTopic}': {taskIndexRecords.Length}");
-            foreach(var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
+            foreach (var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {
                 var taskIds = taskIndexRecordsBatch.Select(x => x.TaskId).ToArray();
                 Dictionary<string, TaskMetaInformation> taskMetas;
-                using(metricsContext.Timer("GetMetas").NewContext())
+                using (metricsContext.Timer("GetMetas").NewContext())
                     taskMetas = handleTasksMetaStorage.GetMetas(taskIds);
-                foreach(var taskIndexRecord in taskIndexRecordsBatch)
+                foreach (var taskIndexRecord in taskIndexRecordsBatch)
                 {
-                    if(taskMetas.TryGetValue(taskIndexRecord.TaskId, out var taskMeta) && taskMeta.Id != taskIndexRecord.TaskId)
+                    if (taskMetas.TryGetValue(taskIndexRecord.TaskId, out var taskMeta) && taskMeta.Id != taskIndexRecord.TaskId)
                         throw new InvalidProgramStateException($"taskIndexRecord.TaskId ({taskIndexRecord.TaskId}) != taskMeta.TaskId ({taskMeta.Id})");
-                    using(var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
+                    using (var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                     {
                         LocalTaskQueueingResult result;
-                        using(metricsContext.Timer("TryQueueTask").NewContext())
+                        using (metricsContext.Timer("TryQueueTask").NewContext())
                             result = localTaskQueue.TryQueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, taskTraceContext.TaskIsBeingTraced);
                         taskTraceContext.Finish(result.TaskIsSentToThreadPool, () => globalTime.GetNowTicks());
-                        if(result.QueueIsFull)
+                        if (result.QueueIsFull)
                         {
                             metricsContext.Meter("QueueIsFull").Mark();
                             return;
                         }
-                        if(result.QueueIsStopped)
+                        if (result.QueueIsStopped)
                         {
                             metricsContext.Meter("QueueIsStopped").Mark();
                             return;

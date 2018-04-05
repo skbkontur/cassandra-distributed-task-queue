@@ -31,15 +31,15 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public bool MoveNext()
         {
-            while(true)
+            while (true)
             {
-                if(eventEnumerator.MoveNext())
+                if (eventEnumerator.MoveNext())
                     return true;
-                if(iCur >= iTo)
+                if (iCur >= iTo)
                     return false;
                 iCur++;
                 string startColumnName = null;
-                if(iCur == iFrom)
+                if (iCur == iFrom)
                     startColumnName = EventPointerFormatter.GetColumnName(fromTicks, GuidHelpers.MinGuid);
                 var partitionKey = EventPointerFormatter.GetPartitionKey(iCur * EventPointerFormatter.PartitionDurationTicks);
                 eventEnumerator = connection.GetRow(partitionKey, startColumnName, batchSize).GetEnumerator();

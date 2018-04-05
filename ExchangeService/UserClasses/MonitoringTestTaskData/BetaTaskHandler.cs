@@ -20,7 +20,7 @@ namespace ExchangeService.UserClasses.MonitoringTestTaskData
 
         protected override HandleResult HandleTask(BetaTaskData taskData)
         {
-            while(taskData.IsProcess)
+            while (taskData.IsProcess)
             {
                 Thread.Sleep(TimeSpan.FromMilliseconds(50));
                 var taskDataBytes = taskDataStorage.Read(Context);

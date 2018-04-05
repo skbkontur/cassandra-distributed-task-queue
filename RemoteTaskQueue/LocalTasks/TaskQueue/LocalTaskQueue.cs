@@ -35,18 +35,18 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public void Start()
         {
-            lock(lockObject)
+            lock (lockObject)
                 stopped = false;
         }
 
         public void StopAndWait(TimeSpan timeout)
         {
-            if(stopped)
+            if (stopped)
                 return;
             Task[] tasks;
-            lock(lockObject)
+            lock (lockObject)
             {
-                if(stopped)
+                if (stopped)
                     return;
                 stopped = true;
                 tasks = hashtable.Values.Cast<Task>().ToArray();
@@ -58,7 +58,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         [NotNull]
         public LocalTaskQueueingResult TryQueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, bool taskIsBeingTraced)
         {
-            using(var infrastructureTraceContext = new InfrastructureTaskTraceContext(taskIsBeingTraced))
+            using (var infrastructureTraceContext = new InfrastructureTaskTraceContext(taskIsBeingTraced))
             {
                 var result = DoTryQueueTask(taskIndexRecord, taskMeta, taskQueueReason, taskIsBeingTraced);
                 infrastructureTraceContext.Finish(result.TaskIsSentToThreadPool);
@@ -70,36 +70,36 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         private LocalTaskQueueingResult DoTryQueueTask([NotNull] TaskIndexRecord taskIndexRecord, [CanBeNull] TaskMetaInformation taskMeta, TaskQueueReason taskQueueReason, bool taskIsBeingTraced)
         {
             var taskIsSentToThreadPool = false;
-            if(taskMeta != null && !taskHandlerRegistry.ContainsHandlerFor(taskMeta.Name))
+            if (taskMeta != null && !taskHandlerRegistry.ContainsHandlerFor(taskMeta.Name))
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
-            if(taskMeta == null && taskIndexRecord.MinimalStartTicks > (Timestamp.Now - HandlerTask.MaxAllowedIndexInconsistencyDuration).Ticks)
+            if (taskMeta == null && taskIndexRecord.MinimalStartTicks > (Timestamp.Now - HandlerTask.MaxAllowedIndexInconsistencyDuration).Ticks)
             {
                 logger.Debug($"Мета для задачи TaskId = {taskIndexRecord.TaskId} еще не записана, ждем {HandlerTask.MaxAllowedIndexInconsistencyDuration}");
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             }
-            if(!taskCounter.TryIncrement(taskQueueReason))
+            if (!taskCounter.TryIncrement(taskQueueReason))
                 return LocalTaskQueueingResult.QueueIsFullResult;
             try
             {
                 var handlerTask = new HandlerTask(taskIndexRecord, taskQueueReason, taskMeta, taskHandlerRegistry, remoteTaskQueueInternals);
-                lock(lockObject)
+                lock (lockObject)
                 {
-                    if(stopped)
+                    if (stopped)
                         return LocalTaskQueueingResult.QueueIsStoppedResult;
-                    if(hashtable.ContainsKey(taskIndexRecord.TaskId))
+                    if (hashtable.ContainsKey(taskIndexRecord.TaskId))
                         return LocalTaskQueueingResult.TaskIsSkippedResult;
                     var groboTraceKey = taskMeta?.Name ?? "TaskMetaIsNotAvailable";
                     var taskWrapper = new TaskWrapper(taskIndexRecord.TaskId, groboTraceKey, taskQueueReason, taskIsBeingTraced, handlerTask, this);
                     var asyncTask = Task.Factory.StartNew(taskWrapper.Run);
                     taskIsSentToThreadPool = true;
                     metricsContext.Meter("TaskIsSentToThreadPool").Mark();
-                    if(!taskWrapper.Finished)
+                    if (!taskWrapper.Finished)
                         hashtable.Add(taskIndexRecord.TaskId, asyncTask);
                 }
             }
             finally
             {
-                if(!taskIsSentToThreadPool)
+                if (!taskIsSentToThreadPool)
                     taskCounter.Decrement(taskQueueReason);
             }
             return LocalTaskQueueingResult.SuccessResult;
@@ -107,11 +107,11 @@ namespace RemoteQueue.LocalTasks.TaskQueue
 
         public void TaskFinished([NotNull] string taskId, TaskQueueReason taskQueueReason, bool taskIsBeingTraced, LocalTaskProcessingResult result)
         {
-            lock(lockObject)
+            lock (lockObject)
                 hashtable.Remove(taskId);
             taskCounter.Decrement(taskQueueReason);
             metricsContext.Meter("TaskIsFinished").Mark();
-            if(taskIsBeingTraced)
+            if (taskIsBeingTraced)
             {
                 InfrastructureTaskTraceContext.Finish();
                 RemoteTaskHandlingTraceContext.Finish(result, remoteTaskQueueInternals.GlobalTime.GetNowTicks());

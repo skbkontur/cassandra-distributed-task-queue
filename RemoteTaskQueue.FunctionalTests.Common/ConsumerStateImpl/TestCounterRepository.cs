@@ -24,13 +24,13 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 
         public int GetCounter(string taskId)
         {
-            using(Lock(taskId))
+            using (Lock(taskId))
                 return GetCounterInternal(taskId);
         }
 
         public int IncrementCounter(string taskId)
         {
-            using(Lock(taskId))
+            using (Lock(taskId))
             {
                 var cnt = GetCounterInternal(taskId);
                 SetCounterInternal(taskId, cnt + 1);
@@ -40,7 +40,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 
         public int DecrementCounter(string taskId)
         {
-            using(Lock(taskId))
+            using (Lock(taskId))
             {
                 var cnt = GetCounterInternal(taskId);
                 SetCounterInternal(taskId, cnt - 1);
@@ -50,14 +50,14 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 
         public void SetValueForCounter(string taskId, int value)
         {
-            using(Lock(taskId))
+            using (Lock(taskId))
                 SetCounterInternal(taskId, value);
         }
 
         private int GetCounterInternal(string taskId)
         {
             Column column;
-            if(cfConnection.TryGetColumn(taskId, dataColumnName, out column))
+            if (cfConnection.TryGetColumn(taskId, dataColumnName, out column))
                 return serializer.Deserialize<int>(column.Value);
             return 0;
         }

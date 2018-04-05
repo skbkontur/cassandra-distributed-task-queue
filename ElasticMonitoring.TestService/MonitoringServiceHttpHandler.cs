@@ -54,7 +54,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
         private void StopFeeding()
         {
-            if(feedsRunner != null)
+            if (feedsRunner != null)
             {
                 feedsRunner.Stop();
                 feedsRunner = null;

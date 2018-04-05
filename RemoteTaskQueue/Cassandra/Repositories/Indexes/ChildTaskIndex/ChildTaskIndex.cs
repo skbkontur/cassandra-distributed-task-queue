@@ -25,7 +25,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
 
         public void WriteIndexRecord([NotNull] TaskMetaInformation taskMeta, long timestamp)
         {
-            if(string.IsNullOrEmpty(taskMeta.ParentTaskId))
+            if (string.IsNullOrEmpty(taskMeta.ParentTaskId))
                 return;
             var ttl = taskMeta.GetTtl();
             cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName).AddColumn(taskMeta.ParentTaskId, new Column

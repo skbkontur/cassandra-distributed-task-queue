@@ -38,22 +38,22 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         public EventsProcessingResult<string> ProcessEvents([NotNull] EventsQueryResult<TaskMetaUpdatedEvent, string> eventsQueryResult)
         {
             string offsetToCommit = null;
-            foreach(var @event in eventsQueryResult.Events)
+            foreach (var @event in eventsQueryResult.Events)
             {
-                if(taskIdsToProcess.Add(@event.Event.TaskId))
+                if (taskIdsToProcess.Add(@event.Event.TaskId))
                     taskIdsToProcessInChronologicalOrder.Add(@event.Event.TaskId);
                 var eventTimestamp = new Timestamp(@event.Event.Ticks);
-                if(lastNotProcessedEventsBatchStartTimestamp == null)
+                if (lastNotProcessedEventsBatchStartTimestamp == null)
                     lastNotProcessedEventsBatchStartTimestamp = eventTimestamp;
-                if(eventTimestamp - lastNotProcessedEventsBatchStartTimestamp > settings.MaxEventsProcessingTimeWindow || taskIdsToProcessInChronologicalOrder.Count > settings.MaxEventsProcessingTasksCount)
+                if (eventTimestamp - lastNotProcessedEventsBatchStartTimestamp > settings.MaxEventsProcessingTimeWindow || taskIdsToProcessInChronologicalOrder.Count > settings.MaxEventsProcessingTasksCount)
                 {
                     IndexTasks();
                     offsetToCommit = @event.Offset;
                 }
             }
-            if(eventsQueryResult.NoMoreEventsInSource)
+            if (eventsQueryResult.NoMoreEventsInSource)
             {
-                if(taskIdsToProcessInChronologicalOrder.Any())
+                if (taskIdsToProcessInChronologicalOrder.Any())
                     IndexTasks();
                 offsetToCommit = eventsQueryResult.LastOffset;
             }

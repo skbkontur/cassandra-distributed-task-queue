@@ -66,7 +66,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         public IEnumerable<TaskIndexRecord> GetRecords([NotNull] TaskIndexShardKey taskIndexShardKey, long toTicks, int batchSize)
         {
             var fromTicks = TryGetFromTicks(taskIndexShardKey, out var liveRecordTicksMarker);
-            if(!fromTicks.HasValue)
+            if (!fromTicks.HasValue)
                 return new TaskIndexRecord[0];
             return new GetEventsEnumerable(liveRecordTicksMarker, serializer, RetrieveColumnFamilyConnection(), fromTicks.Value, toTicks, batchSize);
         }
@@ -74,12 +74,12 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private long? TryGetFromTicks([NotNull] TaskIndexShardKey taskIndexShardKey, out ILiveRecordTicksMarker liveRecordTicksMarker)
         {
             liveRecordTicksMarker = oldestLiveRecordTicksHolder.TryGetCurrentMarkerValue(taskIndexShardKey);
-            if(liveRecordTicksMarker == null)
+            if (liveRecordTicksMarker == null)
                 return null;
             var overlapDuration = GetOverlapDuration(taskIndexShardKey);
             var fromTicks = liveRecordTicksMarker.State.CurrentTicks - overlapDuration.Ticks;
             var safetyBelt = (Timestamp.Now - TimeSpan.FromHours(6)).Ticks;
-            if(fromTicks < safetyBelt)
+            if (fromTicks < safetyBelt)
             {
                 Log.For(this).WarnFormat("fromTicks ({0}) < safetyBelt ({1})", new Timestamp(fromTicks), new Timestamp(safetyBelt));
                 return safetyBelt;
@@ -89,10 +89,10 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         private TimeSpan GetOverlapDuration([NotNull] TaskIndexShardKey taskIndexShardKey)
         {
-            lock(locker)
+            lock (locker)
             {
                 var now = Timestamp.Now;
-                if(!lastBigOverlapMomentsByShardKey.TryGetValue(taskIndexShardKey, out var lastBigOverlapMoment) || now - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
+                if (!lastBigOverlapMomentsByShardKey.TryGetValue(taskIndexShardKey, out var lastBigOverlapMoment) || now - lastBigOverlapMoment > TimeSpan.FromMinutes(1))
                 {
                     lastBigOverlapMomentsByShardKey[taskIndexShardKey] = now;
                     //Сложно рассчитать математически правильный размер отката, и код постановки таски может измениться,

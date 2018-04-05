@@ -12,7 +12,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if(value is string)
+            if (value is string)
                 writer.WriteValue(value as string);
             else
                 serializer.Serialize(writer, value);
