@@ -186,8 +186,8 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             CheckSearch("NOT _exists_:Meta.ParentTaskId", t0, t1, taskId0, taskId1);
             CheckSearch("NOT _exists_:Meta.Name", t0, t1);
 
-            CheckSearch("Data.TimeMs:0", t0, t1, taskId0);
-            CheckSearch("Data.UseCounter:false", t0, t1, taskId0);
+            CheckSearch("Data.SlowTaskData.TimeMs:0", t0, t1, taskId0);
+            CheckSearch("Data.SlowTaskData.UseCounter:false", t0, t1, taskId0);
         }
 
         [Test]
@@ -203,18 +203,103 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             WaitForTasks(new[] {taskId1}, TimeSpan.FromSeconds(5));
             monitoringServiceClient.ExecuteForcedFeeding();
 
-            var taskId2 = QueueTask(new DeltaTaskData {FieldWithCommonName = new []{47}});
+            var taskId2 = QueueTask(new DeltaTaskData {FieldWithCommonName = new[] {47}});
             WaitForTasks(new[] {taskId2}, TimeSpan.FromSeconds(5));
             monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
 
             CheckSearch("*", t0, t1, taskId0, taskId1, taskId2);
-            CheckSearch($"Data.FieldWithCommonName:42", t0, t1, taskId0);
-            CheckSearch($"Data.FieldWithCommonName:\"abc xyz\"", t0, t1, taskId1);
-            CheckSearch($"Data.FieldWithCommonName:47", t0, t1, taskId2);
+            CheckSearch($"Data.AlphaTaskData.FieldWithCommonName:42", t0, t1, taskId0);
+            CheckSearch($"Data.GammaTaskData.FieldWithCommonName:\"abc xyz\"", t0, t1, taskId1);
+            CheckSearch($"Data.DeltaTaskData.FieldWithCommonName:47", t0, t1, taskId2);
             CheckSearch($"abc", t0, t1, taskId1);
             CheckSearch($"xyz", t0, t1, taskId1);
+        }
+
+        [Test]
+        public void TestFieldsWithAbstractTypesAreIgnored()
+        {
+            var t0 = Timestamp.Now;
+
+            var taskId0 = QueueTask(new AlphaTaskData
+                {
+                    NonIndexableField = new StructuredTaskDataDetails
+                        {
+                            Info = new StructuredTaskDataDetails.DetailsInfo
+                                {
+                                    SomeInfo = "abc"
+                                }
+                        }
+                });
+            WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var taskId1 = QueueTask(new AlphaTaskData
+                {
+                    NonIndexableField = new PlainTaskDataDetails
+                        {
+                            Info = "def"
+                        }
+                });
+            WaitForTasks(new[] {taskId1}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var taskId2 = QueueTask(new GammaTaskData
+                {
+                    NonIndexableField = new StructuredTaskDataDetails
+                        {
+                            Info = new StructuredTaskDataDetails.DetailsInfo
+                                {
+                                    SomeInfo = "ghi"
+                                }
+                        }
+                });
+            WaitForTasks(new[] {taskId2}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var taskId3 = QueueTask(new GammaTaskData
+                {
+                    NonIndexableField = new PlainTaskDataDetails
+                        {
+                            Info = "jkl"
+                        }
+                });
+            WaitForTasks(new[] {taskId3}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var taskId4 = QueueTask(new DeltaTaskData
+                {
+                    NonIndexableField = new StructuredTaskDataDetails
+                        {
+                            Info = new StructuredTaskDataDetails.DetailsInfo
+                                {
+                                    SomeInfo = "mno"
+                                }
+                        }
+                });
+            WaitForTasks(new[] {taskId4}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var taskId5 = QueueTask(new DeltaTaskData
+                {
+                    NonIndexableField = new PlainTaskDataDetails
+                        {
+                            Info = "pqr"
+                        }
+                });
+            WaitForTasks(new[] {taskId5}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var t1 = Timestamp.Now;
+
+            CheckSearch("*", t0, t1, taskId0, taskId1, taskId2, taskId3, taskId4, taskId5);
+            CheckSearch($"abc", t0, t1);
+            CheckSearch($"def", t0, t1);
+            CheckSearch($"ghi", t0, t1);
+            CheckSearch($"jkl", t0, t1);
+            CheckSearch($"mno", t0, t1);
+            CheckSearch($"pqr", t0, t1);
         }
 
         [Test]
@@ -222,19 +307,20 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         {
             var t0 = Timestamp.Now;
             var chainId = Guid.NewGuid();
-            var taskId0 = QueueTask(new AlphaTaskData{ChainId = chainId});
-            var taskId1 = QueueTask(new GammaTaskData{ChainId = chainId});
-            var taskId2 = QueueTask(new DeltaTaskData{ChainId = Guid.NewGuid()});
-            var taskId3 = QueueTask(new DeltaTaskData{ChainId = chainId});
-            var taskId4 = QueueTask(new AlphaTaskData{ChainId = Guid.NewGuid()});
-            var taskId5 = QueueTask(new GammaTaskData{ChainId = Guid.NewGuid()});
+            var taskId0 = QueueTask(new AlphaTaskData {ChainId = chainId});
+            var taskId1 = QueueTask(new GammaTaskData {ChainId = chainId});
+            var taskId2 = QueueTask(new DeltaTaskData {ChainId = Guid.NewGuid()});
+            var taskId3 = QueueTask(new DeltaTaskData {ChainId = chainId});
+            var taskId4 = QueueTask(new AlphaTaskData {ChainId = Guid.NewGuid()});
+            var taskId5 = QueueTask(new GammaTaskData {ChainId = Guid.NewGuid()});
             WaitForTasks(new[] {taskId0, taskId1, taskId2, taskId3, taskId4, taskId5}, TimeSpan.FromSeconds(5));
             monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
             CheckSearch("*", t0, t1, taskId0, taskId1, taskId2, taskId3, taskId4, taskId5);
             CheckSearch($"\"{chainId}\"", t0, t1, taskId0, taskId1, taskId3);
-            CheckSearch($"Data.ChainId:{chainId}", t0, t1, taskId0, taskId1, taskId3);
+            CheckSearch($"Data.AlphaTaskData.ChainId:\"{chainId}\" OR Data.GammaTaskData.ChainId:\"{chainId}\" OR Data.DeltaTaskData.ChainId:\"{chainId}\"", t0, t1, taskId0, taskId1, taskId3);
+            CheckSearch($"Data.\\*.ChainId:\"{chainId}\"", t0, t1, taskId0, taskId1, taskId3);
         }
 
         [Test]

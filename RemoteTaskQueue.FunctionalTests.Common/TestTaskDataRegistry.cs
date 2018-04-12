@@ -16,9 +16,6 @@ namespace RemoteTaskQueue.FunctionalTests.Common
             Register<FakePeriodicTaskData>();
             Register<FakeMixedPeriodicAndFailTaskData>();
             Register<SimpleTaskData>();
-            Register<ByteArrayTaskData>();
-            Register<ByteArrayAndNestedTaskData>();
-            Register<FileIdTaskData>();
 
             Register<SlowTaskData>();
             Register<AlphaTaskData>();

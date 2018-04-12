@@ -15,5 +15,6 @@ namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskDat
 
         public Guid ChainId { get; set; }
         public string FieldWithCommonName { get; set; }
+        public ITaskDataDetails NonIndexableField { get; set; }
     }
 }

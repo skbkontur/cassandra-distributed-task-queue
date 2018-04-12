@@ -123,15 +123,10 @@
     <Compile Include="Storage\Search\SearchIndexNameFactory.cs" />
     <Compile Include="Storage\Utils\DateTimeFormatter.cs" />
     <Compile Include="Storage\Utils\NamedLoggerExtension.cs" />
-    <Compile Include="Storage\Writing\Contracts\LastUpdateTicks.cs" />
-    <Compile Include="Storage\Writing\Contracts\MetaIndexedInfo.cs" />
-    <Compile Include="Storage\Writing\Contracts\TaskIndexedInfo.cs" />
-    <Compile Include="Storage\Writing\OmitNonIndexablePropertiesContractResolver.cs" />
+    <Compile Include="Storage\Writing\MetaIndexedInfo.cs" />
+    <Compile Include="Storage\Writing\TaskIndexedInfo.cs" />
+    <Compile Include="Storage\Writing\OmitBinaryAndAbstractPropertiesContractResolver.cs" />
     <Compile Include="Storage\Writing\RtqElasticsearchOffsetStorage.cs" />
-    <Compile Include="Storage\Writing\StringConverter.cs" />
-    <Compile Include="Storage\Writing\TaskDataService.cs" />
-    <Compile Include="Storage\Writing\TaskWriter.cs" />
-    <Compile Include="Storage\Writing\TaskWriterJsonSettings.cs" />
     <Compile Include="Storage\Writing\TruncateLongStringsConverter.cs" />
     <Compile Include="Storage\Writing\TruncateLongStringsConverter2K.cs" />
   </ItemGroup>

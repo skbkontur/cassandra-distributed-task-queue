@@ -98,6 +98,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                                                     type = "object"
                                                 },
                                             DataAsText = TextType(),
+                                            ExceptionInfo = TextType(),
                                             Meta = new
                                                 {
                                                     properties = new
@@ -113,7 +114,6 @@ namespace RemoteTaskQueue.Monitoring.Storage
                                                             StartExecutingTime = DateType(),
                                                             FinishExecutingTime = DateType(),
                                                             LastModificationTime = DateType(),
-                                                            Exception = TextType(),
                                                             ExpirationTime = DateType()
                                                         }
                                                 }

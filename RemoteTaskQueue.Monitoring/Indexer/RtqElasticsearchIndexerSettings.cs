@@ -2,6 +2,10 @@
 
 using JetBrains.Annotations;
 
+using Newtonsoft.Json;
+
+using RemoteTaskQueue.Monitoring.Storage.Writing;
+
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
@@ -18,17 +22,23 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         }
 
         [NotNull]
-        public Timestamp InitialIndexingStartTimestamp { get; private set; }
+        public Timestamp InitialIndexingStartTimestamp { get; }
 
         public TimeSpan MaxEventsProcessingTimeWindow { get; set; }
         public int MaxEventsProcessingTasksCount { get; set; }
         public int TaskIdsProcessingBatchSize { get; set; }
         public int IndexingThreadsCount { get; set; }
 
+        [NotNull]
+        public JsonSerializerSettings JsonSerializerSettings => new JsonSerializerSettings
+            {
+                ContractResolver = new OmitBinaryAndAbstractPropertiesContractResolver(),
+                Converters = new JsonConverter[] {new TruncateLongStringsConverter(500)},
+            };
+
         public override string ToString()
         {
-            return string.Format("InitialIndexingStartTimestamp: {0}, MaxEventsProcessingTimeWindow: {1}, MaxEventsProcessingTasksCount: {2}, TaskIdsProcessingBatchSize: {3}, IndexingThreadsCount: {4}",
-                                 InitialIndexingStartTimestamp, MaxEventsProcessingTimeWindow, MaxEventsProcessingTasksCount, TaskIdsProcessingBatchSize, IndexingThreadsCount);
+            return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, IndexingThreadsCount: {IndexingThreadsCount}";
         }
     }
 }

@@ -63,13 +63,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\ExchangeSchedulableRunnerSettings.cs" />
     <Compile Include="TaskHandlerRegistry.cs" />
-    <Compile Include="UserClasses\ByteArrayAndNestedTaskHandler.cs" />
-    <Compile Include="UserClasses\ByteArrayTaskDataHandler.cs" />
     <Compile Include="UserClasses\ChainTaskHandler.cs" />
     <Compile Include="UserClasses\FakeFailTaskHandler.cs" />
     <Compile Include="UserClasses\FakeMixedPeriodicAndFailTaskHandler.cs" />
     <Compile Include="UserClasses\FakePeriodicTaskHandler.cs" />
-    <Compile Include="UserClasses\FileIdTaskDataHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\AlphaTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\BetaTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\FailingTaskHandler.cs" />

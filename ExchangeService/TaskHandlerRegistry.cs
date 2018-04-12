@@ -18,14 +18,11 @@ namespace ExchangeService
             Register<FakePeriodicTaskHandler>();
             Register<FakeMixedPeriodicAndFailTaskHandler>();
             Register<SimpleTaskHandler>();
-            Register<ByteArrayTaskDataHandler>();
-            Register<FileIdTaskDataHandler>();
             Register<AlphaTaskHandler>();
             Register<BetaTaskHandler>();
             Register<GammaTaskHandler>();
             Register<DeltaTaskHandler>();
             Register<SlowTaskHandler>();
-            Register<ByteArrayAndNestedTaskHandler>();
             Register<ChainTaskHandler>();
             Register<FailingTaskHandler>();
         }

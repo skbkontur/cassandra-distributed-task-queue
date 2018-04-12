@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 
 using Newtonsoft.Json;
@@ -6,7 +6,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Writing
 {
-    internal class OmitNonIndexablePropertiesContractResolver : DefaultContractResolver
+    public class OmitBinaryAndAbstractPropertiesContractResolver : DefaultContractResolver
     {
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
@@ -16,18 +16,23 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
                 if (propertyInfo.PropertyType.IsArray)
                 {
                     var elementType = propertyInfo.PropertyType.GetElementType();
-                    if (IsBadType(elementType))
+                    if (IsBinaryType(elementType) || IsAbstractType(elementType))
                         return null;
                 }
-                if (IsBadType(propertyInfo.PropertyType))
+                if (IsBinaryType(propertyInfo.PropertyType) || IsAbstractType(propertyInfo.PropertyType))
                     return null;
             }
             return base.CreateProperty(member, memberSerialization);
         }
 
-        private static bool IsBadType(Type elementType)
+        private static bool IsBinaryType(Type elementType)
         {
-            return elementType.IsAbstract || elementType.IsInterface || elementType == typeof(object) || elementType == typeof(byte[]);
+            return elementType == typeof(byte[]);
+        }
+
+        private static bool IsAbstractType(Type elementType)
+        {
+            return elementType.IsAbstract || elementType == typeof(object);
         }
     }
 }

@@ -72,24 +72,21 @@
     <Compile Include="ConsumerStateImpl\TestCounterRepository.cs" />
     <Compile Include="ConsumerStateImpl\TestTaskLogger.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\GammaTaskData.cs" />
+    <Compile Include="TaskDatas\MonitoringTestTaskData\ITaskDataDetails.cs" />
     <Compile Include="TestRemoteTaskQueueContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestRemoteTaskQueueSettings.cs" />
     <Compile Include="TestTaskDataRegistry.cs" />
-    <Compile Include="TaskDatas\ByteArrayAndNestedTaskData.cs" />
-    <Compile Include="TaskDatas\ByteArrayTaskData.cs" />
     <Compile Include="TaskDatas\ChainTaskData.cs" />
     <Compile Include="TaskDatas\FakeFailTaskData.cs" />
     <Compile Include="TaskDatas\FakeMixedPeriodicAndFailTaskData.cs" />
     <Compile Include="TaskDatas\FakePeriodicTaskData.cs" />
-    <Compile Include="TaskDatas\FileIdTaskData.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\AlphaTaskData.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\BetaTaskData.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\DeltaTaskData.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\FailingTaskData.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\ITaskDataWithTopic.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\SlowTaskData.cs" />
-    <Compile Include="TaskDatas\NestedClass.cs" />
     <Compile Include="TaskDatas\SimpleTaskData.cs" />
     <Compile Include="WithTestRemoteTaskQueue.cs" />
   </ItemGroup>

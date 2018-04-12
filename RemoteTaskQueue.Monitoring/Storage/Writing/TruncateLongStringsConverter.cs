@@ -6,14 +6,14 @@ using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Writing
 {
-    internal class TruncateLongStringsConverter : JsonConverter
+    public class TruncateLongStringsConverter : JsonConverter
     {
         public TruncateLongStringsConverter(int maxStringLength)
         {
             this.maxStringLength = maxStringLength;
         }
 
-        public override bool CanRead { get { return false; } }
+        public override bool CanRead => false;
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
