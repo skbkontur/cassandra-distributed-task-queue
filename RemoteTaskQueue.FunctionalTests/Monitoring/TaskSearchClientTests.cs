@@ -48,8 +48,8 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             monitoringServiceClient.ExecuteForcedFeeding();
 
-            CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId), t0, t1, taskId);
-            CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId2), t0, t1, taskId2);
+            CheckSearch($"Meta.Id:\"{taskId}\"", t0, t1, taskId);
+            CheckSearch($"Meta.Id:\"{taskId2}\"", t0, t1, taskId2);
         }
 
         [Test]
@@ -64,9 +64,9 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             var t1 = Timestamp.Now;
             CheckSearch("*", t0, t1, taskId);
-            CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
-            CheckSearch(string.Format("Meta.Id:\"{0}\"", taskId), t0, t1, taskId);
-            CheckSearch(string.Format("Meta.Name:{0}", typeof(SlowTaskData).Name), t0, t1, taskId);
+            CheckSearch($"\"{taskId}\"", t0, t1, taskId);
+            CheckSearch($"Meta.Id:\"{taskId}\"", t0, t1, taskId);
+            CheckSearch($"Meta.Name:{typeof(SlowTaskData).Name}", t0, t1, taskId);
             CheckSearch("Meta.Name:Zzz", t0, t1);
         }
 
@@ -83,10 +83,10 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
-            CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
-            CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
-            CheckSearch(string.Format("ExceptionInfo:\"{0}\"", uniqueData), t0, t1, taskId);
-            CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1);
+            CheckSearch($"\"{taskId}\"", t0, t1, taskId);
+            CheckSearch($"\"{uniqueData}\"", t0, t1, taskId);
+            CheckSearch($"ExceptionInfo:\"{uniqueData}\"", t0, t1, taskId);
+            CheckSearch($"\"{Guid.NewGuid()}\"", t0, t1);
         }
 
         [Test]
@@ -102,7 +102,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t1 = Timestamp.Now;
             var ttl = TestRemoteTaskQueueSettings.StandardTestTaskTtl;
             Log.For(this).Info(ToIsoTime(new Timestamp(remoteTaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.ExpirationTimestampTicks.Value)));
-            CheckSearch(string.Format("Meta.ExpirationTime: [\"{0}\" TO \"{1}\"]", ToIsoTime(t0 + ttl), ToIsoTime(t1 + ttl + TimeSpan.FromSeconds(10))), t0, t1, taskId);
+            CheckSearch($"Meta.ExpirationTime: [\"{ToIsoTime(t0 + ttl)}\" TO \"{ToIsoTime(t1 + ttl + TimeSpan.FromSeconds(10))}\"]", t0, t1, taskId);
         }
 
         private static string ToIsoTime(Timestamp timestamp)
@@ -124,12 +124,12 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
-            CheckSearch(string.Format("\"{0}\"", taskId), t0, t1, taskId);
-            CheckSearch(string.Format("\"{0}\"", uniqueData), t0, t1, taskId);
-            CheckSearch(string.Format("\"{0}\"", Guid.NewGuid()), t0, t1);
+            CheckSearch($"\"{taskId}\"", t0, t1, taskId);
+            CheckSearch($"\"{uniqueData}\"", t0, t1, taskId);
+            CheckSearch($"\"{Guid.NewGuid()}\"", t0, t1);
 
             for (var attempts = 1; attempts <= 3; attempts++)
-                CheckSearch(string.Format("\"FailingTask failed: {0}. Attempts = {1}\"", failingTaskData, attempts), t0, t1, taskId);
+                CheckSearch($"\"FailingTask failed: {failingTaskData}. Attempts = {attempts}\"", t0, t1, taskId);
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 var taskId0 = QueueTask(new SlowTaskData());
                 WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
                 monitoringServiceClient.ExecuteForcedFeeding();
-                CheckSearch(string.Format("\"{0}\"", taskId0), t0, Timestamp.Now, taskId0);
+                CheckSearch($"\"{taskId0}\"", t0, Timestamp.Now, taskId0);
             }
         }
 
@@ -156,10 +156,9 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 var taskId0 = QueueTask(new SlowTaskData());
                 var taskId1 = QueueTask(new SlowTaskData());
                 var taskId2 = QueueTask(new SlowTaskData());
-                //Console.WriteLine("ids: {0} {1} {2}", taskId0, taskId1, taskId2);
                 WaitForTasks(new[] {taskId0, taskId1, taskId2}, TimeSpan.FromSeconds(5));
                 monitoringServiceClient.ExecuteForcedFeeding();
-                CheckSearch(string.Format("\"{0}\"", taskId0), t0, Timestamp.Now, taskId0);
+                CheckSearch($"\"{taskId0}\"", t0, Timestamp.Now, taskId0);
             }
         }
 
@@ -181,7 +180,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             CheckSearch("*", t0, t2, taskId0, taskId1);
 
-            CheckSearch(string.Format("Meta.Id:\"{0}\" OR Meta.Id:\"{1}\"", taskId0, taskId1), t0, t1, taskId0, taskId1);
+            CheckSearch($"Meta.Id:\"{taskId0}\" OR Meta.Id:\"{taskId1}\"", t0, t1, taskId0, taskId1);
             CheckSearch("Meta.State:Finished", t0, t1, taskId0, taskId1);
 
             CheckSearch("NOT _exists_:Meta.ParentTaskId", t0, t1, taskId0, taskId1);
@@ -189,6 +188,53 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             CheckSearch("Data.TimeMs:0", t0, t1, taskId0);
             CheckSearch("Data.UseCounter:false", t0, t1, taskId0);
+        }
+
+        [Test]
+        public void TestTaskDatasWithCommonFieldName()
+        {
+            var t0 = Timestamp.Now;
+
+            var taskId0 = QueueTask(new AlphaTaskData {FieldWithCommonName = 42});
+            WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var taskId1 = QueueTask(new GammaTaskData {FieldWithCommonName = "abc xyz"});
+            WaitForTasks(new[] {taskId1}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var taskId2 = QueueTask(new DeltaTaskData {FieldWithCommonName = new []{47}});
+            WaitForTasks(new[] {taskId2}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var t1 = Timestamp.Now;
+
+            CheckSearch("*", t0, t1, taskId0, taskId1, taskId2);
+            CheckSearch($"Data.FieldWithCommonName:42", t0, t1, taskId0);
+            CheckSearch($"Data.FieldWithCommonName:\"abc xyz\"", t0, t1, taskId1);
+            CheckSearch($"Data.FieldWithCommonName:47", t0, t1, taskId2);
+            CheckSearch($"abc", t0, t1, taskId1);
+            CheckSearch($"xyz", t0, t1, taskId1);
+        }
+
+        [Test]
+        public void TestTaskChain()
+        {
+            var t0 = Timestamp.Now;
+            var chainId = Guid.NewGuid();
+            var taskId0 = QueueTask(new AlphaTaskData{ChainId = chainId});
+            var taskId1 = QueueTask(new GammaTaskData{ChainId = chainId});
+            var taskId2 = QueueTask(new DeltaTaskData{ChainId = Guid.NewGuid()});
+            var taskId3 = QueueTask(new DeltaTaskData{ChainId = chainId});
+            var taskId4 = QueueTask(new AlphaTaskData{ChainId = Guid.NewGuid()});
+            var taskId5 = QueueTask(new GammaTaskData{ChainId = Guid.NewGuid()});
+            WaitForTasks(new[] {taskId0, taskId1, taskId2, taskId3, taskId4, taskId5}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var t1 = Timestamp.Now;
+            CheckSearch("*", t0, t1, taskId0, taskId1, taskId2, taskId3, taskId4, taskId5);
+            CheckSearch($"\"{chainId}\"", t0, t1, taskId0, taskId1, taskId3);
+            CheckSearch($"Data.ChainId:{chainId}", t0, t1, taskId0, taskId1, taskId3);
         }
 
         [Test]

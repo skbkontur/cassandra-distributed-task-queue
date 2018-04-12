@@ -4,16 +4,16 @@ using RemoteQueue.Configuration;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {
-    [TaskName("AlphaTaskData")]
-    public class AlphaTaskData : ITaskDataWithTopic
+    [TaskName("GammaTaskData")]
+    public class GammaTaskData : ITaskDataWithTopic
     {
-        public AlphaTaskData()
+        public GammaTaskData()
         {
             ChainId = Guid.NewGuid();
-            FieldWithCommonName = ChainId.GetHashCode();
+            FieldWithCommonName = ChainId.ToString();
         }
 
         public Guid ChainId { get; set; }
-        public int FieldWithCommonName { get; set; }
+        public string FieldWithCommonName { get; set; }
     }
 }

@@ -71,6 +71,7 @@
     <Compile Include="ConsumerStateImpl\ITestTaskLogger.cs" />
     <Compile Include="ConsumerStateImpl\TestCounterRepository.cs" />
     <Compile Include="ConsumerStateImpl\TestTaskLogger.cs" />
+    <Compile Include="TaskDatas\MonitoringTestTaskData\GammaTaskData.cs" />
     <Compile Include="TestRemoteTaskQueueContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestRemoteTaskQueueSettings.cs" />
