@@ -97,6 +97,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
 
     getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): ?RouterLocationDescriptor {
         const documentCirculationId =
+            // @flow-disable-next-line хоршо бы разобраться и затипизировать четко
             taskDetails.taskData && typeof taskDetails.taskData.documentCirculationId === "string"
                 ? taskDetails.taskData.documentCirculationId
                 : null;
