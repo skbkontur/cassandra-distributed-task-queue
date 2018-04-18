@@ -16,6 +16,7 @@ using RemoteQueue.Handling;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
+using RemoteTaskQueue.Monitoring.Storage;
 using RemoteTaskQueue.Monitoring.Storage.Client;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
@@ -374,6 +375,16 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                     return tasks.All(t => t.Meta.State == TaskState.Finished || t.Meta.State == TaskState.Fatal) ? WaitResult.StopWaiting : WaitResult.ContinueWaiting;
                 }, timeSpan);
         }
+
+        [Test]
+        public void UpdateSchemaMultipleTimes()
+        {
+            Assert.DoesNotThrow(() => schema.Actualize(local : true, bulkLoad : false));
+            Assert.DoesNotThrow(() => schema.Actualize(local : true, bulkLoad : false));
+        }
+
+        [Injected]
+        private readonly RtqElasticsearchSchema schema;
 
         [Injected]
         private ISerializer serializer;
