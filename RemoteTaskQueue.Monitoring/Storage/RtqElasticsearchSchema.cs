@@ -15,7 +15,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
 
         public void Actualize(bool local, bool bulkLoad)
         {
-            elasticsearchClient.IndicesCreate(RtqElasticsearchConsts.IndexingProgressIndexName, new {settings = Settings(local, bulkLoad)}).ProcessResponse(acceptableCodes: 400);
+            elasticsearchClient.IndicesCreate(RtqElasticsearchConsts.IndexingProgressIndexName, new {settings = Settings(local, bulkLoad)}).ProcessResponse(acceptableCodes : 400);
             PutTaskIndicesTemplate(local, bulkLoad);
         }
 
