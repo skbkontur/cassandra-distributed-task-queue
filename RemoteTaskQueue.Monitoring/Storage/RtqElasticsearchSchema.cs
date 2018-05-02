@@ -29,7 +29,11 @@ namespace RemoteTaskQueue.Monitoring.Storage
                             number_of_shards = 6,
                             number_of_replicas = local || bulkLoad ? 0 : 1,
                             refresh_interval = bulkLoad ? "-1" : (local ? "1s" : "10s"),
-                            merge = new {scheduler = new {max_thread_count = 1}} // see https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules-merge.html
+                            merge = new {scheduler = new {max_thread_count = 1}}, // see https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules-merge.html
+                            query = new
+                                {
+                                    default_field = "DataAsText",
+                                }
                         }
                 };
         }
@@ -54,13 +58,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                                                         {
                                                             path_match = "Data.*",
                                                             match_mapping_type = "string",
-                                                            mapping = new
-                                                                {
-                                                                    type = "keyword",
-                                                                    store = false,
-                                                                    index = true,
-                                                                    copy_to = "DataAsText"
-                                                                }
+                                                            mapping = KeywordTypeWithCopy(),
                                                         }
                                                 },
                                             new
@@ -97,17 +95,28 @@ namespace RemoteTaskQueue.Monitoring.Storage
                                                 {
                                                     type = "object"
                                                 },
-                                            DataAsText = TextType(),
-                                            ExceptionInfo = TextType(),
+                                            DataAsText = new
+                                                {
+                                                    type = "text",
+                                                    store = false,
+                                                    index = true
+                                                },
+                                            ExceptionInfo = new
+                                                {
+                                                    type = "text",
+                                                    store = false,
+                                                    index = true,
+                                                    copy_to = "DataAsText",
+                                                },
                                             Meta = new
                                                 {
                                                     properties = new
                                                         {
-                                                            Name = KeywordType(),
-                                                            Id = KeywordType(),
-                                                            State = KeywordType(),
-                                                            ParentTaskId = KeywordType(),
-                                                            TaskGroupLock = KeywordType(),
+                                                            Name = KeywordTypeWithCopy(),
+                                                            Id = KeywordTypeWithCopy(),
+                                                            State = KeywordTypeWithCopy(),
+                                                            ParentTaskId = KeywordTypeWithCopy(),
+                                                            TaskGroupLock = KeywordTypeWithCopy(),
                                                             Attempts = new {type = "integer", store = false},
                                                             EnqueueTime = DateType(),
                                                             MinimalStartTime = DateType(),
@@ -130,15 +139,21 @@ namespace RemoteTaskQueue.Monitoring.Storage
         }
 
         [NotNull]
-        private static object TextType()
-        {
-            return new {type = "text", store = false, index = true};
-        }
-
-        [NotNull]
         private static object KeywordType()
         {
             return new {type = "keyword", store = false, index = true};
+        }
+
+        [NotNull]
+        private static object KeywordTypeWithCopy()
+        {
+            return new
+                {
+                    type = "keyword",
+                    store = false,
+                    index = true,
+                    copy_to = "DataAsText",
+                };
         }
 
         private readonly IElasticsearchClient elasticsearchClient;
