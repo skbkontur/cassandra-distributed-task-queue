@@ -3,6 +3,7 @@
 using JetBrains.Annotations;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 using RemoteTaskQueue.Monitoring.Storage.Writing;
 
@@ -33,7 +34,11 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         public JsonSerializerSettings JsonSerializerSettings => new JsonSerializerSettings
             {
                 ContractResolver = new OmitBinaryAndAbstractPropertiesContractResolver(),
-                Converters = new JsonConverter[] {new TruncateLongStringsConverter(500)},
+                Converters = new JsonConverter[]
+                    {
+                        new TruncateLongStringsConverter(500),
+                        new StringEnumConverter(),
+                    },
             };
 
         public override string ToString()
