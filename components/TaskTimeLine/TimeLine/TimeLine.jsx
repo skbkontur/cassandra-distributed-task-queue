@@ -9,7 +9,11 @@ type TimeLineProps = {
 };
 
 export default function TimeLine({ children }: TimeLineProps): React.Node {
-    return <div className={cn("root")}>{children}</div>;
+    return (
+        <div className={cn("root")} data-tid={"InnerTimeLine"}>
+            {children}
+        </div>
+    );
 }
 
 type TimeLineEntryProps = {

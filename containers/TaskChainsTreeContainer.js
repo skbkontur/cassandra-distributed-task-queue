@@ -141,6 +141,7 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
         return (
             <CommonLayout>
                 <CommonLayout.GoBack
+                    data-tid={"GoBack"}
                     to={
                         parentLocation || {
                             pathname: "/AdminTools/Tasks",

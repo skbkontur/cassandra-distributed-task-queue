@@ -84,11 +84,11 @@ export default class TaskChainTree extends React.Component<TaskChainTreeProps, $
         }
         const TimeLineEntry = TimeLine.Entry;
         return (
-            <TimeLineEntry {...iconAndColorProps} key={taskMeta.id}>
-                <div className={cn("task-name")}>
+            <TimeLineEntry {...iconAndColorProps} key={taskMeta.id} data-tid="TimeLineTaskItem">
+                <div className={cn("task-name")} data-tid="TaskName">
                     <RouterLink to={getTaskLocation(taskMeta.id)}>{taskMeta.name}</RouterLink>
                 </div>
-                <div className={cn("task-id")}>
+                <div className={cn("task-id")} data-tid="TaskId">
                     <AllowCopyToClipboard>{taskMeta.id}</AllowCopyToClipboard>
                 </div>
             </TimeLineEntry>
@@ -160,11 +160,10 @@ export default class TaskChainTree extends React.Component<TaskChainTreeProps, $
         }, {});
 
         const mostParentTasks = this.findAllMostParents(taskMetaHashSet);
-
         return (
-            <ColumnStack block stretch gap={8}>
+            <ColumnStack block stretch gap={8} data-tid={"TimeLines"}>
                 {mostParentTasks.map((x, i) => (
-                    <Fit key={i}>
+                    <Fit key={i} data-tid="TimeLine">
                         <TimeLine>{this.buildTaskTimeLine(x, taskMetaHashSet)}</TimeLine>
                     </Fit>
                 ))}

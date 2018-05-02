@@ -134,7 +134,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
                 <Fill />
                 {relatedTasksLocation && (
                     <Fit>
-                        <RouterLink icon="list" to={relatedTasksLocation}>
+                        <RouterLink icon="list" data-tid={"RelatedTaskTree"} to={relatedTasksLocation}>
                             View related tasks tree
                         </RouterLink>
                     </Fit>
