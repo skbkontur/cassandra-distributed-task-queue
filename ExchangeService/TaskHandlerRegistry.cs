@@ -22,6 +22,7 @@ namespace ExchangeService
             Register<BetaTaskHandler>();
             Register<GammaTaskHandler>();
             Register<DeltaTaskHandler>();
+            Register<EpsilonTaskHandler>();
             Register<SlowTaskHandler>();
             Register<ChainTaskHandler>();
             Register<FailingTaskHandler>();

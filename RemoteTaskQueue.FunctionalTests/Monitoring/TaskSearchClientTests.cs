@@ -325,6 +325,19 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         }
 
         [Test]
+        public void TestTaskWithEnumSearch()
+        {
+            var t0 = Timestamp.Now;
+            var taskId = QueueTask(new EpsilonTaskData(EpsilonEnum.Delta));
+            WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var t1 = Timestamp.Now;
+            CheckSearch("Data.\\*.EpsilonEnum:\"Delta\"", t0, t1, taskId);
+            CheckSearch("Data.\\*.EpsilonEnum:\"Epsilon\"", t0, t1);
+        }
+
+        [Test]
         public void TestPaging()
         {
             var t0 = Timestamp.Now;

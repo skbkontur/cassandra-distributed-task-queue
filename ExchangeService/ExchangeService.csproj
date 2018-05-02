@@ -69,6 +69,7 @@
     <Compile Include="UserClasses\FakePeriodicTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\AlphaTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\BetaTaskHandler.cs" />
+    <Compile Include="UserClasses\MonitoringTestTaskData\EpsilonTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\FailingTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\GammaTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\SlowTaskHandler.cs" />

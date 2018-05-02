@@ -22,6 +22,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
             Register<BetaTaskData>();
             Register<GammaTaskData>();
             Register<DeltaTaskData>();
+            Register<EpsilonTaskData>();
             Register<FailingTaskData>();
 
             Register<ChainTaskData>();
