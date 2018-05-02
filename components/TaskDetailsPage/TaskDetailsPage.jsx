@@ -108,7 +108,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
                 pathname: "/AdminTools/Tasks/Tree",
                 search: buildSearchQueryForRequest({
                     enqueueDateTimeRange: rangeSelector.getMonthOf(ticksToDate(taskDetails.taskMeta.ticks)),
-                    queryString: `Data.DocumentCirculationId:"${documentCirculationId || ""}"`,
+                    queryString: `Data.\\*.DocumentCirculationId:"${documentCirculationId || ""}"`,
                     names: [],
                     states: [],
                 }),
