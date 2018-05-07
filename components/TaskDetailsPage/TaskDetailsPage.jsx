@@ -67,7 +67,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
                                 </Fit>
                             )}
                             {taskDetails && (
-                                <Fit>
+                                <Fit className={cn("task-data-container")}>
                                     <Accordion
                                         customRender={taskDetailsCustomRender}
                                         value={taskDetails.taskData}
