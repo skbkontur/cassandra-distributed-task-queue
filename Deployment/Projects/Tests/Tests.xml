@@ -15,7 +15,8 @@
     <FrontEndMode>FromDeploy</FrontEndMode>
     <ServiceRunMode>Run</ServiceRunMode>
 
-    <GlobalServices Condition="'$(GlobalServices)' == ''"></GlobalServices>
+    <UseLocalCassandra>false</UseLocalCassandra>
+    <GlobalServices></GlobalServices>
   </PropertyGroup>
 
   <ItemGroup>

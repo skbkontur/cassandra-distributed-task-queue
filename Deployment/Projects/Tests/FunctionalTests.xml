@@ -15,7 +15,8 @@
     <FrontEndMode>FromDeploy</FrontEndMode>
     <ServiceRunMode>Run</ServiceRunMode>
 
-    <GlobalServices Condition="'$(GlobalServices)' == ''">Cassandra;ElasticSearchVNext</GlobalServices>
+    <UseLocalCassandra>true</UseLocalCassandra>
+    <GlobalServices>ElasticSearchVNext</GlobalServices>
   </PropertyGroup>
 
   <Import Project="..\Configuration\ServiceSuites.xml" />

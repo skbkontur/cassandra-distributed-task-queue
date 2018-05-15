@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <Import Project="$(MSBuildThisFileDirectory)..\..\MsBuild\DeployTargets\Targets\LocalCassandra.targets" Condition="'$(LocalCassandraTargetsImported)' == ''" />
+
   <Target Name="Fire">
-    <RemoveDir Directories="$(MSBuildThisFileDirectory)..\..\Assemblies\Cassandra\db" />
+    <CallTarget Targets="ResetLocalCassandraDb" />
     <RemoveDir Directories="$(MSBuildThisFileDirectory)..\..\Assemblies\ElasticSearchVNext\data" />
   </Target>
 
