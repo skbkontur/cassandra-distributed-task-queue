@@ -240,7 +240,7 @@ export default function customRender(target: mixed, path: string[]): React.Node 
         }
     }
 
-    if (pathTop === "blobId") {
+    if (pathTop === "blobId" && typeof target === "object") {
         const blobId = getByPath(target, path);
         const blobSize = getByPath(target, [...path.slice(0, path.length - 1), "blobSize"]);
         const isLargeBlob = getByPath(target, [...path.slice(0, path.length - 1), "isLargeBlob"]);
@@ -248,7 +248,9 @@ export default function customRender(target: mixed, path: string[]): React.Node 
             return (
                 <Link
                     data-tid="GoToLink"
-                    href={`/AdminTools/FileData/DownloadBlob?blobId=${blobId}&blobSize=${blobSize}&isLargeBlob=${isLargeBlob}`}>
+                    href={`/AdminTools/FileData/DownloadBlob?blobId=${blobId}&blobSize=${blobSize}&isLargeBlob=${String(
+                        isLargeBlob
+                    )}`}>
                     {blobId}
                 </Link>
             );
