@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { Link } from "ui";
-import { type RouterLocationDescriptor } from "react-router";
+import { type RouterLocationDescriptor } from "react-router-dom";
 
 import CommonLayout, { CommonLayoutGoBack, CommonLayoutHeader, CommonLayoutContent } from "../../../Commons/Layouts";
 

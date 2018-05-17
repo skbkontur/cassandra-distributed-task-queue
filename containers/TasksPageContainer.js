@@ -4,8 +4,8 @@ import $c from "property-chain";
 import _ from "lodash";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from "ui";
 import { RowStack, ColumnStack, Fit } from "ui/layout";
-import { withRouter } from "react-router";
-import { type ReactRouter } from "react-router";
+import { withRouter } from "react-router-dom";
+import { type IBrowserHistory } from "react-router-dom";
 import { Loader } from "ui";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 import { SuperUserAccessLevels } from "Domain/Globals";
@@ -31,9 +31,10 @@ import numberToString from "../Domain/numberToString";
 
 type TasksPageContainerProps = {
     searchQuery: string,
-    router: ReactRouter,
+    history: IBrowserHistory,
     remoteTaskQueueApi: IRemoteTaskQueueApi,
     results: ?RemoteTaskQueueSearchResults,
+    requestParams: ?string,
 };
 
 type TasksPageContainerState = {
@@ -112,13 +113,13 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
     }
 
     async componentWillMount(): any {
-        const { searchQuery } = this.props;
+        const { searchQuery, results, requestParams } = this.props;
         await this.updateAvailableTaskNamesIfNeed();
 
         const request = this.getRequestBySearchQuery(searchQuery);
         this.setState({ request: request });
 
-        if (!this.isSearchRequestEmpty(searchQuery)) {
+        if ((requestParams !== searchQuery || !results) && !this.isSearchRequestEmpty(searchQuery)) {
             this.loadData(searchQuery, request);
         }
     }
@@ -139,6 +140,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         const request = this.getRequestBySearchQuery(searchQuery);
 
         this.setState({ request: request });
+
         if (
             (this.state.searchRequested && !this.isSearchRequestEmpty(searchQuery) && !results) ||
             !_.isEqual(prevPaging, nextPaging)
@@ -149,14 +151,15 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
 
     async loadData(searchQuery: ?string, request: RemoteTaskQueueSearchRequest): Promise<void> {
         const { from, size } = pagingMapping.parse(searchQuery);
-        const { router } = this.props;
+        const { history } = this.props;
         this.setState({ loading: true });
         try {
             const results = await this.searchTasks(request, from || 0, size || 20);
-            router.replace({
+            history.replace({
                 pathname: "/AdminTools/Tasks",
                 search: searchQuery,
                 state: {
+                    requestParams: searchQuery,
                     results: results,
                 },
             });
@@ -166,10 +169,10 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
     }
 
     handleSearch() {
-        const { router } = this.props;
+        const { history } = this.props;
         const { request } = this.state;
         this.setState({ searchRequested: true }, () => {
-            router.push({
+            history.push({
                 pathname: "/AdminTools/Tasks",
                 search: SearchQuery.combine(
                     this.getSearchRequestMapping().stringify(request),

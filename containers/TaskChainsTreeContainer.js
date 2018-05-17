@@ -1,8 +1,8 @@
 // @flow
 import * as React from "react";
 import _ from "lodash";
-import { withRouter } from "react-router";
-import { type ReactRouter } from "react-router";
+import { withRouter } from "react-router-dom";
+import { type IBrowserHistory } from "react-router-dom";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
@@ -23,10 +23,11 @@ import TaskChainTree from "../components/TaskChainTree/TaskChainTree";
 
 type TaskChainsTreeContainerProps = {
     searchQuery: string,
-    router: ReactRouter,
+    history: IBrowserHistory,
     remoteTaskQueueApi: IRemoteTaskQueueApi,
     taskDetails: ?(RemoteTaskInfoModel[]),
     parentLocation: RouterLocationDescriptor,
+    searchedQuery: ?string,
 };
 
 type TaskChainsTreeContainerState = {
@@ -68,12 +69,13 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
     }
 
     componentWillMount() {
-        const { searchQuery } = this.props;
+        const { searchQuery, searchedQuery } = this.props;
         const request = this.getRequestBySearchQuery(searchQuery);
-
-        this.setState({ request: request });
-        if (!this.isSearchRequestEmpty(searchQuery)) {
-            this.loadData(searchQuery, request);
+        if (searchedQuery !== searchQuery) {
+            this.setState({ request: request });
+            if (!this.isSearchRequestEmpty(searchQuery)) {
+                this.loadData(searchQuery, request);
+            }
         }
     }
 
@@ -96,7 +98,7 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
     }
 
     async loadData(searchQuery: ?string, request: RemoteTaskQueueSearchRequest): Promise<void> {
-        const { router } = this.props;
+        const { history } = this.props;
         let iterationCount = 0;
 
         this.setState({ loading: true, loaderText: "Загрузка задач: 0" });
@@ -120,11 +122,12 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
                     break;
                 }
             }
-            router.replace({
+            history.replace({
                 pathname: "/AdminTools/Tasks/Tree",
                 search: searchQuery,
                 state: {
                     taskDetails: taskDetails,
+                    searchedQuery: searchQuery,
                 },
             });
         } finally {

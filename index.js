@@ -1,15 +1,16 @@
 // @flow
 import * as React from "react";
 import ReactDom from "react-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { WindowUtils } from "Commons/DomUtils";
-import { IndexRoute, Router, Route, browserHistory, type RouterLocationDescriptor } from "react-router";
+import { type RouterLocationDescriptor, type RouteOptions } from "react-router-dom";
 
+import ServiceHeader from "../ServiceHeader/components/ServiceHeader";
 import { RemoteTaskQueueApi } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 
 import TasksPage from "./containers/TasksPageContainer";
 import TaskDetailsPageContainer from "./containers/TaskDetailsPageContainer";
 import TaskChainsTreeContainer from "./containers/TaskChainsTreeContainer";
-import Layout from "./components/Layout/Layout";
 import { ApiProvider } from "./api/RemoteTaskQueueApiInjection";
 
 import "ui/styles/reset.less";
@@ -41,14 +42,27 @@ function tryGetParentLocationFromHistoryState(location: RouterLocationDescriptor
 }
 
 ReactDom.render(
-    <ApiProvider remoteTaskQueueApi={api}>
-        <Router history={browserHistory}>
-            <Route path={TasksPath} component={Layout}>
-                <IndexRoute
+    <BrowserRouter>
+        <ApiProvider remoteTaskQueueApi={api}>
+            <Route path={TasksPath} component={RemoteTaskQueueApplication} />
+        </ApiProvider>
+    </BrowserRouter>,
+    WindowUtils.getElementByIdToRenderApp("content")
+);
+
+export function RemoteTaskQueueApplication({ match }: RouteOptions): React.Node {
+    const baseUrl = match.url;
+    return (
+        <ServiceHeader currentInterfaceType={null}>
+            <Switch>
+                <Route
+                    exact
+                    path={`${baseUrl}/`}
                     component={({ location }) => <TasksPage searchQuery={location.search} {...location.state} />}
                 />
                 <Route
-                    path="Tree"
+                    exact
+                    path={`${baseUrl}/Tree`}
                     component={({ location }) => (
                         <TaskChainsTreeContainer
                             searchQuery={location.search}
@@ -58,16 +72,15 @@ ReactDom.render(
                     )}
                 />
                 <Route
-                    path=":id"
-                    component={({ location, params }) => (
+                    path={`${baseUrl}/:id`}
+                    component={({ location, match: { params } }) => (
                         <TaskDetailsPageContainer
                             id={params.id || ""}
                             parentLocation={tryGetParentLocationFromHistoryState(location)}
                         />
                     )}
                 />
-            </Route>
-        </Router>
-    </ApiProvider>,
-    WindowUtils.getElementByIdToRenderApp("content")
-);
+            </Switch>
+        </ServiceHeader>
+    );
+}
