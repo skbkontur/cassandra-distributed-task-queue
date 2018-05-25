@@ -1,12 +1,14 @@
 // @flow
 import * as React from "react";
+import { Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink } from "ui";
+import { RowStack, ColumnStack, Fit, Fill } from "ui/layout";
+
 import TaskTypesSelect from "../TaskTypesSelect/TaskTypesSelect";
 import TaskStatesSelect from "../TaskStatesSelect/TaskStatesSelect";
 import { TimeZones } from "../../../Commons/DataTypes/Time";
-import type { RemoteTaskQueueSearchRequest } from "../../api/RemoteTaskQueueApi";
-import { Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink } from "ui";
+import { type RemoteTaskQueueSearchRequest } from "../../api/RemoteTaskQueueApi";
 import DateTimeRangePicker from "../../../Commons/DateTimeRangePicker/DateTimeRangePicker";
-import { RowStack, ColumnStack, Fit, Fill } from "ui/layout";
+
 import cn from "./TaskQueueFilter.less";
 
 export type TaskQueueFilterProps = {

@@ -1,6 +1,7 @@
 // @flow
 import * as React from "react";
 import { Icon } from "ui";
+
 import TimeLineCycled from "./TimeLineCycled";
 import cn from "./TimeLine.less";
 

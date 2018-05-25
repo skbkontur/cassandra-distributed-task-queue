@@ -1,23 +1,25 @@
 // @flow
 import * as React from "react";
-import cn from "./TaskDetailsPage.less";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink, RouterLink } from "ui";
 import { RowStack, ColumnStack, Fill, Fit } from "ui/layout";
+import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
+
 import CommonLayout, {
     CommonLayoutGoBack,
     CommonLayoutGreyLineHeader,
     CommonLayoutContent,
 } from "../../../Commons/Layouts";
-import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import Accordion from "../../../Commons/Accordion/Accordion";
 import taskDetailsCustomRender from "../../Domain/TaskDetailsCustomRender";
 import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
-import type { RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
-import type { RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+import { type RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
+import { type RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
 import RangeSelector from "../../../Commons/DateTimeRangePicker/RangeSelector";
 import { TimeZones, ticksToDate } from "../../../Commons/DataTypes/Time";
+
+import cn from "./TaskDetailsPage.less";
 
 export type TaskDetailsPageProps = {
     parentLocation: RouterLocationDescriptor,

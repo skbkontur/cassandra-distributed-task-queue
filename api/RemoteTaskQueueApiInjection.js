@@ -1,7 +1,8 @@
 // @flow
 import { createApiProvider, createWithApiWrapper } from "../../Commons/ApiInjection";
-import type { ApiProviderBase } from "../../Commons/ApiInjection";
-import type { IRemoteTaskQueueApi } from "./RemoteTaskQueueApi";
+import { type ApiProviderBase } from "../../Commons/ApiInjection";
+
+import { type IRemoteTaskQueueApi } from "./RemoteTaskQueueApi";
 
 type ApiProps = { remoteTaskQueueApi: IRemoteTaskQueueApi };
 

@@ -3,11 +3,13 @@ import * as React from "react";
 import ReactDom from "react-dom";
 import { WindowUtils } from "Commons/DomUtils";
 import { IndexRoute, Router, Route, browserHistory, type RouterLocationDescriptor } from "react-router";
+
+import { RemoteTaskQueueApi } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+
 import TasksPage from "./containers/TasksPageContainer";
 import TaskDetailsPageContainer from "./containers/TaskDetailsPageContainer";
 import TaskChainsTreeContainer from "./containers/TaskChainsTreeContainer";
 import Layout from "./components/Layout/Layout";
-import { RemoteTaskQueueApi } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { ApiProvider } from "./api/RemoteTaskQueueApiInjection";
 
 import "ui/styles/reset.less";

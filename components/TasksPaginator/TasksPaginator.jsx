@@ -1,7 +1,7 @@
 // @flow
 import * as React from "react";
 import { RouterLink } from "ui";
-import type { RouterLocationDescriptor } from "react-router";
+import { type RouterLocationDescriptor } from "react-router";
 
 export type TasksPaginatorProps = {
     nextPageLocation: RouterLocationDescriptor | null,

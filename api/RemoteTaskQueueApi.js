@@ -1,13 +1,13 @@
 // @flow
-import type { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
+import { type DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
 import { TimeZones } from "../../Commons/DataTypes/Time";
 import RangeSelector from "../../Commons/DateTimeRangePicker/RangeSelector";
-import type { TaskMetaInformation } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
-import type { RemoteTaskQueueSearchRequest } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
-import type { RemoteTaskQueueSearchResults } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
-import type { IRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import type { RemoteTaskInfoModel } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
-import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
+import { type TaskMetaInformation } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
+import { type RemoteTaskQueueSearchRequest } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
+import { type RemoteTaskQueueSearchResults } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
+import { type IRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { type RemoteTaskInfoModel } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
+import { type TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 
 export type {
     IRemoteTaskQueueApi,

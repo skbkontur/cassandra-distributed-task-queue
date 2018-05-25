@@ -5,27 +5,28 @@ import _ from "lodash";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from "ui";
 import { RowStack, ColumnStack, Fit } from "ui/layout";
 import { withRouter } from "react-router";
-import type { ReactRouter } from "react-router";
+import { type ReactRouter } from "react-router";
 import { Loader } from "ui";
-import TasksTable from "../components/TaskTable/TaskTable";
-import TasksPaginator from "../components/TasksPaginator/TasksPaginator";
-import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
-import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 import { SuperUserAccessLevels } from "Domain/Globals";
 import { getCurrentUserInfo } from "Domain/Globals";
+import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { SearchQuery, queryStringMapping } from "Commons/QueryStringMapping";
+import CommonLayout from "Commons/Layouts";
+import { type QueryStringMapping } from "Commons/QueryStringMapping";
+import { type RouterLocationDescriptor } from "Commons/DataTypes/Routing";
+import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+
+import { type IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
+import { type RemoteTaskQueueSearchRequest, type RemoteTaskQueueSearchResults } from "../api/RemoteTaskQueueApi";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../api/RemoteTaskQueueApi";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { SearchQuery, queryStringMapping } from "Commons/QueryStringMapping";
-import CommonLayout from "Commons/Layouts";
-import type { RemoteTaskQueueSearchRequest, RemoteTaskQueueSearchResults } from "../api/RemoteTaskQueueApi";
-import type { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
-import type { QueryStringMapping } from "Commons/QueryStringMapping";
-import type { RouterLocationDescriptor } from "Commons/DataTypes/Routing";
-import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
+import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
+import TasksPaginator from "../components/TasksPaginator/TasksPaginator";
+import TasksTable from "../components/TaskTable/TaskTable";
 import numberToString from "../Domain/numberToString";
 
 type TasksPageContainerProps = {

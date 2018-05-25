@@ -1,10 +1,12 @@
 // @flow
 import * as React from "react";
-import cn from "./TaskDetailsMetaTable.less";
+
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
-import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
+import { type TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
 import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
-import type { Ticks } from "../../../Commons/DataTypes/Time";
+import { type Ticks } from "../../../Commons/DataTypes/Time";
+
+import cn from "./TaskDetailsMetaTable.less";
 
 export type TaskDetailsMetaTableProps = {
     taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,

@@ -2,12 +2,14 @@
 import * as React from "react";
 import { RouterLink } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
-import type { RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
-import TimeLine from "../TaskTimeLine/TimeLine/TimeLine";
-import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import _ from "lodash";
+
+import { type RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+import TimeLine from "../TaskTimeLine/TimeLine/TimeLine";
+import { type TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
+
 import cn from "./TaskChainTree.less";
 
 const IconColors = {

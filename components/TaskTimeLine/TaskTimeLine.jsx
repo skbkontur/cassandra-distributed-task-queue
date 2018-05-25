@@ -1,15 +1,17 @@
 // @flow
 import * as React from "react";
 import { RouterLink } from "ui";
-import cn from "./TaskTimeLine.less";
-import TimeLine from "./TimeLine/TimeLine";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+
 import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
 import { ticksToDate } from "../../../Commons/DataTypes/Time";
-import type { Ticks } from "../../../Commons/DataTypes/Time";
-import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
-import type { RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+import { type Ticks } from "../../../Commons/DataTypes/Time";
+import { type TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
+import { type RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
+
+import TimeLine from "./TimeLine/TimeLine";
+import cn from "./TaskTimeLine.less";
 
 const TimeLineEntry = TimeLine.Entry;
 

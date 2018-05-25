@@ -1,8 +1,10 @@
 // @flow
 import * as React from "react";
 import { Link } from "ui";
+import { type RouterLocationDescriptor } from "react-router";
+
 import CommonLayout, { CommonLayoutGoBack, CommonLayoutHeader, CommonLayoutContent } from "../../../Commons/Layouts";
-import type { RouterLocationDescriptor } from "react-router";
+
 import SorryImage from "./Sorry.png";
 import cn from "./TaskNotFoundPage.less";
 

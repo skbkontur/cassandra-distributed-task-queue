@@ -2,6 +2,7 @@
 import * as React from "react";
 import { Button, Icon, Tooltip, Checkbox, Input } from "ui";
 import { ColumnStack, RowStack, Fit } from "ui/layout";
+
 import cn from "./TaskTypesSelect.less";
 
 export type TaskTypesSelectProps = {

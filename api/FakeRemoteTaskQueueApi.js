@@ -1,14 +1,16 @@
 // @flow
-import type { RemoteTaskQueueSearchResults } from "./../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
-import type { RemoteTaskQueueSearchRequest } from "./../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
-import type { TaskMetaInformationAndTaskMetaInformationChildTasks } from "./../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
-import type { RemoteTaskInfoModel } from "./../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
-import type { IRemoteTaskQueueApi } from "./RemoteTaskQueueApi";
-import type { TaskManipulationResult } from "./../../Domain/EDI/Api/RemoteTaskQueue/TaskManipulationResult";
 import moment from "moment";
-import { dateToTicks } from "../../Commons/DataTypes/Time";
 import { delay } from "utils";
+
+import { dateToTicks } from "../../Commons/DataTypes/Time";
 import { TaskStates } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { type RemoteTaskQueueSearchResults } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
+import { type RemoteTaskQueueSearchRequest } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
+import { type TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
+import { type RemoteTaskInfoModel } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
+import { type TaskManipulationResult } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskManipulationResult";
+
+import { type IRemoteTaskQueueApi } from "./RemoteTaskQueueApi";
 
 let requestCount = 1;
 function emulateErrors() {

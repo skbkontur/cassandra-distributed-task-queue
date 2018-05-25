@@ -1,17 +1,18 @@
 // @flow
 import * as React from "react";
 import $c from "property-chain";
+import { takeLastAndRejectPrevious } from "PromiseUtils";
+import { ApiError } from "Domain/ApiBase/ApiBase";
+import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+
 import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
 import TaskDetailsPage from "../components/TaskDetailsPage/TaskDetailsPage";
 import TaskNotFoundPage from "../components/TaskNotFoundPage/TaskNotFoundPage";
 import { SuperUserAccessLevels } from "../../Domain/Globals";
-import type { RemoteTaskInfoModel, IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
+import { type RemoteTaskInfoModel, type IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
 import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
-import { takeLastAndRejectPrevious } from "PromiseUtils";
 import { getCurrentUserInfo } from "../../Domain/Globals";
-import type { RouterLocationDescriptor } from "../../Commons/DataTypes/Routing";
-import { ApiError } from "Domain/ApiBase/ApiBase";
-import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+import { type RouterLocationDescriptor } from "../../Commons/DataTypes/Routing";
 
 type TaskDetailsPageContainerProps = {
     id: string,

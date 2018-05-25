@@ -3,9 +3,11 @@ import * as React from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "ui";
 import _ from "lodash";
 import { RowStack, Fit } from "ui/layout";
+
+import { type TaskMetaInformation } from "../../api/RemoteTaskQueueApi";
+import { type RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+
 import TaskDetails from "./TaskDetails/TaskDetails";
-import type { TaskMetaInformation } from "../../api/RemoteTaskQueueApi";
-import type { RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
 import cn from "./TaskTable.less";
 
 export type TaskTableProps = {
