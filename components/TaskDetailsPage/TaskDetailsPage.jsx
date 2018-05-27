@@ -16,7 +16,7 @@ import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
 import { type RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
 import { type RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
-import RangeSelector from "../../../Commons/DateTimeRangePicker/RangeSelector";
+import { RangeSelector } from "../../../Commons/DateTimeRangePicker/RangeSelector";
 import { TimeZones, ticksToDate } from "../../../Commons/DataTypes/Time";
 
 import cn from "./TaskDetailsPage.less";
