@@ -7,7 +7,6 @@ using NUnit.Framework;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
@@ -21,8 +20,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void SetUp()
         {
             ResetCassandraState();
-            var cfName = new ColumnFamilyFullName(QueueKeyspaceName, timeBasedCfName);
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(cfName, cassandraCluster);
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(QueueKeyspaceName, timeBasedCfName, cassandraCluster);
         }
 
         protected override ColumnFamily[] GetColumnFamilies()

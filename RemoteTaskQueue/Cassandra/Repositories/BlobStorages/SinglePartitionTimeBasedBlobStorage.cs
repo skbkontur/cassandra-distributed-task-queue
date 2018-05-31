@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.CassandraPrimitives.Storages.Primitives;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
@@ -16,9 +15,10 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class SinglePartitionTimeBasedBlobStorage
     {
-        public SinglePartitionTimeBasedBlobStorage(ColumnFamilyFullName cfName, ICassandraCluster cassandraCluster)
+        public SinglePartitionTimeBasedBlobStorage([NotNull] string keyspaceName, [NotNull] string columnFamilyName, ICassandraCluster cassandraCluster)
         {
-            this.cfName = cfName;
+            this.keyspaceName = keyspaceName;
+            this.columnFamilyName = columnFamilyName;
             this.cassandraCluster = cassandraCluster;
         }
 
@@ -27,8 +27,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             if (value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", columnId));
             if (value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
-                Log.For(this).WarnFormat("Writing extra large blob with rowKey={0} and columnId={1} of size={2} into cf: {3}", rowKey, columnId, value.Length, cfName);
-            var connection = cassandraCluster.RetrieveColumnFamilyConnection(cfName.KeyspaceName, cfName.ColumnFamilyName);
+                Log.For(this).WarnFormat("Writing extra large blob with rowKey={0} and columnId={1} of size={2} into cf: {3}.{4}", rowKey, columnId, value.Length, keyspaceName, columnFamilyName);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamilyName);
             connection.AddColumn(rowKey, new Column
                 {
                     Name = FormatColumnName(columnId),
@@ -40,14 +40,14 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 
         public void Delete([NotNull] string rowKey, [NotNull] TimeGuid columnId, long timestamp)
         {
-            var connection = cassandraCluster.RetrieveColumnFamilyConnection(cfName.KeyspaceName, cfName.ColumnFamilyName);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamilyName);
             connection.DeleteColumn(rowKey, FormatColumnName(columnId), timestamp);
         }
 
         [CanBeNull]
         public byte[] Read([NotNull] string rowKey, [NotNull] TimeGuid columnId)
         {
-            var connection = cassandraCluster.RetrieveColumnFamilyConnection(cfName.KeyspaceName, cfName.ColumnFamilyName);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamilyName);
             Column column;
             if (!connection.TryGetColumn(rowKey, FormatColumnName(columnId), out column) || column.Value == null)
                 return null;
@@ -61,7 +61,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public Dictionary<TimeGuid, byte[]> Read([NotNull] string rowKey, [NotNull] TimeGuid[] columnIds)
         {
             var columnNameToIdMap = columnIds.Distinct().ToDictionary(FormatColumnName, x => x);
-            var connection = cassandraCluster.RetrieveColumnFamilyConnection(cfName.KeyspaceName, cfName.ColumnFamilyName);
+            var connection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamilyName);
             var columns = connection.GetColumns(rowKey, columnNameToIdMap.Keys.ToArray());
             return columns.Select(x => new ColumnWithId {ColumnId = columnNameToIdMap[x.Name], Column = x})
                           .Where(x => x.Column.Value != null)
@@ -74,7 +74,8 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return string.Format("{0}_{1}", columnId.GetTimestamp().Ticks.ToString("D20", CultureInfo.InvariantCulture), columnId.ToGuid());
         }
 
-        private readonly ColumnFamilyFullName cfName;
+        private readonly string keyspaceName;
+        private readonly string columnFamilyName;
         private readonly ICassandraCluster cassandraCluster;
 
         private class ColumnWithId
