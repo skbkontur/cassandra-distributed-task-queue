@@ -11,8 +11,7 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
-
-using Vostok.Logging.Abstractions;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {
@@ -36,7 +35,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
             var keyspaceName = container.Get<IRemoteTaskQueueSettings>().QueueKeyspace;
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(keyspaceName, RemoteTaskQueueLockConstants.LockColumnFamily);
             var remoteLockImplementation = container.Create<CassandraRemoteLockImplementationSettings, CassandraRemoteLockImplementation>(remoteLockImplementationSettings);
-            container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(keyspaceName), new SilentLog()));
+            container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(keyspaceName), new VostokToLog4NetAdapter()));
         }
     }
 }
