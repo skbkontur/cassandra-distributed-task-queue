@@ -1,7 +1,6 @@
-// @flow
 import * as React from "react";
 import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
-import { type TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { Button, Icon, Tooltip, Checkbox } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
@@ -9,8 +8,8 @@ import { ColumnStack, Fit } from "ui/layout";
 import cn from "./TaskStatesSelect.less";
 
 export type TaskStatesSelectProps = {
-    value: TaskState[],
-    onChange: (selectedTaskStates: TaskState[]) => void,
+    value: TaskState[];
+    onChange: (selectedTaskStates: TaskState[]) => void;
 };
 
 const TaskStateCaptions = {
@@ -25,7 +24,7 @@ const TaskStateCaptions = {
 };
 
 export default class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
-    render(): React.Node {
+    render(): JSX.Element {
         const { value } = this.props;
         return (
             <Tooltip render={() => this.renderTooltip()} trigger="click" pos="bottom left">
@@ -39,7 +38,7 @@ export default class TaskStatesSelect extends React.Component<TaskStatesSelectPr
         );
     }
 
-    renderTooltip(): React.Node {
+    renderTooltip(): JSX.Element {
         return (
             <ColumnStack block gap={2}>
                 {getAllTaskStates().map((item, index) => {

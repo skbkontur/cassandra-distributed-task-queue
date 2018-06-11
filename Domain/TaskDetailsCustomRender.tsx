@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { Icon, Link, LinkDropdown } from "ui";
 import _ from "lodash";
@@ -7,7 +6,7 @@ const LinkMenuItem = LinkDropdown.MenuItem;
 export const endsWith = (ending: string, str: string): boolean => str.slice(-ending.length) === ending;
 
 // eslint-disable-next-line flowtype/no-weak-types
-function getByPath(target: ?Object, path: string[]): mixed {
+function getByPath(target: Nullable<Object>, path: string[]): mixed {
     // @flow-coverage-ignore-next-line
     return _.get(target, path);
 }
@@ -16,9 +15,9 @@ export function OrganizationLinkDropdown({
     partyId,
     caption,
 }: {
-    partyId: string,
-    caption?: ?string,
-}): React.Element<*> {
+    partyId: string;
+    caption?: Nullable<string>;
+}): JSX.Element {
     return (
         <LinkDropdown renderTitle={caption != null ? caption : partyId} data-tid="GoToLink">
             <LinkMenuItem href={`/AdminTools/PartyEdit?partyId=${partyId}`} data-tid="GoToPartyEdit">
@@ -40,7 +39,7 @@ export function OrganizationLinkDropdown({
 }
 
 // eslint-disable-next-line max-statements
-export default function customRender(target: mixed, path: string[]): React.Node | null {
+export default function customRender(target: mixed, path: string[]): JSX.Element | null {
     const pathTop = path[path.length - 1];
     if (target == null) {
         return null;

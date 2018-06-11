@@ -1,11 +1,9 @@
-// @flow
 import * as React from "react";
 import $c from "property-chain";
 import _ from "lodash";
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from "ui";
 import { RowStack, ColumnStack, Fit } from "ui/layout";
 import { withRouter } from "react-router-dom";
-import { type IBrowserHistory } from "react-router-dom";
 import { Loader } from "ui";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 import { SuperUserAccessLevels } from "Domain/Globals";
@@ -13,12 +11,12 @@ import { getCurrentUserInfo } from "Domain/Globals";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { SearchQuery, queryStringMapping } from "Commons/QueryStringMapping";
 import CommonLayout from "Commons/Layouts";
-import { type QueryStringMapping } from "Commons/QueryStringMapping";
-import { type RouterLocationDescriptor } from "Commons/DataTypes/Routing";
+import { QueryStringMapping } from "Commons/QueryStringMapping";
+import { Location, LocationDescriptor, LocationDescriptorObject } from "history";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 
-import { type IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
-import { type RemoteTaskQueueSearchRequest, type RemoteTaskQueueSearchResults } from "../api/RemoteTaskQueueApi";
+import { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
+import { RemoteTaskQueueSearchRequest, RemoteTaskQueueSearchResults } from "../api/RemoteTaskQueueApi";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
@@ -28,26 +26,28 @@ import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
 import TasksPaginator from "../components/TasksPaginator/TasksPaginator";
 import TasksTable from "../components/TaskTable/TaskTable";
 import numberToString from "../Domain/numberToString";
+import { RouteComponentProps } from "react-router-dom";
 
-type TasksPageContainerProps = {
-    searchQuery: string,
-    history: IBrowserHistory,
-    remoteTaskQueueApi: IRemoteTaskQueueApi,
-    results: ?RemoteTaskQueueSearchResults,
-    requestParams: ?string,
-};
+interface TasksPageContainerProps extends RouteComponentProps<any> {
+    searchQuery: string;
+    remoteTaskQueueApi: IRemoteTaskQueueApi;
+    results: Nullable<RemoteTaskQueueSearchResults>;
+    requestParams: Nullable<string>;
+}
 
 type TasksPageContainerState = {
-    loading: boolean,
-    request: RemoteTaskQueueSearchRequest,
-    availableTaskNames: string[] | null,
-    confirmMultipleModalOpened: boolean,
-    modalType: "Rerun" | "Cancel",
-    manyTaskConfirm: string,
-    searchRequested: boolean,
+    loading: boolean;
+    request: RemoteTaskQueueSearchRequest;
+    availableTaskNames: string[] | null;
+    confirmMultipleModalOpened: boolean;
+    modalType: "Rerun" | "Cancel";
+    manyTaskConfirm: string;
+    searchRequested: boolean;
 };
 
-const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping()
+const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping<
+    RemoteTaskQueueSearchRequest
+>()
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")
@@ -59,7 +59,7 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
         result[name] = name;
         return result;
     }, {});
-    return queryStringMapping()
+    return queryStringMapping<RemoteTaskQueueSearchRequest>()
         .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
         .mapToString(x => x.queryString, "q")
         .mapToSet(x => x.names, "types", availableTaskNamesMap, true)
@@ -67,7 +67,10 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
         .build();
 }
 
-const pagingMapping: QueryStringMapping<{ from: ?number, size: ?number }> = queryStringMapping()
+const pagingMapping: QueryStringMapping<{ from: Nullable<number>; size: Nullable<number> }> = queryStringMapping<{
+    from: Nullable<number>;
+    size: Nullable<number>;
+}>()
     .mapToInteger(x => x.from, "from")
     .mapToInteger(x => x.size, "size")
     .build();
@@ -91,7 +94,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
     };
     searchTasks = takeLastAndRejectPrevious(this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi));
 
-    isSearchRequestEmpty(searchQuery: ?string): boolean {
+    isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
         const request = provisionalMapping.parse(searchQuery);
         return isRemoteTaskQueueSearchRequestEmpty(request);
     }
@@ -104,7 +107,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         return createSearchRequestMapping(availableTaskNames);
     }
 
-    getRequestBySearchQuery(searchQuery: ?string): RemoteTaskQueueSearchRequest {
+    getRequestBySearchQuery(searchQuery: Nullable<string>): RemoteTaskQueueSearchRequest {
         const request = this.getSearchRequestMapping().parse(searchQuery);
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
             return createDefaultRemoteTaskQueueSearchRequest();
@@ -112,7 +115,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         return request;
     }
 
-    async componentWillMount(): any {
+    async componentWillMount() {
         const { searchQuery, results, requestParams } = this.props;
         await this.updateAvailableTaskNamesIfNeed();
 
@@ -131,7 +134,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    async componentWillReceiveProps(nextProps: TasksPageContainerProps): any {
+    async componentWillReceiveProps(nextProps: TasksPageContainerProps) {
         const { searchQuery, results } = nextProps;
         const prevPaging = pagingMapping.parse(this.props.searchQuery);
         const nextPaging = pagingMapping.parse(searchQuery);
@@ -149,7 +152,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    async loadData(searchQuery: ?string, request: RemoteTaskQueueSearchRequest): Promise<void> {
+    async loadData(searchQuery: Nullable<string>, request: RemoteTaskQueueSearchRequest): Promise<void> {
         const { from, size } = pagingMapping.parse(searchQuery);
         const { history } = this.props;
         this.setState({ loading: true });
@@ -162,7 +165,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
                     requestParams: searchQuery,
                     results: results,
                 },
-            });
+            } as LocationDescriptorObject);
         } finally {
             this.setState({ loading: false, searchRequested: false });
         }
@@ -179,11 +182,11 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
                     pagingMapping.stringify({ from: 0, size: 20 })
                 ),
                 state: null,
-            });
+            } as LocationDescriptorObject);
         });
     }
 
-    getTaskLocation(id: string): RouterLocationDescriptor {
+    getTaskLocation(id: string): LocationDescriptor {
         const { results, searchQuery } = this.props;
         const { request } = this.state;
         const { from, size } = pagingMapping.parse(searchQuery);
@@ -205,7 +208,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         };
     }
 
-    getNextPageLocation(): RouterLocationDescriptor | null {
+    getNextPageLocation(): LocationDescriptor | null {
         const { searchQuery, results } = this.props;
         const { from, size } = pagingMapping.parse(searchQuery);
         const request = this.getRequestBySearchQuery(searchQuery);
@@ -213,7 +216,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         if (!results) {
             return null;
         }
-        if (from + size >= results.totalCount) {
+        if ((from || 0) + (size || 0) >= results.totalCount) {
             return null;
         }
         return {
@@ -222,10 +225,10 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
                 this.getSearchRequestMapping().stringify(request),
                 pagingMapping.stringify({ from: (from || 0) + (size || 20), size: size || 20 })
             ),
-        };
+        } as LocationDescriptorObject;
     }
 
-    getPrevPageLocation(): RouterLocationDescriptor | null {
+    getPrevPageLocation(): LocationDescriptor | null {
         const { searchQuery } = this.props;
         const { from, size } = pagingMapping.parse(searchQuery);
         const request = this.getRequestBySearchQuery(searchQuery);
@@ -239,7 +242,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
                 this.getSearchRequestMapping().stringify(request),
                 pagingMapping.stringify({ from: Math.max(0, (from || 0) - (size || 20)), size: size || 20 })
             ),
-        };
+        } as LocationDescriptorObject;
     }
 
     async handleRerunTask(id: string): Promise<void> {
@@ -286,11 +289,11 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    renderModal(): React.Node {
+    renderModal(): JSX.Element {
         const { results } = this.props;
         const { modalType, manyTaskConfirm } = this.state;
         const confirmedRegExp = /б.*л.*я/i;
-        const counter = (results && parseInt(results.totalCount, 10)) || 0;
+        const counter = (results && results.totalCount) || 0;
 
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmMultipleOperationModal">
@@ -385,7 +388,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         });
     }
 
-    render(): React.Node {
+    render(): JSX.Element {
         const currentUser = getCurrentUserInfo();
         const allowRerunOrCancel = $c(currentUser)
             .with(x => x.superUserAccessLevel)

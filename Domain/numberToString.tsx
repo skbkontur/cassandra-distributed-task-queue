@@ -30,7 +30,7 @@ export default function numberToString(number: number | string): string | false 
     function numberParser(num: string, desc: number): string {
         let newNum: string = num;
         let string = "";
-        let newNumHundred = "";
+        let newNumHundred: string | number = "";
         if (newNum.length === 3) {
             newNumHundred = Number(newNum.substr(0, 1));
             newNum = newNum.substr(1, 3);

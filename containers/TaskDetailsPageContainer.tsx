@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import $c from "property-chain";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
@@ -9,21 +8,21 @@ import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
 import TaskDetailsPage from "../components/TaskDetailsPage/TaskDetailsPage";
 import TaskNotFoundPage from "../components/TaskNotFoundPage/TaskNotFoundPage";
 import { SuperUserAccessLevels } from "../../Domain/Globals";
-import { type RemoteTaskInfoModel, type IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
+import { RemoteTaskInfoModel, IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
 import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
 import { getCurrentUserInfo } from "../../Domain/Globals";
-import { type RouterLocationDescriptor } from "../../Commons/DataTypes/Routing";
+import { LocationDescriptor } from "history";
 
 type TaskDetailsPageContainerProps = {
-    id: string,
-    remoteTaskQueueApi: IRemoteTaskQueueApi,
-    parentLocation: ?RouterLocationDescriptor,
+    id: string;
+    remoteTaskQueueApi: IRemoteTaskQueueApi;
+    parentLocation: Nullable<LocationDescriptor>;
 };
 
 type TaskDetailsPageContainerState = {
-    taskDetails: ?RemoteTaskInfoModel,
-    loading: boolean,
-    notFoundError: boolean,
+    taskDetails: Nullable<RemoteTaskInfoModel>;
+    loading: boolean;
+    notFoundError: boolean;
 };
 
 class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerProps, TaskDetailsPageContainerState> {
@@ -46,7 +45,7 @@ class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerP
         }
     }
 
-    getTaskLocation(id: string): RouterLocationDescriptor {
+    getTaskLocation(id: string): LocationDescriptor {
         const { parentLocation } = this.props;
 
         return {
@@ -103,13 +102,13 @@ class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerP
         }
     }
 
-    getDefaultParetnLocation(): RouterLocationDescriptor {
+    getDefaultParetnLocation(): LocationDescriptor {
         return {
             pathname: "/AdminTools/Tasks",
         };
     }
 
-    render(): React.Node {
+    render(): JSX.Element {
         const { taskDetails, loading, notFoundError } = this.state;
         const { parentLocation } = this.props;
         const currentUser = getCurrentUserInfo();

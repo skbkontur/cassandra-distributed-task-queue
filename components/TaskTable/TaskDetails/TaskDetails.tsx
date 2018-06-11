@@ -1,36 +1,38 @@
-// @flow
 import * as React from "react";
 import { Link, RouterLink, Checkbox } from "ui";
 import { RowStack, ColumnStack, Fit, Fill } from "ui/layout";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
-import { type TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import AllowCopyToClipboard from "../../../../Commons/AllowCopyToClipboard";
-import { type RouterLocationDescriptor } from "../../../../Commons/DataTypes/Routing";
-import { type TaskMetaInformation } from "../../../api/RemoteTaskQueueApi";
-import { type Ticks } from "../../../../Commons/DataTypes/Time";
+import { LocationDescriptor } from "history";
+import { TaskMetaInformation } from "../../../api/RemoteTaskQueueApi";
+import { Ticks } from "../../../../Commons/DataTypes/Time";
 import DateTimeView from "../../../../Commons/DateTimeView/DateTimeView";
 
 import cn from "./TaskDetails.less";
 
 type TaskDetailsProps = {
-    taskInfo: TaskMetaInformation,
-    allowRerunOrCancel: boolean,
-    onRerun: () => any,
-    onCancel: () => any,
-    getTaskLocation: (id: string) => RouterLocationDescriptor,
+    taskInfo: TaskMetaInformation;
+    allowRerunOrCancel: boolean;
+    onRerun: () => any;
+    onCancel: () => any;
+    getTaskLocation: (id: string) => LocationDescriptor;
 };
 
-function dateFormatter(item: TaskMetaInformation, selector: (obj: TaskMetaInformation) => ?Ticks): React.Node {
+function dateFormatter(
+    item: TaskMetaInformation,
+    selector: (obj: TaskMetaInformation) => Nullable<Ticks>
+): JSX.Element {
     return <DateTimeView value={selector(item)} />;
 }
 
 function taskDate(
     taskInfo: TaskMetaInformation,
     caption: string,
-    selector: (obj: TaskMetaInformation) => ?Ticks
-): React.Node {
+    selector: (obj: TaskMetaInformation) => Nullable<Ticks>
+): JSX.Element {
     return (
         <div className={cn("date")}>
             <span className={cn("caption")}>{caption}</span>
@@ -54,7 +56,7 @@ function getStateClassName(taskState: TaskState): string {
     return stateClassNames[taskState];
 }
 
-export default function TaskDetails(props: TaskDetailsProps): React.Node {
+export default function TaskDetails(props: TaskDetailsProps): JSX.Element {
     const { allowRerunOrCancel, taskInfo, onCancel, onRerun, getTaskLocation } = props;
     return (
         <RowStack baseline block gap={1} className={cn("task-details", getStateClassName(taskInfo.state))}>

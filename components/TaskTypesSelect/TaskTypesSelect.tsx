@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { Button, Icon, Tooltip, Checkbox, Input } from "ui";
 import { ColumnStack, RowStack, Fit } from "ui/layout";
@@ -6,14 +5,14 @@ import { ColumnStack, RowStack, Fit } from "ui/layout";
 import cn from "./TaskTypesSelect.less";
 
 export type TaskTypesSelectProps = {
-    availableTaskTypes: string[],
-    value: string[],
-    disabled?: boolean,
-    onChange: (selectedTaskTypes: string[]) => void,
+    availableTaskTypes: string[];
+    value: string[];
+    disabled?: boolean;
+    onChange: (selectedTaskTypes: string[]) => void;
 };
 
 type TaskTypesSelectState = {
-    query: string,
+    query: string;
 };
 
 export default class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskTypesSelectState> {
@@ -21,7 +20,7 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
         query: "",
     };
 
-    render(): React.Node {
+    render(): JSX.Element {
         const { disabled, value } = this.props;
         return (
             <Tooltip
@@ -39,7 +38,7 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
         );
     }
 
-    renderTooltip(): ?React.Node {
+    renderTooltip(): Nullable<JSX.Element> {
         const { availableTaskTypes } = this.props;
         const { query } = this.state;
         if (availableTaskTypes.length === 0) {

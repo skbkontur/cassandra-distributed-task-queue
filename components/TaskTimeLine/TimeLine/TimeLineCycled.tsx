@@ -1,19 +1,18 @@
-// @flow
 import * as React from "react";
 import { Icon } from "ui";
 
 import cn from "./TimeLine.less";
 
-type TimeLineCycledProps = {
-    children?: any,
-    content?: ?React.Node | ?string,
-    icon?: ?string,
+export type TimeLineCycledProps = {
+    children?: any;
+    content?: Nullable<JSX.Element> | Nullable<string>;
+    icon?: Nullable<string>;
 };
 
 export default class TimeLineCycled extends React.Component<TimeLineCycledProps> {
     refs: {
-        entries: ?HTMLElement,
-        lines: ?HTMLElement,
+        entries: HTMLElement;
+        lines: HTMLElement;
     };
 
     componentDidUpdate() {
@@ -36,7 +35,7 @@ export default class TimeLineCycled extends React.Component<TimeLineCycledProps>
         }
     }
 
-    render(): React.Node {
+    render(): JSX.Element {
         const { children, content, icon } = this.props;
 
         return (

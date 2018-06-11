@@ -1,15 +1,14 @@
-// @flow
 import * as React from "react";
 import { RouterLink } from "ui";
-import { type RouterLocationDescriptor } from "react-router-dom";
+import { LocationDescriptor } from "history";
 
 export type TasksPaginatorProps = {
-    nextPageLocation: RouterLocationDescriptor | null,
-    prevPageLocation: RouterLocationDescriptor | null,
+    nextPageLocation: LocationDescriptor | null;
+    prevPageLocation: LocationDescriptor | null;
 };
 
 export default class TasksPaginator extends React.Component<TasksPaginatorProps> {
-    render(): React.Node {
+    render(): JSX.Element {
         const { nextPageLocation, prevPageLocation } = this.props;
         return (
             <div>

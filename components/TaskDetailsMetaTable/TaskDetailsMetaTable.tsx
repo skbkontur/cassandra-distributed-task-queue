@@ -1,19 +1,18 @@
-// @flow
 import * as React from "react";
 
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
-import { type TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
+import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
 import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
-import { type Ticks } from "../../../Commons/DataTypes/Time";
+import { Ticks } from "../../../Commons/DataTypes/Time";
 
 import cn from "./TaskDetailsMetaTable.less";
 
 export type TaskDetailsMetaTableProps = {
-    taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
+    taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
 };
 
 export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps, $FlowFixMeState> {
-    render(): React.Node {
+    render(): JSX.Element {
         return (
             <table className={cn("table")}>
                 <tbody>{this.renderMetaInfo()}</tbody>
@@ -21,7 +20,7 @@ export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMet
         );
     }
 
-    renderMetaInfo(): React.Node[] {
+    renderMetaInfo(): JSX.Element[] {
         const { taskMeta } = this.props;
         return [
             <tr key="TaskId">
@@ -96,7 +95,7 @@ export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMet
     }
 }
 
-function renderDate(date?: ?Ticks): React.Node {
+function renderDate(date?: Nullable<Ticks>): JSX.Element {
     return (
         <span>
             <DateTimeView value={date} />{" "}

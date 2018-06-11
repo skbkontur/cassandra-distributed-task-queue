@@ -1,27 +1,26 @@
-// @flow
 import * as React from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "ui";
 import _ from "lodash";
 import { RowStack, Fit } from "ui/layout";
 
-import { type TaskMetaInformation } from "../../api/RemoteTaskQueueApi";
-import { type RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+import { TaskMetaInformation } from "../../api/RemoteTaskQueueApi";
+import { LocationDescriptor } from "history";
 
 import TaskDetails from "./TaskDetails/TaskDetails";
 import cn from "./TaskTable.less";
 
 export type TaskTableProps = {
-    taskInfos: TaskMetaInformation[],
-    allowRerunOrCancel: boolean,
-    onRerun: string => void,
-    onCancel: string => void,
-    getTaskLocation: string => RouterLocationDescriptor,
+    taskInfos: TaskMetaInformation[];
+    allowRerunOrCancel: boolean;
+    onRerun: (x0: string) => void;
+    onCancel: (x0: string) => void;
+    getTaskLocation: (x0: string) => LocationDescriptor;
 };
 
 type TasksTableState = {
-    openedModal: boolean,
-    modalType: "Cancel" | "Rerun",
-    actionTask: string,
+    openedModal: boolean;
+    modalType: "Cancel" | "Rerun";
+    actionTask: string;
 };
 
 export default class TasksTable extends React.Component<TaskTableProps, TasksTableState> {
@@ -41,7 +40,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    render(): React.Node {
+    render(): JSX.Element {
         const { taskInfos } = this.props;
         const { openedModal } = this.state;
         return (
@@ -52,7 +51,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    renderRow(item: TaskMetaInformation): React.Node {
+    renderRow(item: TaskMetaInformation): JSX.Element {
         const { allowRerunOrCancel, getTaskLocation } = this.props;
         return (
             <div key={item.id} className={cn("task-details-row")}>
@@ -68,7 +67,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    renderModal(): React.Node {
+    renderModal(): JSX.Element {
         const { onCancel, onRerun } = this.props;
         const { modalType, actionTask } = this.state;
 

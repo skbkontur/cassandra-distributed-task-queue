@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink } from "ui";
 import { RowStack, ColumnStack, Fit, Fill } from "ui/layout";
@@ -6,20 +5,20 @@ import { RowStack, ColumnStack, Fit, Fill } from "ui/layout";
 import TaskTypesSelect from "../TaskTypesSelect/TaskTypesSelect";
 import TaskStatesSelect from "../TaskStatesSelect/TaskStatesSelect";
 import { TimeZones } from "../../../Commons/DataTypes/Time";
-import { type RemoteTaskQueueSearchRequest } from "../../api/RemoteTaskQueueApi";
+import { RemoteTaskQueueSearchRequest } from "../../api/RemoteTaskQueueApi";
 import DateTimeRangePicker from "../../../Commons/DateTimeRangePicker/DateTimeRangePicker";
 
 import cn from "./TaskQueueFilter.less";
 
 export type TaskQueueFilterProps = {
-    value: RemoteTaskQueueSearchRequest,
-    availableTaskTypes: string[] | null,
-    onChange: (filterParams: $Shape<RemoteTaskQueueSearchRequest>) => void,
-    onSearchButtonClick: () => void,
+    value: RemoteTaskQueueSearchRequest;
+    availableTaskTypes: string[] | null;
+    onChange: (filterParams: $Shape<RemoteTaskQueueSearchRequest>) => void;
+    onSearchButtonClick: () => void;
 };
 
 type TaskQueueFilterState = {
-    openedModal: boolean,
+    openedModal: boolean;
 };
 
 export default class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQueueFilterState> {
@@ -27,7 +26,7 @@ export default class TaskQueueFilter extends React.Component<TaskQueueFilterProp
         openedModal: false,
     };
 
-    render(): React.Node {
+    render(): JSX.Element {
         const { enqueueDateTimeRange, queryString, states, names } = this.props.value;
         const { availableTaskTypes, onChange, onSearchButtonClick } = this.props;
         const { openedModal } = this.state;
@@ -94,7 +93,7 @@ export default class TaskQueueFilter extends React.Component<TaskQueueFilterProp
         );
     }
 
-    renderModal(): React.Node {
+    renderModal(): JSX.Element {
         return (
             <Modal data-tid="Modal" onClose={() => this.closeModal()} width={900}>
                 <ModalHeader>Справка</ModalHeader>

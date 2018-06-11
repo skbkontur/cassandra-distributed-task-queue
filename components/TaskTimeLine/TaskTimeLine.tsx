@@ -1,13 +1,12 @@
-// @flow
 import * as React from "react";
 import { RouterLink } from "ui";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
 import { ticksToDate } from "../../../Commons/DataTypes/Time";
-import { type Ticks } from "../../../Commons/DataTypes/Time";
-import { type TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
-import { type RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+import { Ticks } from "../../../Commons/DataTypes/Time";
+import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
+import { LocationDescriptor } from "history";
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
 
 import TimeLine from "./TimeLine/TimeLine";
@@ -22,19 +21,19 @@ const IconColors = {
 };
 
 type TaskTimeLineProps = {
-    taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
-    getHrefToTask: (id: string) => RouterLocationDescriptor,
+    taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
+    getHrefToTask: (id: string) => LocationDescriptor;
 };
 
 export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $FlowFixMeState> {
-    ticksToDate(ticks: ?Ticks): ?Date {
+    ticksToDate(ticks: Nullable<Ticks>): Nullable<Date> {
         if (!ticks) {
             return null;
         }
         return ticksToDate(ticks);
     }
 
-    getIconColor(severity: string): ?string {
+    getIconColor(severity: string): Nullable<string> {
         switch (severity) {
             case "error":
                 return "#d43517";
@@ -47,7 +46,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         }
     }
 
-    createSimpleEntry(entry: { title: string, severity?: string, icon: string, date?: ?Ticks }): React.Node {
+    createSimpleEntry(entry: { title: string; severity?: string; icon: string; date?: Nullable<Ticks> }): JSX.Element {
         const severity = entry.severity || "info";
 
         return (
@@ -64,7 +63,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         );
     }
 
-    getStartedEntry(): null | React.Node {
+    getStartedEntry(): null | JSX.Element {
         const { taskMeta } = this.props;
 
         if (!taskMeta.startExecutingTicks) {
@@ -77,13 +76,13 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         });
     }
 
-    getExectionEntries(): (null | React.Node)[] {
+    getExectionEntries(): (null | JSX.Element)[] {
         const { taskMeta } = this.props;
         if (taskMeta.attempts === undefined || taskMeta.attempts === null || taskMeta.attempts === 0) {
             return [this.getShouldStartedEntry(), this.getStartedEntry()];
         }
 
-        const shouldStartAndStartEntries = [];
+        const shouldStartAndStartEntries: Array<null | JSX.Element> = [];
         if (taskMeta.state === TaskStates.WaitingForRerun) {
             shouldStartAndStartEntries.push(
                 this.getStartedEntry(),
@@ -118,7 +117,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         return shouldStartAndStartEntries;
     }
 
-    getShouldStartedEntry(): null | React.Node {
+    getShouldStartedEntry(): null | JSX.Element {
         const { taskMeta } = this.props;
         return this.createSimpleEntry({
             title: "Start scheduled",
@@ -127,7 +126,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         });
     }
 
-    getCurrentStateEntries(): (null | React.Node)[] {
+    getCurrentStateEntries(): (null | JSX.Element)[] {
         const { taskMeta } = this.props;
 
         if (taskMeta.state === TaskStates.Finished) {
@@ -194,7 +193,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         return [];
     }
 
-    getEnqueuedEntry(): null | React.Node {
+    getEnqueuedEntry(): null | JSX.Element {
         const { taskMeta } = this.props;
         return this.createSimpleEntry({
             title: "Enqueued",
@@ -203,7 +202,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         });
     }
 
-    getChildrenTaskIdsEntry(): null | React.Node {
+    getChildrenTaskIdsEntry(): null | JSX.Element {
         const { taskMeta, getHrefToTask } = this.props;
         if (taskMeta.childTaskIds && taskMeta.childTaskIds.length > 0) {
             return (
@@ -228,7 +227,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         return null;
     }
 
-    getParentTaskIdEntry(): null | React.Node {
+    getParentTaskIdEntry(): null | JSX.Element {
         const { taskMeta, getHrefToTask } = this.props;
         if (!taskMeta.parentTaskId) {
             return null;
@@ -245,17 +244,19 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         );
     }
 
-    getTaskTimeLineEntries(): React.Node[] {
+    getTaskTimeLineEntries(): JSX.Element[] {
         return [
             this.getParentTaskIdEntry(),
             this.getEnqueuedEntry(),
             ...this.getExectionEntries(),
             ...this.getCurrentStateEntries(),
             this.getChildrenTaskIdsEntry(),
-        ].filter(Boolean);
+        ]
+            .filter(x => x != null)
+            .map(x => x as JSX.Element);
     }
 
-    render(): React.Node {
+    render(): JSX.Element {
         return <TimeLine>{this.getTaskTimeLineEntries()}</TimeLine>;
     }
 }

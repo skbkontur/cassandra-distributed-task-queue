@@ -1,4 +1,3 @@
-// @flow
 import * as React from "react";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink, RouterLink } from "ui";
 import { RowStack, ColumnStack, Fill, Fit } from "ui/layout";
@@ -13,8 +12,8 @@ import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import Accordion from "../../../Commons/Accordion/Accordion";
 import taskDetailsCustomRender from "../../Domain/TaskDetailsCustomRender";
 import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
-import { type RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
-import { type RouterLocationDescriptor } from "../../../Commons/DataTypes/Routing";
+import { RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
+import { LocationDescriptor } from "history";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
 import { RangeSelector } from "../../../Commons/DateTimeRangePicker/RangeSelector";
 import { TimeZones, ticksToDate } from "../../../Commons/DataTypes/Time";
@@ -22,17 +21,17 @@ import { TimeZones, ticksToDate } from "../../../Commons/DataTypes/Time";
 import cn from "./TaskDetailsPage.less";
 
 export type TaskDetailsPageProps = {
-    parentLocation: RouterLocationDescriptor,
-    taskDetails: ?RemoteTaskInfoModel,
-    getTaskLocation: (id: string) => RouterLocationDescriptor,
-    allowRerunOrCancel: boolean,
-    onRerun: (id: string) => void,
-    onCancel: (id: string) => void,
+    parentLocation: LocationDescriptor;
+    taskDetails: Nullable<RemoteTaskInfoModel>;
+    getTaskLocation: (id: string) => LocationDescriptor;
+    allowRerunOrCancel: boolean;
+    onRerun: (id: string) => void;
+    onCancel: (id: string) => void;
 };
 
 type TaskDetailsPageState = {
-    openedModal: boolean,
-    modalType: "Cancel" | "Rerun",
+    openedModal: boolean;
+    modalType: "Cancel" | "Rerun";
 };
 
 export default class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskDetailsPageState> {
@@ -43,7 +42,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         });
     }
 
-    render(): React.Node {
+    render(): JSX.Element {
         const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation } = this.props;
         const { openedModal } = this.state;
 
@@ -62,7 +61,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
                         </CommonLayoutGreyLineHeader>
                     )}
                     <CommonLayoutContent>
-                        <ColumnStack block streach gap={2}>
+                        <ColumnStack block stretch gap={2}>
                             {taskDetails && (
                                 <Fit>
                                     <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />
@@ -97,11 +96,11 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         );
     }
 
-    getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): ?RouterLocationDescriptor {
+    getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): Nullable<LocationDescriptor> {
         const documentCirculationId =
             // @flow-disable-next-line хоршо бы разобраться и затипизировать четко
-            taskDetails.taskData && typeof taskDetails.taskData.documentCirculationId === "string"
-                ? taskDetails.taskData.documentCirculationId
+            taskDetails.taskData && typeof taskDetails.taskData["documentCirculationId"] === "string"
+                ? taskDetails.taskData["documentCirculationId"]
                 : null;
         if (documentCirculationId != null && taskDetails.taskMeta.ticks != null) {
             const rangeSelector = new RangeSelector(TimeZones.UTC);
@@ -119,7 +118,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         return null;
     }
 
-    renderButtons(): React.Node | null {
+    renderButtons(): JSX.Element | null {
         const { taskDetails } = this.props;
         if (!taskDetails) {
             return null;
@@ -159,7 +158,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         );
     }
 
-    renderModal(): React.Node | null {
+    renderModal(): JSX.Element | null {
         const { onCancel, onRerun, taskDetails } = this.props;
         const { modalType } = this.state;
         if (!taskDetails) {
