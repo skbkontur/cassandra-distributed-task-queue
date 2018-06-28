@@ -32,7 +32,7 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
                     <span className={cn("button-text")}>
                         {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
                     </span>
-                    <Icon name="caret-bottom" />
+                    <Icon name="ArrowTriangleDown" />
                 </Button>
             </Tooltip>
         );
@@ -56,7 +56,7 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
                         <Fit>
                             <Input
                                 value={query}
-                                rightIcon={<Icon name="search" />}
+                                rightIcon={<Icon name="Search" />}
                                 onChange={(e, val) => this.setState({ query: val })}
                             />
                         </Fit>

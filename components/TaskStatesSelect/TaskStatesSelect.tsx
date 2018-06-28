@@ -32,7 +32,7 @@ export default class TaskStatesSelect extends React.Component<TaskStatesSelectPr
                     <span data-tid="ButtonText" className={cn("button-text")}>
                         {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
                     </span>
-                    <Icon name="caret-bottom" />
+                    <Icon name="ArrowTriangleDown" />
                 </Button>
             </Tooltip>
         );

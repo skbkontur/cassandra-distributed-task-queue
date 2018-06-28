@@ -1,12 +1,12 @@
 import * as React from "react";
-import { Icon } from "ui";
+import { Icon, IconName } from "ui";
 
 import cn from "./TimeLine.less";
 
 export type TimeLineCycledProps = {
     children?: any;
     content?: Nullable<JSX.Element> | Nullable<string>;
-    icon?: Nullable<string>;
+    icon?: IconName;
 };
 
 export default class TimeLineCycled extends React.Component<TimeLineCycledProps> {

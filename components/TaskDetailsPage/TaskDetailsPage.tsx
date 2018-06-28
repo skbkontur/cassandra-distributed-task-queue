@@ -135,21 +135,21 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
                 <Fill />
                 {relatedTasksLocation && (
                     <Fit>
-                        <RouterLink icon="list" data-tid={"RelatedTaskTree"} to={relatedTasksLocation}>
+                        <RouterLink icon="ListRows" data-tid={"RelatedTaskTree"} to={relatedTasksLocation}>
                             View related tasks tree
                         </RouterLink>
                     </Fit>
                 )}
                 {isCancelable && (
                     <Fit>
-                        <ButtonLink icon="remove" use="danger" data-tid={"CancelButton"} onClick={() => this.cancel()}>
+                        <ButtonLink icon="Delete" use="danger" data-tid={"CancelButton"} onClick={() => this.cancel()}>
                             Cancel task
                         </ButtonLink>
                     </Fit>
                 )}
                 {isRerunable && (
                     <Fit>
-                        <ButtonLink icon="refresh" data-tid={"RerunButton"} onClick={() => this.rerun()}>
+                        <ButtonLink icon="Refresh" data-tid={"RerunButton"} onClick={() => this.rerun()}>
                             Rerun task
                         </ButtonLink>
                     </Fit>

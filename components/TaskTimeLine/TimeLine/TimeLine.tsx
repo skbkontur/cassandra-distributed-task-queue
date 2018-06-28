@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Icon } from "ui";
+import { Icon, IconName } from "ui";
 
 import TimeLineCycled, { TimeLineCycledProps } from "./TimeLineCycled";
 import cn from "./TimeLine.less";
@@ -25,8 +25,8 @@ export default class TimeLine extends React.Component<TimeLineProps> {
 
 type TimeLineEntryProps = {
     children?: React.ReactNode;
-    icon?: Nullable<string>;
-    iconColor?: Nullable<string>;
+    icon: IconName;
+    iconColor?: string;
 };
 
 TimeLine.Branch = function TimeLine({ children }: TimeLineProps): JSX.Element {

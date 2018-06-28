@@ -1,5 +1,5 @@
 import * as React from "react";
-import { RouterLink } from "ui";
+import { RouterLink, IconName } from "ui";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
@@ -33,7 +33,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         return ticksToDate(ticks);
     }
 
-    getIconColor(severity: string): Nullable<string> {
+    getIconColor(severity: string): string | undefined {
         switch (severity) {
             case "error":
                 return "#d43517";
@@ -46,7 +46,12 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         }
     }
 
-    createSimpleEntry(entry: { title: string; severity?: string; icon: string; date?: Nullable<Ticks> }): JSX.Element {
+    createSimpleEntry(entry: {
+        title: string;
+        severity?: string;
+        icon: IconName;
+        date?: Nullable<Ticks>;
+    }): JSX.Element {
         const severity = entry.severity || "info";
 
         return (
@@ -71,7 +76,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         }
         return this.createSimpleEntry({
             title: "Started",
-            icon: "enter",
+            icon: "ArrowCorner1",
             date: taskMeta.startExecutingTicks,
         });
     }
@@ -88,7 +93,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
                 this.getStartedEntry(),
                 this.createSimpleEntry({
                     title: "Finished",
-                    icon: "ok",
+                    icon: "Ok",
                     date: taskMeta.finishExecutingTicks,
                 })
             );
@@ -97,7 +102,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
                 this.getStartedEntry(),
                 this.createSimpleEntry({
                     title: "Failed",
-                    icon: "clear",
+                    icon: "Clear",
                     severity: "error",
                     date: taskMeta.finishExecutingTicks,
                 })
@@ -109,7 +114,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         if (taskMeta.attempts !== undefined && taskMeta.attempts !== null && taskMeta.attempts > 1) {
             const TimeLineCycled = TimeLine.Cycled;
             return [
-                <TimeLineCycled key="FewAttempts" icon="refresh" content={`Restarted for ${taskMeta.attempts} times`}>
+                <TimeLineCycled key="FewAttempts" icon="Refresh" content={`Restarted for ${taskMeta.attempts} times`}>
                     {shouldStartAndStartEntries}
                 </TimeLineCycled>,
             ];
@@ -121,7 +126,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         const { taskMeta } = this.props;
         return this.createSimpleEntry({
             title: "Start scheduled",
-            icon: "wait",
+            icon: "Clock",
             date: taskMeta.minimalStartTicks,
         });
     }
@@ -133,7 +138,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
             return [
                 this.createSimpleEntry({
                     title: "Finished",
-                    icon: "ok",
+                    icon: "Ok",
                     severity: "success",
                     date: taskMeta.finishExecutingTicks,
                 }),
@@ -143,7 +148,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
             return [
                 this.createSimpleEntry({
                     title: "Failed",
-                    icon: "clear",
+                    icon: "Clear",
                     severity: "error",
                     date: taskMeta.finishExecutingTicks,
                 }),
@@ -153,7 +158,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
             return [
                 this.createSimpleEntry({
                     title: "Canceled",
-                    icon: "remove",
+                    icon: "Delete",
                     severity: "error",
                     date: taskMeta.finishExecutingTicks || taskMeta.lastModificationTicks,
                 }),
@@ -164,7 +169,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
                 this.getShouldStartedEntry(),
                 this.createSimpleEntry({
                     title: "Waiting for next run",
-                    icon: "wait",
+                    icon: "Clock",
                     severity: "waiting",
                 }),
             ];
@@ -173,7 +178,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
             return [
                 this.createSimpleEntry({
                     title: "Waiting for complete",
-                    icon: "wait",
+                    icon: "Clock",
                     severity: "waiting",
                 }),
             ];
@@ -182,7 +187,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
             return [
                 this.createSimpleEntry({
                     title: "Waiting for start",
-                    icon: "wait",
+                    icon: "Clock",
                     severity: "waiting",
                 }),
             ];
@@ -197,7 +202,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         const { taskMeta } = this.props;
         return this.createSimpleEntry({
             title: "Enqueued",
-            icon: "download",
+            icon: "Download",
             date: taskMeta.ticks,
         });
     }
@@ -206,7 +211,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
         const { taskMeta, getHrefToTask } = this.props;
         if (taskMeta.childTaskIds && taskMeta.childTaskIds.length > 0) {
             return (
-                <TimeLineEntry key="Children" icon="arrow-bottom" iconColor={IconColors.grey}>
+                <TimeLineEntry key="Children" icon="ArrowBoldDown" iconColor={IconColors.grey}>
                     <div className={cn("entry", "waiting")}>
                         <div>Enqueued tasks:</div>
                         {taskMeta.childTaskIds.slice(0, 3).map(x => (
@@ -233,7 +238,7 @@ export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $Fl
             return null;
         }
         return (
-            <TimeLineEntry key="Parent" icon="arrow-top" iconColor={IconColors.grey}>
+            <TimeLineEntry key="Parent" icon="ArrowBoldUp" iconColor={IconColors.grey}>
                 <div className={cn("entry", "waiting")}>
                     Parent:{" "}
                     <AllowCopyToClipboard>

@@ -104,7 +104,7 @@ export default function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                                     data-tid="Cancel"
                                                     disabled={!cancelableStates.includes(taskInfo.state)}
                                                     onClick={onCancel}
-                                                    icon="remove">
+                                                    icon="Delete">
                                                     Cancel
                                                 </Link>
                                             </Fit>
@@ -113,7 +113,7 @@ export default function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                                     data-tid="Rerun"
                                                     disabled={!rerunableStates.includes(taskInfo.state)}
                                                     onClick={onRerun}
-                                                    icon="refresh">
+                                                    icon="Refresh">
                                                     Rerun
                                                 </Link>
                                             </Fit>

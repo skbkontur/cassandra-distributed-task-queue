@@ -13,12 +13,12 @@ export default class TasksPaginator extends React.Component<TasksPaginatorProps>
         return (
             <div>
                 {prevPageLocation && (
-                    <RouterLink to={prevPageLocation} icon="arrow-left" data-tid="PrevLink">
+                    <RouterLink to={prevPageLocation} icon="ArrowBoldLeft" data-tid="PrevLink">
                         Предыдущая
                     </RouterLink>
                 )}
                 {nextPageLocation && (
-                    <RouterLink to={nextPageLocation} icon="arrow-right" data-tid="NextLink">
+                    <RouterLink to={nextPageLocation} icon="ArrowBoldRight" data-tid="NextLink">
                         Следующая
                     </RouterLink>
                 )}

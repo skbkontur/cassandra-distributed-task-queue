@@ -229,10 +229,10 @@ export default function customRender(target: mixed, path: string[]): JSX.Element
                 <LinkDropdown renderTitle={rawMessageId}>
                     <LinkMenuItem
                         href={`/AdminTools/TablesView/RawMessageMetaInformation/${transportBoxId}/${rawMessageId}`}>
-                        <Icon name="doc-o" /> Открыть RawMessageMetaInformation
+                        <Icon name="DocumentLite" /> Открыть RawMessageMetaInformation
                     </LinkMenuItem>
                     <LinkMenuItem href={`/AdminTools/FileData?fileId=${transportBoxId}_${rawMessageId}`}>
-                        <Icon name="download" /> Скачать файл
+                        <Icon name="Download" /> Скачать файл
                     </LinkMenuItem>
                 </LinkDropdown>
             );
