@@ -1,3 +1,5 @@
+@importSettings "edi\graphite.csf"
+
 #Общие настройки сервисов
 ListeningPort = 4403,4404,4405,4406,4407
 ServiceName = ExchangeService

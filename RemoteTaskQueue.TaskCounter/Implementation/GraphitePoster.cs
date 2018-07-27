@@ -2,17 +2,17 @@
 
 using RemoteQueue.Cassandra.Entities;
 
-using SKBKontur.Catalogue.Core.Configuration.Settings;
 using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
+using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
 
 namespace RemoteTaskQueue.TaskCounter.Implementation
 {
     public class GraphitePoster
     {
-        public GraphitePoster(ICatalogueGraphiteClient graphiteClient, ICompositeCounter counter, IApplicationSettings applicationSettings)
+        public GraphitePoster(ICatalogueGraphiteClient graphiteClient, IGraphitePathPrefixProvider graphitePathPrefixProvider, ICompositeCounter counter)
         {
             this.counter = counter;
-            graphitePrefix = applicationSettings.TryGetString("TaskCounter.GraphitePrefix", out graphitePrefix) ? graphitePrefix : null;
+            graphitePrefix = $"{graphitePathPrefixProvider.GlobalPathPrefix}.SubSystem.RemoteTaskQueueCounter";
             this.graphiteClient = graphiteClient;
         }
 
@@ -24,14 +24,14 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             var taskCounts = counter.GetAllCounts();
             //todo post time value, not now
             DateTime utcNow = DateTime.UtcNow;
-            graphiteClient.Send(string.Format("{0}.TotalCount.OldWaitingTaskCount.{1}", graphitePrefix, Environment.MachineName), totalCount.OldWaitingTaskCount, utcNow);
-            graphiteClient.Send(string.Format("{0}.TotalCount.TaskCounter.{1}", graphitePrefix, Environment.MachineName), totalCount.Count, utcNow);
-            graphiteClient.Send(string.Format("{0}.ActualizationLag.TaskCounter.{1}", graphitePrefix, Environment.MachineName), (long)TimeSpan.FromTicks(utcNow.Ticks - totalCount.UpdateTicks).TotalMilliseconds, utcNow);
-            SendCountsByState(string.Format("{0}.TotalCount", graphitePrefix), totalCount.Counts);
+            graphiteClient.Send($"{graphitePrefix}.TotalCount.OldWaitingTaskCount.{Environment.MachineName}", totalCount.OldWaitingTaskCount, utcNow);
+            graphiteClient.Send($"{graphitePrefix}.TotalCount.TaskCounter.{Environment.MachineName}", totalCount.Count, utcNow);
+            graphiteClient.Send($"{graphitePrefix}.ActualizationLag.TaskCounter.{Environment.MachineName}", (long)TimeSpan.FromTicks(utcNow.Ticks - totalCount.UpdateTicks).TotalMilliseconds, utcNow);
+            SendCountsByState($"{graphitePrefix}.TotalCount", totalCount.Counts);
             foreach (var kvp in taskCounts)
             {
-                graphiteClient.Send(string.Format("{0}.{2}_Count.TaskCounter.{1}", graphitePrefix, Environment.MachineName, kvp.Key), kvp.Value.Count, utcNow);
-                SendCountsByState(string.Format("{0}.{1}_Count", graphitePrefix, kvp.Key), kvp.Value.Counts);
+                graphiteClient.Send($"{graphitePrefix}.{kvp.Key}_Count.TaskCounter.{Environment.MachineName}", kvp.Value.Count, utcNow);
+                SendCountsByState($"{graphitePrefix}.{kvp.Key}_Count", kvp.Value.Counts);
             }
         }
 
@@ -41,7 +41,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             foreach (var taskState in states)
             {
                 var count = counts[(int)taskState];
-                graphiteClient.Send(string.Format("{0}.{1}.{2}", prefix, taskState, Environment.MachineName), count, DateTime.UtcNow);
+                graphiteClient.Send($"{prefix}.{taskState}.{Environment.MachineName}", count, DateTime.UtcNow);
             }
         }
 

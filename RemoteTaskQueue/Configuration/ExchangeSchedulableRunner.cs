@@ -24,7 +24,7 @@ namespace RemoteQueue.Configuration
             IExchangeSchedulableRunnerSettings runnerSettings,
             IPeriodicTaskRunner periodicTaskRunner,
             ICatalogueGraphiteClient graphiteClient,
-            IProjectWideGraphitePathPrefixProvider graphitePathPrefixProvider,
+            IGraphitePathPrefixProvider graphitePathPrefixProvider,
             ITaskDataRegistry taskDataRegistry,
             ITaskHandlerRegistry taskHandlerRegistry,
             ISerializer serializer,

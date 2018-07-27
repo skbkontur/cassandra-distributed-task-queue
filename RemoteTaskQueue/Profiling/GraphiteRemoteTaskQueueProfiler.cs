@@ -15,36 +15,36 @@ namespace RemoteQueue.Profiling
     [IgnoredImplementation]
     public class GraphiteRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
-        public GraphiteRemoteTaskQueueProfiler([NotNull] IProjectWideGraphitePathPrefixProvider graphitePathPrefixProvider, [NotNull] ICatalogueStatsDClient statsDClient)
+        public GraphiteRemoteTaskQueueProfiler([NotNull] IGraphitePathPrefixProvider graphitePathPrefixProvider, [NotNull] ICatalogueStatsDClient statsDClient)
         {
-            if (string.IsNullOrWhiteSpace(graphitePathPrefixProvider.ProjectWideGraphitePathPrefix))
+            if (string.IsNullOrWhiteSpace(graphitePathPrefixProvider.GlobalPathPrefix))
                 this.statsDClient = EmptyStatsDClient.Instance;
             else
             {
-                var keyNamePrefix = string.Format("{0}.SubSystem.RemoteTaskQueueTasks", graphitePathPrefixProvider.ProjectWideGraphitePathPrefix);
+                var keyNamePrefix = $"{graphitePathPrefixProvider.GlobalPathPrefix}.SubSystem.RemoteTaskQueueTasks";
                 this.statsDClient = statsDClient.WithScopes(new[]
                     {
-                        string.Format("{0}.{1}", keyNamePrefix, Environment.MachineName),
-                        string.Format("{0}.{1}", keyNamePrefix, "Total")
+                        $"{keyNamePrefix}.{Environment.MachineName}",
+                        $"{keyNamePrefix}.Total"
                     });
             }
         }
 
         public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)
         {
-            statsDClient.Increment("TasksQueued." + meta.Name);
+            statsDClient.Increment($"TasksQueued.{meta.Name}");
         }
 
         public void ProcessTaskExecutionFinished([NotNull] TaskMetaInformation meta, [NotNull] HandleResult handleResult, TimeSpan taskExecutionTime)
         {
-            statsDClient.Timing("ExecutionTime." + meta.Name, (long)taskExecutionTime.TotalMilliseconds);
-            statsDClient.Increment("TasksExecuted." + meta.Name + "." + handleResult.FinishAction);
+            statsDClient.Timing($"ExecutionTime.{meta.Name}", (long)taskExecutionTime.TotalMilliseconds);
+            statsDClient.Increment($"TasksExecuted.{meta.Name}.{handleResult.FinishAction}");
         }
 
         public void ProcessTaskExecutionFailed([NotNull] TaskMetaInformation meta, TimeSpan taskExecutionTime)
         {
-            statsDClient.Timing("ExecutionTime." + meta.Name, (long)taskExecutionTime.TotalMilliseconds);
-            statsDClient.Increment("TasksExecutionFailed." + meta.Name);
+            statsDClient.Timing($"ExecutionTime.{meta.Name}", (long)taskExecutionTime.TotalMilliseconds);
+            statsDClient.Increment($"TasksExecutionFailed.{meta.Name}");
         }
 
         private readonly ICatalogueStatsDClient statsDClient;

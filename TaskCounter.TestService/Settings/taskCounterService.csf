@@ -1,3 +1,5 @@
+@importSettings "edi\graphite.csf"
+
 ServiceName = TaskCounterService
 LogDirectory = logs
 ListeningPort = 4410

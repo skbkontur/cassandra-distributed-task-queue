@@ -16,11 +16,11 @@ namespace RemoteQueue.Configuration
 {
     public class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
     {
-        public ReportConsumerStateToGraphiteTask(ICatalogueGraphiteClient graphiteClient, IProjectWideGraphitePathPrefixProvider graphitePathPrefixProvider, List<IHandlerManager> handlerManagers)
+        public ReportConsumerStateToGraphiteTask(ICatalogueGraphiteClient graphiteClient, IGraphitePathPrefixProvider graphitePathPrefixProvider, List<IHandlerManager> handlerManagers)
         {
             this.graphiteClient = graphiteClient;
             this.handlerManagers = handlerManagers;
-            graphitePathPrefix = FormatGraphitePathPrefix(graphitePathPrefixProvider.ProjectWideGraphitePathPrefix);
+            graphitePathPrefix = FormatGraphitePathPrefix(graphitePathPrefixProvider.GlobalPathPrefix);
             startupTimestamp = Timestamp.Now;
         }
 
@@ -32,7 +32,7 @@ namespace RemoteQueue.Configuration
                                      .Replace(".exe", string.Empty)
                                      .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
                                      .Last();
-            return string.Format("{0}.SubSystem.RemoteTaskQueueMonitoring.{1}.{2}", projectWideGraphitePathPrefix, Environment.MachineName, processName);
+            return $"{projectWideGraphitePathPrefix}.SubSystem.RemoteTaskQueueMonitoring.{Environment.MachineName}.{processName}";
         }
 
         public override sealed void Run()
@@ -45,7 +45,7 @@ namespace RemoteQueue.Configuration
                 foreach (var marker in handlerManager.GetCurrentLiveRecordTicksMarkers())
                 {
                     var lag = TimeSpan.FromTicks(now.Ticks - marker.CurrentTicks);
-                    var graphitePath = string.Format("{0}.LiveRecordTicksMarkerLag.{1}.{2}", graphitePathPrefix, marker.TaskIndexShardKey.TaskState, marker.TaskIndexShardKey.TaskTopic);
+                    var graphitePath = $"{graphitePathPrefix}.LiveRecordTicksMarkerLag.{marker.TaskIndexShardKey.TaskState}.{marker.TaskIndexShardKey.TaskTopic}";
                     graphiteClient.Send(graphitePath, (long)lag.TotalMilliseconds, now.ToDateTime());
                 }
             }
