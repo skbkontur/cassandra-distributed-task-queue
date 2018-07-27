@@ -189,7 +189,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
-            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Single().ExceptionMessageInfo, Is.StringContaining(exception.Message));
+            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Single().ExceptionMessageInfo, Contains.Substring(exception.Message));
             Assert.That(() => taskExceptionInfoStorage.Read(new[] {meta})[meta.Id], Is.Empty.After((int)metaTtl.Multiply(2).TotalMilliseconds, 500));
         }
 
@@ -208,7 +208,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
             Thread.Sleep(metaTtl.Multiply(2));
-            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Single().ExceptionMessageInfo, Is.StringContaining(exception.Message));
+            Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Single().ExceptionMessageInfo, Contains.Substring(exception.Message));
         }
 
         [Test]
