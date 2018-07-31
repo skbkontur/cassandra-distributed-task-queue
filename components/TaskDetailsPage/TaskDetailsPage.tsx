@@ -1,48 +1,48 @@
+import { LocationDescriptor } from "history";
 import * as React from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink, RouterLink } from "ui";
-import { RowStack, ColumnStack, Fill, Fit } from "ui/layout";
+import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui";
+import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
+import Accordion from "../../../Commons/Accordion/Accordion";
+import { ticksToDate, TimeZones } from "../../../Commons/DataTypes/Time";
+import { RangeSelector } from "../../../Commons/DateTimeRangePicker/RangeSelector";
 import CommonLayout, {
+    CommonLayoutContent,
     CommonLayoutGoBack,
     CommonLayoutGreyLineHeader,
-    CommonLayoutContent,
 } from "../../../Commons/Layouts";
-import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
-import Accordion from "../../../Commons/Accordion/Accordion";
-import taskDetailsCustomRender from "../../Domain/TaskDetailsCustomRender";
-import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
 import { RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
-import { LocationDescriptor } from "history";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
-import { RangeSelector } from "../../../Commons/DateTimeRangePicker/RangeSelector";
-import { TimeZones, ticksToDate } from "../../../Commons/DataTypes/Time";
+import taskDetailsCustomRender from "../../Domain/TaskDetailsCustomRender";
+import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
+import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
 
 import cn from "./TaskDetailsPage.less";
 
-export type TaskDetailsPageProps = {
+export interface TaskDetailsPageProps {
     parentLocation: LocationDescriptor;
     taskDetails: Nullable<RemoteTaskInfoModel>;
     getTaskLocation: (id: string) => LocationDescriptor;
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => void;
     onCancel: (id: string) => void;
-};
+}
 
-type TaskDetailsPageState = {
+interface TaskDetailsPageState {
     openedModal: boolean;
     modalType: "Cancel" | "Rerun";
-};
+}
 
 export default class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskDetailsPageState> {
-    componentWillMount() {
+    public componentWillMount() {
         this.setState({
             openedModal: false,
             modalType: "Cancel",
         });
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation } = this.props;
         const { openedModal } = this.state;
 
@@ -96,7 +96,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         );
     }
 
-    getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): Nullable<LocationDescriptor> {
+    public getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): Nullable<LocationDescriptor> {
         const documentCirculationId =
             // @flow-disable-next-line хоршо бы разобраться и затипизировать четко
             taskDetails.taskData && typeof taskDetails.taskData["documentCirculationId"] === "string"
@@ -118,7 +118,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         return null;
     }
 
-    renderButtons(): JSX.Element | null {
+    public renderButtons(): JSX.Element | null {
         const { taskDetails } = this.props;
         if (!taskDetails) {
             return null;
@@ -158,7 +158,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         );
     }
 
-    renderModal(): JSX.Element | null {
+    public renderModal(): JSX.Element | null {
         const { onCancel, onRerun, taskDetails } = this.props;
         const { modalType } = this.state;
         if (!taskDetails) {
@@ -210,21 +210,21 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
         );
     }
 
-    rerun() {
+    public rerun() {
         this.setState({
             openedModal: true,
             modalType: "Rerun",
         });
     }
 
-    cancel() {
+    public cancel() {
         this.setState({
             openedModal: true,
             modalType: "Cancel",
         });
     }
 
-    closeModal() {
+    public closeModal() {
         this.setState({
             openedModal: false,
         });

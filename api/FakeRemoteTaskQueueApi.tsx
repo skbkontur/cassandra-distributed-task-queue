@@ -2,12 +2,12 @@ import moment from "moment";
 import { delay } from "utils";
 
 import { dateToTicks } from "../../Commons/DataTypes/Time";
-import { TaskStates } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { RemoteTaskQueueSearchResults } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
-import { RemoteTaskQueueSearchRequest } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
-import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 import { RemoteTaskInfoModel } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
+import { RemoteTaskQueueSearchRequest } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
+import { RemoteTaskQueueSearchResults } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
 import { TaskManipulationResult } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskManipulationResult";
+import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
+import { TaskStates } from "../../Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import { IRemoteTaskQueueApi } from "./RemoteTaskQueueApi";
 
@@ -50,13 +50,13 @@ export function createTask(
 }
 
 export class RemoteTaskQueueApi implements IRemoteTaskQueueApi {
-    async getAllTaskNames(): Promise<string[]> {
+    public async getAllTaskNames(): Promise<string[]> {
         await delay(1300);
         emulateErrors();
         return ["Name1", "Name2", "Name3", "Name4", "Name5"];
     }
 
-    async search(
+    public async search(
         _searchRequest: RemoteTaskQueueSearchRequest,
         _from: number,
         _size: number
@@ -131,7 +131,7 @@ export class RemoteTaskQueueApi implements IRemoteTaskQueueApi {
         };
     }
 
-    async getTaskDetails(taskId: string): Promise<RemoteTaskInfoModel> {
+    public async getTaskDetails(taskId: string): Promise<RemoteTaskInfoModel> {
         await delay(1000);
         emulateErrors();
         return {
@@ -180,7 +180,7 @@ export class RemoteTaskQueueApi implements IRemoteTaskQueueApi {
         };
     }
 
-    async cancelTasks(_ids: string[]): Promise<{ [key: string]: TaskManipulationResult }> {
+    public async cancelTasks(_ids: string[]): Promise<{ [key: string]: TaskManipulationResult }> {
         await delay(1000);
         emulateErrors();
         return {
@@ -188,7 +188,7 @@ export class RemoteTaskQueueApi implements IRemoteTaskQueueApi {
         };
     }
 
-    async rerunTasks(_ids: string[]): Promise<{ [key: string]: TaskManipulationResult }> {
+    public async rerunTasks(_ids: string[]): Promise<{ [key: string]: TaskManipulationResult }> {
         await delay(1000);
         emulateErrors();
         return {
@@ -196,7 +196,7 @@ export class RemoteTaskQueueApi implements IRemoteTaskQueueApi {
         };
     }
 
-    async rerunTasksBySearchQuery(
+    public async rerunTasksBySearchQuery(
         _searchRequest: RemoteTaskQueueSearchRequest
     ): Promise<{ [key: string]: TaskManipulationResult }> {
         await delay(1000);
@@ -206,7 +206,7 @@ export class RemoteTaskQueueApi implements IRemoteTaskQueueApi {
         };
     }
 
-    async cancelTasksBySearchQuery(
+    public async cancelTasksBySearchQuery(
         _searchRequest: RemoteTaskQueueSearchRequest
     ): Promise<{ [key: string]: TaskManipulationResult }> {
         await delay(1000);

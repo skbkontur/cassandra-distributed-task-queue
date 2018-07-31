@@ -1,15 +1,15 @@
 import * as React from "react";
 import { Icon, IconName } from "ui";
 
-import TimeLineCycled, { TimeLineCycledProps } from "./TimeLineCycled";
 import cn from "./TimeLine.less";
+import TimeLineCycled, { TimeLineCycledProps } from "./TimeLineCycled";
 
-type TimeLineProps = {
+interface TimeLineProps {
     children?: any;
-};
+}
 
 export default class TimeLine extends React.Component<TimeLineProps> {
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { children } = this.props;
         return (
             <div className={cn("root")} data-tid={"InnerTimeLine"}>
@@ -17,17 +17,17 @@ export default class TimeLine extends React.Component<TimeLineProps> {
             </div>
         );
     }
-    static Branch: React.ComponentType<TimeLineProps>;
-    static BranchNode: React.ComponentType<TimeLineProps>;
-    static Entry: React.ComponentType<TimeLineEntryProps>;
-    static Cycled: React.ComponentType<TimeLineCycledProps>;
+    public static Branch: React.ComponentType<TimeLineProps>;
+    public static BranchNode: React.ComponentType<TimeLineProps>;
+    public static Entry: React.ComponentType<TimeLineEntryProps>;
+    public static Cycled: React.ComponentType<TimeLineCycledProps>;
 }
 
-type TimeLineEntryProps = {
+interface TimeLineEntryProps {
     children?: React.ReactNode;
     icon: IconName;
     iconColor?: string;
-};
+}
 
 TimeLine.Branch = function TimeLine({ children }: TimeLineProps): JSX.Element {
     return (
@@ -39,20 +39,20 @@ TimeLine.Branch = function TimeLine({ children }: TimeLineProps): JSX.Element {
 };
 
 TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineProps> {
-    refs: {
+    public refs: {
         branches: HTMLElement;
         line: HTMLElement;
     };
 
-    componentDidUpdate() {
+    public componentDidUpdate() {
         this.updateLinesHeight();
     }
 
-    componentDidMount() {
+    public componentDidMount() {
         this.updateLinesHeight();
     }
 
-    updateLinesHeight() {
+    public updateLinesHeight() {
         if (this.refs.branches != null) {
             const branches = this.refs.branches.children;
             const lastEntry = branches[branches.length - 1];
@@ -64,7 +64,7 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineP
         }
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { children } = this.props;
         return (
             <div className={cn("branch-node")}>

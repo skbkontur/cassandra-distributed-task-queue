@@ -3,27 +3,27 @@ import { Icon, IconName } from "ui";
 
 import cn from "./TimeLine.less";
 
-export type TimeLineCycledProps = {
+export interface TimeLineCycledProps {
     children?: any;
     content?: Nullable<JSX.Element> | Nullable<string>;
     icon?: IconName;
-};
+}
 
 export default class TimeLineCycled extends React.Component<TimeLineCycledProps> {
-    refs: {
+    public refs: {
         entries: HTMLElement;
         lines: HTMLElement;
     };
 
-    componentDidUpdate() {
+    public componentDidUpdate() {
         this.updateLinesHeight();
     }
 
-    componentDidMount() {
+    public componentDidMount() {
         this.updateLinesHeight();
     }
 
-    updateLinesHeight() {
+    public updateLinesHeight() {
         if (this.refs.entries != null) {
             const entries = this.refs.entries.children;
             const lastEntry = entries[entries.length - 1];
@@ -35,7 +35,7 @@ export default class TimeLineCycled extends React.Component<TimeLineCycledProps>
         }
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { children, content, icon } = this.props;
 
         return (

@@ -1,16 +1,16 @@
 import * as React from "react";
-import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
+import { Button, Checkbox, Icon, Tooltip } from "ui";
+import { ColumnStack, Fit } from "ui/layout";
 import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { Button, Icon, Tooltip, Checkbox } from "ui";
-import { ColumnStack, Fit } from "ui/layout";
+import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import cn from "./TaskStatesSelect.less";
 
-export type TaskStatesSelectProps = {
+export interface TaskStatesSelectProps {
     value: TaskState[];
     onChange: (selectedTaskStates: TaskState[]) => void;
-};
+}
 
 const TaskStateCaptions = {
     [TaskStates.Unknown]: "Unknown",
@@ -24,7 +24,7 @@ const TaskStateCaptions = {
 };
 
 export default class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { value } = this.props;
         return (
             <Tooltip render={() => this.renderTooltip()} trigger="click" pos="bottom left">
@@ -38,7 +38,7 @@ export default class TaskStatesSelect extends React.Component<TaskStatesSelectPr
         );
     }
 
-    renderTooltip(): JSX.Element {
+    public renderTooltip(): JSX.Element {
         return (
             <ColumnStack block gap={2}>
                 {getAllTaskStates().map((item, index) => {
@@ -57,12 +57,12 @@ export default class TaskStatesSelect extends React.Component<TaskStatesSelectPr
         );
     }
 
-    isItemSelected(item: TaskState): boolean {
+    public isItemSelected(item: TaskState): boolean {
         const { value } = this.props;
         return Boolean(value.find(i => i === item));
     }
 
-    selectItem(val: boolean, taskState: TaskState) {
+    public selectItem(val: boolean, taskState: TaskState) {
         const { value, onChange } = this.props;
         const newSelectedArray = value.slice();
 

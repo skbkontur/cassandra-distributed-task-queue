@@ -1,36 +1,36 @@
-import * as React from "react";
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "ui";
+import { LocationDescriptor } from "history";
 import _ from "lodash";
-import { RowStack, Fit } from "ui/layout";
+import * as React from "react";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
+import { Fit, RowStack } from "ui/layout";
 
 import { TaskMetaInformation } from "../../api/RemoteTaskQueueApi";
-import { LocationDescriptor } from "history";
 
 import TaskDetails from "./TaskDetails/TaskDetails";
 import cn from "./TaskTable.less";
 
-export type TaskTableProps = {
+export interface TaskTableProps {
     taskInfos: TaskMetaInformation[];
     allowRerunOrCancel: boolean;
     onRerun: (x0: string) => void;
     onCancel: (x0: string) => void;
     getTaskLocation: (x0: string) => LocationDescriptor;
-};
+}
 
-type TasksTableState = {
+interface TasksTableState {
     openedModal: boolean;
     modalType: "Cancel" | "Rerun";
     actionTask: string;
-};
+}
 
 export default class TasksTable extends React.Component<TaskTableProps, TasksTableState> {
-    state: TasksTableState = {
+    public state: TasksTableState = {
         openedModal: false,
         modalType: "Cancel",
         actionTask: "",
     };
 
-    shouldComponentUpdate(nextProps: TaskTableProps, nextState: TasksTableState): boolean {
+    public shouldComponentUpdate(nextProps: TaskTableProps, nextState: TasksTableState): boolean {
         return (
             !_.isEqual(this.props.taskInfos, nextProps.taskInfos) ||
             !_.isEqual(this.props.allowRerunOrCancel, nextProps.allowRerunOrCancel) ||
@@ -40,7 +40,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { taskInfos } = this.props;
         const { openedModal } = this.state;
         return (
@@ -51,7 +51,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    renderRow(item: TaskMetaInformation): JSX.Element {
+    public renderRow(item: TaskMetaInformation): JSX.Element {
         const { allowRerunOrCancel, getTaskLocation } = this.props;
         return (
             <div key={item.id} className={cn("task-details-row")}>
@@ -67,7 +67,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    renderModal(): JSX.Element {
+    public renderModal(): JSX.Element {
         const { onCancel, onRerun } = this.props;
         const { modalType, actionTask } = this.state;
 
@@ -117,7 +117,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         );
     }
 
-    rerun(id: string) {
+    public rerun(id: string) {
         this.setState({
             openedModal: true,
             modalType: "Rerun",
@@ -125,7 +125,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         });
     }
 
-    cancel(id: string) {
+    public cancel(id: string) {
         this.setState({
             openedModal: true,
             modalType: "Cancel",
@@ -133,7 +133,7 @@ export default class TasksTable extends React.Component<TaskTableProps, TasksTab
         });
     }
 
-    closeModal() {
+    public closeModal() {
         this.setState({
             openedModal: false,
         });

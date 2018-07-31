@@ -3,7 +3,9 @@ import { ApiProviderBase } from "../../Commons/ApiInjection";
 
 import { IRemoteTaskQueueApi } from "./RemoteTaskQueueApi";
 
-type ApiProps = { remoteTaskQueueApi: IRemoteTaskQueueApi };
+interface ApiProps {
+    remoteTaskQueueApi: IRemoteTaskQueueApi;
+}
 
 const ApiProvider: ApiProviderBase<ApiProps> = createApiProvider(["remoteTaskQueueApi"]);
 export { ApiProvider };

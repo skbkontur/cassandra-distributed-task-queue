@@ -1,51 +1,51 @@
-import * as React from "react";
+import { LocationDescriptor } from "history";
 import $c from "property-chain";
-import { takeLastAndRejectPrevious } from "PromiseUtils";
-import { ApiError } from "Domain/ApiBase/ApiBase";
+import * as React from "react";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+import { ApiError } from "Domain/ApiBase/ApiBase";
+import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
+import { SuperUserAccessLevels } from "../../Domain/Globals";
+import { getCurrentUserInfo } from "../../Domain/Globals";
+import { IRemoteTaskQueueApi, RemoteTaskInfoModel } from "../api/RemoteTaskQueueApi";
+import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
 import TaskDetailsPage from "../components/TaskDetailsPage/TaskDetailsPage";
 import TaskNotFoundPage from "../components/TaskNotFoundPage/TaskNotFoundPage";
-import { SuperUserAccessLevels } from "../../Domain/Globals";
-import { RemoteTaskInfoModel, IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
-import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
-import { getCurrentUserInfo } from "../../Domain/Globals";
-import { LocationDescriptor } from "history";
 
-type TaskDetailsPageContainerProps = {
+interface TaskDetailsPageContainerProps {
     id: string;
     remoteTaskQueueApi: IRemoteTaskQueueApi;
     parentLocation: Nullable<LocationDescriptor>;
-};
+}
 
-type TaskDetailsPageContainerState = {
+interface TaskDetailsPageContainerState {
     taskDetails: Nullable<RemoteTaskInfoModel>;
     loading: boolean;
     notFoundError: boolean;
-};
+}
 
 class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerProps, TaskDetailsPageContainerState> {
-    state: TaskDetailsPageContainerState = {
+    public state: TaskDetailsPageContainerState = {
         loading: false,
         taskDetails: null,
         notFoundError: false,
     };
-    getTaskDetails = takeLastAndRejectPrevious(
+    public getTaskDetails = takeLastAndRejectPrevious(
         this.props.remoteTaskQueueApi.getTaskDetails.bind(this.props.remoteTaskQueueApi)
     );
 
-    componentWillMount() {
+    public componentWillMount() {
         this.loadData(this.props.id);
     }
 
-    componentWillReceiveProps(nextProps: TaskDetailsPageContainerProps) {
+    public componentWillReceiveProps(nextProps: TaskDetailsPageContainerProps) {
         if (this.props.id !== nextProps.id) {
             this.loadData(nextProps.id);
         }
     }
 
-    getTaskLocation(id: string): LocationDescriptor {
+    public getTaskLocation(id: string): LocationDescriptor {
         const { parentLocation } = this.props;
 
         return {
@@ -54,7 +54,7 @@ class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerP
         };
     }
 
-    async loadData(id: string): Promise<void> {
+    public async loadData(id: string): Promise<void> {
         this.setState({ loading: true, notFoundError: false });
         try {
             try {
@@ -78,7 +78,7 @@ class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerP
         }
     }
 
-    async handlerRerun(): Promise<void> {
+    public async handlerRerun(): Promise<void> {
         const { remoteTaskQueueApi, id } = this.props;
         this.setState({ loading: true });
         try {
@@ -90,7 +90,7 @@ class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerP
         }
     }
 
-    async handlerCancel(): Promise<void> {
+    public async handlerCancel(): Promise<void> {
         const { remoteTaskQueueApi, id } = this.props;
         this.setState({ loading: true });
         try {
@@ -102,13 +102,13 @@ class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerP
         }
     }
 
-    getDefaultParetnLocation(): LocationDescriptor {
+    public getDefaultParetnLocation(): LocationDescriptor {
         return {
             pathname: "/AdminTools/Tasks",
         };
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { taskDetails, loading, notFoundError } = this.state;
         const { parentLocation } = this.props;
         const currentUser = getCurrentUserInfo();

@@ -1,13 +1,13 @@
+import { LocationDescriptor } from "history";
+import _ from "lodash";
 import * as React from "react";
-import { RouterLink, IconName } from "ui";
+import { IconName, RouterLink } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import _ from "lodash";
 
-import { LocationDescriptor } from "history";
-import TimeLine from "../TaskTimeLine/TimeLine/TimeLine";
-import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
+import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
+import TimeLine from "../TaskTimeLine/TimeLine/TimeLine";
 
 import cn from "./TaskChainTree.less";
 
@@ -18,13 +18,13 @@ const IconColors = {
     warning: "#ff9900",
 };
 
-type TaskChainTreeProps = {
+interface TaskChainTreeProps {
     taskMetas: TaskMetaInformationAndTaskMetaInformationChildTasks[];
     getTaskLocation: (id: string) => LocationDescriptor;
-};
+}
 
 export default class TaskChainTree extends React.Component<TaskChainTreeProps, $FlowFixMeState> {
-    buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): JSX.Element {
+    public buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): JSX.Element {
         const { getTaskLocation } = this.props;
 
         let iconAndColorProps: { icon: IconName; iconColor: undefined | string } = {
@@ -96,7 +96,7 @@ export default class TaskChainTree extends React.Component<TaskChainTreeProps, $
         );
     }
 
-    buildChildEntries(
+    public buildChildEntries(
         taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
         taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
     ): JSX.Element[] {
@@ -120,14 +120,14 @@ export default class TaskChainTree extends React.Component<TaskChainTreeProps, $
         ];
     }
 
-    buildTaskTimeLine(
+    public buildTaskTimeLine(
         taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
         taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
     ): JSX.Element[] {
         return [this.buildTaskTimeLineEntry(taskMeta), ...this.buildChildEntries(taskMeta, taskMetaHashSet)];
     }
 
-    findMostParentTask(
+    public findMostParentTask(
         taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks },
         startTaskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks
     ): TaskMetaInformationAndTaskMetaInformationChildTasks {
@@ -141,7 +141,7 @@ export default class TaskChainTree extends React.Component<TaskChainTreeProps, $
         return result;
     }
 
-    findAllMostParents(taskMetaHashSet: {
+    public findAllMostParents(taskMetaHashSet: {
         [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks;
     }): TaskMetaInformationAndTaskMetaInformationChildTasks[] {
         let mostParentTasks = Object.getOwnPropertyNames(taskMetaHashSet)
@@ -153,7 +153,7 @@ export default class TaskChainTree extends React.Component<TaskChainTreeProps, $
         return mostParentTasks;
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { taskMetas } = this.props;
         const taskMetaHashSet = taskMetas.reduce((result, taskMeta) => {
             result[taskMeta.id] = taskMeta;

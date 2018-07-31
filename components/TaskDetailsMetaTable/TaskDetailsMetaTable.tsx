@@ -1,18 +1,18 @@
 import * as React from "react";
 
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
-import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
-import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
 import { Ticks } from "../../../Commons/DataTypes/Time";
+import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
+import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
 
 import cn from "./TaskDetailsMetaTable.less";
 
-export type TaskDetailsMetaTableProps = {
+export interface TaskDetailsMetaTableProps {
     taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
-};
+}
 
 export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps, $FlowFixMeState> {
-    render(): JSX.Element {
+    public render(): JSX.Element {
         return (
             <table className={cn("table")}>
                 <tbody>{this.renderMetaInfo()}</tbody>
@@ -20,7 +20,7 @@ export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMet
         );
     }
 
-    renderMetaInfo(): JSX.Element[] {
+    public renderMetaInfo(): JSX.Element[] {
         const { taskMeta } = this.props;
         return [
             <tr key="TaskId">

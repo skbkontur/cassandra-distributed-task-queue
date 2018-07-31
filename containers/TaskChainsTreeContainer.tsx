@@ -1,23 +1,23 @@
-import * as React from "react";
-import _ from "lodash";
-import { withRouter, RouteComponentProps } from "react-router-dom";
 import { History, Location } from "history";
-import { takeLastAndRejectPrevious } from "PromiseUtils";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { LocationDescriptor } from "history";
+import _ from "lodash";
+import * as React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
-import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
+import CommonLayout from "../../Commons/Layouts";
+import { queryStringMapping } from "../../Commons/QueryStringMapping";
+import { QueryStringMapping } from "../../Commons/QueryStringMapping";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../api/RemoteTaskQueueApi";
-import { queryStringMapping } from "../../Commons/QueryStringMapping";
-import CommonLayout from "../../Commons/Layouts";
-import { RemoteTaskQueueSearchRequest, RemoteTaskInfoModel } from "../api/RemoteTaskQueueApi";
+import { RemoteTaskInfoModel, RemoteTaskQueueSearchRequest } from "../api/RemoteTaskQueueApi";
 import { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
-import { QueryStringMapping } from "../../Commons/QueryStringMapping";
-import { LocationDescriptor } from "history";
+import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
 import TaskChainTree from "../components/TaskChainTree/TaskChainTree";
 
 interface TaskChainsTreeContainerProps extends RouteComponentProps<any> {
@@ -28,11 +28,11 @@ interface TaskChainsTreeContainerProps extends RouteComponentProps<any> {
     searchedQuery: Nullable<string>;
 }
 
-type TaskChainsTreeContainerState = {
+interface TaskChainsTreeContainerState {
     loading: boolean;
     loaderText: string;
     request: RemoteTaskQueueSearchRequest;
-};
+}
 
 const mapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping<RemoteTaskQueueSearchRequest>()
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
@@ -46,23 +46,25 @@ function isNotNullOrUndefined<T extends Object>(input: null | undefined | T): in
 }
 
 class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerProps, TaskChainsTreeContainerState> {
-    state: TaskChainsTreeContainerState = {
+    public state: TaskChainsTreeContainerState = {
         loading: false,
         loaderText: "",
         request: createDefaultRemoteTaskQueueSearchRequest(),
     };
-    searchTasks = takeLastAndRejectPrevious(this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi));
-    getTaskByIds = takeLastAndRejectPrevious(async (ids: string[]): Promise<RemoteTaskInfoModel[]> => {
+    public searchTasks = takeLastAndRejectPrevious(
+        this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
+    );
+    public getTaskByIds = takeLastAndRejectPrevious(async (ids: string[]): Promise<RemoteTaskInfoModel[]> => {
         const result = await Promise.all(ids.map(id => this.props.remoteTaskQueueApi.getTaskDetails(id)));
         return result;
     });
 
-    isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
+    public isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
         const request = mapping.parse(searchQuery);
         return isRemoteTaskQueueSearchRequestEmpty(request);
     }
 
-    getRequestBySearchQuery(searchQuery: Nullable<string>): RemoteTaskQueueSearchRequest {
+    public getRequestBySearchQuery(searchQuery: Nullable<string>): RemoteTaskQueueSearchRequest {
         const request = mapping.parse(searchQuery);
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
             return createDefaultRemoteTaskQueueSearchRequest();
@@ -70,7 +72,7 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
         return request;
     }
 
-    componentWillMount() {
+    public componentWillMount() {
         const { searchQuery, searchedQuery } = this.props;
         const request = this.getRequestBySearchQuery(searchQuery);
         if (searchedQuery !== searchQuery) {
@@ -81,7 +83,7 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
         }
     }
 
-    componentWillReceiveProps(nextProps: TaskChainsTreeContainerProps) {
+    public componentWillReceiveProps(nextProps: TaskChainsTreeContainerProps) {
         const { searchQuery, taskDetails } = nextProps;
         const request = this.getRequestBySearchQuery(searchQuery);
 
@@ -91,7 +93,7 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
         }
     }
 
-    getParentAndChildrenTaskIds(taskMetas: RemoteTaskInfoModel[]): string[] {
+    public getParentAndChildrenTaskIds(taskMetas: RemoteTaskInfoModel[]): string[] {
         const linkedIds = taskMetas
             .map(x => [x.taskMeta.parentTaskId, ...(x.taskMeta.childTaskIds || [])])
             .flatten()
@@ -99,7 +101,7 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
         return _.uniq(linkedIds);
     }
 
-    async loadData(searchQuery: Nullable<string>, request: RemoteTaskQueueSearchRequest): Promise<void> {
+    public async loadData(searchQuery: Nullable<string>, request: RemoteTaskQueueSearchRequest): Promise<void> {
         const { history } = this.props;
         let iterationCount = 0;
 
@@ -137,11 +139,11 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
         }
     }
 
-    getTaskLocation(id: string): LocationDescriptor {
+    public getTaskLocation(id: string): LocationDescriptor {
         return { pathname: `/AdminTools/Tasks/${id}` };
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { taskDetails, searchQuery, parentLocation } = this.props;
         const { loaderText, loading } = this.state;
         return (

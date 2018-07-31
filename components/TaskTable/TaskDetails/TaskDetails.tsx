@@ -1,25 +1,25 @@
+import { LocationDescriptor } from "history";
 import * as React from "react";
-import { Link, RouterLink, Checkbox } from "ui";
-import { RowStack, ColumnStack, Fit, Fill } from "ui/layout";
+import { Checkbox, Link, RouterLink } from "ui";
+import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import AllowCopyToClipboard from "../../../../Commons/AllowCopyToClipboard";
-import { LocationDescriptor } from "history";
-import { TaskMetaInformation } from "../../../api/RemoteTaskQueueApi";
 import { Ticks } from "../../../../Commons/DataTypes/Time";
 import DateTimeView from "../../../../Commons/DateTimeView/DateTimeView";
+import { TaskMetaInformation } from "../../../api/RemoteTaskQueueApi";
 
 import cn from "./TaskDetails.less";
 
-type TaskDetailsProps = {
+interface TaskDetailsProps {
     taskInfo: TaskMetaInformation;
     allowRerunOrCancel: boolean;
     onRerun: () => any;
     onCancel: () => any;
     getTaskLocation: (id: string) => LocationDescriptor;
-};
+}
 
 function dateFormatter(
     item: TaskMetaInformation,

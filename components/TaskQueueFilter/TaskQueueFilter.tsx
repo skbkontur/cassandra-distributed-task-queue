@@ -1,32 +1,32 @@
 import * as React from "react";
-import { Button, Input, Modal, ModalHeader, ModalBody, ModalFooter, ButtonLink } from "ui";
-import { RowStack, ColumnStack, Fit, Fill } from "ui/layout";
+import { Button, ButtonLink, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
+import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 
-import TaskTypesSelect from "../TaskTypesSelect/TaskTypesSelect";
-import TaskStatesSelect from "../TaskStatesSelect/TaskStatesSelect";
 import { TimeZones } from "../../../Commons/DataTypes/Time";
-import { RemoteTaskQueueSearchRequest } from "../../api/RemoteTaskQueueApi";
 import DateTimeRangePicker from "../../../Commons/DateTimeRangePicker/DateTimeRangePicker";
+import { RemoteTaskQueueSearchRequest } from "../../api/RemoteTaskQueueApi";
+import TaskStatesSelect from "../TaskStatesSelect/TaskStatesSelect";
+import TaskTypesSelect from "../TaskTypesSelect/TaskTypesSelect";
 
 import cn from "./TaskQueueFilter.less";
 
-export type TaskQueueFilterProps = {
+export interface TaskQueueFilterProps {
     value: RemoteTaskQueueSearchRequest;
     availableTaskTypes: string[] | null;
     onChange: (filterParams: $Shape<RemoteTaskQueueSearchRequest>) => void;
     onSearchButtonClick: () => void;
-};
+}
 
-type TaskQueueFilterState = {
+interface TaskQueueFilterState {
     openedModal: boolean;
-};
+}
 
 export default class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQueueFilterState> {
-    state: TaskQueueFilterState = {
+    public state: TaskQueueFilterState = {
         openedModal: false,
     };
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { enqueueDateTimeRange, queryString, states, names } = this.props.value;
         const { availableTaskTypes, onChange, onSearchButtonClick } = this.props;
         const { openedModal } = this.state;
@@ -93,7 +93,7 @@ export default class TaskQueueFilter extends React.Component<TaskQueueFilterProp
         );
     }
 
-    renderModal(): JSX.Element {
+    public renderModal(): JSX.Element {
         return (
             <Modal data-tid="Modal" onClose={() => this.closeModal()} width={900}>
                 <ModalHeader>Справка</ModalHeader>
@@ -155,11 +155,11 @@ export default class TaskQueueFilter extends React.Component<TaskQueueFilterProp
         );
     }
 
-    openModal() {
+    public openModal() {
         this.setState({ openedModal: true });
     }
 
-    closeModal() {
+    public closeModal() {
         this.setState({ openedModal: false });
     }
 }

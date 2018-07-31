@@ -1,19 +1,20 @@
-import * as React from "react";
-import $c from "property-chain";
+import { Location, LocationDescriptor, LocationDescriptorObject } from "history";
 import _ from "lodash";
-import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from "ui";
-import { RowStack, ColumnStack, Fit } from "ui/layout";
+import $c from "property-chain";
+import * as React from "react";
+import { RouteComponentProps } from "react-router-dom";
 import { withRouter } from "react-router-dom";
 import { Loader } from "ui";
-import { takeLastAndRejectPrevious } from "PromiseUtils";
-import { SuperUserAccessLevels } from "Domain/Globals";
-import { getCurrentUserInfo } from "Domain/Globals";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { SearchQuery, queryStringMapping } from "Commons/QueryStringMapping";
+import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
+import { ColumnStack, Fit, RowStack } from "ui/layout";
+import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import CommonLayout from "Commons/Layouts";
 import { QueryStringMapping } from "Commons/QueryStringMapping";
-import { Location, LocationDescriptor, LocationDescriptorObject } from "history";
-import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+import { queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
+import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { getCurrentUserInfo } from "Domain/Globals";
+import { SuperUserAccessLevels } from "Domain/Globals";
+import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
 import { RemoteTaskQueueSearchRequest, RemoteTaskQueueSearchResults } from "../api/RemoteTaskQueueApi";
@@ -22,11 +23,10 @@ import {
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../api/RemoteTaskQueueApi";
 import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
-import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
 import TasksPaginator from "../components/TasksPaginator/TasksPaginator";
+import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
 import TasksTable from "../components/TaskTable/TaskTable";
 import numberToString from "../Domain/numberToString";
-import { RouteComponentProps } from "react-router-dom";
 
 interface TasksPageContainerProps extends RouteComponentProps<any> {
     searchQuery: string;
@@ -35,7 +35,7 @@ interface TasksPageContainerProps extends RouteComponentProps<any> {
     requestParams: Nullable<string>;
 }
 
-type TasksPageContainerState = {
+interface TasksPageContainerState {
     loading: boolean;
     request: RemoteTaskQueueSearchRequest;
     availableTaskNames: string[] | null;
@@ -43,7 +43,7 @@ type TasksPageContainerState = {
     modalType: "Rerun" | "Cancel";
     manyTaskConfirm: string;
     searchRequested: boolean;
-};
+}
 
 const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping<
     RemoteTaskQueueSearchRequest
@@ -83,7 +83,7 @@ export function buildSearchQueryForRequest(request: RemoteTaskQueueSearchRequest
 }
 
 class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksPageContainerState> {
-    state: TasksPageContainerState = {
+    public state: TasksPageContainerState = {
         loading: false,
         request: createDefaultRemoteTaskQueueSearchRequest(),
         availableTaskNames: null,
@@ -92,14 +92,16 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         manyTaskConfirm: "",
         searchRequested: false,
     };
-    searchTasks = takeLastAndRejectPrevious(this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi));
+    public searchTasks = takeLastAndRejectPrevious(
+        this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
+    );
 
-    isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
+    public isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
         const request = provisionalMapping.parse(searchQuery);
         return isRemoteTaskQueueSearchRequestEmpty(request);
     }
 
-    getSearchRequestMapping(): QueryStringMapping<RemoteTaskQueueSearchRequest> {
+    public getSearchRequestMapping(): QueryStringMapping<RemoteTaskQueueSearchRequest> {
         const { availableTaskNames } = this.state;
         if (!availableTaskNames) {
             throw new Error("InvalidProgramState");
@@ -107,7 +109,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         return createSearchRequestMapping(availableTaskNames);
     }
 
-    getRequestBySearchQuery(searchQuery: Nullable<string>): RemoteTaskQueueSearchRequest {
+    public getRequestBySearchQuery(searchQuery: Nullable<string>): RemoteTaskQueueSearchRequest {
         const request = this.getSearchRequestMapping().parse(searchQuery);
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
             return createDefaultRemoteTaskQueueSearchRequest();
@@ -115,7 +117,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         return request;
     }
 
-    async componentWillMount() {
+    public async componentWillMount() {
         const { searchQuery, results, requestParams } = this.props;
         await this.updateAvailableTaskNamesIfNeed();
 
@@ -127,14 +129,14 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    async updateAvailableTaskNamesIfNeed(): Promise<void> {
+    public async updateAvailableTaskNamesIfNeed(): Promise<void> {
         if (this.state.availableTaskNames === null) {
             const availableTaskNames = await this.props.remoteTaskQueueApi.getAllTaskNames();
             this.setState({ availableTaskNames: availableTaskNames });
         }
     }
 
-    async componentWillReceiveProps(nextProps: TasksPageContainerProps) {
+    public async componentWillReceiveProps(nextProps: TasksPageContainerProps) {
         const { searchQuery, results } = nextProps;
         const prevPaging = pagingMapping.parse(this.props.searchQuery);
         const nextPaging = pagingMapping.parse(searchQuery);
@@ -152,7 +154,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    async loadData(searchQuery: Nullable<string>, request: RemoteTaskQueueSearchRequest): Promise<void> {
+    public async loadData(searchQuery: Nullable<string>, request: RemoteTaskQueueSearchRequest): Promise<void> {
         const { from, size } = pagingMapping.parse(searchQuery);
         const { history } = this.props;
         this.setState({ loading: true });
@@ -171,7 +173,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    handleSearch() {
+    public handleSearch() {
         const { history } = this.props;
         const { request } = this.state;
         this.setState({ searchRequested: true }, () => {
@@ -186,7 +188,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         });
     }
 
-    getTaskLocation(id: string): LocationDescriptor {
+    public getTaskLocation(id: string): LocationDescriptor {
         const { results, searchQuery } = this.props;
         const { request } = this.state;
         const { from, size } = pagingMapping.parse(searchQuery);
@@ -208,7 +210,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         };
     }
 
-    getNextPageLocation(): LocationDescriptor | null {
+    public getNextPageLocation(): LocationDescriptor | null {
         const { searchQuery, results } = this.props;
         const { from, size } = pagingMapping.parse(searchQuery);
         const request = this.getRequestBySearchQuery(searchQuery);
@@ -228,7 +230,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         } as LocationDescriptorObject;
     }
 
-    getPrevPageLocation(): LocationDescriptor | null {
+    public getPrevPageLocation(): LocationDescriptor | null {
         const { searchQuery } = this.props;
         const { from, size } = pagingMapping.parse(searchQuery);
         const request = this.getRequestBySearchQuery(searchQuery);
@@ -245,7 +247,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         } as LocationDescriptorObject;
     }
 
-    async handleRerunTask(id: string): Promise<void> {
+    public async handleRerunTask(id: string): Promise<void> {
         const { remoteTaskQueueApi } = this.props;
         this.setState({ loading: true });
         try {
@@ -255,7 +257,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    async handleCancelTask(id: string): Promise<void> {
+    public async handleCancelTask(id: string): Promise<void> {
         const { remoteTaskQueueApi } = this.props;
         this.setState({ loading: true });
         try {
@@ -265,7 +267,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    async handleRerunAll(): Promise<void> {
+    public async handleRerunAll(): Promise<void> {
         const { searchQuery, remoteTaskQueueApi } = this.props;
         const request = this.getRequestBySearchQuery(searchQuery);
 
@@ -277,7 +279,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    async handleCancelAll(): Promise<void> {
+    public async handleCancelAll(): Promise<void> {
         const { searchQuery, remoteTaskQueueApi } = this.props;
         const request = this.getRequestBySearchQuery(searchQuery);
 
@@ -289,7 +291,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    renderModal(): JSX.Element {
+    public renderModal(): JSX.Element {
         const { results } = this.props;
         const { modalType, manyTaskConfirm } = this.state;
         const confirmedRegExp = /б.*л.*я/i;
@@ -368,27 +370,27 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         );
     }
 
-    clickRerunAll() {
+    public clickRerunAll() {
         this.setState({
             confirmMultipleModalOpened: true,
             modalType: "Rerun",
         });
     }
 
-    clickCancelAll() {
+    public clickCancelAll() {
         this.setState({
             confirmMultipleModalOpened: true,
             modalType: "Cancel",
         });
     }
 
-    closeModal() {
+    public closeModal() {
         this.setState({
             confirmMultipleModalOpened: false,
         });
     }
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const currentUser = getCurrentUserInfo();
         const allowRerunOrCancel = $c(currentUser)
             .with(x => x.superUserAccessLevel)

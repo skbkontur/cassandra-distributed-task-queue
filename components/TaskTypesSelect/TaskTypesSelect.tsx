@@ -1,26 +1,26 @@
 import * as React from "react";
-import { Button, Icon, Tooltip, Checkbox, Input } from "ui";
-import { ColumnStack, RowStack, Fit } from "ui/layout";
+import { Button, Checkbox, Icon, Input, Tooltip } from "ui";
+import { ColumnStack, Fit, RowStack } from "ui/layout";
 
 import cn from "./TaskTypesSelect.less";
 
-export type TaskTypesSelectProps = {
+export interface TaskTypesSelectProps {
     availableTaskTypes: string[];
     value: string[];
     disabled?: boolean;
     onChange: (selectedTaskTypes: string[]) => void;
-};
+}
 
-type TaskTypesSelectState = {
+interface TaskTypesSelectState {
     query: string;
-};
+}
 
 export default class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskTypesSelectState> {
-    state: TaskTypesSelectState = {
+    public state: TaskTypesSelectState = {
         query: "",
     };
 
-    render(): JSX.Element {
+    public render(): JSX.Element {
         const { disabled, value } = this.props;
         return (
             <Tooltip
@@ -38,7 +38,7 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
         );
     }
 
-    renderTooltip(): Nullable<JSX.Element> {
+    public renderTooltip(): Nullable<JSX.Element> {
         const { availableTaskTypes } = this.props;
         const { query } = this.state;
         if (availableTaskTypes.length === 0) {
@@ -89,7 +89,7 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
         );
     }
 
-    selectItem(val: boolean, taskType: string) {
+    public selectItem(val: boolean, taskType: string) {
         const { value, onChange } = this.props;
         const newSelectedArray = value.slice();
         if (val) {
@@ -101,20 +101,20 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
         onChange(newSelectedArray);
     }
 
-    clear() {
+    public clear() {
         const { onChange } = this.props;
         onChange([]);
         this.setState({ query: "" });
     }
 
-    invert() {
+    public invert() {
         const { onChange, availableTaskTypes, value } = this.props;
         this.setState({ query: "" });
         const inverseValues = availableTaskTypes.filter(item => !value.includes(item));
         onChange(inverseValues);
     }
 
-    isItemSelected(item: string): boolean {
+    public isItemSelected(item: string): boolean {
         const { value } = this.props;
         return Boolean(value.find(i => i === item));
     }
