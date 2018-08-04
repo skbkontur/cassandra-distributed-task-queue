@@ -127,7 +127,7 @@ export class RemoteTaskQueueApi implements IRemoteTaskQueueApi {
         ];
         return {
             totalCount: 100500,
-            taskMetas: taskMetaSources.map(x => createTask(x)),
+            taskMetas: taskMetaSources.map(createTask),
         };
     }
 
