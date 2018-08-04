@@ -1,8 +1,9 @@
-import { Location, LocationDescriptor } from "history";
+import { LocationDescriptor } from "history";
 import _ from "lodash";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+import { CommonLayout } from "Commons/Layouts";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
@@ -10,7 +11,6 @@ import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
-import CommonLayout from "../../Commons/Layouts";
 import { queryStringMapping, QueryStringMapping } from "../../Commons/QueryStringMapping";
 import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import {

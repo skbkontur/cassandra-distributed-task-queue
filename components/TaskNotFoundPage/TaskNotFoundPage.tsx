@@ -2,7 +2,7 @@ import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Link } from "ui";
 
-import CommonLayout, { CommonLayoutContent, CommonLayoutGoBack, CommonLayoutHeader } from "../../../Commons/Layouts";
+import { CommonLayout } from "Commons/Layouts";
 
 import SorryImage from "./Sorry.png";
 import cn from "./TaskNotFoundPage.less";
@@ -17,9 +17,9 @@ export default class TaskNotFoundPage extends React.Component<TaskNotFoundPagePr
 
         return (
             <CommonLayout>
-                <CommonLayoutGoBack to={parentLocation}>Вернуться к поиску задач</CommonLayoutGoBack>
-                <CommonLayoutHeader title="По этому адресу задачи нет" />
-                <CommonLayoutContent>
+                <CommonLayout.GoBack to={parentLocation}>Вернуться к поиску задач</CommonLayout.GoBack>
+                <CommonLayout.Header title="По этому адресу задачи нет" />
+                <CommonLayout.Content>
                     Это могло произойти по двум причинам:
                     <ul className={cn("list")}>
                         <li>Неправильный URL. Возможно вы не полностью скопировали ссылку.</li>
@@ -30,7 +30,7 @@ export default class TaskNotFoundPage extends React.Component<TaskNotFoundPagePr
                         </li>
                     </ul>
                     <img className={cn("sorry-image")} width={1190} height={515} src={SorryImage} />
-                </CommonLayoutContent>
+                </CommonLayout.Content>
             </CommonLayout>
         );
     }

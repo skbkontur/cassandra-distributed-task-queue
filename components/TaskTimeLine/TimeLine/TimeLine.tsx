@@ -29,7 +29,7 @@ interface TimeLineEntryProps {
     iconColor?: string;
 }
 
-TimeLine.Branch = function TimeLine({ children }: TimeLineProps): JSX.Element {
+TimeLine.Branch = function TimeLineBranch({ children }: TimeLineProps): JSX.Element {
     return (
         <div className={cn("root", "branch")}>
             <div className={cn("line-up")} />

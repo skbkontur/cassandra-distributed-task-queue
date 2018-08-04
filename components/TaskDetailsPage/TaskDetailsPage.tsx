@@ -2,17 +2,13 @@ import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
+import { CommonLayout } from "Commons/Layouts";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import Accordion from "../../../Commons/Accordion/Accordion";
 import { ticksToDate, TimeZones } from "../../../Commons/DataTypes/Time";
 import { RangeSelector } from "../../../Commons/DateTimeRangePicker/RangeSelector";
-import CommonLayout, {
-    CommonLayoutContent,
-    CommonLayoutGoBack,
-    CommonLayoutGreyLineHeader,
-} from "../../../Commons/Layouts";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
 import taskDetailsCustomRender from "../../Domain/TaskDetailsCustomRender";
 import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
@@ -50,17 +46,17 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
             <div>
                 <CommonLayout>
                     {taskDetails && (
-                        <CommonLayoutGoBack to={parentLocation}>Вернуться к поиску задач</CommonLayoutGoBack>
+                        <CommonLayout.GoBack to={parentLocation}>Вернуться к поиску задач</CommonLayout.GoBack>
                     )}
                     {taskDetails && (
-                        <CommonLayoutGreyLineHeader
+                        <CommonLayout.GreyLineHeader
                             data-tid="Header"
                             title={`Задача ${taskDetails.taskMeta.name}`}
                             tools={taskDetails && allowRerunOrCancel ? this.renderButtons() : null}>
                             <TaskTimeLine getHrefToTask={getTaskLocation} taskMeta={taskDetails.taskMeta} />
-                        </CommonLayoutGreyLineHeader>
+                        </CommonLayout.GreyLineHeader>
                     )}
-                    <CommonLayoutContent>
+                    <CommonLayout.Content>
                         <ColumnStack block stretch gap={2}>
                             {taskDetails && (
                                 <Fit>
@@ -87,7 +83,7 @@ export default class TaskDetailsPage extends React.Component<TaskDetailsPageProp
                                     </Fit>
                                 )}
                         </ColumnStack>
-                    </CommonLayoutContent>
+                    </CommonLayout.Content>
                 </CommonLayout>
                 {openedModal && this.renderModal()}
             </div>
