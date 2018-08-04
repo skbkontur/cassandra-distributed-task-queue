@@ -38,57 +38,6 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
         );
     }
 
-    public renderTooltip(): Nullable<JSX.Element> {
-        const { availableTaskTypes } = this.props;
-        const { query } = this.state;
-        if (availableTaskTypes.length === 0) {
-            return null;
-        }
-        const filteredTaskTypes = query
-            ? availableTaskTypes.filter(item => {
-                  return item.search(new RegExp(query, "i")) !== -1;
-              })
-            : availableTaskTypes;
-        return (
-            <ColumnStack gap={3}>
-                <Fit>
-                    <RowStack gap={2}>
-                        <Fit>
-                            <Input
-                                value={query}
-                                rightIcon={<Icon name="Search" />}
-                                onChange={(e, val) => this.setState({ query: val })}
-                            />
-                        </Fit>
-                        <Fit>
-                            <Button onClick={() => this.clear()}>Очистить все</Button>
-                        </Fit>
-                        <Fit>
-                            <Button onClick={() => this.invert()}>Инвертировать</Button>
-                        </Fit>
-                    </RowStack>
-                </Fit>
-                <Fit>
-                    <div className={cn("tooltip-columns-wrapper")}>
-                        <div className={cn("tooltip-columns")}>
-                            {filteredTaskTypes.map((item, index) => {
-                                return (
-                                    <Checkbox
-                                        data-tid={item}
-                                        checked={this.isItemSelected(item)}
-                                        key={index}
-                                        onChange={(e, val) => this.selectItem(val, item)}>
-                                        {item}
-                                    </Checkbox>
-                                );
-                            })}
-                        </div>
-                    </div>
-                </Fit>
-            </ColumnStack>
-        );
-    }
-
     public selectItem(val: boolean, taskType: string) {
         const { value, onChange } = this.props;
         const newSelectedArray = value.slice();
@@ -117,5 +66,52 @@ export default class TaskTypesSelect extends React.Component<TaskTypesSelectProp
     public isItemSelected(item: string): boolean {
         const { value } = this.props;
         return Boolean(value.find(i => i === item));
+    }
+
+    private renderTooltip(): Nullable<JSX.Element> {
+        const { availableTaskTypes } = this.props;
+        const { query } = this.state;
+        if (availableTaskTypes.length === 0) {
+            return null;
+        }
+        const filteredTaskTypes = query
+            ? availableTaskTypes.filter(item => item.search(new RegExp(query, "i")) !== -1)
+            : availableTaskTypes;
+        return (
+            <ColumnStack gap={3}>
+                <Fit>
+                    <RowStack gap={2}>
+                        <Fit>
+                            <Input
+                                value={query}
+                                rightIcon={<Icon name="Search" />}
+                                onChange={(e, val) => this.setState({ query: val })}
+                            />
+                        </Fit>
+                        <Fit>
+                            <Button onClick={() => this.clear()}>Очистить все</Button>
+                        </Fit>
+                        <Fit>
+                            <Button onClick={() => this.invert()}>Инвертировать</Button>
+                        </Fit>
+                    </RowStack>
+                </Fit>
+                <Fit>
+                    <div className={cn("tooltip-columns-wrapper")}>
+                        <div className={cn("tooltip-columns")}>
+                            {filteredTaskTypes.map((item, index) => (
+                                <Checkbox
+                                    data-tid={item}
+                                    checked={this.isItemSelected(item)}
+                                    key={index}
+                                    onChange={(e, val) => this.selectItem(val, item)}>
+                                    {item}
+                                </Checkbox>
+                            ))}
+                        </div>
+                    </div>
+                </Fit>
+            </ColumnStack>
+        );
     }
 }

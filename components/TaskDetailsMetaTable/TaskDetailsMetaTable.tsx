@@ -81,14 +81,12 @@ export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMet
                 <td>ChildTaskIds</td>
                 <td data-tid="ChildTaskIds">
                     {taskMeta.childTaskIds &&
-                        taskMeta.childTaskIds.map(item => {
-                            return (
-                                <span key={item}>
-                                    <a href={"/AdminTools/Tasks/" + item}>{item}</a>
-                                    <br />
-                                </span>
-                            );
-                        })}
+                        taskMeta.childTaskIds.map(item => (
+                            <span key={item}>
+                                <a href={"/AdminTools/Tasks/" + item}>{item}</a>
+                                <br />
+                            </span>
+                        ))}
                 </td>
             </tr>,
         ];

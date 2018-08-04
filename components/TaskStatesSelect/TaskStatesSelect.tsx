@@ -38,31 +38,29 @@ export default class TaskStatesSelect extends React.Component<TaskStatesSelectPr
         );
     }
 
-    public renderTooltip(): JSX.Element {
+    private renderTooltip(): JSX.Element {
         return (
             <ColumnStack block gap={2}>
-                {getAllTaskStates().map((item, index) => {
-                    return (
-                        <Fit key={index}>
-                            <Checkbox
-                                data-tid={item}
-                                checked={this.isItemSelected(item)}
-                                onChange={(e, val) => this.selectItem(val, item)}>
-                                {TaskStateCaptions[item]}
-                            </Checkbox>
-                        </Fit>
-                    );
-                })}
+                {getAllTaskStates().map((item, index) => (
+                    <Fit key={index}>
+                        <Checkbox
+                            data-tid={item}
+                            checked={this.isItemSelected(item)}
+                            onChange={(e, val) => this.selectItem(val, item)}>
+                            {TaskStateCaptions[item]}
+                        </Checkbox>
+                    </Fit>
+                ))}
             </ColumnStack>
         );
     }
 
-    public isItemSelected(item: TaskState): boolean {
+    private isItemSelected(item: TaskState): boolean {
         const { value } = this.props;
         return Boolean(value.find(i => i === item));
     }
 
-    public selectItem(val: boolean, taskState: TaskState) {
+    private selectItem(val: boolean, taskState: TaskState) {
         const { value, onChange } = this.props;
         const newSelectedArray = value.slice();
 
