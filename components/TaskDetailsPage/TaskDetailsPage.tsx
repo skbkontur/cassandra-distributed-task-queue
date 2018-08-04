@@ -6,7 +6,7 @@ import { CommonLayout } from "Commons/Layouts";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
-import Accordion from "../../../Commons/Accordion/Accordion";
+import { Accordion } from "../../../Commons/Accordion/Accordion";
 import { ticksToDate, TimeZones } from "../../../Commons/DataTypes/Time";
 import { RangeSelector } from "../../../Commons/DateTimeRangePicker/RangeSelector";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";

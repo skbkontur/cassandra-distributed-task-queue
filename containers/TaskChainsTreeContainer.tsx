@@ -10,7 +10,7 @@ import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/Rem
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
-import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
+import { DelayedLoader } from "../../Commons/DelayedLoader/DelayedLoader";
 import { queryStringMapping, QueryStringMapping } from "../../Commons/QueryStringMapping";
 import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import {

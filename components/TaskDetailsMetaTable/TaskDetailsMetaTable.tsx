@@ -1,9 +1,8 @@
 import * as React from "react";
+import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
+import { Ticks } from "Commons/DataTypes/Time";
+import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
-
-import { AllowCopyToClipboard } from "../../../Commons/AllowCopyToClipboard";
-import { Ticks } from "../../../Commons/DataTypes/Time";
-import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
 
 import cn from "./TaskDetailsMetaTable.less";
 

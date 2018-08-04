@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import ServiceHeader from "../../../ServiceHeader/components/ServiceHeader";
+import { ServiceHeader } from "../../../ServiceHeader/components/ServiceHeader";
 
 interface LayoutProps {
     children?: any;

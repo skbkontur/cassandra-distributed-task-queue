@@ -8,7 +8,7 @@ import { WindowUtils } from "Commons/DomUtils";
 
 import { RemoteTaskQueueApi } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { ApiProvider } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
-import ServiceHeader from "../ServiceHeader/components/ServiceHeader";
+import { ServiceHeader } from "../ServiceHeader/components/ServiceHeader";
 
 import { TasksPageContainer } from "./containers/TasksPageContainer";
 import { TaskChainsTreeContainer } from "./containers/TaskChainsTreeContainer";

@@ -7,7 +7,7 @@ import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskIn
 import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
-import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
+import { DelayedLoader } from "../../Commons/DelayedLoader/DelayedLoader";
 import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import { getCurrentUserInfo, SuperUserAccessLevels } from "../../Domain/Globals";
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
