@@ -41,7 +41,8 @@ export default function numberToString(number: number | string): string | false 
         } else {
             const firstNum = Number(newNum.substr(0, 1));
             const secondNum = Number(newNum.substr(1, 2));
-            string += arrNumbers[1][firstNum] + " " + arrNumbers[0][secondNum] + " ";
+            string += arrNumbers[1][firstNum] + " ";
+            string += arrNumbers[0][secondNum] + " ";
         }
         const lastNum = parseFloat(newNum.substr(-1));
         switch (desc) {
