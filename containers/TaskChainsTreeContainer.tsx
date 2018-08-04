@@ -100,7 +100,7 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
         return _.uniq(linkedIds);
     }
 
-    public async loadData(searchQuery: Nullable<string>, request: RemoteTaskQueueSearchRequest): Promise<void> {
+    public async loadData(searchQuery: undefined | string, request: RemoteTaskQueueSearchRequest): Promise<void> {
         const { history } = this.props;
         let iterationCount = 0;
 
@@ -132,7 +132,7 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
                     taskDetails: taskDetails,
                     searchedQuery: searchQuery,
                 },
-            } as Location);
+            });
         } finally {
             this.setState({ loading: false });
         }

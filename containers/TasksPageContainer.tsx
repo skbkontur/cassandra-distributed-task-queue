@@ -151,7 +151,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
         }
     }
 
-    public async loadData(searchQuery: Nullable<string>, request: RemoteTaskQueueSearchRequest): Promise<void> {
+    public async loadData(searchQuery: undefined | string, request: RemoteTaskQueueSearchRequest): Promise<void> {
         const { from, size } = pagingMapping.parse(searchQuery);
         const { history } = this.props;
         this.setState({ loading: true });
@@ -164,7 +164,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
                     requestParams: searchQuery,
                     results: results,
                 },
-            } as LocationDescriptorObject);
+            });
         } finally {
             this.setState({ loading: false, searchRequested: false });
         }
@@ -181,7 +181,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
                     pagingMapping.stringify({ from: 0, size: 20 })
                 ),
                 state: null,
-            } as LocationDescriptorObject);
+            });
         });
     }
 
@@ -224,7 +224,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
                 this.getSearchRequestMapping().stringify(request),
                 pagingMapping.stringify({ from: (from || 0) + (size || 20), size: size || 20 })
             ),
-        } as LocationDescriptorObject;
+        };
     }
 
     public getPrevPageLocation(): LocationDescriptor | null {
@@ -241,7 +241,7 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
                 this.getSearchRequestMapping().stringify(request),
                 pagingMapping.stringify({ from: Math.max(0, (from || 0) - (size || 20)), size: size || 20 })
             ),
-        } as LocationDescriptorObject;
+        };
     }
 
     public async handleRerunTask(id: string): Promise<void> {
