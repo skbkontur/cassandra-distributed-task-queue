@@ -1,6 +1,7 @@
 import _ from "lodash";
 import * as React from "react";
 import { Icon, Link, LinkDropdown } from "ui";
+
 const LinkMenuItem = LinkDropdown.MenuItem;
 
 export const endsWith = (ending: string, str: string): boolean => str.slice(-ending.length) === ending;

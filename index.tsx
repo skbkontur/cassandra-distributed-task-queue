@@ -1,16 +1,15 @@
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import ReactDom from "react-dom";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { RouteComponentProps } from "react-router-dom";
+import { BrowserRouter, Route, RouteComponentProps, Switch } from "react-router-dom";
 import "ui/styles/reset.less";
 import "ui/styles/typography.less";
 import { WindowUtils } from "Commons/DomUtils";
 
 import { RemoteTaskQueueApi } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { ApiProvider } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import ServiceHeader from "../ServiceHeader/components/ServiceHeader";
 
-import { ApiProvider } from "./api/RemoteTaskQueueApiInjection";
 import TasksPage from "./containers/TasksPageContainer";
 import TaskChainsTreeContainer from "./containers/TaskChainsTreeContainer";
 import TaskDetailsPageContainer from "./containers/TaskDetailsPageContainer";

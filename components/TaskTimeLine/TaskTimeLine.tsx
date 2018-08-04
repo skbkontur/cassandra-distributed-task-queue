@@ -1,13 +1,12 @@
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { IconName, RouterLink } from "ui";
+import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
-import { ticksToDate } from "../../../Commons/DataTypes/Time";
-import { Ticks } from "../../../Commons/DataTypes/Time";
+import { Ticks, ticksToDate } from "../../../Commons/DataTypes/Time";
 import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
-import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "../../api/RemoteTaskQueueApi";
 
 import cn from "./TaskTimeLine.less";
 import TimeLine from "./TimeLine/TimeLine";

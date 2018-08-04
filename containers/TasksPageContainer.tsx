@@ -1,28 +1,25 @@
-import { Location, LocationDescriptor, LocationDescriptorObject } from "history";
+import { LocationDescriptor, LocationDescriptorObject } from "history";
 import _ from "lodash";
 import $c from "property-chain";
 import * as React from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { withRouter } from "react-router-dom";
-import { Loader } from "ui";
-import { Button, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { Button, Input, Loader, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
 import { ColumnStack, Fit, RowStack } from "ui/layout";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import CommonLayout from "Commons/Layouts";
-import { QueryStringMapping } from "Commons/QueryStringMapping";
-import { queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
+import { QueryStringMapping, queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
+import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
+import { RemoteTaskQueueSearchResults } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { getCurrentUserInfo } from "Domain/Globals";
-import { SuperUserAccessLevels } from "Domain/Globals";
+import { getCurrentUserInfo, SuperUserAccessLevels } from "Domain/Globals";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
-import { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
-import { RemoteTaskQueueSearchRequest, RemoteTaskQueueSearchResults } from "../api/RemoteTaskQueueApi";
+import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
-} from "../api/RemoteTaskQueueApi";
-import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
+} from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
 import TasksPaginator from "../components/TasksPaginator/TasksPaginator";
 import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
 import TasksTable from "../components/TaskTable/TaskTable";

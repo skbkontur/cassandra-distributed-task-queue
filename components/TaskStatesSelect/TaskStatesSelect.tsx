@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Button, Checkbox, Icon, Tooltip } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskState, TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import cn from "./TaskStatesSelect.less";

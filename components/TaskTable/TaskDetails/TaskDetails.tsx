@@ -2,14 +2,13 @@ import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Checkbox, Link, RouterLink } from "ui";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
+import { TaskState, TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import AllowCopyToClipboard from "../../../../Commons/AllowCopyToClipboard";
 import { Ticks } from "../../../../Commons/DataTypes/Time";
 import DateTimeView from "../../../../Commons/DateTimeView/DateTimeView";
-import { TaskMetaInformation } from "../../../api/RemoteTaskQueueApi";
 
 import cn from "./TaskDetails.less";
 

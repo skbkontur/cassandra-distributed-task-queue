@@ -2,6 +2,7 @@ import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
+import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import Accordion from "../../../Commons/Accordion/Accordion";
@@ -12,7 +13,6 @@ import CommonLayout, {
     CommonLayoutGoBack,
     CommonLayoutGreyLineHeader,
 } from "../../../Commons/Layouts";
-import { RemoteTaskInfoModel } from "../../api/RemoteTaskQueueApi";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
 import taskDetailsCustomRender from "../../Domain/TaskDetailsCustomRender";
 import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";

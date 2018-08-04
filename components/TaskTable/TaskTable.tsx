@@ -3,8 +3,7 @@ import _ from "lodash";
 import * as React from "react";
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
 import { Fit, RowStack } from "ui/layout";
-
-import { TaskMetaInformation } from "../../api/RemoteTaskQueueApi";
+import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
 
 import TaskDetails from "./TaskDetails/TaskDetails";
 import cn from "./TaskTable.less";

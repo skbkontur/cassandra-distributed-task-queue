@@ -3,13 +3,13 @@ import $c from "property-chain";
 import * as React from "react";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { ApiError } from "Domain/ApiBase/ApiBase";
+import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
+import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
-import { SuperUserAccessLevels } from "../../Domain/Globals";
-import { getCurrentUserInfo } from "../../Domain/Globals";
-import { IRemoteTaskQueueApi, RemoteTaskInfoModel } from "../api/RemoteTaskQueueApi";
-import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
+import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
+import { getCurrentUserInfo, SuperUserAccessLevels } from "../../Domain/Globals";
 import TaskDetailsPage from "../components/TaskDetailsPage/TaskDetailsPage";
 import TaskNotFoundPage from "../components/TaskNotFoundPage/TaskNotFoundPage";
 

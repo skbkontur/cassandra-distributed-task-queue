@@ -1,23 +1,22 @@
-import { History, Location } from "history";
-import { LocationDescriptor } from "history";
+import { Location, LocationDescriptor } from "history";
 import _ from "lodash";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
+import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
 import CommonLayout from "../../Commons/Layouts";
-import { queryStringMapping } from "../../Commons/QueryStringMapping";
-import { QueryStringMapping } from "../../Commons/QueryStringMapping";
+import { queryStringMapping, QueryStringMapping } from "../../Commons/QueryStringMapping";
+import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
-} from "../api/RemoteTaskQueueApi";
-import { RemoteTaskInfoModel, RemoteTaskQueueSearchRequest } from "../api/RemoteTaskQueueApi";
-import { IRemoteTaskQueueApi } from "../api/RemoteTaskQueueApi";
-import { withRemoteTaskQueueApi } from "../api/RemoteTaskQueueApiInjection";
+} from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
 import TaskChainTree from "../components/TaskChainTree/TaskChainTree";
 
 interface TaskChainsTreeContainerProps extends RouteComponentProps<any> {
