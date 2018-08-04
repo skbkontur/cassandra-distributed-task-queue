@@ -10,9 +10,9 @@ import { RemoteTaskQueueApi } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTask
 import { ApiProvider } from "../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import ServiceHeader from "../ServiceHeader/components/ServiceHeader";
 
-import TasksPage from "./containers/TasksPageContainer";
-import TaskChainsTreeContainer from "./containers/TaskChainsTreeContainer";
-import TaskDetailsPageContainer from "./containers/TaskDetailsPageContainer";
+import { TasksPageContainer } from "./containers/TasksPageContainer";
+import { TaskChainsTreeContainer } from "./containers/TaskChainsTreeContainer";
+import { TaskDetailsPageContainer } from "./containers/TaskDetailsPageContainer";
 
 const api = new RemoteTaskQueueApi("/internal-api/remote-task-queue/");
 const TasksPath = "/AdminTools/Tasks";
@@ -56,7 +56,7 @@ export function RemoteTaskQueueApplication({ match }: RouteComponentProps<any>):
                 <Route
                     exact
                     path={`${baseUrl}/`}
-                    render={({ location }) => <TasksPage searchQuery={location.search} {...location.state} />}
+                    render={({ location }) => <TasksPageContainer searchQuery={location.search} {...location.state} />}
                 />
                 <Route
                     exact

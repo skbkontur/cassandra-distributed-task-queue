@@ -5,7 +5,7 @@ import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
 import { Fit, RowStack } from "ui/layout";
 import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
 
-import TaskDetails from "./TaskDetails/TaskDetails";
+import { TaskDetails } from "./TaskDetails/TaskDetails";
 import cn from "./TaskTable.less";
 
 export interface TaskTableProps {
@@ -22,7 +22,7 @@ interface TasksTableState {
     actionTask: string;
 }
 
-export default class TasksTable extends React.Component<TaskTableProps, TasksTableState> {
+export class TasksTable extends React.Component<TaskTableProps, TasksTableState> {
     public state: TasksTableState = {
         openedModal: false,
         modalType: "Cancel",

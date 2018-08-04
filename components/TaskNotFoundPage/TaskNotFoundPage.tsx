@@ -11,7 +11,7 @@ interface TaskNotFoundPageProps {
     parentLocation: LocationDescriptor;
 }
 
-export default class TaskNotFoundPage extends React.Component<TaskNotFoundPageProps> {
+export class TaskNotFoundPage extends React.Component<TaskNotFoundPageProps> {
     public render(): JSX.Element {
         const { parentLocation } = this.props;
 

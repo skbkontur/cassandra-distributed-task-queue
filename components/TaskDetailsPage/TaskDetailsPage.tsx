@@ -10,9 +10,9 @@ import Accordion from "../../../Commons/Accordion/Accordion";
 import { ticksToDate, TimeZones } from "../../../Commons/DataTypes/Time";
 import { RangeSelector } from "../../../Commons/DateTimeRangePicker/RangeSelector";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
-import taskDetailsCustomRender from "../../Domain/TaskDetailsCustomRender";
-import TaskDetailsMetaTable from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
-import TaskTimeLine from "../TaskTimeLine/TaskTimeLine";
+import { taskDetailsCustomRender } from "../../Domain/TaskDetailsCustomRender";
+import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
+import { TaskTimeLine } from "../TaskTimeLine/TaskTimeLine";
 
 import cn from "./TaskDetailsPage.less";
 
@@ -30,7 +30,7 @@ interface TaskDetailsPageState {
     modalType: "Cancel" | "Rerun";
 }
 
-export default class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskDetailsPageState> {
+export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskDetailsPageState> {
     public componentWillMount() {
         this.setState({
             openedModal: false,

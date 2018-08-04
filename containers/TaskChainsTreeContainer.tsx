@@ -17,7 +17,7 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
-import TaskChainTree from "../components/TaskChainTree/TaskChainTree";
+import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 
 interface TaskChainsTreeContainerProps extends RouteComponentProps<any> {
     searchQuery: string;
@@ -44,7 +44,10 @@ function isNotNullOrUndefined<T extends Object>(input: null | undefined | T): in
     return input != null;
 }
 
-class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerProps, TaskChainsTreeContainerState> {
+class TaskChainsTreeContainerInternal extends React.Component<
+    TaskChainsTreeContainerProps,
+    TaskChainsTreeContainerState
+> {
     public state: TaskChainsTreeContainerState = {
         loading: false,
         loaderText: "",
@@ -176,4 +179,4 @@ class TaskChainsTreeContainer extends React.Component<TaskChainsTreeContainerPro
     }
 }
 
-export default withRouter(withRemoteTaskQueueApi(TaskChainsTreeContainer));
+export const TaskChainsTreeContainer = withRouter(withRemoteTaskQueueApi(TaskChainsTreeContainerInternal));

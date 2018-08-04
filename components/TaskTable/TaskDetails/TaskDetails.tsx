@@ -6,7 +6,7 @@ import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInfo
 import { TaskState, TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
-import AllowCopyToClipboard from "../../../../Commons/AllowCopyToClipboard";
+import { AllowCopyToClipboard } from "../../../../Commons/AllowCopyToClipboard";
 import { Ticks } from "../../../../Commons/DataTypes/Time";
 import DateTimeView from "../../../../Commons/DateTimeView/DateTimeView";
 
@@ -55,7 +55,7 @@ function getStateClassName(taskState: TaskState): string {
     return stateClassNames[taskState];
 }
 
-export default function TaskDetails(props: TaskDetailsProps): JSX.Element {
+export function TaskDetails(props: TaskDetailsProps): JSX.Element {
     const { allowRerunOrCancel, taskInfo, onCancel, onRerun, getTaskLocation } = props;
     return (
         <RowStack baseline block gap={1} className={cn("task-details", getStateClassName(taskInfo.state))}>

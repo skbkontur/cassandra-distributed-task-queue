@@ -6,6 +6,6 @@ interface LayoutProps {
     children?: any;
 }
 
-export default function Layout({ children }: LayoutProps): React.ReactNode {
+export function Layout({ children }: LayoutProps): React.ReactNode {
     return <ServiceHeader currentInterfaceType={null}>{children}</ServiceHeader>;
 }

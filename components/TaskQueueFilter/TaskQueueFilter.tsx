@@ -4,9 +4,9 @@ import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
 
 import { TimeZones } from "../../../Commons/DataTypes/Time";
-import DateTimeRangePicker from "../../../Commons/DateTimeRangePicker/DateTimeRangePicker";
-import TaskStatesSelect from "../TaskStatesSelect/TaskStatesSelect";
-import TaskTypesSelect from "../TaskTypesSelect/TaskTypesSelect";
+import { DateTimeRangePicker } from "../../../Commons/DateTimeRangePicker/DateTimeRangePicker";
+import { TaskStatesSelect } from "../TaskStatesSelect/TaskStatesSelect";
+import { TaskTypesSelect } from "../TaskTypesSelect/TaskTypesSelect";
 
 import cn from "./TaskQueueFilter.less";
 
@@ -21,7 +21,7 @@ interface TaskQueueFilterState {
     openedModal: boolean;
 }
 
-export default class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQueueFilterState> {
+export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQueueFilterState> {
     public state: TaskQueueFilterState = {
         openedModal: false,
     };

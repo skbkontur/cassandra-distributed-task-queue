@@ -4,12 +4,12 @@ import { IconName, RouterLink } from "ui";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
+import { AllowCopyToClipboard } from "../../../Commons/AllowCopyToClipboard";
 import { Ticks, ticksToDate } from "../../../Commons/DataTypes/Time";
 import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
 
 import cn from "./TaskTimeLine.less";
-import TimeLine from "./TimeLine/TimeLine";
+import { TimeLine } from "./TimeLine/TimeLine";
 
 const TimeLineEntry = TimeLine.Entry;
 
@@ -24,7 +24,7 @@ interface TaskTimeLineProps {
     getHrefToTask: (id: string) => LocationDescriptor;
 }
 
-export default class TaskTimeLine extends React.Component<TaskTimeLineProps, $FlowFixMeState> {
+export class TaskTimeLine extends React.Component<TaskTimeLineProps, $FlowFixMeState> {
     public ticksToDate(ticks: Nullable<Ticks>): Nullable<Date> {
         if (!ticks) {
             return null;

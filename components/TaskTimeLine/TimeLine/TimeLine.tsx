@@ -2,13 +2,13 @@ import * as React from "react";
 import { Icon, IconName } from "ui";
 
 import cn from "./TimeLine.less";
-import TimeLineCycled, { TimeLineCycledProps } from "./TimeLineCycled";
+import { TimeLineCycled, TimeLineCycledProps } from "./TimeLineCycled";
 
 interface TimeLineProps {
     children?: any;
 }
 
-export default class TimeLine extends React.Component<TimeLineProps> {
+export class TimeLine extends React.Component<TimeLineProps> {
     public static Branch: React.ComponentType<TimeLineProps>;
     public static BranchNode: React.ComponentType<TimeLineProps>;
     public static Entry: React.ComponentType<TimeLineEntryProps>;

@@ -40,7 +40,7 @@ export function OrganizationLinkDropdown({
 }
 
 // eslint-disable-next-line max-statements
-export default function customRender(target: mixed, path: string[]): JSX.Element | null {
+export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Element | null {
     const pathTop = path[path.length - 1];
     if (target == null) {
         return null;

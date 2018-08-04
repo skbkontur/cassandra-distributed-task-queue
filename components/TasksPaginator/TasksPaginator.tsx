@@ -7,7 +7,7 @@ export interface TasksPaginatorProps {
     prevPageLocation: LocationDescriptor | null;
 }
 
-export default class TasksPaginator extends React.Component<TasksPaginatorProps> {
+export class TasksPaginator extends React.Component<TasksPaginatorProps> {
     public render(): JSX.Element {
         const { nextPageLocation, prevPageLocation } = this.props;
         return (

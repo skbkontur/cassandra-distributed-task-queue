@@ -25,7 +25,7 @@ const arrNumbers = [
     ["", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"],
 ];
 
-export default function numberToString(value: number | string): string | false {
+export function numberToString(value: number | string): string | false {
     function numberParser(num: string, desc: number): string {
         let newNum: string = num;
         let result = "";

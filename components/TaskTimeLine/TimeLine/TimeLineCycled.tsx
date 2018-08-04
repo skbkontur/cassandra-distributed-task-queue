@@ -9,7 +9,7 @@ export interface TimeLineCycledProps {
     icon?: IconName;
 }
 
-export default class TimeLineCycled extends React.Component<TimeLineCycledProps> {
+export class TimeLineCycled extends React.Component<TimeLineCycledProps> {
     public refs: {
         entries: HTMLElement;
         lines: HTMLElement;

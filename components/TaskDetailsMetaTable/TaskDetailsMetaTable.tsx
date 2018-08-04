@@ -1,7 +1,7 @@
 import * as React from "react";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 
-import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
+import { AllowCopyToClipboard } from "../../../Commons/AllowCopyToClipboard";
 import { Ticks } from "../../../Commons/DataTypes/Time";
 import DateTimeView from "../../../Commons/DateTimeView/DateTimeView";
 
@@ -11,7 +11,7 @@ export interface TaskDetailsMetaTableProps {
     taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
 }
 
-export default class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps, $FlowFixMeState> {
+export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps, $FlowFixMeState> {
     public render(): JSX.Element {
         return (
             <table className={cn("table")}>

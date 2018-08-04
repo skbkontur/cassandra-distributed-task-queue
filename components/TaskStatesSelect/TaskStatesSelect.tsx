@@ -22,7 +22,7 @@ const TaskStateCaptions = {
     [TaskStates.Canceled]: "Canceled",
 };
 
-export default class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
+export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
     public render(): JSX.Element {
         const { value } = this.props;
         return (

@@ -15,7 +15,7 @@ interface TaskTypesSelectState {
     query: string;
 }
 
-export default class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskTypesSelectState> {
+export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskTypesSelectState> {
     public state: TaskTypesSelectState = {
         query: "",
     };

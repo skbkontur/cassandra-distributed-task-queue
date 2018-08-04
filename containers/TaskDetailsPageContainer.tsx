@@ -10,8 +10,8 @@ import { takeLastAndRejectPrevious } from "PromiseUtils";
 import DelayedLoader from "../../Commons/DelayedLoader/DelayedLoader";
 import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import { getCurrentUserInfo, SuperUserAccessLevels } from "../../Domain/Globals";
-import TaskDetailsPage from "../components/TaskDetailsPage/TaskDetailsPage";
-import TaskNotFoundPage from "../components/TaskNotFoundPage/TaskNotFoundPage";
+import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
+import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";
 
 interface TaskDetailsPageContainerProps {
     id: string;
@@ -25,7 +25,10 @@ interface TaskDetailsPageContainerState {
     notFoundError: boolean;
 }
 
-class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerProps, TaskDetailsPageContainerState> {
+class TaskDetailsPageContainerInternal extends React.Component<
+    TaskDetailsPageContainerProps,
+    TaskDetailsPageContainerState
+> {
     public state: TaskDetailsPageContainerState = {
         loading: false,
         taskDetails: null,
@@ -141,4 +144,4 @@ class TaskDetailsPageContainer extends React.Component<TaskDetailsPageContainerP
     }
 }
 
-export default withRemoteTaskQueueApi(TaskDetailsPageContainer);
+export const TaskDetailsPageContainer = withRemoteTaskQueueApi(TaskDetailsPageContainerInternal);

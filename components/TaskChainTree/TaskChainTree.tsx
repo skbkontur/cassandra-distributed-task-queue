@@ -6,8 +6,8 @@ import { ColumnStack, Fit } from "ui/layout";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import AllowCopyToClipboard from "../../../Commons/AllowCopyToClipboard";
-import TimeLine from "../TaskTimeLine/TimeLine/TimeLine";
+import { AllowCopyToClipboard } from "../../../Commons/AllowCopyToClipboard";
+import { TimeLine } from "../TaskTimeLine/TimeLine/TimeLine";
 
 import cn from "./TaskChainTree.less";
 
@@ -23,7 +23,7 @@ interface TaskChainTreeProps {
     getTaskLocation: (id: string) => LocationDescriptor;
 }
 
-export default class TaskChainTree extends React.Component<TaskChainTreeProps, $FlowFixMeState> {
+export class TaskChainTree extends React.Component<TaskChainTreeProps, $FlowFixMeState> {
     public buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): JSX.Element {
         const { getTaskLocation } = this.props;
 

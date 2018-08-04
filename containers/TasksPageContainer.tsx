@@ -20,10 +20,10 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
-import TasksPaginator from "../components/TasksPaginator/TasksPaginator";
-import TaskQueueFilter from "../components/TaskQueueFilter/TaskQueueFilter";
-import TasksTable from "../components/TaskTable/TaskTable";
-import numberToString from "../Domain/numberToString";
+import { TasksPaginator } from "../components/TasksPaginator/TasksPaginator";
+import { TaskQueueFilter } from "../components/TaskQueueFilter/TaskQueueFilter";
+import { TasksTable } from "../components/TaskTable/TaskTable";
+import { numberToString } from "../Domain/numberToString";
 
 interface TasksPageContainerProps extends RouteComponentProps<any> {
     searchQuery: string;
@@ -79,7 +79,7 @@ export function buildSearchQueryForRequest(request: RemoteTaskQueueSearchRequest
     return provisionalMapping.stringify(request);
 }
 
-class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksPageContainerState> {
+class TasksPageContainerInternal extends React.Component<TasksPageContainerProps, TasksPageContainerState> {
     public state: TasksPageContainerState = {
         loading: false,
         request: createDefaultRemoteTaskQueueSearchRequest(),
@@ -474,4 +474,4 @@ class TasksPageContainer extends React.Component<TasksPageContainerProps, TasksP
     }
 }
 
-export default withRouter(withRemoteTaskQueueApi(TasksPageContainer));
+export const TasksPageContainer = withRouter(withRemoteTaskQueueApi(TasksPageContainerInternal));
