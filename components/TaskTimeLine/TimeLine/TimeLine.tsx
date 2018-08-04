@@ -9,6 +9,10 @@ interface TimeLineProps {
 }
 
 export default class TimeLine extends React.Component<TimeLineProps> {
+    public static Branch: React.ComponentType<TimeLineProps>;
+    public static BranchNode: React.ComponentType<TimeLineProps>;
+    public static Entry: React.ComponentType<TimeLineEntryProps>;
+    public static Cycled: React.ComponentType<TimeLineCycledProps>;
     public render(): JSX.Element {
         const { children } = this.props;
         return (
@@ -17,10 +21,6 @@ export default class TimeLine extends React.Component<TimeLineProps> {
             </div>
         );
     }
-    public static Branch: React.ComponentType<TimeLineProps>;
-    public static BranchNode: React.ComponentType<TimeLineProps>;
-    public static Entry: React.ComponentType<TimeLineEntryProps>;
-    public static Cycled: React.ComponentType<TimeLineCycledProps>;
 }
 
 interface TimeLineEntryProps {
