@@ -1,4 +1,4 @@
-import { LocationDescriptor, LocationDescriptorObject } from "history";
+import { LocationDescriptor } from "history";
 import _ from "lodash";
 import $c from "property-chain";
 import * as React from "react";
