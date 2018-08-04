@@ -25,70 +25,70 @@ const arrNumbers = [
     ["", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"],
 ];
 
-export default function numberToString(number: number | string): string | false {
+export default function numberToString(value: number | string): string | false {
     function numberParser(num: string, desc: number): string {
         let newNum: string = num;
-        let string = "";
+        let result = "";
         let newNumHundred: string | number = "";
         if (newNum.length === 3) {
             newNumHundred = Number(newNum.substr(0, 1));
             newNum = newNum.substr(1, 3);
-            string = arrNumbers[2][newNumHundred] + " ";
+            result = arrNumbers[2][newNumHundred] + " ";
         }
 
         if (Number(newNum) < 20) {
-            string += arrNumbers[0][Number(newNum)] + " ";
+            result += arrNumbers[0][Number(newNum)] + " ";
         } else {
             const firstNum = Number(newNum.substr(0, 1));
             const secondNum = Number(newNum.substr(1, 2));
-            string += arrNumbers[1][firstNum] + " ";
-            string += arrNumbers[0][secondNum] + " ";
+            result += arrNumbers[1][firstNum] + " ";
+            result += arrNumbers[0][secondNum] + " ";
         }
         const lastNum = parseFloat(newNum.substr(-1));
         switch (desc) {
             case 1:
                 if (lastNum === 1) {
-                    string += "тысяча ";
+                    result += "тысяча ";
                 } else if (lastNum > 1 && lastNum < 5) {
-                    string += "тысячи ";
+                    result += "тысячи ";
                 } else {
-                    string += "тысяч ";
+                    result += "тысяч ";
                 }
-                string = string.replace("один ", "одна ");
-                string = string.replace("два ", "две ");
+                result = result.replace("один ", "одна ");
+                result = result.replace("два ", "две ");
                 break;
             case 2:
                 if (lastNum === 1) {
-                    string += "миллион ";
+                    result += "миллион ";
                 } else if (lastNum > 1 && lastNum < 5) {
-                    string += "миллиона ";
+                    result += "миллиона ";
                 } else {
-                    string += "миллионов ";
+                    result += "миллионов ";
                 }
                 break;
             case 3:
                 if (lastNum === 1) {
-                    string += "миллиард ";
+                    result += "миллиард ";
                 } else if (lastNum > 1 && lastNum < 5) {
-                    string += "миллиарда ";
+                    result += "миллиарда ";
                 } else {
-                    string += "миллиардов ";
+                    result += "миллиардов ";
                 }
                 break;
             default:
                 break;
         }
-        string = string.replace("  ", " ");
-        return string;
+        result = result.replace("  ", " ");
+        return result;
     }
 
-    if (!number || number === 0) {
+    if (!value || value === 0) {
         return false;
     }
 
-    let copyNumber = number;
+    let copyNumber = value;
 
-    if (typeof number === "string") {
+    if (typeof value === "string") {
         copyNumber = String(copyNumber).replace(",", ".");
         if (isNaN(parseInt(copyNumber, 10))) {
             return false;
@@ -96,17 +96,17 @@ export default function numberToString(number: number | string): string | false 
     }
     copyNumber = copyNumber.toString();
     const numberLength = copyNumber.length;
-    let string = "";
+    let result = "";
     let numParser = "";
     let count = 0;
     for (let i = numberLength - 1; i >= 0; i--) {
         const numDigit = copyNumber.substr(i, 1);
         numParser = numDigit + numParser;
         if ((numParser.length === 3 || i === 0) && !isNaN(parseInt(numParser, 10))) {
-            string = numberParser(numParser, count) + string;
+            result = numberParser(numParser, count) + result;
             numParser = "";
             count++;
         }
     }
-    return string.replace(/\s+$/, "").replace(/\s{2}/g, " ");
+    return result.replace(/\s+$/, "").replace(/\s{2}/g, " ");
 }
