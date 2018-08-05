@@ -1,5 +1,5 @@
 import { LocationDescriptor } from "history";
-import $c from "property-chain";
+import { $c } from "property-chain";
 import * as React from "react";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { ApiError } from "Domain/ApiBase/ApiBase";
