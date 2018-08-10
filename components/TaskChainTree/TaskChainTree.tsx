@@ -3,10 +3,10 @@ import _ from "lodash";
 import * as React from "react";
 import { IconName, RouterLink } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
+import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import { AllowCopyToClipboard } from "../../../Commons/AllowCopyToClipboard";
 import { TimeLine } from "../TaskTimeLine/TimeLine/TimeLine";
 
 import cn from "./TaskChainTree.less";

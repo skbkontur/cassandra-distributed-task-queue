@@ -1,15 +1,15 @@
 import { LocationDescriptor } from "history";
 import { $c } from "property-chain";
 import * as React from "react";
+import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { ApiError } from "Domain/ApiBase/ApiBase";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
+import { getCurrentUserInfo, SuperUserAccessLevels } from "Domain/Globals";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
-import { DelayedLoader } from "../../Commons/DelayedLoader/DelayedLoader";
-import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
-import { getCurrentUserInfo, SuperUserAccessLevels } from "../../Domain/Globals";
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
 import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";
 

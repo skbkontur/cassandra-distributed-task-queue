@@ -9,17 +9,17 @@ import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { CommonLayout } from "Commons/Layouts";
 import { QueryStringMapping, queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
 import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
+import {
+    createDefaultRemoteTaskQueueSearchRequest,
+    isRemoteTaskQueueSearchRequestEmpty,
+} from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
 import { RemoteTaskQueueSearchResults } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { getCurrentUserInfo, SuperUserAccessLevels } from "Domain/Globals";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
-import { withRemoteTaskQueueApi } from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
-import {
-    createDefaultRemoteTaskQueueSearchRequest,
-    isRemoteTaskQueueSearchRequestEmpty,
-} from "../../Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
 import { TasksPaginator } from "../components/TasksPaginator/TasksPaginator";
 import { TaskQueueFilter } from "../components/TaskQueueFilter/TaskQueueFilter";
 import { TasksTable } from "../components/TaskTable/TaskTable";

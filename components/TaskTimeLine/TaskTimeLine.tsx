@@ -4,9 +4,9 @@ import { IconName, RouterLink } from "ui";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import { AllowCopyToClipboard } from "../../../Commons/AllowCopyToClipboard";
-import { Ticks, ticksToDate } from "../../../Commons/DataTypes/Time";
-import { DateTimeView } from "../../../Commons/DateTimeView/DateTimeView";
+import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
+import { Ticks, ticksToDate } from "Commons/DataTypes/Time";
+import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 
 import cn from "./TaskTimeLine.less";
 import { TimeLine } from "./TimeLine/TimeLine";

@@ -2,13 +2,13 @@ import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
+import { Accordion } from "Commons/Accordion/Accordion";
+import { ticksToDate, TimeZones } from "Commons/DataTypes/Time";
+import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";
 import { CommonLayout } from "Commons/Layouts";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
-import { Accordion } from "../../../Commons/Accordion/Accordion";
-import { ticksToDate, TimeZones } from "../../../Commons/DataTypes/Time";
-import { RangeSelector } from "../../../Commons/DateTimeRangePicker/RangeSelector";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
 import { taskDetailsCustomRender } from "../../Domain/TaskDetailsCustomRender";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
