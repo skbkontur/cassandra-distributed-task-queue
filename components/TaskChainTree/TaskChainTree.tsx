@@ -23,7 +23,7 @@ interface TaskChainTreeProps {
     getTaskLocation: (id: string) => LocationDescriptor;
 }
 
-export class TaskChainTree extends React.Component<TaskChainTreeProps, $FlowFixMeState> {
+export class TaskChainTree extends React.Component<TaskChainTreeProps> {
     public buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): JSX.Element {
         const { getTaskLocation } = this.props;
 

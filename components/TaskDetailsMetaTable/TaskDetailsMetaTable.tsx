@@ -10,7 +10,7 @@ export interface TaskDetailsMetaTableProps {
     taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
 }
 
-export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps, $FlowFixMeState> {
+export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps> {
     public render(): JSX.Element {
         return (
             <table className={cn("table")}>

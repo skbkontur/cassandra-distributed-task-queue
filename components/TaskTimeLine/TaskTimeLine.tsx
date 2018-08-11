@@ -24,7 +24,7 @@ interface TaskTimeLineProps {
     getHrefToTask: (id: string) => LocationDescriptor;
 }
 
-export class TaskTimeLine extends React.Component<TaskTimeLineProps, $FlowFixMeState> {
+export class TaskTimeLine extends React.Component<TaskTimeLineProps> {
     public ticksToDate(ticks: Nullable<Ticks>): Nullable<Date> {
         if (!ticks) {
             return null;
