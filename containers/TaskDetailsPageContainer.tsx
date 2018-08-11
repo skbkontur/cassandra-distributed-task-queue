@@ -1,13 +1,15 @@
 import { LocationDescriptor } from "history";
 import { $c } from "property-chain";
 import * as React from "react";
+import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
 import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { ApiError } from "Domain/ApiBase/ApiBase";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
-import { getCurrentUserInfo, SuperUserAccessLevels } from "Domain/Globals";
+import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
+import { SuperUserAccessLevels } from "Domain/Globals";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
@@ -17,6 +19,7 @@ interface TaskDetailsPageContainerProps {
     id: string;
     remoteTaskQueueApi: IRemoteTaskQueueApi;
     parentLocation: Nullable<LocationDescriptor>;
+    userInfo: ReactApplicationUserInfo;
 }
 
 interface TaskDetailsPageContainerState {
@@ -114,7 +117,7 @@ class TaskDetailsPageContainerInternal extends React.Component<
     public render(): JSX.Element {
         const { taskDetails, loading, notFoundError } = this.state;
         const { parentLocation } = this.props;
-        const currentUser = getCurrentUserInfo();
+        const currentUser = this.props.userInfo;
 
         return (
             <DelayedLoader active={loading} type="big" simulateHeightToEnablePageScroll data-tid="Loader">
@@ -144,4 +147,4 @@ class TaskDetailsPageContainerInternal extends React.Component<
     }
 }
 
-export const TaskDetailsPageContainer = withRemoteTaskQueueApi(TaskDetailsPageContainerInternal);
+export const TaskDetailsPageContainer = withUserInfoStrict(withRemoteTaskQueueApi(TaskDetailsPageContainerInternal));

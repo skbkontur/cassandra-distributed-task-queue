@@ -5,6 +5,7 @@ import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Button, Input, Loader, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
 import { ColumnStack, Fit, RowStack } from "ui/layout";
+import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { CommonLayout } from "Commons/Layouts";
 import { QueryStringMapping, queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
@@ -17,7 +18,8 @@ import {
 } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
 import { RemoteTaskQueueSearchResults } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { getCurrentUserInfo, SuperUserAccessLevels } from "Domain/Globals";
+import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
+import { SuperUserAccessLevels } from "Domain/Globals";
 import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import { TasksPaginator } from "../components/TasksPaginator/TasksPaginator";
@@ -30,6 +32,7 @@ interface TasksPageContainerProps extends RouteComponentProps<any> {
     remoteTaskQueueApi: IRemoteTaskQueueApi;
     results: Nullable<RemoteTaskQueueSearchResults>;
     requestParams: Nullable<string>;
+    userInfo: ReactApplicationUserInfo;
 }
 
 interface TasksPageContainerState {
@@ -388,7 +391,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
     }
 
     public render(): JSX.Element {
-        const currentUser = getCurrentUserInfo();
+        const currentUser = this.props.userInfo;
         const allowRerunOrCancel = $c(currentUser)
             .with(x => x.superUserAccessLevel)
             .with(x => [SuperUserAccessLevels.God, SuperUserAccessLevels.Developer].includes(x))
@@ -474,4 +477,4 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
     }
 }
 
-export const TasksPageContainer = withRouter(withRemoteTaskQueueApi(TasksPageContainerInternal));
+export const TasksPageContainer = withUserInfoStrict(withRouter(withRemoteTaskQueueApi(TasksPageContainerInternal)));

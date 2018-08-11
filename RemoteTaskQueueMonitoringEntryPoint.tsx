@@ -1,10 +1,6 @@
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import ReactDom from "react-dom";
-import { BrowserRouter, Route, RouteComponentProps, Switch } from "react-router-dom";
-import "ui/styles/reset.less";
-import "ui/styles/typography.less";
-import { WindowUtils } from "Commons/DomUtils";
+import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import { RemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { ApiProvider } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
 
@@ -39,14 +35,13 @@ function tryGetParentLocationFromHistoryState(location: any): Nullable<LocationD
     return null;
 }
 
-ReactDom.render(
-    <BrowserRouter>
+export function RemoteTaskQueueMonitoringEntryPoint(): JSX.Element {
+    return (
         <ApiProvider remoteTaskQueueApi={api}>
             <Route path={TasksPath} component={RemoteTaskQueueApplication} />
         </ApiProvider>
-    </BrowserRouter>,
-    WindowUtils.getElementByIdToRenderApp("content")
-);
+    );
+}
 
 export function RemoteTaskQueueApplication({ match }: RouteComponentProps<any>): JSX.Element {
     const baseUrl = match.url;
