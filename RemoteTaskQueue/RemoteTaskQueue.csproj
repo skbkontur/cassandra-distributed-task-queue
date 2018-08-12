@@ -54,10 +54,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Annotations, Version=10.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\JetBrains.Annotations.dll</HintPath>
-    </Reference>
     <Reference Include="Kontur.Tracing.Core">
       <HintPath>..\..\Assemblies\Kontur\Kontur.Tracing\Kontur.Tracing.Core.dll</HintPath>
     </Reference>
@@ -175,6 +171,9 @@
     <Compile Include="Configuration\TaskHandlerRegistryBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations">
+      <Version>2018.2.1</Version>
+    </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>
     </PackageReference>
