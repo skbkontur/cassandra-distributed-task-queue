@@ -69,6 +69,9 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
     }
 
     if ((pathTop === "boxId" || endsWith("BoxId", pathTop)) && typeof target === "object") {
+        if (path.includes("transportBoxId")) {
+            return null;
+        }
         const boxId = getByPath(target, path);
         if (typeof boxId === "string") {
             return (
