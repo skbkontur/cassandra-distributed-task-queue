@@ -68,15 +68,27 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
         }
     }
 
-    if ((pathTop === "boxId" || endsWith("BoxId", pathTop)) && typeof target === "object") {
-        if (path.includes("transportBoxId")) {
-            return null;
-        }
+    if (
+        (pathTop === "boxId" || endsWith("BoxId", pathTop)) &&
+        typeof target === "object" &&
+        pathTop !== "transportBoxId"
+    ) {
         const boxId = getByPath(target, path);
         if (typeof boxId === "string") {
             return (
                 <Link data-tid="GoToLink" href={`/AdminTools/TablesView/BoxStorageElement/${boxId}/${boxId}`}>
                     {boxId}
+                </Link>
+            );
+        }
+    }
+
+    if (pathTop === "transportBoxId" && typeof target === "object") {
+        const id = getByPath(target, path);
+        if (typeof id === "string") {
+            return (
+                <Link data-tid="GoToLink" href={`/AdminTools/TablesView/TransportBoxStorageElement/${id}/${id}`}>
+                    {id}
                 </Link>
             );
         }
