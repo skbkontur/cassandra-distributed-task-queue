@@ -62,12 +62,6 @@
     <Reference Include="Elasticsearch.Net">
       <HintPath>..\..\Assemblies\ElasticSearch\Client\Elasticsearch.Net.dll</HintPath>
     </Reference>
-    <Reference Include="FluentAssertions">
-      <HintPath>..\..\Assemblies\FluentAssertions\FluentAssertions.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentAssertions.Core">
-      <HintPath>..\..\Assemblies\FluentAssertions\FluentAssertions.Core.dll</HintPath>
-    </Reference>
     <Reference Include="GroboContainer">
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
     </Reference>
@@ -151,6 +145,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="FluentAssertions">
+      <Version>4.19.4</Version>
+    </PackageReference>
     <PackageReference Include="NUnit">
       <Version>3.10.1</Version>
     </PackageReference>
