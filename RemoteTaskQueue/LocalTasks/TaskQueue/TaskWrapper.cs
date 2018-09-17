@@ -1,22 +1,18 @@
 ﻿using System;
 
-using GroboTrace;
-
 using JetBrains.Annotations;
 
 using log4net;
 
 using RemoteQueue.Handling;
-using RemoteQueue.Profiling;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
     internal class TaskWrapper
     {
-        public TaskWrapper([NotNull] string taskId, [NotNull] string groboTraceKey, TaskQueueReason taskQueueReason, bool taskIsBeingTraced, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
+        public TaskWrapper([NotNull] string taskId, TaskQueueReason taskQueueReason, bool taskIsBeingTraced, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
         {
             this.taskId = taskId;
-            this.groboTraceKey = groboTraceKey;
             this.taskQueueReason = taskQueueReason;
             this.taskIsBeingTraced = taskIsBeingTraced;
             this.handlerTask = handlerTask;
@@ -31,8 +27,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             LocalTaskProcessingResult result;
             try
             {
-                using (Profiler.Profile(groboTraceKey, new RtqGroboTraceProfilerSink(taskId)))
-                    result = handlerTask.RunTask();
+                result = handlerTask.RunTask();
             }
             catch (Exception e)
             {
@@ -51,7 +46,6 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         }
 
         private readonly string taskId;
-        private readonly string groboTraceKey;
         private readonly TaskQueueReason taskQueueReason;
         private readonly bool taskIsBeingTraced;
         private readonly HandlerTask handlerTask;

@@ -42,10 +42,6 @@
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
-    <Reference Include="GroboTrace, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GroboTrace.dll</HintPath>
-    </Reference>
     <Reference Include="Kontur.Tracing.Core">
       <HintPath>..\..\Assemblies\Kontur\Kontur.Tracing\Kontur.Tracing.Core.dll</HintPath>
     </Reference>
@@ -132,7 +128,6 @@
     <Compile Include="Handling\RemoteTaskQueueExtensions.cs" />
     <Compile Include="LocalTasks\TaskQueue\LocalTaskQueueingResult.cs" />
     <Compile Include="Profiling\GraphiteRemoteTaskQueueProfiler.cs" />
-    <Compile Include="Profiling\RtqGroboTraceProfilerSink.cs" />
     <Compile Include="Tracing\BusinessLogicTaskTraceContext.cs" />
     <Compile Include="Tracing\InfrastructureTaskTraceContext.cs" />
     <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />
