@@ -1,6 +1,4 @@
-using System;
-
-using Kontur.Tracing.Core;
+﻿using System;
 
 namespace RemoteQueue.Tracing
 {
@@ -8,36 +6,36 @@ namespace RemoteQueue.Tracing
     {
         public InfrastructureTaskTraceContext(bool taskIsBeingTraced)
         {
-            if (taskIsBeingTraced)
+            /*if (taskIsBeingTraced)
             {
                 traceContext = Trace.CreateChildContext("Handle.Infrastructure");
                 traceContext.RecordTimepoint(Timepoint.Start);
-            }
+            }*/
         }
 
         public void Finish(bool taskIsSentToThreadPool)
         {
-            if (traceContext != null)
+            /*if (traceContext != null)
             {
                 var flush = !taskIsSentToThreadPool;
                 if (flush)
                     traceContext.RecordTimepoint(Timepoint.Finish);
                 traceContext.Dispose(flush);
-            }
+            }*/
         }
 
         public void Dispose()
         {
-            if (traceContext != null)
-                traceContext.Dispose();
+            /*if (traceContext != null)
+                traceContext.Dispose();*/
         }
 
         public static void Finish()
         {
-            TraceContext.Current.RecordTimepoint(Timepoint.Finish);
-            Trace.FinishCurrentContext();
+            /*TraceContext.Current.RecordTimepoint(Timepoint.Finish);
+            Trace.FinishCurrentContext();*/
         }
 
-        private readonly ITraceContext traceContext;
+        //private readonly ITraceContext traceContext;
     }
 }

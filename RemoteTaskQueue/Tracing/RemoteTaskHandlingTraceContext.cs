@@ -1,13 +1,9 @@
-using System;
+﻿using System;
 
 using JetBrains.Annotations;
 
-using Kontur.Tracing.Core;
-
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.LocalTasks.TaskQueue;
-
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Tracing
 {
@@ -16,35 +12,35 @@ namespace RemoteQueue.Tracing
         public RemoteTaskHandlingTraceContext([CanBeNull] TaskMetaInformation taskMeta)
         {
             TaskIsBeingTraced = taskMeta != null;
-            if (taskMeta != null)
+            /*if (taskMeta != null)
             {
                 traceContext = Trace.ContinueContext(taskMeta.TraceId, taskMeta.Id, taskMeta.TraceIsActive, isRoot : true);
                 traceContext.RecordTimepoint(Timepoint.Start, new DateTime(taskMeta.Ticks, DateTimeKind.Utc));
-            }
+            }*/
         }
 
         public bool TaskIsBeingTraced { get; private set; }
 
         public void Finish(bool taskIsSentToThreadPool, Func<long> getGlobalNowTicks)
         {
-            if (traceContext != null)
+            /*if (traceContext != null)
             {
                 var flush = !taskIsSentToThreadPool;
                 if (flush)
                     traceContext.RecordTimepoint(Timepoint.Finish, new DateTime(getGlobalNowTicks(), DateTimeKind.Utc));
                 traceContext.Dispose(flush);
-            }
+            }*/
         }
 
         public void Dispose()
         {
-            if (traceContext != null)
-                traceContext.Dispose();
+            /*if (traceContext != null)
+                traceContext.Dispose();*/
         }
 
         public static void Finish(LocalTaskProcessingResult result, long finishTaskProcessingTicks)
         {
-            switch (result)
+            /*switch (result)
             {
             case LocalTaskProcessingResult.Success:
                 TraceContext.Current.RecordAnnotation(Annotation.ResponseCode, "200");
@@ -64,9 +60,9 @@ namespace RemoteQueue.Tracing
                 throw new InvalidProgramStateException(string.Format("Invalid LocalTaskProcessingResult: {0}", result));
             }
             TraceContext.Current.RecordTimepoint(Timepoint.Finish, new DateTime(finishTaskProcessingTicks, DateTimeKind.Utc));
-            Trace.FinishCurrentContext();
+            Trace.FinishCurrentContext();*/
         }
 
-        private readonly ITraceContext traceContext;
+        //private readonly ITraceContext traceContext;
     }
 }

@@ -1,8 +1,6 @@
-using System;
+﻿using System;
 
 using JetBrains.Annotations;
-
-using Kontur.Tracing.Core;
 
 namespace RemoteQueue.Tracing
 {
@@ -10,16 +8,16 @@ namespace RemoteQueue.Tracing
     {
         protected PrimitiveTaskTraceContext([NotNull] string primitiveName)
         {
-            traceContext = Trace.CreateChildContext(primitiveName);
-            traceContext.RecordTimepoint(Timepoint.Start);
+            /*traceContext = Trace.CreateChildContext(primitiveName);
+            traceContext.RecordTimepoint(Timepoint.Start);*/
         }
 
         public void Dispose()
         {
-            traceContext.RecordTimepoint(Timepoint.Finish);
-            traceContext.Dispose();
+            /*traceContext.RecordTimepoint(Timepoint.Finish);
+            traceContext.Dispose();*/
         }
 
-        private readonly ITraceContext traceContext;
+        //private readonly ITraceContext traceContext;
     }
 }
