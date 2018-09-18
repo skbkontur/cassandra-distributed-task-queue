@@ -15,7 +15,8 @@ using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteQueue.Cassandra.Repositories
 {
@@ -27,7 +28,8 @@ namespace RemoteQueue.Cassandra.Repositories
             IEventLogRepository eventLogRepository,
             IGlobalTime globalTime,
             IChildTaskIndex childTaskIndex,
-            ITaskDataRegistry taskDataRegistry)
+            ITaskDataRegistry taskDataRegistry,
+            ILog logger)
         {
             this.taskMetaStorage = taskMetaStorage;
             this.minimalStartTicksIndex = minimalStartTicksIndex;
@@ -35,6 +37,7 @@ namespace RemoteQueue.Cassandra.Repositories
             this.globalTime = globalTime;
             this.childTaskIndex = childTaskIndex;
             this.taskDataRegistry = taskDataRegistry;
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue.HandleTasksMetaStorage");
         }
 
         [CanBeNull]
@@ -52,7 +55,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 var liveRecords = minimalStartTicksIndex.GetRecords(taskIndexShardKey, toTicks, batchSize : 2000).Take(10000).ToArray();
                 liveRecordsByKey.Add(taskIndexShardKey, liveRecords);
                 if (liveRecords.Any())
-                    Log.For(this).Info($"Got {liveRecords.Length} live minimalStartTicksIndex records for taskIndexShardKey: {taskIndexShardKey}; Oldest live record: {liveRecords.First()}");
+                    logger.Info($"Got {liveRecords.Length} live minimalStartTicksIndex records for taskIndexShardKey: {taskIndexShardKey}; Oldest live record: {liveRecords.First()}");
             }
             return Shuffle(liveRecordsByKey.SelectMany(x => x.Value).ToArray());
         }
@@ -134,5 +137,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IGlobalTime globalTime;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly ILog logger;
     }
 }

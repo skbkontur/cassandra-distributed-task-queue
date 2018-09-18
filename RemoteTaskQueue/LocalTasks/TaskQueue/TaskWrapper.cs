@@ -2,21 +2,27 @@
 
 using JetBrains.Annotations;
 
-using log4net;
-
 using RemoteQueue.Handling;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteQueue.LocalTasks.TaskQueue
 {
     internal class TaskWrapper
     {
-        public TaskWrapper([NotNull] string taskId, TaskQueueReason taskQueueReason, bool taskIsBeingTraced, [NotNull] HandlerTask handlerTask, [NotNull] LocalTaskQueue localTaskQueue)
+        public TaskWrapper([NotNull] string taskId,
+                           TaskQueueReason taskQueueReason,
+                           bool taskIsBeingTraced,
+                           [NotNull] HandlerTask handlerTask,
+                           [NotNull] LocalTaskQueue localTaskQueue,
+                           [NotNull] ILog logger)
         {
             this.taskId = taskId;
             this.taskQueueReason = taskQueueReason;
             this.taskIsBeingTraced = taskIsBeingTraced;
             this.handlerTask = handlerTask;
             this.localTaskQueue = localTaskQueue;
+            this.logger = logger;
             finished = false;
         }
 
@@ -32,7 +38,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             catch (Exception e)
             {
                 result = LocalTaskProcessingResult.Undefined;
-                logger.Error("Ошибка во время обработки асинхронной задачи.", e);
+                logger.Error(e, "Ошибка во время обработки асинхронной задачи.");
             }
             try
             {
@@ -41,7 +47,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             }
             catch (Exception e)
             {
-                logger.Warn("Ошибка во время окончания задачи.", e);
+                logger.Warn(e, "Ошибка во время окончания задачи.");
             }
         }
 
@@ -50,7 +56,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         private readonly bool taskIsBeingTraced;
         private readonly HandlerTask handlerTask;
         private readonly LocalTaskQueue localTaskQueue;
+        private readonly ILog logger;
         private volatile bool finished;
-        private readonly ILog logger = LogManager.GetLogger(typeof(LocalTaskQueue));
     }
 }

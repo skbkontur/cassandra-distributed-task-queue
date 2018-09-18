@@ -1,6 +1,4 @@
-﻿using RemoteQueue.Configuration;
-
-using RemoteTaskQueue.FunctionalTests.Common;
+﻿using RemoteTaskQueue.FunctionalTests.Common;
 
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
@@ -19,7 +17,6 @@ namespace ExchangeService
         private void Run()
         {
             Container.ConfigureForTestRemoteTaskQueue();
-            Container.Configurator.ForAbstraction<IExchangeSchedulableRunner>().UseType<ExchangeSchedulableRunner>();
             Container.Get<HttpService>().Run();
         }
     }

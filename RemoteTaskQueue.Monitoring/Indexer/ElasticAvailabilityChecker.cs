@@ -3,29 +3,30 @@ using System.Diagnostics;
 using System.Threading;
 
 using RemoteTaskQueue.Monitoring.Storage;
-using RemoteTaskQueue.Monitoring.Storage.Utils;
 
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class ElasticAvailabilityChecker
     {
-        public ElasticAvailabilityChecker(RtqElasticsearchClientFactory elasticsearchClientFactory)
+        public ElasticAvailabilityChecker(RtqElasticsearchClientFactory elasticsearchClientFactory, ILog logger)
         {
             this.elasticsearchClientFactory = elasticsearchClientFactory;
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue.ElasticAvailabilityChecker");
         }
 
         public void WaitAlive()
         {
-            Log.For(this).LogInfoFormat("Checking Elasticsearch is alive");
+            logger.Info("Checking Elasticsearch is alive");
             var isOk = false;
             var w = Stopwatch.StartNew();
             do
             {
                 if (!IsAlive())
-                    Log.For(this).LogInfoFormat("ES is dead.");
+                    logger.Info("ES is dead.");
                 else
                 {
                     isOk = true;
@@ -34,10 +35,10 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 Thread.Sleep(1000);
             } while (w.Elapsed < timeout);
             if (isOk)
-                Log.For(this).LogInfoFormat("Checking OK");
+                logger.Info("Checking OK");
             else
             {
-                Log.For(this).LogWarnFormat("Checking FAIL. Exiting");
+                logger.Warn("Checking FAIL. Exiting");
                 throw new InvalidProgramStateException("Elasticsearch is dead - cannot start");
             }
         }
@@ -56,12 +57,13 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             }
             catch (Exception e)
             {
-                Log.For(this).LogWarnFormat("CRASH: {0}", e.ToString());
+                logger.Warn("CRASH: {0}", e.ToString());
                 return false;
             }
         }
 
         private readonly TimeSpan timeout = TimeSpan.FromSeconds(20);
         private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
+        private readonly ILog logger;
     }
 }

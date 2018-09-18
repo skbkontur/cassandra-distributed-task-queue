@@ -2,7 +2,7 @@
 
 namespace RemoteQueue.Settings
 {
-    public interface IExchangeSchedulableRunnerSettings
+    public interface IRtqConsumerSettings
     {
         TimeSpan PeriodicInterval { get; }
         int MaxRunningTasksCount { get; }

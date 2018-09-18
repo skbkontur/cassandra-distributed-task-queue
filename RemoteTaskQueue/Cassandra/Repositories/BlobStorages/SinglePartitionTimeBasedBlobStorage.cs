@@ -9,17 +9,22 @@ using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class SinglePartitionTimeBasedBlobStorage
     {
-        public SinglePartitionTimeBasedBlobStorage([NotNull] string keyspaceName, [NotNull] string columnFamilyName, ICassandraCluster cassandraCluster)
+        public SinglePartitionTimeBasedBlobStorage([NotNull] string keyspaceName,
+                                                   [NotNull] string columnFamilyName,
+                                                   ICassandraCluster cassandraCluster,
+                                                   ILog logger)
         {
             this.keyspaceName = keyspaceName;
             this.columnFamilyName = columnFamilyName;
             this.cassandraCluster = cassandraCluster;
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue.SinglePartitionTimeBasedBlobStorage");
         }
 
         public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)
@@ -27,7 +32,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             if (value == null)
                 throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", columnId));
             if (value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
-                Log.For(this).WarnFormat("Writing extra large blob with rowKey={0} and columnId={1} of size={2} into cf: {3}.{4}", rowKey, columnId, value.Length, keyspaceName, columnFamilyName);
+                logger.Warn(string.Format("Writing extra large blob with rowKey={0} and columnId={1} of size={2} into cf: {3}.{4}", rowKey, columnId, value.Length, keyspaceName, columnFamilyName));
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamilyName);
             connection.AddColumn(rowKey, new Column
                 {
@@ -77,6 +82,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         private readonly string keyspaceName;
         private readonly string columnFamilyName;
         private readonly ICassandraCluster cassandraCluster;
+        private readonly ILog logger;
 
         private class ColumnWithId
         {

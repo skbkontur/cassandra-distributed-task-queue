@@ -10,11 +10,14 @@ using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteQueue.Handling
 {
     internal interface IRemoteTaskQueueInternals
     {
         TimeSpan TaskTtl { get; }
+        ILog Logger { get; }
         ISerializer Serializer { get; }
         IGlobalTime GlobalTime { get; }
         ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; }

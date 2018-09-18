@@ -13,11 +13,14 @@ using SkbKontur.Graphite.Client;
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqMonitoringEventFeeder
     {
-        public RtqMonitoringEventFeeder(EventFeedFactory eventFeedFactory,
+        public RtqMonitoringEventFeeder(ILog logger,
+                                        EventFeedFactory eventFeedFactory,
                                         RtqElasticsearchIndexerSettings indexerSettings,
                                         RtqElasticsearchClientFactory elasticsearchClientFactory,
                                         RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
@@ -28,7 +31,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient);
-            var taskMetaProcessor = new TaskMetaProcessor(indexerSettings, elasticsearchClientFactory, remoteTaskQueue, perfGraphiteReporter);
+            var taskMetaProcessor = new TaskMetaProcessor(logger.ForContext("CassandraDistributedTaskQueue.Monitoring"), indexerSettings, elasticsearchClientFactory, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
             this.elasticsearchClientFactory = elasticsearchClientFactory;

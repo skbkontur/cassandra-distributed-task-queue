@@ -7,19 +7,20 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 
 using RemoteTaskQueue.Monitoring.Storage;
-using RemoteTaskQueue.Monitoring.Storage.Utils;
 
 using SkbKontur.Graphite.Client;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqMonitoringEventBulkIndexer
     {
-        public RtqMonitoringEventBulkIndexer(RtqElasticsearchIndexerSettings indexerSettings,
+        public RtqMonitoringEventBulkIndexer(ILog logger,
+                                             RtqElasticsearchIndexerSettings indexerSettings,
                                              RtqElasticsearchClientFactory elasticsearchClientFactory,
                                              RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                              IStatsDClient statsDClient)
@@ -28,17 +29,18 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchBulkIndexer", statsDClient);
-            taskMetaProcessor = new TaskMetaProcessor(indexerSettings, elasticsearchClientFactory, remoteTaskQueue, perfGraphiteReporter);
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue.MonitoringEventBulkIndexer");
+            taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClientFactory, remoteTaskQueue, perfGraphiteReporter);
         }
 
         public void ProcessEvents([NotNull] Timestamp indexingStartTimestamp, [NotNull] Timestamp indexingFinishTimestamp)
         {
             if (indexingStartTimestamp >= indexingFinishTimestamp)
             {
-                Log.For(this).LogInfoFormat(string.Format("IndexingFinishTimestamp is reached: {0}", indexingFinishTimestamp));
+                logger.Info(string.Format("IndexingFinishTimestamp is reached: {0}", indexingFinishTimestamp));
                 return;
             }
-            Log.For(this).LogInfoFormat("Processing events from {0} to {1}", indexingStartTimestamp, indexingFinishTimestamp);
+            logger.Info(string.Format("Processing events from {0} to {1}", indexingStartTimestamp, indexingFinishTimestamp));
             Timestamp lastEventsBatchStartTimestamp = null;
             var taskIdsToProcess = new HashSet<string>();
             var taskIdsToProcessInChronologicalOrder = new List<string>();
@@ -69,6 +71,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 taskMetaProcessor.ProcessTasks(taskIdsToProcessInChronologicalOrder);
         }
 
+        private readonly ILog logger;
         private readonly RtqElasticsearchIndexerSettings indexerSettings;
         private readonly EventLogRepository eventLogRepository;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter;

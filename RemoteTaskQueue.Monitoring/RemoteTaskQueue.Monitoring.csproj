@@ -50,10 +50,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.InternalApi.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.ServiceLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
-    </Reference>
     <Reference Include="Elasticsearch.Net, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c85685fc594512a6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\ElasticSearch\Client\Elasticsearch.Net.dll</HintPath>
@@ -86,7 +82,6 @@
     <Compile Include="Storage\RtqElasticsearchSchema.cs" />
     <Compile Include="Storage\Search\SearchIndexNameFactory.cs" />
     <Compile Include="Storage\Utils\DateTimeFormatter.cs" />
-    <Compile Include="Storage\Utils\NamedLoggerExtension.cs" />
     <Compile Include="Storage\Writing\MetaIndexedInfo.cs" />
     <Compile Include="Storage\Writing\TaskIndexedInfo.cs" />
     <Compile Include="Storage\Writing\OmitBinaryAndAbstractPropertiesContractResolver.cs" />

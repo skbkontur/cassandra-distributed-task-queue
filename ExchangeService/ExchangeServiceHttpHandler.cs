@@ -8,31 +8,31 @@ namespace ExchangeService
 {
     public class ExchangeServiceHttpHandler : IHttpHandler
     {
-        public ExchangeServiceHttpHandler(IExchangeSchedulableRunner exchangeSchedulableRunner)
+        public ExchangeServiceHttpHandler(RtqConsumer consumer)
         {
-            runner = exchangeSchedulableRunner;
+            this.consumer = consumer;
         }
 
         [HttpMethod]
         public void Start()
         {
-            runner.Start();
+            consumer.Start();
         }
 
         [HttpMethod]
         public void Stop()
         {
-            runner.Stop();
+            consumer.Stop();
         }
 
         [HttpMethod]
         public void ChangeTaskTtl(TimeSpan ttl)
         {
 #pragma warning disable 618
-            runner.RemoteTaskQueueBackdoor.ChangeTaskTtl(ttl);
+            consumer.RemoteTaskQueueBackdoor.ChangeTaskTtl(ttl);
 #pragma warning restore 618
         }
 
-        private readonly IExchangeSchedulableRunner runner;
+        private readonly RtqConsumer consumer;
     }
 }

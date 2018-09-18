@@ -6,9 +6,9 @@ using SKBKontur.Catalogue.Core.Configuration.Settings;
 
 namespace ExchangeService.Settings
 {
-    public class ExchangeSchedulableRunnerSettings : IExchangeSchedulableRunnerSettings
+    public class RtqConsumerSettings : IRtqConsumerSettings
     {
-        public ExchangeSchedulableRunnerSettings(IApplicationSettings applicationSettings)
+        public RtqConsumerSettings(IApplicationSettings applicationSettings)
         {
             PeriodicInterval = applicationSettings.GetTimeSpan("SchedulerInterval");
             MaxRunningTasksCount = applicationSettings.GetInt("MaxRunningTasksCount");

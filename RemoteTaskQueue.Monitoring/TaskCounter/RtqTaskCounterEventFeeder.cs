@@ -11,13 +11,15 @@ using SkbKontur.Graphite.Client;
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;
 using SKBKontur.Catalogue.Objects.Json;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.Monitoring.TaskCounter
 {
     public class RtqTaskCounterEventFeeder
     {
-        public RtqTaskCounterEventFeeder(ISerializer serializer,
+        public RtqTaskCounterEventFeeder(ILog logger,
+                                         ISerializer serializer,
                                          IStatsDClient statsDClient,
                                          IGraphiteClient graphiteClient,
                                          ITaskDataRegistry taskDataRegistry,
@@ -37,7 +39,8 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.TaskCounter.Perf", statsDClient);
-            Log.For(this).Info($"Using RtqTaskCounterSettings: {settings.ToPrettyJson()}");
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue.TaskCounter");
+            this.logger.Info($"Using RtqTaskCounterSettings: {settings.ToPrettyJson()}");
         }
 
         [NotNull]
@@ -45,7 +48,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
         public ( /*[NotNull]*/ IEventFeedsRunner, /*[NotNull]*/ RtqTaskCounterStateManager, /*[NotNull]*/ RtqTaskCounterGraphiteReporter) RunEventFeeding()
         {
-            var stateManager = new RtqTaskCounterStateManager(serializer, taskDataRegistry, stateStorage, settings, offsetInterpreter, perfGraphiteReporter);
+            var stateManager = new RtqTaskCounterStateManager(logger, serializer, taskDataRegistry, stateStorage, settings, offsetInterpreter, perfGraphiteReporter);
             var eventConsumer = new RtqTaskCounterEventConsumer(stateManager, handleTasksMetaStorage, perfGraphiteReporter);
             IBladesBuilder<string> bladesBuilder = BladesBuilder.New(eventLogRepository, eventConsumer);
             foreach (var bladeId in stateManager.Blades)
@@ -61,6 +64,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
             return (eventFeedsRunner, stateManager, new RtqTaskCounterGraphiteReporter(stateManager, graphiteClient));
         }
 
+        private readonly ILog logger;
         private readonly ISerializer serializer;
         private readonly IGraphiteClient graphiteClient;
         private readonly ITaskDataRegistry taskDataRegistry;

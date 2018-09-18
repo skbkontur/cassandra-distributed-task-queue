@@ -15,14 +15,16 @@ using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskExceptionInfoStorage : ITaskExceptionInfoStorage
     {
-        public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings)
+        public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings, ILog logger)
         {
             this.serializer = serializer;
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(remoteTaskQueueSettings.QueueKeyspace, timeBasedCfName, cassandraCluster);
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(remoteTaskQueueSettings.QueueKeyspace, timeBasedCfName, cassandraCluster, logger);
         }
 
         public bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out List<TimeGuid> newExceptionInfoIds)

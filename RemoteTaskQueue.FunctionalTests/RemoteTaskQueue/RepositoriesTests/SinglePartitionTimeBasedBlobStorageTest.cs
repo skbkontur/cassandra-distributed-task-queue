@@ -11,6 +11,8 @@ using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     public class SinglePartitionTimeBasedBlobStorageTest : RepositoryFunctionalTestBase
@@ -20,7 +22,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void SetUp()
         {
             ResetCassandraState();
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(QueueKeyspaceName, timeBasedCfName, cassandraCluster);
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(QueueKeyspaceName, timeBasedCfName, cassandraCluster, new SilentLog());
         }
 
         protected override ColumnFamily[] GetColumnFamilies()

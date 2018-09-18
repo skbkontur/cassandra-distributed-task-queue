@@ -15,20 +15,23 @@ using SKBKontur.Catalogue.Core.EventFeeds.Building;
 using SKBKontur.Catalogue.Core.EventFeeds.OffsetStorages;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.Json;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.Monitoring.TaskCounter
 {
     // NB! RtqTaskCounterEventFeeder is essentially single-threaded because of WithSingleLeaderElectionKey() configuration
     public class RtqTaskCounterStateManager
     {
-        public RtqTaskCounterStateManager(ISerializer serializer,
+        public RtqTaskCounterStateManager(ILog logger,
+                                          ISerializer serializer,
                                           ITaskDataRegistry taskDataRegistry,
                                           IRtqTaskCounterStateStorage stateStorage,
                                           RtqTaskCounterSettings settings,
                                           RtqEventLogOffsetInterpreter offsetInterpreter,
                                           RtqMonitoringPerfGraphiteReporter perfGraphiteReporter)
         {
+            this.logger = logger;
             this.serializer = serializer;
             this.taskDataRegistry = taskDataRegistry;
             this.stateStorage = stateStorage;
@@ -65,7 +68,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
                 var persistedLastBladeOffset = LoadPersistedState();
                 AdjustBladeOffsets(persistedLastBladeOffset);
             }
-            Log.For(this).Info($"EventFeedIsRunning flag is switched to: {EventFeedIsRunning}");
+            logger.Info($"EventFeedIsRunning flag is switched to: {EventFeedIsRunning}");
         }
 
         private void AdjustBladeOffsets([CanBeNull] string persistedLastBladeOffset)
@@ -76,7 +79,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
                 if (bladeId == Blades.Last() && !string.IsNullOrEmpty(persistedLastBladeOffset))
                     bladeOffset = persistedLastBladeOffset;
                 bladeOffsetStorages[bladeId.BladeKey].Write(bladeOffset);
-                Log.For(this).Info($"Blade {bladeId} is moved to offset: {offsetInterpreter.Format(bladeOffset)}");
+                logger.Info($"Blade {bladeId} is moved to offset: {offsetInterpreter.Format(bladeOffset)}");
             }
         }
 
@@ -84,7 +87,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         private string LoadPersistedState()
         {
             var (persistedLastBladeOffset, persistedTaskMetasCount) = perfGraphiteReporter.ReportTiming("LoadPersistedState", DoLoadPersistedState, out var timer);
-            Log.For(this).Info($"Loaded state with LastBladeOffset: {offsetInterpreter.Format(persistedLastBladeOffset)}, TaskMetas.Count: {persistedTaskMetasCount} in {timer.Elapsed}");
+            logger.Info($"Loaded state with LastBladeOffset: {offsetInterpreter.Format(persistedLastBladeOffset)}, TaskMetas.Count: {persistedTaskMetasCount} in {timer.Elapsed}");
             return persistedLastBladeOffset;
         }
 
@@ -114,7 +117,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
             var garbageTaskMetasCount = perfGraphiteReporter.ReportTiming("CollectGarbageInState", () => CollectGarbageInState(now), out var timer);
             perfGraphiteReporter.Increment("GarbageTaskMetas", garbageTaskMetasCount);
-            Log.For(this).Info($"Collected garbage in state with garbageTaskMetasCount: {garbageTaskMetasCount} in {timer.Elapsed}");
+            logger.Info($"Collected garbage in state with garbageTaskMetasCount: {garbageTaskMetasCount} in {timer.Elapsed}");
 
             var lastBladeOffset = bladeOffsetStorages[Blades.Last().BladeKey].Read();
             if (string.IsNullOrEmpty(lastBladeOffset))
@@ -122,7 +125,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
             var persistedState = perfGraphiteReporter.ReportTiming("PersistState", () => DoPersistState(lastBladeOffset), out timer);
             perfGraphiteReporter.Increment("PersistedTaskMetas", persistedState.TaskMetas.Count);
-            Log.For(this).Info($"Persisted state with lastBladeOffset: {offsetInterpreter.Format(persistedState.LastBladeOffset)}, persistedTaskMetasCount: {persistedState.TaskMetas.Count} in {timer.Elapsed}");
+            logger.Info($"Persisted state with lastBladeOffset: {offsetInterpreter.Format(persistedState.LastBladeOffset)}, persistedTaskMetasCount: {persistedState.TaskMetas.Count} in {timer.Elapsed}");
 
             lastStatePersistedTimestamp = Timestamp.Now;
         }
@@ -198,7 +201,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
             var lostTasks = pendingTaskMetas.Where(x => x.MinimalStartTimestamp < now - settings.PendingTaskExecutionUpperBound).ToArray();
             if (lostTasks.Length > 0)
-                Log.For(this).Warn($"Probably {lostTasks.Length} lost tasks detected: {lostTasks.ToPrettyJson()}");
+                logger.Warn($"Probably {lostTasks.Length} lost tasks detected: {lostTasks.ToPrettyJson()}");
 
             var taskCounters = new RtqTaskCounters
                 {
@@ -258,12 +261,13 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
             {
                 timer.Stop();
             }
-            Log.For(this).Info($"Selected {pendingTaskMetas.Count} pendingTaskMetas from {taskMetasCount} taskMetas in {timer.Elapsed}");
+            logger.Info($"Selected {pendingTaskMetas.Count} pendingTaskMetas from {taskMetasCount} taskMetas in {timer.Elapsed}");
             return pendingTaskMetas;
         }
 
         private int resetLocalStateCalls;
         private Timestamp lastStatePersistedTimestamp;
+        private readonly ILog logger;
         private readonly ISerializer serializer;
         private readonly ITaskDataRegistry taskDataRegistry;
         private readonly IRtqTaskCounterStateStorage stateStorage;

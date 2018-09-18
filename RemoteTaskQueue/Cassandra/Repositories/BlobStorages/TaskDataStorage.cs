@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -11,14 +11,16 @@ using RemoteQueue.Settings;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.Objects;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskDataStorage : ITaskDataStorage
     {
-        public TaskDataStorage(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings remoteTaskQueueSettings)
+        public TaskDataStorage(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings remoteTaskQueueSettings, ILog logger)
         {
             var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
-            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster);
+            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster, logger);
         }
 
         [NotNull]

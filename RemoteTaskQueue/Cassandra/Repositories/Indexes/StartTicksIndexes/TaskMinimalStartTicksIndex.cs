@@ -11,17 +11,23 @@ using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class TaskMinimalStartTicksIndex : ITaskMinimalStartTicksIndex
     {
-        public TaskMinimalStartTicksIndex(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings, IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder)
+        public TaskMinimalStartTicksIndex(ICassandraCluster cassandraCluster,
+                                          ISerializer serializer,
+                                          IRemoteTaskQueueSettings remoteTaskQueueSettings,
+                                          IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder,
+                                          ILog logger)
         {
             this.cassandraCluster = cassandraCluster;
             this.serializer = serializer;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue.TaskMinimalStartTicksIndex");
             keyspaceName = remoteTaskQueueSettings.QueueKeyspace;
         }
 
@@ -68,7 +74,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var fromTicks = TryGetFromTicks(taskIndexShardKey, out var liveRecordTicksMarker);
             if (!fromTicks.HasValue)
                 return new TaskIndexRecord[0];
-            return new GetEventsEnumerable(liveRecordTicksMarker, serializer, RetrieveColumnFamilyConnection(), fromTicks.Value, toTicks, batchSize);
+            return new GetEventsEnumerable(liveRecordTicksMarker, serializer, RetrieveColumnFamilyConnection(), fromTicks.Value, toTicks, batchSize, logger);
         }
 
         private long? TryGetFromTicks([NotNull] TaskIndexShardKey taskIndexShardKey, out ILiveRecordTicksMarker liveRecordTicksMarker)
@@ -81,7 +87,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var safetyBelt = (Timestamp.Now - TimeSpan.FromHours(6)).Ticks;
             if (fromTicks < safetyBelt)
             {
-                Log.For(this).WarnFormat("fromTicks ({0}) < safetyBelt ({1})", new Timestamp(fromTicks), new Timestamp(safetyBelt));
+                logger.Warn(string.Format("fromTicks ({0}) < safetyBelt ({1})", new Timestamp(fromTicks), new Timestamp(safetyBelt)));
                 return safetyBelt;
             }
             return fromTicks;
@@ -114,6 +120,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly ICassandraCluster cassandraCluster;
         private readonly ISerializer serializer;
         private readonly IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder;
+        private readonly ILog logger;
         private readonly string keyspaceName;
         private readonly object locker = new object();
         private readonly Dictionary<TaskIndexShardKey, Timestamp> lastBigOverlapMomentsByShardKey = new Dictionary<TaskIndexShardKey, Timestamp>();

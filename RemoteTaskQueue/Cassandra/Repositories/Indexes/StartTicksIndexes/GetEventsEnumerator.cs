@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -7,17 +7,23 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using log4net;
-
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Connections;
 using SKBKontur.Catalogue.Objects;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerator : IEnumerator<TaskIndexRecord>
     {
-        public GetEventsEnumerator([NotNull] ILiveRecordTicksMarker liveRecordTicksMarker, ISerializer serializer, IColumnFamilyConnection connection, long fromTicks, long toTicks, int batchSize)
+        public GetEventsEnumerator([NotNull] ILiveRecordTicksMarker liveRecordTicksMarker,
+                                   ISerializer serializer,
+                                   IColumnFamilyConnection connection,
+                                   long fromTicks,
+                                   long toTicks,
+                                   int batchSize,
+                                   ILog logger)
         {
             this.liveRecordTicksMarker = liveRecordTicksMarker;
             this.serializer = serializer;
@@ -25,6 +31,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.fromTicks = fromTicks;
             this.toTicks = toTicks;
             this.batchSize = batchSize;
+            this.logger = logger;
             iFrom = CassandraNameHelper.GetTicksRowNumber(fromTicks);
             iTo = CassandraNameHelper.GetTicksRowNumber(toTicks);
             Reset();
@@ -52,8 +59,8 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
                     liveRecordTicksMarker.TryMoveForward(currentLiveRecordTicks);
                     if (!loggedTooOldIndexRecord && currentLiveRecordTicks < (Timestamp.Now - TimeSpan.FromHours(1)).Ticks)
                     {
-                        logger.WarnFormat("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
-                                          Current.TaskId, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp);
+                        logger.Warn(string.Format("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
+                                                  Current.TaskId, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp));
                         loggedTooOldIndexRecord = true;
                     }
                     return true;
@@ -89,7 +96,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             }
         }
 
-        object IEnumerator.Current { get { return Current; } }
+        object IEnumerator.Current => Current;
 
         private void LogFromToCountStatistics()
         {
@@ -110,19 +117,18 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             }
         }
 
-        private static void PrintStatistics()
+        private void PrintStatistics()
         {
             var result = new StringBuilder();
             result.AppendLine("Statistics about a number of requested rows:");
             foreach (var statistic in statistics)
                 result.AppendLine(string.Format(" {0} {1}", statistic.Key, (double)statistic.Value.TotalProcessedRows / (statistic.Value.TotalCount + 1)));
-            logger.InfoFormat(result.ToString());
+            logger.Info(result.ToString());
         }
 
         private static Dictionary<TaskIndexShardKey, TaskStateStatistics> statistics;
         private static readonly object statisticsLockObject = new object();
 
-        private static readonly ILog logger = LogManager.GetLogger(typeof(GetEventsEnumerator));
         private static Timestamp lastStatisticsLogMoment = Timestamp.Now - TimeSpan.FromMinutes(1);
 
         private readonly ILiveRecordTicksMarker liveRecordTicksMarker;
@@ -133,6 +139,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
         private readonly int batchSize;
         private readonly long iFrom;
         private readonly long iTo;
+        private readonly ILog logger;
         private long iCur;
         private bool loggedTooOldIndexRecord;
         private IEnumerator<Column> eventEnumerator;

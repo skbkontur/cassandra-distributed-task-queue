@@ -24,7 +24,8 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteQueue.Handling
 {
@@ -33,37 +34,39 @@ namespace RemoteQueue.Handling
 #pragma warning restore 618
     {
         public RemoteTaskQueue(
+            ILog logger,
             ISerializer serializer,
             ICassandraCluster cassandraCluster,
             IRemoteTaskQueueSettings taskQueueSettings,
             ITaskDataRegistry taskDataRegistry,
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
-            TaskDataRegistry = taskDataRegistry;
-            Serializer = serializer;
             TaskTtl = taskQueueSettings.TaskTtl;
+            Logger = logger;
+            Serializer = serializer;
+            TaskDataRegistry = taskDataRegistry;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
             ticksHolder = new TicksHolder(cassandraCluster, serializer, taskQueueSettings);
             GlobalTime = new GlobalTime(ticksHolder);
-            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(ticksHolder));
-            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, taskQueueSettings);
+            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(ticksHolder), logger);
+            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, taskQueueSettings, logger);
             EventLogRepository = new EventLogRepository(serializer, cassandraCluster, taskQueueSettings, ticksHolder);
             childTaskIndex = new ChildTaskIndex(cassandraCluster, taskQueueSettings, serializer, taskMetaStorage);
-            HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, EventLogRepository, GlobalTime, childTaskIndex, taskDataRegistry);
-            TaskDataStorage = new TaskDataStorage(cassandraCluster, taskQueueSettings);
-            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, taskQueueSettings);
+            HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, EventLogRepository, GlobalTime, childTaskIndex, taskDataRegistry, logger);
+            TaskDataStorage = new TaskDataStorage(cassandraCluster, taskQueueSettings, logger);
+            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, taskQueueSettings, logger);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, TaskDataStorage, TaskExceptionInfoStorage, remoteTaskQueueProfiler);
-
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(taskQueueSettings.QueueKeyspaceForLock, RemoteTaskQueueLockConstants.LockColumnFamily);
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
-            lazyRemoteLockCreator = new Lazy<RemoteLocker>(() => new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(string.Format("{0}_{1}", taskQueueSettings.QueueKeyspaceForLock, RemoteTaskQueueLockConstants.LockColumnFamily)), VostokLoggingAdapter.Instance));
+            lazyRemoteLockCreator = new Lazy<RemoteLocker>(() => new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics($"{taskQueueSettings.QueueKeyspaceForLock}_{RemoteTaskQueueLockConstants.LockColumnFamily}"), logger));
             RemoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 
         public TimeSpan TaskTtl { get; private set; }
 
-        public ITaskDataRegistry TaskDataRegistry { get; private set; }
+        public ILog Logger { get; private set; }
         public ISerializer Serializer { get; private set; }
+        public ITaskDataRegistry TaskDataRegistry { get; private set; }
         public IGlobalTime GlobalTime { get; private set; }
         public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; private set; }
         public EventLogRepository EventLogRepository { get; private set; }

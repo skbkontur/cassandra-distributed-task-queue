@@ -15,19 +15,26 @@ using RemoteQueue.Profiling;
 using RemoteQueue.Tracing;
 
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteQueue.Handling
 {
     public class HandlerManager : IHandlerManager
     {
-        public HandlerManager([NotNull] string taskTopic, int maxRunningTasksCount, ILocalTaskQueue localTaskQueue, IHandleTasksMetaStorage handleTasksMetaStorage, IGlobalTime globalTime)
+        public HandlerManager([NotNull] string taskTopic,
+                              int maxRunningTasksCount,
+                              ILocalTaskQueue localTaskQueue,
+                              IHandleTasksMetaStorage handleTasksMetaStorage,
+                              IGlobalTime globalTime,
+                              ILog logger)
         {
             this.taskTopic = taskTopic;
             this.maxRunningTasksCount = maxRunningTasksCount;
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue.HandlerManager");
             allTaskIndexShardKeysToRead = allTaskStatesToRead.Select(x => new TaskIndexShardKey(taskTopic, x)).ToArray();
         }
 
@@ -45,7 +52,7 @@ namespace RemoteQueue.Handling
             TaskIndexRecord[] taskIndexRecords;
             using (metricsContext.Timer("GetIndexRecords").NewContext())
                 taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(toTicks, allTaskIndexShardKeysToRead);
-            Log.For(this).Info($"Number of live minimalStartTicksIndex records for topic '{taskTopic}': {taskIndexRecords.Length}");
+            logger.Info($"Number of live minimalStartTicksIndex records for topic '{taskTopic}': {taskIndexRecords.Length}");
             foreach (var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {
                 var taskIds = taskIndexRecordsBatch.Select(x => x.TaskId).ToArray();
@@ -82,6 +89,7 @@ namespace RemoteQueue.Handling
         private readonly ILocalTaskQueue localTaskQueue;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly IGlobalTime globalTime;
+        private readonly ILog logger;
         private readonly TaskIndexShardKey[] allTaskIndexShardKeysToRead;
         private static readonly TaskState[] allTaskStatesToRead = {TaskState.New, TaskState.WaitingForRerun, TaskState.WaitingForRerunAfterError, TaskState.InProcess};
         private readonly MetricsContext metricsContext = MetricsContext.For(nameof(HandlerManager));

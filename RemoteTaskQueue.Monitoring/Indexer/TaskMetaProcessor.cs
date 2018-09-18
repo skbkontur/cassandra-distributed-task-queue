@@ -22,17 +22,20 @@ using RemoteTaskQueue.Monitoring.Storage.Writing;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Bulk;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class TaskMetaProcessor
     {
-        public TaskMetaProcessor(RtqElasticsearchIndexerSettings settings,
+        public TaskMetaProcessor(ILog logger,
+                                 RtqElasticsearchIndexerSettings settings,
                                  RtqElasticsearchClientFactory elasticsearchClientFactory,
                                  RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                  RtqMonitoringPerfGraphiteReporter perfGraphiteReporter)
         {
+            this.logger = logger;
             this.settings = settings;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             taskDataRegistry = remoteTaskQueue.TaskDataRegistry;
@@ -45,7 +48,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         public void ProcessTasks([NotNull, ItemNotNull] List<string> taskIdsToProcess)
         {
-            Log.For(this).LogInfoFormat("Processing tasks: {0}", taskIdsToProcess.Count);
+            logger.Info(string.Format("Processing tasks: {0}", taskIdsToProcess.Count));
             taskIdsToProcess.Batch(settings.TaskIdsProcessingBatchSize, Enumerable.ToArray)
                             .AsParallel()
                             .WithDegreeOfParallelism(settings.IndexingThreadsCount)
@@ -80,7 +83,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         private void IndexBatch([NotNull] ( /*[NotNull]*/ TaskMetaInformation TaskMeta, /*[NotNull, ItemNotNull]*/ TaskExceptionInfo[] TaskExceptionInfos, /*[CanBeNull]*/ object TaskData)[] batch)
         {
-            Log.For(this).LogInfoFormat("IndexBatch: {0} tasks", batch.Length);
+            logger.Info(string.Format("IndexBatch: {0} tasks", batch.Length));
             var body = new object[batch.Length * 2];
             for (var i = 0; i < batch.Length; i++)
             {
@@ -113,7 +116,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             }
             catch (Exception e)
             {
-                Log.For(this).LogErrorFormat(e, "Failed to deserialize taskData for: {0}", taskMetaInformation);
+                logger.Error(e, string.Format("Failed to deserialize taskData for: {0}", taskMetaInformation));
                 return null;
             }
         }
@@ -140,6 +143,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             return new TaskIndexedInfo(meta, exceptionInfo, taskData);
         }
 
+        private readonly ILog logger;
         private readonly RtqElasticsearchIndexerSettings settings;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskDataRegistry taskDataRegistry;

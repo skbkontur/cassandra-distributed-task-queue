@@ -7,8 +7,6 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using log4net;
-
 using Metrics;
 
 using RemoteQueue.Cassandra.Entities;
@@ -26,6 +24,8 @@ using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.GrobufExtensions;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+
+using Vostok.Logging.Abstractions;
 
 using MetricsContext = RemoteQueue.Profiling.MetricsContext;
 
@@ -54,6 +54,7 @@ namespace RemoteQueue.Handling
             remoteTaskQueueProfiler = remoteTaskQueueInternals.RemoteTaskQueueProfiler;
             globalTime = remoteTaskQueueInternals.GlobalTime;
             taskTtl = remoteTaskQueueInternals.TaskTtl;
+            logger = remoteTaskQueueInternals.Logger.ForContext("CassandraDistributedTaskQueue.HandlerTask");
             taskShardMetricsContext = MetricsContext.For($"Shards.{taskIndexRecord.TaskIndexShardKey.TaskTopic}.{taskIndexRecord.TaskIndexShardKey.TaskState}.Tasks");
         }
 
@@ -154,7 +155,7 @@ namespace RemoteQueue.Handling
                 catch (Exception e)
                 {
                     taskShardMetricsContext.Meter("ReadTaskException_UnderLock").Mark();
-                    logger.Error($"Ошибка во время чтения задачи: {taskIndexRecord}", e);
+                    logger.Error(e, $"Ошибка во время чтения задачи: {taskIndexRecord}");
                     return LocalTaskProcessingResult.Undefined;
                 }
 
@@ -226,7 +227,7 @@ namespace RemoteQueue.Handling
                     }
                     catch (Exception e)
                     {
-                        logger.Error($"Ошибка во время продления времени жизни задачи: {newMeta}", e);
+                        logger.Error(e, $"Ошибка во время продления времени жизни задачи: {newMeta}");
                     }
                 }
 
@@ -303,7 +304,7 @@ namespace RemoteQueue.Handling
         [CanBeNull]
         private List<TimeGuid> TryLogError([NotNull] Exception e, [NotNull] TaskMetaInformation inProcessMeta)
         {
-            logger.Error($"Ошибка во время обработки задачи: {inProcessMeta}", e);
+            logger.Error(e, $"Ошибка во время обработки задачи: {inProcessMeta}");
             try
             {
                 if (taskExceptionInfoStorage.TryAddNewExceptionInfo(inProcessMeta, e, out var newExceptionInfoIds))
@@ -311,7 +312,7 @@ namespace RemoteQueue.Handling
             }
             catch
             {
-                logger.Error($"Не смогли записать ошибку для задачи: {inProcessMeta}", e);
+                logger.Error(e, $"Не смогли записать ошибку для задачи: {inProcessMeta}");
             }
             return null;
         }
@@ -361,7 +362,7 @@ namespace RemoteQueue.Handling
             }
             catch (Exception e)
             {
-                logger.Error($"Can't update task state for: {oldMeta}", e);
+                logger.Error(e, $"Can't update task state for: {oldMeta}");
                 return null;
             }
         }
@@ -380,7 +381,7 @@ namespace RemoteQueue.Handling
         private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private readonly IGlobalTime globalTime;
         private readonly TimeSpan taskTtl;
-        private static readonly ILog logger = LogManager.GetLogger(typeof(HandlerTask));
+        private readonly ILog logger;
         private static readonly TimeSpan longRunningTaskDurationThreshold = TimeSpan.FromMinutes(1);
         public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
         private readonly MetricsContext taskShardMetricsContext;
