@@ -73,7 +73,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 var columnsToFetch = eventsToFetch + 1;
                 var columnsIncludingStartColumn = RetrieveColumnFamilyConnection().GetColumns(partitionKey, exclusiveStartColumnName, toOffsetInclusive, columnsToFetch, reversed : false);
                 events.AddRange(columnsIncludingStartColumn.SkipWhile(x => x.Name == exclusiveStartColumnName)
-                                                           .Select(x => new EventWithOffset<TaskMetaUpdatedEvent, string>(serializer.Deserialize<TaskMetaUpdatedEvent>(x.Value), x.Name))
+                                                           .Select(x => new EventWithOffset<TaskMetaUpdatedEvent, string>(serializer.Deserialize<TaskMetaUpdatedEvent>(x.Value), offset : x.Name))
                                                            .Take(eventsToFetch));
                 var currentPartitionIsExhausted = columnsIncludingStartColumn.Length < columnsToFetch;
                 if (!currentPartitionIsExhausted)
