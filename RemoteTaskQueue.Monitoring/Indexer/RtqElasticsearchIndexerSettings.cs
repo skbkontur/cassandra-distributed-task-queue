@@ -33,7 +33,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         [NotNull]
         public JsonSerializerSettings JsonSerializerSettings => new JsonSerializerSettings
             {
-                ContractResolver = new OmitBinaryAndAbstractPropertiesContractResolver(),
+                ContractResolver = new OmitTimeGuidAndBinaryAndAbstractPropertiesContractResolver(),
                 Converters = new JsonConverter[]
                     {
                         new TruncateLongStringsConverter(500),
