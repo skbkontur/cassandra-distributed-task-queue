@@ -99,7 +99,6 @@
     <Compile Include="Storage\Utils\DateTimeFormatter.cs" />
     <Compile Include="Storage\Utils\NamedLoggerExtension.cs" />
     <Compile Include="Storage\Writing\MetaIndexedInfo.cs" />
-    <Compile Include="Storage\Writing\OmitTimeGuidAndBinaryAndAbstractPropertiesContractResolver.cs" />
     <Compile Include="Storage\Writing\TaskIndexedInfo.cs" />
     <Compile Include="Storage\Writing\OmitBinaryAndAbstractPropertiesContractResolver.cs" />
     <Compile Include="Storage\Writing\RtqElasticsearchOffsetStorage.cs" />

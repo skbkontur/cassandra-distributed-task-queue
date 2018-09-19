@@ -8,6 +8,7 @@ using Newtonsoft.Json.Converters;
 using RemoteTaskQueue.Monitoring.Storage.Writing;
 
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.Json;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
@@ -33,11 +34,12 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         [NotNull]
         public JsonSerializerSettings JsonSerializerSettings => new JsonSerializerSettings
             {
-                ContractResolver = new OmitTimeGuidAndBinaryAndAbstractPropertiesContractResolver(),
+                ContractResolver = new OmitBinaryAndAbstractPropertiesContractResolver(),
                 Converters = new JsonConverter[]
                     {
                         new TruncateLongStringsConverter(500),
                         new StringEnumConverter(),
+                        new TimeGuidConverter(),
                     },
             };
 
