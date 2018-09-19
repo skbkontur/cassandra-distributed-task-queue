@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-
-using JetBrains.Annotations;
 
 using RemoteQueue.Handling;
-
-using SkbKontur.Graphite.Client;
+using RemoteQueue.Profiling;
 
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
@@ -16,44 +11,27 @@ namespace RemoteQueue.Configuration
 {
     public class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
     {
-        public ReportConsumerStateToGraphiteTask(IGraphiteClient graphiteClient, List<IHandlerManager> handlerManagers)
+        public ReportConsumerStateToGraphiteTask(IRemoteTaskQueueProfiler remoteTaskQueueProfiler, List<IHandlerManager> handlerManagers)
         {
-            this.graphiteClient = graphiteClient;
+            this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
             this.handlerManagers = handlerManagers;
-            graphitePathPrefix = FormatGraphitePathPrefix();
             startupTimestamp = Timestamp.Now;
-        }
-
-        [NotNull]
-        private static string FormatGraphitePathPrefix()
-        {
-            var processName = Process.GetCurrentProcess()
-                                     .ProcessName
-                                     .Replace(".exe", string.Empty)
-                                     .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
-                                     .Last();
-            return $"SubSystem.RemoteTaskQueueMonitoring.{Environment.MachineName}.{processName}";
         }
 
         public override sealed void Run()
         {
-            var now = Timestamp.Now;
-            if (now - startupTimestamp < TimeSpan.FromMinutes(3))
+            var nowTimestamp = Timestamp.Now;
+            if (nowTimestamp - startupTimestamp < TimeSpan.FromMinutes(3))
                 return;
             foreach (var handlerManager in handlerManagers)
             {
-                foreach (var marker in handlerManager.GetCurrentLiveRecordTicksMarkers())
-                {
-                    var lag = TimeSpan.FromTicks(now.Ticks - marker.CurrentTicks);
-                    var graphitePath = $"{graphitePathPrefix}.LiveRecordTicksMarkerLag.{marker.TaskIndexShardKey.TaskState}.{marker.TaskIndexShardKey.TaskTopic}";
-                    graphiteClient.Send(graphitePath, (long)lag.TotalMilliseconds, now.ToDateTime());
-                }
+                foreach (var currentLiveRecordTicksMarker in handlerManager.GetCurrentLiveRecordTicksMarkers())
+                    remoteTaskQueueProfiler.ReportLiveRecordTicksMarkerLag(nowTimestamp, currentLiveRecordTicksMarker);
             }
         }
 
-        private readonly IGraphiteClient graphiteClient;
+        private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
         private readonly List<IHandlerManager> handlerManagers;
-        private readonly string graphitePathPrefix;
         private readonly Timestamp startupTimestamp;
     }
 }

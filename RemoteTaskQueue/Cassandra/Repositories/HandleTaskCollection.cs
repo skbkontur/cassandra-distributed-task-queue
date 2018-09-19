@@ -14,7 +14,10 @@ namespace RemoteQueue.Cassandra.Repositories
 {
     public class HandleTaskCollection : IHandleTaskCollection
     {
-        public HandleTaskCollection(IHandleTasksMetaStorage handleTasksMetaStorage, ITaskDataStorage taskDataStorage, ITaskExceptionInfoStorage taskExceptionInfoStorage, IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+        public HandleTaskCollection(IHandleTasksMetaStorage handleTasksMetaStorage,
+                                    ITaskDataStorage taskDataStorage,
+                                    ITaskExceptionInfoStorage taskExceptionInfoStorage,
+                                    IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskDataStorage = taskDataStorage;

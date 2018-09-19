@@ -10,8 +10,6 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
-using SkbKontur.Graphite.Client;
-
 using SKBKontur.Cassandra.CassandraClient.Clusters;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
@@ -23,7 +21,6 @@ namespace RemoteQueue.Configuration
         public ExchangeSchedulableRunner(
             IExchangeSchedulableRunnerSettings runnerSettings,
             IPeriodicTaskRunner periodicTaskRunner,
-            IGraphiteClient graphiteClient,
             ITaskDataRegistry taskDataRegistry,
             ITaskHandlerRegistry taskHandlerRegistry,
             ISerializer serializer,
@@ -38,7 +35,7 @@ namespace RemoteQueue.Configuration
             localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
             foreach (var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
                 handlerManagers.Add(new HandlerManager(taskTopic, runnerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime));
-            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(graphiteClient, handlerManagers);
+            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(remoteTaskQueueProfiler, handlerManagers);
             RemoteTaskQueueBackdoor = remoteTaskQueue;
         }
 
