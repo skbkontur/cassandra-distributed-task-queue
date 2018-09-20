@@ -7,16 +7,17 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
-using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
+using SkbKontur.Graphite.Client;
+
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.ServiceLib.Graphite;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Configuration
 {
     public class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
     {
-        public ReportConsumerStateToGraphiteTask(ICatalogueGraphiteClient graphiteClient, IGraphitePathPrefixProvider graphitePathPrefixProvider, List<IHandlerManager> handlerManagers)
+        public ReportConsumerStateToGraphiteTask(IGraphiteClient graphiteClient, IGraphitePathPrefixProvider graphitePathPrefixProvider, List<IHandlerManager> handlerManagers)
         {
             this.graphiteClient = graphiteClient;
             this.handlerManagers = handlerManagers;
@@ -51,7 +52,7 @@ namespace RemoteQueue.Configuration
             }
         }
 
-        private readonly ICatalogueGraphiteClient graphiteClient;
+        private readonly IGraphiteClient graphiteClient;
         private readonly List<IHandlerManager> handlerManagers;
         private readonly string graphitePathPrefix;
         private readonly Timestamp startupTimestamp;

@@ -38,10 +38,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.Core.Graphite.Client, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.Graphite.Client.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Core.LocalPersistentStoring, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.LocalPersistentStoring.dll</HintPath>
@@ -53,10 +49,6 @@
     <Reference Include="GroboContainer, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\GroboContainer.dll</HintPath>
-    </Reference>
-    <Reference Include="SKBKontur.Graphite.Client, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\GraphiteClient\SKBKontur.Graphite.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

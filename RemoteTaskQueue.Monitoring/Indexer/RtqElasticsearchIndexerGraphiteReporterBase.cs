@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 
 using JetBrains.Annotations;
 
-using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
+using SkbKontur.Graphite.Client;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public abstract class RtqElasticsearchIndexerGraphiteReporterBase : IRtqElasticsearchIndexerGraphiteReporter
     {
-        protected RtqElasticsearchIndexerGraphiteReporterBase([NotNull] string graphitePrefix, ICatalogueStatsDClient statsDClient)
+        protected RtqElasticsearchIndexerGraphiteReporterBase([NotNull] string graphitePrefix, IStatsDClient statsDClient)
         {
             this.graphitePrefix = graphitePrefix;
             this.statsDClient = statsDClient;
@@ -25,6 +25,6 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         }
 
         private readonly string graphitePrefix;
-        private readonly ICatalogueStatsDClient statsDClient;
+        private readonly IStatsDClient statsDClient;
     }
 }

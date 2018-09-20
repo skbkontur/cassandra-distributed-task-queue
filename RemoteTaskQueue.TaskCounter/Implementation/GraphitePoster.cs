@@ -2,14 +2,15 @@
 
 using RemoteQueue.Cassandra.Entities;
 
-using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
-using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
+using SkbKontur.Graphite.Client;
+
+using SKBKontur.Catalogue.ServiceLib.Graphite;
 
 namespace RemoteTaskQueue.TaskCounter.Implementation
 {
     public class GraphitePoster
     {
-        public GraphitePoster(ICatalogueGraphiteClient graphiteClient, IGraphitePathPrefixProvider graphitePathPrefixProvider, ICompositeCounter counter)
+        public GraphitePoster(IGraphiteClient graphiteClient, IGraphitePathPrefixProvider graphitePathPrefixProvider, ICompositeCounter counter)
         {
             this.counter = counter;
             graphitePrefix = $"{graphitePathPrefixProvider.GlobalPathPrefix}.SubSystem.RemoteTaskQueueCounter";
@@ -45,7 +46,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             }
         }
 
-        private readonly ICatalogueGraphiteClient graphiteClient;
+        private readonly IGraphiteClient graphiteClient;
         private readonly ICompositeCounter counter;
         private readonly string graphitePrefix;
     }

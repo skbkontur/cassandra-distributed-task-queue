@@ -1,11 +1,12 @@
-﻿using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
-using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
+﻿using SkbKontur.Graphite.Client;
+
+using SKBKontur.Catalogue.ServiceLib.Graphite;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexerGraphiteReporter : RtqElasticsearchIndexerGraphiteReporterBase
     {
-        public RtqElasticsearchIndexerGraphiteReporter(ICatalogueStatsDClient statsDClient, IGraphitePathPrefixProvider graphitePathPrefixProvider)
+        public RtqElasticsearchIndexerGraphiteReporter(IStatsDClient statsDClient, IGraphitePathPrefixProvider graphitePathPrefixProvider)
             : base($"{graphitePathPrefixProvider.GlobalPathPrefix}.SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient)
         {
         }

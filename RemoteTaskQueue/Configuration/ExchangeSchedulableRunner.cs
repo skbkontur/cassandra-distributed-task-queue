@@ -10,9 +10,10 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
+using SkbKontur.Graphite.Client;
+
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.Core.Graphite.Client.Relay;
-using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
+using SKBKontur.Catalogue.ServiceLib.Graphite;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
@@ -23,7 +24,7 @@ namespace RemoteQueue.Configuration
         public ExchangeSchedulableRunner(
             IExchangeSchedulableRunnerSettings runnerSettings,
             IPeriodicTaskRunner periodicTaskRunner,
-            ICatalogueGraphiteClient graphiteClient,
+            IGraphiteClient graphiteClient,
             IGraphitePathPrefixProvider graphitePathPrefixProvider,
             ITaskDataRegistry taskDataRegistry,
             ITaskHandlerRegistry taskHandlerRegistry,

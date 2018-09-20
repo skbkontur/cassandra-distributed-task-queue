@@ -7,18 +7,19 @@ using JetBrains.Annotations;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.Core.Graphite.Client.Settings;
-using SKBKontur.Catalogue.Core.Graphite.Client.StatsD;
+using SkbKontur.Graphite.Client;
+
+using SKBKontur.Catalogue.ServiceLib.Graphite;
 
 namespace RemoteQueue.Profiling
 {
     [IgnoredImplementation]
     public class GraphiteRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
-        public GraphiteRemoteTaskQueueProfiler([NotNull] IGraphitePathPrefixProvider graphitePathPrefixProvider, [NotNull] ICatalogueStatsDClient statsDClient)
+        public GraphiteRemoteTaskQueueProfiler([NotNull] IGraphitePathPrefixProvider graphitePathPrefixProvider, [NotNull] IStatsDClient statsDClient)
         {
             if (string.IsNullOrWhiteSpace(graphitePathPrefixProvider.GlobalPathPrefix))
-                this.statsDClient = EmptyStatsDClient.Instance;
+                this.statsDClient = NoOpStatsDClient.Instance;
             else
             {
                 var keyNamePrefix = $"{graphitePathPrefixProvider.GlobalPathPrefix}.SubSystem.RemoteTaskQueueTasks";
@@ -47,6 +48,6 @@ namespace RemoteQueue.Profiling
             statsDClient.Increment($"TasksExecutionFailed.{meta.Name}");
         }
 
-        private readonly ICatalogueStatsDClient statsDClient;
+        private readonly IStatsDClient statsDClient;
     }
 }
