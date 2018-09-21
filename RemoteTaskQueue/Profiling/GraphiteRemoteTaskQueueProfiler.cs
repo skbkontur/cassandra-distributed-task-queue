@@ -1,7 +1,5 @@
 ﻿using System;
 
-using GroboContainer.Infection;
-
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
@@ -11,7 +9,6 @@ using SkbKontur.Graphite.Client;
 
 namespace RemoteQueue.Profiling
 {
-    [IgnoredImplementation]
     public class GraphiteRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
         public GraphiteRemoteTaskQueueProfiler([NotNull] IStatsDClient statsDClient)
