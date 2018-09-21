@@ -9,26 +9,15 @@ using RemoteQueue.Handling;
 
 using SkbKontur.Graphite.Client;
 
-using SKBKontur.Catalogue.ServiceLib.Graphite;
-
 namespace RemoteQueue.Profiling
 {
     [IgnoredImplementation]
     public class GraphiteRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
-        public GraphiteRemoteTaskQueueProfiler([NotNull] IGraphitePathPrefixProvider graphitePathPrefixProvider, [NotNull] IStatsDClient statsDClient)
+        public GraphiteRemoteTaskQueueProfiler([NotNull] IStatsDClient statsDClient)
         {
-            if (string.IsNullOrWhiteSpace(graphitePathPrefixProvider.GlobalPathPrefix))
-                this.statsDClient = NoOpStatsDClient.Instance;
-            else
-            {
-                var keyNamePrefix = $"{graphitePathPrefixProvider.GlobalPathPrefix}.SubSystem.RemoteTaskQueueTasks";
-                this.statsDClient = statsDClient.WithScopes(new[]
-                    {
-                        $"{keyNamePrefix}.{Environment.MachineName}",
-                        $"{keyNamePrefix}.Total"
-                    });
-            }
+            const string keyNamePrefix = "SubSystem.RemoteTaskQueueTasks";
+            this.statsDClient = statsDClient.WithScopes($"{keyNamePrefix}.{Environment.MachineName}", $"{keyNamePrefix}.Total");
         }
 
         public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)

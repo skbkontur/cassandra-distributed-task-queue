@@ -4,23 +4,19 @@ using RemoteQueue.Cassandra.Entities;
 
 using SkbKontur.Graphite.Client;
 
-using SKBKontur.Catalogue.ServiceLib.Graphite;
-
 namespace RemoteTaskQueue.TaskCounter.Implementation
 {
     public class GraphitePoster
     {
-        public GraphitePoster(IGraphiteClient graphiteClient, IGraphitePathPrefixProvider graphitePathPrefixProvider, ICompositeCounter counter)
+        public GraphitePoster(IGraphiteClient graphiteClient, ICompositeCounter counter)
         {
             this.counter = counter;
-            graphitePrefix = $"{graphitePathPrefixProvider.GlobalPathPrefix}.SubSystem.RemoteTaskQueueCounter";
+            graphitePrefix = "SubSystem.RemoteTaskQueueCounter";
             this.graphiteClient = graphiteClient;
         }
 
         public void PostData()
         {
-            if (string.IsNullOrEmpty(graphitePrefix))
-                return;
             var totalCount = counter.GetTotalCount();
             var taskCounts = counter.GetAllCounts();
             //todo post time value, not now

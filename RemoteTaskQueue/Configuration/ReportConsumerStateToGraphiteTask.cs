@@ -10,30 +10,29 @@ using RemoteQueue.Handling;
 using SkbKontur.Graphite.Client;
 
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.ServiceLib.Graphite;
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Configuration
 {
     public class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
     {
-        public ReportConsumerStateToGraphiteTask(IGraphiteClient graphiteClient, IGraphitePathPrefixProvider graphitePathPrefixProvider, List<IHandlerManager> handlerManagers)
+        public ReportConsumerStateToGraphiteTask(IGraphiteClient graphiteClient, List<IHandlerManager> handlerManagers)
         {
             this.graphiteClient = graphiteClient;
             this.handlerManagers = handlerManagers;
-            graphitePathPrefix = FormatGraphitePathPrefix(graphitePathPrefixProvider.GlobalPathPrefix);
+            graphitePathPrefix = FormatGraphitePathPrefix();
             startupTimestamp = Timestamp.Now;
         }
 
         [NotNull]
-        private static string FormatGraphitePathPrefix([NotNull] string projectWideGraphitePathPrefix)
+        private static string FormatGraphitePathPrefix()
         {
             var processName = Process.GetCurrentProcess()
                                      .ProcessName
                                      .Replace(".exe", string.Empty)
                                      .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
                                      .Last();
-            return $"{projectWideGraphitePathPrefix}.SubSystem.RemoteTaskQueueMonitoring.{Environment.MachineName}.{processName}";
+            return $"SubSystem.RemoteTaskQueueMonitoring.{Environment.MachineName}.{processName}";
         }
 
         public override sealed void Run()

@@ -176,7 +176,7 @@
       <Version>2.0.0-rc9</Version>
     </PackageReference>
     <PackageReference Include="SkbKontur.Graphite.Client">
-      <Version>1.3.7-rc</Version>
+      <Version>1.3.10-rc</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
