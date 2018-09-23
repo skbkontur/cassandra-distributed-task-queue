@@ -150,7 +150,7 @@
     <Compile Include="LocalTasks\TaskQueue\LocalTaskQueue.cs" />
     <Compile Include="LocalTasks\TaskQueue\LocalTaskProcessingResult.cs" />
     <Compile Include="LocalTasks\TaskQueue\TaskWrapper.cs" />
-    <Compile Include="Profiling\EmptyRemoteTaskQueueProfiler.cs" />
+    <Compile Include="Profiling\NoOpRemoteTaskQueueProfiler.cs" />
     <Compile Include="Profiling\IRemoteTaskQueueProfiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\IExchangeSchedulableRunnerSettings.cs" />

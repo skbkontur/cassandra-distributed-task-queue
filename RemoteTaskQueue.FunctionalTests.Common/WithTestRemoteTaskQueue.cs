@@ -4,6 +4,7 @@ using GroboContainer.Core;
 
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Configuration;
+using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
@@ -27,6 +28,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
         {
             container.Configurator.ForAbstraction<ITaskDataRegistry>().UseType<TestTaskDataRegistry>();
             container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<TestRemoteTaskQueueSettings>();
+            container.Configurator.ForAbstraction<IRemoteTaskQueueProfiler>().UseType<NoOpRemoteTaskQueueProfiler>();
             ConfigureRemoteLock(container);
         }
 

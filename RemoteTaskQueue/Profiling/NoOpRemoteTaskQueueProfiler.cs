@@ -7,7 +7,7 @@ using RemoteQueue.Handling;
 
 namespace RemoteQueue.Profiling
 {
-    public class EmptyRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
+    public class NoOpRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
     {
         public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)
         {
