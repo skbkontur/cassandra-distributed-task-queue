@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using GroboContainer.Infection;
@@ -19,8 +19,8 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
         }
 
         [ContainerConstructor]
-        public MetaCachedReader(IHandleTasksMetaStorage handleTasksMetaStorage)
-            : this(handleTasksMetaStorage, MetaReaderSettings.CacheInterval.Ticks)
+        public MetaCachedReader(RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue)
+            : this(remoteTaskQueue.HandleTasksMetaStorage, MetaReaderSettings.CacheInterval.Ticks)
         {
         }
 

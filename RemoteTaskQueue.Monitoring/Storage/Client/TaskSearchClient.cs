@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -10,7 +10,7 @@ using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Search;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Client
 {
-    public class TaskSearchClient : ITaskSearchClient
+    public class TaskSearchClient
     {
         public TaskSearchClient(RtqElasticsearchClientFactory elasticsearchClientFactory)
         {

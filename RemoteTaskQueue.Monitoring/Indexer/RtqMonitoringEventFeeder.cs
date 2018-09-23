@@ -3,9 +3,12 @@
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Repositories;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using RemoteTaskQueue.Monitoring.Storage;
 using RemoteTaskQueue.Monitoring.Storage.Writing;
+
+using SkbKontur.Graphite.Client;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;
@@ -15,19 +18,24 @@ namespace RemoteTaskQueue.Monitoring.Indexer
     public class RtqMonitoringEventFeeder
     {
         public RtqMonitoringEventFeeder(EventFeedFactory eventFeedFactory,
-                                        RtqGlobalTimeProvider globalTimeProvider,
-                                        EventLogRepository eventLogRepository,
-                                        RtqMonitoringEventConsumer eventConsumer,
-                                        RtqMonitoringOffsetInterpreter offsetInterpreter,
-                                        RtqElasticsearchClientFactory elasticsearchClientFactory)
+                                        RtqElasticsearchIndexerSettings indexerSettings,
+                                        RtqElasticsearchClientFactory elasticsearchClientFactory,
+                                        RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
+                                        IStatsDClient statsDClient)
         {
             this.eventFeedFactory = eventFeedFactory;
-            this.globalTimeProvider = globalTimeProvider;
-            this.eventLogRepository = eventLogRepository;
-            this.eventConsumer = eventConsumer;
-            this.offsetInterpreter = offsetInterpreter;
+            GlobalTime = remoteTaskQueue.GlobalTime;
+            globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);
+            eventLogRepository = remoteTaskQueue.EventLogRepository;
+            var graphiteReporter = new RtqElasticsearchIndexerGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient);
+            var taskMetaProcessor = new TaskMetaProcessor(indexerSettings, elasticsearchClientFactory, remoteTaskQueue, graphiteReporter);
+            eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
+            offsetInterpreter = new RtqMonitoringOffsetInterpreter();
             this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
+
+        [NotNull]
+        public IGlobalTime GlobalTime { get; }
 
         [NotNull]
         public IEventFeedsRunner RunEventFeeding()

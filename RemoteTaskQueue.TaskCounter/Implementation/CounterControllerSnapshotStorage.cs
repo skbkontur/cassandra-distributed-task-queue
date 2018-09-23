@@ -14,17 +14,16 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
 {
     public class CounterControllerSnapshotStorage : ICounterControllerSnapshotStorage
     {
-        public CounterControllerSnapshotStorage(Func<string, long, ILocalPersistentStorage<SnapshotData>> createPersistentFileStorage,
-                                                IApplicationSettings applicationSettings,
-                                                ISerializer serializer, SnaphotConverter snaphotConverter)
+        public CounterControllerSnapshotStorage(ISerializer serializer,
+                                                IApplicationSettings applicationSettings)
         {
             this.serializer = serializer;
-            this.snaphotConverter = snaphotConverter;
+            snaphotConverter = new SnaphotConverter(serializer);
             string path;
             if (!applicationSettings.TryGetString("SnapshotStoragePath", out path))
                 path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Storage");
             logger.InfoFormat("Path: {0}", path);
-            fileStorage = createPersistentFileStorage(path, maxSize);
+            fileStorage = new LocalPersistentStorage<SnapshotData>(serializer, new FileNameGenerator(), path, maxSize);
         }
 
         public void SaveSnapshot(CounterControllerSnapshot snapshot)

@@ -4,12 +4,18 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
+using RemoteQueue.Cassandra.Repositories;
 
 namespace RemoteQueue.Handling
 {
+    [PublicAPI]
     public interface IRemoteTaskQueue
     {
+        [NotNull]
+        EventLogRepository EventLogRepository { get; }
+
         TaskManipulationResult TryCancelTask([NotNull] string taskId);
+
         TaskManipulationResult TryRerunTask([NotNull] string taskId, TimeSpan delay);
 
         [CanBeNull]

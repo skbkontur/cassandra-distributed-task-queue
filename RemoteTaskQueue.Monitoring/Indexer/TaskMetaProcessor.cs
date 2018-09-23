@@ -30,19 +30,15 @@ namespace RemoteTaskQueue.Monitoring.Indexer
     {
         public TaskMetaProcessor(RtqElasticsearchIndexerSettings settings,
                                  RtqElasticsearchClientFactory elasticsearchClientFactory,
-                                 IHandleTasksMetaStorage handleTasksMetaStorage,
-                                 ITaskDataRegistry taskDataRegistry,
-                                 ITaskDataStorage taskDataStorage,
-                                 ITaskExceptionInfoStorage taskExceptionInfoStorage,
-                                 ISerializer serializer,
-                                 IRtqElasticsearchIndexerGraphiteReporter graphiteReporter)
+                                 RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
+                                 RtqElasticsearchIndexerGraphiteReporter graphiteReporter)
         {
             this.settings = settings;
-            this.handleTasksMetaStorage = handleTasksMetaStorage;
-            this.taskDataRegistry = taskDataRegistry;
-            this.taskDataStorage = taskDataStorage;
-            this.taskExceptionInfoStorage = taskExceptionInfoStorage;
-            this.serializer = serializer;
+            handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
+            taskDataRegistry = remoteTaskQueue.TaskDataRegistry;
+            taskDataStorage = remoteTaskQueue.TaskDataStorage;
+            taskExceptionInfoStorage = remoteTaskQueue.TaskExceptionInfoStorage;
+            serializer = remoteTaskQueue.Serializer;
             this.graphiteReporter = graphiteReporter;
             elasticsearchClient = elasticsearchClientFactory.CreateClient(settings.JsonSerializerSettings);
         }
@@ -150,7 +146,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private readonly ITaskDataStorage taskDataStorage;
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly ISerializer serializer;
-        private readonly IRtqElasticsearchIndexerGraphiteReporter graphiteReporter;
+        private readonly RtqElasticsearchIndexerGraphiteReporter graphiteReporter;
         private readonly IElasticsearchClient elasticsearchClient;
     }
 }

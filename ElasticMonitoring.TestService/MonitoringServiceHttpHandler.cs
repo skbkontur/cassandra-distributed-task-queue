@@ -2,8 +2,6 @@
 
 using Elasticsearch.Net;
 
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
-
 using RemoteTaskQueue.Monitoring.Indexer;
 using RemoteTaskQueue.Monitoring.Storage;
 
@@ -15,12 +13,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 {
     public class MonitoringServiceHttpHandler : IHttpHandler
     {
-        public MonitoringServiceHttpHandler(IGlobalTime globalTime,
-                                            RtqMonitoringEventFeeder eventFeeder,
+        public MonitoringServiceHttpHandler(RtqMonitoringEventFeeder eventFeeder,
                                             RtqElasticsearchSchema rtqElasticsearchSchema,
                                             RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
-            this.globalTime = globalTime;
             this.eventFeeder = eventFeeder;
             this.rtqElasticsearchSchema = rtqElasticsearchSchema;
             this.elasticsearchClientFactory = elasticsearchClientFactory;
@@ -47,7 +43,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
             DeleteAllElasticEntities();
             rtqElasticsearchSchema.Actualize(local : true, bulkLoad : false);
-            globalTime.ResetInMemoryState();
+            eventFeeder.GlobalTime.ResetInMemoryState();
 
             feedsRunner = eventFeeder.RunEventFeeding();
         }
@@ -70,7 +66,6 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         }
 
         private IEventFeedsRunner feedsRunner;
-        private readonly IGlobalTime globalTime;
         private readonly RtqMonitoringEventFeeder eventFeeder;
         private readonly RtqElasticsearchSchema rtqElasticsearchSchema;
         private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;

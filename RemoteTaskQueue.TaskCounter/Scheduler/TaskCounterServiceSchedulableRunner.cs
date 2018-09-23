@@ -1,4 +1,4 @@
-using RemoteTaskQueue.TaskCounter.Implementation;
+﻿using RemoteTaskQueue.TaskCounter.Implementation;
 using RemoteTaskQueue.TaskCounter.Implementation.Utils;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
@@ -10,12 +10,11 @@ namespace RemoteTaskQueue.TaskCounter.Scheduler
     {
         public TaskCounterServiceSchedulableRunner(
             IPeriodicTaskRunner periodicTaskRunner,
-            ICounterController counterController,
-            GraphitePoster graphitePoster)
+            CounterController counterController)
         {
             this.periodicTaskRunner = periodicTaskRunner;
             this.counterController = counterController;
-            this.graphitePoster = graphitePoster;
+            graphitePoster = counterController.GraphitePoster;
         }
 
         public void Stop()

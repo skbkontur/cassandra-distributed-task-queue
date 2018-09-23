@@ -1,4 +1,6 @@
-﻿using RemoteTaskQueue.FunctionalTests.Common;
+﻿using RemoteQueue.Configuration;
+
+using RemoteTaskQueue.FunctionalTests.Common;
 
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
@@ -7,7 +9,7 @@ namespace ExchangeService
 {
     public class ExchangeServiceEntryPoint : ApplicationBase
     {
-        protected override string ConfigFileName { get { return "exchangeService.csf"; } }
+        protected override string ConfigFileName => "exchangeService.csf";
 
         private static void Main()
         {
@@ -17,6 +19,7 @@ namespace ExchangeService
         private void Run()
         {
             Container.ConfigureForTestRemoteTaskQueue();
+            Container.Configurator.ForAbstraction<IExchangeSchedulableRunner>().UseType<ExchangeSchedulableRunner>();
             Container.Get<HttpService>().Run();
         }
     }

@@ -13,7 +13,12 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
+using RemoteTaskQueue.TaskCounter.Implementation.OldWaitingTasksCounters;
 using RemoteTaskQueue.TaskCounter.Implementation.Utils;
+
+using SkbKontur.Graphite.Client;
+
+using SKBKontur.Catalogue.Core.Configuration.Settings;
 
 namespace RemoteTaskQueue.TaskCounter.Implementation
 {
@@ -24,6 +29,7 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
                                  ICompositeCounter compositeCounter,
                                  IGlobalTime globalTime,
                                  ICounterControllerSnapshotStorage counterControllerSnapshotStorage,
+                                 IGraphiteClient graphiteClient,
                                  long maxHistoryDepthTicks,
                                  int maxBatch,
                                  long snapshotSaveIntervalTicks,
@@ -41,25 +47,28 @@ namespace RemoteTaskQueue.TaskCounter.Implementation
             unstableZoneTicks = eventLogRepository.UnstableZoneLength.Ticks;
             unprocessedEventsMap = new UnprocessedEventsMap(unstableZoneTicks * 2);
             lastTicks = long.MinValue;
+            GraphitePoster = new GraphitePoster(graphiteClient, compositeCounter);
         }
 
         [ContainerConstructor]
-        public CounterController(IEventLogRepository eventLogRepository,
-                                 IMetaCachedReader reader,
-                                 ICompositeCounter compositeCounter,
-                                 IGlobalTime globalTime,
-                                 ICounterControllerSnapshotStorage counterControllerSnapshotStorage)
-            : this(eventLogRepository,
+        public CounterController(RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
+                                 MetaCachedReader reader,
+                                 IApplicationSettings applicationSettings,
+                                 IGraphiteClient graphiteClient)
+            : this(remoteTaskQueue.EventLogRepository,
                    reader,
-                   compositeCounter,
-                   globalTime,
-                   counterControllerSnapshotStorage,
+                   new CompositeCounter(new OldWaitingTasksCounter()),
+                   remoteTaskQueue.GlobalTime,
+                   new CounterControllerSnapshotStorage(remoteTaskQueue.Serializer, applicationSettings),
+                   graphiteClient,
                    CounterSettings.MaxHistoryDepth.Ticks,
                    CounterSettings.MaxBatch,
                    CounterSettings.CounterSaveSnapshotInterval.Ticks,
                    CounterSettings.MaxStoredSnapshotLength)
         {
         }
+
+        public GraphitePoster GraphitePoster { get; }
 
         private long GetNow()
         {

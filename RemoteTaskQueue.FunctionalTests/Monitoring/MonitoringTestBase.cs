@@ -20,7 +20,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             CollectionAssert.AreEquivalent(expectedIds, actualIds, "q=" + q);
         }
 
-        private static string[] Search(ITaskSearchClient taskSearchClient, string q, Timestamp from, Timestamp to)
+        private static string[] Search(TaskSearchClient taskSearchClient, string q, Timestamp from, Timestamp to)
         {
             var taskSearchResponse = taskSearchClient.Search(new TaskSearchRequest
                 {

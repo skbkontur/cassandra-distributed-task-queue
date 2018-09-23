@@ -11,7 +11,7 @@ namespace RemoteTaskQueue.TaskCounter.Http
 {
     public class TaskCounterHttpHandler : IHttpHandler
     {
-        public TaskCounterHttpHandler(ICounterController counterController, OldWaitingTasksCounter oldWaitingTasksCounter)
+        public TaskCounterHttpHandler(CounterController counterController, OldWaitingTasksCounter oldWaitingTasksCounter)
         {
             this.counterController = counterController;
             this.oldWaitingTasksCounter = oldWaitingTasksCounter;
@@ -39,7 +39,7 @@ namespace RemoteTaskQueue.TaskCounter.Http
                 counterController.Restart(null);
         }
 
-        private readonly ICounterController counterController;
+        private readonly CounterController counterController;
         private readonly OldWaitingTasksCounter oldWaitingTasksCounter;
     }
 }

@@ -15,7 +15,7 @@ namespace RemoteTaskQueue.Monitoring.Api
 {
     public class RemoteTaskQueueMonitoringApi : IRemoteTaskQueueMonitoringApi
     {
-        public RemoteTaskQueueMonitoringApi(IRemoteTaskQueue remoteTaskQueue, ITaskSearchClient taskSearchClient, ITaskDataRegistry taskDataRegistry)
+        public RemoteTaskQueueMonitoringApi(IRemoteTaskQueue remoteTaskQueue, TaskSearchClient taskSearchClient, ITaskDataRegistry taskDataRegistry)
         {
             this.remoteTaskQueue = remoteTaskQueue;
             this.taskSearchClient = taskSearchClient;
@@ -175,7 +175,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         }
 
         private readonly IRemoteTaskQueue remoteTaskQueue;
-        private readonly ITaskSearchClient taskSearchClient;
+        private readonly TaskSearchClient taskSearchClient;
         private readonly ITaskDataRegistry taskDataRegistry;
     }
 }

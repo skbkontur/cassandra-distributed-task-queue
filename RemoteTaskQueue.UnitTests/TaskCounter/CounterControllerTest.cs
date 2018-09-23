@@ -14,6 +14,8 @@ using RemoteTaskQueue.TaskCounter.Implementation;
 
 using Rhino.Mocks;
 
+using SkbKontur.Graphite.Client;
+
 using SKBKontur.Catalogue.TestCore;
 
 namespace RemoteTaskQueue.UnitTests.TaskCounter
@@ -34,7 +36,7 @@ namespace RemoteTaskQueue.UnitTests.TaskCounter
             eventLogRepository.Expect(m => m.UnstableZoneLength).Return(TimeSpan.FromTicks(unstableTicks));
             maxBatch = 3;
 
-            controller = new CounterController(eventLogRepository, metaCachedReader, compositeCounter, globalTime, snapshotStorage,
+            controller = new CounterController(eventLogRepository, metaCachedReader, compositeCounter, globalTime, snapshotStorage, NoOpGraphiteClient.Instance,
                                                maxHistoryDepthTicks, maxBatch, 1000, maxSnapshotLength);
         }
 

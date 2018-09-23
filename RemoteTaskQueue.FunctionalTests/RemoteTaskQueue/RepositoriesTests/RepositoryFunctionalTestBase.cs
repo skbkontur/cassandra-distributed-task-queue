@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-using GroBuf;
-
 using RemoteTaskQueue.FunctionalTests.Common;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
@@ -23,9 +21,6 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         protected abstract ColumnFamily[] GetColumnFamilies();
 
         protected const string QueueKeyspaceName = TestRemoteTaskQueueSettings.QueueKeyspaceName;
-
-        [Injected]
-        protected readonly ISerializer serializer;
 
         [Injected]
         protected readonly ICassandraCluster cassandraCluster;

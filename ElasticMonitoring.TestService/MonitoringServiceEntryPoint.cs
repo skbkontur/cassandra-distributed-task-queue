@@ -9,7 +9,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 {
     public class MonitoringServiceEntryPoint : ApplicationBase
     {
-        protected override string ConfigFileName { get { return "monitoringService.csf"; } }
+        protected override string ConfigFileName => "monitoringService.csf";
 
         private static void Main()
         {

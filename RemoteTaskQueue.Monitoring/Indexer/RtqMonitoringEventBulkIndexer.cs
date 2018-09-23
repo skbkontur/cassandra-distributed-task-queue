@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -6,7 +6,10 @@ using JetBrains.Annotations;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 
+using RemoteTaskQueue.Monitoring.Storage;
 using RemoteTaskQueue.Monitoring.Storage.Utils;
+
+using SkbKontur.Graphite.Client;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Objects;
@@ -16,12 +19,16 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqMonitoringEventBulkIndexer
     {
-        public RtqMonitoringEventBulkIndexer(RtqElasticsearchIndexerSettings settings, EventLogRepository eventLogRepository, RtqMonitoringOffsetInterpreter offsetInterpreter, TaskMetaProcessor taskMetaProcessor)
+        public RtqMonitoringEventBulkIndexer(RtqElasticsearchIndexerSettings indexerSettings,
+                                             RtqElasticsearchClientFactory elasticsearchClientFactory,
+                                             RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
+                                             IStatsDClient statsDClient)
         {
-            this.settings = settings;
-            this.eventLogRepository = eventLogRepository;
-            this.offsetInterpreter = offsetInterpreter;
-            this.taskMetaProcessor = taskMetaProcessor;
+            this.indexerSettings = indexerSettings;
+            eventLogRepository = remoteTaskQueue.EventLogRepository;
+            offsetInterpreter = new RtqMonitoringOffsetInterpreter();
+            var graphiteReporter = new RtqElasticsearchIndexerGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchBulkIndexer", statsDClient);
+            taskMetaProcessor = new TaskMetaProcessor(indexerSettings, elasticsearchClientFactory, remoteTaskQueue, graphiteReporter);
         }
 
         public void ProcessEvents([NotNull] Timestamp indexingStartTimestamp, [NotNull] Timestamp indexingFinishTimestamp)
@@ -48,7 +55,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                     var eventTimestamp = new Timestamp(@event.Event.Ticks);
                     if (lastEventsBatchStartTimestamp == null)
                         lastEventsBatchStartTimestamp = eventTimestamp;
-                    if (eventTimestamp - lastEventsBatchStartTimestamp > settings.MaxEventsProcessingTimeWindow || taskIdsToProcessInChronologicalOrder.Count > settings.MaxEventsProcessingTasksCount)
+                    if (eventTimestamp - lastEventsBatchStartTimestamp > indexerSettings.MaxEventsProcessingTimeWindow || taskIdsToProcessInChronologicalOrder.Count > indexerSettings.MaxEventsProcessingTasksCount)
                     {
                         taskMetaProcessor.ProcessTasks(taskIdsToProcessInChronologicalOrder);
                         taskIdsToProcess.Clear();
@@ -62,7 +69,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 taskMetaProcessor.ProcessTasks(taskIdsToProcessInChronologicalOrder);
         }
 
-        private readonly RtqElasticsearchIndexerSettings settings;
+        private readonly RtqElasticsearchIndexerSettings indexerSettings;
         private readonly EventLogRepository eventLogRepository;
         private readonly RtqMonitoringOffsetInterpreter offsetInterpreter;
         private readonly TaskMetaProcessor taskMetaProcessor;
