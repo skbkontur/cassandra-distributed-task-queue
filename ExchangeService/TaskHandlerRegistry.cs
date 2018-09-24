@@ -26,6 +26,7 @@ namespace ExchangeService
             Register<SlowTaskHandler>();
             Register<ChainTaskHandler>();
             Register<FailingTaskHandler>();
+            Register<TimeGuidTaskHandler>();
         }
 
         private void Register<THandler>()

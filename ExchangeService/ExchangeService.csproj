@@ -68,6 +68,7 @@
     <Compile Include="UserClasses\MonitoringTestTaskData\GammaTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\SlowTaskHandler.cs" />
     <Compile Include="UserClasses\MonitoringTestTaskData\DeltaTaskHandler.cs" />
+    <Compile Include="UserClasses\MonitoringTestTaskData\TimeGuidTaskHandler.cs" />
     <Compile Include="UserClasses\SimpleTaskHandler.cs" />
   </ItemGroup>
   <ItemGroup>

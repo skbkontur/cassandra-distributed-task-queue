@@ -59,6 +59,7 @@
     <Compile Include="TaskDatas\MonitoringTestTaskData\EpsilonTaskData.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\GammaTaskData.cs" />
     <Compile Include="TaskDatas\MonitoringTestTaskData\ITaskDataDetails.cs" />
+    <Compile Include="TaskDatas\MonitoringTestTaskData\TimeGuidTaskData.cs" />
     <Compile Include="TestRemoteTaskQueueContainerConfigurator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestRemoteTaskQueueSettings.cs" />

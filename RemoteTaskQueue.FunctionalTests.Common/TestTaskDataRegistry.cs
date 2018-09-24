@@ -26,6 +26,8 @@ namespace RemoteTaskQueue.FunctionalTests.Common
             Register<FailingTaskData>();
 
             Register<ChainTaskData>();
+
+            Register<TimeGuidTaskData>();
         }
     }
 }

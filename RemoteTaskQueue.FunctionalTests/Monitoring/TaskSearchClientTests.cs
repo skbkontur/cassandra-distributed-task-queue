@@ -21,6 +21,7 @@ using RemoteTaskQueue.Monitoring.Storage.Client;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
+using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
@@ -380,13 +381,13 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             return task.Id;
         }
 
-        private void WaitForTasks(IEnumerable<string> taskIds, TimeSpan timeSpan)
+        private void WaitForTasks(IEnumerable<string> taskIds, TimeSpan timeout)
         {
             WaitHelper.Wait(() =>
                 {
                     var tasks = remoteTaskQueue.HandleTaskCollection.GetTasks(taskIds.ToArray());
                     return tasks.All(t => t.Meta.State == TaskState.Finished || t.Meta.State == TaskState.Fatal) ? WaitResult.StopWaiting : WaitResult.ContinueWaiting;
-                }, timeSpan);
+                }, timeout);
         }
 
         [Test]
@@ -394,6 +395,23 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         {
             Assert.DoesNotThrow(() => schema.Actualize(local : true, bulkLoad : false));
             Assert.DoesNotThrow(() => schema.Actualize(local : true, bulkLoad : false));
+        }
+
+        [Test]
+        public void SearchByTimeGuid()
+        {
+            var t0 = Timestamp.Now;
+            var timeGuid0 = TimeGuid.NowGuid();
+            var taskId0 = QueueTask(new TimeGuidTaskData {Value = timeGuid0});
+            var timeGuid1 = TimeGuid.NowGuid();
+            var taskId1 = QueueTask(new TimeGuidTaskData {Value = timeGuid1});
+            WaitForTasks(new[] {taskId0, taskId1}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var t1 = Timestamp.Now;
+            CheckSearch("*", t0, t1, taskId0, taskId1);
+            CheckSearch($"Data.\\*.Value:\"{timeGuid0.ToGuid().ToString()}\"", t0, t1, taskId0);
+            CheckSearch($"Data.\\*.Value:\"{timeGuid1.ToGuid().ToString()}\"", t0, t1, taskId1);
         }
 
         [Injected]
