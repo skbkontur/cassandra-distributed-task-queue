@@ -39,7 +39,6 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                     {
                         new TruncateLongStringsConverter(500),
                         new StringEnumConverter(),
-                        new TimeGuidConverter(),
                     },
             };
 
