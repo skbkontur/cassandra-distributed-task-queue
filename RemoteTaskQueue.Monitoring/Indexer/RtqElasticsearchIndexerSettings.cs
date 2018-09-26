@@ -8,7 +8,6 @@ using Newtonsoft.Json.Converters;
 using RemoteTaskQueue.Monitoring.Storage.Writing;
 
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.Objects.Json;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
