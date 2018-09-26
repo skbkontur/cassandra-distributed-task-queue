@@ -1,4 +1,5 @@
 @importSettings "edi\graphite.csf"
+@importSettings "edi\environment.csf"
 
 ServiceName = ElasticMonitoringTestService
 LogDirectory = logs
