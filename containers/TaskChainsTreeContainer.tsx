@@ -98,7 +98,7 @@ class TaskChainsTreeContainerInternal extends React.Component<
     public getParentAndChildrenTaskIds(taskMetas: RemoteTaskInfoModel[]): string[] {
         const linkedIds = taskMetas
             .map(x => [x.taskMeta.parentTaskId, ...(x.taskMeta.childTaskIds || [])])
-            .flatten()
+            .flat()
             .filter(isNotNullOrUndefined);
         return _.uniq(linkedIds);
     }
