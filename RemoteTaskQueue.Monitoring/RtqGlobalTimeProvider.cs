@@ -5,7 +5,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteTaskQueue.Monitoring.Indexer
+namespace RemoteTaskQueue.Monitoring
 {
     public class RtqGlobalTimeProvider : IGlobalTimeProvider
     {

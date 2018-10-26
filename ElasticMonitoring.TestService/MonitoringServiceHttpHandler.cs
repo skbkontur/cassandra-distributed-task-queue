@@ -4,22 +4,32 @@ using Elasticsearch.Net;
 
 using RemoteTaskQueue.Monitoring.Indexer;
 using RemoteTaskQueue.Monitoring.Storage;
+using RemoteTaskQueue.Monitoring.TaskCounter;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.EventFeeds;
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 {
     public class MonitoringServiceHttpHandler : IHttpHandler
     {
-        public MonitoringServiceHttpHandler(RtqMonitoringEventFeeder eventFeeder,
+        public MonitoringServiceHttpHandler(RtqTaskCounterEventFeeder taskCounterEventFeeder,
+                                            RtqMonitoringEventFeeder monitoringEventFeeder,
                                             RtqElasticsearchSchema rtqElasticsearchSchema,
                                             RtqElasticsearchClientFactory elasticsearchClientFactory)
         {
-            this.eventFeeder = eventFeeder;
+            this.taskCounterEventFeeder = taskCounterEventFeeder;
+            this.monitoringEventFeeder = monitoringEventFeeder;
             this.rtqElasticsearchSchema = rtqElasticsearchSchema;
             this.elasticsearchClientFactory = elasticsearchClientFactory;
+        }
+
+        [HttpMethod]
+        public RtqTaskCounters GetTaskCounters()
+        {
+            return taskCounterStateManager.GetTaskCounters(Timestamp.Now);
         }
 
         [HttpMethod]
@@ -31,9 +41,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         [HttpMethod]
         public void ExecuteForcedFeeding()
         {
-            feedsRunner.ResetLocalState();
-            feedsRunner.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
+            monitoringFeedsRunner.ResetLocalState();
+            monitoringFeedsRunner.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
             elasticsearchClientFactory.DefaultClient.Value.IndicesRefresh("_all");
+
+            taskCounterFeedsRunner.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
         }
 
         [HttpMethod]
@@ -43,12 +55,20 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
             DeleteAllElasticEntities();
             rtqElasticsearchSchema.Actualize(local : true, bulkLoad : false);
-            eventFeeder.GlobalTime.ResetInMemoryState();
+            monitoringEventFeeder.GlobalTime.ResetInMemoryState();
+            taskCounterEventFeeder.GlobalTime.ResetInMemoryState();
 
-            feedsRunner = eventFeeder.RunEventFeeding();
+            monitoringFeedsRunner = monitoringEventFeeder.RunEventFeeding();
+            (taskCounterFeedsRunner, taskCounterStateManager) = taskCounterEventFeeder.RunEventFeeding();
         }
 
         private void StopFeeding()
+        {
+            StopFeeding(ref taskCounterFeedsRunner);
+            StopFeeding(ref monitoringFeedsRunner);
+        }
+
+        private static void StopFeeding(ref IEventFeedsRunner feedsRunner)
         {
             if (feedsRunner != null)
             {
@@ -65,8 +85,11 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             elasticsearchClient.ClusterHealth(p => p.WaitForStatus(WaitForStatus.Green)).ProcessResponse();
         }
 
-        private IEventFeedsRunner feedsRunner;
-        private readonly RtqMonitoringEventFeeder eventFeeder;
+        private IEventFeedsRunner monitoringFeedsRunner;
+        private IEventFeedsRunner taskCounterFeedsRunner;
+        private RtqTaskCounterStateManager taskCounterStateManager;
+        private readonly RtqTaskCounterEventFeeder taskCounterEventFeeder;
+        private readonly RtqMonitoringEventFeeder monitoringEventFeeder;
         private readonly RtqElasticsearchSchema rtqElasticsearchSchema;
         private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }

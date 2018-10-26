@@ -26,9 +26,9 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         {
             this.indexerSettings = indexerSettings;
             eventLogRepository = remoteTaskQueue.EventLogRepository;
-            offsetInterpreter = new RtqMonitoringOffsetInterpreter();
-            var graphiteReporter = new RtqElasticsearchIndexerGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchBulkIndexer", statsDClient);
-            taskMetaProcessor = new TaskMetaProcessor(indexerSettings, elasticsearchClientFactory, remoteTaskQueue, graphiteReporter);
+            offsetInterpreter = new RtqEventLogOffsetInterpreter();
+            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchBulkIndexer", statsDClient);
+            taskMetaProcessor = new TaskMetaProcessor(indexerSettings, elasticsearchClientFactory, remoteTaskQueue, perfGraphiteReporter);
         }
 
         public void ProcessEvents([NotNull] Timestamp indexingStartTimestamp, [NotNull] Timestamp indexingFinishTimestamp)
@@ -71,7 +71,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         private readonly RtqElasticsearchIndexerSettings indexerSettings;
         private readonly EventLogRepository eventLogRepository;
-        private readonly RtqMonitoringOffsetInterpreter offsetInterpreter;
+        private readonly RtqEventLogOffsetInterpreter offsetInterpreter;
         private readonly TaskMetaProcessor taskMetaProcessor;
     }
 }

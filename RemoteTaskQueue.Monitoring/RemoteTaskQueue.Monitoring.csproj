@@ -61,10 +61,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Mvc5\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api\IRemoteTaskQueueMonitoringApi.cs" />
@@ -73,13 +69,13 @@
     <Compile Include="Api\RemoteTaskQueueSearchRequest.cs" />
     <Compile Include="Api\RemoteTaskQueueSearchResults.cs" />
     <Compile Include="Indexer\ElasticAvailabilityChecker.cs" />
-    <Compile Include="Indexer\RtqGlobalTimeProvider.cs" />
+    <Compile Include="RtqGlobalTimeProvider.cs" />
     <Compile Include="Indexer\RtqMonitoringEventBulkIndexer.cs" />
-    <Compile Include="Indexer\RtqElasticsearchIndexerGraphiteReporter.cs" />
+    <Compile Include="RtqMonitoringPerfGraphiteReporter.cs" />
     <Compile Include="Indexer\RtqElasticsearchIndexerSettings.cs" />
     <Compile Include="Indexer\RtqMonitoringEventConsumer.cs" />
     <Compile Include="Indexer\RtqMonitoringEventFeeder.cs" />
-    <Compile Include="Indexer\RtqMonitoringOffsetInterpreter.cs" />
+    <Compile Include="RtqEventLogOffsetInterpreter.cs" />
     <Compile Include="Indexer\TaskMetaProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storage\Client\TaskSearchClient.cs" />
@@ -97,6 +93,15 @@
     <Compile Include="Storage\Writing\RtqElasticsearchOffsetStorage.cs" />
     <Compile Include="Storage\Writing\TruncateLongStringsConverter.cs" />
     <Compile Include="Storage\Writing\TruncateLongStringsConverter2K.cs" />
+    <Compile Include="TaskCounter\IRtqTaskCounterStateStorage.cs" />
+    <Compile Include="TaskCounter\RtqTaskCounters.cs" />
+    <Compile Include="TaskCounter\RtqTaskCounterGraphiteReporter.cs" />
+    <Compile Include="TaskCounter\RtqTaskCounterEventConsumer.cs" />
+    <Compile Include="TaskCounter\RtqTaskCounterEventFeeder.cs" />
+    <Compile Include="TaskCounter\RtqTaskCounterSettings.cs" />
+    <Compile Include="TaskCounter\RtqTaskCounterState.cs" />
+    <Compile Include="TaskCounter\RtqTaskCounterStateManager.cs" />
+    <Compile Include="TaskCounter\RtqTaskCounterStateTaskMeta.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">

@@ -4,43 +4,36 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
-using FluentAssertions;
-
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Handling;
 
-using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
-using RemoteTaskQueue.TaskCounter;
 
 using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
-namespace RemoteTaskQueue.FunctionalTests.TaskCounter
+namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
-    [EdiTestFixture, WithTestRemoteTaskQueue, AndResetTaskCounterServiceState]
-    public class TaskCounterTest
+    public class TaskCounterTest : MonitoringTestBase
     {
         [Test]
-        public void TestOldWaitingTaskCount()
+        public void LostTasksCount()
         {
             exchangeServiceClient.Stop();
-            taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
-            taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
-            Thread.Sleep(TimeSpan.FromMinutes(6));
-            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().OldWaitingTaskCount == 2, TimeSpan.FromSeconds(10));
+            remoteTaskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
+            remoteTaskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
+            Thread.Sleep(TimeSpan.FromSeconds(10));
+            WaitFor(() => monitoringServiceClient.GetTaskCounters().LostTasksCount == 2, TimeSpan.FromSeconds(10));
 
             exchangeServiceClient.Start();
             WaitFor(() =>
                 {
-                    var taskCount = taskCounterServiceClient.GetProcessingTaskCount();
-                    return taskCount.Count == 0 && taskCount.OldWaitingTaskCount == 0;
+                    var taskCount = monitoringServiceClient.GetTaskCounters();
+                    return taskCount.GetPendingTaskTotalCount() == 0 && taskCount.LostTasksCount == 0;
                 }, TimeSpan.FromSeconds(10));
         }
 
@@ -48,66 +41,43 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
         public void TestCounts()
         {
             exchangeServiceClient.Stop();
-            taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
-            taskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
-            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Counts[(int)TaskState.New] == 2, TimeSpan.FromSeconds(10));
+            remoteTaskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
+            remoteTaskQueue.CreateTask(new SlowTaskData {TimeMs = 1}).Queue();
+            WaitFor(() => monitoringServiceClient.GetTaskCounters().PendingTaskCountsTotal[TaskState.New] == 2, TimeSpan.FromSeconds(10));
             exchangeServiceClient.Start();
-            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
+            WaitFor(() => monitoringServiceClient.GetTaskCounters().GetPendingTaskTotalCount() == 0, TimeSpan.FromSeconds(10));
         }
 
         [Test]
         public void TestCounter()
         {
-            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
+            WaitFor(() => monitoringServiceClient.GetTaskCounters().GetPendingTaskTotalCount() == 0, TimeSpan.FromSeconds(10));
             var taskIds = new List<string>();
             var w = Stopwatch.StartNew();
             do
             {
-                var remoteTask = taskQueue.CreateTask(new SlowTaskData {TimeMs = 1000});
+                var remoteTask = remoteTaskQueue.CreateTask(new SlowTaskData {TimeMs = 1000});
                 remoteTask.Queue();
                 taskIds.Add(remoteTask.Id);
                 Thread.Sleep(100);
                 var processedCountFromCounter = testCounterRepository.GetCounter("SlowTaskHandler_Started") - testCounterRepository.GetCounter("SlowTaskHandler_Finished");
-                var processingTaskCount = taskCounterServiceClient.GetProcessingTaskCount();
-
-                Log.For(this).InfoFormat("InProgress={0} Counter={1}", processedCountFromCounter, processingTaskCount.Count);
+                var processingTaskCount = monitoringServiceClient.GetTaskCounters();
+                Log.For(this).InfoFormat("InProgress={0} Counter={1}", processedCountFromCounter, processingTaskCount.GetPendingTaskTotalCount());
             } while (w.Elapsed < TimeSpan.FromSeconds(10));
             WaitForTasks(taskIds, TimeSpan.FromMinutes(1));
-            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
-        }
-
-        [Test]
-        public void TestRestart()
-        {
-            var now = Timestamp.Now.ToDateTime();
-            taskCounterServiceClient.RestartProcessingTaskCounter(now);
-            var processingTaskCount = taskCounterServiceClient.GetProcessingTaskCount();
-            processingTaskCount.UpdateTicks = 0;
-            processingTaskCount.Counts = null;
-            processingTaskCount.ShouldBeEquivalentTo(new TaskCount
-                {
-                    Count = 0,
-                    StartTicks = now.Ticks
-                });
-            Thread.Sleep(100);
-            taskCounterServiceClient.RestartProcessingTaskCounter(null);
-
-            processingTaskCount = taskCounterServiceClient.GetProcessingTaskCount();
-            var startTicks = processingTaskCount.StartTicks;
-            var dateTime = now - TimeSpan.FromDays(3);
-            Assert.That(startTicks >= dateTime.Ticks);
+            WaitFor(() => monitoringServiceClient.GetTaskCounters().GetPendingTaskTotalCount() == 0, TimeSpan.FromSeconds(10));
         }
 
         [Test]
         public void TestCounterHardAndSlow()
         {
-            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, TimeSpan.FromSeconds(10));
+            WaitFor(() => monitoringServiceClient.GetTaskCounters().GetPendingTaskTotalCount() == 0, TimeSpan.FromSeconds(10));
             var w = Stopwatch.StartNew();
             var taskIds = new List<string>();
             const int count = 200;
             for (var i = 0; i < count; i++)
             {
-                var remoteTask = taskQueue.CreateTask(new SlowTaskData {TimeMs = 1000, UseCounter = false});
+                var remoteTask = remoteTaskQueue.CreateTask(new SlowTaskData {TimeMs = 1000, UseCounter = false});
                 taskIds.Add(remoteTask.Id);
                 remoteTask.Queue();
             }
@@ -138,7 +108,7 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
             var w = Stopwatch.StartNew();
             do
             {
-                var remoteTask = taskQueue.CreateTask(new SlowTaskData {TimeMs = 1000, UseCounter = useTaskCounter});
+                var remoteTask = remoteTaskQueue.CreateTask(new SlowTaskData {TimeMs = 1000, UseCounter = useTaskCounter});
                 taskIds.Add(remoteTask.Id);
                 remoteTask.Queue();
                 if (addDelay > 0)
@@ -147,12 +117,12 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
             Log.For(this).Info("Waiting for all tasks finished");
             WaitForTasks(taskIds, waitTasksTime);
             Log.For(this).Info("Waiting for Counter");
-            WaitFor(() => taskCounterServiceClient.GetProcessingTaskCount().Count == 0, waitTasksTime);
+            WaitFor(() => monitoringServiceClient.GetTaskCounters().GetPendingTaskTotalCount() == 0, waitTasksTime);
         }
 
         private void WaitForTasks(List<string> taskIds, TimeSpan timeout)
         {
-            WaitFor(() => taskIds.All(taskId => taskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.State == TaskState.Finished), timeout);
+            WaitFor(() => taskIds.All(taskId => remoteTaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.State == TaskState.Finished), timeout);
         }
 
         private static void WaitFor(Func<bool> func, TimeSpan timeout)
@@ -162,12 +132,6 @@ namespace RemoteTaskQueue.FunctionalTests.TaskCounter
 
         [Injected]
         private readonly ITestCounterRepository testCounterRepository;
-
-        [Injected]
-        private readonly IRemoteTaskQueue taskQueue;
-
-        [Injected]
-        private readonly TaskCounterServiceClient taskCounterServiceClient;
 
         [Injected]
         private readonly IEventLogRepository eventLogRepository;

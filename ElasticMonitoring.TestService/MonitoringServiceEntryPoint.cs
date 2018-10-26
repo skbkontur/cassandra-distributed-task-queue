@@ -1,6 +1,9 @@
-﻿using RemoteTaskQueue.FunctionalTests.Common;
+﻿using System;
+
+using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.Monitoring.Indexer;
 using RemoteTaskQueue.Monitoring.Storage;
+using RemoteTaskQueue.Monitoring.TaskCounter;
 
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;
@@ -19,6 +22,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         private void Run()
         {
             Container.ConfigureForTestRemoteTaskQueue();
+            Container.Configurator.ForAbstraction<IRtqTaskCounterStateStorage>().UseType<NoOpRtqTaskCounterStateStorage>();
+            Container.Configurator.ForAbstraction<RtqTaskCounterSettings>().UseInstances(new RtqTaskCounterSettings {PendingTaskExecutionUpperBound = TimeSpan.FromSeconds(5)});
             Container.Get<ElasticAvailabilityChecker>().WaitAlive();
             Container.Get<RtqElasticsearchSchema>().Actualize(local : true, bulkLoad : false);
             Container.Get<HttpService>().Run();

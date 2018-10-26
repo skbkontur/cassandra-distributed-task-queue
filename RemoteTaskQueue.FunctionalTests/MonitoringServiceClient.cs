@@ -1,5 +1,7 @@
 ﻿using System;
 
+using RemoteTaskQueue.Monitoring.TaskCounter;
+
 using SKBKontur.Catalogue.ClientLib.Domains;
 using SKBKontur.Catalogue.ClientLib.HttpClientBases;
 using SKBKontur.Catalogue.ClientLib.HttpClientBases.Configuration;
@@ -12,6 +14,11 @@ namespace RemoteTaskQueue.FunctionalTests
         public MonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration)
             : base(domainTopologyFactory, methodDomainFactory, configuration)
         {
+        }
+
+        public RtqTaskCounters GetTaskCounters()
+        {
+            return Method("GetTaskCounters").InvokeOnRandomReplica().ThanReturn<RtqTaskCounters>();
         }
 
         public void ExecuteForcedFeeding()

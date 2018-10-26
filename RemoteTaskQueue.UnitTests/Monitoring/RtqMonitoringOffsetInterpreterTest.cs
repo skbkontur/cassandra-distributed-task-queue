@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 using FluentAssertions;
 
@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Repositories;
 
-using RemoteTaskQueue.Monitoring.Indexer;
+using RemoteTaskQueue.Monitoring;
 
 using SKBKontur.Catalogue.Objects;
 
@@ -79,6 +79,6 @@ namespace RemoteTaskQueue.UnitTests.Monitoring
             return EventPointerFormatter.GetColumnName(ts.Ticks, eventId);
         }
 
-        private readonly RtqMonitoringOffsetInterpreter sut = new RtqMonitoringOffsetInterpreter();
+        private readonly RtqEventLogOffsetInterpreter sut = new RtqEventLogOffsetInterpreter();
     }
 }

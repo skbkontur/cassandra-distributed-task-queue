@@ -119,7 +119,7 @@ namespace RemoteQueue.Cassandra.Entities
         }
 
         [NotNull]
-        private Timestamp GetMinimalStartTimestamp()
+        public Timestamp GetMinimalStartTimestamp()
         {
             if (MinimalStartTicks > Timestamp.MaxValue.Ticks)
                 throw new InvalidProgramStateException(string.Format("Invalid MinimalStartTicks: {0}, impossible to construct Timestamp", MinimalStartTicks));

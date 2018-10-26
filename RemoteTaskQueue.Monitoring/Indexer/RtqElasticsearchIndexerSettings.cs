@@ -13,25 +13,19 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexerSettings
     {
-        public RtqElasticsearchIndexerSettings()
-        {
-            InitialIndexingStartTimestamp = new Timestamp(new DateTime(2016, 02, 01, 0, 0, 0, DateTimeKind.Utc));
-            MaxEventsProcessingTimeWindow = TimeSpan.FromHours(1);
-            MaxEventsProcessingTasksCount = 60000; // slightly less than TaskIdsProcessingBatchSize * IndexingThreadsCount
-            TaskIdsProcessingBatchSize = 4000;
-            IndexingThreadsCount = 16;
-        }
+        [NotNull]
+        public Timestamp InitialIndexingStartTimestamp { get; set; } = new Timestamp(new DateTime(2016, 02, 01, 0, 0, 0, DateTimeKind.Utc));
+
+        public TimeSpan MaxEventsProcessingTimeWindow { get; set; } = TimeSpan.FromHours(1);
+
+        public int MaxEventsProcessingTasksCount { get; set; } = 60000; // slightly less than TaskIdsProcessingBatchSize * IndexingThreadsCount
+
+        public int TaskIdsProcessingBatchSize { get; set; } = 4000;
+
+        public int IndexingThreadsCount { get; set; } = 16;
 
         [NotNull]
-        public Timestamp InitialIndexingStartTimestamp { get; }
-
-        public TimeSpan MaxEventsProcessingTimeWindow { get; set; }
-        public int MaxEventsProcessingTasksCount { get; set; }
-        public int TaskIdsProcessingBatchSize { get; set; }
-        public int IndexingThreadsCount { get; set; }
-
-        [NotNull]
-        public JsonSerializerSettings JsonSerializerSettings => new JsonSerializerSettings
+        public JsonSerializerSettings JsonSerializerSettings { get; } = new JsonSerializerSettings
             {
                 ContractResolver = new OmitBinaryAndAbstractPropertiesContractResolver(),
                 Converters = new JsonConverter[]

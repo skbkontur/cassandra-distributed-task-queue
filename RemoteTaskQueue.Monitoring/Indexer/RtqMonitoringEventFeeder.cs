@@ -27,10 +27,10 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             GlobalTime = remoteTaskQueue.GlobalTime;
             globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
-            var graphiteReporter = new RtqElasticsearchIndexerGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient);
-            var taskMetaProcessor = new TaskMetaProcessor(indexerSettings, elasticsearchClientFactory, remoteTaskQueue, graphiteReporter);
+            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient);
+            var taskMetaProcessor = new TaskMetaProcessor(indexerSettings, elasticsearchClientFactory, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
-            offsetInterpreter = new RtqMonitoringOffsetInterpreter();
+            offsetInterpreter = new RtqEventLogOffsetInterpreter();
             this.elasticsearchClientFactory = elasticsearchClientFactory;
         }
 
@@ -56,7 +56,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private readonly RtqGlobalTimeProvider globalTimeProvider;
         private readonly EventLogRepository eventLogRepository;
         private readonly RtqMonitoringEventConsumer eventConsumer;
-        private readonly RtqMonitoringOffsetInterpreter offsetInterpreter;
+        private readonly RtqEventLogOffsetInterpreter offsetInterpreter;
         private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
     }
 }

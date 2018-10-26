@@ -36,6 +36,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Core.ElasticsearchClientExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
@@ -57,6 +61,7 @@
   <ItemGroup>
     <Compile Include="MonitoringServiceHttpHandler.cs" />
     <Compile Include="MonitoringServiceEntryPoint.cs" />
+    <Compile Include="NoOpRtqTaskCounterStateStorage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

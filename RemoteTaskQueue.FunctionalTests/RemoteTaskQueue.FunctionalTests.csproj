@@ -72,7 +72,6 @@
     <Compile Include="AndResetCassandraState.cs" />
     <Compile Include="AndResetExchangeServiceState.cs" />
     <Compile Include="AndResetMonitoringServiceState.cs" />
-    <Compile Include="AndResetTaskCounterServiceState.cs" />
     <Compile Include="CassandraHelpers.cs" />
     <Compile Include="MonitoringServiceClient.cs" />
     <Compile Include="ExchangeServiceClient.cs" />
@@ -102,8 +101,7 @@
     <Compile Include="RemoteTaskQueue\RepositoriesTests\TicksHolderTest.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\ITestRtqCassandraWithTickHolderTestSuite.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\TimeBasedBlobStorageTest.cs" />
-    <Compile Include="TaskCounterServiceClient.cs" />
-    <Compile Include="TaskCounter\TaskCounterTest.cs" />
+    <Compile Include="Monitoring\TaskCounterTest.cs" />
     <Compile Include="WithTestRemoteTaskQueueSettings.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -114,10 +112,6 @@
     <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj">
       <Project>{977B80E5-2EC8-4394-BE5A-907BCA3C02EA}</Project>
       <Name>RemoteTaskQueue.Monitoring</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RemoteTaskQueue.TaskCounter\RemoteTaskQueue.TaskCounter.csproj">
-      <Project>{B7C6FBDB-C9D6-42A7-BB90-3D52C91D0174}</Project>
-      <Name>RemoteTaskQueue.TaskCounter</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
@@ -135,9 +129,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Settings\exchangeServiceTopology">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Settings\taskCounterServiceTopology">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

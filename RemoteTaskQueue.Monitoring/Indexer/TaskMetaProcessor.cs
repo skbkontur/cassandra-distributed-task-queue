@@ -31,7 +31,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         public TaskMetaProcessor(RtqElasticsearchIndexerSettings settings,
                                  RtqElasticsearchClientFactory elasticsearchClientFactory,
                                  RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
-                                 RtqElasticsearchIndexerGraphiteReporter graphiteReporter)
+                                 RtqMonitoringPerfGraphiteReporter perfGraphiteReporter)
         {
             this.settings = settings;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
@@ -39,7 +39,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             taskDataStorage = remoteTaskQueue.TaskDataStorage;
             taskExceptionInfoStorage = remoteTaskQueue.TaskExceptionInfoStorage;
             serializer = remoteTaskQueue.Serializer;
-            this.graphiteReporter = graphiteReporter;
+            this.perfGraphiteReporter = perfGraphiteReporter;
             elasticsearchClient = elasticsearchClientFactory.CreateClient(settings.JsonSerializerSettings);
         }
 
@@ -52,7 +52,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
                             .ForEach(taskIds =>
                                 {
-                                    var taskMetas = graphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
+                                    var taskMetas = perfGraphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
                                     var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > settings.InitialIndexingStartTimestamp.Ticks).ToArray();
                                     if (taskMetasToIndex.Any())
                                         IndexMetas(taskMetasToIndex);
@@ -61,8 +61,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         private void IndexMetas([NotNull, ItemNotNull] TaskMetaInformation[] batch)
         {
-            var taskDatas = graphiteReporter.ReportTiming("ReadTaskDatas", () => taskDataStorage.Read(batch));
-            var taskExceptionInfos = graphiteReporter.ReportTiming("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch));
+            var taskDatas = perfGraphiteReporter.ReportTiming("ReadTaskDatas", () => taskDataStorage.Read(batch));
+            var taskExceptionInfos = perfGraphiteReporter.ReportTiming("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch));
             var enrichedBatch = new ( /*[NotNull]*/ TaskMetaInformation TaskMeta, /*[NotNull, ItemNotNull]*/ TaskExceptionInfo[] TaskExceptionInfos, /*[CanBeNull]*/ object TaskData)[batch.Length];
             for (var i = 0; i < batch.Length; i++)
             {
@@ -75,7 +75,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 }
                 enrichedBatch[i] = (taskMeta, taskExceptionInfos[taskMeta.Id], taskDataObj);
             }
-            graphiteReporter.ReportTiming("IndexBatch", () => IndexBatch(enrichedBatch));
+            perfGraphiteReporter.ReportTiming("IndexBatch", () => IndexBatch(enrichedBatch));
         }
 
         private void IndexBatch([NotNull] ( /*[NotNull]*/ TaskMetaInformation TaskMeta, /*[NotNull, ItemNotNull]*/ TaskExceptionInfo[] TaskExceptionInfos, /*[CanBeNull]*/ object TaskData)[] batch)
@@ -95,7 +95,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                     };
                 body[2 * i + 1] = BuildTaskIndexedInfo(batch[i].TaskMeta, batch[i].TaskExceptionInfos, batch[i].TaskData);
             }
-            graphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticsearchClient.Bulk<BulkResponse>(body, SetRequestTimeout).DieIfErros());
+            perfGraphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticsearchClient.Bulk<BulkResponse>(body, SetRequestTimeout).DieIfErros());
         }
 
         [NotNull]
@@ -146,7 +146,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private readonly ITaskDataStorage taskDataStorage;
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly ISerializer serializer;
-        private readonly RtqElasticsearchIndexerGraphiteReporter graphiteReporter;
+        private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
         private readonly IElasticsearchClient elasticsearchClient;
     }
 }

@@ -1,18 +1,18 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Repositories;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteTaskQueue.Monitoring.Indexer
+namespace RemoteTaskQueue.Monitoring
 {
-    public class RtqMonitoringOffsetInterpreter : IOffsetInterpreter<string>
+    public class RtqEventLogOffsetInterpreter : IOffsetInterpreter<string>
     {
         [NotNull]
         public string Format([CanBeNull] string offset)
         {
-            return string.Format("EventPointer: {0}, Timestamp: {1}", offset, GetTimestampFromOffset(offset));
+            return $"EventPointer: {offset}, Timestamp: {GetTimestampFromOffset(offset)}";
         }
 
         [CanBeNull]

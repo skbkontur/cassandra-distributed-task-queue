@@ -2,8 +2,6 @@
 
 using JetBrains.Annotations;
 
-using RemoteTaskQueue.Monitoring.Indexer;
-
 using SKBKontur.Catalogue.Core.EventFeeds.OffsetStorages;
 using SKBKontur.Catalogue.Objects;
 
@@ -11,7 +9,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
 {
     public class RtqElasticsearchOffsetStorage : ElasticsearchOffsetStorage<string>
     {
-        public RtqElasticsearchOffsetStorage(RtqElasticsearchClientFactory elasticsearchClientFactory, RtqMonitoringOffsetInterpreter offsetInterpreter, [NotNull] string bladeKey)
+        public RtqElasticsearchOffsetStorage(RtqElasticsearchClientFactory elasticsearchClientFactory, RtqEventLogOffsetInterpreter offsetInterpreter, [NotNull] string bladeKey)
             : base(elasticsearchClientFactory.DefaultClient.Value, key : bladeKey, indexName : RtqElasticsearchConsts.IndexingProgressIndexName)
         {
             this.offsetInterpreter = offsetInterpreter;
@@ -23,6 +21,6 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
             return offsetInterpreter.GetMaxOffsetForTimestamp(Timestamp.Now - TimeSpan.FromDays(3));
         }
 
-        private readonly RtqMonitoringOffsetInterpreter offsetInterpreter;
+        private readonly RtqEventLogOffsetInterpreter offsetInterpreter;
     }
 }
