@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
@@ -14,8 +13,5 @@ namespace RemoteQueue.Cassandra.Repositories
         TimeSpan UnstableZoneLength { get; }
 
         void AddEvent([NotNull] TaskMetaInformation taskMeta, [NotNull] Timestamp eventTimestamp, Guid eventId);
-
-        [NotNull]
-        IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, long toTicks, int batchSize);
     }
 }

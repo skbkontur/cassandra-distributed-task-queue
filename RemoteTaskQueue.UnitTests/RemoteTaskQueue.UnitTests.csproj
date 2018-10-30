@@ -39,10 +39,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.TestCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
@@ -56,9 +52,6 @@
     <Compile Include="Monitoring\TaskIndexInfoSerializationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskCounterTest.cs" />
-    <Compile Include="TaskCounter\CounterControllerTest.cs" />
-    <Compile Include="TaskCounter\OldWaitingTasksCounterTest.cs" />
-    <Compile Include="TaskCounter\ProcessedTasksCounterTest.cs" />
     <Compile Include="TaskDataRegistryRefletionHelpersTest.cs" />
     <Compile Include="TaskDataRegistryTest.cs" />
     <Compile Include="TaskMetaInformationTest.cs" />
@@ -67,10 +60,6 @@
     <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj">
       <Project>{977B80E5-2EC8-4394-BE5A-907BCA3C02EA}</Project>
       <Name>RemoteTaskQueue.Monitoring</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RemoteTaskQueue.TaskCounter\RemoteTaskQueue.TaskCounter.csproj">
-      <Project>{B7C6FBDB-C9D6-42A7-BB90-3D52C91D0174}</Project>
-      <Name>RemoteTaskQueue.TaskCounter</Name>
     </ProjectReference>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj">
       <Project>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</Project>
@@ -94,9 +83,6 @@
     </PackageReference>
     <PackageReference Include="NUnit">
       <Version>3.10.1</Version>
-    </PackageReference>
-    <PackageReference Include="RhinoMocks">
-      <Version>3.6.1</Version>
     </PackageReference>
   </ItemGroup>
 </Project>

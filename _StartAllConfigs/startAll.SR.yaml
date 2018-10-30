@@ -4,5 +4,5 @@ services:
   - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
   - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
   - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
-  - path: TaskCounter.TestService\bin\Catalogue.RemoteTaskQueue.TaskCounter.TestService.exe
   - path: ElasticMonitoring.TestService\bin\Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService.exe
+    name: RtqMonitoringTestService

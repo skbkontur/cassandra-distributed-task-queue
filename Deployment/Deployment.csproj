@@ -44,7 +44,6 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Projects\Services\ElasticMonitoringService.xml" />
-    <Content Include="Projects\Services\TaskCounterService.xml" />
     <Content Include="Projects\Tests\FunctionalTests.xml" />
   </ItemGroup>
   <ItemGroup>

@@ -63,8 +63,6 @@
     <Compile Include="Cassandra\Repositories\BlobStorages\BlobType.cs" />
     <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\EventPointerFormatter.cs" />
-    <Compile Include="Cassandra\Repositories\GetEventLogEnumerable.cs" />
-    <Compile Include="Cassandra\Repositories\GetEventLogEnumerator.cs" />
     <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\ChildTaskIndex.cs" />
     <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\IChildTaskIndex.cs" />

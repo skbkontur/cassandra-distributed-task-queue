@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using GroBuf;
@@ -29,9 +30,10 @@ namespace RemoteQueue.Cassandra.Repositories
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
         }
 
-        public TimeSpan UnstableZoneLength { get; private set; }
+        public TimeSpan UnstableZoneLength { get; }
 
         [NotNull]
+        [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
         public string GetDescription()
         {
             return GetType().FullName;
@@ -103,16 +105,6 @@ namespace RemoteQueue.Cassandra.Repositories
                     return fromOffsetExclusive;
             }
             return EventPointerFormatter.GetColumnName(firstEventTicks - 1, GuidHelpers.MaxGuid);
-        }
-
-        public IEnumerable<TaskMetaUpdatedEvent> GetEvents(long fromTicks, long toTicks, int batchSize)
-        {
-            var firstEventTicks = ticksHolder.GetMinTicks(firstEventTicksRowName);
-            if (firstEventTicks == 0)
-                return new TaskMetaUpdatedEvent[0];
-            firstEventTicks -= EventPointerFormatter.PartitionDurationTicks; //note что это ?
-            fromTicks = new[] {0, fromTicks, firstEventTicks}.Max();
-            return new GetEventLogEnumerable(serializer, RetrieveColumnFamilyConnection(), fromTicks, toTicks, batchSize);
         }
 
         public const string ColumnFamilyName = "RemoteTaskQueueEventLog";
