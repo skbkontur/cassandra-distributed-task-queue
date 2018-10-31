@@ -18,14 +18,16 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
     public class RtqTaskCounterEventFeeder
     {
         public RtqTaskCounterEventFeeder(ISerializer serializer,
+                                         IStatsDClient statsDClient,
+                                         IGraphiteClient graphiteClient,
                                          ITaskDataRegistry taskDataRegistry,
                                          IRtqTaskCounterStateStorage stateStorage,
                                          EventFeedFactory eventFeedFactory,
                                          RtqTaskCounterSettings settings,
-                                         RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
-                                         IStatsDClient statsDClient)
+                                         RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue)
         {
             this.serializer = serializer;
+            this.graphiteClient = graphiteClient;
             this.taskDataRegistry = taskDataRegistry;
             this.stateStorage = stateStorage;
             this.eventFeedFactory = eventFeedFactory;
@@ -41,7 +43,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         [NotNull]
         public IGlobalTime GlobalTime { get; }
 
-        public ( /*[NotNull]*/ IEventFeedsRunner, /*[NotNull]*/ RtqTaskCounterStateManager) RunEventFeeding()
+        public ( /*[NotNull]*/ IEventFeedsRunner, /*[NotNull]*/ RtqTaskCounterStateManager, /*[NotNull]*/ RtqTaskCounterGraphiteReporter) RunEventFeeding()
         {
             var stateManager = new RtqTaskCounterStateManager(serializer, taskDataRegistry, stateStorage, settings, offsetInterpreter, perfGraphiteReporter);
             var eventConsumer = new RtqTaskCounterEventConsumer(stateManager, handleTasksMetaStorage, perfGraphiteReporter);
@@ -56,10 +58,11 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
                 .WithOffsetStorageFactory(bladeId => stateManager.CreateOffsetStorage(bladeId))
                 .WithSingleLeaderElectionKey(stateManager.CompositeFeedKey)
                 .RunFeeds(settings.DelayBetweenEventFeedingIterations);
-            return (eventFeedsRunner, stateManager);
+            return (eventFeedsRunner, stateManager, new RtqTaskCounterGraphiteReporter(stateManager, graphiteClient));
         }
 
         private readonly ISerializer serializer;
+        private readonly IGraphiteClient graphiteClient;
         private readonly ITaskDataRegistry taskDataRegistry;
         private readonly IRtqTaskCounterStateStorage stateStorage;
         private readonly EventFeedFactory eventFeedFactory;

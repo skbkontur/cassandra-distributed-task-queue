@@ -59,7 +59,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             taskCounterEventFeeder.GlobalTime.ResetInMemoryState();
 
             monitoringFeedsRunner = monitoringEventFeeder.RunEventFeeding();
-            (taskCounterFeedsRunner, taskCounterStateManager) = taskCounterEventFeeder.RunEventFeeding();
+            (taskCounterFeedsRunner, taskCounterStateManager, _) = taskCounterEventFeeder.RunEventFeeding();
         }
 
         private void StopFeeding()

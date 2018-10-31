@@ -48,7 +48,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         public BladeId[] Blades { get; }
 
         [NotNull]
-        public string CompositeFeedKey { get; } = "RtqTaskCounterFeed";
+        public string CompositeFeedKey { get; } = "RtqTaskCounter";
 
         public bool EventFeedIsRunning { get; private set; }
 
@@ -66,8 +66,11 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
         public void MaybePersistState()
         {
-            if (lastStatePersistedTimestamp != null && Timestamp.Now - lastStatePersistedTimestamp < settings.StatePersistingInterval)
+            var now = Timestamp.Now;
+            if (lastStatePersistedTimestamp != null && now - lastStatePersistedTimestamp < settings.StatePersistingInterval)
                 return;
+
+            CollectGarbageInState(now);
 
             var lastBladeOffset = lastBladeOffsetStorage.Read();
             if (string.IsNullOrEmpty(lastBladeOffset))
@@ -75,16 +78,44 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
             state.LastBladeOffset = lastBladeOffset;
 
-            perfGraphiteReporter.ReportTiming("PersistState", DoPersistState, out var timer);
-            Log.For(this).Info($"Persisted state with LastBladeOffset: {state.LastBladeOffset}, TaskMetas.Count: {state.TaskMetas.Count} in {timer.Elapsed}");
+            var taskMetasCount = perfGraphiteReporter.ReportTiming("PersistState", DoPersistState, out var timer);
+            Log.For(this).Info($"Persisted state with LastBladeOffset: {state.LastBladeOffset}, TaskMetas.Count: {taskMetasCount} in {timer.Elapsed}");
 
             lastStatePersistedTimestamp = Timestamp.Now;
         }
 
-        private void DoPersistState()
+        private void CollectGarbageInState([NotNull] Timestamp now)
         {
-            var serializedState = serializer.Serialize(state);
+            lock (taskMetasLocker)
+            {
+                var taskIdsToRemove = new List<string>();
+                foreach (var kvp in state.TaskMetas)
+                {
+                    var taskMeta = kvp.Value;
+                    if (IsTaskStateTerminal(taskMeta.State) && taskMeta.LastStateUpdateTimestamp + settings.StateGarbageTtl < now)
+                        taskIdsToRemove.Add(kvp.Key);
+                }
+                foreach (var taskId in taskIdsToRemove)
+                    state.TaskMetas.Remove(taskId);
+            }
+        }
+
+        private static bool IsTaskStateTerminal(TaskState taskState)
+        {
+            return taskState == TaskState.Finished || taskState == TaskState.Fatal || taskState == TaskState.Canceled;
+        }
+
+        private int DoPersistState()
+        {
+            int taskMetasCount;
+            byte[] serializedState;
+            lock (taskMetasLocker)
+            {
+                taskMetasCount = state.TaskMetas.Count;
+                serializedState = serializer.Serialize(state);
+            }
             stateStorage.Write(serializedState);
+            return taskMetasCount;
         }
 
         [NotNull]
@@ -109,44 +140,35 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         {
             lock (taskMetasLocker)
             {
-                if (IsTaskStateTerminal(taskMetaInformation.State))
-                    state.TaskMetas.Remove(taskMetaInformation.Id);
-                else
+                if (!state.TaskMetas.TryGetValue(taskMetaInformation.Id, out var taskMeta))
                 {
-                    if (!state.TaskMetas.TryGetValue(taskMetaInformation.Id, out var taskMeta))
-                    {
-                        taskMeta = new RtqTaskCounterStateTaskMeta(taskMetaInformation.Name);
-                        state.TaskMetas.Add(taskMetaInformation.Id, taskMeta);
-                    }
-                    taskMeta.State = taskMetaInformation.State;
-                    taskMeta.MinimalStartTimestamp = taskMetaInformation.GetMinimalStartTimestamp();
-                    taskMeta.LastModificationTicks = taskMetaInformation.LastModificationTicks;
+                    taskMeta = new RtqTaskCounterStateTaskMeta(taskMetaInformation.Name);
+                    state.TaskMetas.Add(taskMetaInformation.Id, taskMeta);
                 }
+                taskMeta.State = taskMetaInformation.State;
+                taskMeta.MinimalStartTimestamp = taskMetaInformation.GetMinimalStartTimestamp();
+                taskMeta.LastModificationTicks = taskMetaInformation.LastModificationTicks;
+                taskMeta.LastStateUpdateTimestamp = Timestamp.Now;
             }
-        }
-
-        private static bool IsTaskStateTerminal(TaskState taskState)
-        {
-            return taskState == TaskState.Finished || taskState == TaskState.Fatal || taskState == TaskState.Canceled;
         }
 
         [NotNull]
         public RtqTaskCounters GetTaskCounters([NotNull] Timestamp now)
         {
-            var taskMetas = CloneState();
+            var pendingTaskMetas = CloneTaskMetas().Where(x => !IsTaskStateTerminal(x.Value.State)).ToList();
 
-            var lostTasks = taskMetas.Where(x => x.Value.MinimalStartTimestamp < now - settings.PendingTaskExecutionUpperBound).ToArray();
+            var lostTasks = pendingTaskMetas.Where(x => x.Value.MinimalStartTimestamp < now - settings.PendingTaskExecutionUpperBound).ToArray();
             if (lostTasks.Length > 0)
                 Log.For(this).Warn($"Probably {lostTasks.Length} lost tasks detected: {lostTasks.ToPrettyJson()}");
 
             var taskCounters = new RtqTaskCounters
                 {
                     LostTasksCount = lostTasks.Length,
-                    PendingTaskCountsTotal = taskMetas.GroupBy(x => x.Value.State)
+                    PendingTaskCountsTotal = pendingTaskMetas.GroupBy(x => x.Value.State)
                                                       .ToDictionary(g => g.Key, g => g.Count()),
-                    PendingTaskCountsByName = taskMetas.GroupBy(x => x.Value.Name)
+                    PendingTaskCountsByName = pendingTaskMetas.GroupBy(x => x.Value.Name)
                                                        .ToDictionary(g => g.Key, g => g.GroupBy(x => x.Value.State)
-                                                                                       .ToDictionary(gg => gg.Key, gg => g.Count()))
+                                                                                       .ToDictionary(gg => gg.Key, gg => gg.Count()))
                 };
             NormalizeTaskCounters(taskCounters);
 
@@ -155,14 +177,14 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
         private void NormalizeTaskCounters([NotNull] RtqTaskCounters taskCounters)
         {
+            foreach (var taskName in taskDataRegistry.GetAllTaskNames())
+            {
+                if (!taskCounters.PendingTaskCountsByName.ContainsKey(taskName))
+                    taskCounters.PendingTaskCountsByName.Add(taskName, new Dictionary<TaskState, int>());
+            }
             foreach (var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>().Where(x => !IsTaskStateTerminal(x)))
             {
                 NormalizeTaskCounters(taskCounters.PendingTaskCountsTotal, taskState);
-                foreach (var taskName in taskDataRegistry.GetAllTaskNames())
-                {
-                    if (!taskCounters.PendingTaskCountsByName.ContainsKey(taskName))
-                        taskCounters.PendingTaskCountsByName.Add(taskName, new Dictionary<TaskState, int>());
-                }
                 foreach (var kvp in taskCounters.PendingTaskCountsByName)
                     NormalizeTaskCounters(kvp.Value, taskState);
             }
@@ -175,17 +197,14 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         }
 
         [NotNull]
-        private Dictionary<string, RtqTaskCounterStateTaskMeta> CloneState()
+        private Dictionary<string, RtqTaskCounterStateTaskMeta> CloneTaskMetas()
         {
             Dictionary<string, RtqTaskCounterStateTaskMeta> taskMetas;
             var timer = Stopwatch.StartNew();
             try
             {
                 lock (taskMetasLocker)
-                {
-                    var serializedState = serializer.Serialize(state.TaskMetas);
-                    taskMetas = serializer.Deserialize<Dictionary<string, RtqTaskCounterStateTaskMeta>>(serializedState);
-                }
+                    taskMetas = serializer.Copy(state.TaskMetas);
             }
             finally
             {

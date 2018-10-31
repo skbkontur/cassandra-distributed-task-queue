@@ -23,9 +23,12 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
         public long? LastModificationTicks { get; set; }
 
+        [NotNull]
+        public Timestamp LastStateUpdateTimestamp { get; set; }
+
         public override string ToString()
         {
-            return $"Name: {Name}, State: {State}, MinimalStartTimestamp: {MinimalStartTimestamp}, LastModificationTicks: {LastModificationTicks}";
+            return $"Name: {Name}, State: {State}, MinimalStartTimestamp: {MinimalStartTimestamp}, LastModificationTicks: {LastModificationTicks}, LastStateUpdateTimestamp: {LastStateUpdateTimestamp}";
         }
     }
 }

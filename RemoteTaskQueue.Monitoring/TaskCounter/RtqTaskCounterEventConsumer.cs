@@ -50,6 +50,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
                     taskIdsToProcess.Add(@event.Event.TaskId);
             }
 
+            perfGraphiteReporter.Increment("TaskMetasToRead", taskIdsToProcess.Count);
             var taskMetas = perfGraphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIdsToProcess.ToArray()));
             perfGraphiteReporter.Increment("MissedTaskMetas", taskIdsToProcess.Count - taskMetas.Count);
 

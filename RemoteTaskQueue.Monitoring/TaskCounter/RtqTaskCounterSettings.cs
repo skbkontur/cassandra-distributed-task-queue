@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 
 using JetBrains.Annotations;
+
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring.TaskCounter
 {
@@ -20,5 +23,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         public TimeSpan StatePersistingInterval { get; set; } = TimeSpan.FromMinutes(1);
 
         public TimeSpan PendingTaskExecutionUpperBound { get; set; } = TimeSpan.FromMinutes(30);
+
+        public TimeSpan StateGarbageTtl => BladeDelays.Max().Multiply(2);
     }
 }
