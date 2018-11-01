@@ -165,10 +165,10 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
                 {
                     LostTasksCount = lostTasks.Length,
                     PendingTaskCountsTotal = pendingTaskMetas.GroupBy(x => x.Value.State)
-                                                      .ToDictionary(g => g.Key, g => g.Count()),
+                                                             .ToDictionary(g => g.Key, g => g.Count()),
                     PendingTaskCountsByName = pendingTaskMetas.GroupBy(x => x.Value.Name)
-                                                       .ToDictionary(g => g.Key, g => g.GroupBy(x => x.Value.State)
-                                                                                       .ToDictionary(gg => gg.Key, gg => gg.Count()))
+                                                              .ToDictionary(g => g.Key, g => g.GroupBy(x => x.Value.State)
+                                                                                              .ToDictionary(gg => gg.Key, gg => gg.Count()))
                 };
             NormalizeTaskCounters(taskCounters);
 
