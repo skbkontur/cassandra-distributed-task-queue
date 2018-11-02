@@ -16,7 +16,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         public string LastBladeOffset { get; set; }
 
         [NotNull]
-        public Dictionary<string, RtqTaskCounterStateTaskMeta> TaskMetas { get; }
+        public Dictionary<string, RtqTaskCounterStateTaskMeta> TaskMetas { get; set; }
 
         public override string ToString()
         {

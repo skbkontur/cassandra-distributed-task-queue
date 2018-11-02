@@ -31,11 +31,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
 
         public void ResetLocalState()
         {
-            if (!initialized)
-            {
-                stateManager.Initialize();
-                initialized = true;
-            }
+            stateManager.ResetLocalState();
         }
 
         [NotNull]
@@ -62,7 +58,6 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
                        : EventsProcessingResult<string>.DoCommitOffset(eventsQueryResult.LastOffset);
         }
 
-        private bool initialized;
         private readonly RtqTaskCounterStateManager stateManager;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
