@@ -23,7 +23,18 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
             Container.ConfigureForTestRemoteTaskQueue();
             Container.Configurator.ForAbstraction<IRtqTaskCounterStateStorage>().UseType<NoOpRtqTaskCounterStateStorage>();
-            Container.Configurator.ForAbstraction<RtqTaskCounterSettings>().UseInstances(new RtqTaskCounterSettings {PendingTaskExecutionUpperBound = TimeSpan.FromSeconds(5)});
+            Container.Configurator.ForAbstraction<RtqTaskCounterSettings>().UseInstances(new RtqTaskCounterSettings
+                {
+                    BladeDelays = new[]
+                        {
+                            TimeSpan.Zero,
+                            TimeSpan.FromSeconds(1),
+                            TimeSpan.FromSeconds(5)
+                        },
+                    DelayBetweenEventFeedingIterations = TimeSpan.FromSeconds(1),
+                    StatePersistingInterval = TimeSpan.FromSeconds(1),
+                    PendingTaskExecutionUpperBound = TimeSpan.FromSeconds(5)
+                });
             Container.Get<ElasticAvailabilityChecker>().WaitAlive();
             Container.Get<RtqElasticsearchSchema>().Actualize(local : true, bulkLoad : false);
             Container.Get<HttpService>().Run();
