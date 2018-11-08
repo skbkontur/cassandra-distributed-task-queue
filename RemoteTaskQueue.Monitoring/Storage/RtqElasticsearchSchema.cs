@@ -42,14 +42,13 @@ namespace RemoteTaskQueue.Monitoring.Storage
         {
             elasticsearchClient.IndicesPutTemplateForAll(RtqElasticsearchConsts.TemplateName, new
                 {
-                    template = RtqElasticsearchConsts.AllIndicesWildcard,
+                    index_patterns = RtqElasticsearchConsts.AllIndicesWildcard,
                     settings = Settings(local, bulkLoad),
                     mappings = new
                         {
                             doc_type_is_deprecated = new
                                 {
                                     date_detection = false,
-                                    _all = new {enabled = false},
                                     dynamic_templates = new object[]
                                         {
                                             new
