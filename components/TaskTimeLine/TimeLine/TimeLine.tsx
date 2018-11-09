@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Icon, IconName } from "ui";
 
 import cn from "./TimeLine.less";
 import { TimeLineCycled, TimeLineCycledProps } from "./TimeLineCycled";
@@ -25,7 +24,7 @@ export class TimeLine extends React.Component<TimeLineProps> {
 
 interface TimeLineEntryProps {
     children?: React.ReactNode;
-    icon: IconName;
+    icon: JSX.Element;
     iconColor?: string;
 }
 
@@ -81,7 +80,7 @@ TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineE
     return (
         <div className={cn("entry")}>
             <div className={cn("icon")}>
-                <Icon name={icon} color={iconColor} />
+                {React.cloneElement(icon, { color: iconColor })}
                 <div className={cn("line")} />
             </div>
             <div className={cn("content")}>{children}</div>

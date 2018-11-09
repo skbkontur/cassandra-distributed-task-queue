@@ -1,3 +1,5 @@
+import DeleteIcon from "@skbkontur/react-icons/Delete";
+import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Checkbox, Link, RouterLink } from "ui";
@@ -102,7 +104,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                                     data-tid="Cancel"
                                                     disabled={!cancelableStates.includes(taskInfo.state)}
                                                     onClick={onCancel}
-                                                    icon="Delete">
+                                                    icon={<DeleteIcon />}>
                                                     Cancel
                                                 </Link>
                                             </Fit>
@@ -111,7 +113,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                                     data-tid="Rerun"
                                                     disabled={!rerunableStates.includes(taskInfo.state)}
                                                     onClick={onRerun}
-                                                    icon="Refresh">
+                                                    icon={<RefreshIcon />}>
                                                     Rerun
                                                 </Link>
                                             </Fit>

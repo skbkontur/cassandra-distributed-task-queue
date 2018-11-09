@@ -1,7 +1,12 @@
+import ClearIcon from "@skbkontur/react-icons/Clear";
+import ClockIcon from "@skbkontur/react-icons/Clock";
+import DeleteIcon from "@skbkontur/react-icons/Delete";
+import HelpLiteIcon from "@skbkontur/react-icons/HelpLite";
+import OkIcon from "@skbkontur/react-icons/Ok";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
 import * as React from "react";
-import { IconName, RouterLink } from "ui";
+import { RouterLink } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
@@ -27,56 +32,56 @@ export class TaskChainTree extends React.Component<TaskChainTreeProps> {
     public buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): JSX.Element {
         const { getTaskLocation } = this.props;
 
-        let iconAndColorProps: { icon: IconName; iconColor: undefined | string } = {
-            icon: "Ok",
+        let iconAndColorProps: { icon: JSX.Element; iconColor: undefined | string } = {
+            icon: <OkIcon />,
             iconColor: undefined,
         };
         switch (taskMeta.state) {
             case TaskStates.Unknown:
                 iconAndColorProps = {
-                    icon: "HelpLite",
+                    icon: <HelpLiteIcon />,
                     iconColor: IconColors.warning,
                 };
                 break;
             case TaskStates.New:
                 iconAndColorProps = {
-                    icon: "Clock",
+                    icon: <ClockIcon />,
                     iconColor: IconColors.grey,
                 };
                 break;
             case TaskStates.WaitingForRerun:
                 iconAndColorProps = {
-                    icon: "Clock",
+                    icon: <ClockIcon />,
                     iconColor: IconColors.grey,
                 };
                 break;
             case TaskStates.WaitingForRerunAfterError:
                 iconAndColorProps = {
-                    icon: "Clock",
+                    icon: <ClockIcon />,
                     iconColor: IconColors.red,
                 };
                 break;
             case TaskStates.Finished:
                 iconAndColorProps = {
-                    icon: "Ok",
+                    icon: <OkIcon />,
                     iconColor: IconColors.green,
                 };
                 break;
             case TaskStates.InProcess:
                 iconAndColorProps = {
-                    icon: "Clock",
+                    icon: <ClockIcon />,
                     iconColor: IconColors.grey,
                 };
                 break;
             case TaskStates.Fatal:
                 iconAndColorProps = {
-                    icon: "Clear",
+                    icon: <ClearIcon />,
                     iconColor: IconColors.red,
                 };
                 break;
             case TaskStates.Canceled:
                 iconAndColorProps = {
-                    icon: "Delete",
+                    icon: <DeleteIcon />,
                     iconColor: IconColors.red,
                 };
                 break;
