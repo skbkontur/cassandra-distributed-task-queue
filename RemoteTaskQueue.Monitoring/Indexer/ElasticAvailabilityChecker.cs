@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Threading;
 
+using Elasticsearch.Net;
+
 using RemoteTaskQueue.Monitoring.Storage;
 
 using SKBKontur.Catalogue.Objects;
@@ -12,15 +14,15 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class ElasticAvailabilityChecker
     {
-        public ElasticAvailabilityChecker(RtqElasticsearchClientFactory elasticsearchClientFactory, ILog logger)
+        public ElasticAvailabilityChecker(RtqElasticsearchClientFactory elasticClientFactory, ILog logger)
         {
-            this.elasticsearchClientFactory = elasticsearchClientFactory;
+            this.elasticClientFactory = elasticClientFactory;
             this.logger = logger.ForContext("CassandraDistributedTaskQueue.ElasticAvailabilityChecker");
         }
 
         public void WaitAlive()
         {
-            logger.Info("Checking Elasticsearch is alive");
+            logger.Info("Checking ElasticSearch is alive");
             var isOk = false;
             var w = Stopwatch.StartNew();
             do
@@ -39,7 +41,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             else
             {
                 logger.Warn("Checking FAIL. Exiting");
-                throw new InvalidProgramStateException("Elasticsearch is dead - cannot start");
+                throw new InvalidProgramStateException("ElasticSearch is dead - cannot start");
             }
         }
 
@@ -47,10 +49,10 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         {
             try
             {
-                var response = elasticsearchClientFactory.DefaultClient.Value.Info();
+                var response = elasticClientFactory.DefaultClient.Value.Info<DynamicResponse>();
                 if (!response.Success)
                     return false;
-                var legacyStatus = response.Response["status"];
+                var legacyStatus = response.Body["status"];
                 if (legacyStatus != null)
                     return (int)legacyStatus == 200;
                 return response.HttpStatusCode == 200;
@@ -63,7 +65,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         }
 
         private readonly TimeSpan timeout = TimeSpan.FromSeconds(20);
-        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
+        private readonly RtqElasticsearchClientFactory elasticClientFactory;
         private readonly ILog logger;
     }
 }

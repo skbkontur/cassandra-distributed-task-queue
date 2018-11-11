@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Elasticsearch.Net;
-using Elasticsearch.Net.Connection.Configuration;
 
 using GroBuf;
 
@@ -21,7 +20,7 @@ using RemoteTaskQueue.Monitoring.Storage.Utils;
 using RemoteTaskQueue.Monitoring.Storage.Writing;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Bulk;
+using SKBKontur.Catalogue.Objects.Json;
 
 using Vostok.Logging.Abstractions;
 
@@ -31,7 +30,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
     {
         public TaskMetaProcessor(ILog logger,
                                  RtqElasticsearchIndexerSettings settings,
-                                 RtqElasticsearchClientFactory elasticsearchClientFactory,
+                                 RtqElasticsearchClientFactory elasticClientFactory,
                                  RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                  RtqMonitoringPerfGraphiteReporter perfGraphiteReporter)
         {
@@ -43,7 +42,12 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             taskExceptionInfoStorage = remoteTaskQueue.TaskExceptionInfoStorage;
             serializer = remoteTaskQueue.Serializer;
             this.perfGraphiteReporter = perfGraphiteReporter;
-            elasticsearchClient = elasticsearchClientFactory.CreateClient(settings.JsonSerializerSettings);
+            elasticClient = elasticClientFactory.DefaultClient.Value;
+            bulkRequestTimeout = new BulkRequestParameters
+                {
+                    Timeout = this.settings.BulkIndexRequestTimeout,
+                    RequestConfiguration = new RequestConfiguration {RequestTimeout = this.settings.BulkIndexRequestTimeout}
+                };
         }
 
         public void ProcessTasks([NotNull, ItemNotNull] List<string> taskIdsToProcess)
@@ -84,10 +88,10 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private void IndexBatch([NotNull] ( /*[NotNull]*/ TaskMetaInformation TaskMeta, /*[NotNull, ItemNotNull]*/ TaskExceptionInfo[] TaskExceptionInfos, /*[CanBeNull]*/ object TaskData)[] batch)
         {
             logger.Info(string.Format("IndexBatch: {0} tasks", batch.Length));
-            var body = new object[batch.Length * 2];
+            var payload = new string[batch.Length * 2];
             for (var i = 0; i < batch.Length; i++)
             {
-                body[2 * i] = new
+                payload[2 * i] = new
                     {
                         index = new
                             {
@@ -95,16 +99,10 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                 _type = "doc_type_is_deprecated", // see https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
                                 _id = batch[i].TaskMeta.Id
                             }
-                    };
-                body[2 * i + 1] = BuildTaskIndexedInfo(batch[i].TaskMeta, batch[i].TaskExceptionInfos, batch[i].TaskData);
+                    }.ToJson();
+                payload[2 * i + 1] = BuildTaskIndexedInfo(batch[i].TaskMeta, batch[i].TaskExceptionInfos, batch[i].TaskData).ToJson(settings.JsonSerializerSettings);
             }
-            perfGraphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticsearchClient.Bulk<BulkResponse>(body, SetRequestTimeout).DieIfErros());
-        }
-
-        [NotNull]
-        private static BulkRequestParameters SetRequestTimeout([NotNull] BulkRequestParameters requestParameters)
-        {
-            return requestParameters.Timeout("5m").RequestConfiguration(x => new RequestConfigurationDescriptor().RequestTimeout((int)TimeSpan.FromMinutes(5).TotalMilliseconds));
+            perfGraphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticClient.Bulk<StringResponse>(PostData.MultiJson(payload), bulkRequestTimeout).DieIfBulkRequestFailed());
         }
 
         [CanBeNull]
@@ -151,6 +149,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly ISerializer serializer;
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
-        private readonly IElasticsearchClient elasticsearchClient;
+        private readonly IElasticLowLevelClient elasticClient;
+        private readonly BulkRequestParameters bulkRequestTimeout;
     }
 }

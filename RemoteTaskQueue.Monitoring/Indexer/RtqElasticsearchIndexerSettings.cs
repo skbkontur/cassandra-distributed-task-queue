@@ -24,6 +24,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         public int IndexingThreadsCount { get; set; } = 16;
 
+        public TimeSpan BulkIndexRequestTimeout { get; set; } = TimeSpan.FromMinutes(5);
+
         [NotNull]
         public JsonSerializerSettings JsonSerializerSettings { get; } = new JsonSerializerSettings
             {
@@ -37,7 +39,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         public override string ToString()
         {
-            return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, IndexingThreadsCount: {IndexingThreadsCount}";
+            return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, IndexingThreadsCount: {IndexingThreadsCount}, BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
         }
     }
 }

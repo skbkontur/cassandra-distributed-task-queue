@@ -3,24 +3,28 @@
 using JetBrains.Annotations;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
+using SKBKontur.Catalogue.Objects.Json;
 
 namespace RemoteTaskQueue.Monitoring.Storage
 {
     public class RtqElasticsearchSchema
     {
-        public RtqElasticsearchSchema(RtqElasticsearchClientFactory elasticsearchClientFactory)
+        public RtqElasticsearchSchema(RtqElasticsearchClientFactory elasticClientFactory)
         {
-            elasticsearchClient = elasticsearchClientFactory.DefaultClient.Value;
+            elasticClient = elasticClientFactory.DefaultClient.Value;
         }
 
         public void Actualize(bool local, bool bulkLoad)
         {
-            elasticsearchClient.IndicesCreate(RtqElasticsearchConsts.IndexingProgressIndexName, new {settings = Settings(local, bulkLoad)}).ProcessResponse(acceptableCodes : 400);
-            PutTaskIndicesTemplate(local, bulkLoad);
+            var indexSettings = new {settings = GetIndexingProgressIndexSettings(local, bulkLoad)};
+            elasticClient.IndicesCreate<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, PostData.String(indexSettings.ToJson()), allowResourceAlreadyExistsStatus).EnsureSuccess();
+
+            var templateSettings = GetTaskIndicesTemplateSettings(local, bulkLoad);
+            elasticClient.IndicesPutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, PostData.String(templateSettings.ToJson())).EnsureSuccess();
         }
 
         [NotNull]
-        private static object Settings(bool local, bool bulkLoad)
+        private static object GetIndexingProgressIndexSettings(bool local, bool bulkLoad)
         {
             return new
                 {
@@ -38,12 +42,12 @@ namespace RemoteTaskQueue.Monitoring.Storage
                 };
         }
 
-        private void PutTaskIndicesTemplate(bool local, bool bulkLoad)
+        private static object GetTaskIndicesTemplateSettings(bool local, bool bulkLoad)
         {
-            elasticsearchClient.IndicesPutTemplateForAll(RtqElasticsearchConsts.TemplateName, new
+            return new
                 {
                     index_patterns = RtqElasticsearchConsts.AllIndicesWildcard,
-                    settings = Settings(local, bulkLoad),
+                    settings = GetIndexingProgressIndexSettings(local, bulkLoad),
                     mappings = new
                         {
                             doc_type_is_deprecated = new
@@ -128,7 +132,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                                         }
                                 }
                         }
-                }).ProcessResponse();
+                };
         }
 
         [NotNull]
@@ -155,6 +159,11 @@ namespace RemoteTaskQueue.Monitoring.Storage
                 };
         }
 
-        private readonly IElasticsearchClient elasticsearchClient;
+        private readonly IElasticLowLevelClient elasticClient;
+
+        private readonly CreateIndexRequestParameters allowResourceAlreadyExistsStatus = new CreateIndexRequestParameters
+            {
+                RequestConfiguration = new RequestConfiguration {AllowedStatusCodes = new[] {400}}
+            };
     }
 }

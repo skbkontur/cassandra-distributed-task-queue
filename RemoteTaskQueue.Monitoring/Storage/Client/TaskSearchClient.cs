@@ -1,20 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
+using Elasticsearch.Net;
+
 using JetBrains.Annotations;
 
 using RemoteTaskQueue.Monitoring.Storage.Search;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Search;
+using SKBKontur.Catalogue.Objects.Json;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Client
 {
     public class TaskSearchClient
     {
-        public TaskSearchClient(RtqElasticsearchClientFactory elasticsearchClientFactory)
+        public TaskSearchClient(RtqElasticsearchClientFactory elasticClientFactory)
         {
-            this.elasticsearchClientFactory = elasticsearchClientFactory;
+            this.elasticClientFactory = elasticClientFactory;
         }
 
         [NotNull]
@@ -70,35 +73,35 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                                 };
 
             var indexForTimeRange = SearchIndexNameFactory.GetIndexForTimeRange(taskSearchRequest.FromTicksUtc, taskSearchRequest.ToTicksUtc);
-            var metaResponse = elasticsearchClientFactory
-                .DefaultClient.Value
-                .Search<SearchResponse>(indexForTimeRange,
-                                        new
-                                            {
-                                                from,
-                                                size,
-                                                version = true,
-                                                _source = false,
-                                                query = new
-                                                    {
-                                                        @bool = query
-                                                    },
-                                                sort = new[]
-                                                    {
-                                                        new Dictionary<string, object>
-                                                            {
-                                                                {"Meta.EnqueueTime", new {order = "desc", unmapped_type = "long"}}
-                                                            }
-                                                    }
-                                            }, x => x.IgnoreUnavailable(true))
-                .ProcessResponse();
+            var request = new
+                {
+                    @from,
+                    size,
+                    version = true,
+                    _source = false,
+                    query = new
+                        {
+                            @bool = query
+                        },
+                    sort = new[]
+                        {
+                            new Dictionary<string, object>
+                                {
+                                    {"Meta.EnqueueTime", new {order = "desc", unmapped_type = "long"}}
+                                }
+                        }
+                };
+            var body = PostData.String(request.ToJson());
+            var elasticClient = elasticClientFactory.DefaultClient.Value;
+            var searchResponse = elasticClient.Search<StringResponse>(indexForTimeRange, body, ignoreUnavailableIndices).EnsureSuccess().Body.FromJson<SearchResponse>();
             return new TaskSearchResponse
                 {
-                    Ids = metaResponse.Response.Hits.Hits.Select(x => x.Id).ToArray(),
-                    TotalCount = metaResponse.Response.Hits.TotalCount
+                    Ids = searchResponse.Hits.Hits.Select(x => x.Id).ToArray(),
+                    TotalCount = searchResponse.Hits.TotalCount
                 };
         }
 
-        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
+        private readonly RtqElasticsearchClientFactory elasticClientFactory;
+        private readonly SearchRequestParameters ignoreUnavailableIndices = new SearchRequestParameters {IgnoreUnavailable = true};
     }
 }
