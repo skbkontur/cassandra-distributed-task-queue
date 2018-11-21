@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
+using GroboContainer.NUnitExtensions;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
@@ -13,11 +15,9 @@ using RemoteQueue.Configuration;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
-    [EdiTestSuite("ExchangeTests"), WithTestRemoteTaskQueue, AndResetExchangeServiceState]
+    [GroboTestSuite("ExchangeTests"), WithTestRemoteTaskQueue, AndResetExchangeServiceState]
     public abstract class ExchangeTestBase
     {
         protected TaskIndexShardKey TaskIndexShardKey(string taskName, TaskState taskState)

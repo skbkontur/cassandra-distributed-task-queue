@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using GroboContainer.NUnitExtensions;
+
 using MoreLinq;
 
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    [EdiTestSuite("TicksHolderTests")]
+    [GroboTestSuite("TicksHolderTests")]
     public class TicksHolderTest : ITestRtqCassandraWithTickHolderTestSuite
     {
         [Test]

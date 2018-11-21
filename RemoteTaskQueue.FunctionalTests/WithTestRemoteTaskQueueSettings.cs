@@ -1,17 +1,17 @@
-using System.Reflection;
+﻿using System.Reflection;
+
+using GroboContainer.NUnitExtensions;
+using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using RemoteQueue.Settings;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
-
 namespace RemoteTaskQueue.FunctionalTests
 {
-    public class WithTestRemoteTaskQueueSettings : EdiTestSuiteWrapperAttribute
+    public class WithTestRemoteTaskQueueSettings : GroboTestSuiteWrapperAttribute
     {
-        public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableEdiTestContext suiteContext)
+        public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableGroboTestContext suiteContext)
         {
             suiteContext.Container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<TestRemoteTaskQueueSettings>();
         }

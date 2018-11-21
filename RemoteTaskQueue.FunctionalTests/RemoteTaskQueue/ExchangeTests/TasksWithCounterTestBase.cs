@@ -4,6 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 
+using GroboContainer.NUnitExtensions;
+
 using MoreLinq;
 
 using NUnit.Framework;
@@ -13,7 +15,6 @@ using RemoteQueue.Cassandra.Repositories;
 
 using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests

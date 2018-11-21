@@ -66,6 +66,7 @@
     <Compile Include="AndResetExchangeServiceState.cs" />
     <Compile Include="AndResetMonitoringServiceState.cs" />
     <Compile Include="CassandraHelpers.cs" />
+    <Compile Include="GroboTestMachineryContainerConfigurator.cs" />
     <Compile Include="MonitoringServiceClient.cs" />
     <Compile Include="ExchangeServiceClient.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\EventLogRepositoryTests.cs" />
@@ -131,9 +132,6 @@
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>
-    </PackageReference>
-    <PackageReference Include="NUnit">
-      <Version>3.10.1</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

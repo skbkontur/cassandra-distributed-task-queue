@@ -4,6 +4,8 @@ using System.Linq;
 
 using FluentAssertions;
 
+using GroboContainer.NUnitExtensions;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
@@ -12,7 +14,6 @@ using RemoteQueue.Handling;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 using RemoteTaskQueue.Monitoring.Api;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Ranges;
 using SKBKontur.Catalogue.TestCore.Waiting;

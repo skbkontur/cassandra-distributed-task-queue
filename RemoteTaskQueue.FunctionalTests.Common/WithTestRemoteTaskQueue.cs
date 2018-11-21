@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 
 using GroboContainer.Core;
+using GroboContainer.NUnitExtensions;
+using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Configuration;
@@ -10,16 +12,14 @@ using RemoteQueue.Settings;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {
     [WithDefaultSerializer, WithCassandra(TestRemoteTaskQueueSettings.QueueKeyspaceName), WithNoProfiling]
-    public class WithTestRemoteTaskQueue : EdiTestSuiteWrapperAttribute
+    public class WithTestRemoteTaskQueue : GroboTestSuiteWrapperAttribute
     {
-        public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableEdiTestContext suiteContext)
+        public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableGroboTestContext suiteContext)
         {
             ConfigureContainer(suiteContext.Container);
         }

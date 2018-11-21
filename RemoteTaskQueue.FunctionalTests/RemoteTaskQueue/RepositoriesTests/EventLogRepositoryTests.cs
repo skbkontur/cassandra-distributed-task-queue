@@ -4,6 +4,8 @@ using System.Linq;
 
 using FluentAssertions;
 
+using GroboContainer.NUnitExtensions;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
@@ -12,7 +14,6 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.TestCore;
 
@@ -29,7 +30,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
                 };
         }
 
-        [EdiSetUp]
+        [GroboSetUp]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
@@ -40,7 +41,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         private void ClearEventLog()
         {
             ResetCassandraState();
-            EdiTestContext.Current.Container.Get<TicksHolder>().ResetInMemoryState();
+            GroboTestContext.Current.Container.Get<TicksHolder>().ResetInMemoryState();
         }
 
         private void SetUpEventLog()

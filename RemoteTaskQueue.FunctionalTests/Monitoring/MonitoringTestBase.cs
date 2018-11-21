@@ -1,17 +1,18 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
+using GroboContainer.NUnitExtensions;
+
 using NUnit.Framework;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.Monitoring.Storage.Client;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
     [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
-    [EdiTestSuite("MonitoringTests"), WithTestRemoteTaskQueue, AndResetMonitoringServiceState]
+    [GroboTestSuite("MonitoringTests"), WithTestRemoteTaskQueue, AndResetMonitoringServiceState]
     public abstract class MonitoringTestBase
     {
         protected void CheckSearch(string q, Timestamp from, Timestamp to, params string[] expectedIds)

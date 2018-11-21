@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using GroboContainer.Infection;
+using GroboContainer.NUnitExtensions;
+using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using NUnit.Framework;
 
@@ -11,19 +13,17 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
-    [EdiTestFixture]
+    [GroboTestFixture]
     public class HandleTaskMetaStorageTest : ITestRtqCassandraWithTickHolderTestSuite
     {
-        [EdiTestFixtureSetUp]
+        [GroboTestFixtureSetUp]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
-        public void TestFixtureSetUp(IEditableEdiTestContext suiteContext)
+        public void TestFixtureSetUp(IEditableGroboTestContext suiteContext)
         {
             taskDataRegistry = new DummyTaskDataRegistry();
             sut = suiteContext.Container.Create<ITaskDataRegistry, HandleTasksMetaStorage>(taskDataRegistry);

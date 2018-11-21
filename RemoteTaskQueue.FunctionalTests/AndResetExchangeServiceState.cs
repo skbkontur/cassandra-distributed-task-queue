@@ -1,21 +1,21 @@
-﻿using RemoteTaskQueue.FunctionalTests.Common;
+﻿using GroboContainer.NUnitExtensions;
+using GroboContainer.NUnitExtensions.Impl.TestContext;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
+using RemoteTaskQueue.FunctionalTests.Common;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
     [AndResetCassandraState]
-    public class AndResetExchangeServiceState : EdiTestMethodWrapperAttribute
+    public class AndResetExchangeServiceState : GroboTestMethodWrapperAttribute
     {
-        public override sealed void SetUp(string testName, IEditableEdiTestContext suiteContext, IEditableEdiTestContext methodContext)
+        public override sealed void SetUp(string testName, IEditableGroboTestContext suiteContext, IEditableGroboTestContext methodContext)
         {
             suiteContext.Container.Get<RemoteQueue.Handling.RemoteTaskQueue>().ResetTicksHolderInMemoryState();
             suiteContext.Container.Get<ExchangeServiceClient>().Start();
             suiteContext.Container.Get<ExchangeServiceClient>().ChangeTaskTtl(TestRemoteTaskQueueSettings.StandardTestTaskTtl);
         }
 
-        public override void TearDown(string testName, IEditableEdiTestContext suiteContext, IEditableEdiTestContext methodContext)
+        public override void TearDown(string testName, IEditableGroboTestContext suiteContext, IEditableGroboTestContext methodContext)
         {
             suiteContext.Container.Get<ExchangeServiceClient>().Stop();
         }

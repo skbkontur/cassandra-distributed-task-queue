@@ -1,5 +1,7 @@
 ﻿using System;
 
+using GroboContainer.NUnitExtensions;
+
 using NUnit.Framework;
 
 using RemoteQueue.Handling;
@@ -8,8 +10,6 @@ using RemoteQueue.Settings;
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 using RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests;
-
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
@@ -46,10 +46,10 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         [Repeat(5)]
         public void TtlTest()
         {
-            EdiTestContext.Current.Container.Get<ExchangeServiceClient>().Stop();
+            GroboTestContext.Current.Container.Get<ExchangeServiceClient>().Stop();
 
             var smallTtlRemoteTaskQueueSettings = new SmallTtlRemoteTaskQueueSettings(new TestRemoteTaskQueueSettings(), TimeSpan.FromSeconds(5));
-            var smallTtlRemoteTaskQueue = EdiTestContext.Current.Container.Create<IRemoteTaskQueueSettings, RemoteQueue.Handling.RemoteTaskQueue>(smallTtlRemoteTaskQueueSettings);
+            var smallTtlRemoteTaskQueue = GroboTestContext.Current.Container.Create<IRemoteTaskQueueSettings, RemoteQueue.Handling.RemoteTaskQueue>(smallTtlRemoteTaskQueueSettings);
 
             var taskId = smallTtlRemoteTaskQueue.CreateTask(new SimpleTaskData()).Queue();
             var childTaskId1 = smallTtlRemoteTaskQueue.CreateTask(new SimpleTaskData(), new CreateTaskOptions {ParentTaskId = taskId}).Queue();

@@ -2,12 +2,13 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
+using GroboContainer.NUnitExtensions;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
@@ -17,7 +18,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     public class TimeBasedBlobStorageTest : RepositoryFunctionalTestBase
     {
-        [EdiSetUp]
+        [GroboSetUp]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {

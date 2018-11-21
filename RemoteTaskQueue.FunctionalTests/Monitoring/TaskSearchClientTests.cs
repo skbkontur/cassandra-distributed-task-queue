@@ -5,6 +5,8 @@ using System.Threading;
 
 using FluentAssertions;
 
+using GroboContainer.NUnitExtensions;
+
 using GroBuf;
 
 using NUnit.Framework;
@@ -19,7 +21,6 @@ using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 using RemoteTaskQueue.Monitoring.Storage;
 using RemoteTaskQueue.Monitoring.Storage.Client;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;

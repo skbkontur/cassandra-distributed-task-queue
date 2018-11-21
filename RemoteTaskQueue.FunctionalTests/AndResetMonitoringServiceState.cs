@@ -1,17 +1,17 @@
-﻿using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery.Impl.TestContext;
+﻿using GroboContainer.NUnitExtensions;
+using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
     [AndResetExchangeServiceState]
-    public class AndResetMonitoringServiceState : EdiTestMethodWrapperAttribute
+    public class AndResetMonitoringServiceState : GroboTestMethodWrapperAttribute
     {
-        public override sealed void SetUp(string testName, IEditableEdiTestContext suiteContext, IEditableEdiTestContext methodContext)
+        public override sealed void SetUp(string testName, IEditableGroboTestContext suiteContext, IEditableGroboTestContext methodContext)
         {
             suiteContext.Container.Get<MonitoringServiceClient>().ResetState();
         }
 
-        public override void TearDown(string testName, IEditableEdiTestContext suiteContext, IEditableEdiTestContext methodContext)
+        public override void TearDown(string testName, IEditableGroboTestContext suiteContext, IEditableGroboTestContext methodContext)
         {
             suiteContext.Container.Get<MonitoringServiceClient>().Stop();
         }

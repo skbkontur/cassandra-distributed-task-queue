@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
+using GroboContainer.NUnitExtensions;
+
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
@@ -13,7 +15,6 @@ using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 using RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests;
 
-using SKBKontur.Catalogue.NUnit.Extensions.EdiTestMachinery;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
@@ -21,12 +22,12 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
     public class TaskProlongationTest : TasksWithCounterTestBase
     {
-        [EdiSetUp]
+        [GroboSetUp]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
             var smallTtlRemoteTaskQueueSettings = new SmallTtlRemoteTaskQueueSettings(new TestRemoteTaskQueueSettings(), smallTaskTtl);
-            smallTtlRemoteTaskQueue = EdiTestContext.Current.Container.Create<IRemoteTaskQueueSettings, RemoteQueue.Handling.RemoteTaskQueue>(smallTtlRemoteTaskQueueSettings);
+            smallTtlRemoteTaskQueue = GroboTestContext.Current.Container.Create<IRemoteTaskQueueSettings, RemoteQueue.Handling.RemoteTaskQueue>(smallTtlRemoteTaskQueueSettings);
         }
 
         [Test]
@@ -107,7 +108,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 
         private static void SetTaskTtlOnConsumers(TimeSpan ttl)
         {
-            EdiTestContext.Current.Container.Get<ExchangeServiceClient>().ChangeTaskTtl(ttl);
+            GroboTestContext.Current.Container.Get<ExchangeServiceClient>().ChangeTaskTtl(ttl);
         }
 
         private RemoteQueue.Handling.RemoteTaskQueue smallTtlRemoteTaskQueue;
