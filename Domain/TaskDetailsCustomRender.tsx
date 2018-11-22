@@ -1,12 +1,6 @@
 import _ from "lodash";
 import * as React from "react";
-import { Link, LinkDropdown } from "ui";
-
-import CardIcon from "@skbkontur/react-icons/Card";
-import DocumentLiteIcon from "@skbkontur/react-icons/DocumentLite";
-import DownloadIcon from "@skbkontur/react-icons/Download";
-import ExportIcon from "@skbkontur/react-icons/Export";
-import InfoIcon from "@skbkontur/react-icons/Info";
+import { Icon, Link, LinkDropdown } from "ui";
 
 const LinkMenuItem = LinkDropdown.MenuItem;
 
@@ -28,18 +22,18 @@ export function OrganizationLinkDropdown({
     return (
         <LinkDropdown renderTitle={caption != null ? caption : partyId} data-tid="GoToLink">
             <LinkMenuItem href={`/AdminTools/PartyEdit?partyId=${partyId}`} data-tid="GoToPartyEdit">
-                <CardIcon /> Открыть карточку организации
+                <Icon name="Card" /> Открыть карточку организации
             </LinkMenuItem>
             <LinkMenuItem
                 href={`/AdminTools/TablesView/Party2/${partyId}/${partyId}`}
                 data-tid="GoToPartyBusinessObject">
-                <InfoIcon /> Открыть бизнес-объект
+                <Icon name="Info" /> Открыть бизнес-объект
             </LinkMenuItem>
             <LinkMenuItem href={`/${partyId}/Supplier`} data-tid="GoToPartySupplierInterface">
-                <ExportIcon /> Открыть интерфейс поставщика
+                <Icon name="Export" /> Открыть интерфейс поставщика
             </LinkMenuItem>
             <LinkMenuItem href={`/${partyId}/Monitoring/TaskChainList`} data-tid="GoToPartyMonitoring">
-                <ExportIcon /> Открыть мониторинг сообщений
+                <Icon name="Export" /> Открыть мониторинг сообщений
             </LinkMenuItem>
         </LinkDropdown>
     );
@@ -251,10 +245,10 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
                 <LinkDropdown renderTitle={rawMessageId}>
                     <LinkMenuItem
                         href={`/AdminTools/TablesView/RawMessageMetaInformation/${transportBoxId}/${rawMessageId}`}>
-                        <DocumentLiteIcon /> Открыть RawMessageMetaInformation
+                        <Icon name="DocumentLite" /> Открыть RawMessageMetaInformation
                     </LinkMenuItem>
                     <LinkMenuItem href={`/AdminTools/FileData?fileId=${transportBoxId}_${rawMessageId}`}>
-                        <DownloadIcon /> Скачать файл
+                        <Icon name="Download" /> Скачать файл
                     </LinkMenuItem>
                 </LinkDropdown>
             );

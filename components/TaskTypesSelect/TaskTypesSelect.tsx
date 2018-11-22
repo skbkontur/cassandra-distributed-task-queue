@@ -1,7 +1,5 @@
-import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
-import SearchIcon from "@skbkontur/react-icons/Search";
 import * as React from "react";
-import { Button, Checkbox, Input, Tooltip } from "ui";
+import { Button, Checkbox, Icon, Input, Tooltip } from "ui";
 import { ColumnStack, Fit, RowStack } from "ui/layout";
 
 import cn from "./TaskTypesSelect.less";
@@ -34,7 +32,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                     <span className={cn("button-text")}>
                         {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
                     </span>
-                    <ArrowTriangleDownIcon />
+                    <Icon name="ArrowTriangleDown" />
                 </Button>
             </Tooltip>
         );
@@ -86,7 +84,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                         <Fit>
                             <Input
                                 value={query}
-                                rightIcon={<SearchIcon />}
+                                rightIcon={<Icon name="Search" />}
                                 onChange={(e, val) => this.setState({ query: val })}
                             />
                         </Fit>

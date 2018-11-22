@@ -1,6 +1,3 @@
-import DeleteIcon from "@skbkontur/react-icons/Delete";
-import ListRowsIcon from "@skbkontur/react-icons/ListRows";
-import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui";
@@ -132,25 +129,21 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                 <Fill />
                 {relatedTasksLocation && (
                     <Fit>
-                        <RouterLink icon={<ListRowsIcon />} data-tid={"RelatedTaskTree"} to={relatedTasksLocation}>
+                        <RouterLink icon="ListRows" data-tid={"RelatedTaskTree"} to={relatedTasksLocation}>
                             View related tasks tree
                         </RouterLink>
                     </Fit>
                 )}
                 {isCancelable && (
                     <Fit>
-                        <ButtonLink
-                            icon={<DeleteIcon />}
-                            use="danger"
-                            data-tid={"CancelButton"}
-                            onClick={() => this.cancel()}>
+                        <ButtonLink icon="Delete" use="danger" data-tid={"CancelButton"} onClick={() => this.cancel()}>
                             Cancel task
                         </ButtonLink>
                     </Fit>
                 )}
                 {isRerunable && (
                     <Fit>
-                        <ButtonLink icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={() => this.rerun()}>
+                        <ButtonLink icon="Refresh" data-tid={"RerunButton"} onClick={() => this.rerun()}>
                             Rerun task
                         </ButtonLink>
                     </Fit>
