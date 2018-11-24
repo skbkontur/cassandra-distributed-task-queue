@@ -40,7 +40,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                     EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
                 }, 10, 10);
             searchResults2.TotalCount.Should().Be(20);
-            searchResults1.TaskMetas.Select(x => x.Id).Concat(searchResults2.TaskMetas.Select(x => x.Id)).ShouldAllBeEquivalentTo(taskIds);
+            searchResults1.TaskMetas.Select(x => x.Id).Concat(searchResults2.TaskMetas.Select(x => x.Id)).Should().BeEquivalentTo(taskIds);
         }
 
         [Test]
@@ -56,7 +56,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                     EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
                 }, 0, 20);
             searchResults.TotalCount.Should().Be(20);
-            searchResults.TaskMetas.Select(x => x.Id).ShouldAllBeEquivalentTo(taskIds);
+            searchResults.TaskMetas.Select(x => x.Id).Should().BeEquivalentTo(taskIds);
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                     Names = new[] {typeof(BetaTaskData).Name, typeof(DeltaTaskData).Name},
                 }, 0, 20);
             searchResults3.TotalCount.Should().Be(2);
-            searchResults3.TaskMetas.Select(x => x.Name).ShouldAllBeEquivalentTo(new[]
+            searchResults3.TaskMetas.Select(x => x.Name).Should().BeEquivalentTo(new[]
                 {
                     typeof(BetaTaskData).Name,
                     typeof(DeltaTaskData).Name
