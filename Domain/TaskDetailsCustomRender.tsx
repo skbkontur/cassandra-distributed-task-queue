@@ -250,10 +250,11 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
             return (
                 <LinkDropdown renderTitle={rawMessageId}>
                     <LinkMenuItem
-                        href={`/AdminTools/TablesView/RawMessageMetaInformation/${transportBoxId}/${rawMessageId}`}>
+                        href={`/AdminTools/MessagesMeta?transportBoxId=${transportBoxId}&rawMessageId=${rawMessageId}&type=raw-meta`}>
                         <DocumentLiteIcon /> Открыть RawMessageMetaInformation
                     </LinkMenuItem>
-                    <LinkMenuItem href={`/AdminTools/FileData?fileId=${transportBoxId}_${rawMessageId}`}>
+                    <LinkMenuItem
+                        href={`/internal-api/message-monitoring-2/transport-messages/${transportBoxId}/${rawMessageId}`}>
                         <DownloadIcon /> Скачать файл
                     </LinkMenuItem>
                 </LinkDropdown>
