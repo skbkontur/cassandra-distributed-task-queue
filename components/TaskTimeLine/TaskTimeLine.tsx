@@ -1,21 +1,21 @@
-import { LocationDescriptor } from "history";
-import * as React from "react";
-import { RouterLink } from "ui";
-import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { Ticks, ticksToDate } from "Commons/DataTypes/Time";
-import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
-import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-
 import { ArrowBoldDown } from "@skbkontur/react-icons";
 import ArrowBoldUpIcon from "@skbkontur/react-icons/ArrowBoldUp";
 import ArrowCorner1Icon from "@skbkontur/react-icons/ArrowCorner1";
+import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
 import ClearIcon from "@skbkontur/react-icons/Clear";
 import ClockIcon from "@skbkontur/react-icons/Clock";
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import DownloadIcon from "@skbkontur/react-icons/Download";
 import OkIcon from "@skbkontur/react-icons/Ok";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import { LocationDescriptor } from "history";
+import * as React from "react";
+import { ButtonLink, RouterLink } from "ui";
+import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
+import { Ticks, ticksToDate } from "Commons/DataTypes/Time";
+import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
+import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
+import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import cn from "./TaskTimeLine.less";
 import { TimeLine } from "./TimeLine/TimeLine";
@@ -28,12 +28,20 @@ const IconColors = {
     grey: "#a0a0a0",
 };
 
+const alwaysVisibleTaskIdsCount = 3;
+
 interface TaskTimeLineProps {
     taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
     getHrefToTask: (id: string) => LocationDescriptor;
 }
 
-export class TaskTimeLine extends React.Component<TaskTimeLineProps> {
+interface TaskTimeLineState {
+    showAllErrors: boolean;
+}
+
+export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLineState> {
+    public state: TaskTimeLineState = { showAllErrors: false };
+
     public ticksToDate(ticks: Nullable<Ticks>): Nullable<Date> {
         if (!ticks) {
             return null;
@@ -218,24 +226,40 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps> {
         });
     }
 
+    public showAllMessages = (): void => {
+        this.setState({
+            showAllErrors: true,
+        });
+    };
+
     public getChildrenTaskIdsEntry(): null | JSX.Element {
         const { taskMeta, getHrefToTask } = this.props;
         if (taskMeta.childTaskIds && taskMeta.childTaskIds.length > 0) {
+            const visibleTaskIdsCount = this.state.showAllErrors
+                ? taskMeta.childTaskIds.length
+                : alwaysVisibleTaskIdsCount;
+            const hiddenTaskIdsCount = taskMeta.childTaskIds.length - visibleTaskIdsCount;
+
             return (
                 <TimeLineEntry key="Children" icon={<ArrowBoldDown />} iconColor={IconColors.grey}>
-                    <div className={cn("entry", "waiting")}>
+                    <div className={cn("entry", "waiting")} data-tid="EnqueuedTasks">
                         <div>Enqueued tasks:</div>
-                        {taskMeta.childTaskIds.slice(0, 3).map(x => (
-                            <div key={x}>
+                        {taskMeta.childTaskIds.slice(0, visibleTaskIdsCount).map(x => (
+                            <div key={x} data-tid="TaskLink">
                                 <AllowCopyToClipboard>
                                     <RouterLink to={getHrefToTask(x)}>{x}</RouterLink>
                                 </AllowCopyToClipboard>
                             </div>
                         ))}
-                        {taskMeta.childTaskIds &&
-                            taskMeta.childTaskIds.length > 3 && (
-                                <div>...and {taskMeta.childTaskIds.length - 3} more</div>
-                            )}
+
+                        {hiddenTaskIdsCount > 0 && (
+                            <ButtonLink
+                                data-tid={"ShowAllTasks"}
+                                rightIcon={<ArrowTriangleDownIcon />}
+                                onClick={this.showAllMessages}>
+                                ...and {hiddenTaskIdsCount} more
+                            </ButtonLink>
+                        )}
                     </div>
                 </TimeLineEntry>
             );
