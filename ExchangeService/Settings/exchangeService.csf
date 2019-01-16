@@ -1,9 +1,7 @@
 @importSettings "edi\graphite.csf"
 @importSettings "edi\environment.csf"
 
-#Общие настройки сервисов
 ListeningPort = 4403,4404,4405,4406,4407
-ServiceName = ExchangeService
 LogDirectory = logs
 
 #Настройки очереди
