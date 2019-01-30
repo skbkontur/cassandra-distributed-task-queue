@@ -7,6 +7,8 @@ using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
+using Vostok.Logging.Abstractions;
+
 namespace ExchangeService.UserClasses
 {
     public class FakeFailTaskHandler : TaskHandler<FakeFailTaskData>
@@ -21,11 +23,11 @@ namespace ExchangeService.UserClasses
             var counter = testCounterRepository.DecrementCounter(Context.Id);
             if (counter == 0)
             {
-                Log.For(this).InfoFormat("Finished task: {0}", Context.Id);
+                Log.For(this).Info($"Finished task: {Context.Id}");
                 return Fatal(new Exception());
             }
             var rerunInterval = TimeSpan.FromTicks(Math.Min(minDelayBeforeTaskRerun.Ticks * Context.Attempts * Context.Attempts, maxDelayBeforeTaskRerun.Ticks));
-            Log.For(this).InfoFormat("Rerun task: {0}, Counter: {1}, RerunInterval: {2}", Context.Id, counter, rerunInterval);
+            Log.For(this).Info($"Rerun task: {Context.Id}, Counter: {counter}, RerunInterval: {rerunInterval}");
             return RerunAfterError(new Exception(), rerunInterval);
         }
 

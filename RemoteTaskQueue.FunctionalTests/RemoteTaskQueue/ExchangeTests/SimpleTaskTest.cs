@@ -18,6 +18,8 @@ using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
     public class SimpleTaskTest : ExchangeTestBase

@@ -26,6 +26,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                         RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                         IStatsDClient statsDClient)
         {
+            this.logger = logger;
             this.eventFeedFactory = eventFeedFactory;
             GlobalTime = remoteTaskQueue.GlobalTime;
             globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);
@@ -46,7 +47,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             const string key = "RtqMonitoring";
             return eventFeedFactory
                 .WithOffsetType<string>()
-                .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer)
+                .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer, logger)
                                             .WithBlade($"{key}_Blade0", delay : TimeSpan.FromMinutes(1))
                                             .WithBlade($"{key}_Blade1", delay : TimeSpan.FromMinutes(15)))
                 .WithGlobalTimeProvider(globalTimeProvider)
@@ -55,6 +56,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                 .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
         }
 
+        private readonly ILog logger;
         private readonly EventFeedFactory eventFeedFactory;
         private readonly RtqGlobalTimeProvider globalTimeProvider;
         private readonly EventLogRepository eventLogRepository;

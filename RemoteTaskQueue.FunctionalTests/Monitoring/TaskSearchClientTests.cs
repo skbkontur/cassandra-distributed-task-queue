@@ -26,6 +26,8 @@ using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
     public class TaskSearchClientTests : MonitoringTestBase
@@ -35,7 +37,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         {
             var t0 = Timestamp.Now;
             var taskId = QueueTask(new SlowTaskData(), TimeSpan.FromSeconds(1));
-            Log.For(this).InfoFormat("TaskId: {0}", taskId);
+            Log.For(this).Info($"TaskId: {taskId}");
             var taskMetaInformation = handleTasksMetaStorage.GetMeta(taskId);
 
             var badBytes = new byte[] {};
@@ -79,7 +81,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
 
             var uniqueData = Guid.NewGuid();
-            Log.For(this).InfoFormat("ud={0}", uniqueData);
+            Log.For(this).Info($"ud={uniqueData}");
             var taskId = QueueTask(new FailingTaskData {UniqueData = uniqueData, RetryCount = 0});
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(5));
 
@@ -119,7 +121,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
 
             var uniqueData = Guid.NewGuid();
-            Log.For(this).InfoFormat("ud={0}", uniqueData);
+            Log.For(this).Info($"ud={uniqueData}");
             var failingTaskData = new FailingTaskData {UniqueData = uniqueData, RetryCount = 2};
             var taskId = QueueTask(failingTaskData);
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(30));
@@ -141,7 +143,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
             for (var i = 0; i < 100; i++)
             {
-                Log.For(this).InfoFormat("Iteration: {0}", i);
+                Log.For(this).Info($"Iteration: {i}");
                 var taskId0 = QueueTask(new SlowTaskData());
                 WaitForTasks(new[] {taskId0}, TimeSpan.FromSeconds(5));
                 monitoringServiceClient.ExecuteForcedFeeding();
@@ -155,7 +157,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t0 = Timestamp.Now;
             for (var i = 0; i < 100; i++)
             {
-                Log.For(this).InfoFormat("Iteration: {0}", i);
+                Log.For(this).Info($"Iteration: {i}");
                 var taskId0 = QueueTask(new SlowTaskData());
                 var taskId1 = QueueTask(new SlowTaskData());
                 var taskId2 = QueueTask(new SlowTaskData());

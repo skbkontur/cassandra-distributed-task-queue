@@ -17,6 +17,8 @@ using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.Waiting;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
     public class TaskCounterTest : MonitoringTestBase
@@ -63,7 +65,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 Thread.Sleep(100);
                 var processedCountFromCounter = testCounterRepository.GetCounter("SlowTaskHandler_Started") - testCounterRepository.GetCounter("SlowTaskHandler_Finished");
                 var processingTaskCount = monitoringServiceClient.GetTaskCounters();
-                Log.For(this).InfoFormat("InProgress={0} Counter={1}", processedCountFromCounter, processingTaskCount.GetPendingTaskTotalCount());
+                Log.For(this).Info($"InProgress={processedCountFromCounter} Counter={processingTaskCount.GetPendingTaskTotalCount()}");
             } while (w.Elapsed < TimeSpan.FromSeconds(10));
             WaitForTasks(taskIds, TimeSpan.FromMinutes(1));
             WaitFor(() => monitoringServiceClient.GetTaskCounters().GetPendingTaskTotalCount() == 0, TimeSpan.FromSeconds(10));
@@ -87,19 +89,19 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var totalTime = w.ElapsedMilliseconds;
             var addRate = 1000.0 * count / addTime; //tasks / s
             var consumeRate = 1000.0 * count / totalTime; //NOTE consumeRate занижен тк задачи добавляются последовательно
-            Log.For(this).InfoFormat("{0:F0} : {1:F0}", addRate, consumeRate);
+            Log.For(this).Info($"{addRate:F0} : {consumeRate:F0}");
             if (addRate < consumeRate * 2)
                 Log.For(this).Warn("WARN: Slow");
             //Assert.That(addRate > consumeRate * 2);
             var delayMs = (int)((1 / consumeRate - 1 / addRate) * 1000) / 2;
             if (delayMs < 0)
                 delayMs = 0;
-            Log.For(this).InfoFormat("Calculated delay {0} ms", delayMs);
+            Log.For(this).Info($"Calculated delay {delayMs} ms");
 
             var testTime = TimeSpan.FromTicks(eventLogRepository.UnstableZoneLength.Ticks * 5);
-            Log.For(this).InfoFormat("test={0:F1} min", testTime.TotalMinutes);
+            Log.For(this).Info($"test={testTime.TotalMinutes:F1} min");
             var estimatedTaskRunTime = TimeSpan.FromMilliseconds(testTime.TotalMilliseconds * addRate / consumeRate);
-            Log.For(this).InfoFormat("est={0:F1} min", estimatedTaskRunTime.TotalMinutes);
+            Log.For(this).Info($"est={estimatedTaskRunTime.TotalMinutes:F1} min");
             RunTasksAndWatiForCounterZero(false, delayMs, (long)testTime.TotalMilliseconds, TimeSpan.FromMinutes(15));
         }
 

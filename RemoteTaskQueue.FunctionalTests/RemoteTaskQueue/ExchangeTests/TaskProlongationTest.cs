@@ -18,6 +18,8 @@ using RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
     public class TaskProlongationTest : TasksWithCounterTestBase
@@ -38,7 +40,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             var rerunAfter = TimeSpan.FromMilliseconds(100);
 
             var estimatedNumberOfRuns = 2 * (int)(smallTaskTtl.Ticks / rerunAfter.Ticks);
-            Log.For(this).InfoFormat("Estimated number of runs: {0}", estimatedNumberOfRuns);
+            Log.For(this).Info($"Estimated number of runs: {estimatedNumberOfRuns}");
             var parentTaskId = Guid.NewGuid().ToString();
             var taskId = AddTask(estimatedNumberOfRuns, rerunAfter, new[] {estimatedNumberOfRuns, estimatedNumberOfRuns - 1, estimatedNumberOfRuns - 2}, parentTaskId);
             WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromMinutes(1), TimeSpan.FromMilliseconds(100));
@@ -57,7 +59,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             var rerunAfter = TimeSpan.FromSeconds(1);
 
             var estimatedNumberOfRuns = (int)(smallTaskTtl.Ticks * 10 / rerunAfter.Ticks);
-            Log.For(this).InfoFormat("Estimated number of runs: {0}", estimatedNumberOfRuns);
+            Log.For(this).Info($"Estimated number of runs: {estimatedNumberOfRuns}");
             var taskId = AddTask(estimatedNumberOfRuns, rerunAfter, null, null);
             WaitForTerminalState(new[] {taskId}, TaskState.Finished, "FakeMixedPeriodicAndFailTaskData", TimeSpan.FromMinutes(2), TimeSpan.FromSeconds(1));
             var now = Timestamp.Now;

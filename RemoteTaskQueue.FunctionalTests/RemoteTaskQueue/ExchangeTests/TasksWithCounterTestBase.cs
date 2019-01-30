@@ -17,6 +17,8 @@ using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
     public abstract class TasksWithCounterTestBase : ExchangeTestBase
@@ -29,7 +31,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             {
                 var allTasksAreFinished = handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == terminalState);
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
-                Log.For(this).InfoFormat("CurrentCounterValues: {0}", string.Join(", ", attempts));
+                Log.For(this).Info($"CurrentCounterValues: {string.Join(", ", attempts)}");
                 var notFinishedTaskIds = taskIds.EquiZip(attempts, (taskId, attempt) => new {taskId, attempt}).Where(x => x.attempt > 0).Select(x => x.taskId).ToArray();
                 if (allTasksAreFinished)
                 {

@@ -19,6 +19,8 @@ using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     public class TaskExceptionInfoStorageTest : RepositoryFunctionalTestBase
@@ -233,7 +235,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
             sw.Stop();
-            Log.For(this).InfoFormat("sw.Elapsed: {0}", sw.Elapsed);
+            Log.For(this).Info($"sw.Elapsed: {sw.Elapsed}");
 
             Thread.Sleep(metaTtl.Multiply(2));
             var taskExceptionInfos = taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Select(x => x.ExceptionMessageInfo).ToArray();

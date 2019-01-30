@@ -12,6 +12,8 @@ using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
+using Vostok.Logging.Abstractions;
+
 namespace RemoteTaskQueue.FunctionalTests
 {
     public class AndResetCassandraState : GroboTestMethodWrapperAttribute

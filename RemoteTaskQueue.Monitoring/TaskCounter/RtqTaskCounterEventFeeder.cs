@@ -50,7 +50,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         {
             var stateManager = new RtqTaskCounterStateManager(logger, serializer, taskDataRegistry, stateStorage, settings, offsetInterpreter, perfGraphiteReporter);
             var eventConsumer = new RtqTaskCounterEventConsumer(stateManager, handleTasksMetaStorage, perfGraphiteReporter);
-            IBladesBuilder<string> bladesBuilder = BladesBuilder.New(eventLogRepository, eventConsumer);
+            IBladesBuilder<string> bladesBuilder = BladesBuilder.New(eventLogRepository, eventConsumer, logger);
             foreach (var bladeId in stateManager.Blades)
                 bladesBuilder = bladesBuilder.WithBlade(bladeId.BladeKey, bladeId.Delay);
             var eventFeedsRunner = eventFeedFactory
