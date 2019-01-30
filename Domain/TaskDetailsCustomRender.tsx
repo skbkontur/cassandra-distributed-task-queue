@@ -31,7 +31,7 @@ export function OrganizationLinkDropdown({
                 <CardIcon /> Открыть карточку организации
             </LinkMenuItem>
             <LinkMenuItem
-                href={`/AdminTools/TablesView/Party2/${partyId}/${partyId}`}
+                href={`/AdminTools/BusinessObjects/Party2/${partyId}/${partyId}`}
                 data-tid="GoToPartyBusinessObject">
                 <InfoIcon /> Открыть бизнес-объект
             </LinkMenuItem>
@@ -67,7 +67,7 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
             return (
                 <Link
                     data-tid="GoToLink"
-                    href={`/AdminTools/TablesView/ConnectorBoxStorageElement/${connectorBoxId}/${connectorBoxId}`}>
+                    href={`/AdminTools/BusinessObjects/ConnectorBoxStorageElement/${connectorBoxId}/${connectorBoxId}`}>
                     {connectorBoxId}
                 </Link>
             );
@@ -82,7 +82,7 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
         const boxId = getByPath(target, path);
         if (typeof boxId === "string") {
             return (
-                <Link data-tid="GoToLink" href={`/AdminTools/TablesView/BoxStorageElement/${boxId}/${boxId}`}>
+                <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/BoxStorageElement/${boxId}/${boxId}`}>
                     {boxId}
                 </Link>
             );
@@ -93,7 +93,7 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
         const id = getByPath(target, path);
         if (typeof id === "string") {
             return (
-                <Link data-tid="GoToLink" href={`/AdminTools/TablesView/TransportBoxStorageElement/${id}/${id}`}>
+                <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/TransportBoxStorageElement/${id}/${id}`}>
                     {id}
                 </Link>
             );
@@ -105,7 +105,7 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
         if (typeof id === "string") {
             if (["deliveryBox", "transportBox"].includes(path[path.length - 2])) {
                 return (
-                    <Link data-tid="GoToLink" href={`/AdminTools/TablesView/TransportBoxStorageElement/${id}/${id}`}>
+                    <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/TransportBoxStorageElement/${id}/${id}`}>
                         {id}
                     </Link>
                 );
@@ -113,7 +113,7 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
 
             if (["inbox", "outbox", "box"].includes(path[path.length - 2])) {
                 return (
-                    <Link data-tid="GoToLink" href={`/AdminTools/TablesView/BoxStorageElement/${id}/${id}`}>
+                    <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/BoxStorageElement/${id}/${id}`}>
                         {id}
                     </Link>
                 );
@@ -130,7 +130,7 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
                 <Link
                     data-tid="GoToLink"
                     href={
-                        "/AdminTools/TablesView/ConnectorInteractionContextStorageElement/" +
+                        "/AdminTools/BusinessObjects/ConnectorInteractionContextStorageElement/" +
                         `${target.computedConnectorBoxId}/${target.computedConnectorInteractionId}`
                     }>
                     {target.computedConnectorInteractionId}
