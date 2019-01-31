@@ -105,7 +105,9 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
         if (typeof id === "string") {
             if (["deliveryBox", "transportBox"].includes(path[path.length - 2])) {
                 return (
-                    <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/TransportBoxStorageElement/${id}/${id}`}>
+                    <Link
+                        data-tid="GoToLink"
+                        href={`/AdminTools/BusinessObjects/TransportBoxStorageElement/${id}/${id}`}>
                         {id}
                     </Link>
                 );
