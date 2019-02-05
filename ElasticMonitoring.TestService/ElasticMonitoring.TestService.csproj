@@ -61,9 +61,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Settings\dependencies.csf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Settings\monitoringService.csf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

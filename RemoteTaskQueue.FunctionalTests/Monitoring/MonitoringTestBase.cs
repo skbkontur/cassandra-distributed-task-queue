@@ -12,7 +12,7 @@ using SKBKontur.Catalogue.Objects;
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
     [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
-    [GroboTestSuite("MonitoringTests"), WithTestRemoteTaskQueue, AndResetMonitoringServiceState]
+    [GroboTestSuite("MonitoringTests"), WithTestRemoteTaskQueue, WithRtqElasticsearchClient, AndResetMonitoringServiceState]
     public abstract class MonitoringTestBase
     {
         protected void CheckSearch(string q, Timestamp from, Timestamp to, params string[] expectedIds)

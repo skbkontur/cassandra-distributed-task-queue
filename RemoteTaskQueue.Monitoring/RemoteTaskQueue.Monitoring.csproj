@@ -74,6 +74,7 @@
     <Compile Include="Storage\Client\TaskSearchRequest.cs" />
     <Compile Include="Storage\Client\TaskSearchResponse.cs" />
     <Compile Include="Storage\IRtqElasticsearchClient.cs" />
+    <Compile Include="Storage\RtqElasticsearchClient.cs" />
     <Compile Include="Storage\RtqElasticsearchConsts.cs" />
     <Compile Include="Storage\RtqElasticsearchSchema.cs" />
     <Compile Include="Storage\Search\SearchIndexNameFactory.cs" />
