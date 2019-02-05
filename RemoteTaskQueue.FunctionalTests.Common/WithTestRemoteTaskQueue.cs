@@ -37,7 +37,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
             var keyspaceName = container.Get<IRemoteTaskQueueSettings>().QueueKeyspace;
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(keyspaceName, RemoteTaskQueueLockConstants.LockColumnFamily);
             var remoteLockImplementation = container.Create<CassandraRemoteLockImplementationSettings, CassandraRemoteLockImplementation>(remoteLockImplementationSettings);
-            container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(keyspaceName), VostokLoggingAdapter.Instance));
+            container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(keyspaceName), Log.For<WithTestRemoteTaskQueue>()));
         }
     }
 }
