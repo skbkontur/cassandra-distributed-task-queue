@@ -21,7 +21,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
     {
         public RtqMonitoringEventBulkIndexer(ILog logger,
                                              RtqElasticsearchIndexerSettings indexerSettings,
-                                             RtqElasticsearchClientFactory elasticsearchClientFactory,
+                                             IRtqElasticsearchClient elasticsearchClient,
                                              RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                              IStatsDClient statsDClient)
         {
@@ -30,7 +30,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchBulkIndexer", statsDClient);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue.MonitoringEventBulkIndexer");
-            taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClientFactory, remoteTaskQueue, perfGraphiteReporter);
+            taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
         }
 
         public void ProcessEvents([NotNull] Timestamp indexingStartTimestamp, [NotNull] Timestamp indexingFinishTimestamp)

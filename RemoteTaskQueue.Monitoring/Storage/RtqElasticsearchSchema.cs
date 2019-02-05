@@ -1,4 +1,6 @@
-﻿using Elasticsearch.Net;
+﻿using System;
+
+using Elasticsearch.Net;
 
 using JetBrains.Annotations;
 
@@ -9,18 +11,18 @@ namespace RemoteTaskQueue.Monitoring.Storage
 {
     public class RtqElasticsearchSchema
     {
-        public RtqElasticsearchSchema(RtqElasticsearchClientFactory elasticClientFactory)
+        public RtqElasticsearchSchema(Lazy<IRtqElasticsearchClient> elasticClient)
         {
-            elasticClient = elasticClientFactory.DefaultClient.Value;
+            this.elasticClient = elasticClient;
         }
 
         public void Actualize(bool local, bool bulkLoad)
         {
             var indexSettings = new {settings = GetIndexingProgressIndexSettings(local, bulkLoad)};
-            elasticClient.IndicesCreate<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, PostData.String(indexSettings.ToJson()), allowResourceAlreadyExistsStatus).EnsureSuccess();
+            elasticClient.Value.IndicesCreate<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, PostData.String(indexSettings.ToJson()), allowResourceAlreadyExistsStatus).EnsureSuccess();
 
             var templateSettings = GetTaskIndicesTemplateSettings(local, bulkLoad);
-            elasticClient.IndicesPutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, PostData.String(templateSettings.ToJson())).EnsureSuccess();
+            elasticClient.Value.IndicesPutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, PostData.String(templateSettings.ToJson())).EnsureSuccess();
         }
 
         [NotNull]
@@ -159,7 +161,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                 };
         }
 
-        private readonly IElasticLowLevelClient elasticClient;
+        private readonly Lazy<IRtqElasticsearchClient> elasticClient;
 
         private readonly CreateIndexRequestParameters allowResourceAlreadyExistsStatus = new CreateIndexRequestParameters
             {

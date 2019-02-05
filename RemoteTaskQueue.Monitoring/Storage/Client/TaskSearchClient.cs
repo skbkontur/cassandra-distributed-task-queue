@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Elasticsearch.Net;
@@ -15,9 +16,9 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
 {
     public class TaskSearchClient
     {
-        public TaskSearchClient(RtqElasticsearchClientFactory elasticClientFactory)
+        public TaskSearchClient(Lazy<IRtqElasticsearchClient> elasticClient)
         {
-            this.elasticClientFactory = elasticClientFactory;
+            this.elasticClient = elasticClient;
         }
 
         [NotNull]
@@ -92,8 +93,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                         }
                 };
             var body = PostData.String(request.ToJson());
-            var elasticClient = elasticClientFactory.DefaultClient.Value;
-            var searchResponse = elasticClient.Search<StringResponse>(indexForTimeRange, body, ignoreUnavailableIndices).EnsureSuccess().Body.FromJson<SearchResponse>();
+            var searchResponse = elasticClient.Value.Search<StringResponse>(indexForTimeRange, body, ignoreUnavailableIndices).EnsureSuccess().Body.FromJson<SearchResponse>();
             return new TaskSearchResponse
                 {
                     Ids = searchResponse.Hits.Hits.Select(x => x.Id).ToArray(),
@@ -101,7 +101,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                 };
         }
 
-        private readonly RtqElasticsearchClientFactory elasticClientFactory;
+        private readonly Lazy<IRtqElasticsearchClient> elasticClient;
         private readonly SearchRequestParameters ignoreUnavailableIndices = new SearchRequestParameters {IgnoreUnavailable = true};
     }
 }

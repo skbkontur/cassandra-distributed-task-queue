@@ -30,7 +30,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
     {
         public TaskMetaProcessor(ILog logger,
                                  RtqElasticsearchIndexerSettings settings,
-                                 RtqElasticsearchClientFactory elasticClientFactory,
+                                 IRtqElasticsearchClient elasticClient,
                                  RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                  RtqMonitoringPerfGraphiteReporter perfGraphiteReporter)
         {
@@ -42,7 +42,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             taskExceptionInfoStorage = remoteTaskQueue.TaskExceptionInfoStorage;
             serializer = remoteTaskQueue.Serializer;
             this.perfGraphiteReporter = perfGraphiteReporter;
-            elasticClient = elasticClientFactory.DefaultClient.Value;
+            this.elasticClient = elasticClient;
             bulkRequestTimeout = new BulkRequestParameters
                 {
                     Timeout = this.settings.BulkIndexRequestTimeout,
@@ -149,7 +149,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly ISerializer serializer;
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
-        private readonly IElasticLowLevelClient elasticClient;
+        private readonly IRtqElasticsearchClient elasticClient;
         private readonly BulkRequestParameters bulkRequestTimeout;
     }
 }

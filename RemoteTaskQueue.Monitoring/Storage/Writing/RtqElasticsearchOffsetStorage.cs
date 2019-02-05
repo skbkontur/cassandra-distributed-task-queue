@@ -9,8 +9,8 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
 {
     public class RtqElasticsearchOffsetStorage : ElasticsearchOffsetStorage<string>
     {
-        public RtqElasticsearchOffsetStorage(RtqElasticsearchClientFactory elasticsearchClientFactory, RtqEventLogOffsetInterpreter offsetInterpreter, [NotNull] string bladeKey)
-            : base(elasticsearchClientFactory.DefaultClient.Value, key : bladeKey, indexName : RtqElasticsearchConsts.IndexingProgressIndexName)
+        public RtqElasticsearchOffsetStorage(IRtqElasticsearchClient elasticsearchClient, RtqEventLogOffsetInterpreter offsetInterpreter, [NotNull] string bladeKey)
+            : base(elasticsearchClient, key : bladeKey, indexName : RtqElasticsearchConsts.IndexingProgressIndexName)
         {
             this.offsetInterpreter = offsetInterpreter;
         }

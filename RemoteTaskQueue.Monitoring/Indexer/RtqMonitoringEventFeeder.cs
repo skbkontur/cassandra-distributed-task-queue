@@ -22,7 +22,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         public RtqMonitoringEventFeeder(ILog logger,
                                         EventFeedFactory eventFeedFactory,
                                         RtqElasticsearchIndexerSettings indexerSettings,
-                                        RtqElasticsearchClientFactory elasticsearchClientFactory,
+                                        IRtqElasticsearchClient elasticsearchClient,
                                         RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                         IStatsDClient statsDClient)
         {
@@ -31,10 +31,10 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient);
-            var taskMetaProcessor = new TaskMetaProcessor(logger.ForContext("CassandraDistributedTaskQueue.Monitoring"), indexerSettings, elasticsearchClientFactory, remoteTaskQueue, perfGraphiteReporter);
+            var taskMetaProcessor = new TaskMetaProcessor(logger.ForContext("CassandraDistributedTaskQueue.Monitoring"), indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
-            this.elasticsearchClientFactory = elasticsearchClientFactory;
+            this.elasticsearchClient = elasticsearchClient;
         }
 
         [NotNull]
@@ -51,7 +51,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                             .WithBlade($"{key}_Blade1", delay : TimeSpan.FromMinutes(15)))
                 .WithGlobalTimeProvider(globalTimeProvider)
                 .WithOffsetInterpreter(offsetInterpreter)
-                .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClientFactory, offsetInterpreter, bladeId.BladeKey))
+                .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey))
                 .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
         }
 
@@ -60,6 +60,6 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private readonly EventLogRepository eventLogRepository;
         private readonly RtqMonitoringEventConsumer eventConsumer;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter;
-        private readonly RtqElasticsearchClientFactory elasticsearchClientFactory;
+        private readonly IRtqElasticsearchClient elasticsearchClient;
     }
 }

@@ -4,4 +4,5 @@
 	<s:String x:Key="/Default/Environment/InjectedLayers/FileInjectedLayer/=33BE97A1B2E0E149BBD2B72157DB55B5/RelativePath/@EntryValue">..\..\Common.DotSettings</s:String>
 	<s:Boolean x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File33BE97A1B2E0E149BBD2B72157DB55B5/@KeyIndexDefined">True</s:Boolean>
 	<s:Double x:Key="/Default/Environment/InjectedLayers/InjectedLayerCustomization/=File33BE97A1B2E0E149BBD2B72157DB55B5/RelativePriority/@EntryValue">1</s:Double>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=elasticsearch/@EntryIndexedValue">True</s:Boolean>
 </wpf:ResourceDictionary>
