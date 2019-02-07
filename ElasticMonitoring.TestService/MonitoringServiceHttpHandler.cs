@@ -18,7 +18,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         public MonitoringServiceHttpHandler(RtqTaskCounterEventFeeder taskCounterEventFeeder,
                                             RtqMonitoringEventFeeder monitoringEventFeeder,
                                             RtqElasticsearchSchema rtqElasticsearchSchema,
-                                            Lazy<IRtqElasticsearchClient> elasticClient)
+                                            IRtqElasticsearchClient elasticClient)
         {
             this.taskCounterEventFeeder = taskCounterEventFeeder;
             this.monitoringEventFeeder = monitoringEventFeeder;
@@ -43,7 +43,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         {
             monitoringFeedsRunner.ResetLocalState();
             monitoringFeedsRunner.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
-            elasticClient.Value.IndicesRefresh<StringResponse>("_all").EnsureSuccess();
+            elasticClient.IndicesRefresh<StringResponse>("_all").EnsureSuccess();
 
             taskCounterFeedsRunner.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
         }
@@ -79,9 +79,9 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
         private void DeleteAllElasticEntities()
         {
-            elasticClient.Value.IndicesDelete<StringResponse>(RtqElasticsearchConsts.AllIndicesWildcard, new DeleteIndexRequestParameters {RequestConfiguration = allowNotFoundStatusCode}).EnsureSuccess();
-            elasticClient.Value.IndicesDeleteTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, new DeleteIndexTemplateRequestParameters {RequestConfiguration = allowNotFoundStatusCode}).EnsureSuccess();
-            elasticClient.Value.ClusterHealth<StringResponse>(new ClusterHealthRequestParameters {WaitForStatus = WaitForStatus.Green}).EnsureSuccess();
+            elasticClient.IndicesDelete<StringResponse>(RtqElasticsearchConsts.AllIndicesWildcard, new DeleteIndexRequestParameters {RequestConfiguration = allowNotFoundStatusCode}).EnsureSuccess();
+            elasticClient.IndicesDeleteTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, new DeleteIndexTemplateRequestParameters {RequestConfiguration = allowNotFoundStatusCode}).EnsureSuccess();
+            elasticClient.ClusterHealth<StringResponse>(new ClusterHealthRequestParameters {WaitForStatus = WaitForStatus.Green}).EnsureSuccess();
         }
 
         private IEventFeedsRunner monitoringFeedsRunner;
@@ -90,7 +90,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
         private readonly RtqTaskCounterEventFeeder taskCounterEventFeeder;
         private readonly RtqMonitoringEventFeeder monitoringEventFeeder;
         private readonly RtqElasticsearchSchema rtqElasticsearchSchema;
-        private readonly Lazy<IRtqElasticsearchClient> elasticClient;
+        private readonly IRtqElasticsearchClient elasticClient;
         private readonly RequestConfiguration allowNotFoundStatusCode = new RequestConfiguration {AllowedStatusCodes = new[] {404}};
     }
 }

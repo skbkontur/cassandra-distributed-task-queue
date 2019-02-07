@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using Elasticsearch.Net;
@@ -16,7 +15,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
 {
     public class TaskSearchClient
     {
-        public TaskSearchClient(Lazy<IRtqElasticsearchClient> elasticClient)
+        public TaskSearchClient(IRtqElasticsearchClient elasticClient)
         {
             this.elasticClient = elasticClient;
         }
@@ -93,7 +92,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                         }
                 };
             var body = PostData.String(request.ToJson());
-            var searchResponse = elasticClient.Value.Search<StringResponse>(indexForTimeRange, body, ignoreUnavailableIndices).EnsureSuccess().Body.FromJson<SearchResponse>();
+            var searchResponse = elasticClient.Search<StringResponse>(indexForTimeRange, body, ignoreUnavailableIndices).EnsureSuccess().Body.FromJson<SearchResponse>();
             return new TaskSearchResponse
                 {
                     Ids = searchResponse.Hits.Hits.Select(x => x.Id).ToArray(),
@@ -101,7 +100,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                 };
         }
 
-        private readonly Lazy<IRtqElasticsearchClient> elasticClient;
+        private readonly IRtqElasticsearchClient elasticClient;
         private readonly SearchRequestParameters ignoreUnavailableIndices = new SearchRequestParameters {IgnoreUnavailable = true};
     }
 }

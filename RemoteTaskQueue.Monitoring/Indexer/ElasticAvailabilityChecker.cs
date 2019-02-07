@@ -14,7 +14,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class ElasticAvailabilityChecker
     {
-        public ElasticAvailabilityChecker(Lazy<IRtqElasticsearchClient> elasticClient, ILog logger)
+        public ElasticAvailabilityChecker(IRtqElasticsearchClient elasticClient, ILog logger)
         {
             this.elasticClient = elasticClient;
             this.logger = logger.ForContext("CassandraDistributedTaskQueue.ElasticAvailabilityChecker");
@@ -49,7 +49,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         {
             try
             {
-                var response = elasticClient.Value.Info<DynamicResponse>();
+                var response = elasticClient.Info<DynamicResponse>();
                 if (!response.Success)
                     return false;
                 var legacyStatus = response.Body["status"];
@@ -65,7 +65,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         }
 
         private readonly TimeSpan timeout = TimeSpan.FromSeconds(20);
-        private readonly Lazy<IRtqElasticsearchClient> elasticClient;
+        private readonly IRtqElasticsearchClient elasticClient;
         private readonly ILog logger;
     }
 }
