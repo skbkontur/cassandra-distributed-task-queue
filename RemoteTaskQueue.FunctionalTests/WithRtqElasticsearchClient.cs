@@ -8,9 +8,9 @@ using RemoteTaskQueue.Monitoring.Storage;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
-    public class WithRtqElasticsearchClientAttribute : GroboTestSuiteWrapperAttribute
+    public class WithRtqElasticsearchClient : GroboTestSuiteWrapperAttribute
     {
-        public override void SetUp(string suiteName, Assembly testAssembly, IEditableGroboTestContext suiteContext)
+        public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableGroboTestContext suiteContext)
         {
             suiteContext.Container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(new Uri("http://localhost:9205")));
         }

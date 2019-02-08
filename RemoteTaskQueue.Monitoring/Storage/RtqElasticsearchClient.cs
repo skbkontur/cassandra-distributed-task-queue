@@ -1,13 +1,15 @@
 ﻿using System;
 
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
+using Elasticsearch.Net;
+
+using JetBrains.Annotations;
 
 namespace RemoteTaskQueue.Monitoring.Storage
 {
-    public class RtqElasticsearchClient : ElasticsearchClient, IRtqElasticsearchClient
+    public class RtqElasticsearchClient : ElasticLowLevelClient, IRtqElasticsearchClient
     {
-        public RtqElasticsearchClient(params Uri[] uris)
-            : base(uris)
+        public RtqElasticsearchClient([NotNull, ItemNotNull] params Uri[] uris)
+            : base(new ConnectionConfiguration(new SniffingConnectionPool(uris)).DisableDirectStreaming())
         {
         }
     }

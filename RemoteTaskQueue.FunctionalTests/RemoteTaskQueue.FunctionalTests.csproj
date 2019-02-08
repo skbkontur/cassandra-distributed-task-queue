@@ -100,7 +100,7 @@
     <Compile Include="RemoteTaskQueue\RepositoriesTests\ITestRtqCassandraWithTickHolderTestSuite.cs" />
     <Compile Include="RemoteTaskQueue\RepositoriesTests\TimeBasedBlobStorageTest.cs" />
     <Compile Include="Monitoring\TaskCounterTest.cs" />
-    <Compile Include="WithRtqElasticsearchClientAttribute.cs" />
+    <Compile Include="WithRtqElasticsearchClient.cs" />
     <Compile Include="WithTestRemoteTaskQueueSettings.cs" />
   </ItemGroup>
   <ItemGroup>
