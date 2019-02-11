@@ -6,7 +6,7 @@ using RemoteTaskQueue.FunctionalTests.Common;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
+using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {

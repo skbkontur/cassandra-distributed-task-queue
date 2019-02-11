@@ -11,8 +11,8 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
-using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
 using SKBKontur.Catalogue.ServiceLib.Logging;
+using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {

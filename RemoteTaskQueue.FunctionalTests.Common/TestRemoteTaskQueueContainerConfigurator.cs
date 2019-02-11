@@ -1,6 +1,6 @@
 ﻿using GroboContainer.Core;
 
-using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
+using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {

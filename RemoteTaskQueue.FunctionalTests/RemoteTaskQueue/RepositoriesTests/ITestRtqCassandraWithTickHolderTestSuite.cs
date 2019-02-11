@@ -1,6 +1,6 @@
 ﻿using RemoteTaskQueue.FunctionalTests.Common;
 
-using SKBKontur.Catalogue.NUnit.Extensions.CommonWrappers;
+using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
