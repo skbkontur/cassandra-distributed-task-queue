@@ -45,11 +45,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
                     {
                         if (sw.Elapsed > timeout)
                             throw;
-                        Log.For(this).Warn("Maybe we have a stability issue because index records are being removed after new task meta has been written. Will keep waiting.", e);
+                        Log.For(this).Warn(e, "Maybe we have a stability issue because index records are being removed after new task meta has been written. Will keep waiting.");
                     }
                 }
                 if (sw.Elapsed > timeout)
-                    throw new TooLateException("Время ожидания превысило {0} мс. NotFinihedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
+                    throw new TooLateException("Время ожидания превысило {0} мс. NotFinishedTaskIds: {1}", timeout, string.Join(", ", notFinishedTaskIds));
                 Thread.Sleep(sleepInterval.Value);
             }
         }

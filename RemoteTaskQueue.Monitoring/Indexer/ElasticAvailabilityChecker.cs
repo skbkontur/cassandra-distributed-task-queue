@@ -59,7 +59,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             }
             catch (Exception e)
             {
-                logger.Warn("CRASH: {0}", e.ToString());
+                logger.Warn(e, "CRASH");
                 return false;
             }
         }
