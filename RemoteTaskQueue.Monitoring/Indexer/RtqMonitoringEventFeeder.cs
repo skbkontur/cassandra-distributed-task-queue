@@ -26,13 +26,13 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                         RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                         IStatsDClient statsDClient)
         {
-            this.logger = logger;
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue.Monitoring");
             this.eventFeedFactory = eventFeedFactory;
             GlobalTime = remoteTaskQueue.GlobalTime;
             globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient);
-            var taskMetaProcessor = new TaskMetaProcessor(logger.ForContext("CassandraDistributedTaskQueue.Monitoring"), indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
+            var taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
             this.elasticsearchClient = elasticsearchClient;

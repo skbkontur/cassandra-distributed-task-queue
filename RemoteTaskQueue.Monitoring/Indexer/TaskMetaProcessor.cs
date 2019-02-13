@@ -52,7 +52,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         public void ProcessTasks([NotNull, ItemNotNull] List<string> taskIdsToProcess)
         {
-            logger.Info(string.Format("Processing tasks: {0}", taskIdsToProcess.Count));
+            logger.Info($"Processing tasks: {taskIdsToProcess.Count}");
             taskIdsToProcess.Batch(settings.TaskIdsProcessingBatchSize, Enumerable.ToArray)
                             .AsParallel()
                             .WithDegreeOfParallelism(settings.IndexingThreadsCount)
@@ -87,7 +87,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         private void IndexBatch([NotNull] ( /*[NotNull]*/ TaskMetaInformation TaskMeta, /*[NotNull, ItemNotNull]*/ TaskExceptionInfo[] TaskExceptionInfos, /*[CanBeNull]*/ object TaskData)[] batch)
         {
-            logger.Info(string.Format("IndexBatch: {0} tasks", batch.Length));
+            logger.Info($"IndexBatch: {batch.Length} tasks");
             var payload = new string[batch.Length * 2];
             for (var i = 0; i < batch.Length; i++)
             {
@@ -114,7 +114,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             }
             catch (Exception e)
             {
-                logger.Error(e, string.Format("Failed to deserialize taskData for: {0}", taskMetaInformation));
+                logger.Error(e, $"Failed to deserialize taskData for: {taskMetaInformation}");
                 return null;
             }
         }
