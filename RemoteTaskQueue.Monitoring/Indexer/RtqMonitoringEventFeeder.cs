@@ -46,14 +46,14 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         {
             const string key = "RtqMonitoring";
             return eventFeedFactory
-                .WithOffsetType<string>()
-                .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer, logger)
-                                            .WithBlade($"{key}_Blade0", delay : TimeSpan.FromMinutes(1))
-                                            .WithBlade($"{key}_Blade1", delay : TimeSpan.FromMinutes(15)))
-                .WithGlobalTimeProvider(globalTimeProvider)
-                .WithOffsetInterpreter(offsetInterpreter)
-                .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey))
-                .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
+                   .WithOffsetType<string>()
+                   .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer, logger)
+                                               .WithBlade($"{key}_Blade0", delay : TimeSpan.FromMinutes(1))
+                                               .WithBlade($"{key}_Blade1", delay : TimeSpan.FromMinutes(15)))
+                   .WithGlobalTimeProvider(globalTimeProvider)
+                   .WithOffsetInterpreter(offsetInterpreter)
+                   .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey))
+                   .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
         }
 
         private readonly ILog logger;

@@ -34,10 +34,10 @@ namespace RemoteQueue.Configuration
             if (type == null)
                 return new List<Type>();
             return new[] {type}
-                .Union(type.GetInterfaces())
-                .Union(GetAllTypesToSearchForAttributes(type.BaseType))
-                .Distinct()
-                .ToList();
+                   .Union(type.GetInterfaces())
+                   .Union(GetAllTypesToSearchForAttributes(type.BaseType))
+                   .Distinct()
+                   .ToList();
         }
 
         [NotNull]

@@ -121,7 +121,7 @@ namespace RemoteTaskQueue.Monitoring.Api
                             {
                                 ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskId)
                             }
-                        ),
+                    ),
                 };
         }
 

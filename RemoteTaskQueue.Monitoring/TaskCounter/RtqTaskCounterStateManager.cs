@@ -95,7 +95,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         {
             var serializedState = stateStorage.TryRead();
             if (serializedState == null)
-                return (PersistedLastBladeOffset: null, PersistedTaskMetasCount: 0);
+                return (PersistedLastBladeOffset : null, PersistedTaskMetasCount : 0);
 
             var persistedState = serializer.Deserialize<RtqTaskCounterState>(serializedState);
             var result = (persistedState.LastBladeOffset, persistedState.TaskMetas.Count);

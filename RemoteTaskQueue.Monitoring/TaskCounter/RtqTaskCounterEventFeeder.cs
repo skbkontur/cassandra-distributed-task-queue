@@ -54,13 +54,13 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
             foreach (var bladeId in stateManager.Blades)
                 bladesBuilder = bladesBuilder.WithBlade(bladeId.BladeKey, bladeId.Delay);
             var eventFeedsRunner = eventFeedFactory
-                .WithOffsetType<string>()
-                .WithEventType(bladesBuilder)
-                .WithGlobalTimeProvider(globalTimeProvider)
-                .WithOffsetInterpreter(offsetInterpreter)
-                .WithOffsetStorageFactory(bladeId => stateManager.CreateOffsetStorage(bladeId))
-                .WithSingleLeaderElectionKey(stateManager.CompositeFeedKey)
-                .RunFeeds(settings.DelayBetweenEventFeedingIterations);
+                                   .WithOffsetType<string>()
+                                   .WithEventType(bladesBuilder)
+                                   .WithGlobalTimeProvider(globalTimeProvider)
+                                   .WithOffsetInterpreter(offsetInterpreter)
+                                   .WithOffsetStorageFactory(bladeId => stateManager.CreateOffsetStorage(bladeId))
+                                   .WithSingleLeaderElectionKey(stateManager.CompositeFeedKey)
+                                   .RunFeeds(settings.DelayBetweenEventFeedingIterations);
             return (eventFeedsRunner, stateManager, new RtqTaskCounterGraphiteReporter(stateManager, graphiteClient));
         }
 

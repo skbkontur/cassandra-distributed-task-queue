@@ -13,7 +13,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
     {
         public TestTaskLogger(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings taskQueueSettings)
             :
-                base(cassandraCluster, taskQueueSettings, ColumnFamilies.TestTaskLoggerCfName)
+            base(cassandraCluster, taskQueueSettings, ColumnFamilies.TestTaskLoggerCfName)
         {
         }
 

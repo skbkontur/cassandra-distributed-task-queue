@@ -77,9 +77,9 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             var distinctIds = ids.DistinctBy(x => x.Id).ToArray();
             return ReadRegular(distinctIds, defaultBatchSize)
-                .Concat(ReadLarge(distinctIds, defaultBatchSize))
-                .Where(x => x.Column.Value != null)
-                .ToDictionary(x => x.BlobId, x => x.Column.Value);
+                   .Concat(ReadLarge(distinctIds, defaultBatchSize))
+                   .Where(x => x.Column.Value != null)
+                   .ToDictionary(x => x.BlobId, x => x.Column.Value);
         }
 
         [NotNull]
