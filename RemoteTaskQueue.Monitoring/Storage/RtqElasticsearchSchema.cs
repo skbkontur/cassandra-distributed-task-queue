@@ -42,6 +42,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                 };
         }
 
+        [NotNull]
         private static object GetTaskIndicesTemplateSettings(bool local, bool bulkLoad)
         {
             return new
@@ -126,7 +127,8 @@ namespace RemoteTaskQueue.Monitoring.Storage
                                                             StartExecutingTime = DateType(),
                                                             FinishExecutingTime = DateType(),
                                                             LastModificationTime = DateType(),
-                                                            ExpirationTime = DateType()
+                                                            ExpirationTime = DateType(),
+                                                            LastExecutionDurationInMs = DurationType(),
                                                         }
                                                 }
                                         }
@@ -145,6 +147,12 @@ namespace RemoteTaskQueue.Monitoring.Storage
         private static object KeywordType()
         {
             return new {type = "keyword", store = false, index = true};
+        }
+
+        [NotNull]
+        private static object DurationType()
+        {
+            return new {type = "double", store = false};
         }
 
         [NotNull]

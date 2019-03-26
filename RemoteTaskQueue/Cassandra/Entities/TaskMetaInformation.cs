@@ -38,6 +38,7 @@ namespace RemoteQueue.Cassandra.Entities
         public long? LastModificationTicks { get; set; }
         public long? ExpirationTimestampTicks { get; private set; }
         public long? ExpirationModificationTicks { get; private set; }
+        public long? ExecutionDurationTicks => FinishExecutingTicks - StartExecutingTicks;
         public TaskState State { get; set; }
         public int Attempts { get; set; }
         public string ParentTaskId { get; set; }

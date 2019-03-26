@@ -30,5 +30,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
 
         [JsonConverter(typeof(UtcTicksDateConverter))]
         public long ExpirationTime { get; set; }
+        
+        public double? LastExecutionDurationInMs { get; set; }
     }
 }

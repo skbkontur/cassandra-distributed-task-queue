@@ -122,6 +122,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         [NotNull]
         private static object BuildTaskIndexedInfo([NotNull] TaskMetaInformation taskMeta, [NotNull, ItemNotNull] TaskExceptionInfo[] taskExceptionInfos, [CanBeNull] object taskData)
         {
+            var executionDurationTicks = taskMeta.ExecutionDurationTicks;
             var meta = new MetaIndexedInfo
                 {
                     Id = taskMeta.Id,
@@ -136,6 +137,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                     MinimalStartTime = taskMeta.MinimalStartTicks,
                     StartExecutingTime = taskMeta.StartExecutingTicks,
                     ExpirationTime = taskMeta.ExpirationTimestampTicks ?? 0,
+                    LastExecutionDurationInMs = executionDurationTicks != null ? TimeSpan.FromTicks(executionDurationTicks.Value).TotalMilliseconds : (double?)null
                 };
             var exceptionInfo = string.Join("\r\n", taskExceptionInfos.Reverse().Select(x => x.ExceptionMessageInfo));
             return new TaskIndexedInfo(meta, exceptionInfo, taskData);

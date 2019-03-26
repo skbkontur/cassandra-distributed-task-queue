@@ -417,6 +417,26 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             CheckSearch($"Data.\\*.Value:\"{timeGuid1.ToGuid().ToString()}\"", t0, t1, taskId1);
         }
 
+        [Test]
+        public void TestFilterExecutionTime()
+        {
+            var t0 = Timestamp.Now;
+            var taskId0 = QueueTask(new SlowTaskData {TimeMs = 100});
+            var taskId1 = QueueTask(new SlowTaskData {TimeMs = 1000});
+            WaitForTasks(new[] {taskId0, taskId1}, TimeSpan.FromSeconds(5));
+            monitoringServiceClient.ExecuteForcedFeeding();
+
+            var t1 = Timestamp.Now;
+            CheckSearch("*", t0, t1, taskId0, taskId1);
+            CheckSearch($"Meta.LastExecutionDurationInMs:[0 TO 500]", t0, t1, taskId0);
+            CheckSearch($"Meta.LastExecutionDurationInMs:[500 TO 2000]", t0, t1, taskId1);
+            CheckSearch($"Meta.LastExecutionDurationInMs:[0 TO 450.666]", t0, t1, taskId0);
+            CheckSearch($"Meta.LastExecutionDurationInMs:[550.666 TO 2000]", t0, t1, taskId1);
+            CheckSearch($"Meta.LastExecutionDurationInMs:[* TO 450.666]", t0, t1, taskId0);
+            CheckSearch($"Meta.LastExecutionDurationInMs:[550.666 TO *]", t0, t1, taskId1);
+            CheckSearch($"Meta.LastExecutionDurationInMs:[* TO *]", t0, t1, taskId0, taskId1);
+        }
+
         [Injected]
         private readonly RtqElasticsearchSchema schema;
 
