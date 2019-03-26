@@ -128,7 +128,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
                                                             FinishExecutingTime = DateType(),
                                                             LastModificationTime = DateType(),
                                                             ExpirationTime = DateType(),
-                                                            LastExecutionDurationInMs = DurationType(),
+                                                            LastExecutionDurationInMs = DoubleType(),
                                                         }
                                                 }
                                         }
@@ -150,7 +150,7 @@ namespace RemoteTaskQueue.Monitoring.Storage
         }
 
         [NotNull]
-        private static object DurationType()
+        private static object DoubleType()
         {
             return new {type = "double", store = false};
         }
