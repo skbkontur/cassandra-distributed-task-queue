@@ -25,11 +25,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
     public render(): JSX.Element {
         const { disabled, value } = this.props;
         return (
-            <Tooltip
-                render={() => this.renderTooltip()}
-                trigger={disabled ? "closed" : "click"}
-                pos="bottom left"
-                data-tid="Tooltip">
+            <Tooltip render={this.renderTooltip} trigger={"click"} pos="bottom left" data-tid="Tooltip">
                 <Button disabled={disabled}>
                     <span className={cn("button-text")}>
                         {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
@@ -70,15 +66,16 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
         return Boolean(value.find(i => i === item));
     }
 
-    private renderTooltip(): Nullable<JSX.Element> {
-        const { availableTaskTypes } = this.props;
+    private readonly renderTooltip = (): Nullable<JSX.Element> => {
+        const { availableTaskTypes, disabled } = this.props;
         const { query } = this.state;
-        if (availableTaskTypes.length === 0) {
+        if (disabled || availableTaskTypes.length === 0) {
             return null;
         }
         const filteredTaskTypes = query
             ? availableTaskTypes.filter(item => item.search(new RegExp(query, "i")) !== -1)
             : availableTaskTypes;
+
         return (
             <ColumnStack gap={3}>
                 <Fit>
@@ -115,5 +112,5 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                 </Fit>
             </ColumnStack>
         );
-    }
+    };
 }
