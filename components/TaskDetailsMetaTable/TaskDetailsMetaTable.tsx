@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { ticksToTimestamp } from "Commons/ConvertTimeUtil";
+import { ticksToMilliseconds } from "Commons/ConvertTimeUtil";
 import { Ticks } from "Commons/DataTypes/Time";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
@@ -22,7 +22,7 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
 
     public renderMetaInfo(): JSX.Element[] {
         const { taskMeta } = this.props;
-        const executionTime = ticksToTimestamp(taskMeta.executionDurationTicks);
+        const executionTime = ticksToMilliseconds(taskMeta.executionDurationTicks);
         return [
             <tr key="TaskId">
                 <td>TaskId</td>
@@ -52,9 +52,7 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
             </tr>,
             <tr key="ExecutionDurationInMs">
                 <td>ExecutionDurationInMs</td>
-                <td data-tid="FinishExecutedTime">
-                    {executionTime == null ? "unknown" : executionTime.getMilliseconds()}
-                </td>
+                <td data-tid="FinishExecutedTime">{executionTime == null ? "unknown" : executionTime}</td>
             </tr>,
             <tr key="MinimalStartTime">
                 <td>MinimalStartTime</td>
