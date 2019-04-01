@@ -14,7 +14,6 @@ export const endsWith = (ending: string, str: string): boolean => str.slice(-end
 
 // eslint-disable-next-line flowtype/no-weak-types
 function getByPath(target: Nullable<Object>, path: string[]): mixed {
-    // @flow-coverage-ignore-next-line
     return _.get(target, path);
 }
 

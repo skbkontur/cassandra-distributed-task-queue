@@ -66,17 +66,13 @@ class TaskDetailsPageContainerInternal extends React.Component<
             try {
                 const taskDetails = await this.getTaskDetails(id);
                 this.setState({ taskDetails: taskDetails });
-                // @flow-coverage-ignore-next-line
             } catch (e) {
-                // @flow-coverage-ignore-next-line
                 if (e instanceof ApiError) {
-                    // @flow-coverage-ignore-next-line
                     if (e.statusCode === 404) {
                         this.setState({ notFoundError: true });
                         return;
                     }
                 }
-                // @flow-coverage-ignore-next-line
                 throw e;
             }
         } finally {

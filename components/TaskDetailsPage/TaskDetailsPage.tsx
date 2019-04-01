@@ -95,7 +95,6 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
 
     public getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): Nullable<LocationDescriptor> {
         const documentCirculationId =
-            // @flow-disable-next-line хоршо бы разобраться и затипизировать четко
             taskDetails.taskData && typeof taskDetails.taskData["documentCirculationId"] === "string"
                 ? taskDetails.taskData["documentCirculationId"]
                 : null;
