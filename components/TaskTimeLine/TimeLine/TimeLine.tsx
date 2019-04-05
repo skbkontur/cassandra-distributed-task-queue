@@ -38,10 +38,8 @@ TimeLine.Branch = function TimeLineBranch({ children }: TimeLineProps): JSX.Elem
 };
 
 TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineProps> {
-    public refs: {
-        branches: HTMLElement;
-        line: HTMLElement;
-    };
+    public branches: HTMLElement | null = null;
+    public line: HTMLElement | null = null;
 
     public componentDidUpdate() {
         this.updateLinesHeight();
@@ -52,11 +50,11 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineP
     }
 
     public updateLinesHeight() {
-        if (this.refs.branches != null) {
-            const branches = this.refs.branches.children;
+        if (this.branches != null) {
+            const branches = this.branches.children;
             const lastEntry = branches[branches.length - 1];
             const lastEntryWidth = lastEntry.clientWidth;
-            const line = this.refs.line;
+            const line = this.line;
             if (!isNaN(lastEntryWidth) && line != null) {
                 line.style.marginRight = (lastEntryWidth - 7).toString() + "px";
             }
@@ -67,8 +65,8 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineP
         const { children } = this.props;
         return (
             <div className={cn("branch-node")}>
-                <div className={cn("hor-line")} ref="line" />
-                <div className={cn("branch-nodes")} ref="branches">
+                <div className={cn("hor-line")} ref={el => (this.line = el)} />
+                <div className={cn("branch-nodes")} ref={el => (this.branches = el)}>
                     {children}
                 </div>
             </div>

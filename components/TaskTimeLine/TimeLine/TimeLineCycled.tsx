@@ -9,10 +9,8 @@ export interface TimeLineCycledProps {
 }
 
 export class TimeLineCycled extends React.Component<TimeLineCycledProps> {
-    public refs: {
-        entries: HTMLElement;
-        lines: HTMLElement;
-    };
+    public entries: HTMLElement | null = null;
+    public lines: HTMLElement | null = null;
 
     public componentDidUpdate() {
         this.updateLinesHeight();
@@ -23,11 +21,11 @@ export class TimeLineCycled extends React.Component<TimeLineCycledProps> {
     }
 
     public updateLinesHeight() {
-        if (this.refs.entries != null) {
-            const entries = this.refs.entries.children;
+        if (this.entries != null) {
+            const entries = this.entries.children;
             const lastEntry = entries[entries.length - 1];
             const lastEntryHeight = lastEntry.clientHeight;
-            const lines = this.refs.lines;
+            const lines = this.lines;
             if (!isNaN(lastEntryHeight) && lines != null) {
                 lines.style.marginBottom = (lastEntryHeight - 22).toString() + "px";
             }
@@ -39,10 +37,10 @@ export class TimeLineCycled extends React.Component<TimeLineCycledProps> {
 
         return (
             <div className={cn("cycle")}>
-                <div ref="entries" className={cn("entries")}>
+                <div ref={el => (this.entries = el)} className={cn("entries")}>
                     {children}
                 </div>
-                <div className={cn("lines")} ref="lines">
+                <div className={cn("lines")} ref={el => (this.lines = el)}>
                     <div className={cn("line-1")} />
                     <div className={cn("line-2")} />
                     <div className={cn("line-3")} />
