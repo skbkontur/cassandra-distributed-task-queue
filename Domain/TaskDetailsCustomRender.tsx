@@ -10,6 +10,13 @@ import InfoIcon from "@skbkontur/react-icons/Info";
 
 const LinkMenuItem = LinkDropdown.MenuItem;
 
+const transportBoxIdContainers = [
+    "deliveryBox",
+    "transportBox",
+    "transportBoxIdentifier",
+    "originalMessageSenderBoxIdentifier",
+];
+
 export const endsWith = (ending: string, str: string): boolean => str.slice(-ending.length) === ending;
 
 // eslint-disable-next-line flowtype/no-weak-types
@@ -74,36 +81,10 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
         }
     }
 
-    if (
-        (pathTop === "boxId" || endsWith("BoxId", pathTop)) &&
-        typeof target === "object" &&
-        pathTop !== "transportBoxId"
-    ) {
-        const boxId = getByPath(target, path);
-        if (typeof boxId === "string") {
-            return (
-                <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/BoxStorageElement/${boxId}/${boxId}`}>
-                    {boxId}
-                </Link>
-            );
-        }
-    }
-
-    if (pathTop === "transportBoxId" && typeof target === "object") {
+    if ((pathTop === "id" || pathTop === "boxId") && typeof target === "object") {
         const id = getByPath(target, path);
         if (typeof id === "string") {
-            return (
-                <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/TransportBoxStorageElement/${id}/${id}`}>
-                    {id}
-                </Link>
-            );
-        }
-    }
-
-    if (pathTop === "id" && typeof target === "object") {
-        const id = getByPath(target, path);
-        if (typeof id === "string") {
-            if (["deliveryBox", "transportBox"].includes(path[path.length - 2])) {
+            if (transportBoxIdContainers.includes(path[path.length - 2])) {
                 return (
                     <Link
                         data-tid="GoToLink"
@@ -120,6 +101,28 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
                     </Link>
                 );
             }
+        }
+    }
+
+    if (pathTop === "transportBoxId" && typeof target === "object") {
+        const id = getByPath(target, path);
+        if (typeof id === "string") {
+            return (
+                <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/TransportBoxStorageElement/${id}/${id}`}>
+                    {id}
+                </Link>
+            );
+        }
+    }
+
+    if ((pathTop === "boxId" || endsWith("BoxId", pathTop)) && typeof target === "object") {
+        const boxId = getByPath(target, path);
+        if (typeof boxId === "string") {
+            return (
+                <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/BoxStorageElement/${boxId}/${boxId}`}>
+                    {boxId}
+                </Link>
+            );
         }
     }
 
