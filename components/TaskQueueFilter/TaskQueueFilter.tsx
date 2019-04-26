@@ -61,7 +61,6 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                 </Fill>
                 <Fit>
                     <DateTimeRangePicker
-                        timeZone={TimeZones.UTC}
                         data-tid={"DateTimeRangePicker"}
                         hideTime
                         value={enqueueDateTimeRange || defaultEnqueueDateTimeRange}
