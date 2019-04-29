@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Button, ButtonLink, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
-import { TimeZones } from "Commons/DataTypes/Time";
 import { DateTimeRangePicker } from "Commons/DateTimeRangePicker/DateTimeRangePicker";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
 
