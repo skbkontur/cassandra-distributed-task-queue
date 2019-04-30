@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { ticksToMilliseconds } from "Commons/ConvertTimeUtil";
-import { Ticks } from "Commons/DataTypes/Time";
+import { Ticks } from "Commons/DataHelpers/Time";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 

@@ -6,7 +6,7 @@ import * as React from "react";
 import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { Accordion } from "Commons/Accordion/Accordion";
-import { ticksToDate, TimeZones } from "Commons/DataTypes/Time";
+import { ticksToDate, TimeZones } from "Commons/DataHelpers/Time";
 import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";
 import { CommonLayout } from "Commons/Layouts";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";

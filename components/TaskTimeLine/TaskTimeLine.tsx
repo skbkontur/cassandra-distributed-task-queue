@@ -12,7 +12,7 @@ import { LocationDescriptor } from "history";
 import * as React from "react";
 import { ButtonLink, RouterLink } from "ui";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { Ticks, ticksToDate } from "Commons/DataTypes/Time";
+import { Ticks, ticksToDate } from "Commons/DataHelpers/Time";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
