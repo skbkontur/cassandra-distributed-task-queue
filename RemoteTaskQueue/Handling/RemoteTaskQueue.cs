@@ -42,23 +42,23 @@ namespace RemoteQueue.Handling
             IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
         {
             TaskTtl = taskQueueSettings.TaskTtl;
-            Logger = logger;
+            Logger = logger.ForContext("CassandraDistributedTaskQueue");
             Serializer = serializer;
             TaskDataRegistry = taskDataRegistry;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
             ticksHolder = new TicksHolder(cassandraCluster, serializer, taskQueueSettings);
             GlobalTime = new GlobalTime(ticksHolder);
-            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(ticksHolder), logger);
-            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, taskQueueSettings, logger);
+            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(ticksHolder), Logger);
+            var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, taskQueueSettings, Logger);
             EventLogRepository = new EventLogRepository(serializer, cassandraCluster, taskQueueSettings, ticksHolder);
             childTaskIndex = new ChildTaskIndex(cassandraCluster, taskQueueSettings, serializer, taskMetaStorage);
-            HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, EventLogRepository, GlobalTime, childTaskIndex, taskDataRegistry, logger);
-            TaskDataStorage = new TaskDataStorage(cassandraCluster, taskQueueSettings, logger);
-            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, taskQueueSettings, logger);
+            HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, EventLogRepository, GlobalTime, childTaskIndex, taskDataRegistry, Logger);
+            TaskDataStorage = new TaskDataStorage(cassandraCluster, taskQueueSettings, Logger);
+            TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, taskQueueSettings, Logger);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, TaskDataStorage, TaskExceptionInfoStorage, remoteTaskQueueProfiler);
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(taskQueueSettings.QueueKeyspaceForLock, RemoteTaskQueueLockConstants.LockColumnFamily);
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
-            lazyRemoteLockCreator = new Lazy<RemoteLocker>(() => new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics($"{taskQueueSettings.QueueKeyspaceForLock}_{RemoteTaskQueueLockConstants.LockColumnFamily}"), logger));
+            lazyRemoteLockCreator = new Lazy<RemoteLocker>(() => new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics($"{taskQueueSettings.QueueKeyspaceForLock}_{RemoteTaskQueueLockConstants.LockColumnFamily}"), Logger));
             RemoteTaskQueueProfiler = remoteTaskQueueProfiler;
         }
 

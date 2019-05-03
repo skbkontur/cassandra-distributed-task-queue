@@ -24,7 +24,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             this.keyspaceName = keyspaceName;
             this.columnFamilyName = columnFamilyName;
             this.cassandraCluster = cassandraCluster;
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.SinglePartitionTimeBasedBlobStorage");
+            this.logger = logger.ForContext(nameof(SinglePartitionTimeBasedBlobStorage));
         }
 
         public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)

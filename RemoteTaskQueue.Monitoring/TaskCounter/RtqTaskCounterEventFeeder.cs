@@ -39,7 +39,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.TaskCounter.Perf", statsDClient);
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.TaskCounter");
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqTaskCounterEventFeeder));
             this.logger.Info($"Using RtqTaskCounterSettings: {settings.ToPrettyJson()}");
         }
 

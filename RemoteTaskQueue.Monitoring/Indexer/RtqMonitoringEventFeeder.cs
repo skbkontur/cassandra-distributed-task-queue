@@ -26,7 +26,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                         RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                         IStatsDClient statsDClient)
         {
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.Monitoring");
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqMonitoringEventFeeder));
             this.eventFeedFactory = eventFeedFactory;
             GlobalTime = remoteTaskQueue.GlobalTime;
             globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);

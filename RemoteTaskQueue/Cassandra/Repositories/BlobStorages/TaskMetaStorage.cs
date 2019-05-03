@@ -23,7 +23,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             this.serializer = serializer;
             var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
-            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster, logger);
+            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster, logger.ForContext(nameof(TaskMetaStorage)));
         }
 
         public void Write([NotNull] TaskMetaInformation taskMeta, long timestamp)

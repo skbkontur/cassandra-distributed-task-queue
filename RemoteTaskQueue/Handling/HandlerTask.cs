@@ -54,7 +54,7 @@ namespace RemoteQueue.Handling
             remoteTaskQueueProfiler = remoteTaskQueueInternals.RemoteTaskQueueProfiler;
             globalTime = remoteTaskQueueInternals.GlobalTime;
             taskTtl = remoteTaskQueueInternals.TaskTtl;
-            logger = remoteTaskQueueInternals.Logger.ForContext("CassandraDistributedTaskQueue.HandlerTask");
+            logger = remoteTaskQueueInternals.Logger.ForContext(nameof(HandlerTask));
             taskShardMetricsContext = MetricsContext.For($"Shards.{taskIndexRecord.TaskIndexShardKey.TaskTopic}.{taskIndexRecord.TaskIndexShardKey.TaskState}.Tasks");
         }
 

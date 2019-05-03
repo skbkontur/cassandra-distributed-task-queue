@@ -26,7 +26,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             this.taskCounter = taskCounter;
             this.taskHandlerRegistry = taskHandlerRegistry;
             this.remoteTaskQueueInternals = remoteTaskQueueInternals;
-            logger = remoteTaskQueueInternals.Logger.ForContext("CassandraDistributedTaskQueue.LocalTaskQueue");
+            logger = remoteTaskQueueInternals.Logger.ForContext(nameof(LocalTaskQueue));
             Instance = this;
         }
 

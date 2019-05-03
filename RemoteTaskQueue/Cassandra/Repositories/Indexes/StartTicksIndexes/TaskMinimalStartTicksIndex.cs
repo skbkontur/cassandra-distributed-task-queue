@@ -27,7 +27,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.cassandraCluster = cassandraCluster;
             this.serializer = serializer;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.TaskMinimalStartTicksIndex");
+            this.logger = logger.ForContext(nameof(TaskMinimalStartTicksIndex));
             keyspaceName = remoteTaskQueueSettings.QueueKeyspace;
         }
 

@@ -37,10 +37,10 @@ namespace RemoteQueue.Configuration
             var remoteTaskQueue = new RemoteTaskQueue(logger, serializer, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
             localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
             foreach (var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
-                handlerManagers.Add(new HandlerManager(taskTopic, consumerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime, logger));
+                handlerManagers.Add(new HandlerManager(taskTopic, consumerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime, remoteTaskQueue.Logger));
             reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(remoteTaskQueueProfiler, handlerManagers);
             RemoteTaskQueueBackdoor = remoteTaskQueue;
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.Consumer");
+            this.logger = remoteTaskQueue.Logger.ForContext(nameof(RtqConsumer));
         }
 
         public void Dispose()

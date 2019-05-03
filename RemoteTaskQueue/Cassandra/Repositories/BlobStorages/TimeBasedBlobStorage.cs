@@ -22,7 +22,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             this.settings = settings;
             this.cassandraCluster = cassandraCluster;
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.TimeBasedBlobStorage");
+            this.logger = logger.ForContext(nameof(TimeBasedBlobStorage));
         }
 
         [NotNull]

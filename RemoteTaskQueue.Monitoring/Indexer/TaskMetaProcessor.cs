@@ -34,7 +34,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                  RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
                                  RtqMonitoringPerfGraphiteReporter perfGraphiteReporter)
         {
-            this.logger = logger;
+            this.logger = logger.ForContext(nameof(TaskMetaProcessor));
             this.settings = settings;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             taskDataRegistry = remoteTaskQueue.TaskDataRegistry;

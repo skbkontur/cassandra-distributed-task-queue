@@ -20,7 +20,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public TaskDataStorage(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings remoteTaskQueueSettings, ILog logger)
         {
             var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
-            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster, logger);
+            timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster, logger.ForContext(nameof(TaskDataStorage)));
         }
 
         [NotNull]

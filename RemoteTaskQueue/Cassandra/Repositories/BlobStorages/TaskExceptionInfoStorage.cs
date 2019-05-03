@@ -24,7 +24,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings, ILog logger)
         {
             this.serializer = serializer;
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(remoteTaskQueueSettings.QueueKeyspace, timeBasedCfName, cassandraCluster, logger);
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(remoteTaskQueueSettings.QueueKeyspace, timeBasedCfName, cassandraCluster, logger.ForContext(nameof(TaskExceptionInfoStorage)));
         }
 
         public bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out List<TimeGuid> newExceptionInfoIds)

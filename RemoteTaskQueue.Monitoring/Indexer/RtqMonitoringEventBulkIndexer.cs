@@ -29,7 +29,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchBulkIndexer", statsDClient);
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.MonitoringEventBulkIndexer");
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqMonitoringEventBulkIndexer));
             taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
         }
 

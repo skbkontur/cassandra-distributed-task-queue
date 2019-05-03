@@ -37,7 +37,7 @@ namespace RemoteQueue.Cassandra.Repositories
             this.globalTime = globalTime;
             this.childTaskIndex = childTaskIndex;
             this.taskDataRegistry = taskDataRegistry;
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.HandleTasksMetaStorage");
+            this.logger = logger.ForContext(nameof(HandleTasksMetaStorage));
         }
 
         [CanBeNull]

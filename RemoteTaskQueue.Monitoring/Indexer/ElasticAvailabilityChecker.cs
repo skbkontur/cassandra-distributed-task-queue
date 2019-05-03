@@ -17,7 +17,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         public ElasticAvailabilityChecker(IRtqElasticsearchClient elasticClient, ILog logger)
         {
             this.elasticClient = elasticClient;
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.ElasticAvailabilityChecker");
+            this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(ElasticAvailabilityChecker));
         }
 
         public void WaitAlive()

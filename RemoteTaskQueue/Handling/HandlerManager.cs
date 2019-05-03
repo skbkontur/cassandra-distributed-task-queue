@@ -34,7 +34,7 @@ namespace RemoteQueue.Handling
             this.localTaskQueue = localTaskQueue;
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.globalTime = globalTime;
-            this.logger = logger.ForContext("CassandraDistributedTaskQueue.HandlerManager");
+            this.logger = logger.ForContext(nameof(HandlerManager));
             allTaskIndexShardKeysToRead = allTaskStatesToRead.Select(x => new TaskIndexShardKey(taskTopic, x)).ToArray();
         }
 
