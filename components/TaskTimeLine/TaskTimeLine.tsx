@@ -12,8 +12,9 @@ import { LocationDescriptor } from "history";
 import * as React from "react";
 import { ButtonLink, RouterLink } from "ui";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { Ticks, ticksToDate } from "Commons/DataHelpers/Time";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
+import { TimeUtils } from "Commons/TimeUtils";
+import { Ticks } from "Domain/DataTypes/Time";
 import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
@@ -46,7 +47,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
         if (!ticks) {
             return null;
         }
-        return ticksToDate(ticks);
+        return TimeUtils.ticksToDate(ticks);
     }
 
     public getIconColor(severity: string): string | undefined {

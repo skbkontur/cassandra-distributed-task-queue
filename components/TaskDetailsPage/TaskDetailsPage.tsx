@@ -6,9 +6,9 @@ import * as React from "react";
 import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { Accordion } from "Commons/Accordion/Accordion";
-import { ticksToDate, TimeZones } from "Commons/DataHelpers/Time";
 import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";
 import { CommonLayout } from "Commons/Layouts";
+import { TimeUtils } from "Commons/TimeUtils";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
@@ -99,12 +99,12 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                 ? taskDetails.taskData["documentCirculationId"]
                 : null;
         if (documentCirculationId != null && taskDetails.taskMeta.ticks != null) {
-            const rangeSelector = new RangeSelector(TimeZones.UTC);
+            const rangeSelector = new RangeSelector(TimeUtils.TimeZones.UTC);
 
             return {
                 pathname: "/AdminTools/Tasks/Tree",
                 search: buildSearchQueryForRequest({
-                    enqueueDateTimeRange: rangeSelector.getMonthOf(ticksToDate(taskDetails.taskMeta.ticks)),
+                    enqueueDateTimeRange: rangeSelector.getMonthOf(TimeUtils.ticksToDate(taskDetails.taskMeta.ticks)),
                     queryString: `Data.\\*.DocumentCirculationId:"${documentCirculationId || ""}"`,
                     names: [],
                     states: [],
