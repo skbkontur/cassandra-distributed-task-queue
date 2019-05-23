@@ -8,9 +8,9 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling;
 
-using SkbKontur.Graphite.Client;
-
 using SKBKontur.Catalogue.Objects;
+
+using SkbKontur.Graphite.Client;
 
 namespace RemoteQueue.Profiling
 {

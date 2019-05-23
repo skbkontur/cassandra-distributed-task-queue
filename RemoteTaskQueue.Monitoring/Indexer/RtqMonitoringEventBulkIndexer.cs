@@ -8,10 +8,10 @@ using RemoteQueue.Cassandra.Repositories;
 
 using RemoteTaskQueue.Monitoring.Storage;
 
-using SkbKontur.Graphite.Client;
-
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Objects;
+
+using SkbKontur.Graphite.Client;
 
 using Vostok.Logging.Abstractions;
 

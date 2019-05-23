@@ -6,11 +6,11 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Configuration;
 
-using SkbKontur.Graphite.Client;
-
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;
 using SKBKontur.Catalogue.Objects.Json;
+
+using SkbKontur.Graphite.Client;
 
 using Vostok.Logging.Abstractions;
 

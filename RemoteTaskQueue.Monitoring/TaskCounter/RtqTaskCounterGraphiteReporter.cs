@@ -5,9 +5,9 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 
-using SkbKontur.Graphite.Client;
-
 using SKBKontur.Catalogue.Objects;
+
+using SkbKontur.Graphite.Client;
 
 namespace RemoteTaskQueue.Monitoring.TaskCounter
 {
