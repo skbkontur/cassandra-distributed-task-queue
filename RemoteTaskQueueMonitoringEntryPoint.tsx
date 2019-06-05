@@ -1,8 +1,7 @@
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
-import { RemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { ApiProvider } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
+import { RemoteTaskQueueApi, RemoteTaskQueueApiProvider } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 
 import { ServiceHeader } from "../ServiceHeader/components/ServiceHeader";
 
@@ -37,9 +36,9 @@ function tryGetParentLocationFromHistoryState(location: any): Nullable<LocationD
 
 export function RemoteTaskQueueMonitoringEntryPoint(): JSX.Element {
     return (
-        <ApiProvider remoteTaskQueueApi={api}>
+        <RemoteTaskQueueApiProvider remoteTaskQueueApi={api}>
             <Route path={TasksPath} component={RemoteTaskQueueApplication} />
-        </ApiProvider>
+        </RemoteTaskQueueApiProvider>
     );
 }
 

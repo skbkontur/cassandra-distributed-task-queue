@@ -7,8 +7,7 @@ import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { CommonLayout } from "Commons/Layouts";
 import { queryStringMapping, QueryStringMapping } from "Commons/QueryStringMapping";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
-import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
+import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
 import {
     createDefaultRemoteTaskQueueSearchRequest,

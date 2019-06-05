@@ -9,8 +9,7 @@ import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { CommonLayout } from "Commons/Layouts";
 import { QueryStringMapping, queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
-import { IRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueApiInjection";
+import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
