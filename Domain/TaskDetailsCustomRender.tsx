@@ -7,6 +7,7 @@ import DocumentLiteIcon from "@skbkontur/react-icons/DocumentLite";
 import DownloadIcon from "@skbkontur/react-icons/Download";
 import ExportIcon from "@skbkontur/react-icons/Export";
 import InfoIcon from "@skbkontur/react-icons/Info";
+import { MessagesApiUrls } from "Domain/EDI/Api/MessageMonitoring/MessagesApi";
 
 const LinkMenuItem = LinkDropdown.MenuItem;
 
@@ -254,8 +255,7 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
                         href={`/AdminTools/MessagesMeta?transportBoxId=${transportBoxId}&rawMessageId=${rawMessageId}&type=raw-meta`}>
                         <DocumentLiteIcon /> Открыть RawMessageMetaInformation
                     </LinkMenuItem>
-                    <LinkMenuItem
-                        href={`/internal-api/message-monitoring-2/transport-messages/${transportBoxId}/${rawMessageId}`}>
+                    <LinkMenuItem href={MessagesApiUrls.getUrlForOpenTransportMessage(transportBoxId, rawMessageId)}>
                         <DownloadIcon /> Скачать файл
                     </LinkMenuItem>
                 </LinkDropdown>
