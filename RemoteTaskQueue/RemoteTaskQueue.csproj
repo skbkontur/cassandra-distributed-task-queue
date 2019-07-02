@@ -1,171 +1,29 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net472</TargetFramework>
     <RootNamespace>RemoteQueue</RootNamespace>
     <AssemblyName>RemoteTaskQueue</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\..\Assemblies\Temp\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Catalogue.Commons, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Catalogue.Commons">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.Core.EventFeeds, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Catalogue.Core.EventFeeds">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Cassandra\Entities\TaskMetaUpdatedEvent.cs" />
-    <Compile Include="Cassandra\Primitives\ColumnFamilyRepositoryBase.cs" />
-    <Compile Include="Cassandra\Primitives\RemoteTaskQueueLockConstants.cs" />
-    <Compile Include="Cassandra\Entities\CassandraNameAttribute.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\BlobId.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\SinglePartitionTimeBasedBlobStorage.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorage.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\ITaskDataStorage.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\ITaskExceptionInfoStorage.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\ITaskMetaStorage.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\TaskDataStorage.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\TaskExceptionInfoStorage.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\TaskMetaStorage.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\TimeBasedBlobStorageSettings.cs" />
-    <Compile Include="Cassandra\Repositories\BlobStorages\BlobType.cs" />
-    <Compile Include="Cassandra\Repositories\EventLogRepository.cs" />
-    <Compile Include="Cassandra\Repositories\EventPointerFormatter.cs" />
-    <Compile Include="Cassandra\Repositories\IEventLogRepository.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\ChildTaskIndex.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\ChildTaskIndex\IChildTaskIndex.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ILiveRecordTicksMarker.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\IOldestLiveRecordTicksHolder.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\LiveRecordTicksMarker.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\LiveRecordTicksMarkerState.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\OldestLiveRecordTicksHolder.cs" />
-    <Compile Include="Cassandra\Entities\Task.cs" />
-    <Compile Include="Cassandra\Entities\TaskExceptionInfo.cs" />
-    <Compile Include="Cassandra\Entities\TaskMetaInformation.cs" />
-    <Compile Include="Cassandra\Entities\EnumExtensions.cs" />
-    <Compile Include="Cassandra\Entities\TaskState.cs" />
-    <Compile Include="Cassandra\Repositories\GlobalTicksHolder\ITicksHolder.cs" />
-    <Compile Include="Cassandra\Repositories\GlobalTicksHolder\TicksHolder.cs" />
-    <Compile Include="Cassandra\Repositories\HandleTaskCollection.cs" />
-    <Compile Include="Cassandra\Repositories\HandleTasksMetaStorage.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerable.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\GetEventsEnumerator.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\TaskMinimalStartTicksIndex.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\ITaskMinimalStartTicksIndex.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\TaskIndexRecord.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\TaskIndexShardKey.cs" />
-    <Compile Include="Cassandra\Repositories\Indexes\StartTicksIndexes\CassandraNameHelper.cs" />
-    <Compile Include="Configuration\ColumnFamilyRegistry.cs" />
-    <Compile Include="Configuration\RtqConsumer.cs" />
-    <Compile Include="Configuration\IColumnFamilyRegistry.cs" />
-    <Compile Include="Configuration\ITaskDataRegistry.cs" />
-    <Compile Include="Configuration\ITaskHandlerRegistry.cs" />
-    <Compile Include="Configuration\TaskDataRegistryRefletionHelpers.cs" />
-    <Compile Include="Configuration\ReportConsumerStateToGraphiteTask.cs" />
-    <Compile Include="Cassandra\Repositories\GlobalTicksHolder\GlobalTime.cs" />
-    <Compile Include="Cassandra\Repositories\GlobalTicksHolder\IGlobalTime.cs" />
-    <Compile Include="Configuration\TaskNameAttribute.cs" />
-    <Compile Include="Configuration\TaskTopicAttribute.cs" />
-    <Compile Include="Handling\CreateTaskOptions.cs" />
-    <Compile Include="Handling\ExecutionContext\ITaskExecutionContext.cs" />
-    <Compile Include="Handling\FinishAction.cs" />
-    <Compile Include="Handling\HandlerManager.cs" />
-    <Compile Include="Handling\HandleResult.cs" />
-    <Compile Include="Handling\HandlerTask.cs" />
-    <Compile Include="Handling\IHandlerManager.cs" />
-    <Compile Include="Handling\IRemoteTask.cs" />
-    <Compile Include="Handling\IRemoteTaskQueue.cs" />
-    <Compile Include="Handling\IRemoteTaskQueueBackdoor.cs" />
-    <Compile Include="Handling\IRemoteTaskQueueInternals.cs" />
-    <Compile Include="Handling\ITaskCounter.cs" />
-    <Compile Include="Handling\ITaskData.cs" />
-    <Compile Include="Handling\ITaskHandler.cs" />
-    <Compile Include="Profiling\MetricsContext.cs" />
-    <Compile Include="Profiling\ProfilingMetrics.cs" />
-    <Compile Include="Handling\RemoteTask.cs" />
-    <Compile Include="Handling\RemoteTaskInfo.cs" />
-    <Compile Include="Handling\RemoteTaskQueue.cs" />
-    <Compile Include="Handling\TaskManipulationResult.cs" />
-    <Compile Include="Handling\RemoteTaskQueueExtensions.cs" />
-    <Compile Include="LocalTasks\TaskQueue\LocalTaskQueueingResult.cs" />
-    <Compile Include="Profiling\GraphiteRemoteTaskQueueProfiler.cs" />
-    <Compile Include="Tracing\BusinessLogicTaskTraceContext.cs" />
-    <Compile Include="Tracing\InfrastructureTaskTraceContext.cs" />
-    <Compile Include="Tracing\PrimitiveTaskTraceContext.cs" />
-    <Compile Include="Tracing\PublishTaskTraceContext.cs" />
-    <Compile Include="Tracing\RemoteTaskHandlingTraceContext.cs" />
-    <Compile Include="Tracing\RemoteTaskInitialTraceContext.cs" />
-    <Compile Include="Handling\RemoteTaskWithContinuationOptimization.cs" />
-    <Compile Include="Handling\TaskCounter.cs" />
-    <Compile Include="Handling\ExecutionContext\TaskExecutionContext.cs" />
-    <Compile Include="Handling\TaskHandler.cs" />
-    <Compile Include="Cassandra\Repositories\IHandleTaskCollection.cs" />
-    <Compile Include="Cassandra\Repositories\IHandleTasksMetaStorage.cs" />
-    <Compile Include="Handling\TaskQueueReason.cs" />
-    <Compile Include="LocalTasks\TaskQueue\ILocalTaskQueue.cs" />
-    <Compile Include="LocalTasks\TaskQueue\LocalTaskQueue.cs" />
-    <Compile Include="LocalTasks\TaskQueue\LocalTaskProcessingResult.cs" />
-    <Compile Include="LocalTasks\TaskQueue\TaskWrapper.cs" />
-    <Compile Include="Profiling\NoOpRemoteTaskQueueProfiler.cs" />
-    <Compile Include="Profiling\IRemoteTaskQueueProfiler.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\IRtqConsumerSettings.cs" />
-    <Compile Include="Settings\IRemoteTaskQueueSettings.cs" />
-    <Compile Include="Configuration\TaskDataRegistryBase.cs" />
-    <Compile Include="Configuration\TaskHandlerRegistryBase.cs" />
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.1"/>
+    <PackageReference Include="morelinq" Version="3.1.1"/>
+    <PackageReference Include="SkbKontur.Cassandra.DistributedLock" Version="2.0.7"/>
+    <PackageReference Include="SkbKontur.Graphite.Client" Version="1.3.12"/>
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations">
-      <Version>2019.1.1</Version>
-    </PackageReference>
-    <PackageReference Include="morelinq">
-      <Version>3.1.1</Version>
-    </PackageReference>
-    <PackageReference Include="SkbKontur.Cassandra.DistributedLock">
-      <Version>2.0.7</Version>
-    </PackageReference>
-    <PackageReference Include="SkbKontur.Graphite.Client">
-      <Version>1.3.12</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
