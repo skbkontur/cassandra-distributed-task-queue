@@ -5,6 +5,8 @@
     <RootNamespace>RemoteTaskQueue.FunctionalTests.Common</RootNamespace>
     <AssemblyName>RemoteTaskQueue.FunctionalTests.Common</AssemblyName>
     <OutputPath>bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

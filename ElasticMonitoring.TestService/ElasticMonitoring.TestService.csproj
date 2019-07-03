@@ -6,6 +6,8 @@
     <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService</RootNamespace>
     <AssemblyName>Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService</AssemblyName>
     <OutputPath>bin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,6 +5,8 @@
     <RootNamespace>RemoteTaskQueue.Monitoring</RootNamespace>
     <AssemblyName>RemoteTaskQueue.Monitoring</AssemblyName>
     <OutputPath>..\..\Assemblies\Temp\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
