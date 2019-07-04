@@ -6,8 +6,6 @@
     <RootNamespace>ExchangeService</RootNamespace>
     <AssemblyName>Catalogue.RemoteTaskQueue.ExchangeService</AssemblyName>
     <OutputPath>bin\</OutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 
