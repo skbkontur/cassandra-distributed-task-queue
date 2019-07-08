@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <OutputType>Exe</OutputType>
     <RootNamespace>ExchangeService</RootNamespace>
     <AssemblyName>Catalogue.RemoteTaskQueue.ExchangeService</AssemblyName>
     <OutputPath>bin\</OutputPath>
+    <OutputType>Exe</OutputType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 

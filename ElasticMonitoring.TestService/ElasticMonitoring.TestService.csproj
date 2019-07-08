@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <OutputType>Exe</OutputType>
     <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService</RootNamespace>
     <AssemblyName>Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService</AssemblyName>
     <OutputPath>bin\</OutputPath>
+    <OutputType>Exe</OutputType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 
