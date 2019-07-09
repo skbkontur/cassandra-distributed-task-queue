@@ -4,7 +4,7 @@
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>Deployment</RootNamespace>
     <AssemblyName>Deployment</AssemblyName>
-    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,10 +20,9 @@
     <Content Include="Projects\Services\ElasticMonitoringService.xml" />
     <Content Include="Projects\Tests\FunctionalTests.xml" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="Projects\Common.vars">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Projects\Common.vars" />
   </ItemGroup>
 
 </Project>

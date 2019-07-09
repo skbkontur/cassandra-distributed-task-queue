@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <PlatformTarget>x64</PlatformTarget>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>RemoteTaskQueue.FunctionalTests</RootNamespace>
     <AssemblyName>RemoteTaskQueue.FunctionalTests</AssemblyName>
     <OutputPath>bin\</OutputPath>
+    <NoWarn>649</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,7 +48,8 @@
   </ItemGroup>
 
   <ItemGroup>
-      <PackageReference Include="FluentAssertions" Version="5.6.0"/>
+    <PackageReference Include="FluentAssertions" Version="5.6.0"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
   </ItemGroup>
 
 </Project>
