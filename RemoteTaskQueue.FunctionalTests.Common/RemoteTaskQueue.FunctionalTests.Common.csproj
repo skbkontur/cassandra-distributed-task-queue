@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GroboContainer.NUnitExtensions" Version="1.0.16"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Catalogue.Commons">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>
@@ -17,14 +25,6 @@
     <Reference Include="Catalogue.TestCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GroboContainer.NUnitExtensions" Version="1.0.16"/>
   </ItemGroup>
 
 </Project>

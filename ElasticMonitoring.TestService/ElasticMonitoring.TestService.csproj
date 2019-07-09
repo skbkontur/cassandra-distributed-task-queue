@@ -10,9 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Settings\monitoringService.csf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj"/>
+    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -31,8 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj"/>
-    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj"/>
+    <None Include="Settings\monitoringService.csf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -9,12 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Catalogue.Commons">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.EventFeeds">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
-    </Reference>
+    <PackageReference Include="FluentAssertions" Version="5.6.0"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <PackageReference Include="NUnit" Version="3.11.0"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -23,9 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.6.0"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
-    <PackageReference Include="NUnit" Version="3.11.0"/>
+    <Reference Include="Catalogue.Commons">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.Core.EventFeeds">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

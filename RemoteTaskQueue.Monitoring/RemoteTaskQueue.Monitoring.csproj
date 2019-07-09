@@ -8,6 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Elasticsearch.Net" Version="6.6.0"/>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
@@ -24,15 +33,6 @@
     <Reference Include="Catalogue.Core.InternalApi.Core">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.InternalApi.Core.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Elasticsearch.Net" Version="6.6.0"/>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2"/>
   </ItemGroup>
 
 </Project>

@@ -10,12 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Settings\monitoringServiceTopology">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Settings\exchangeServiceTopology">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="FluentAssertions" Version="5.6.0"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj"/>
+    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -43,13 +44,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj"/>
-    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.6.0"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+    <None Include="Settings\monitoringServiceTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Settings\exchangeServiceTopology">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
