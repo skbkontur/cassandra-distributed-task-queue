@@ -1,14 +1,15 @@
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
+import { PageTitle } from "Commons/HOC/PageTitle";
 import { RemoteTaskQueueApi, RemoteTaskQueueApiProvider } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 
+import { AdminToolsSupervisorRoute } from "../AdminTools/AdminToolsSupervisorRoute";
 import { ServiceHeader } from "../ServiceHeader/components/ServiceHeader";
 
 import { TasksPageContainer } from "./containers/TasksPageContainer";
 import { TaskChainsTreeContainer } from "./containers/TaskChainsTreeContainer";
 import { TaskDetailsPageContainer } from "./containers/TaskDetailsPageContainer";
-
 const api = new RemoteTaskQueueApi("/internal-api/remote-task-queue/");
 const TasksPath = "/AdminTools/Tasks";
 
@@ -36,9 +37,11 @@ function tryGetParentLocationFromHistoryState(location: any): Nullable<LocationD
 
 export function RemoteTaskQueueMonitoringEntryPoint(): JSX.Element {
     return (
-        <RemoteTaskQueueApiProvider remoteTaskQueueApi={api}>
-            <Route path={TasksPath} component={RemoteTaskQueueApplication} />
-        </RemoteTaskQueueApiProvider>
+        <PageTitle title={"Очередь задач"}>
+            <RemoteTaskQueueApiProvider remoteTaskQueueApi={api}>
+                <AdminToolsSupervisorRoute path={TasksPath} component={RemoteTaskQueueApplication} />
+            </RemoteTaskQueueApiProvider>
+        </PageTitle>
     );
 }
 
