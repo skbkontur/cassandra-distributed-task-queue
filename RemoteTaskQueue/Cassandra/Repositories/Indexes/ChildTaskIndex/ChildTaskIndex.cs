@@ -37,7 +37,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
                 });
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public string[] GetChildTaskIds([NotNull] string taskId)
         {
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName);

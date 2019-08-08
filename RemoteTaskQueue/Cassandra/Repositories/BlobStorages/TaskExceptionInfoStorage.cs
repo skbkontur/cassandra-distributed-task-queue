@@ -81,7 +81,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         }
 
         [NotNull]
-        public Dictionary<string, TaskExceptionInfo[]> Read([NotNull] TaskMetaInformation[] taskMetas)
+        public Dictionary<string, TaskExceptionInfo[]> Read([NotNull, ItemNotNull] TaskMetaInformation[] taskMetas)
         {
             var result = new Dictionary<string, TaskExceptionInfo[]>();
             foreach (var taskMeta in taskMetas.DistinctBy(x => x.Id))
@@ -96,7 +96,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return result;
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public static string[] GetColumnFamilyNames()
         {
             return new[] {timeBasedCfName};

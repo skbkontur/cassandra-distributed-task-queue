@@ -24,19 +24,19 @@ namespace RemoteQueue.Handling
         [NotNull]
         RemoteTaskInfo<T> GetTaskInfo<T>([NotNull] string taskId) where T : ITaskData;
 
-        [NotNull]
-        RemoteTaskInfo[] GetTaskInfos([NotNull] string[] taskIds);
+        [NotNull, ItemNotNull]
+        RemoteTaskInfo[] GetTaskInfos([NotNull, ItemNotNull] string[] taskIds);
+
+        [NotNull, ItemNotNull]
+        RemoteTaskInfo<T>[] GetTaskInfos<T>([NotNull, ItemNotNull] string[] taskIds) where T : ITaskData;
 
         [NotNull]
-        RemoteTaskInfo<T>[] GetTaskInfos<T>([NotNull] string[] taskIds) where T : ITaskData;
-
-        [NotNull]
-        Dictionary<string, TaskMetaInformation> GetTaskMetas([NotNull] string[] taskIds);
+        Dictionary<string, TaskMetaInformation> GetTaskMetas([NotNull, ItemNotNull] string[] taskIds);
 
         [NotNull]
         IRemoteTask CreateTask<T>([NotNull] T taskData, [CanBeNull] CreateTaskOptions createTaskOptions = null) where T : ITaskData;
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         string[] GetChildrenTaskIds([NotNull] string taskId);
     }
 }

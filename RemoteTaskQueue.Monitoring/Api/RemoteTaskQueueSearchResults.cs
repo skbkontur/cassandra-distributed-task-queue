@@ -11,7 +11,7 @@ namespace RemoteTaskQueue.Monitoring.Api
     {
         public int TotalCount { get; set; }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public TaskMetaInformation[] TaskMetas { get; set; }
     }
 }

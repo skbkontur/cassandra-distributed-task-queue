@@ -71,7 +71,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return taskDatas;
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public static string[] GetColumnFamilyNames()
         {
             return new[] {largeBlobsCfName, regularBlobsCfName};

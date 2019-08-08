@@ -28,7 +28,7 @@ namespace RemoteQueue.Cassandra.Entities
         [CanBeNull]
         public BlobId TaskDataId { get; set; }
 
-        [CanBeNull]
+        [CanBeNull, ItemNotNull]
         public List<TimeGuid> TaskExceptionInfoIds { get; set; }
 
         public long Ticks { get; set; }

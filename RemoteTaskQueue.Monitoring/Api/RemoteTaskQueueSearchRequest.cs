@@ -21,7 +21,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         [CanBeNull]
         public TaskState[] States { get; set; }
 
-        [CanBeNull]
+        [CanBeNull, ItemNotNull]
         public string[] Names { get; set; }
     }
 }

@@ -8,24 +8,26 @@ namespace RemoteTaskQueue.Monitoring.Api
 {
     public interface IRemoteTaskQueueMonitoringApi
     {
+        [NotNull, ItemNotNull]
         string[] GetAllTaksNames();
 
-        RemoteTaskQueueSearchResults Search(RemoteTaskQueueSearchRequest searchRequest, int from, int size);
+        [NotNull]
+        RemoteTaskQueueSearchResults Search([NotNull] RemoteTaskQueueSearchRequest searchRequest, int from, int size);
 
         [NotNull]
-        RemoteTaskInfoModel GetTaskDetails(string taskId);
+        RemoteTaskInfoModel GetTaskDetails([NotNull] string taskId);
 
         [NotNull]
-        Dictionary<string, TaskManipulationResult> CancelTasks(string[] ids);
+        Dictionary<string, TaskManipulationResult> CancelTasks([NotNull, ItemNotNull] string[] ids);
 
         [NotNull]
-        Dictionary<string, TaskManipulationResult> RerunTasks(string[] ids);
+        Dictionary<string, TaskManipulationResult> RerunTasks([NotNull, ItemNotNull] string[] ids);
 
         [NotNull]
-        Dictionary<string, TaskManipulationResult> RerunTasksBySearchQuery(RemoteTaskQueueSearchRequest searchRequest);
+        Dictionary<string, TaskManipulationResult> RerunTasksBySearchQuery([NotNull] RemoteTaskQueueSearchRequest searchRequest);
 
         [NotNull]
-        Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery(RemoteTaskQueueSearchRequest searchRequest);
+        Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery([NotNull] RemoteTaskQueueSearchRequest searchRequest);
 
         void ResetTicksHolderInMemoryState();
     }

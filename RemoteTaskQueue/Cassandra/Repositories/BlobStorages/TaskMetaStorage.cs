@@ -50,7 +50,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         }
 
         [NotNull]
-        public Dictionary<string, TaskMetaInformation> Read([NotNull] string[] taskIds)
+        public Dictionary<string, TaskMetaInformation> Read([NotNull, ItemNotNull] string[] taskIds)
         {
             var blobIdToTaskIdMap = taskIds.Distinct().ToDictionary(GetBlobId);
             var taskMetas = timeBasedBlobStorage.Read(blobIdToTaskIdMap.Keys.ToArray())
@@ -67,13 +67,13 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
             return new BlobId(timeGuid, BlobType.Regular);
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public IEnumerable<Tuple<string, TaskMetaInformation>> ReadAll(int batchSize)
         {
             return timeBasedBlobStorage.ReadAll(batchSize).Select(x => Tuple.Create(x.Item1.Id.ToGuid().ToString(), serializer.Deserialize<TaskMetaInformation>(x.Item2)));
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public static string[] GetColumnFamilyNames()
         {
             return new[] {largeBlobsCfName, regularBlobsCfName};

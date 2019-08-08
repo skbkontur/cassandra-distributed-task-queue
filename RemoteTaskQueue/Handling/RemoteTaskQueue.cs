@@ -69,7 +69,10 @@ namespace RemoteQueue.Handling
         public ITaskDataRegistry TaskDataRegistry { get; private set; }
         public IGlobalTime GlobalTime { get; private set; }
         public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; private set; }
+
+        [NotNull]
         public EventLogRepository EventLogRepository { get; private set; }
+
         public IHandleTasksMetaStorage HandleTasksMetaStorage { get; private set; }
         public ITaskDataStorage TaskDataStorage { get; private set; }
         public ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; private set; }
@@ -149,8 +152,8 @@ namespace RemoteQueue.Handling
             return taskInfos[0];
         }
 
-        [NotNull]
-        public RemoteTaskInfo[] GetTaskInfos([NotNull] string[] taskIds)
+        [NotNull, ItemNotNull]
+        public RemoteTaskInfo[] GetTaskInfos([NotNull, ItemNotNull] string[] taskIds)
         {
             if (taskIds.Any(string.IsNullOrWhiteSpace))
                 throw new InvalidProgramStateException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
@@ -164,14 +167,14 @@ namespace RemoteQueue.Handling
                 }).ToArray();
         }
 
-        [NotNull]
-        public RemoteTaskInfo<T>[] GetTaskInfos<T>([NotNull] string[] taskIds) where T : ITaskData
+        [NotNull, ItemNotNull]
+        public RemoteTaskInfo<T>[] GetTaskInfos<T>([NotNull, ItemNotNull] string[] taskIds) where T : ITaskData
         {
             return GetTaskInfos(taskIds).Select(ConvertRemoteTaskInfo<T>).ToArray();
         }
 
         [NotNull]
-        public Dictionary<string, TaskMetaInformation> GetTaskMetas([NotNull] string[] taskIds)
+        public Dictionary<string, TaskMetaInformation> GetTaskMetas([NotNull, ItemNotNull] string[] taskIds)
         {
             if (taskIds.Any(string.IsNullOrWhiteSpace))
                 throw new InvalidProgramStateException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
@@ -209,7 +212,7 @@ namespace RemoteQueue.Handling
             return context.CurrentTask.Meta.Id;
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public string[] GetChildrenTaskIds([NotNull] string taskId)
         {
             if (string.IsNullOrWhiteSpace(taskId))

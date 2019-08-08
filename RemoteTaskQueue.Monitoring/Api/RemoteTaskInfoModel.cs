@@ -9,6 +9,7 @@ namespace RemoteTaskQueue.Monitoring.Api
 {
     public class TaskMetaInformationChildTasks
     {
+        [NotNull, ItemNotNull]
         public string[] ChildTaskIds { get; set; }
     }
 
@@ -21,7 +22,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         [NotNull]
         public ITaskData TaskData { get; set; }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public TaskExceptionInfo[] ExceptionInfos { get; set; }
     }
 }

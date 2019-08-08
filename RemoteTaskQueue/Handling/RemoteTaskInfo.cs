@@ -8,7 +8,7 @@ namespace RemoteQueue.Handling
 {
     public class RemoteTaskInfo
     {
-        public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] ITaskData taskData, [NotNull] TaskExceptionInfo[] exceptionInfos)
+        public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] ITaskData taskData, [NotNull, ItemNotNull] TaskExceptionInfo[] exceptionInfos)
         {
             Context = context;
             TaskData = taskData;
@@ -16,12 +16,12 @@ namespace RemoteQueue.Handling
         }
 
         [NotNull]
-        public TaskMetaInformation Context { get; private set; }
+        public TaskMetaInformation Context { get; }
 
         [NotNull]
-        public ITaskData TaskData { get; private set; }
+        public ITaskData TaskData { get; }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public TaskExceptionInfo[] ExceptionInfos { get; private set; }
 
         [Obsolete("For FakeRemoteTaskQueue impl only")]
@@ -34,7 +34,7 @@ namespace RemoteQueue.Handling
     public class RemoteTaskInfo<T>
         where T : ITaskData
     {
-        public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] T taskData, [NotNull] TaskExceptionInfo[] exceptionInfos)
+        public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] T taskData, [NotNull, ItemNotNull] TaskExceptionInfo[] exceptionInfos)
         {
             Context = context;
             TaskData = taskData;
@@ -42,12 +42,12 @@ namespace RemoteQueue.Handling
         }
 
         [NotNull]
-        public TaskMetaInformation Context { get; private set; }
+        public TaskMetaInformation Context { get; }
 
         [NotNull]
-        public T TaskData { get; private set; }
+        public T TaskData { get; }
 
-        [NotNull]
-        public TaskExceptionInfo[] ExceptionInfos { get; private set; }
+        [NotNull, ItemNotNull]
+        public TaskExceptionInfo[] ExceptionInfos { get; }
     }
 }

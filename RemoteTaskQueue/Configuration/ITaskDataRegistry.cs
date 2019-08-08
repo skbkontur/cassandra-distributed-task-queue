@@ -6,7 +6,7 @@ namespace RemoteQueue.Configuration
 {
     public interface ITaskDataRegistry
     {
-        [NotNull]
+        [NotNull, ItemNotNull]
         string[] GetAllTaskNames();
 
         [NotNull]
@@ -17,7 +17,7 @@ namespace RemoteQueue.Configuration
 
         bool TryGetTaskType([NotNull] string taskName, out Type taskType);
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         string[] GetAllTaskTopics();
 
         [NotNull]

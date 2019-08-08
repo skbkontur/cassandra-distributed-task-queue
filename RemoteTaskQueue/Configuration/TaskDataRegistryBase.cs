@@ -39,7 +39,7 @@ namespace RemoteQueue.Configuration
             return ShardingHelpers.GetShard(taskName.GetPersistentHashCode(), topicsCount).ToString(CultureInfo.InvariantCulture);
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public string[] GetAllTaskNames()
         {
             return nameToType.Keys.ToArray();
@@ -68,7 +68,7 @@ namespace RemoteQueue.Configuration
             return nameToType.TryGetValue(taskName, out taskType);
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public string[] GetAllTaskTopics()
         {
             return nameToTopic.Values.Distinct().ToArray();

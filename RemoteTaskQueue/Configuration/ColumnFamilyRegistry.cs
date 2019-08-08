@@ -31,7 +31,7 @@ namespace RemoteQueue.Configuration
             cfNames.Add(ChildTaskIndex.ColumnFamilyName);
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         public ColumnFamily[] GetAllColumnFamilyNames()
         {
             return cfNames.Select(cfName => new ColumnFamily {Name = cfName}).ToArray();
