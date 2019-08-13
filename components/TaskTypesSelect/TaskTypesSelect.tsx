@@ -25,14 +25,16 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
     public render(): JSX.Element {
         const { disabled, value } = this.props;
         return (
-            <Tooltip render={this.renderTooltip} trigger={"click"} pos="bottom left" data-tid="Tooltip">
-                <Button disabled={disabled}>
-                    <span className={cn("button-text")}>
-                        {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
-                    </span>
-                    <ArrowTriangleDownIcon />
-                </Button>
-            </Tooltip>
+            <span>
+                <Tooltip render={this.renderTooltip} trigger={"click"} pos="bottom left" data-tid="Tooltip">
+                    <Button disabled={disabled}>
+                        <span className={cn("button-text")}>
+                            {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
+                        </span>
+                        <ArrowTriangleDownIcon />
+                    </Button>
+                </Tooltip>
+            </span>
         );
     }
 

@@ -27,14 +27,16 @@ export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
     public render(): JSX.Element {
         const { value } = this.props;
         return (
-            <Tooltip render={() => this.renderTooltip()} trigger="click" pos="bottom left">
-                <Button>
-                    <span data-tid="ButtonText" className={cn("button-text")}>
-                        {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
-                    </span>
-                    <ArrowTriangleDownIcon />
-                </Button>
-            </Tooltip>
+            <span>
+                <Tooltip render={() => this.renderTooltip()} trigger="click" pos="bottom left">
+                    <Button>
+                        <span data-tid="ButtonText" className={cn("button-text")}>
+                            {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
+                        </span>
+                        <ArrowTriangleDownIcon />
+                    </Button>
+                </Tooltip>
+            </span>
         );
     }
 
