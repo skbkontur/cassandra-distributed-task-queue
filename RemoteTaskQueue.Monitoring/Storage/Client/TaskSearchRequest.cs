@@ -13,7 +13,7 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
         [CanBeNull, ItemNotNull]
         public string[] TaskNames { get; set; }
 
-        [CanBeNull]
+        [CanBeNull, ItemNotNull]
         public string[] TaskStates { get; set; }
     }
 }
