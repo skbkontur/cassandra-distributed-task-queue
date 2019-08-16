@@ -35,7 +35,7 @@ export function OrganizationLinkDropdown({
                 data-tid="GoToPartyBusinessObject">
                 <InfoIcon /> Открыть бизнес-объект
             </LinkMenuItem>
-            <LinkMenuItem href={`/${partyId}/Supplier`} data-tid="GoToPartySupplierInterface">
+            <LinkMenuItem href={`/${partyId}/Supplier/NewApplications`} data-tid="GoToPartySupplierInterface">
                 <ExportIcon /> Открыть интерфейс поставщика
             </LinkMenuItem>
             <LinkMenuItem href={`/${partyId}/Monitoring/TaskChainList`} data-tid="GoToPartyMonitoring">
