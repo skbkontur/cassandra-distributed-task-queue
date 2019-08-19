@@ -28,7 +28,7 @@ export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
         const { value } = this.props;
         return (
             <span>
-                <Tooltip render={() => this.renderTooltip()} trigger="click" pos="bottom left">
+                <Tooltip render={this.renderTooltip} trigger="click" pos="bottom left">
                     <Button>
                         <span data-tid="ButtonText" className={cn("button-text")}>
                             {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
@@ -40,22 +40,20 @@ export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
         );
     }
 
-    private renderTooltip(): JSX.Element {
-        return (
-            <ColumnStack block gap={2}>
-                {getAllTaskStates().map((item, index) => (
-                    <Fit key={index}>
-                        <Checkbox
-                            data-tid={item}
-                            checked={this.isItemSelected(item)}
-                            onChange={(e, val) => this.selectItem(val, item)}>
-                            {TaskStateCaptions[item]}
-                        </Checkbox>
-                    </Fit>
-                ))}
-            </ColumnStack>
-        );
-    }
+    private readonly renderTooltip = (): JSX.Element => (
+        <ColumnStack block gap={2}>
+            {getAllTaskStates().map((item, index) => (
+                <Fit key={index}>
+                    <Checkbox
+                        data-tid={item}
+                        checked={this.isItemSelected(item)}
+                        onChange={(e, val) => this.selectItem(val, item)}>
+                        {TaskStateCaptions[item]}
+                    </Checkbox>
+                </Fit>
+            ))}
+        </ColumnStack>
+    );
 
     private isItemSelected(item: TaskState): boolean {
         const { value } = this.props;
