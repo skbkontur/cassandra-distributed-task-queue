@@ -1,49 +1,32 @@
-﻿using System;
+﻿using GroBuf;
 
 using RemoteTaskQueue.Monitoring.TaskCounter;
 
-using SKBKontur.Catalogue.ClientLib.Domains;
-using SKBKontur.Catalogue.ClientLib.HttpClientBases;
-using SKBKontur.Catalogue.ClientLib.HttpClientBases.Configuration;
-using SKBKontur.Catalogue.ClientLib.Topology;
+using SKBKontur.Catalogue.ClientLib.GroboClusterClient;
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
-    public class MonitoringServiceClient : HttpClientBase
+    public class MonitoringServiceClient : HttpClientForTestsBase
     {
-        public MonitoringServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration)
-            : base(domainTopologyFactory, methodDomainFactory, configuration)
+        public MonitoringServiceClient(ISerializer serializer)
+            : base(serializer, Log.For<MonitoringServiceClient>(), applicationName : "RtqMonitoringServiceClient", port : 4413)
         {
         }
 
         public RtqTaskCounters GetTaskCounters()
         {
-            return Method("GetTaskCounters").InvokeOnRandomReplica().ThanReturn<RtqTaskCounters>();
+            return clusterClient.Post("GetTaskCounters").ThenReturn<RtqTaskCounters>();
         }
 
         public void ExecuteForcedFeeding()
         {
-            Method("ExecuteForcedFeeding").SendToEachReplica(DomainConsistencyLevel.All);
+            clusterClient.Post("ExecuteForcedFeeding");
         }
 
         public void ResetState()
         {
-            Method("ResetState").SendToEachReplica(DomainConsistencyLevel.All);
-        }
-
-        public void Stop()
-        {
-            Method("Stop").SendToEachReplica(DomainConsistencyLevel.All);
-        }
-
-        protected override sealed string GetDefaultTopologyFileName()
-        {
-            return "monitoringService";
-        }
-
-        protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
-        {
-            return defaultConfiguration.WithTimeout(TimeSpan.FromMinutes(1));
+            clusterClient.Post("ResetState");
         }
     }
 }

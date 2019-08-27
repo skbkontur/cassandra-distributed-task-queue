@@ -1,42 +1,34 @@
 ﻿using System;
+using System.Linq;
 
-using SKBKontur.Catalogue.ClientLib.Domains;
-using SKBKontur.Catalogue.ClientLib.HttpClientBases;
-using SKBKontur.Catalogue.ClientLib.HttpClientBases.Configuration;
-using SKBKontur.Catalogue.ClientLib.Topology;
+using GroBuf;
+
+using JetBrains.Annotations;
+
+using MoreLinq;
+
+using SKBKontur.Catalogue.ServiceLib.Logging;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
-    public class ExchangeServiceClient : HttpClientBase
+    public class ExchangeServiceClient
     {
-        public ExchangeServiceClient(IDomainTopologyFactory domainTopologyFactory, IMethodDomainFactory methodDomainFactory, IHttpServiceClientConfiguration configuration)
-            : base(domainTopologyFactory, methodDomainFactory, configuration)
+        public ExchangeServiceClient([NotNull] ISerializer serializer)
         {
+            var logger = Log.For(this);
+            var ports = new[] {4403, 4404, 4405, 4406, 4407};
+            replicaClients = ports.Select(port => new ExchangeServiceReplicaClient(serializer, logger, port)).ToArray();
         }
 
-        public void Start()
-        {
-            Method("Start").SendToEachReplica(DomainConsistencyLevel.All);
-        }
+        public void Start() =>
+            replicaClients.ForEach(replica => replica.Start());
 
-        public void Stop()
-        {
-            Method("Stop").SendToEachReplica(DomainConsistencyLevel.All);
-        }
+        public void Stop() =>
+            replicaClients.ForEach(replica => replica.Stop());
 
-        public void ChangeTaskTtl(TimeSpan ttl)
-        {
-            Method("ChangeTaskTtl").SendToEachReplica(DomainConsistencyLevel.All, ttl);
-        }
+        public void ChangeTaskTtl(TimeSpan ttl) =>
+            replicaClients.ForEach(replica => replica.ChangeTaskTtl(ttl));
 
-        protected override IHttpServiceClientConfiguration DoGetConfiguration(IHttpServiceClientConfiguration defaultConfiguration)
-        {
-            return defaultConfiguration.WithTimeout(TimeSpan.FromSeconds(30));
-        }
-
-        protected override string GetDefaultTopologyFileName()
-        {
-            return "exchangeService";
-        }
+        private readonly ExchangeServiceReplicaClient[] replicaClients;
     }
 }
