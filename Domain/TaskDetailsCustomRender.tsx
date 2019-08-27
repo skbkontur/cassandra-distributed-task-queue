@@ -27,7 +27,7 @@ export function OrganizationLinkDropdown({
 }): JSX.Element {
     return (
         <LinkDropdown renderTitle={caption != null ? caption : partyId} data-tid="GoToLink">
-            <LinkMenuItem href={`/AdminTools/PartyEdit?partyId=${partyId}`} data-tid="GoToPartyEdit">
+            <LinkMenuItem href={`/AdminTools/Parties/${partyId}`} data-tid="GoToPartyEdit">
                 <CardIcon /> Открыть карточку организации
             </LinkMenuItem>
             <LinkMenuItem
