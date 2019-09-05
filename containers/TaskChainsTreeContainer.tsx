@@ -6,6 +6,7 @@ import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { CommonLayout } from "Commons/Layouts";
 import { queryStringMapping, QueryStringMapping } from "Commons/QueryStringMapping";
+import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
@@ -14,7 +15,6 @@ import {
     isRemoteTaskQueueSearchRequestEmpty,
 } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 

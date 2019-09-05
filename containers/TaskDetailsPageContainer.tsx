@@ -4,12 +4,12 @@ import * as React from "react";
 import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
 import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
+import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
 import { ApiError } from "Domain/ApiBase/ApiBase";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
 import { SuperUserAccessLevels } from "Domain/Globals";
-import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
 import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";

@@ -9,6 +9,7 @@ import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { CommonLayout } from "Commons/Layouts";
 import { QueryStringMapping, queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
+import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
 import {
@@ -19,7 +20,6 @@ import { RemoteTaskQueueSearchResults } from "Domain/EDI/Api/RemoteTaskQueue/Rem
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
 import { SuperUserAccessLevels } from "Domain/Globals";
-import { takeLastAndRejectPrevious } from "PromiseUtils";
 
 import { TasksPaginator } from "../components/TasksPaginator/TasksPaginator";
 import { TaskQueueFilter } from "../components/TaskQueueFilter/TaskQueueFilter";
