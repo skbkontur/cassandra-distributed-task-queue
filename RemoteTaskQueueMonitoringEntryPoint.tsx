@@ -4,7 +4,7 @@ import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import { PageTitle } from "Commons/HOC/PageTitle";
 import { RemoteTaskQueueApi, RemoteTaskQueueApiProvider } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 
-import { AdminToolsSupervisorRoute } from "../AdminTools/AdminToolsSupervisorRoute";
+import { AdminToolsSupervisorRoute } from "../AdminTools/AdminToolsSuperUserRoutes";
 import { ServiceHeader } from "../ServiceHeader/components/ServiceHeader";
 
 import { TasksPageContainer } from "./containers/TasksPageContainer";
