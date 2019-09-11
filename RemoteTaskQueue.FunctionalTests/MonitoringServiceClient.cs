@@ -2,15 +2,14 @@
 
 using RemoteTaskQueue.Monitoring.TaskCounter;
 
-using SKBKontur.Catalogue.ClientLib.GroboClusterClient;
-using SKBKontur.Catalogue.ServiceLib.Logging;
+using SKBKontur.Catalogue.ServiceLib.GroboClusterClient;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
     public class MonitoringServiceClient : HttpClientForTestsBase
     {
         public MonitoringServiceClient(ISerializer serializer)
-            : base(serializer, Log.For<MonitoringServiceClient>(), applicationName : "RtqMonitoringServiceClient", port : 4413)
+            : base(serializer, applicationName : "RtqMonitoringServiceClient", port : 4413)
         {
         }
 

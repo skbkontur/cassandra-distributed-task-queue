@@ -20,9 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Catalogue.ClientLib">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.ClientLib.dll</HintPath>
-    </Reference>
     <Reference Include="Catalogue.Commons">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>

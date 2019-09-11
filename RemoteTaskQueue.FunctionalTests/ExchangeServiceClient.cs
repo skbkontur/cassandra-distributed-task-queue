@@ -7,17 +7,14 @@ using JetBrains.Annotations;
 
 using MoreLinq;
 
-using SKBKontur.Catalogue.ServiceLib.Logging;
-
 namespace RemoteTaskQueue.FunctionalTests
 {
     public class ExchangeServiceClient
     {
         public ExchangeServiceClient([NotNull] ISerializer serializer)
         {
-            var logger = Log.For(this);
             var ports = new[] {4403, 4404, 4405, 4406, 4407};
-            replicaClients = ports.Select(port => new ExchangeServiceReplicaClient(serializer, logger, port)).ToArray();
+            replicaClients = ports.Select(port => new ExchangeServiceReplicaClient(serializer, port)).ToArray();
         }
 
         public void Start() =>

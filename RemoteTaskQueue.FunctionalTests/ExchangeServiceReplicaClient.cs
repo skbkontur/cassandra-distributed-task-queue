@@ -4,16 +4,14 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using SKBKontur.Catalogue.ClientLib.GroboClusterClient;
-
-using Vostok.Logging.Abstractions;
+using SKBKontur.Catalogue.ServiceLib.GroboClusterClient;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
     public class ExchangeServiceReplicaClient : HttpClientForTestsBase
     {
-        public ExchangeServiceReplicaClient([NotNull] ISerializer serializer, [NotNull] ILog logger, int port)
-            : base(serializer, logger, applicationName : "ExchangeService", port)
+        public ExchangeServiceReplicaClient([NotNull] ISerializer serializer, int port)
+            : base(serializer, applicationName : "ExchangeService", port)
         {
         }
 
