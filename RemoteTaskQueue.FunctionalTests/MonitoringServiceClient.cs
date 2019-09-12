@@ -1,4 +1,6 @@
-﻿using GroBuf;
+﻿using System;
+
+using GroBuf;
 
 using RemoteTaskQueue.Monitoring.TaskCounter;
 
@@ -9,8 +11,18 @@ namespace RemoteTaskQueue.FunctionalTests
     public class MonitoringServiceClient : HttpClientForTestsBase
     {
         public MonitoringServiceClient(ISerializer serializer)
-            : base(serializer, applicationName : "RtqMonitoringServiceClient", port : 4413)
+            : base(serializer, "RtqMonitoringServiceClient", port : 4413)
         {
+        }
+
+        public void Start()
+        {
+            clusterClient.Post("Start", new RequestSettings(timeout : TimeSpan.FromSeconds(30)));
+        }
+
+        public void Stop()
+        {
+            clusterClient.Post("Stop", new RequestSettings(timeout : TimeSpan.FromMinutes(2)));
         }
 
         public RtqTaskCounters GetTaskCounters()

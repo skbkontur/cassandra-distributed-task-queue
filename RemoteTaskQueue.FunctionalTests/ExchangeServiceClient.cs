@@ -17,14 +17,20 @@ namespace RemoteTaskQueue.FunctionalTests
             replicaClients = ports.Select(port => new ExchangeServiceReplicaClient(serializer, port)).ToArray();
         }
 
-        public void Start() =>
+        public void Start()
+        {
             replicaClients.ForEach(replica => replica.Start());
+        }
 
-        public void Stop() =>
+        public void Stop()
+        {
             replicaClients.ForEach(replica => replica.Stop());
+        }
 
-        public void ChangeTaskTtl(TimeSpan ttl) =>
+        public void ChangeTaskTtl(TimeSpan ttl)
+        {
             replicaClients.ForEach(replica => replica.ChangeTaskTtl(ttl));
+        }
 
         private readonly ExchangeServiceReplicaClient[] replicaClients;
     }
