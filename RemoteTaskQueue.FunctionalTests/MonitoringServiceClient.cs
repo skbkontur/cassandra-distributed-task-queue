@@ -11,18 +11,8 @@ namespace RemoteTaskQueue.FunctionalTests
     public class MonitoringServiceClient : HttpClientForTestsBase
     {
         public MonitoringServiceClient(ISerializer serializer)
-            : base(serializer, "RtqMonitoringServiceClient", port : 4413)
+            : base(serializer, "RtqMonitoringServiceClient", port : 4413, defaultRequestTimeout : TimeSpan.FromMinutes(1))
         {
-        }
-
-        public void Start()
-        {
-            clusterClient.Post("Start", new RequestSettings(timeout : TimeSpan.FromSeconds(30)));
-        }
-
-        public void Stop()
-        {
-            clusterClient.Post("Stop", new RequestSettings(timeout : TimeSpan.FromMinutes(2)));
         }
 
         public RtqTaskCounters GetTaskCounters()
@@ -38,6 +28,11 @@ namespace RemoteTaskQueue.FunctionalTests
         public void ResetState()
         {
             clusterClient.Post("ResetState");
+        }
+
+        public void Stop()
+        {
+            clusterClient.Post("Stop");
         }
     }
 }

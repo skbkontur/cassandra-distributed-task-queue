@@ -11,18 +11,18 @@ namespace RemoteTaskQueue.FunctionalTests
     public class ExchangeServiceReplicaClient : HttpClientForTestsBase
     {
         public ExchangeServiceReplicaClient([NotNull] ISerializer serializer, int port)
-            : base(serializer, "ExchangeService", port)
+            : base(serializer, "ExchangeService", port, defaultRequestTimeout : TimeSpan.FromSeconds(30))
         {
         }
 
         public void Start()
         {
-            clusterClient.Post("Start", new RequestSettings(timeout : TimeSpan.FromSeconds(30)));
+            clusterClient.Post("Start");
         }
 
         public void Stop()
         {
-            clusterClient.Post("Stop", new RequestSettings(timeout : TimeSpan.FromMinutes(2)));
+            clusterClient.Post("Stop");
         }
 
         public void ChangeTaskTtl(TimeSpan ttl)
