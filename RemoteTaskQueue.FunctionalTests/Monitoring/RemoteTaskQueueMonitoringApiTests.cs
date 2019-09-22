@@ -162,10 +162,10 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         public void TestRerunTask()
         {
             var taskId = QueueTasksAndWaitForActualization(new AlphaTaskData()).Single();
-            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId).TaskMeta.Item1.Attempts.Should().Be(1);
+            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId).TaskMeta.Attempts.Should().Be(1);
             remoteTaskQueueMonitoringApi.RerunTasks(new[] {taskId});
             WaitForTasks(new[] {taskId}, TimeSpan.FromSeconds(60));
-            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId).TaskMeta.Item1.Attempts.Should().Be(2);
+            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId).TaskMeta.Attempts.Should().Be(2);
         }
 
         [Test]
@@ -178,9 +178,9 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 new BetaTaskData());
             var t1 = Timestamp.Now;
 
-            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[0]).TaskMeta.Item1.Attempts.Should().Be(1);
-            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[1]).TaskMeta.Item1.Attempts.Should().Be(1);
-            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[2]).TaskMeta.Item1.Attempts.Should().Be(1);
+            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[0]).TaskMeta.Attempts.Should().Be(1);
+            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[1]).TaskMeta.Attempts.Should().Be(1);
+            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[2]).TaskMeta.Attempts.Should().Be(1);
 
             remoteTaskQueueMonitoringApi.RerunTasksBySearchQuery(new RemoteTaskQueueSearchRequest
                 {
@@ -190,9 +190,9 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             WaitForTasks(new[] {taskId[0], taskId[1]}, TimeSpan.FromSeconds(60));
 
-            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[0]).TaskMeta.Item1.Attempts.Should().Be(2);
-            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[1]).TaskMeta.Item1.Attempts.Should().Be(2);
-            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[2]).TaskMeta.Item1.Attempts.Should().Be(1);
+            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[0]).TaskMeta.Attempts.Should().Be(2);
+            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[1]).TaskMeta.Attempts.Should().Be(2);
+            remoteTaskQueueMonitoringApi.GetTaskDetails(taskId[2]).TaskMeta.Attempts.Should().Be(1);
         }
 
         private static Range<DateTime> EnqueueDateTimeRange(Timestamp t0, Timestamp t1)

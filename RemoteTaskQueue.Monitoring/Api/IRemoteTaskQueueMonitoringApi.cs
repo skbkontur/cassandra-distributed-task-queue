@@ -14,7 +14,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         [NotNull]
         RemoteTaskQueueSearchResults Search([NotNull] RemoteTaskQueueSearchRequest searchRequest, int from, int size);
 
-        [NotNull]
+        [CanBeNull]
         RemoteTaskInfoModel GetTaskDetails([NotNull] string taskId);
 
         [NotNull]

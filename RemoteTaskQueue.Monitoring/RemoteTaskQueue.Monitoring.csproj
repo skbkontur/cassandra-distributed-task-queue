@@ -30,9 +30,6 @@
     <Reference Include="Catalogue.Core.ElasticsearchClientExtensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
     </Reference>
-    <Reference Include="Catalogue.Core.InternalApi.Core">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.InternalApi.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

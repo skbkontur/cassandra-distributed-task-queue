@@ -10,8 +10,7 @@ using RemoteQueue.Handling;
 
 using RemoteTaskQueue.Monitoring.Storage.Client;
 
-using SKBKontur.Catalogue.Core.InternalApi.Core;
-using SKBKontur.Catalogue.Core.InternalApi.Core.Exceptions;
+using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring.Api
 {
@@ -34,9 +33,9 @@ namespace RemoteTaskQueue.Monitoring.Api
         public RemoteTaskQueueSearchResults Search([NotNull] RemoteTaskQueueSearchRequest searchRequest, int from, int size)
         {
             if (searchRequest.EnqueueDateTimeRange == null)
-                throw new BadRequestException("enqueueDateTimeRange should be specified");
+                throw new ArgumentException("enqueueDateTimeRange should be specified");
             if (searchRequest.EnqueueDateTimeRange.OpenType != null)
-                throw new BadRequestException("Both enqueueDateTimeRange.lowerBound and enqueueDateTimeRange.uppedBound should be specified");
+                throw new ArgumentException("Both enqueueDateTimeRange.lowerBound and enqueueDateTimeRange.uppedBound should be specified");
 
             var searchResult = FindTasks(searchRequest, from, size);
             var taskMetas = remoteTaskQueue.GetTaskMetas(searchResult.Ids);
@@ -112,23 +111,19 @@ namespace RemoteTaskQueue.Monitoring.Api
 //                };
 //        }
 
-        [NotNull]
+        [CanBeNull]
         public RemoteTaskInfoModel GetTaskDetails([NotNull] string taskId)
         {
             var result = remoteTaskQueue.TryGetTaskInfo(taskId);
             if (result == null)
-                throw new NotFoundException($"Task with id {taskId} not found");
+                return null;
+
             return new RemoteTaskInfoModel
                 {
                     ExceptionInfos = result.ExceptionInfos,
                     TaskData = result.TaskData,
-                    TaskMeta = new Merged<TaskMetaInformation, TaskMetaInformationChildTasks>(
-                        result.Context,
-                        new TaskMetaInformationChildTasks
-                            {
-                                ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskId)
-                            }
-                    ),
+                    TaskMeta = result.Context,
+                    ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskId),
                 };
         }
 
