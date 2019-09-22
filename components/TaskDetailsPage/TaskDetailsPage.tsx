@@ -56,14 +56,21 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                             data-tid="Header"
                             title={`Задача ${taskDetails.taskMeta.name}`}
                             tools={taskDetails && allowRerunOrCancel ? this.renderButtons() : null}>
-                            <TaskTimeLine getHrefToTask={getTaskLocation} taskMeta={taskDetails.taskMeta} />
+                            <TaskTimeLine
+                                getHrefToTask={getTaskLocation}
+                                taskMeta={taskDetails.taskMeta}
+                                childTaskIds={taskDetails.childTaskIds}
+                            />
                         </CommonLayout.GreyLineHeader>
                     )}
                     <CommonLayout.Content>
                         <ColumnStack block stretch gap={2}>
                             {taskDetails && (
                                 <Fit>
-                                    <TaskDetailsMetaTable taskMeta={taskDetails.taskMeta} />
+                                    <TaskDetailsMetaTable
+                                        taskMeta={taskDetails.taskMeta}
+                                        childTaskIds={taskDetails.childTaskIds}
+                                    />
                                 </Fit>
                             )}
                             {taskDetails && (

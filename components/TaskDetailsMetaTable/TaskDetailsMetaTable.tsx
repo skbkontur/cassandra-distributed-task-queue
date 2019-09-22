@@ -3,12 +3,13 @@ import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { ticksToMilliseconds } from "Commons/ConvertTimeUtil";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { Ticks } from "Domain/DataTypes/Time";
-import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
+import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
 
 import cn from "./TaskDetailsMetaTable.less";
 
 export interface TaskDetailsMetaTableProps {
-    taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
+    taskMeta: TaskMetaInformation;
+    childTaskIds: string[];
 }
 
 export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps> {
@@ -21,7 +22,7 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
     }
 
     public renderMetaInfo(): JSX.Element[] {
-        const { taskMeta } = this.props;
+        const { taskMeta, childTaskIds } = this.props;
         const executionTime = ticksToMilliseconds(taskMeta.executionDurationTicks);
         return [
             <tr key="TaskId">
@@ -85,8 +86,8 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
             <tr key="ChildTaskIds">
                 <td>ChildTaskIds</td>
                 <td data-tid="ChildTaskIds">
-                    {taskMeta.childTaskIds &&
-                        taskMeta.childTaskIds.map(item => (
+                    {childTaskIds &&
+                        childTaskIds.map(item => (
                             <span key={item}>
                                 <a href={"/AdminTools/Tasks/" + item}>{item}</a>
                                 <br />

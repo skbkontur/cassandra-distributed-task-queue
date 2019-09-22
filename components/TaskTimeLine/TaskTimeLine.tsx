@@ -15,7 +15,7 @@ import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { TimeUtils } from "Commons/TimeUtils";
 import { Ticks } from "Domain/DataTypes/Time";
-import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
+import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import cn from "./TaskTimeLine.less";
@@ -32,7 +32,8 @@ const IconColors = {
 const alwaysVisibleTaskIdsCount = 3;
 
 interface TaskTimeLineProps {
-    taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks;
+    taskMeta: TaskMetaInformation;
+    childTaskIds: string[];
     getHrefToTask: (id: string) => LocationDescriptor;
 }
 
@@ -234,18 +235,16 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
     };
 
     public getChildrenTaskIdsEntry(): null | JSX.Element {
-        const { taskMeta, getHrefToTask } = this.props;
-        if (taskMeta.childTaskIds && taskMeta.childTaskIds.length > 0) {
-            const visibleTaskIdsCount = this.state.showAllErrors
-                ? taskMeta.childTaskIds.length
-                : alwaysVisibleTaskIdsCount;
-            const hiddenTaskIdsCount = taskMeta.childTaskIds.length - visibleTaskIdsCount;
+        const { childTaskIds, getHrefToTask } = this.props;
+        if (childTaskIds && childTaskIds.length > 0) {
+            const visibleTaskIdsCount = this.state.showAllErrors ? childTaskIds.length : alwaysVisibleTaskIdsCount;
+            const hiddenTaskIdsCount = childTaskIds.length - visibleTaskIdsCount;
 
             return (
                 <TimeLineEntry key="Children" icon={<ArrowBoldDown />} iconColor={IconColors.grey}>
                     <div className={cn("entry", "waiting")} data-tid="EnqueuedTasks">
                         <div>Enqueued tasks:</div>
-                        {taskMeta.childTaskIds.slice(0, visibleTaskIdsCount).map(x => (
+                        {childTaskIds.slice(0, visibleTaskIdsCount).map(x => (
                             <div key={x} data-tid="TaskLink">
                                 <AllowCopyToClipboard>
                                     <RouterLink to={getHrefToTask(x)}>{x}</RouterLink>

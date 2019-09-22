@@ -9,7 +9,7 @@ import * as React from "react";
 import { RouterLink } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { TaskMetaInformationAndTaskMetaInformationChildTasks } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformationChildTasks";
+import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import { TimeLine } from "../TaskTimeLine/TimeLine/TimeLine";
@@ -24,12 +24,12 @@ const IconColors = {
 };
 
 interface TaskChainTreeProps {
-    taskMetas: TaskMetaInformationAndTaskMetaInformationChildTasks[];
+    taskDetails: RemoteTaskInfoModel[];
     getTaskLocation: (id: string) => LocationDescriptor;
 }
 
 export class TaskChainTree extends React.Component<TaskChainTreeProps> {
-    public buildTaskTimeLineEntry(taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks): JSX.Element {
+    public buildTaskTimeLineEntry({ taskMeta }: RemoteTaskInfoModel): JSX.Element {
         const { getTaskLocation } = this.props;
 
         let iconAndColorProps: { icon: JSX.Element; iconColor: undefined | string } = {
@@ -102,20 +102,20 @@ export class TaskChainTree extends React.Component<TaskChainTreeProps> {
     }
 
     public buildChildEntries(
-        taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
-        taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
+        { taskMeta, childTaskIds }: RemoteTaskInfoModel,
+        taskMetaHashSet: { [key: string]: RemoteTaskInfoModel }
     ): JSX.Element[] {
-        if (!taskMeta.childTaskIds || taskMeta.childTaskIds.length === 0) {
+        if (!childTaskIds || childTaskIds.length === 0) {
             return [];
         }
-        if (taskMeta.childTaskIds.length === 1) {
-            return this.buildTaskTimeLine(taskMetaHashSet[taskMeta.childTaskIds[0]], taskMetaHashSet);
+        if (childTaskIds.length === 1) {
+            return this.buildTaskTimeLine(taskMetaHashSet[childTaskIds[0]], taskMetaHashSet);
         }
         const TimeLineBranch = TimeLine.Branch;
         const TimeLineBranchNode = TimeLine.BranchNode;
         return [
             <TimeLineBranchNode key={`${taskMeta.id}-branches`}>
-                {taskMeta.childTaskIds
+                {childTaskIds
                     .map(x => taskMetaHashSet[x])
                     .filter(x => x)
                     .map((x, i) => (
@@ -126,42 +126,40 @@ export class TaskChainTree extends React.Component<TaskChainTreeProps> {
     }
 
     public buildTaskTimeLine(
-        taskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks,
-        taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks }
+        taskMeta: RemoteTaskInfoModel,
+        taskMetaHashSet: { [key: string]: RemoteTaskInfoModel }
     ): JSX.Element[] {
         return [this.buildTaskTimeLineEntry(taskMeta), ...this.buildChildEntries(taskMeta, taskMetaHashSet)];
     }
 
     public findMostParentTask(
-        taskMetaHashSet: { [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks },
-        startTaskMeta: TaskMetaInformationAndTaskMetaInformationChildTasks
-    ): TaskMetaInformationAndTaskMetaInformationChildTasks {
+        taskMetaHashSet: { [key: string]: RemoteTaskInfoModel },
+        startTaskMeta: RemoteTaskInfoModel
+    ): RemoteTaskInfoModel {
         let result = startTaskMeta;
-        while (result.parentTaskId) {
-            if (!taskMetaHashSet[result.parentTaskId]) {
+        while (result.taskMeta.parentTaskId) {
+            if (!taskMetaHashSet[result.taskMeta.parentTaskId]) {
                 return result;
             }
-            result = taskMetaHashSet[result.parentTaskId];
+            result = taskMetaHashSet[result.taskMeta.parentTaskId];
         }
         return result;
     }
 
-    public findAllMostParents(taskMetaHashSet: {
-        [key: string]: TaskMetaInformationAndTaskMetaInformationChildTasks;
-    }): TaskMetaInformationAndTaskMetaInformationChildTasks[] {
+    public findAllMostParents(taskMetaHashSet: { [key: string]: RemoteTaskInfoModel }): RemoteTaskInfoModel[] {
         let mostParentTasks = Object.getOwnPropertyNames(taskMetaHashSet)
             .map(x => taskMetaHashSet[x])
             .map(x => this.findMostParentTask(taskMetaHashSet, x));
         mostParentTasks = _.uniq(mostParentTasks);
-        mostParentTasks = _.sortBy(mostParentTasks, x => x.ticks);
+        mostParentTasks = _.sortBy(mostParentTasks, x => x.taskMeta.ticks);
         mostParentTasks = _.reverse(mostParentTasks);
         return mostParentTasks;
     }
 
     public render(): JSX.Element {
-        const { taskMetas } = this.props;
-        const taskMetaHashSet = taskMetas.reduce((result, taskMeta) => {
-            result[taskMeta.id] = taskMeta;
+        const { taskDetails } = this.props;
+        const taskMetaHashSet = taskDetails.reduce((result, taskDetails) => {
+            result[taskDetails.taskMeta.id] = taskDetails;
             return result;
         }, {});
 

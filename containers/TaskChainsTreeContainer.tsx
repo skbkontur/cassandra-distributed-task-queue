@@ -94,9 +94,9 @@ class TaskChainsTreeContainerInternal extends React.Component<
         }
     }
 
-    public getParentAndChildrenTaskIds(taskMetas: RemoteTaskInfoModel[]): string[] {
-        const linkedIds = taskMetas
-            .map(x => [x.taskMeta.parentTaskId, ...(x.taskMeta.childTaskIds || [])])
+    public getParentAndChildrenTaskIds(taskDetails: RemoteTaskInfoModel[]): string[] {
+        const linkedIds = taskDetails
+            .map(x => [x.taskMeta.parentTaskId, ...(x.childTaskIds || [])])
             .flat()
             .filter(isNotNullOrUndefined);
         return _.uniq(linkedIds);
@@ -117,12 +117,12 @@ class TaskChainsTreeContainerInternal extends React.Component<
                 if (taskIdsToLoad.length > 100) {
                     throw new Error("Количство задач в дереве превысило допустимый предел: 100 зачад");
                 }
-                const loadedtaskDetails = await this.getTaskByIds(taskIdsToLoad);
+                const loadedTaskDetails = await this.getTaskByIds(taskIdsToLoad);
                 allTaskIds = [...allTaskIds, ...taskIdsToLoad];
                 this.setState({ loading: true, loaderText: `Загрузка задач: ${taskDetails.length}` });
-                const parentAndChildrenTaskIds = this.getParentAndChildrenTaskIds(loadedtaskDetails);
+                const parentAndChildrenTaskIds = this.getParentAndChildrenTaskIds(loadedTaskDetails);
                 taskIdsToLoad = _.difference(parentAndChildrenTaskIds, allTaskIds);
-                taskDetails = [...taskDetails, ...loadedtaskDetails];
+                taskDetails = [...taskDetails, ...loadedTaskDetails];
                 if (iterationCount > 50) {
                     break;
                 }
@@ -166,7 +166,7 @@ class TaskChainsTreeContainerInternal extends React.Component<
                             {taskDetails && (
                                 <TaskChainTree
                                     getTaskLocation={id => this.getTaskLocation(id)}
-                                    taskMetas={taskDetails.map(x => x.taskMeta)}
+                                    taskDetails={taskDetails}
                                 />
                             )}
                         </div>
