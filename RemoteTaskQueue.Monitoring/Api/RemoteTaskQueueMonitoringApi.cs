@@ -10,8 +10,6 @@ using RemoteQueue.Handling;
 
 using RemoteTaskQueue.Monitoring.Storage.Client;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace RemoteTaskQueue.Monitoring.Api
 {
     public class RemoteTaskQueueMonitoringApi : IRemoteTaskQueueMonitoringApi
