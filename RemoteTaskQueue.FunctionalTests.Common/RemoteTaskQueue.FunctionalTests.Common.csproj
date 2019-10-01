@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="GroboContainer.NUnitExtensions" Version="1.0.30"/>
+    <PackageReference Include="Vostok.Logging.Log4net" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
