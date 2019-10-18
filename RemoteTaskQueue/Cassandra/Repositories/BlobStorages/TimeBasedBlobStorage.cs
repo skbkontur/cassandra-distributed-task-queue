@@ -77,12 +77,12 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
         {
             var distinctIds = ids.DistinctBy(x => x.Id).ToArray();
             return ReadRegular(distinctIds, defaultBatchSize)
-                   .Concat(ReadLarge(distinctIds, defaultBatchSize))
+                   .Concat(ReadLarge(distinctIds))
                    .Where(x => x.Column.Value != null)
                    .ToDictionary(x => x.BlobId, x => x.Column.Value);
         }
 
-        [NotNull]
+        [NotNull, ItemNotNull]
         private IEnumerable<ColumnWithId> ReadRegular([NotNull] BlobId[] ids, int batchSize)
         {
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, settings.RegularBlobsCfName);
@@ -99,20 +99,19 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                                                       }));
         }
 
-        [NotNull]
-        private IEnumerable<ColumnWithId> ReadLarge([NotNull] BlobId[] ids, int batchSize)
+        [NotNull, ItemNotNull]
+        private IEnumerable<ColumnWithId> ReadLarge([NotNull] BlobId[] blobIds)
         {
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, settings.LargeBlobsCfName);
-            return ids.Where(x => x.Type == BlobType.Large)
-                      .Select(blobId => new {BlobId = blobId, ColumnAddress = GetColumnAddress(blobId)})
-                      .Batch(batchSize, Enumerable.ToArray)
-                      .SelectMany(batch =>
-                          {
-                              var rowKeyToBlobIdMap = batch.ToDictionary(x => x.ColumnAddress.RowKey, x => x.BlobId);
-                              var kvps = connection.GetRows(rowKeyToBlobIdMap.Keys.ToArray(), new[] {largeBlobColumnName});
-                              return kvps.Where(x => x.Value != null && x.Value.Any())
-                                         .Select(x => new ColumnWithId {BlobId = rowKeyToBlobIdMap[x.Key], Column = x.Value.Single()});
-                          });
+            return blobIds.Where(x => x.Type == BlobType.Large)
+                          .Select(blobId =>
+                              {
+                                  var columnAddress = GetColumnAddress(blobId);
+                                  if (!connection.TryGetColumn(columnAddress.RowKey, columnAddress.ColumnName, out var column))
+                                      return null;
+                                  return new ColumnWithId {BlobId = blobId, Column = column};
+                              })
+                          .Where(x => x != null);
         }
 
         [NotNull]
@@ -162,7 +161,7 @@ namespace RemoteQueue.Cassandra.Repositories.BlobStorages
                 if (keys.Length == 0)
                     yield break;
                 var blobIds = keys.Select(x => new BlobId(GetTimeGuidFromRowKey(x), BlobType.Large)).ToArray();
-                foreach (var columnWithId in ReadLarge(blobIds, batchSize))
+                foreach (var columnWithId in ReadLarge(blobIds))
                 {
                     if (columnWithId.Column.Value != null)
                         yield return Tuple.Create(columnWithId.BlobId, columnWithId.Column.Value);
