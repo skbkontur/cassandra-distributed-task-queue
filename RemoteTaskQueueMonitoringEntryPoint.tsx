@@ -3,8 +3,9 @@ import * as React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import { PageTitle } from "Commons/HOC/PageTitle";
 import { RemoteTaskQueueApi, RemoteTaskQueueApiProvider } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { SuperUserAccessLevels } from "Domain/Globals";
 
-import { AdminToolsSupervisorRoute } from "../AdminTools/AdminToolsSuperUserRoutes";
+import { AdminToolsRoute } from "../AdminTools/AdminToolsApplication";
 import { ServiceHeader } from "../ServiceHeader/components/ServiceHeader";
 
 import { TasksPageContainer } from "./containers/TasksPageContainer";
@@ -39,7 +40,11 @@ export function RemoteTaskQueueMonitoringEntryPoint(): JSX.Element {
     return (
         <PageTitle title={"Очередь задач"}>
             <RemoteTaskQueueApiProvider remoteTaskQueueApi={api}>
-                <AdminToolsSupervisorRoute path={TasksPath} component={RemoteTaskQueueApplication} />
+                <AdminToolsRoute
+                    minimalSuperUserAccessLevel={SuperUserAccessLevels.Supervisor}
+                    path={TasksPath}
+                    component={RemoteTaskQueueApplication}
+                />
             </RemoteTaskQueueApiProvider>
         </PageTitle>
     );
