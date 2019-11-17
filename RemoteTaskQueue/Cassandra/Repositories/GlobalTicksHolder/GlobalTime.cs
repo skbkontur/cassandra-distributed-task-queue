@@ -1,7 +1,6 @@
 ﻿using System;
 
-using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {

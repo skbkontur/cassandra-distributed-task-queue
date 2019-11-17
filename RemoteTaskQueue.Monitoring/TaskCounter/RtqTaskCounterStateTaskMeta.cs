@@ -2,7 +2,7 @@
 
 using RemoteQueue.Cassandra.Entities;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.Monitoring.TaskCounter
 {

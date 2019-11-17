@@ -7,8 +7,9 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {

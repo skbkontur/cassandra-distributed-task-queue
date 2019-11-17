@@ -5,7 +5,8 @@ using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Abstractions;
 using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Catalogue.Objects;
+
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {

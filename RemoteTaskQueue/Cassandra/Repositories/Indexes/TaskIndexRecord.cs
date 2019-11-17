@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 
 using JetBrains.Annotations;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories.Indexes
 {
@@ -31,16 +31,21 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes
 
         public bool Equals(TaskIndexRecord other)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
             return string.Equals(TaskId, other.TaskId) && MinimalStartTicks == other.MinimalStartTicks && TaskIndexShardKey.Equals(other.TaskIndexShardKey);
         }
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != this.GetType())
+                return false;
             return Equals((TaskIndexRecord)obj);
         }
 

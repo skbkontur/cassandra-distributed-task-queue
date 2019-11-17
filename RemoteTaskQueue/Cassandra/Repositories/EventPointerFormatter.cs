@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Globalization;
 
 using JetBrains.Annotations;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Repositories
 {

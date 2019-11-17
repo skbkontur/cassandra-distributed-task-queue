@@ -8,8 +8,7 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.Objects;
-
+using SkbKontur.Cassandra.TimeBasedUuid;
 using SkbKontur.Graphite.Client;
 
 namespace RemoteQueue.Profiling

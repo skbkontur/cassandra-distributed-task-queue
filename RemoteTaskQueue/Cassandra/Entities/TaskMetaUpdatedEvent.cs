@@ -1,5 +1,7 @@
 ﻿using JetBrains.Annotations;
 
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Cassandra.Entities

@@ -1,7 +1,7 @@
 ﻿using RemoteQueue.Configuration;
 using RemoteQueue.Handling;
 
-using SKBKontur.Catalogue.Objects.TimeBasedUuid;
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {

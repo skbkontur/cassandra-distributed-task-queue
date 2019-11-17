@@ -9,6 +9,9 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Settings;
 
 using SKBKontur.Cassandra.CassandraClient.Clusters;
+
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;

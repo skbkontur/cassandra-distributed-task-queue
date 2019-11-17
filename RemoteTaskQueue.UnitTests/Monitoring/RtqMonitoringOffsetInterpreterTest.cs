@@ -8,6 +8,8 @@ using RemoteQueue.Cassandra.Repositories;
 
 using RemoteTaskQueue.Monitoring;
 
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.UnitTests.Monitoring

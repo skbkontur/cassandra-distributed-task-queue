@@ -7,7 +7,7 @@ using NUnit.Framework;
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.Monitoring.Storage.Client;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {

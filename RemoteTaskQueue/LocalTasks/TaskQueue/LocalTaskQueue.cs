@@ -11,7 +11,7 @@ using RemoteQueue.Handling;
 using RemoteQueue.Profiling;
 using RemoteQueue.Tracing;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 using Vostok.Logging.Abstractions;
 

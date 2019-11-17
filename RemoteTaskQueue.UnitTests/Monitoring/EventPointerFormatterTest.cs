@@ -1,10 +1,12 @@
-using System;
+﻿using System;
 
 using FluentAssertions;
 
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Repositories;
+
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Objects;
 

@@ -10,10 +10,11 @@ using JetBrains.Annotations;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Configuration;
 
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;
 using SKBKontur.Catalogue.Core.EventFeeds.OffsetStorages;
-using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.Json;
 
 using Vostok.Logging.Abstractions;

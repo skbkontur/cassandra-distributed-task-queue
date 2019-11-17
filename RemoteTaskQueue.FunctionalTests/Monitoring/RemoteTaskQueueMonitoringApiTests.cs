@@ -14,7 +14,8 @@ using RemoteQueue.Handling;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 using RemoteTaskQueue.Monitoring.Api;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Ranges;
 using SKBKontur.Catalogue.TestCore.Waiting;
 

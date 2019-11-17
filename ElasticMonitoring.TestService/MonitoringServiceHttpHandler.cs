@@ -6,9 +6,10 @@ using RemoteTaskQueue.Monitoring.Indexer;
 using RemoteTaskQueue.Monitoring.Storage;
 using RemoteTaskQueue.Monitoring.TaskCounter;
 
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService

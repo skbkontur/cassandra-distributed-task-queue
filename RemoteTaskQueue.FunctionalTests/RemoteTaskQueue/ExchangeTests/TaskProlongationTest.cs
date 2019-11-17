@@ -15,7 +15,8 @@ using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 using RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
 using Vostok.Logging.Abstractions;

@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using RemoteQueue.Handling;
 using RemoteQueue.Profiling;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace RemoteQueue.Configuration

@@ -6,8 +6,9 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
 
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.Objects.TimeBasedUuid;
 
 namespace RemoteQueue.Cassandra.Entities
 {

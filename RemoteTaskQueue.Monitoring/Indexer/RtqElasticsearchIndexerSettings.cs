@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 
 using RemoteTaskQueue.Monitoring.Storage.Writing;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.Monitoring.Indexer
 {

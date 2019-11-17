@@ -2,8 +2,9 @@
 
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.Monitoring
 {

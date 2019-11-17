@@ -8,8 +8,9 @@ using RemoteQueue.Cassandra.Repositories;
 
 using RemoteTaskQueue.Monitoring.Storage;
 
+using SkbKontur.Cassandra.TimeBasedUuid;
+
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Objects;
 
 using SkbKontur.Graphite.Client;
 
