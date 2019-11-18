@@ -9,6 +9,8 @@ using RemoteTaskQueue.Monitoring.Storage.Writing;
 
 using SkbKontur.Cassandra.TimeBasedUuid;
 
+using SKBKontur.Catalogue.Objects.Json;
+
 namespace RemoteTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexerSettings
@@ -34,6 +36,8 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                     {
                         new TruncateLongStringsConverter(500),
                         new StringEnumConverter(),
+                        new TimestampJsonConverter(),
+                        new TimeGuidJsonConverter()
                     },
             };
 

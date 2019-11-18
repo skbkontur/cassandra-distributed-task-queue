@@ -5,11 +5,12 @@ using Elasticsearch.Net;
 
 using JetBrains.Annotations;
 
+using Newtonsoft.Json;
+
 using RemoteTaskQueue.Monitoring.Storage.Search;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Search;
-using SKBKontur.Catalogue.Objects.Json;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Client
 {
@@ -91,8 +92,9 @@ namespace RemoteTaskQueue.Monitoring.Storage.Client
                                 }
                         }
                 };
-            var body = PostData.String(request.ToJson());
-            var searchResponse = elasticClient.Search<StringResponse>(indexForTimeRange, body, ignoreUnavailableIndices).EnsureSuccess().Body.FromJson<SearchResponse>();
+            var body = PostData.String(JsonConvert.SerializeObject(request));
+            var stringResponse = elasticClient.Search<StringResponse>(indexForTimeRange, body, ignoreUnavailableIndices).EnsureSuccess();
+            var searchResponse = JsonConvert.DeserializeObject<SearchResponse>(stringResponse.Body);
             return new TaskSearchResponse
                 {
                     Ids = searchResponse.Hits.Hits.Select(x => x.Id).ToArray(),

@@ -10,6 +10,8 @@ using JetBrains.Annotations;
 
 using MoreLinq;
 
+using Newtonsoft.Json;
+
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
@@ -20,7 +22,6 @@ using RemoteTaskQueue.Monitoring.Storage.Utils;
 using RemoteTaskQueue.Monitoring.Storage.Writing;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
-using SKBKontur.Catalogue.Objects.Json;
 
 using Vostok.Logging.Abstractions;
 
@@ -91,7 +92,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             var payload = new string[batch.Length * 2];
             for (var i = 0; i < batch.Length; i++)
             {
-                payload[2 * i] = new
+                payload[2 * i] = JsonConvert.SerializeObject(new
                     {
                         index = new
                             {
@@ -99,8 +100,9 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                 _type = "doc_type_is_deprecated", // see https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
                                 _id = batch[i].TaskMeta.Id
                             }
-                    }.ToJson();
-                payload[2 * i + 1] = BuildTaskIndexedInfo(batch[i].TaskMeta, batch[i].TaskExceptionInfos, batch[i].TaskData).ToJson(settings.JsonSerializerSettings);
+                    });
+                var taskIndexedInfo = BuildTaskIndexedInfo(batch[i].TaskMeta, batch[i].TaskExceptionInfos, batch[i].TaskData);
+                payload[2 * i + 1] = JsonConvert.SerializeObject(taskIndexedInfo, settings.JsonSerializerSettings);
             }
             perfGraphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticClient.Bulk<StringResponse>(PostData.MultiJson(payload), bulkRequestTimeout).DieIfBulkRequestFailed());
         }

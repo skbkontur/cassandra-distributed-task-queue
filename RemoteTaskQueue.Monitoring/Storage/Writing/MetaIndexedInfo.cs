@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Serialization;
+using RemoteTaskQueue.Monitoring.Storage.Utils;
 
 namespace RemoteTaskQueue.Monitoring.Storage.Writing
 {
@@ -13,22 +13,22 @@ namespace RemoteTaskQueue.Monitoring.Storage.Writing
         public string TaskGroupLock { get; set; }
         public int Attempts { get; set; }
 
-        [JsonConverter(typeof(UtcTicksDateConverter))]
+        [JsonConverter(typeof(UtcTicksJsonConverter))]
         public long EnqueueTime { get; set; }
 
-        [JsonConverter(typeof(UtcTicksDateConverter))]
+        [JsonConverter(typeof(UtcTicksJsonConverter))]
         public long MinimalStartTime { get; set; }
 
-        [JsonConverter(typeof(UtcTicksDateConverter))]
+        [JsonConverter(typeof(UtcTicksJsonConverter))]
         public long? StartExecutingTime { get; set; }
 
-        [JsonConverter(typeof(UtcTicksDateConverter))]
+        [JsonConverter(typeof(UtcTicksJsonConverter))]
         public long? FinishExecutingTime { get; set; }
 
-        [JsonConverter(typeof(UtcTicksDateConverter))]
+        [JsonConverter(typeof(UtcTicksJsonConverter))]
         public long LastModificationTime { get; set; }
 
-        [JsonConverter(typeof(UtcTicksDateConverter))]
+        [JsonConverter(typeof(UtcTicksJsonConverter))]
         public long ExpirationTime { get; set; }
 
         public double? LastExecutionDurationInMs { get; set; }

@@ -2,8 +2,9 @@
 
 using JetBrains.Annotations;
 
+using Newtonsoft.Json;
+
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
-using SKBKontur.Catalogue.Objects.Json;
 
 namespace RemoteTaskQueue.Monitoring.Storage
 {
@@ -17,10 +18,12 @@ namespace RemoteTaskQueue.Monitoring.Storage
         public void Actualize(bool local, bool bulkLoad)
         {
             var indexSettings = new {settings = GetIndexingProgressIndexSettings(local, bulkLoad)};
-            elasticClient.IndicesCreate<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, PostData.String(indexSettings.ToJson()), allowResourceAlreadyExistsStatus).EnsureSuccess();
+            var indexSettingsPostData = PostData.String(JsonConvert.SerializeObject(indexSettings));
+            elasticClient.IndicesCreate<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, indexSettingsPostData, allowResourceAlreadyExistsStatus).EnsureSuccess();
 
             var templateSettings = GetTaskIndicesTemplateSettings(local, bulkLoad);
-            elasticClient.IndicesPutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, PostData.String(templateSettings.ToJson())).EnsureSuccess();
+            var templateSettingsPostData = PostData.String(JsonConvert.SerializeObject(templateSettings));
+            elasticClient.IndicesPutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData).EnsureSuccess();
         }
 
         [NotNull]
