@@ -1,6 +1,7 @@
 import { LocationDescriptor } from "history";
 import * as React from "react";
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
+import { MetricsCategory, MetricsCategoryProvider } from "ui/metrics";
 import { PageTitle } from "Commons/HOC/PageTitle";
 import { RemoteTaskQueueApi, RemoteTaskQueueApiProvider } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { SuperUserAccessLevels } from "Domain/Globals";
@@ -53,34 +54,38 @@ export function RemoteTaskQueueMonitoringEntryPoint(): JSX.Element {
 export function RemoteTaskQueueApplication({ match }: RouteComponentProps<any>): JSX.Element {
     const baseUrl = match.url;
     return (
-        <ServiceHeader currentInterfaceType={null}>
-            <Switch>
-                <Route
-                    exact
-                    path={`${baseUrl}/`}
-                    render={({ location }) => <TasksPageContainer searchQuery={location.search} {...location.state} />}
-                />
-                <Route
-                    exact
-                    path={`${baseUrl}/Tree`}
-                    render={({ location }) => (
-                        <TaskChainsTreeContainer
-                            searchQuery={location.search}
-                            {...location.state}
-                            parentLocation={tryGetParentLocationFromHistoryState(location)}
-                        />
-                    )}
-                />
-                <Route
-                    path={`${baseUrl}/:id`}
-                    render={({ location, match: { params } }) => (
-                        <TaskDetailsPageContainer
-                            id={params.id || ""}
-                            parentLocation={tryGetParentLocationFromHistoryState(location)}
-                        />
-                    )}
-                />
-            </Switch>
-        </ServiceHeader>
+        <MetricsCategoryProvider category={MetricsCategory.TaskQueue}>
+            <ServiceHeader currentInterfaceType={null}>
+                <Switch>
+                    <Route
+                        exact
+                        path={`${baseUrl}/`}
+                        render={({ location }) => (
+                            <TasksPageContainer searchQuery={location.search} {...location.state} />
+                        )}
+                    />
+                    <Route
+                        exact
+                        path={`${baseUrl}/Tree`}
+                        render={({ location }) => (
+                            <TaskChainsTreeContainer
+                                searchQuery={location.search}
+                                {...location.state}
+                                parentLocation={tryGetParentLocationFromHistoryState(location)}
+                            />
+                        )}
+                    />
+                    <Route
+                        path={`${baseUrl}/:id`}
+                        render={({ location, match: { params } }) => (
+                            <TaskDetailsPageContainer
+                                id={params.id || ""}
+                                parentLocation={tryGetParentLocationFromHistoryState(location)}
+                            />
+                        )}
+                    />
+                </Switch>
+            </ServiceHeader>
+        </MetricsCategoryProvider>
     );
 }
