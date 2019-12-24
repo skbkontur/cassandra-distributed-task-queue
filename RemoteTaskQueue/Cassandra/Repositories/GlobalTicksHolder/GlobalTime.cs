@@ -18,11 +18,6 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
             return newNowTicks;
         }
 
-        public long GetNowTicks()
-        {
-            return Math.Max(ticksHolder.GetMaxTicks(globalTicksName), Timestamp.Now.Ticks);
-        }
-
         public void ResetInMemoryState()
         {
             ticksHolder.ResetInMemoryState();

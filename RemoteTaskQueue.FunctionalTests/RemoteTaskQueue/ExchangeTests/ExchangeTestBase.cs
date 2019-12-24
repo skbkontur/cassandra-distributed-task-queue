@@ -32,7 +32,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             {
                 foreach (var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
                 {
-                    var indexRecords = index.GetRecords(new TaskIndexShardKey(taskTopic, taskState), globalTime.GetNowTicks(), 2000).ToArray();
+                    var indexRecords = index.GetRecords(new TaskIndexShardKey(taskTopic, taskState), globalTime.UpdateNowTicks(), batchSize : 2000).ToArray();
                     foreach (var indexRecord in indexRecords)
                     {
                         List<TaskIndexShardKey> shardKeys;

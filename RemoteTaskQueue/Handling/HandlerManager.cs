@@ -70,7 +70,7 @@ namespace RemoteQueue.Handling
                         LocalTaskQueueingResult result;
                         using (metricsContext.Timer("TryQueueTask").NewContext())
                             result = localTaskQueue.TryQueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, taskTraceContext.TaskIsBeingTraced);
-                        taskTraceContext.Finish(result.TaskIsSentToThreadPool, () => globalTime.GetNowTicks());
+                        taskTraceContext.Finish(result.TaskIsSentToThreadPool, () => globalTime.UpdateNowTicks());
                         if (result.QueueIsFull)
                         {
                             metricsContext.Meter("QueueIsFull").Mark();
