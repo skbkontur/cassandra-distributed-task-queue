@@ -4,8 +4,9 @@ using GroboContainer.NUnitExtensions;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 
-using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SkbKontur.Cassandra.ThriftClient.Abstractions;
+using SkbKontur.Cassandra.ThriftClient.Clusters;
+
 using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests

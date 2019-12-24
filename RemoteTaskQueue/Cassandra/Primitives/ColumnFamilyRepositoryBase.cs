@@ -1,7 +1,7 @@
-using RemoteQueue.Settings;
+﻿using RemoteQueue.Settings;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Connections;
+using SkbKontur.Cassandra.ThriftClient.Clusters;
+using SkbKontur.Cassandra.ThriftClient.Connections;
 
 namespace RemoteQueue.Cassandra.Primitives
 {

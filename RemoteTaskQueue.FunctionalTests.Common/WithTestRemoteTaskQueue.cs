@@ -9,8 +9,9 @@ using RemoteQueue.Configuration;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
+using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
+
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 

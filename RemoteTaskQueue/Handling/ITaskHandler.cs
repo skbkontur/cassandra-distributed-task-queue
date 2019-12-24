@@ -2,7 +2,7 @@
 
 using RemoteQueue.Cassandra.Entities;
 
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SkbKontur.Cassandra.DistributedLock;
 
 namespace RemoteQueue.Handling
 {

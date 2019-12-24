@@ -8,8 +8,7 @@ using MoreLinq;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Settings;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
-
+using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Objects;

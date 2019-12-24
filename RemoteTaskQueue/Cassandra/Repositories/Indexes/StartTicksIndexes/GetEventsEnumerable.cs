@@ -5,7 +5,7 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using SKBKontur.Cassandra.CassandraClient.Connections;
+using SkbKontur.Cassandra.ThriftClient.Connections;
 
 using Vostok.Logging.Abstractions;
 

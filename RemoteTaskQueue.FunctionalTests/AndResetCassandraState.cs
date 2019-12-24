@@ -9,7 +9,8 @@ using RemoteQueue.Configuration;
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 
-using SKBKontur.Cassandra.CassandraClient.Abstractions;
+using SkbKontur.Cassandra.ThriftClient.Abstractions;
+
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
 using Vostok.Logging.Abstractions;

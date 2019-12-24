@@ -19,12 +19,11 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
-
+using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
+using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock.RemoteLocker;
 using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;

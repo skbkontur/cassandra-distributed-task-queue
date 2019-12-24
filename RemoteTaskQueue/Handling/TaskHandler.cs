@@ -5,7 +5,8 @@ using GroBuf;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Tracing;
 
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SkbKontur.Cassandra.DistributedLock;
+
 using SKBKontur.Catalogue.Objects;
 
 namespace RemoteQueue.Handling

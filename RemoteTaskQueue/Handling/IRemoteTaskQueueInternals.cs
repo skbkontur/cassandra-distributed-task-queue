@@ -8,7 +8,7 @@ using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Profiling;
 
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SkbKontur.Cassandra.DistributedLock;
 
 using Vostok.Logging.Abstractions;
 

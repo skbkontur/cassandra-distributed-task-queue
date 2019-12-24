@@ -5,10 +5,10 @@ using GroBuf;
 using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
-using SKBKontur.Cassandra.CassandraClient.Abstractions;
-using SKBKontur.Cassandra.CassandraClient.Clusters;
-using SKBKontur.Cassandra.CassandraClient.Connections;
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
+using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.ThriftClient.Abstractions;
+using SkbKontur.Cassandra.ThriftClient.Clusters;
+using SkbKontur.Cassandra.ThriftClient.Connections;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {

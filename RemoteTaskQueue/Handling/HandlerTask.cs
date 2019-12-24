@@ -20,9 +20,9 @@ using RemoteQueue.Handling.ExecutionContext;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 
+using SkbKontur.Cassandra.DistributedLock;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.CassandraPrimitives.RemoteLock;
 using SKBKontur.Catalogue.GrobufExtensions;
 using SKBKontur.Catalogue.Objects;
 

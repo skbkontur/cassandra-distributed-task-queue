@@ -10,7 +10,8 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
-using SKBKontur.Cassandra.CassandraClient.Clusters;
+using SkbKontur.Cassandra.ThriftClient.Clusters;
+
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 using Vostok.Logging.Abstractions;
