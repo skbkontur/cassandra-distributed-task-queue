@@ -1,3 +1,6 @@
+baseDirectory: ..\
+deployDirectoryName: RTQRuns
+
 services:
   - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
   - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe

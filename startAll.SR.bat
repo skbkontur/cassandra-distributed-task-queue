@@ -8,4 +8,4 @@ pushd ..\Assemblies\ElasticSearchVNext\Server\bin\
 start elasticsearch.bat
 popd
 
-start "ServiceRunner" "..\Tools.Compiled\ServiceRunner\ServiceRunner.exe" "_StartAllConfigs\startAll.SR.yaml" "-startAllServices"
+start "ServiceRunner" "..\Tools.Compiled\ServiceRunner\WinForms\ServiceRunner.exe" -suite="..\..\..\RemoteTaskQueue\_StartAllConfigs\startAll.SR.yaml" "-startAllServices"
