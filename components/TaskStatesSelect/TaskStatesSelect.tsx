@@ -2,7 +2,7 @@ import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
 import * as React from "react";
 import { Button, Checkbox, Tooltip } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
-import { TaskState, TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import cn from "./TaskStatesSelect.less";
@@ -13,14 +13,14 @@ export interface TaskStatesSelectProps {
 }
 
 const TaskStateCaptions = {
-    [TaskStates.Unknown]: "Unknown",
-    [TaskStates.New]: "New",
-    [TaskStates.WaitingForRerun]: "Waiting for rerun",
-    [TaskStates.WaitingForRerunAfterError]: "Waiting for rerun after error",
-    [TaskStates.Finished]: "Finished",
-    [TaskStates.InProcess]: "In process",
-    [TaskStates.Fatal]: "Fatal",
-    [TaskStates.Canceled]: "Canceled",
+    [TaskState.Unknown]: "Unknown",
+    [TaskState.New]: "New",
+    [TaskState.WaitingForRerun]: "Waiting for rerun",
+    [TaskState.WaitingForRerunAfterError]: "Waiting for rerun after error",
+    [TaskState.Finished]: "Finished",
+    [TaskState.InProcess]: "In process",
+    [TaskState.Fatal]: "Fatal",
+    [TaskState.Canceled]: "Canceled",
 };
 
 export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {

@@ -6,6 +6,7 @@ import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { CommonLayout } from "Commons/Layouts";
 import { queryStringMapping, QueryStringMapping } from "Commons/QueryStringMapping";
+import { getEnumValues } from "Commons/QueryStringMapping/QueryStringMappingExtensions";
 import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
@@ -14,7 +15,7 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 
@@ -36,7 +37,7 @@ const mapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMap
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")
-    .mapToSet(x => x.states, "states", TaskStates)
+    .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
     .build();
 
 function isNotNullOrUndefined<T extends Object>(input: null | undefined | T): input is T {

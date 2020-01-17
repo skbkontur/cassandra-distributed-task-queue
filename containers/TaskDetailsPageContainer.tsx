@@ -8,8 +8,8 @@ import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
 import { ApiError } from "Domain/ApiBase/ApiBase";
 import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { SuperUserAccessLevel } from "Domain/EDI/Auth/SuperUserAccessLevel";
 import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
-import { SuperUserAccessLevels } from "Domain/Globals";
 
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
 import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";
@@ -125,7 +125,7 @@ class TaskDetailsPageContainerInternal extends React.Component<
                         parentLocation={parentLocation || this.getDefaultParetnLocation()}
                         allowRerunOrCancel={$c(currentUser)
                             .with(x => x.superUserAccessLevel)
-                            .with(x => [SuperUserAccessLevels.God, SuperUserAccessLevels.Developer].includes(x))
+                            .with(x => [SuperUserAccessLevel.God, SuperUserAccessLevel.Developer].includes(x))
                             .return(false)}
                         taskDetails={taskDetails}
                         onRerun={() => {

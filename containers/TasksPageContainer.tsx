@@ -9,6 +9,7 @@ import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { CommonLayout } from "Commons/Layouts";
 import { QueryStringMapping, queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
+import { getEnumValues } from "Commons/QueryStringMapping/QueryStringMappingExtensions";
 import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
 import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
@@ -17,9 +18,9 @@ import {
     isRemoteTaskQueueSearchRequestEmpty,
 } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
 import { RemoteTaskQueueSearchResults } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { SuperUserAccessLevel } from "Domain/EDI/Auth/SuperUserAccessLevel";
 import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
-import { SuperUserAccessLevels } from "Domain/Globals";
 
 import { TasksPaginator } from "../components/TasksPaginator/TasksPaginator";
 import { TaskQueueFilter } from "../components/TaskQueueFilter/TaskQueueFilter";
@@ -50,7 +51,7 @@ const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = que
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")
-    .mapToSet(x => x.states, "states", TaskStates)
+    .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
     .build();
 
 function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMapping<RemoteTaskQueueSearchRequest> {
@@ -62,7 +63,7 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
         .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
         .mapToString(x => x.queryString, "q")
         .mapToSet(x => x.names, "types", availableTaskNamesMap, true)
-        .mapToSet(x => x.states, "states", TaskStates)
+        .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
         .build();
 }
 
@@ -393,7 +394,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         const currentUser = this.props.userInfo;
         const allowRerunOrCancel = $c(currentUser)
             .with(x => x.superUserAccessLevel)
-            .with(x => [SuperUserAccessLevels.God, SuperUserAccessLevels.Developer].includes(x))
+            .with(x => [SuperUserAccessLevel.God, SuperUserAccessLevel.Developer].includes(x))
             .return(false);
 
         const { availableTaskNames, request, loading } = this.state;

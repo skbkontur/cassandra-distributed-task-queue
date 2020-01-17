@@ -8,7 +8,7 @@ import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { Ticks } from "Domain/DataTypes/Time";
 import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
-import { TaskState, TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import cn from "./TaskDetails.less";
@@ -80,7 +80,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                 </Fit>
                                 <Fit className={cn("state")}>
                                     <span className={cn("state-name")} data-tid="State">
-                                        {TaskStates[taskInfo.state]}
+                                        {TaskState[taskInfo.state]}
                                     </span>
                                     <span className={cn("attempts")}>
                                         Attempts: <span data-tid="Attempts">{taskInfo.attempts}</span>

@@ -16,7 +16,7 @@ import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { TimeUtils } from "Commons/TimeUtils";
 import { Ticks } from "Domain/DataTypes/Time";
 import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
-import { TaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import cn from "./TaskTimeLine.less";
 import { TimeLine } from "./TimeLine/TimeLine";
@@ -106,7 +106,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
         }
 
         const shouldStartAndStartEntries: Array<null | JSX.Element> = [];
-        if (taskMeta.state === TaskStates.WaitingForRerun) {
+        if (taskMeta.state === TaskState.WaitingForRerun) {
             shouldStartAndStartEntries.push(
                 this.getStartedEntry(),
                 this.createSimpleEntry({
@@ -115,7 +115,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
                     date: taskMeta.finishExecutingTicks,
                 })
             );
-        } else if (taskMeta.state === TaskStates.WaitingForRerunAfterError) {
+        } else if (taskMeta.state === TaskState.WaitingForRerunAfterError) {
             shouldStartAndStartEntries.push(
                 this.getStartedEntry(),
                 this.createSimpleEntry({
@@ -155,7 +155,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
     public getCurrentStateEntries(): Array<null | JSX.Element> {
         const { taskMeta } = this.props;
 
-        if (taskMeta.state === TaskStates.Finished) {
+        if (taskMeta.state === TaskState.Finished) {
             return [
                 this.createSimpleEntry({
                     title: "Finished",
@@ -165,7 +165,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
                 }),
             ];
         }
-        if (taskMeta.state === TaskStates.Fatal) {
+        if (taskMeta.state === TaskState.Fatal) {
             return [
                 this.createSimpleEntry({
                     title: "Failed",
@@ -175,7 +175,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
                 }),
             ];
         }
-        if (taskMeta.state === TaskStates.Canceled) {
+        if (taskMeta.state === TaskState.Canceled) {
             return [
                 this.createSimpleEntry({
                     title: "Canceled",
@@ -185,7 +185,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
                 }),
             ];
         }
-        if (taskMeta.state === TaskStates.WaitingForRerun || taskMeta.state === TaskStates.WaitingForRerunAfterError) {
+        if (taskMeta.state === TaskState.WaitingForRerun || taskMeta.state === TaskState.WaitingForRerunAfterError) {
             return [
                 this.getShouldStartedEntry(),
                 this.createSimpleEntry({
@@ -195,7 +195,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
                 }),
             ];
         }
-        if (taskMeta.state === TaskStates.InProcess) {
+        if (taskMeta.state === TaskState.InProcess) {
             return [
                 this.createSimpleEntry({
                     title: "Waiting for complete",
@@ -204,7 +204,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
                 }),
             ];
         }
-        if (taskMeta.state === TaskStates.New) {
+        if (taskMeta.state === TaskState.New) {
             return [
                 this.createSimpleEntry({
                     title: "Waiting for start",
@@ -213,7 +213,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
                 }),
             ];
         }
-        if (taskMeta.state === TaskStates.Unknown) {
+        if (taskMeta.state === TaskState.Unknown) {
             return [];
         }
         return [];
