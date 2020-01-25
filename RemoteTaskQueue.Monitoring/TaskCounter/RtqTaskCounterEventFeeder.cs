@@ -9,6 +9,7 @@ using SkbKontur.Cassandra.GlobalTimestamp;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;
+using SKBKontur.Catalogue.Core.EventFeeds.Implementations;
 using SKBKontur.Catalogue.Objects.Json;
 
 using SkbKontur.Graphite.Client;
@@ -36,7 +37,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
             this.eventFeedFactory = eventFeedFactory;
             this.settings = settings;
             GlobalTime = remoteTaskQueue.GlobalTime;
-            globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);
+            globalTimeProvider = new DefaultGlobalTimeProvider(GlobalTime);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.TaskCounter.Perf", statsDClient);
@@ -72,7 +73,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         private readonly IRtqTaskCounterStateStorage stateStorage;
         private readonly EventFeedFactory eventFeedFactory;
         private readonly RtqTaskCounterSettings settings;
-        private readonly RtqGlobalTimeProvider globalTimeProvider;
+        private readonly IGlobalTimeProvider globalTimeProvider;
         private readonly EventLogRepository eventLogRepository;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;

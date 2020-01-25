@@ -6,7 +6,6 @@ using JetBrains.Annotations;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
@@ -26,7 +25,6 @@ namespace RemoteQueue.Configuration
                 cfNames.Add(cfName);
             cfNames.Add(RemoteTaskQueueLockConstants.LockColumnFamily);
             cfNames.Add(RtqMinTicksHolder.ColumnFamilyName);
-            cfNames.Add(TicksHolder.ColumnFamilyName);
             cfNames.Add(TaskMinimalStartTicksIndex.ColumnFamilyName);
             cfNames.Add(EventLogRepository.ColumnFamilyName);
             cfNames.Add(ChildTaskIndex.ColumnFamilyName);

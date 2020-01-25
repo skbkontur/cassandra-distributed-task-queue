@@ -11,6 +11,7 @@ using SkbKontur.Cassandra.GlobalTimestamp;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;
+using SKBKontur.Catalogue.Core.EventFeeds.Implementations;
 
 using SkbKontur.Graphite.Client;
 
@@ -30,7 +31,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqMonitoringEventFeeder));
             this.eventFeedFactory = eventFeedFactory;
             GlobalTime = remoteTaskQueue.GlobalTime;
-            globalTimeProvider = new RtqGlobalTimeProvider(GlobalTime);
+            globalTimeProvider = new DefaultGlobalTimeProvider(GlobalTime);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient);
             var taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
@@ -59,7 +60,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
 
         private readonly ILog logger;
         private readonly EventFeedFactory eventFeedFactory;
-        private readonly RtqGlobalTimeProvider globalTimeProvider;
+        private readonly IGlobalTimeProvider globalTimeProvider;
         private readonly EventLogRepository eventLogRepository;
         private readonly RtqMonitoringEventConsumer eventConsumer;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter;

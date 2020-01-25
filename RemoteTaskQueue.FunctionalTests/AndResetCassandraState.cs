@@ -25,7 +25,7 @@ namespace RemoteTaskQueue.FunctionalTests
             Log.For(this).Info("Resetting test RTQ cassandra state");
             var columnFamilies = new RtqColumnFamilyRegistry().GetAllColumnFamilyNames().Concat(new[]
                 {
-                    new ColumnFamily {Name = "GlobalMaxTicks"},
+                    new ColumnFamily {Name = GlobalTimeProxy.ColumnFamilyName},
                     new ColumnFamily {Name = ColumnFamilies.TestTaskLoggerCfName},
                     new ColumnFamily {Name = ColumnFamilies.TestCounterRepositoryCfName}
                 }).ToArray();

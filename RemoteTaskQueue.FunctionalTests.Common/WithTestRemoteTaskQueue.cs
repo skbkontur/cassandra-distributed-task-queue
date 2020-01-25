@@ -5,7 +5,6 @@ using GroboContainer.NUnitExtensions;
 using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Configuration;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
@@ -29,7 +28,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
 
         public static void ConfigureContainer(IContainer container)
         {
-            container.Configurator.ForAbstraction<IGlobalTime>().UseType<RtqGlobalTimeProxy>();
+            container.Configurator.ForAbstraction<IGlobalTime>().UseType<GlobalTimeProxy>();
             container.Configurator.ForAbstraction<ITaskDataRegistry>().UseType<TestTaskDataRegistry>();
             container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<TestRemoteTaskQueueSettings>();
             container.Configurator.ForAbstraction<IRemoteTaskQueueProfiler>().UseType<NoOpRemoteTaskQueueProfiler>();

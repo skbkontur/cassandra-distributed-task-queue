@@ -15,11 +15,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
         public TimeSpan TaskTtl { get; } = StandardTestTaskTtl;
         public bool EnableContinuationOptimization { get; } = true;
 
-        public const string QueueKeyspaceName = "EdiRtqKeyspace";
-
-        // todo (andrew, 25.01.2020): revert after avk/singleGlobalTime3 release
-        //public const string QueueKeyspaceName = "TestRtqKeyspace";
-
+        public const string QueueKeyspaceName = "TestRtqKeyspace";
         public static TimeSpan StandardTestTaskTtl = TimeSpan.FromHours(24);
     }
 }
