@@ -1,8 +1,6 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using JetBrains.Annotations;
-
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SKBKontur.Catalogue.Objects;
 
@@ -10,9 +8,9 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class OldestLiveRecordTicksHolder : IOldestLiveRecordTicksHolder
     {
-        public OldestLiveRecordTicksHolder(ITicksHolder ticksHolder)
+        public OldestLiveRecordTicksHolder(IMinTicksHolder minTicksHolder)
         {
-            this.ticksHolder = ticksHolder;
+            this.minTicksHolder = minTicksHolder;
         }
 
         [CanBeNull]
@@ -21,7 +19,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             var currentMarkerValue = DoTryGetCurrentMarkerValue(taskIndexShardKey);
             if (currentMarkerValue != null)
                 return currentMarkerValue;
-            var persistedTicks = ticksHolder.GetMinTicks(taskIndexShardKey.ToCassandraKey());
+            var persistedTicks = minTicksHolder.GetMinTicks(taskIndexShardKey.ToCassandraKey());
             if (persistedTicks == 0)
                 return null;
             return DoGetCurrentMarkerValue(taskIndexShardKey, persistedTicks);
@@ -78,7 +76,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 
         public void MoveMarkerBackwardIfNecessary([NotNull] TaskIndexShardKey taskIndexShardKey, long newTicks)
         {
-            ticksHolder.UpdateMinTicks(taskIndexShardKey.ToCassandraKey(), newTicks);
+            minTicksHolder.UpdateMinTicks(taskIndexShardKey.ToCassandraKey(), newTicks);
             DoMoveBackwardIfNecessary(taskIndexShardKey, newTicks);
         }
 
@@ -97,7 +95,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             }
         }
 
-        private readonly ITicksHolder ticksHolder;
+        private readonly IMinTicksHolder minTicksHolder;
         private readonly object locker = new object();
         private readonly Dictionary<TaskIndexShardKey, long> ticksByShardKey = new Dictionary<TaskIndexShardKey, long>();
     }

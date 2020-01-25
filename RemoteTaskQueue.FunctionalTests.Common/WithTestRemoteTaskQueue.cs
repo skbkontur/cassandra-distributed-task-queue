@@ -5,12 +5,14 @@ using GroboContainer.NUnitExtensions;
 using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using RemoteQueue.Cassandra.Primitives;
+using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Configuration;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
 using SkbKontur.Cassandra.DistributedLock;
 using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
+using SkbKontur.Cassandra.GlobalTimestamp;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
@@ -27,6 +29,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
 
         public static void ConfigureContainer(IContainer container)
         {
+            container.Configurator.ForAbstraction<IGlobalTime>().UseType<RtqGlobalTimeProxy>();
             container.Configurator.ForAbstraction<ITaskDataRegistry>().UseType<TestTaskDataRegistry>();
             container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<TestRemoteTaskQueueSettings>();
             container.Configurator.ForAbstraction<IRemoteTaskQueueProfiler>().UseType<NoOpRemoteTaskQueueProfiler>();

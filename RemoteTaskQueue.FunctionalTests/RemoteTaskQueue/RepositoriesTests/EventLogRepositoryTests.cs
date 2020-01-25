@@ -10,7 +10,6 @@ using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.TimeBasedUuid;
@@ -27,7 +26,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         {
             return new[]
                 {
-                    new ColumnFamily {Name = TicksHolder.ColumnFamilyName},
+                    new ColumnFamily {Name = RtqMinTicksHolder.ColumnFamilyName},
                     new ColumnFamily {Name = EventLogRepository.ColumnFamilyName},
                 };
         }
@@ -43,7 +42,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         private void ClearEventLog()
         {
             ResetCassandraState();
-            GroboTestContext.Current.Container.Get<TicksHolder>().ResetInMemoryState();
+            GroboTestContext.Current.Container.Get<IMinTicksHolder>().ResetInMemoryState();
         }
 
         private void SetUpEventLog()

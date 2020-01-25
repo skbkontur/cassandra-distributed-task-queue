@@ -12,6 +12,9 @@ namespace RemoteQueue.Settings
         string QueueKeyspace { get; }
 
         [NotNull]
+        string NewQueueKeyspace { get; }
+
+        [NotNull]
         string QueueKeyspaceForLock { get; }
 
         TimeSpan TaskTtl { get; }

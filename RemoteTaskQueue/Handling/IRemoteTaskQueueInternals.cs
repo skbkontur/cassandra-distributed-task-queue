@@ -4,11 +4,11 @@ using GroBuf;
 
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Profiling;
 
 using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.GlobalTimestamp;
 
 using Vostok.Logging.Abstractions;
 

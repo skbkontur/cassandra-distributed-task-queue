@@ -8,12 +8,13 @@ using GroboContainer.NUnitExtensions;
 using NUnit.Framework;
 
 using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
 
 using RemoteTaskQueue.FunctionalTests.Common;
+
+using SkbKontur.Cassandra.GlobalTimestamp;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {
@@ -32,7 +33,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             {
                 foreach (var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>())
                 {
-                    var indexRecords = index.GetRecords(new TaskIndexShardKey(taskTopic, taskState), globalTime.UpdateNowTicks(), batchSize : 2000).ToArray();
+                    var indexRecords = index.GetRecords(new TaskIndexShardKey(taskTopic, taskState), globalTime.UpdateNowTimestamp().Ticks, batchSize : 2000).ToArray();
                     foreach (var indexRecord in indexRecords)
                     {
                         List<TaskIndexShardKey> shardKeys;

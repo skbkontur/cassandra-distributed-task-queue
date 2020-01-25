@@ -10,6 +10,7 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Settings;
 
+using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
@@ -28,6 +29,7 @@ namespace RemoteQueue.Configuration
                            ITaskDataRegistry taskDataRegistry,
                            ITaskHandlerRegistry taskHandlerRegistry,
                            ISerializer serializer,
+                           IGlobalTime globalTime,
                            ICassandraCluster cassandraCluster,
                            IRemoteTaskQueueSettings taskQueueSettings,
                            IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
@@ -35,7 +37,7 @@ namespace RemoteQueue.Configuration
             this.consumerSettings = consumerSettings;
             this.periodicTaskRunner = periodicTaskRunner;
             var taskCounter = new TaskCounter(consumerSettings.MaxRunningTasksCount, consumerSettings.MaxRunningContinuationsCount);
-            var remoteTaskQueue = new RemoteTaskQueue(logger, serializer, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
+            var remoteTaskQueue = new RemoteTaskQueue(logger, serializer, globalTime, cassandraCluster, taskQueueSettings, taskDataRegistry, remoteTaskQueueProfiler);
             localTaskQueue = new LocalTaskQueue(taskCounter, taskHandlerRegistry, remoteTaskQueue);
             foreach (var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
                 handlerManagers.Add(new HandlerManager(taskTopic, consumerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime, remoteTaskQueue.Logger));

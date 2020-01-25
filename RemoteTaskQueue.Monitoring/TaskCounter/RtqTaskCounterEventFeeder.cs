@@ -3,8 +3,9 @@
 using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Configuration;
+
+using SkbKontur.Cassandra.GlobalTimestamp;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Core.EventFeeds.Building;

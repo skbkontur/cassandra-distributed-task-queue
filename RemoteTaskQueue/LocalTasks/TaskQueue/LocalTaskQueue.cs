@@ -114,7 +114,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             if (taskIsBeingTraced)
             {
                 InfrastructureTaskTraceContext.Finish();
-                RemoteTaskHandlingTraceContext.Finish(result, remoteTaskQueueInternals.GlobalTime.UpdateNowTicks());
+                RemoteTaskHandlingTraceContext.Finish(result, remoteTaskQueueInternals.GlobalTime.UpdateNowTimestamp().Ticks);
             }
         }
 

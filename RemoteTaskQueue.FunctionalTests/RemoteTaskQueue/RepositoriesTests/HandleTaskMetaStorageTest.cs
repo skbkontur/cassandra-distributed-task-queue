@@ -13,12 +13,17 @@ using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Configuration;
 
+using RemoteTaskQueue.FunctionalTests.Common;
+
 using SkbKontur.Cassandra.TimeBasedUuid;
+
+using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     [GroboTestFixture]
-    public class HandleTaskMetaStorageTest : ITestRtqCassandraWithTickHolderTestSuite
+    [WithDefaultSerializer, WithTestRemoteTaskQueueSettings, WithCassandra(TestRemoteTaskQueueSettings.QueueKeyspaceName), AndResetCassandraState]
+    public class HandleTaskMetaStorageTest
     {
         [GroboTestFixtureSetUp]
         [SuppressMessage("ReSharper", "UnusedMember.Global")]

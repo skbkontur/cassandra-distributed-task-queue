@@ -23,10 +23,10 @@ namespace RemoteQueue.Handling
         }
 
         [NotNull]
-        public string Id { get { return task.Meta.Id; } }
+        public string Id => task.Meta.Id;
 
         [CanBeNull]
-        public string ParentTaskId { get { return task.Meta.ParentTaskId; } }
+        public string ParentTaskId => task.Meta.ParentTaskId;
 
         [NotNull]
         public string Queue()

@@ -6,13 +6,13 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
 using RemoteQueue.Profiling;
 
+using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Objects;
@@ -65,7 +65,7 @@ namespace RemoteQueue.Cassandra.Repositories
         public TaskIndexRecord AddMeta([NotNull] TaskMetaInformation taskMeta, [CanBeNull] TaskIndexRecord oldTaskIndexRecord)
         {
             var metricsContext = MetricsContext.For(taskMeta).SubContext("HandleTasksMetaStorage.AddMeta");
-            var globalNowTicks = globalTime.UpdateNowTicks();
+            var globalNowTicks = globalTime.UpdateNowTimestamp().Ticks;
             var nowTicks = Math.Max((taskMeta.LastModificationTicks ?? 0) + PreciseTimestampGenerator.TicksPerMicrosecond, globalNowTicks);
             taskMeta.LastModificationTicks = nowTicks;
             using (metricsContext.Timer("EventLogRepository_AddEvent").NewContext())
@@ -90,7 +90,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public void ProlongMetaTtl([NotNull] TaskMetaInformation taskMeta)
         {
-            var globalNowTicks = globalTime.UpdateNowTicks();
+            var globalNowTicks = globalTime.UpdateNowTimestamp().Ticks;
             minimalStartTicksIndex.WriteRecord(FormatIndexRecord(taskMeta), globalNowTicks, taskMeta.GetTtl());
             childTaskIndex.WriteIndexRecord(taskMeta, globalNowTicks);
             taskMetaStorage.Write(taskMeta, globalNowTicks);

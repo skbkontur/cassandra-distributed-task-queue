@@ -1,13 +1,15 @@
-﻿using JetBrains.Annotations;
+﻿using System;
 
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
+using JetBrains.Annotations;
 
+using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 
 namespace RemoteTaskQueue.Monitoring
 {
+    [Obsolete("todo (andrew, 25.01.2020): remove after avk/singleGlobalTime3 release")]
     public class RtqGlobalTimeProvider : IGlobalTimeProvider
     {
         public RtqGlobalTimeProvider(IGlobalTime globalTime)
@@ -18,7 +20,7 @@ namespace RemoteTaskQueue.Monitoring
         [NotNull]
         public Timestamp GetNowTimestamp()
         {
-            return new Timestamp(globalTime.UpdateNowTicks());
+            return globalTime.UpdateNowTimestamp();
         }
 
         private readonly IGlobalTime globalTime;

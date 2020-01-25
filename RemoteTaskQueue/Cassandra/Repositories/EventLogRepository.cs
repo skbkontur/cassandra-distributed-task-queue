@@ -9,7 +9,6 @@ using JetBrains.Annotations;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
@@ -23,11 +22,11 @@ namespace RemoteQueue.Cassandra.Repositories
 {
     public class EventLogRepository : ColumnFamilyRepositoryBase, IEventLogRepository, IEventSource<TaskMetaUpdatedEvent, string>
     {
-        public EventLogRepository(ISerializer serializer, ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings settings, ITicksHolder ticksHolder)
+        public EventLogRepository(ISerializer serializer, ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings settings, IMinTicksHolder minTicksHolder)
             : base(cassandraCluster, settings, ColumnFamilyName)
         {
             this.serializer = serializer;
-            this.ticksHolder = ticksHolder;
+            this.minTicksHolder = minTicksHolder;
             var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(settings.QueueKeyspace, ColumnFamilyName).GetConnectionParameters();
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
         }
@@ -43,7 +42,7 @@ namespace RemoteQueue.Cassandra.Repositories
 
         public void AddEvent([NotNull] TaskMetaInformation taskMeta, [NotNull] Timestamp eventTimestamp, Guid eventId)
         {
-            ticksHolder.UpdateMinTicks(firstEventTicksRowName, eventTimestamp.Ticks);
+            minTicksHolder.UpdateMinTicks(firstEventTicksRowName, eventTimestamp.Ticks);
             var ttl = taskMeta.GetTtl();
             RetrieveColumnFamilyConnection().AddColumn(EventPointerFormatter.GetPartitionKey(eventTimestamp.Ticks), new Column
                 {
@@ -61,7 +60,7 @@ namespace RemoteQueue.Cassandra.Repositories
                 throw new InvalidProgramStateException("estimatedCount <= 0");
             if (string.IsNullOrEmpty(toOffsetInclusive))
                 throw new InvalidProgramStateException("toOffsetInclusive is not set");
-            var firstEventTicks = ticksHolder.GetMinTicks(firstEventTicksRowName);
+            var firstEventTicks = minTicksHolder.GetMinTicks(firstEventTicksRowName);
             if (firstEventTicks == 0)
                 return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset : null, noMoreEventsInSource : true);
             var exclusiveStartColumnName = GetExclusiveStartColumnName(fromOffsetExclusive, firstEventTicks);
@@ -112,6 +111,6 @@ namespace RemoteQueue.Cassandra.Repositories
         public const string ColumnFamilyName = "RemoteTaskQueueEventLog";
         private const string firstEventTicksRowName = "firstEventTicksRowName";
         private readonly ISerializer serializer;
-        private readonly ITicksHolder ticksHolder;
+        private readonly IMinTicksHolder minTicksHolder;
     }
 }

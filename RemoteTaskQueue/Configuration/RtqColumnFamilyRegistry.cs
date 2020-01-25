@@ -14,9 +14,9 @@ using SkbKontur.Cassandra.ThriftClient.Abstractions;
 
 namespace RemoteQueue.Configuration
 {
-    public class ColumnFamilyRegistry : IColumnFamilyRegistry
+    public class RtqColumnFamilyRegistry
     {
-        public ColumnFamilyRegistry()
+        public RtqColumnFamilyRegistry()
         {
             foreach (var cfName in TaskMetaStorage.GetColumnFamilyNames())
                 cfNames.Add(cfName);
@@ -25,6 +25,7 @@ namespace RemoteQueue.Configuration
             foreach (var cfName in TaskExceptionInfoStorage.GetColumnFamilyNames())
                 cfNames.Add(cfName);
             cfNames.Add(RemoteTaskQueueLockConstants.LockColumnFamily);
+            cfNames.Add(RtqMinTicksHolder.ColumnFamilyName);
             cfNames.Add(TicksHolder.ColumnFamilyName);
             cfNames.Add(TaskMinimalStartTicksIndex.ColumnFamilyName);
             cfNames.Add(EventLogRepository.ColumnFamilyName);

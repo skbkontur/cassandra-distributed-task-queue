@@ -12,7 +12,6 @@ using Metrics;
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
@@ -21,6 +20,7 @@ using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 
 using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.GrobufExtensions;
@@ -66,7 +66,7 @@ namespace RemoteQueue.Handling
             {
                 taskShardMetricsContext.Meter("NoMeta").Mark();
                 logger.Error($"Удаляем запись индекса, для которой мета так и не записалась: {taskIndexRecord}");
-                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
+                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTimestamp().Ticks);
                 return LocalTaskProcessingResult.Undefined;
             }
             var localNow = Timestamp.Now;
@@ -177,14 +177,14 @@ namespace RemoteQueue.Handling
                             logger.Error($"После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration} и задача уже находится в терминальном состоянии, " +
                                          $"поэтому просто удаляем зависшую запись из индекса; oldMeta: {oldMeta}; taskIndexRecord: {taskIndexRecord}; localNow: {localNow}");
                             using (metricsContext.Timer("RemoveIndexRecord_Terminal").NewContext())
-                                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTicks());
+                                taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTimestamp().Ticks);
                         }
                         else
                         {
                             logger.Error($"После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration}, поэтому чиним индекс; " +
                                          $"oldMeta: {oldMeta}; taskIndexRecord: {taskIndexRecord}; indexRecordConsistentWithActualMeta: {indexRecordConsistentWithActualMeta}; localNow: {localNow}");
                             taskShardMetricsContext.Meter("FixIndex_UnderLock").Mark();
-                            var globalNowTicks = globalTime.UpdateNowTicks();
+                            var globalNowTicks = globalTime.UpdateNowTimestamp().Ticks;
                             using (metricsContext.Timer("AddIndexRecord_FixIndex").NewContext())
                                 taskMinimalStartTicksIndex.AddRecord(indexRecordConsistentWithActualMeta, globalNowTicks, oldMeta.GetTtl());
                             using (metricsContext.Timer("RemoveIndexRecord_FixIndex").NewContext())

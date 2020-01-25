@@ -15,7 +15,8 @@ namespace RemoteQueue.Cassandra.Repositories.GlobalTicksHolder
 {
     // todo (maybe-optimize): по-хорошему надо распилить на две CF
     // здесь реализуется не очень хороший паттерн - в одной CF метки времени для записи выбираются разными способами: ticks и long.MaxValue - ticks
-    public class TicksHolder : ITicksHolder
+    [Obsolete("todo (andrew, 25.01.2020): remove after avk/singleGlobalTime3 release")]
+    public class TicksHolder
     {
         public TicksHolder(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings settings)
         {

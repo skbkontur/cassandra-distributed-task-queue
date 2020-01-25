@@ -85,30 +85,6 @@ namespace RemoteTaskQueue.Monitoring.Api
                 };
         }
 
-//        [NotNull]
-//        private static TaskMetaInformation TaskMetaToApiModel([NotNull] TaskMetaInformation taskMeta, [CanBeNull] string[] childrenTaskIds)
-//        {
-//            return new TaskMetaInformationModel
-//                {
-//                    Id = taskMeta.Id,
-//                    Name = taskMeta.Name,
-//                    EnqueueDateTime = TicksToDateTime(taskMeta.Ticks),
-//                    MinimalStartDateTime = TicksToDateTime(taskMeta.MinimalStartTicks),
-//                    StartExecutingDateTime = TicksToDateTime(taskMeta.StartExecutingTicks),
-//                    FinishExecutingDateTime = TicksToDateTime(taskMeta.FinishExecutingTicks),
-//                    LastModificationDateTime = TicksToDateTime(taskMeta.LastModificationTicks),
-//                    ExpirationTimestamp = TicksToDateTime(taskMeta.ExpirationTimestampTicks),
-//                    ExpirationModificationDateTime = TicksToDateTime(taskMeta.ExpirationModificationTicks),
-//                    ChildTaskIds = childrenTaskIds,
-//                    State = taskMeta.State,
-//                    Attempts = taskMeta.Attempts,
-//                    ParentTaskId = taskMeta.ParentTaskId,
-//                    TaskGroupLock = taskMeta.TaskGroupLock,
-//                    TraceId = taskMeta.TraceId,
-//                    TraceIsActive = taskMeta.TraceIsActive,
-//                };
-//        }
-
         [CanBeNull]
         public RemoteTaskInfoModel GetTaskDetails([NotNull] string taskId)
         {
@@ -175,7 +151,7 @@ namespace RemoteTaskQueue.Monitoring.Api
 
         public void ResetTicksHolderInMemoryState()
         {
-            (remoteTaskQueue as RemoteQueue.Handling.RemoteTaskQueue).ResetTicksHolderInMemoryState();
+            ((RemoteQueue.Handling.RemoteTaskQueue)remoteTaskQueue).ResetTicksHolderInMemoryState();
         }
 
         private readonly IRemoteTaskQueue remoteTaskQueue;

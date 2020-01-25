@@ -7,13 +7,13 @@ using MoreLinq;
 
 using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.LocalTasks.TaskQueue;
 using RemoteQueue.Profiling;
 using RemoteQueue.Tracing;
 
+using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Objects;
@@ -70,7 +70,7 @@ namespace RemoteQueue.Handling
                         LocalTaskQueueingResult result;
                         using (metricsContext.Timer("TryQueueTask").NewContext())
                             result = localTaskQueue.TryQueueTask(taskIndexRecord, taskMeta, TaskQueueReason.PullFromQueue, taskTraceContext.TaskIsBeingTraced);
-                        taskTraceContext.Finish(result.TaskIsSentToThreadPool, () => globalTime.UpdateNowTicks());
+                        taskTraceContext.Finish(result.TaskIsSentToThreadPool, () => globalTime.UpdateNowTimestamp().Ticks);
                         if (result.QueueIsFull)
                         {
                             metricsContext.Meter("QueueIsFull").Mark();

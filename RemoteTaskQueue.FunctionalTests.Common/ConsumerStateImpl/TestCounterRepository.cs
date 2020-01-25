@@ -2,10 +2,10 @@
 
 using GroBuf;
 
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Settings;
 
 using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Connections;
@@ -67,7 +67,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
             cfConnection.AddColumn(taskId, new Column
                 {
                     Name = dataColumnName,
-                    Timestamp = globalTime.UpdateNowTicks(),
+                    Timestamp = globalTime.UpdateNowTimestamp().Ticks,
                     Value = serializer.Serialize(value),
                     TTL = (int)TimeSpan.FromHours(1).TotalSeconds,
                 });

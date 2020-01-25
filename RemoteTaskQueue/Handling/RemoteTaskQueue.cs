@@ -10,7 +10,6 @@ using RemoteQueue.Cassandra.Entities;
 using RemoteQueue.Cassandra.Primitives;
 using RemoteQueue.Cassandra.Repositories;
 using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.GlobalTicksHolder;
 using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
 using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using RemoteQueue.Configuration;
@@ -21,6 +20,7 @@ using RemoteQueue.Settings;
 
 using SkbKontur.Cassandra.DistributedLock;
 using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
+using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
@@ -37,6 +37,7 @@ namespace RemoteQueue.Handling
         public RemoteTaskQueue(
             ILog logger,
             ISerializer serializer,
+            IGlobalTime globalTime,
             ICassandraCluster cassandraCluster,
             IRemoteTaskQueueSettings taskQueueSettings,
             ITaskDataRegistry taskDataRegistry,
@@ -45,13 +46,13 @@ namespace RemoteQueue.Handling
             TaskTtl = taskQueueSettings.TaskTtl;
             Logger = logger.ForContext("CassandraDistributedTaskQueue");
             Serializer = serializer;
+            GlobalTime = globalTime;
             TaskDataRegistry = taskDataRegistry;
             enableContinuationOptimization = taskQueueSettings.EnableContinuationOptimization;
-            ticksHolder = new TicksHolder(cassandraCluster, serializer, taskQueueSettings);
-            GlobalTime = new GlobalTime(ticksHolder);
-            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(ticksHolder), Logger);
+            minTicksHolder = new RtqMinTicksHolder(cassandraCluster, taskQueueSettings);
+            TaskMinimalStartTicksIndex = new TaskMinimalStartTicksIndex(cassandraCluster, serializer, taskQueueSettings, new OldestLiveRecordTicksHolder(minTicksHolder), Logger);
             var taskMetaStorage = new TaskMetaStorage(cassandraCluster, serializer, taskQueueSettings, Logger);
-            EventLogRepository = new EventLogRepository(serializer, cassandraCluster, taskQueueSettings, ticksHolder);
+            EventLogRepository = new EventLogRepository(serializer, cassandraCluster, taskQueueSettings, minTicksHolder);
             childTaskIndex = new ChildTaskIndex(cassandraCluster, taskQueueSettings, serializer, taskMetaStorage);
             HandleTasksMetaStorage = new HandleTasksMetaStorage(taskMetaStorage, TaskMinimalStartTicksIndex, EventLogRepository, GlobalTime, childTaskIndex, taskDataRegistry, Logger);
             TaskDataStorage = new TaskDataStorage(cassandraCluster, taskQueueSettings, Logger);
@@ -65,29 +66,28 @@ namespace RemoteQueue.Handling
 
         public TimeSpan TaskTtl { get; private set; }
 
-        public ILog Logger { get; private set; }
-        public ISerializer Serializer { get; private set; }
-        public ITaskDataRegistry TaskDataRegistry { get; private set; }
-        public IGlobalTime GlobalTime { get; private set; }
-        public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; private set; }
+        public ILog Logger { get; }
+        public ISerializer Serializer { get; }
+        public IGlobalTime GlobalTime { get; }
+        public ITaskDataRegistry TaskDataRegistry { get; }
+        public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; }
 
         [NotNull]
-        public EventLogRepository EventLogRepository { get; private set; }
+        public EventLogRepository EventLogRepository { get; }
 
-        public IHandleTasksMetaStorage HandleTasksMetaStorage { get; private set; }
-        public ITaskDataStorage TaskDataStorage { get; private set; }
-        public ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; private set; }
-        public IHandleTaskCollection HandleTaskCollection { get; private set; }
+        public IHandleTasksMetaStorage HandleTasksMetaStorage { get; }
+        public ITaskDataStorage TaskDataStorage { get; }
+        public ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; }
+        public IHandleTaskCollection HandleTaskCollection { get; }
         public IRemoteLockCreator RemoteLockCreator => lazyRemoteLockCreator.Value;
-        public IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; private set; }
-        IRemoteTaskQueue IRemoteTaskQueueInternals.RemoteTaskQueue { get { return this; } }
+        public IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; }
+        IRemoteTaskQueue IRemoteTaskQueueInternals.RemoteTaskQueue => this;
 
         public TaskManipulationResult TryCancelTask([NotNull] string taskId)
         {
             if (string.IsNullOrWhiteSpace(taskId))
                 throw new InvalidProgramStateException("TaskId is required");
-            IRemoteLock remoteLock;
-            if (!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
+            if (!RemoteLockCreator.TryGetLock(taskId, out var remoteLock))
                 return TaskManipulationResult.Failure_LockAcquiringFails;
             using (remoteLock)
             {
@@ -113,8 +113,7 @@ namespace RemoteQueue.Handling
                 throw new InvalidProgramStateException("TaskId is required");
             if (delay.Ticks < 0)
                 throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
-            IRemoteLock remoteLock;
-            if (!RemoteLockCreator.TryGetLock(taskId, out remoteLock))
+            if (!RemoteLockCreator.TryGetLock(taskId, out var remoteLock))
                 return TaskManipulationResult.Failure_LockAcquiringFails;
             using (remoteLock)
             {
@@ -207,10 +206,7 @@ namespace RemoteQueue.Handling
         [CanBeNull]
         private static string GetCurrentExecutingTaskId()
         {
-            var context = TaskExecutionContext.Current;
-            if (context == null)
-                return null;
-            return context.CurrentTask.Meta.Id;
+            return TaskExecutionContext.Current?.CurrentTask.Meta.Id;
         }
 
         [NotNull, ItemNotNull]
@@ -223,7 +219,8 @@ namespace RemoteQueue.Handling
 
         public void ResetTicksHolderInMemoryState()
         {
-            ticksHolder.ResetInMemoryState();
+            GlobalTime.ResetInMemoryState();
+            minTicksHolder.ResetInMemoryState();
         }
 
         public void ChangeTaskTtl(TimeSpan ttl)
@@ -236,11 +233,11 @@ namespace RemoteQueue.Handling
         {
             var taskType = task.TaskData.GetType();
             if (!typeof(T).IsAssignableFrom(taskType))
-                throw new Exception(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
+                throw new InvalidProgramStateException(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
             return new RemoteTaskInfo<T>(task.Context, (T)task.TaskData, task.ExceptionInfos);
         }
 
-        private readonly TicksHolder ticksHolder;
+        private readonly IMinTicksHolder minTicksHolder;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly bool enableContinuationOptimization;
         private readonly Lazy<RemoteLocker> lazyRemoteLockCreator;

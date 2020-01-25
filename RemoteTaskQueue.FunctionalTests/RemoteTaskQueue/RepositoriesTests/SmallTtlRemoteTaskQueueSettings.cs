@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 using GroboContainer.Infection;
 
@@ -15,10 +15,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             TaskTtl = taskTtl;
         }
 
-        public bool EnableContinuationOptimization { get { return baseSettings.EnableContinuationOptimization; } }
-        public string QueueKeyspace { get { return baseSettings.QueueKeyspace; } }
-        public string QueueKeyspaceForLock { get { return baseSettings.QueueKeyspaceForLock; } }
-        public TimeSpan TaskTtl { get; private set; }
+        public bool EnableContinuationOptimization => baseSettings.EnableContinuationOptimization;
+        public string QueueKeyspace => baseSettings.QueueKeyspace;
+        public string NewQueueKeyspace => baseSettings.QueueKeyspace;
+        public string QueueKeyspaceForLock => baseSettings.QueueKeyspaceForLock;
+        public TimeSpan TaskTtl { get; }
 
         private readonly IRemoteTaskQueueSettings baseSettings;
     }
