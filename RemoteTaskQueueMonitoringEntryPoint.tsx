@@ -4,9 +4,9 @@ import { Route, RouteComponentProps, Switch } from "react-router-dom";
 import { MetricsCategory, MetricsCategoryProvider } from "ui/metrics";
 import { PageTitle } from "Commons/HOC/PageTitle";
 import { RemoteTaskQueueApi, RemoteTaskQueueApiProvider } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { SuperUserAccessLevel } from "Domain/EDI/Auth/SuperUserAccessLevel";
 
 import { AdminToolsRoute } from "../AdminTools/AdminToolsApplication";
+import { AdminToolsAccessRights, AdminToolsPage } from "../AdminTools/Domain/AccessRights";
 import { ServiceHeader } from "../ServiceHeader/components/ServiceHeader";
 
 import { TasksPageContainer } from "./containers/TasksPageContainer";
@@ -44,7 +44,7 @@ export function RemoteTaskQueueMonitoringEntryPoint(): JSX.Element {
             <MetricsCategoryProvider category={MetricsCategory.TaskQueue}>
                 <RemoteTaskQueueApiProvider remoteTaskQueueApi={api}>
                     <AdminToolsRoute
-                        minimalSuperUserAccessLevel={SuperUserAccessLevel.Supervisor}
+                        minimalSuperUserAccessLevel={AdminToolsAccessRights[AdminToolsPage.Tasks]}
                         path={TasksPath}
                         component={RemoteTaskQueueApplication}
                     />
