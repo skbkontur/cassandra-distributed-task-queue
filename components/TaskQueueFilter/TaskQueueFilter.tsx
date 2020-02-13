@@ -2,7 +2,7 @@ import * as React from "react";
 import { Button, ButtonLink, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { DateTimeRangePicker } from "Commons/DateTimeRangePicker/DateTimeRangePicker";
-import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
+import { RtqMonitoringSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequest";
 
 import { TaskStatesSelect } from "../TaskStatesSelect/TaskStatesSelect";
 import { TaskTypesSelect } from "../TaskTypesSelect/TaskTypesSelect";
@@ -10,9 +10,9 @@ import { TaskTypesSelect } from "../TaskTypesSelect/TaskTypesSelect";
 import cn from "./TaskQueueFilter.less";
 
 export interface TaskQueueFilterProps {
-    value: RemoteTaskQueueSearchRequest;
+    value: RtqMonitoringSearchRequest;
     availableTaskTypes: string[] | null;
-    onChange: (filterParams: $Shape<RemoteTaskQueueSearchRequest>) => void;
+    onChange: (filterParams: $Shape<RtqMonitoringSearchRequest>) => void;
     onSearchButtonClick: () => void;
 }
 

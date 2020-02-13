@@ -6,8 +6,8 @@ import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
 import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
 import { ApiError } from "Domain/ApiBase/ApiBase";
-import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
+import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
 import { SuperUserAccessLevel } from "Domain/EDI/Auth/SuperUserAccessLevel";
 import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
 
@@ -22,7 +22,7 @@ interface TaskDetailsPageContainerProps {
 }
 
 interface TaskDetailsPageContainerState {
-    taskDetails: Nullable<RemoteTaskInfoModel>;
+    taskDetails: Nullable<RtqMonitoringTaskModel>;
     loading: boolean;
     notFoundError: boolean;
 }

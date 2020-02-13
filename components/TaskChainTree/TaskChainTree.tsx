@@ -9,7 +9,7 @@ import * as React from "react";
 import { RouterLink } from "ui";
 import { ColumnStack, Fit } from "ui/layout";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
+import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
 import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import { TimeLine } from "../TaskTimeLine/TimeLine/TimeLine";
@@ -24,12 +24,12 @@ const IconColors = {
 };
 
 interface TaskChainTreeProps {
-    taskDetails: RemoteTaskInfoModel[];
+    taskDetails: RtqMonitoringTaskModel[];
     getTaskLocation: (id: string) => LocationDescriptor;
 }
 
 export class TaskChainTree extends React.Component<TaskChainTreeProps> {
-    public buildTaskTimeLineEntry({ taskMeta }: RemoteTaskInfoModel): JSX.Element {
+    public buildTaskTimeLineEntry({ taskMeta }: RtqMonitoringTaskModel): JSX.Element {
         const { getTaskLocation } = this.props;
 
         let iconAndColorProps: { icon: JSX.Element; iconColor: undefined | string } = {
@@ -102,8 +102,8 @@ export class TaskChainTree extends React.Component<TaskChainTreeProps> {
     }
 
     public buildChildEntries(
-        { taskMeta, childTaskIds }: RemoteTaskInfoModel,
-        taskMetaHashSet: { [key: string]: RemoteTaskInfoModel }
+        { taskMeta, childTaskIds }: RtqMonitoringTaskModel,
+        taskMetaHashSet: { [key: string]: RtqMonitoringTaskModel }
     ): JSX.Element[] {
         if (!childTaskIds || childTaskIds.length === 0) {
             return [];
@@ -126,16 +126,16 @@ export class TaskChainTree extends React.Component<TaskChainTreeProps> {
     }
 
     public buildTaskTimeLine(
-        taskMeta: RemoteTaskInfoModel,
-        taskMetaHashSet: { [key: string]: RemoteTaskInfoModel }
+        taskMeta: RtqMonitoringTaskModel,
+        taskMetaHashSet: { [key: string]: RtqMonitoringTaskModel }
     ): JSX.Element[] {
         return [this.buildTaskTimeLineEntry(taskMeta), ...this.buildChildEntries(taskMeta, taskMetaHashSet)];
     }
 
     public findMostParentTask(
-        taskMetaHashSet: { [key: string]: RemoteTaskInfoModel },
-        startTaskMeta: RemoteTaskInfoModel
-    ): RemoteTaskInfoModel {
+        taskMetaHashSet: { [key: string]: RtqMonitoringTaskModel },
+        startTaskMeta: RtqMonitoringTaskModel
+    ): RtqMonitoringTaskModel {
         let result = startTaskMeta;
         while (result.taskMeta.parentTaskId) {
             if (!taskMetaHashSet[result.taskMeta.parentTaskId]) {
@@ -146,7 +146,7 @@ export class TaskChainTree extends React.Component<TaskChainTreeProps> {
         return result;
     }
 
-    public findAllMostParents(taskMetaHashSet: { [key: string]: RemoteTaskInfoModel }): RemoteTaskInfoModel[] {
+    public findAllMostParents(taskMetaHashSet: { [key: string]: RtqMonitoringTaskModel }): RtqMonitoringTaskModel[] {
         let mostParentTasks = Object.getOwnPropertyNames(taskMetaHashSet)
             .map(x => taskMetaHashSet[x])
             .map(x => this.findMostParentTask(taskMetaHashSet, x));

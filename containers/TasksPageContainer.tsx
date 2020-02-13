@@ -12,12 +12,12 @@ import { QueryStringMapping, queryStringMapping, SearchQuery } from "Commons/Que
 import { getEnumValues } from "Commons/QueryStringMapping/QueryStringMappingExtensions";
 import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
+import { RtqMonitoringSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequest";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
-} from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
-import { RemoteTaskQueueSearchResults } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchResults";
+} from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequestUtils";
+import { RtqMonitoringSearchResults } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchResults";
 import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { SuperUserAccessLevel } from "Domain/EDI/Auth/SuperUserAccessLevel";
 import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
@@ -30,14 +30,14 @@ import { numberToString } from "../Domain/numberToString";
 interface TasksPageContainerProps extends RouteComponentProps<any> {
     searchQuery: string;
     remoteTaskQueueApi: IRemoteTaskQueueApi;
-    results: Nullable<RemoteTaskQueueSearchResults>;
+    results: Nullable<RtqMonitoringSearchResults>;
     requestParams: Nullable<string>;
     userInfo: ReactApplicationUserInfo;
 }
 
 interface TasksPageContainerState {
     loading: boolean;
-    request: RemoteTaskQueueSearchRequest;
+    request: RtqMonitoringSearchRequest;
     availableTaskNames: string[] | null;
     confirmMultipleModalOpened: boolean;
     modalType: "Rerun" | "Cancel";
@@ -45,8 +45,8 @@ interface TasksPageContainerState {
     searchRequested: boolean;
 }
 
-const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping<
-    RemoteTaskQueueSearchRequest
+const provisionalMapping: QueryStringMapping<RtqMonitoringSearchRequest> = queryStringMapping<
+    RtqMonitoringSearchRequest
 >()
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
     .mapToString(x => x.queryString, "q")
@@ -54,12 +54,12 @@ const provisionalMapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = que
     .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
     .build();
 
-function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMapping<RemoteTaskQueueSearchRequest> {
+function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMapping<RtqMonitoringSearchRequest> {
     const availableTaskNamesMap = availableTaskNames.reduce((result, name) => {
         result[name] = name;
         return result;
     }, {});
-    return queryStringMapping<RemoteTaskQueueSearchRequest>()
+    return queryStringMapping<RtqMonitoringSearchRequest>()
         .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
         .mapToString(x => x.queryString, "q")
         .mapToSet(x => x.names, "types", availableTaskNamesMap, true)
@@ -75,7 +75,7 @@ const pagingMapping: QueryStringMapping<{ from: Nullable<number>; size: Nullable
     .mapToInteger(x => x.size, "size")
     .build();
 
-export function buildSearchQueryForRequest(request: RemoteTaskQueueSearchRequest): string {
+export function buildSearchQueryForRequest(request: RtqMonitoringSearchRequest): string {
     if (request.names && request.names.length > 0) {
         throw new Error("Cannot build search request with names.");
     }
@@ -101,7 +101,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         return isRemoteTaskQueueSearchRequestEmpty(request);
     }
 
-    public getSearchRequestMapping(): QueryStringMapping<RemoteTaskQueueSearchRequest> {
+    public getSearchRequestMapping(): QueryStringMapping<RtqMonitoringSearchRequest> {
         const { availableTaskNames } = this.state;
         if (!availableTaskNames) {
             throw new Error("InvalidProgramState");
@@ -109,7 +109,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         return createSearchRequestMapping(availableTaskNames);
     }
 
-    public getRequestBySearchQuery(searchQuery: Nullable<string>): RemoteTaskQueueSearchRequest {
+    public getRequestBySearchQuery(searchQuery: Nullable<string>): RtqMonitoringSearchRequest {
         const request = this.getSearchRequestMapping().parse(searchQuery);
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
             return createDefaultRemoteTaskQueueSearchRequest();
@@ -154,7 +154,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         }
     }
 
-    public async loadData(searchQuery: undefined | string, request: RemoteTaskQueueSearchRequest): Promise<void> {
+    public async loadData(searchQuery: undefined | string, request: RtqMonitoringSearchRequest): Promise<void> {
         const { from, size } = pagingMapping.parse(searchQuery);
         const { history } = this.props;
         this.setState({ loading: true });

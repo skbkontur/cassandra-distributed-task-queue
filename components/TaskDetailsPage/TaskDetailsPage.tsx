@@ -9,7 +9,7 @@ import { Accordion } from "Commons/Accordion/Accordion";
 import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";
 import { CommonLayout } from "Commons/Layouts";
 import { TimeUtils } from "Commons/TimeUtils";
-import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
+import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
 import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
 
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
@@ -21,7 +21,7 @@ import cn from "./TaskDetailsPage.less";
 
 export interface TaskDetailsPageProps {
     parentLocation: LocationDescriptor;
-    taskDetails: Nullable<RemoteTaskInfoModel>;
+    taskDetails: Nullable<RtqMonitoringTaskModel>;
     getTaskLocation: (id: string) => LocationDescriptor;
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => void;
@@ -100,7 +100,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
         );
     }
 
-    public getRelatedTasksLocation(taskDetails: RemoteTaskInfoModel): Nullable<LocationDescriptor> {
+    public getRelatedTasksLocation(taskDetails: RtqMonitoringTaskModel): Nullable<LocationDescriptor> {
         const documentCirculationId =
             taskDetails.taskData && typeof taskDetails.taskData["documentCirculationId"] === "string"
                 ? taskDetails.taskData["documentCirculationId"]

@@ -8,13 +8,13 @@ import { CommonLayout } from "Commons/Layouts";
 import { queryStringMapping, QueryStringMapping } from "Commons/QueryStringMapping";
 import { getEnumValues } from "Commons/QueryStringMapping/QueryStringMappingExtensions";
 import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
-import { RemoteTaskInfoModel } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskInfoModel";
 import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { RemoteTaskQueueSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequest";
+import { RtqMonitoringSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequest";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
-} from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueueSearchRequestUtils";
+} from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequestUtils";
+import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
 import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
@@ -22,7 +22,7 @@ import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 interface TaskChainsTreeContainerProps extends RouteComponentProps<any> {
     searchQuery: string;
     remoteTaskQueueApi: IRemoteTaskQueueApi;
-    taskDetails: Nullable<RemoteTaskInfoModel[]>;
+    taskDetails: Nullable<RtqMonitoringTaskModel[]>;
     parentLocation: LocationDescriptor;
     searchedQuery: Nullable<string>;
 }
@@ -30,10 +30,10 @@ interface TaskChainsTreeContainerProps extends RouteComponentProps<any> {
 interface TaskChainsTreeContainerState {
     loading: boolean;
     loaderText: string;
-    request: RemoteTaskQueueSearchRequest;
+    request: RtqMonitoringSearchRequest;
 }
 
-const mapping: QueryStringMapping<RemoteTaskQueueSearchRequest> = queryStringMapping<RemoteTaskQueueSearchRequest>()
+const mapping: QueryStringMapping<RtqMonitoringSearchRequest> = queryStringMapping<RtqMonitoringSearchRequest>()
     .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")
@@ -56,7 +56,7 @@ class TaskChainsTreeContainerInternal extends React.Component<
     public searchTasks = takeLastAndRejectPrevious(
         this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
     );
-    public getTaskByIds = takeLastAndRejectPrevious(async (ids: string[]): Promise<RemoteTaskInfoModel[]> => {
+    public getTaskByIds = takeLastAndRejectPrevious(async (ids: string[]): Promise<RtqMonitoringTaskModel[]> => {
         const result = await Promise.all(ids.map(id => this.props.remoteTaskQueueApi.getTaskDetails(id)));
         return result;
     });
@@ -66,7 +66,7 @@ class TaskChainsTreeContainerInternal extends React.Component<
         return isRemoteTaskQueueSearchRequestEmpty(request);
     }
 
-    public getRequestBySearchQuery(searchQuery: Nullable<string>): RemoteTaskQueueSearchRequest {
+    public getRequestBySearchQuery(searchQuery: Nullable<string>): RtqMonitoringSearchRequest {
         const request = mapping.parse(searchQuery);
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
             return createDefaultRemoteTaskQueueSearchRequest();
@@ -95,7 +95,7 @@ class TaskChainsTreeContainerInternal extends React.Component<
         }
     }
 
-    public getParentAndChildrenTaskIds(taskDetails: RemoteTaskInfoModel[]): string[] {
+    public getParentAndChildrenTaskIds(taskDetails: RtqMonitoringTaskModel[]): string[] {
         const linkedIds = taskDetails
             .map(x => [x.taskMeta.parentTaskId, ...(x.childTaskIds || [])])
             .flat()
@@ -103,13 +103,13 @@ class TaskChainsTreeContainerInternal extends React.Component<
         return _.uniq(linkedIds);
     }
 
-    public async loadData(searchQuery: undefined | string, request: RemoteTaskQueueSearchRequest): Promise<void> {
+    public async loadData(searchQuery: undefined | string, request: RtqMonitoringSearchRequest): Promise<void> {
         const { history } = this.props;
         let iterationCount = 0;
 
         this.setState({ loading: true, loaderText: "Загрузка задач: 0" });
         try {
-            let taskDetails: RemoteTaskInfoModel[] = [];
+            let taskDetails: RtqMonitoringTaskModel[] = [];
             let allTaskIds: string[] = [];
             const results = await this.searchTasks(request, 0, 100);
             let taskIdsToLoad = results.taskMetas.map((x: any) => x.id);
