@@ -1,12 +1,11 @@
-﻿using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
-
+﻿using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {
-    [TaskName("TimeGuidTaskData")]
-    public class TimeGuidTaskData : ITaskData
+    [RtqTaskName("TimeGuidTaskData")]
+    public class TimeGuidTaskData : IRtqTaskData
     {
         public TimeGuid Value { get; set; }
     }

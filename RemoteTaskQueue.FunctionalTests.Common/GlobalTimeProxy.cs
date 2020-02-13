@@ -1,7 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-using RemoteQueue.Settings;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
@@ -10,9 +9,9 @@ namespace RemoteTaskQueue.FunctionalTests.Common
 {
     public class GlobalTimeProxy : IGlobalTime
     {
-        public GlobalTimeProxy(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings taskQueueSettings)
+        public GlobalTimeProxy(ICassandraCluster cassandraCluster, IRtqSettings rtqSettings)
         {
-            var maxTicksCfConnection = cassandraCluster.RetrieveColumnFamilyConnection(taskQueueSettings.QueueKeyspace, ColumnFamilyName);
+            var maxTicksCfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.QueueKeyspace, ColumnFamilyName);
             globalTime = new GlobalTime(maxTicksCfConnection);
         }
 

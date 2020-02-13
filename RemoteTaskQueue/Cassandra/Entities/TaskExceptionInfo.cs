@@ -2,7 +2,7 @@
 
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Cassandra.Entities
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
 {
     public class TaskExceptionInfo
     {

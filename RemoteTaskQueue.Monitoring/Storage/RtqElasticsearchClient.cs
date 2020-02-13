@@ -4,7 +4,7 @@ using Elasticsearch.Net;
 
 using JetBrains.Annotations;
 
-namespace RemoteTaskQueue.Monitoring.Storage
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
 {
     public class RtqElasticsearchClient : ElasticLowLevelClient, IRtqElasticsearchClient
     {

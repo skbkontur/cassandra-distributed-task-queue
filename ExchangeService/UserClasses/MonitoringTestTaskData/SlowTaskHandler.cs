@@ -1,13 +1,13 @@
 ﻿using System.Threading;
 
-using RemoteQueue.Handling;
-
 using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+
 namespace ExchangeService.UserClasses.MonitoringTestTaskData
 {
-    public class SlowTaskHandler : TaskHandler<SlowTaskData>
+    public class SlowTaskHandler : RtqTaskHandler<SlowTaskData>
     {
         public SlowTaskHandler(ITestCounterRepository testCounterRepository)
         {

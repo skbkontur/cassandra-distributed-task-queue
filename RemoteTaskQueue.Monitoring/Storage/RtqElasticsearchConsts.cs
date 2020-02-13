@@ -1,4 +1,4 @@
-﻿namespace RemoteTaskQueue.Monitoring.Storage
+﻿namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
 {
     public static class RtqElasticsearchConsts
     {

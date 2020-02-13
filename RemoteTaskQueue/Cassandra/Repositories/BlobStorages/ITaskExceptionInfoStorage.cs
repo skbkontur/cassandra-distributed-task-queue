@@ -3,11 +3,10 @@ using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
 {
     public interface ITaskExceptionInfoStorage
     {

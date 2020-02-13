@@ -3,14 +3,14 @@ using System.Threading;
 
 using GroBuf;
 
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Handling;
-
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
+
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace ExchangeService.UserClasses.MonitoringTestTaskData
 {
-    public class BetaTaskHandler : TaskHandler<BetaTaskData>
+    public class BetaTaskHandler : RtqTaskHandler<BetaTaskData>
     {
         public BetaTaskHandler(ISerializer serializer, ITaskDataStorage taskDataStorage)
         {

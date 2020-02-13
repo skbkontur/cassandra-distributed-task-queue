@@ -2,9 +2,9 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
 {
     public interface ITaskDataStorage
     {

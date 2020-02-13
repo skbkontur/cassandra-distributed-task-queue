@@ -3,11 +3,10 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
-
-using RemoteTaskQueue.Monitoring.Storage;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
@@ -16,14 +15,14 @@ using SkbKontur.Graphite.Client;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteTaskQueue.Monitoring.Indexer
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
     public class RtqMonitoringEventBulkIndexer
     {
         public RtqMonitoringEventBulkIndexer(ILog logger,
                                              RtqElasticsearchIndexerSettings indexerSettings,
                                              IRtqElasticsearchClient elasticsearchClient,
-                                             RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
+                                             RemoteTaskQueue remoteTaskQueue,
                                              IStatsDClient statsDClient)
         {
             this.indexerSettings = indexerSettings;

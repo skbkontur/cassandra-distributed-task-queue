@@ -2,9 +2,9 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteQueue.Tracing
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Tracing
 {
     public class RemoteTaskInitialTraceContext : IDisposable
     {

@@ -4,7 +4,7 @@ using System.Reflection;
 using GroboContainer.NUnitExtensions;
 using GroboContainer.NUnitExtensions.Impl.TestContext;
 
-using RemoteTaskQueue.Monitoring.Storage;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 
 namespace RemoteTaskQueue.FunctionalTests
 {

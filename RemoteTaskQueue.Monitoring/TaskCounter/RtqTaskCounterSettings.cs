@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteTaskQueue.Monitoring.TaskCounter
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
     public class RtqTaskCounterSettings
     {

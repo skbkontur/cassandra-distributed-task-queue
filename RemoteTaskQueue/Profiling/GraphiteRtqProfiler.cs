@@ -4,18 +4,17 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Handling;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.TimeBasedUuid;
 using SkbKontur.Graphite.Client;
 
-namespace RemoteQueue.Profiling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
 {
-    public class GraphiteRemoteTaskQueueProfiler : IRemoteTaskQueueProfiler
+    public class GraphiteRtqProfiler : IRtqProfiler
     {
-        public GraphiteRemoteTaskQueueProfiler([NotNull] IStatsDClient statsDClient, [NotNull] IGraphiteClient graphiteClient)
+        public GraphiteRtqProfiler([NotNull] IStatsDClient statsDClient, [NotNull] IGraphiteClient graphiteClient)
         {
             const string keyNamePrefix = "SubSystem.RemoteTaskQueueTasks";
             this.statsDClient = statsDClient.WithScopes($"{keyNamePrefix}.{Environment.MachineName}", $"{keyNamePrefix}.Total");

@@ -4,7 +4,7 @@ using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteQueue.Cassandra.Entities
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
 {
     public class TaskMetaUpdatedEvent
     {

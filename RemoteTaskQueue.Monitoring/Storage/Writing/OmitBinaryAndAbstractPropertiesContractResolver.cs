@@ -4,7 +4,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Writing
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
 {
     public class OmitBinaryAndAbstractPropertiesContractResolver : DefaultContractResolver
     {

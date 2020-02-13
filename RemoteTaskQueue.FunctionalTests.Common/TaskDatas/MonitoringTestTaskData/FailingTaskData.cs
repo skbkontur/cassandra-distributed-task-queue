@@ -1,12 +1,12 @@
 using System;
 
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {
-    [TaskName("FailingTaskData")]
-    public class FailingTaskData : ITaskData
+    [RtqTaskName("FailingTaskData")]
+    public class FailingTaskData : IRtqTaskData
     {
         public Guid UniqueData { get; set; }
 

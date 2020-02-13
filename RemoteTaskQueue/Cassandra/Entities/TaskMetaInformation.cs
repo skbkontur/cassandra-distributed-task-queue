@@ -4,13 +4,12 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteQueue.Cassandra.Entities
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
 {
     public class TaskMetaInformation
     {

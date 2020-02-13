@@ -5,14 +5,13 @@ using JetBrains.Annotations;
 
 using MoreLinq;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.LocalTasks.TaskQueue;
-using RemoteQueue.Profiling;
-using RemoteQueue.Tracing;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue;
+using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Tracing;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
@@ -20,9 +19,9 @@ using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-    public class HandlerManager : IHandlerManager
+    internal class HandlerManager : IHandlerManager
     {
         public HandlerManager([NotNull] string taskTopic,
                               int maxRunningTasksCount,

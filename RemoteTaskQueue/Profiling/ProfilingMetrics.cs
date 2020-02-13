@@ -6,7 +6,7 @@ using Metrics;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteQueue.Profiling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
 {
     internal static class ProfilingMetrics
     {

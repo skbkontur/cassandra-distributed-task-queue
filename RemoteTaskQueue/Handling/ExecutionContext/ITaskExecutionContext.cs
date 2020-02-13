@@ -1,6 +1,6 @@
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteQueue.Handling.ExecutionContext
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling.ExecutionContext
 {
     internal interface ITaskExecutionContext
     {

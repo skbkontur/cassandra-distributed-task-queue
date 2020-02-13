@@ -4,14 +4,13 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Configuration;
-using RemoteQueue.Profiling;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
@@ -19,7 +18,7 @@ using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.Cassandra.Repositories
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
     public class HandleTasksMetaStorage : IHandleTasksMetaStorage
     {
@@ -29,7 +28,7 @@ namespace RemoteQueue.Cassandra.Repositories
             IEventLogRepository eventLogRepository,
             IGlobalTime globalTime,
             IChildTaskIndex childTaskIndex,
-            ITaskDataRegistry taskDataRegistry,
+            IRtqTaskDataRegistry taskDataRegistry,
             ILog logger)
         {
             this.taskMetaStorage = taskMetaStorage;
@@ -137,7 +136,7 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IEventLogRepository eventLogRepository;
         private readonly IGlobalTime globalTime;
         private readonly IChildTaskIndex childTaskIndex;
-        private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly IRtqTaskDataRegistry taskDataRegistry;
         private readonly ILog logger;
     }
 }

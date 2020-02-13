@@ -4,8 +4,7 @@ using System.Linq;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Entities;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.UnitTests

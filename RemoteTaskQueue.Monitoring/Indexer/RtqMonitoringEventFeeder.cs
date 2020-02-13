@@ -2,11 +2,10 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Repositories;
-
-using RemoteTaskQueue.Monitoring.Storage;
-using RemoteTaskQueue.Monitoring.Storage.Writing;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
 using SkbKontur.Cassandra.GlobalTimestamp;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
@@ -17,7 +16,7 @@ using SkbKontur.Graphite.Client;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteTaskQueue.Monitoring.Indexer
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
     public class RtqMonitoringEventFeeder
     {
@@ -25,7 +24,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
                                         EventFeedFactory eventFeedFactory,
                                         RtqElasticsearchIndexerSettings indexerSettings,
                                         IRtqElasticsearchClient elasticsearchClient,
-                                        RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
+                                        RemoteTaskQueue remoteTaskQueue,
                                         IStatsDClient statsDClient)
         {
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqMonitoringEventFeeder));

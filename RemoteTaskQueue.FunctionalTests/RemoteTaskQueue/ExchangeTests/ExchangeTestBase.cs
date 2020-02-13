@@ -7,13 +7,12 @@ using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Configuration;
-
 using RemoteTaskQueue.FunctionalTests.Common;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.GlobalTimestamp;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
@@ -75,10 +74,10 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         private readonly ITaskMinimalStartTicksIndex index;
 
         [Injected]
-        private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly IRtqTaskDataRegistry taskDataRegistry;
 
         [Injected]
         [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
-        protected readonly RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue;
+        protected readonly SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue remoteTaskQueue;
     }
 }

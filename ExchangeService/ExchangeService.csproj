@@ -3,15 +3,15 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>ExchangeService</RootNamespace>
-    <AssemblyName>Catalogue.RemoteTaskQueue.ExchangeService</AssemblyName>
+    <AssemblyName>RemoteTaskQueue.ExchangeService</AssemblyName>
     <OutputPath>bin\</OutputPath>
     <OutputType>Exe</OutputType>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj"/>
-    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj"/>
+    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj" />
+    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj" />
   </ItemGroup>
 
   <ItemGroup>

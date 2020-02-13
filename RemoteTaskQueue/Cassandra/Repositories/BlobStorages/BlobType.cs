@@ -1,4 +1,4 @@
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
 {
     public enum BlobType
     {

@@ -1,4 +1,4 @@
-namespace RemoteTaskQueue.Monitoring.Storage.Client
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client
 {
     public class TaskSearchResponse
     {

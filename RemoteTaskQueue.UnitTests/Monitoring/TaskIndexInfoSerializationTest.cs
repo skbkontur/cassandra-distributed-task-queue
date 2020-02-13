@@ -6,8 +6,8 @@ using Newtonsoft.Json;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.Monitoring.Indexer;
-using RemoteTaskQueue.Monitoring.Storage.Writing;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
 
 namespace RemoteTaskQueue.UnitTests.Monitoring
 {

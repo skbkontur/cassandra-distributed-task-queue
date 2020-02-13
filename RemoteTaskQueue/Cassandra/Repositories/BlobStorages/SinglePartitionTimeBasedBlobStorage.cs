@@ -13,7 +13,7 @@ using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
 {
     public class SinglePartitionTimeBasedBlobStorage
     {

@@ -2,16 +2,15 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Tracing;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Tracing;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     internal class RemoteTask : IRemoteTask
     {

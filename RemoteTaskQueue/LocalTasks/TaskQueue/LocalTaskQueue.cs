@@ -4,29 +4,28 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
-using RemoteQueue.Profiling;
-using RemoteQueue.Tracing;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Tracing;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using Vostok.Logging.Abstractions;
 
 using Task = System.Threading.Tasks.Task;
 
-namespace RemoteQueue.LocalTasks.TaskQueue
+namespace SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue
 {
     internal class LocalTaskQueue : ILocalTaskQueue
     {
-        public LocalTaskQueue(ITaskCounter taskCounter, ITaskHandlerRegistry taskHandlerRegistry, IRemoteTaskQueueInternals remoteTaskQueueInternals)
+        public LocalTaskQueue(LocalQueueTaskCounter localQueueTaskCounter, IRtqTaskHandlerRegistry taskHandlerRegistry, IRtqInternals rtqInternals)
         {
-            this.taskCounter = taskCounter;
+            this.localQueueTaskCounter = localQueueTaskCounter;
             this.taskHandlerRegistry = taskHandlerRegistry;
-            this.remoteTaskQueueInternals = remoteTaskQueueInternals;
-            logger = remoteTaskQueueInternals.Logger.ForContext(nameof(LocalTaskQueue));
+            this.rtqInternals = rtqInternals;
+            logger = rtqInternals.Logger.ForContext(nameof(LocalTaskQueue));
             Instance = this;
         }
 
@@ -78,11 +77,11 @@ namespace RemoteQueue.LocalTasks.TaskQueue
                 logger.Debug($"Мета для задачи TaskId = {taskIndexRecord.TaskId} еще не записана, ждем {HandlerTask.MaxAllowedIndexInconsistencyDuration}");
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             }
-            if (!taskCounter.TryIncrement(taskQueueReason))
+            if (!localQueueTaskCounter.TryIncrement(taskQueueReason))
                 return LocalTaskQueueingResult.QueueIsFullResult;
             try
             {
-                var handlerTask = new HandlerTask(taskIndexRecord, taskQueueReason, taskMeta, taskHandlerRegistry, remoteTaskQueueInternals);
+                var handlerTask = new HandlerTask(taskIndexRecord, taskQueueReason, taskMeta, taskHandlerRegistry, rtqInternals);
                 lock (lockObject)
                 {
                     if (stopped)
@@ -100,7 +99,7 @@ namespace RemoteQueue.LocalTasks.TaskQueue
             finally
             {
                 if (!taskIsSentToThreadPool)
-                    taskCounter.Decrement(taskQueueReason);
+                    localQueueTaskCounter.Decrement(taskQueueReason);
             }
             return LocalTaskQueueingResult.SuccessResult;
         }
@@ -109,19 +108,19 @@ namespace RemoteQueue.LocalTasks.TaskQueue
         {
             lock (lockObject)
                 hashtable.Remove(taskId);
-            taskCounter.Decrement(taskQueueReason);
+            localQueueTaskCounter.Decrement(taskQueueReason);
             metricsContext.Meter("TaskIsFinished").Mark();
             if (taskIsBeingTraced)
             {
                 InfrastructureTaskTraceContext.Finish();
-                RemoteTaskHandlingTraceContext.Finish(result, remoteTaskQueueInternals.GlobalTime.UpdateNowTimestamp().Ticks);
+                RemoteTaskHandlingTraceContext.Finish(result, rtqInternals.GlobalTime.UpdateNowTimestamp().Ticks);
             }
         }
 
         private volatile bool stopped;
-        private readonly ITaskCounter taskCounter;
-        private readonly ITaskHandlerRegistry taskHandlerRegistry;
-        private readonly IRemoteTaskQueueInternals remoteTaskQueueInternals;
+        private readonly LocalQueueTaskCounter localQueueTaskCounter;
+        private readonly IRtqTaskHandlerRegistry taskHandlerRegistry;
+        private readonly IRtqInternals rtqInternals;
         private readonly ILog logger;
         private readonly Hashtable hashtable = new Hashtable();
         private readonly object lockObject = new object();

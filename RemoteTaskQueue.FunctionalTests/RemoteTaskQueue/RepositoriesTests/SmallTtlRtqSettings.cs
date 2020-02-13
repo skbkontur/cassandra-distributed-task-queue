@@ -2,14 +2,14 @@
 
 using GroboContainer.Infection;
 
-using RemoteQueue.Settings;
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     [IgnoredImplementation]
-    public class SmallTtlRemoteTaskQueueSettings : IRemoteTaskQueueSettings
+    public class SmallTtlRtqSettings : IRtqSettings
     {
-        public SmallTtlRemoteTaskQueueSettings(IRemoteTaskQueueSettings baseSettings, TimeSpan taskTtl)
+        public SmallTtlRtqSettings(IRtqSettings baseSettings, TimeSpan taskTtl)
         {
             this.baseSettings = baseSettings;
             TaskTtl = taskTtl;
@@ -21,6 +21,6 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public string QueueKeyspaceForLock => baseSettings.QueueKeyspaceForLock;
         public TimeSpan TaskTtl { get; }
 
-        private readonly IRemoteTaskQueueSettings baseSettings;
+        private readonly IRtqSettings baseSettings;
     }
 }

@@ -1,6 +1,6 @@
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public interface IOldestLiveRecordTicksHolder
     {

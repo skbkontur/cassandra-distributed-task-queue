@@ -2,7 +2,7 @@ using System;
 
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Cassandra.Entities
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
 {
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public sealed class CassandraNameAttribute : Attribute

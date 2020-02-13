@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.Monitoring.Storage.Utils;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Utils;
 
 namespace RemoteTaskQueue.UnitTests.Monitoring
 {

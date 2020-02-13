@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Linq;
 
-using RemoteQueue.Handling;
-
 using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+
 namespace ExchangeService.UserClasses
 {
-    public class FakeMixedPeriodicAndFailTaskHandler : TaskHandler<FakeMixedPeriodicAndFailTaskData>
+    public class FakeMixedPeriodicAndFailTaskHandler : RtqTaskHandler<FakeMixedPeriodicAndFailTaskData>
     {
         public FakeMixedPeriodicAndFailTaskHandler(ITestCounterRepository testCounterRepository)
         {

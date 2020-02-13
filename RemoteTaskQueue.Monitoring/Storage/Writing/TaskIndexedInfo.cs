@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 using Newtonsoft.Json;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Writing
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
 {
     public class TaskIndexedInfo
     {

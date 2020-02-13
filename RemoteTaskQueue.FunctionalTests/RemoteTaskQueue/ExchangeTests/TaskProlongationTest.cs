@@ -6,15 +6,14 @@ using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Handling;
-using RemoteQueue.Settings;
-
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 using RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
@@ -29,8 +28,8 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         [SuppressMessage("ReSharper", "UnusedMember.Global")]
         public void SetUp()
         {
-            var smallTtlRemoteTaskQueueSettings = new SmallTtlRemoteTaskQueueSettings(new TestRemoteTaskQueueSettings(), smallTaskTtl);
-            smallTtlRemoteTaskQueue = GroboTestContext.Current.Container.Create<IRemoteTaskQueueSettings, RemoteQueue.Handling.RemoteTaskQueue>(smallTtlRemoteTaskQueueSettings);
+            var smallTtlRemoteTaskQueueSettings = new SmallTtlRtqSettings(new TestRtqSettings(), smallTaskTtl);
+            smallTtlRemoteTaskQueue = GroboTestContext.Current.Container.Create<IRtqSettings, SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue>(smallTtlRemoteTaskQueueSettings);
         }
 
         [Test]
@@ -114,7 +113,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             GroboTestContext.Current.Container.Get<ExchangeServiceClient>().ChangeTaskTtl(ttl);
         }
 
-        private RemoteQueue.Handling.RemoteTaskQueue smallTtlRemoteTaskQueue;
+        private SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue smallTtlRemoteTaskQueue;
 
         [Injected]
         private readonly ITaskMetaStorage taskMetaStorage;

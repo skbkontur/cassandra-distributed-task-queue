@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-using RemoteTaskQueue.Monitoring.Storage.Utils;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Utils;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Writing
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
 {
     public class MetaIndexedInfo
     {

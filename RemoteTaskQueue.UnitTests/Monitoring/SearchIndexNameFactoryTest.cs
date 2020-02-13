@@ -3,7 +3,7 @@ using System.Linq;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.Monitoring.Storage.Search;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Search;
 
 namespace RemoteTaskQueue.UnitTests.Monitoring
 {

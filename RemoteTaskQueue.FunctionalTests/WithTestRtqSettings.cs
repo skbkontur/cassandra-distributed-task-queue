@@ -3,20 +3,19 @@
 using GroboContainer.NUnitExtensions;
 using GroboContainer.NUnitExtensions.Impl.TestContext;
 
-using RemoteQueue.Settings;
-
 using RemoteTaskQueue.FunctionalTests.Common;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.GlobalTimestamp;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
-    public class WithTestRemoteTaskQueueSettings : GroboTestSuiteWrapperAttribute
+    public class WithTestRtqSettings : GroboTestSuiteWrapperAttribute
     {
         public override sealed void SetUp(string suiteName, Assembly testAssembly, IEditableGroboTestContext suiteContext)
         {
             suiteContext.Container.Configurator.ForAbstraction<IGlobalTime>().UseType<GlobalTimeProxy>();
-            suiteContext.Container.Configurator.ForAbstraction<IRemoteTaskQueueSettings>().UseType<TestRemoteTaskQueueSettings>();
+            suiteContext.Container.Configurator.ForAbstraction<IRtqSettings>().UseType<TestRtqSettings>();
         }
     }
 }

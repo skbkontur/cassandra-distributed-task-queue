@@ -1,6 +1,6 @@
 ﻿using System;
 
-using RemoteQueue.Settings;
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 
 using SKBKontur.Catalogue.Core.Configuration.Settings;
 

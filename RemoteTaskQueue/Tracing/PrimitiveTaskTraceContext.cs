@@ -2,7 +2,7 @@
 
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Tracing
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Tracing
 {
     public abstract class PrimitiveTaskTraceContext : IDisposable
     {

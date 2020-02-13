@@ -1,13 +1,11 @@
 ﻿using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Repositories;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Objects;
 
-namespace RemoteTaskQueue.Monitoring
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring
 {
     public class RtqEventLogOffsetInterpreter : IOffsetInterpreter<string>
     {
@@ -26,7 +24,7 @@ namespace RemoteTaskQueue.Monitoring
         [NotNull]
         public string GetMaxOffsetForTimestamp([NotNull] Timestamp timestamp)
         {
-            return EventPointerFormatter.GetColumnName(timestamp.Ticks, GuidHelpers.MaxGuid);
+            return EventPointerFormatter.GetMaxColumnNameForTimestamp(timestamp);
         }
 
         public int Compare([CanBeNull] string x, [CanBeNull] string y)

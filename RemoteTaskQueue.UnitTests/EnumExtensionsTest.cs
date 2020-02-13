@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
 namespace RemoteTaskQueue.UnitTests
 {

@@ -2,9 +2,9 @@
 
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Settings
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Settings
 {
-    public interface IRemoteTaskQueueSettings
+    public interface IRtqSettings
     {
         bool EnableContinuationOptimization { get; }
 

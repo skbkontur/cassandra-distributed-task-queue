@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RemoteQueue.Settings
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Settings
 {
     public interface IRtqConsumerSettings
     {

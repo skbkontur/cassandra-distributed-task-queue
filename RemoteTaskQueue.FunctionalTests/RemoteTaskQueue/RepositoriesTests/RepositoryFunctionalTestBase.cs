@@ -12,7 +12,7 @@ using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     [SuppressMessage("ReSharper", "UnassignedReadonlyField")]
-    [GroboTestSuite("RepositoryTests"), WithDefaultSerializer, WithTestRemoteTaskQueueSettings, WithCassandra(QueueKeyspaceName)]
+    [GroboTestSuite("RepositoryTests"), WithDefaultSerializer, WithTestRtqSettings, WithCassandra(QueueKeyspaceName)]
     public abstract class RepositoryFunctionalTestBase
     {
         protected void ResetCassandraState()
@@ -22,7 +22,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 
         protected abstract ColumnFamily[] GetColumnFamilies();
 
-        protected const string QueueKeyspaceName = TestRemoteTaskQueueSettings.QueueKeyspaceName;
+        protected const string QueueKeyspaceName = TestRtqSettings.QueueKeyspaceName;
 
         [Injected]
         protected readonly ICassandraCluster cassandraCluster;

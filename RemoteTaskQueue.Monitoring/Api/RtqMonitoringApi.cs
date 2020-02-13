@@ -4,31 +4,30 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client;
 
-using RemoteTaskQueue.Monitoring.Storage.Client;
-
-namespace RemoteTaskQueue.Monitoring.Api
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 {
-    public class RemoteTaskQueueMonitoringApi : IRemoteTaskQueueMonitoringApi
+    public class RtqMonitoringApi : IRtqMonitoringApi
     {
-        public RemoteTaskQueueMonitoringApi(IRemoteTaskQueue remoteTaskQueue, TaskSearchClient taskSearchClient, ITaskDataRegistry taskDataRegistry)
+        public RtqMonitoringApi(IRtqTaskManager taskManager, TaskSearchClient taskSearchClient, IRtqTaskDataRegistry taskDataRegistry)
         {
-            this.remoteTaskQueue = remoteTaskQueue;
+            this.taskManager = taskManager;
             this.taskSearchClient = taskSearchClient;
             this.taskDataRegistry = taskDataRegistry;
         }
 
         [NotNull, ItemNotNull]
-        public string[] GetAllTaksNames()
+        public string[] GetAllTasksNames()
         {
             return taskDataRegistry.GetAllTaskNames();
         }
 
         [NotNull]
-        public RemoteTaskQueueSearchResults Search([NotNull] RemoteTaskQueueSearchRequest searchRequest, int from, int size)
+        public RtqMonitoringSearchResults Search([NotNull] RtqMonitoringSearchRequest searchRequest, int from, int size)
         {
             if (searchRequest.EnqueueDateTimeRange == null)
                 throw new ArgumentException("enqueueDateTimeRange should be specified");
@@ -36,14 +35,14 @@ namespace RemoteTaskQueue.Monitoring.Api
                 throw new ArgumentException("Both enqueueDateTimeRange.lowerBound and enqueueDateTimeRange.uppedBound should be specified");
 
             var searchResult = FindTasks(searchRequest, from, size);
-            var taskMetas = remoteTaskQueue.GetTaskMetas(searchResult.Ids);
+            var taskMetas = taskManager.GetTaskMetas(searchResult.Ids);
             var taskListItems = new List<TaskMetaInformation>();
             foreach (var taskId in searchResult.Ids)
             {
                 if (taskMetas.TryGetValue(taskId, out var taskMeta))
                     taskListItems.Add(taskMeta);
             }
-            return new RemoteTaskQueueSearchResults
+            return new RtqMonitoringSearchResults
                 {
                     TotalCount = searchResult.TotalCount,
                     TaskMetas = taskListItems.ToArray(),
@@ -51,12 +50,12 @@ namespace RemoteTaskQueue.Monitoring.Api
         }
 
         [NotNull]
-        private TaskSearchResponse FindTasks([NotNull] RemoteTaskQueueSearchRequest searchRequest, int from, int size)
+        private TaskSearchResponse FindTasks([NotNull] RtqMonitoringSearchRequest searchRequest, int from, int size)
         {
             return taskSearchClient.Search(CreateTaskSearchRequest(searchRequest), from, size);
         }
 
-        private IEnumerable<string> FindAllTasks([NotNull] RemoteTaskQueueSearchRequest searchRequest)
+        private IEnumerable<string> FindAllTasks([NotNull] RtqMonitoringSearchRequest searchRequest)
         {
             const int batchSize = 100;
             var taskSearchRequest = CreateTaskSearchRequest(searchRequest);
@@ -73,7 +72,7 @@ namespace RemoteTaskQueue.Monitoring.Api
         }
 
         [NotNull]
-        private static TaskSearchRequest CreateTaskSearchRequest([NotNull] RemoteTaskQueueSearchRequest searchRequest)
+        private static TaskSearchRequest CreateTaskSearchRequest([NotNull] RtqMonitoringSearchRequest searchRequest)
         {
             return new TaskSearchRequest
                 {
@@ -86,18 +85,18 @@ namespace RemoteTaskQueue.Monitoring.Api
         }
 
         [CanBeNull]
-        public RemoteTaskInfoModel GetTaskDetails([NotNull] string taskId)
+        public RtqMonitoringTaskModel GetTaskDetails([NotNull] string taskId)
         {
-            var result = remoteTaskQueue.TryGetTaskInfo(taskId);
+            var result = taskManager.TryGetTaskInfo(taskId);
             if (result == null)
                 return null;
 
-            return new RemoteTaskInfoModel
+            return new RtqMonitoringTaskModel
                 {
                     ExceptionInfos = result.ExceptionInfos,
                     TaskData = result.TaskData,
                     TaskMeta = result.Context,
-                    ChildTaskIds = remoteTaskQueue.GetChildrenTaskIds(taskId),
+                    ChildTaskIds = taskManager.GetChildrenTaskIds(taskId),
                 };
         }
 
@@ -107,7 +106,7 @@ namespace RemoteTaskQueue.Monitoring.Api
             var result = new Dictionary<string, TaskManipulationResult>();
             foreach (var taskId in ids.Distinct())
             {
-                var taskManipulationResult = remoteTaskQueue.TryCancelTask(taskId);
+                var taskManipulationResult = taskManager.TryCancelTask(taskId);
                 result.Add(taskId, taskManipulationResult);
             }
             return result;
@@ -119,31 +118,31 @@ namespace RemoteTaskQueue.Monitoring.Api
             var result = new Dictionary<string, TaskManipulationResult>();
             foreach (var taskId in ids.Distinct())
             {
-                var taskManipulationResult = remoteTaskQueue.TryRerunTask(taskId, TimeSpan.Zero);
+                var taskManipulationResult = taskManager.TryRerunTask(taskId, TimeSpan.Zero);
                 result.Add(taskId, taskManipulationResult);
             }
             return result;
         }
 
         [NotNull]
-        public Dictionary<string, TaskManipulationResult> RerunTasksBySearchQuery([NotNull] RemoteTaskQueueSearchRequest searchRequest)
+        public Dictionary<string, TaskManipulationResult> RerunTasksBySearchQuery([NotNull] RtqMonitoringSearchRequest searchRequest)
         {
             var result = new Dictionary<string, TaskManipulationResult>();
             foreach (var taskId in FindAllTasks(searchRequest).Distinct())
             {
-                var taskManipulationResult = remoteTaskQueue.TryRerunTask(taskId, TimeSpan.Zero);
+                var taskManipulationResult = taskManager.TryRerunTask(taskId, TimeSpan.Zero);
                 result.Add(taskId, taskManipulationResult);
             }
             return result;
         }
 
         [NotNull]
-        public Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery([NotNull] RemoteTaskQueueSearchRequest searchRequest)
+        public Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery([NotNull] RtqMonitoringSearchRequest searchRequest)
         {
             var result = new Dictionary<string, TaskManipulationResult>();
             foreach (var taskId in FindAllTasks(searchRequest).Distinct())
             {
-                var taskManipulationResult = remoteTaskQueue.TryCancelTask(taskId);
+                var taskManipulationResult = taskManager.TryCancelTask(taskId);
                 result.Add(taskId, taskManipulationResult);
             }
             return result;
@@ -151,11 +150,11 @@ namespace RemoteTaskQueue.Monitoring.Api
 
         public void ResetTicksHolderInMemoryState()
         {
-            ((RemoteQueue.Handling.RemoteTaskQueue)remoteTaskQueue).ResetTicksHolderInMemoryState();
+            ((RemoteTaskQueue)taskManager).ResetTicksHolderInMemoryState();
         }
 
-        private readonly IRemoteTaskQueue remoteTaskQueue;
+        private readonly IRtqTaskManager taskManager;
         private readonly TaskSearchClient taskSearchClient;
-        private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly IRtqTaskDataRegistry taskDataRegistry;
     }
 }

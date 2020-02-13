@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace RemoteTaskQueue.UnitTests
 {
@@ -10,7 +10,7 @@ namespace RemoteTaskQueue.UnitTests
         [Test]
         public void TestUnlimitedAllTaskCount()
         {
-            var taskCounter = new TaskCounter(0, 0);
+            var taskCounter = new LocalQueueTaskCounter(0, 0);
             for (var i = 0; i < 100; i++)
             {
                 Assert.That(taskCounter.TryIncrement(TaskQueueReason.TaskContinuation));
@@ -23,7 +23,7 @@ namespace RemoteTaskQueue.UnitTests
         [Test]
         public void TestUnlimitedTaskCount()
         {
-            var taskCounter = new TaskCounter(0, 10);
+            var taskCounter = new LocalQueueTaskCounter(0, 10);
 
             for (var i = 0; i < 100; i++)
             {
@@ -54,7 +54,7 @@ namespace RemoteTaskQueue.UnitTests
         [Test]
         public void TestLimitedTaskCount()
         {
-            var taskCounter = new TaskCounter(2, 3);
+            var taskCounter = new LocalQueueTaskCounter(2, 3);
 
             Assert.That(taskCounter.CanQueueTask(TaskQueueReason.PullFromQueue));
             Assert.That(taskCounter.TryIncrement(TaskQueueReason.PullFromQueue));
@@ -102,7 +102,7 @@ namespace RemoteTaskQueue.UnitTests
         [Test]
         public void TestUnlimitedTaskContinuationCount()
         {
-            var taskCounter = new TaskCounter(10, 0);
+            var taskCounter = new LocalQueueTaskCounter(10, 0);
 
             for (var i = 0; i < 10; i++)
             {

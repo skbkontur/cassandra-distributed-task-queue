@@ -6,14 +6,14 @@ using JetBrains.Annotations;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteQueue.Configuration
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
 {
-    public static class TaskDataRegistryRefletionHelpers
+    public static class RtqTaskDataRegistryReflectionHelpers
     {
         [NotNull]
         public static string GetTaskName([NotNull] this Type taskDataType)
         {
-            var taskNameAttribute = GetAttributesForType<TaskNameAttribute>(taskDataType).SingleOrDefault();
+            var taskNameAttribute = GetAttributesForType<RtqTaskNameAttribute>(taskDataType).SingleOrDefault();
             if (taskNameAttribute == null)
                 throw new InvalidProgramStateException($"TaskName attribute not found for: {taskDataType.FullName}");
             return taskNameAttribute.TaskName;
@@ -22,7 +22,7 @@ namespace RemoteQueue.Configuration
         [CanBeNull]
         public static string TryGetTaskTopic([NotNull] this Type taskDataType, bool taskTopicIsRequired)
         {
-            var taskTopicAttribute = GetAllTypesToSearchForAttributes(taskDataType).SelectMany(GetAttributesForType<TaskTopicAttribute>).SingleOrDefault();
+            var taskTopicAttribute = GetAllTypesToSearchForAttributes(taskDataType).SelectMany(GetAttributesForType<RtqTaskTopicAttribute>).SingleOrDefault();
             if (taskTopicIsRequired && taskTopicAttribute == null)
                 throw new InvalidProgramStateException($"TaskTopic attribute not found for: {taskDataType.FullName}");
             return taskTopicAttribute?.TaskTopic;

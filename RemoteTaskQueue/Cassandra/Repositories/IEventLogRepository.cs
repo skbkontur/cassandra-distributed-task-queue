@@ -2,11 +2,10 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace RemoteQueue.Cassandra.Repositories
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
     public interface IEventLogRepository
     {

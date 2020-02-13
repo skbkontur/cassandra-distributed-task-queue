@@ -1,6 +1,6 @@
 ﻿using System;
 
-using RemoteQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
@@ -29,7 +29,7 @@ namespace ExchangeService
         public void ChangeTaskTtl(TimeSpan ttl)
         {
 #pragma warning disable 618
-            consumer.RemoteTaskQueueBackdoor.ChangeTaskTtl(ttl);
+            consumer.RtqBackdoor.ChangeTaskTtl(ttl);
 #pragma warning restore 618
         }
 

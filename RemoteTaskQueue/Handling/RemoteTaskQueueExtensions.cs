@@ -1,13 +1,15 @@
 ﻿using JetBrains.Annotations;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
+    [PublicAPI]
     public static class RemoteTaskQueueExtensions
     {
         [NotNull]
-        public static string ContinueWith<T>([NotNull] this IRemoteTaskQueue remoteTaskQueue, [NotNull] T taskData) where T : ITaskData
+        public static string ContinueWith<T>([NotNull] this IRtqTaskProducer taskProducer, [NotNull] T taskData)
+            where T : IRtqTaskData
         {
-            return remoteTaskQueue.CreateTask(taskData).Queue();
+            return taskProducer.CreateTask(taskData).Queue();
         }
     }
 }

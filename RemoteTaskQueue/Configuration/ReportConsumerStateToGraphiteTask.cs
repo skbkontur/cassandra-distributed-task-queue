@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using RemoteQueue.Handling;
-using RemoteQueue.Profiling;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
-namespace RemoteQueue.Configuration
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
 {
-    public class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
+    internal class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
     {
-        public ReportConsumerStateToGraphiteTask(IRemoteTaskQueueProfiler remoteTaskQueueProfiler, List<IHandlerManager> handlerManagers)
+        public ReportConsumerStateToGraphiteTask(IRtqProfiler rtqProfiler, List<IHandlerManager> handlerManagers)
         {
-            this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
+            this.rtqProfiler = rtqProfiler;
             this.handlerManagers = handlerManagers;
             startupTimestamp = Timestamp.Now;
         }
@@ -27,11 +26,11 @@ namespace RemoteQueue.Configuration
             foreach (var handlerManager in handlerManagers)
             {
                 foreach (var currentLiveRecordTicksMarker in handlerManager.GetCurrentLiveRecordTicksMarkers())
-                    remoteTaskQueueProfiler.ReportLiveRecordTicksMarkerLag(nowTimestamp, currentLiveRecordTicksMarker);
+                    rtqProfiler.ReportLiveRecordTicksMarkerLag(nowTimestamp, currentLiveRecordTicksMarker);
             }
         }
 
-        private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
+        private readonly IRtqProfiler rtqProfiler;
         private readonly List<IHandlerManager> handlerManagers;
         private readonly Timestamp startupTimestamp;
     }

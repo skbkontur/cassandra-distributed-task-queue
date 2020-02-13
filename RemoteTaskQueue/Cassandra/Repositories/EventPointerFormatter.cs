@@ -5,7 +5,9 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace RemoteQueue.Cassandra.Repositories
+using SKBKontur.Catalogue.Objects;
+
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
     public static class EventPointerFormatter
     {
@@ -23,7 +25,13 @@ namespace RemoteQueue.Cassandra.Repositories
         [NotNull]
         public static string GetColumnName(long eventTicks, Guid eventId)
         {
-            return string.Format("{0}_{1}", eventTicks.ToString("D20", CultureInfo.InvariantCulture), eventId);
+            return $"{eventTicks.ToString("D20", CultureInfo.InvariantCulture)}_{eventId}";
+        }
+
+        [NotNull]
+        public static string GetMaxColumnNameForTimestamp([NotNull] Timestamp timestamp)
+        {
+            return GetColumnName(timestamp.Ticks, GuidHelpers.MaxGuid);
         }
 
         [NotNull]

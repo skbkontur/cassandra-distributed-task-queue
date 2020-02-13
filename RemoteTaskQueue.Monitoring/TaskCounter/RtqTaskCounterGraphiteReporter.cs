@@ -3,12 +3,11 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
 using SkbKontur.Graphite.Client;
 
-namespace RemoteTaskQueue.Monitoring.TaskCounter
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
     public class RtqTaskCounterGraphiteReporter
     {

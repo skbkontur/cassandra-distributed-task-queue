@@ -2,10 +2,10 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
 
-namespace RemoteQueue.Cassandra.Repositories
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
     public interface IHandleTaskCollection
     {

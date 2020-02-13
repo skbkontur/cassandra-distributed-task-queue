@@ -3,12 +3,11 @@
 using GroboContainer.NUnitExtensions;
 using GroboContainer.NUnitExtensions.Impl.TestContext;
 
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Configuration;
-
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 
@@ -29,7 +28,7 @@ namespace RemoteTaskQueue.FunctionalTests
                     new ColumnFamily {Name = ColumnFamilies.TestTaskLoggerCfName},
                     new ColumnFamily {Name = ColumnFamilies.TestCounterRepositoryCfName}
                 }).ToArray();
-            suiteContext.Container.ResetCassandraState(TestRemoteTaskQueueSettings.QueueKeyspaceName, columnFamilies);
+            suiteContext.Container.ResetCassandraState(TestRtqSettings.QueueKeyspaceName, columnFamilies);
             suiteContext.Container.Get<IGlobalTime>().ResetInMemoryState();
             suiteContext.Container.Get<IMinTicksHolder>().ResetInMemoryState();
         }

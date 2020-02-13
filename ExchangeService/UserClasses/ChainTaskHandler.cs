@@ -1,15 +1,15 @@
-﻿using RemoteQueue.Handling;
-
-using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
+﻿using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
+
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace ExchangeService.UserClasses
 {
-    public class ChainTaskHandler : TaskHandler<ChainTaskData>
+    public class ChainTaskHandler : RtqTaskHandler<ChainTaskData>
     {
-        public ChainTaskHandler(IRemoteTaskQueue remoteTaskQueue, ITestTaskLogger logger)
+        public ChainTaskHandler(IRtqTaskProducer taskProducer, ITestTaskLogger logger)
         {
-            this.remoteTaskQueue = remoteTaskQueue;
+            this.taskProducer = taskProducer;
             this.logger = logger;
         }
 
@@ -18,7 +18,7 @@ namespace ExchangeService.UserClasses
             logger.Log(taskData.LoggingTaskIdKey, Context.Id);
             if (taskData.ChainPosition == 9)
                 return Finish();
-            remoteTaskQueue.CreateTask(new ChainTaskData
+            taskProducer.CreateTask(new ChainTaskData
                 {
                     ChainPosition = taskData.ChainPosition + 1,
                     ChainName = taskData.ChainName,
@@ -27,7 +27,7 @@ namespace ExchangeService.UserClasses
             return Finish();
         }
 
-        private readonly IRemoteTaskQueue remoteTaskQueue;
+        private readonly IRtqTaskProducer taskProducer;
         private readonly ITestTaskLogger logger;
     }
 }

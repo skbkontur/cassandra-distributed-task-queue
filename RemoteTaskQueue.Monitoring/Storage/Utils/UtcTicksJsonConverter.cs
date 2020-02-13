@@ -4,7 +4,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Utils
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Utils
 {
     public class UtcTicksJsonConverter : IsoDateTimeConverter
     {

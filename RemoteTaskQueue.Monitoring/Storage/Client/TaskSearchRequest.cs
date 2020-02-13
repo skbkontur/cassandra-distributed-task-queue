@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Client
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client
 {
     public class TaskSearchRequest
     {

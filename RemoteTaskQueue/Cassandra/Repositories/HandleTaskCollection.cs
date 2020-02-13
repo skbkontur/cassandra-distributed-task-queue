@@ -3,26 +3,26 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Profiling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteQueue.Cassandra.Repositories
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
     public class HandleTaskCollection : IHandleTaskCollection
     {
         public HandleTaskCollection(IHandleTasksMetaStorage handleTasksMetaStorage,
                                     ITaskDataStorage taskDataStorage,
                                     ITaskExceptionInfoStorage taskExceptionInfoStorage,
-                                    IRemoteTaskQueueProfiler remoteTaskQueueProfiler)
+                                    IRtqProfiler rtqProfiler)
         {
             this.handleTasksMetaStorage = handleTasksMetaStorage;
             this.taskDataStorage = taskDataStorage;
             this.taskExceptionInfoStorage = taskExceptionInfoStorage;
-            this.remoteTaskQueueProfiler = remoteTaskQueueProfiler;
+            this.rtqProfiler = rtqProfiler;
         }
 
         [NotNull]
@@ -31,7 +31,7 @@ namespace RemoteQueue.Cassandra.Repositories
             var metricsContextForTaskName = MetricsContext.For(task.Meta);
             if (task.Meta.Attempts == 0)
             {
-                remoteTaskQueueProfiler.ProcessTaskCreation(task.Meta);
+                rtqProfiler.ProcessTaskCreation(task.Meta);
                 metricsContextForTaskName.Meter("TasksQueued").Mark();
             }
             using (metricsContextForTaskName.Timer("CreationTime").NewContext())
@@ -81,6 +81,6 @@ namespace RemoteQueue.Cassandra.Repositories
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskDataStorage taskDataStorage;
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
-        private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
+        private readonly IRtqProfiler rtqProfiler;
     }
 }

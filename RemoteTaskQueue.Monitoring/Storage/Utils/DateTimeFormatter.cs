@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Utils
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Utils
 {
     public static class DateTimeFormatter
     {

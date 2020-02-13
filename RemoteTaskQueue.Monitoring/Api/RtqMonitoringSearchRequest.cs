@@ -1,14 +1,14 @@
-using System;
+﻿using System;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
 using SKBKontur.Catalogue.Ranges;
 
-namespace RemoteTaskQueue.Monitoring.Api
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 {
-    public class RemoteTaskQueueSearchRequest
+    public class RtqMonitoringSearchRequest
     {
         [NotNull]
         public Range<DateTime> EnqueueDateTimeRange { get; set; }

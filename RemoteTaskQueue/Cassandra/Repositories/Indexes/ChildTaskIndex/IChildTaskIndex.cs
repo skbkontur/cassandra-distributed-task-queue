@@ -1,8 +1,8 @@
 ﻿using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.ChildTaskIndex
 {
     public interface IChildTaskIndex
     {

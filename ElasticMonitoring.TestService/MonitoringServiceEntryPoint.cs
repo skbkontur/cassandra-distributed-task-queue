@@ -1,9 +1,10 @@
 ﻿using System;
 
 using RemoteTaskQueue.FunctionalTests.Common;
-using RemoteTaskQueue.Monitoring.Indexer;
-using RemoteTaskQueue.Monitoring.Storage;
-using RemoteTaskQueue.Monitoring.TaskCounter;
+
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
 
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.Services;

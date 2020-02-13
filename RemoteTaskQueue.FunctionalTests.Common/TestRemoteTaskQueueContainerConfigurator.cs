@@ -8,7 +8,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
     {
         public static void ConfigureForTestRemoteTaskQueue(this IContainer container)
         {
-            WithCassandra.SetUpCassandra(container, TestRemoteTaskQueueSettings.QueueKeyspaceName);
+            WithCassandra.SetUpCassandra(container, TestRtqSettings.QueueKeyspaceName);
             WithTestRemoteTaskQueue.ConfigureContainer(container);
         }
     }

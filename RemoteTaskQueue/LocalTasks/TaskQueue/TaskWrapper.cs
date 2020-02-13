@@ -2,11 +2,11 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.LocalTasks.TaskQueue
+namespace SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue
 {
     internal class TaskWrapper
     {

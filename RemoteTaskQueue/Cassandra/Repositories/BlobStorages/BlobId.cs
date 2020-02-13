@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
 {
     public class BlobId : IEquatable<BlobId>
     {

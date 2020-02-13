@@ -11,16 +11,15 @@ using GroBuf;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Handling;
-
 using RemoteTaskQueue.FunctionalTests.Common;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
-using RemoteTaskQueue.Monitoring.Storage;
-using RemoteTaskQueue.Monitoring.Storage.Client;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
@@ -105,7 +104,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             monitoringServiceClient.ExecuteForcedFeeding();
 
             var t1 = Timestamp.Now;
-            var ttl = TestRemoteTaskQueueSettings.StandardTestTaskTtl;
+            var ttl = TestRtqSettings.StandardTestTaskTtl;
             Log.For(this).Info(ToIsoTime(new Timestamp(remoteTaskQueue.GetTaskInfo<SlowTaskData>(taskId).Context.ExpirationTimestampTicks.Value)));
             CheckSearch($"Meta.ExpirationTime: [\"{ToIsoTime(t0 + ttl)}\" TO \"{ToIsoTime(t1 + ttl + TimeSpan.FromSeconds(10))}\"]", t0, t1, taskId);
         }
@@ -377,7 +376,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             resultsPage2.Ids.Should().Equal(expectedTaskIds.Skip(pageSize).ToArray());
         }
 
-        private string QueueTask<T>(T taskData, TimeSpan? delay = null) where T : ITaskData
+        private string QueueTask<T>(T taskData, TimeSpan? delay = null) where T : IRtqTaskData
         {
             var task = remoteTaskQueue.CreateTask(taskData);
             task.Queue(delay ?? TimeSpan.Zero);

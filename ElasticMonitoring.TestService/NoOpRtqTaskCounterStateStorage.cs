@@ -1,4 +1,4 @@
-﻿using RemoteTaskQueue.Monitoring.TaskCounter;
+﻿using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 {

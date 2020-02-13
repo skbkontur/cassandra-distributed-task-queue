@@ -13,7 +13,7 @@ using SkbKontur.Cassandra.TimeBasedUuid;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class GetEventsEnumerator : IEnumerator<TaskIndexRecord>
     {

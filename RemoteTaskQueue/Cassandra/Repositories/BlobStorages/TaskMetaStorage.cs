@@ -6,9 +6,8 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Settings;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
@@ -16,14 +15,14 @@ using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskMetaStorage : ITaskMetaStorage
     {
-        public TaskMetaStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings, ILog logger)
+        public TaskMetaStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRtqSettings rtqSettings, ILog logger)
         {
             this.serializer = serializer;
-            var settings = new TimeBasedBlobStorageSettings(remoteTaskQueueSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
+            var settings = new TimeBasedBlobStorageSettings(rtqSettings.QueueKeyspace, largeBlobsCfName, regularBlobsCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster, logger.ForContext(nameof(TaskMetaStorage)));
         }
 

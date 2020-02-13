@@ -2,9 +2,8 @@
 
 using GroBuf;
 
-using RemoteQueue.Settings;
-
 using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
@@ -14,12 +13,12 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
     public class TestCounterRepository : ITestCounterRepository
     {
-        public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings taskQueueSettings, IGlobalTime globalTime, IRemoteLockCreator remoteLockCreator)
+        public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRtqSettings rtqSettings, IGlobalTime globalTime, IRemoteLockCreator remoteLockCreator)
         {
             this.serializer = serializer;
             this.globalTime = globalTime;
             this.remoteLockCreator = remoteLockCreator;
-            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(taskQueueSettings.QueueKeyspace, ColumnFamilies.TestCounterRepositoryCfName);
+            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.QueueKeyspace, ColumnFamilies.TestCounterRepositoryCfName);
         }
 
         public int GetCounter(string taskId)

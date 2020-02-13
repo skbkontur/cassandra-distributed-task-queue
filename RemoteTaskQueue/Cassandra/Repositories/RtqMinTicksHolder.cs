@@ -1,17 +1,16 @@
 ﻿using JetBrains.Annotations;
 
-using RemoteQueue.Settings;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 
-namespace RemoteQueue.Cassandra.Repositories
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
     public class RtqMinTicksHolder : IMinTicksHolder
     {
-        public RtqMinTicksHolder(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings taskQueueSettings)
+        public RtqMinTicksHolder(ICassandraCluster cassandraCluster, IRtqSettings rtqSettings)
         {
-            var minTicksCfConnection = cassandraCluster.RetrieveColumnFamilyConnection(taskQueueSettings.NewQueueKeyspace, ColumnFamilyName);
+            var minTicksCfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.NewQueueKeyspace, ColumnFamilyName);
             minTicksHolder = new MinTicksHolder(minTicksCfConnection);
         }
 

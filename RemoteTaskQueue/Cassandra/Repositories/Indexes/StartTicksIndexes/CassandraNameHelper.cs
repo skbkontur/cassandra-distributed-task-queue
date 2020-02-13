@@ -3,9 +3,9 @@ using System.Globalization;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public static class CassandraNameHelper
     {

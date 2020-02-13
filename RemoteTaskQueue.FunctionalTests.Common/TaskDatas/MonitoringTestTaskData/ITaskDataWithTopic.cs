@@ -1,10 +1,10 @@
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {
-    [TaskTopic("TestTopic")]
-    public interface ITaskDataWithTopic : ITaskData
+    [RtqTaskTopic("TestTopic")]
+    public interface ITaskDataWithTopic : IRtqTaskData
     {
     }
 }

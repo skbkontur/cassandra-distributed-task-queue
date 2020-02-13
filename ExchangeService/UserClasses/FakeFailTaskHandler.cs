@@ -1,9 +1,9 @@
 ﻿using System;
 
-using RemoteQueue.Handling;
-
 using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
+
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
@@ -11,7 +11,7 @@ using Vostok.Logging.Abstractions;
 
 namespace ExchangeService.UserClasses
 {
-    public class FakeFailTaskHandler : TaskHandler<FakeFailTaskData>
+    public class FakeFailTaskHandler : RtqTaskHandler<FakeFailTaskData>
     {
         public FakeFailTaskHandler(ITestCounterRepository testCounterRepository)
         {

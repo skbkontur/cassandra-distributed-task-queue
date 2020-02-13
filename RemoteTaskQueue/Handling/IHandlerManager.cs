@@ -1,12 +1,12 @@
 ﻿using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-    public interface IHandlerManager : IPeriodicTask
+    internal interface IHandlerManager : IPeriodicTask
     {
         [NotNull]
         LiveRecordTicksMarkerState[] GetCurrentLiveRecordTicksMarkers();

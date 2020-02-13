@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     [Obsolete("Use with caution")]
-    public interface IRemoteTaskQueueBackdoor
+    internal interface IRtqBackdoor
     {
         void ResetTicksHolderInMemoryState();
 

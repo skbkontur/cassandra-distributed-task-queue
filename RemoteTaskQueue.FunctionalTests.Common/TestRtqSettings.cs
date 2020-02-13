@@ -2,12 +2,12 @@
 
 using GroboContainer.Infection;
 
-using RemoteQueue.Settings;
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {
     [IgnoredImplementation]
-    public class TestRemoteTaskQueueSettings : IRemoteTaskQueueSettings
+    public class TestRtqSettings : IRtqSettings
     {
         public string QueueKeyspace { get; } = QueueKeyspaceName;
         public string NewQueueKeyspace { get; } = QueueKeyspaceName;

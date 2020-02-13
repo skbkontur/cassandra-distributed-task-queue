@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-    public class TaskCounter : ITaskCounter
+    internal class LocalQueueTaskCounter
     {
-        public TaskCounter(int maxRunningTasksCount, int maxRunningContinuationsCount)
+        public LocalQueueTaskCounter(int maxRunningTasksCount, int maxRunningContinuationsCount)
         {
             this.maxRunningTasksCount = maxRunningTasksCount;
             this.maxRunningContinuationsCount = maxRunningContinuationsCount;

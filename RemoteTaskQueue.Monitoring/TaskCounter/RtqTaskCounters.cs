@@ -3,9 +3,9 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteTaskQueue.Monitoring.TaskCounter
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
     public class RtqTaskCounters
     {

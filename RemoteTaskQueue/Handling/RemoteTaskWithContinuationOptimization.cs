@@ -2,12 +2,12 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.LocalTasks.TaskQueue;
-using RemoteQueue.Tracing;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue;
+using SkbKontur.Cassandra.DistributedTaskQueue.Tracing;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     internal class RemoteTaskWithContinuationOptimization : RemoteTask
     {

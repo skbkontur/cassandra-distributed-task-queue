@@ -7,12 +7,12 @@ using JetBrains.Annotations;
 
 using Newtonsoft.Json;
 
-using RemoteTaskQueue.Monitoring.Storage.Search;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Search;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions.Responses.Search;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Client
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client
 {
     public class TaskSearchClient
     {

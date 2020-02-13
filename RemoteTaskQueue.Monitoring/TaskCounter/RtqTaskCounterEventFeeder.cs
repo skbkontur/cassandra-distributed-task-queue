@@ -2,9 +2,9 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Configuration;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
@@ -16,7 +16,7 @@ using SkbKontur.Graphite.Client;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteTaskQueue.Monitoring.TaskCounter
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
     public class RtqTaskCounterEventFeeder
     {
@@ -24,11 +24,11 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
                                          ISerializer serializer,
                                          IStatsDClient statsDClient,
                                          IGraphiteClient graphiteClient,
-                                         ITaskDataRegistry taskDataRegistry,
+                                         IRtqTaskDataRegistry taskDataRegistry,
                                          IRtqTaskCounterStateStorage stateStorage,
                                          EventFeedFactory eventFeedFactory,
                                          RtqTaskCounterSettings settings,
-                                         RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue)
+                                         RemoteTaskQueue remoteTaskQueue)
         {
             this.serializer = serializer;
             this.graphiteClient = graphiteClient;
@@ -69,7 +69,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         private readonly ILog logger;
         private readonly ISerializer serializer;
         private readonly IGraphiteClient graphiteClient;
-        private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly IRtqTaskDataRegistry taskDataRegistry;
         private readonly IRtqTaskCounterStateStorage stateStorage;
         private readonly EventFeedFactory eventFeedFactory;
         private readonly RtqTaskCounterSettings settings;

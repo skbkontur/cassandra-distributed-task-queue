@@ -2,13 +2,13 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     public class RemoteTaskInfo
     {
-        public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] ITaskData taskData, [NotNull, ItemNotNull] TaskExceptionInfo[] exceptionInfos)
+        public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] IRtqTaskData taskData, [NotNull, ItemNotNull] TaskExceptionInfo[] exceptionInfos)
         {
             Context = context;
             TaskData = taskData;
@@ -19,7 +19,7 @@ namespace RemoteQueue.Handling
         public TaskMetaInformation Context { get; }
 
         [NotNull]
-        public ITaskData TaskData { get; }
+        public IRtqTaskData TaskData { get; }
 
         [NotNull, ItemNotNull]
         public TaskExceptionInfo[] ExceptionInfos { get; private set; }
@@ -32,7 +32,7 @@ namespace RemoteQueue.Handling
     }
 
     public class RemoteTaskInfo<T>
-        where T : ITaskData
+        where T : IRtqTaskData
     {
         public RemoteTaskInfo([NotNull] TaskMetaInformation context, [NotNull] T taskData, [NotNull, ItemNotNull] TaskExceptionInfo[] exceptionInfos)
         {

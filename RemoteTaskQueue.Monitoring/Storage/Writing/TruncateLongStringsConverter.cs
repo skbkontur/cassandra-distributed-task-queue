@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Writing
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
 {
     public class TruncateLongStringsConverter : JsonConverter
     {

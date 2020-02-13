@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes
 {
     public class TaskIndexRecord : IEquatable<TaskIndexRecord>
     {

@@ -1,5 +1,8 @@
-﻿namespace RemoteQueue.Handling
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public enum TaskManipulationResult
     {
         Success,

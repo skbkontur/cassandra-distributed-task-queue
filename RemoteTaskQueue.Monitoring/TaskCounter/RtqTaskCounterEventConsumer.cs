@@ -4,12 +4,12 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
 
-namespace RemoteTaskQueue.Monitoring.TaskCounter
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
     public class RtqTaskCounterEventConsumer : IEventConsumer<TaskMetaUpdatedEvent, string>
     {

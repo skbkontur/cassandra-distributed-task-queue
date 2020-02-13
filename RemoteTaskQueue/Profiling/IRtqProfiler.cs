@@ -2,15 +2,14 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Handling;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace RemoteQueue.Profiling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
 {
-    public interface IRemoteTaskQueueProfiler
+    public interface IRtqProfiler
     {
         void ProcessTaskCreation([NotNull] TaskMetaInformation meta);
         void ProcessTaskExecutionFinished([NotNull] TaskMetaInformation meta, [NotNull] HandleResult handleResult, TimeSpan taskExecutionTime);

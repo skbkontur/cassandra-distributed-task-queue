@@ -8,9 +8,8 @@ using JetBrains.Annotations;
 
 using MoreLinq;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Settings;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
@@ -18,14 +17,14 @@ using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
 {
     public class TaskExceptionInfoStorage : ITaskExceptionInfoStorage
     {
-        public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRemoteTaskQueueSettings remoteTaskQueueSettings, ILog logger)
+        public TaskExceptionInfoStorage(ICassandraCluster cassandraCluster, ISerializer serializer, IRtqSettings rtqSettings, ILog logger)
         {
             this.serializer = serializer;
-            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(remoteTaskQueueSettings.QueueKeyspace, timeBasedCfName, cassandraCluster, logger.ForContext(nameof(TaskExceptionInfoStorage)));
+            timeBasedBlobStorage = new SinglePartitionTimeBasedBlobStorage(rtqSettings.QueueKeyspace, timeBasedCfName, cassandraCluster, logger.ForContext(nameof(TaskExceptionInfoStorage)));
         }
 
         public bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out List<TimeGuid> newExceptionInfoIds)

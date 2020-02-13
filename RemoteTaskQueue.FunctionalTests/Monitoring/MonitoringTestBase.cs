@@ -5,8 +5,8 @@ using GroboContainer.NUnitExtensions;
 using NUnit.Framework;
 
 using RemoteTaskQueue.FunctionalTests.Common;
-using RemoteTaskQueue.Monitoring.Storage.Client;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
@@ -39,6 +39,6 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         protected readonly MonitoringServiceClient monitoringServiceClient;
 
         [Injected]
-        protected readonly RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue;
+        protected readonly SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue remoteTaskQueue;
     }
 }

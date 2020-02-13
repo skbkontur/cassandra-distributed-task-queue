@@ -1,10 +1,10 @@
-﻿using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+﻿using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas
 {
-    [TaskName("FakePeriodicTaskData")]
-    public class FakePeriodicTaskData : ITaskData
+    [RtqTaskName("FakePeriodicTaskData")]
+    public class FakePeriodicTaskData : IRtqTaskData
     {
     }
 }

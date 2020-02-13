@@ -8,13 +8,12 @@ using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using NUnit.Framework;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Configuration;
-
 using RemoteTaskQueue.FunctionalTests.Common;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
@@ -22,7 +21,7 @@ using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     [GroboTestFixture]
-    [WithDefaultSerializer, WithTestRemoteTaskQueueSettings, WithCassandra(TestRemoteTaskQueueSettings.QueueKeyspaceName), AndResetCassandraState]
+    [WithDefaultSerializer, WithTestRtqSettings, WithCassandra(TestRtqSettings.QueueKeyspaceName), AndResetCassandraState]
     public class HandleTaskMetaStorageTest
     {
         [GroboTestFixtureSetUp]
@@ -30,7 +29,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void TestFixtureSetUp(IEditableGroboTestContext suiteContext)
         {
             taskDataRegistry = new DummyTaskDataRegistry();
-            sut = suiteContext.Container.Create<ITaskDataRegistry, HandleTasksMetaStorage>(taskDataRegistry);
+            sut = suiteContext.Container.Create<IRtqTaskDataRegistry, HandleTasksMetaStorage>(taskDataRegistry);
         }
 
         private static string NewTaskId()
@@ -165,7 +164,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         private HandleTasksMetaStorage sut;
 
         [IgnoredImplementation]
-        private class DummyTaskDataRegistry : ITaskDataRegistry
+        private class DummyTaskDataRegistry : IRtqTaskDataRegistry
         {
             public string[] GetAllTaskNames()
             {

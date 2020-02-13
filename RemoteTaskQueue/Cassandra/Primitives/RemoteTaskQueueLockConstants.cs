@@ -1,4 +1,4 @@
-namespace RemoteQueue.Cassandra.Primitives
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Primitives
 {
     public static class RemoteTaskQueueLockConstants
     {

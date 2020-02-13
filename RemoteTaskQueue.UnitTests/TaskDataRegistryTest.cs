@@ -2,8 +2,8 @@
 
 using NUnit.Framework;
 
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 using SKBKontur.Catalogue.Objects;
 
@@ -83,14 +83,14 @@ namespace RemoteTaskQueue.UnitTests
             Assert.Throws<InvalidProgramStateException>(() => taskDataRegistry.GetTaskTopic("UnregisteredTask"));
         }
 
-        [TaskTopic("Topic3")]
-        private interface ITaskDataWithTopic : ITaskData
+        [RtqTaskTopic("Topic3")]
+        private interface ITaskDataWithTopic : IRtqTaskData
         {
         }
 
         private readonly TestTaskDataRegistry taskDataRegistry = new TestTaskDataRegistry();
 
-        private class TestTaskDataRegistry : TaskDataRegistryBase
+        private class TestTaskDataRegistry : RtqTaskDataRegistryBase
         {
             public TestTaskDataRegistry()
             {
@@ -104,37 +104,37 @@ namespace RemoteTaskQueue.UnitTests
             }
         }
 
-        [TaskName("TaskData1")]
-        private class TaskData1 : ITaskData
+        [RtqTaskName("TaskData1")]
+        private class TaskData1 : IRtqTaskData
         {
         }
 
-        [TaskName("TaskData2")]
-        private class TaskData2 : ITaskData
+        [RtqTaskName("TaskData2")]
+        private class TaskData2 : IRtqTaskData
         {
         }
 
-        [TaskName("TaskData3")]
-        private class TaskData3 : ITaskData
+        [RtqTaskName("TaskData3")]
+        private class TaskData3 : IRtqTaskData
         {
         }
 
-        [TaskName("TaskData1WithTopic1"), TaskTopic("Topic1")]
-        private class TaskData1WithTopic1 : ITaskData
+        [RtqTaskName("TaskData1WithTopic1"), RtqTaskTopic("Topic1")]
+        private class TaskData1WithTopic1 : IRtqTaskData
         {
         }
 
-        [TaskName("TaskData2WithTopic1"), TaskTopic("Topic1")]
-        private class TaskData2WithTopic1 : ITaskData
+        [RtqTaskName("TaskData2WithTopic1"), RtqTaskTopic("Topic1")]
+        private class TaskData2WithTopic1 : IRtqTaskData
         {
         }
 
-        [TaskName("TaskData3WithTopic2"), TaskTopic("Topic2")]
-        private class TaskData3WithTopic2 : ITaskData
+        [RtqTaskName("TaskData3WithTopic2"), RtqTaskTopic("Topic2")]
+        private class TaskData3WithTopic2 : IRtqTaskData
         {
         }
 
-        [TaskName("TaskData4WithTopic3")]
+        [RtqTaskName("TaskData4WithTopic3")]
         private class TaskData4WithTopic3 : ITaskDataWithTopic
         {
         }

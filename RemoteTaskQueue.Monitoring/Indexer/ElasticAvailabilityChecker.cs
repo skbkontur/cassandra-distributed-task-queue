@@ -4,13 +4,13 @@ using System.Threading;
 
 using Elasticsearch.Net;
 
-using RemoteTaskQueue.Monitoring.Storage;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 
 using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteTaskQueue.Monitoring.Indexer
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
     public class ElasticAvailabilityChecker
     {

@@ -10,9 +10,9 @@ namespace RemoteTaskQueue.FunctionalTests
     {
         public override sealed void SetUp(string testName, IEditableGroboTestContext suiteContext, IEditableGroboTestContext methodContext)
         {
-            suiteContext.Container.Get<RemoteQueue.Handling.RemoteTaskQueue>().ResetTicksHolderInMemoryState();
+            suiteContext.Container.Get<SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue>().ResetTicksHolderInMemoryState();
             suiteContext.Container.Get<ExchangeServiceClient>().Start();
-            suiteContext.Container.Get<ExchangeServiceClient>().ChangeTaskTtl(TestRemoteTaskQueueSettings.StandardTestTaskTtl);
+            suiteContext.Container.Get<ExchangeServiceClient>().ChangeTaskTtl(TestRtqSettings.StandardTestTaskTtl);
         }
 
         public override void TearDown(string testName, IEditableGroboTestContext suiteContext, IEditableGroboTestContext methodContext)

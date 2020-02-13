@@ -1,6 +1,6 @@
 ﻿using Elasticsearch.Net;
 
-namespace RemoteTaskQueue.Monitoring.Storage
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
 {
     public interface IRtqElasticsearchClient : IElasticLowLevelClient
     {

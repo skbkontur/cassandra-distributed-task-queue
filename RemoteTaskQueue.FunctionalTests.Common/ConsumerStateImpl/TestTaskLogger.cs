@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 
-using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Settings;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Primitives;
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
@@ -11,9 +10,9 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
     public class TestTaskLogger : ColumnFamilyRepositoryBase, ITestTaskLogger
     {
-        public TestTaskLogger(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings taskQueueSettings)
+        public TestTaskLogger(ICassandraCluster cassandraCluster, IRtqSettings rtqSettings)
             :
-            base(cassandraCluster, taskQueueSettings, ColumnFamilies.TestTaskLoggerCfName)
+            base(cassandraCluster, rtqSettings, ColumnFamilies.TestTaskLoggerCfName)
         {
         }
 

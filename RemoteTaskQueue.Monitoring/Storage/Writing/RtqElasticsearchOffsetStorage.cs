@@ -6,7 +6,7 @@ using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Core.EventFeeds.OffsetStorages;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Writing
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
 {
     public class RtqElasticsearchOffsetStorage : ElasticsearchOffsetStorage<string>
     {

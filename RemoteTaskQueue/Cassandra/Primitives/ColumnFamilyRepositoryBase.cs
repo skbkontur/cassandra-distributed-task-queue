@@ -1,16 +1,15 @@
-﻿using RemoteQueue.Settings;
-
+﻿using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Connections;
 
-namespace RemoteQueue.Cassandra.Primitives
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Primitives
 {
     public abstract class ColumnFamilyRepositoryBase
     {
-        protected ColumnFamilyRepositoryBase(ICassandraCluster cassandraCluster, IRemoteTaskQueueSettings settings, string columnFamilyName)
+        protected ColumnFamilyRepositoryBase(ICassandraCluster cassandraCluster, IRtqSettings rtqSettings, string columnFamilyName)
         {
             this.cassandraCluster = cassandraCluster;
-            keyspace = settings.QueueKeyspace;
+            keyspace = rtqSettings.QueueKeyspace;
             this.columnFamilyName = columnFamilyName;
         }
 

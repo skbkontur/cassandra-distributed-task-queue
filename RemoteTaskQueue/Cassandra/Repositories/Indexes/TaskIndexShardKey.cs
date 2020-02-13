@@ -2,9 +2,9 @@ using System;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes
 {
     public class TaskIndexShardKey : IEquatable<TaskIndexShardKey>
     {

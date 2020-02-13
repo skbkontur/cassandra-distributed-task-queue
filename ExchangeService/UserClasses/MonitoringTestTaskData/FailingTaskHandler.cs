@@ -1,12 +1,12 @@
 ﻿using System;
 
-using RemoteQueue.Handling;
-
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
+
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace ExchangeService.UserClasses.MonitoringTestTaskData
 {
-    public class FailingTaskHandler : TaskHandler<FailingTaskData>
+    public class FailingTaskHandler : RtqTaskHandler<FailingTaskData>
     {
         protected override HandleResult HandleTask(FailingTaskData taskData)
         {

@@ -5,8 +5,7 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Settings;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Connections;
@@ -14,13 +13,13 @@ using SkbKontur.Cassandra.TimeBasedUuid;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class TaskMinimalStartTicksIndex : ITaskMinimalStartTicksIndex
     {
         public TaskMinimalStartTicksIndex(ICassandraCluster cassandraCluster,
                                           ISerializer serializer,
-                                          IRemoteTaskQueueSettings remoteTaskQueueSettings,
+                                          IRtqSettings rtqSettings,
                                           IOldestLiveRecordTicksHolder oldestLiveRecordTicksHolder,
                                           ILog logger)
         {
@@ -28,7 +27,7 @@ namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
             this.serializer = serializer;
             this.oldestLiveRecordTicksHolder = oldestLiveRecordTicksHolder;
             this.logger = logger.ForContext(nameof(TaskMinimalStartTicksIndex));
-            keyspaceName = remoteTaskQueueSettings.QueueKeyspace;
+            keyspaceName = rtqSettings.QueueKeyspace;
         }
 
         [CanBeNull]

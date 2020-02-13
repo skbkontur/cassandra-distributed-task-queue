@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Configuration
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
 {
-    public interface ITaskDataRegistry
+    public interface IRtqTaskDataRegistry
     {
         [NotNull, ItemNotNull]
         string[] GetAllTaskNames();

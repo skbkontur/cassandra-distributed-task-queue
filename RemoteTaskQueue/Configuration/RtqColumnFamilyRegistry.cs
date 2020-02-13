@@ -3,15 +3,14 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Primitives;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Primitives;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 
-namespace RemoteQueue.Configuration
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
 {
     public class RtqColumnFamilyRegistry
     {

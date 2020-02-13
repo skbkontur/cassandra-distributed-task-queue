@@ -1,8 +1,8 @@
 ﻿using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteQueue.Profiling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
 {
     internal class MetricsContext
     {

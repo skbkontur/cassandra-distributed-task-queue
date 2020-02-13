@@ -2,7 +2,7 @@
 
 using GroBuf;
 
-using RemoteTaskQueue.Monitoring.TaskCounter;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
 
 using SKBKontur.Catalogue.ServiceLib.GroboClusterClient;
 

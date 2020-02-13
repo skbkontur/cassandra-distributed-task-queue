@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 using SkbKontur.Graphite.Client;
 
-namespace RemoteTaskQueue.Monitoring
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring
 {
     public class RtqMonitoringPerfGraphiteReporter
     {

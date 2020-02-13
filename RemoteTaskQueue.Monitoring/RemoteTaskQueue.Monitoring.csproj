@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
-    <RootNamespace>RemoteTaskQueue.Monitoring</RootNamespace>
     <AssemblyName>RemoteTaskQueue.Monitoring</AssemblyName>
+    <RootNamespace>SkbKontur.Cassandra.DistributedTaskQueue.Monitoring</RootNamespace>
     <OutputPath>..\..\Assemblies\Temp\</OutputPath>
   </PropertyGroup>
 

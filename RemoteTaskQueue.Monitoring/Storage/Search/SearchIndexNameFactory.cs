@@ -3,9 +3,9 @@ using System.Text;
 
 using JetBrains.Annotations;
 
-using RemoteTaskQueue.Monitoring.Storage.Utils;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Utils;
 
-namespace RemoteTaskQueue.Monitoring.Storage.Search
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Search
 {
     public class SearchIndexNameFactory
     {

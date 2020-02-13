@@ -2,19 +2,18 @@
 
 using GroBuf;
 
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Profiling;
-
 using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-    internal interface IRemoteTaskQueueInternals
+    internal interface IRtqInternals
     {
         TimeSpan TaskTtl { get; }
         ILog Logger { get; }
@@ -25,7 +24,7 @@ namespace RemoteQueue.Handling
         IHandleTaskCollection HandleTaskCollection { get; }
         ITaskExceptionInfoStorage TaskExceptionInfoStorage { get; }
         IRemoteLockCreator RemoteLockCreator { get; }
-        IRemoteTaskQueueProfiler RemoteTaskQueueProfiler { get; }
-        IRemoteTaskQueue RemoteTaskQueue { get; }
+        IRtqProfiler Profiler { get; }
+        IRtqTaskProducer TaskProducer { get; }
     }
 }

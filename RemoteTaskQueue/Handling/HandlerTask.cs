@@ -9,17 +9,16 @@ using JetBrains.Annotations;
 
 using Metrics;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Cassandra.Repositories.Indexes;
-using RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling.ExecutionContext;
-using RemoteQueue.LocalTasks.TaskQueue;
-using RemoteQueue.Profiling;
-
 using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling.ExecutionContext;
+using SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue;
+using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
@@ -28,9 +27,9 @@ using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
-using MetricsContext = RemoteQueue.Profiling.MetricsContext;
+using MetricsContext = SkbKontur.Cassandra.DistributedTaskQueue.Profiling.MetricsContext;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     internal class HandlerTask
     {
@@ -38,24 +37,24 @@ namespace RemoteQueue.Handling
             [NotNull] TaskIndexRecord taskIndexRecord,
             TaskQueueReason reason,
             [CanBeNull] TaskMetaInformation taskMeta,
-            ITaskHandlerRegistry taskHandlerRegistry,
-            IRemoteTaskQueueInternals remoteTaskQueueInternals)
+            IRtqTaskHandlerRegistry taskHandlerRegistry,
+            IRtqInternals rtqInternals)
         {
             this.taskIndexRecord = taskIndexRecord;
             this.reason = reason;
             this.taskMeta = taskMeta;
             this.taskHandlerRegistry = taskHandlerRegistry;
-            serializer = remoteTaskQueueInternals.Serializer;
-            remoteTaskQueue = remoteTaskQueueInternals.RemoteTaskQueue;
-            handleTaskCollection = remoteTaskQueueInternals.HandleTaskCollection;
-            remoteLockCreator = remoteTaskQueueInternals.RemoteLockCreator;
-            taskExceptionInfoStorage = remoteTaskQueueInternals.TaskExceptionInfoStorage;
-            handleTasksMetaStorage = remoteTaskQueueInternals.HandleTasksMetaStorage;
-            taskMinimalStartTicksIndex = remoteTaskQueueInternals.TaskMinimalStartTicksIndex;
-            remoteTaskQueueProfiler = remoteTaskQueueInternals.RemoteTaskQueueProfiler;
-            globalTime = remoteTaskQueueInternals.GlobalTime;
-            taskTtl = remoteTaskQueueInternals.TaskTtl;
-            logger = remoteTaskQueueInternals.Logger.ForContext(nameof(HandlerTask));
+            serializer = rtqInternals.Serializer;
+            taskProducer = rtqInternals.TaskProducer;
+            handleTaskCollection = rtqInternals.HandleTaskCollection;
+            remoteLockCreator = rtqInternals.RemoteLockCreator;
+            taskExceptionInfoStorage = rtqInternals.TaskExceptionInfoStorage;
+            handleTasksMetaStorage = rtqInternals.HandleTasksMetaStorage;
+            taskMinimalStartTicksIndex = rtqInternals.TaskMinimalStartTicksIndex;
+            rtqProfiler = rtqInternals.Profiler;
+            globalTime = rtqInternals.GlobalTime;
+            taskTtl = rtqInternals.TaskTtl;
+            logger = rtqInternals.Logger.ForContext(nameof(HandlerTask));
             taskShardMetricsContext = MetricsContext.For($"Shards.{taskIndexRecord.TaskIndexShardKey.TaskTopic}.{taskIndexRecord.TaskIndexShardKey.TaskState}.Tasks");
         }
 
@@ -242,7 +241,7 @@ namespace RemoteQueue.Handling
             metricsContext = metricsContext.SubContext(nameof(DoProcessTask));
             using (metricsContext.Timer("Total").NewContext())
             {
-                ITaskHandler taskHandler;
+                IRtqTaskHandler taskHandler;
                 try
                 {
                     using (metricsContext.Timer("CreateHandlerFor").NewContext())
@@ -263,15 +262,15 @@ namespace RemoteQueue.Handling
                     {
                         HandleResult handleResult;
                         using (metricsContext.Timer("HandleTask").NewContext())
-                            handleResult = taskHandler.HandleTask(remoteTaskQueue, serializer, remoteLockCreator, task);
-                        remoteTaskQueueProfiler.ProcessTaskExecutionFinished(inProcessMeta, handleResult, sw.Elapsed);
+                            handleResult = taskHandler.HandleTask(taskProducer, serializer, task);
+                        rtqProfiler.ProcessTaskExecutionFinished(inProcessMeta, handleResult, sw.Elapsed);
                         MetricsContext.For(inProcessMeta).Meter("TasksExecuted").Mark();
                         using (metricsContext.Timer("UpdateTaskMetaByHandleResult").NewContext())
                             return UpdateTaskMetaByHandleResult(inProcessMeta, handleResult);
                     }
                     catch (Exception e)
                     {
-                        remoteTaskQueueProfiler.ProcessTaskExecutionFailed(inProcessMeta, sw.Elapsed);
+                        rtqProfiler.ProcessTaskExecutionFailed(inProcessMeta, sw.Elapsed);
                         MetricsContext.For(inProcessMeta).Meter("TasksExecutionFailed").Mark();
                         var taskExceptionInfoId = TryLogError(e, inProcessMeta);
                         using (metricsContext.Timer("TrySwitchToTerminalState").NewContext())
@@ -371,15 +370,15 @@ namespace RemoteQueue.Handling
         private readonly TaskIndexRecord taskIndexRecord;
         private readonly TaskQueueReason reason;
         private readonly TaskMetaInformation taskMeta;
-        private readonly ITaskHandlerRegistry taskHandlerRegistry;
+        private readonly IRtqTaskHandlerRegistry taskHandlerRegistry;
         private readonly ISerializer serializer;
-        private readonly IRemoteTaskQueue remoteTaskQueue;
+        private readonly IRtqTaskProducer taskProducer;
         private readonly IHandleTaskCollection handleTaskCollection;
         private readonly IRemoteLockCreator remoteLockCreator;
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly ITaskMinimalStartTicksIndex taskMinimalStartTicksIndex;
-        private readonly IRemoteTaskQueueProfiler remoteTaskQueueProfiler;
+        private readonly IRtqProfiler rtqProfiler;
         private readonly IGlobalTime globalTime;
         private readonly TimeSpan taskTtl;
         private readonly ILog logger;

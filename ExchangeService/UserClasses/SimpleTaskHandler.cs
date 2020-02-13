@@ -1,11 +1,11 @@
-﻿using RemoteQueue.Handling;
-
-using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
+﻿using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
+
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace ExchangeService.UserClasses
 {
-    public class SimpleTaskHandler : TaskHandler<SimpleTaskData>
+    public class SimpleTaskHandler : RtqTaskHandler<SimpleTaskData>
     {
         public SimpleTaskHandler(ITestCounterRepository testCounterRepository)
         {

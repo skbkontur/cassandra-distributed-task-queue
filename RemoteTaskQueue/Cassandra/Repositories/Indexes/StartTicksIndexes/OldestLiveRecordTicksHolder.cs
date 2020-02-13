@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
     public class OldestLiveRecordTicksHolder : IOldestLiveRecordTicksHolder
     {

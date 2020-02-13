@@ -2,7 +2,7 @@
 
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Cassandra.Repositories.BlobStorages
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
 {
     public class TimeBasedBlobStorageSettings
     {

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 
-namespace RemoteTaskQueue.Monitoring.Storage
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
 {
     public class RtqElasticsearchSchema
     {

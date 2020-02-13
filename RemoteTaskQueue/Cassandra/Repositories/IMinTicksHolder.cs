@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-namespace RemoteQueue.Cassandra.Repositories
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
     public interface IMinTicksHolder
     {

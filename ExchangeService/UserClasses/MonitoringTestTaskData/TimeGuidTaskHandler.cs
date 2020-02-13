@@ -1,10 +1,10 @@
-﻿using RemoteQueue.Handling;
+﻿using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 
-using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace ExchangeService.UserClasses.MonitoringTestTaskData
 {
-    public class TimeGuidTaskHandler : TaskHandler<TimeGuidTaskData>
+    public class TimeGuidTaskHandler : RtqTaskHandler<TimeGuidTaskData>
     {
         protected override HandleResult HandleTask(TimeGuidTaskData taskData)
         {

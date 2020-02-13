@@ -3,14 +3,14 @@ using ExchangeService.UserClasses.MonitoringTestTaskData;
 
 using GroboContainer.Core;
 
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace ExchangeService
 {
-    public class TaskHandlerRegistry : TaskHandlerRegistryBase
+    public class RtqTaskHandlerRegistry : RtqTaskHandlerRegistryBase
     {
-        public TaskHandlerRegistry(IContainer container, ITaskDataRegistry taskDataRegistry)
+        public RtqTaskHandlerRegistry(IContainer container, IRtqTaskDataRegistry taskDataRegistry)
             : base(taskDataRegistry)
         {
             this.container = container;
@@ -30,7 +30,7 @@ namespace ExchangeService
         }
 
         private void Register<THandler>()
-            where THandler : ITaskHandler
+            where THandler : IRtqTaskHandler
         {
             Register(() => container.Create<THandler>());
         }

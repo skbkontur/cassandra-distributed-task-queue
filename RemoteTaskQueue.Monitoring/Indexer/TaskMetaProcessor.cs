@@ -12,27 +12,27 @@ using MoreLinq;
 
 using Newtonsoft.Json;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Cassandra.Repositories;
-using RemoteQueue.Cassandra.Repositories.BlobStorages;
-using RemoteQueue.Configuration;
-
-using RemoteTaskQueue.Monitoring.Storage;
-using RemoteTaskQueue.Monitoring.Storage.Utils;
-using RemoteTaskQueue.Monitoring.Storage.Writing;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Utils;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteTaskQueue.Monitoring.Indexer
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
     public class TaskMetaProcessor
     {
         public TaskMetaProcessor(ILog logger,
                                  RtqElasticsearchIndexerSettings settings,
                                  IRtqElasticsearchClient elasticClient,
-                                 RemoteQueue.Handling.RemoteTaskQueue remoteTaskQueue,
+                                 RemoteTaskQueue remoteTaskQueue,
                                  RtqMonitoringPerfGraphiteReporter perfGraphiteReporter)
         {
             this.logger = logger.ForContext(nameof(TaskMetaProcessor));
@@ -148,7 +148,7 @@ namespace RemoteTaskQueue.Monitoring.Indexer
         private readonly ILog logger;
         private readonly RtqElasticsearchIndexerSettings settings;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
-        private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly IRtqTaskDataRegistry taskDataRegistry;
         private readonly ITaskDataStorage taskDataStorage;
         private readonly ITaskExceptionInfoStorage taskExceptionInfoStorage;
         private readonly ISerializer serializer;

@@ -7,9 +7,8 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Cassandra.Entities;
-using RemoteQueue.Configuration;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
@@ -19,14 +18,14 @@ using SKBKontur.Catalogue.Objects.Json;
 
 using Vostok.Logging.Abstractions;
 
-namespace RemoteTaskQueue.Monitoring.TaskCounter
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
     // NB! RtqTaskCounterEventFeeder is essentially single-threaded because of WithSingleLeaderElectionKey() configuration
     public class RtqTaskCounterStateManager
     {
         public RtqTaskCounterStateManager(ILog logger,
                                           ISerializer serializer,
-                                          ITaskDataRegistry taskDataRegistry,
+                                          IRtqTaskDataRegistry taskDataRegistry,
                                           IRtqTaskCounterStateStorage stateStorage,
                                           RtqTaskCounterSettings settings,
                                           RtqEventLogOffsetInterpreter offsetInterpreter,
@@ -270,7 +269,7 @@ namespace RemoteTaskQueue.Monitoring.TaskCounter
         private Timestamp lastStatePersistedTimestamp;
         private readonly ILog logger;
         private readonly ISerializer serializer;
-        private readonly ITaskDataRegistry taskDataRegistry;
+        private readonly IRtqTaskDataRegistry taskDataRegistry;
         private readonly IRtqTaskCounterStateStorage stateStorage;
         private readonly RtqTaskCounterSettings settings;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter;

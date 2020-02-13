@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 using SKBKontur.Catalogue.Objects;
 
-namespace RemoteQueue.Cassandra.Entities
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
 {
     public static class EnumExtensions
     {

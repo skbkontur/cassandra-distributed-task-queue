@@ -2,8 +2,8 @@ using System;
 
 using NUnit.Framework;
 
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 using SKBKontur.Catalogue.Objects;
 
@@ -31,17 +31,17 @@ namespace RemoteTaskQueue.UnitTests
             Assert.Throws<InvalidOperationException>(() => typeof(TaskData3).TryGetTaskTopic(false));
         }
 
-        private abstract class BaseTaskData : ITaskData
+        private abstract class BaseTaskData : IRtqTaskData
         {
         }
 
-        [TaskName("BaseName")]
-        private abstract class BaseTaskDataWithName : ITaskData
+        [RtqTaskName("BaseName")]
+        private abstract class BaseTaskDataWithName : IRtqTaskData
         {
         }
 
-        [TaskTopic("BaseTopic")]
-        private abstract class BaseTaskDataWithTopic : ITaskData
+        [RtqTaskTopic("BaseTopic")]
+        private abstract class BaseTaskDataWithTopic : IRtqTaskData
         {
         }
 
@@ -49,20 +49,20 @@ namespace RemoteTaskQueue.UnitTests
         {
         }
 
-        [TaskName("TaskName1")]
-        [TaskTopic("Topic1")]
+        [RtqTaskName("TaskName1")]
+        [RtqTaskTopic("Topic1")]
         private class TaskData1 : BaseTaskData
         {
         }
 
-        [TaskName("TaskName2")]
-        [TaskTopic("Topic2")]
+        [RtqTaskName("TaskName2")]
+        [RtqTaskTopic("Topic2")]
         private class TaskData2 : BaseTaskDataWithName
         {
         }
 
-        [TaskName("TaskName3")]
-        [TaskTopic("Topic3")]
+        [RtqTaskName("TaskName3")]
+        [RtqTaskTopic("Topic3")]
         private class TaskData3 : BaseTaskDataWithTopic
         {
         }

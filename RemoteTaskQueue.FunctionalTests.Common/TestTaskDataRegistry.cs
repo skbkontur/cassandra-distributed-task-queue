@@ -1,14 +1,14 @@
 ﻿using GroboContainer.Infection;
 
-using RemoteQueue.Configuration;
-
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
+
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {
     [IgnoredImplementation]
-    public class TestTaskDataRegistry : TaskDataRegistryBase
+    public class TestTaskDataRegistry : RtqTaskDataRegistryBase
     {
         public TestTaskDataRegistry()
         {

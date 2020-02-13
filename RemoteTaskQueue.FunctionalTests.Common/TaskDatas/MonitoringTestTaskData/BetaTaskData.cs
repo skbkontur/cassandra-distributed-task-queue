@@ -1,8 +1,8 @@
-using RemoteQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {
-    [TaskName("BetaTaskData")]
+    [RtqTaskName("BetaTaskData")]
     public class BetaTaskData : ITaskDataWithTopic
     {
         public bool IsProcess { get; set; }

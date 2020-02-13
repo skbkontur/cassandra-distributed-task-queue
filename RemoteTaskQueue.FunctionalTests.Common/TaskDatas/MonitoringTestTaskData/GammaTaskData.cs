@@ -1,10 +1,10 @@
 ﻿using System;
 
-using RemoteQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {
-    [TaskName("GammaTaskData")]
+    [RtqTaskName("GammaTaskData")]
     public class GammaTaskData : ITaskDataWithTopic
     {
         public GammaTaskData()

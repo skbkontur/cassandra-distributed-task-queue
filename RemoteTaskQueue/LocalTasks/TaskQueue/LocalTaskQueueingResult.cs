@@ -1,4 +1,4 @@
-namespace RemoteQueue.LocalTasks.TaskQueue
+namespace SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue
 {
     public class LocalTaskQueueingResult
     {

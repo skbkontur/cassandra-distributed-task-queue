@@ -1,4 +1,4 @@
-﻿namespace RemoteQueue.Handling
+﻿namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     public class CreateTaskOptions
     {

@@ -1,25 +1,25 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Strings;
 
-namespace RemoteQueue.Configuration
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
 {
-    public abstract class TaskDataRegistryBase : ITaskDataRegistry
+    public abstract class RtqTaskDataRegistryBase : IRtqTaskDataRegistry
     {
-        protected TaskDataRegistryBase(bool allTasksShouldHaveTopic = false)
+        protected RtqTaskDataRegistryBase(bool allTasksShouldHaveTopic = false)
         {
             this.allTasksShouldHaveTopic = allTasksShouldHaveTopic;
         }
 
-        protected void Register<T>() where T : ITaskData
+        protected void Register<T>() where T : IRtqTaskData
         {
             var taskType = typeof(T);
             var taskName = taskType.GetTaskName();

@@ -1,4 +1,4 @@
-﻿using RemoteQueue.Configuration;
+﻿using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {
@@ -11,7 +11,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskDat
         Epsilon = 4,
     }
 
-    [TaskName("EpsilonTaskData")]
+    [RtqTaskName("EpsilonTaskData")]
     public class EpsilonTaskData : ITaskDataWithTopic
     {
         public EpsilonTaskData(EpsilonEnum epsilonEnum)

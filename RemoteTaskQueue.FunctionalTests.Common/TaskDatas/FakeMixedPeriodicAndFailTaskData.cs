@@ -2,13 +2,13 @@
 
 using JetBrains.Annotations;
 
-using RemoteQueue.Configuration;
-using RemoteQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas
 {
-    [TaskName("FakeMixedPeriodicAndFailTaskData")]
-    public class FakeMixedPeriodicAndFailTaskData : ITaskData
+    [RtqTaskName("FakeMixedPeriodicAndFailTaskData")]
+    public class FakeMixedPeriodicAndFailTaskData : IRtqTaskData
     {
         public FakeMixedPeriodicAndFailTaskData(TimeSpan rerunAfter, [CanBeNull] int[] failWhenCounterEqualTo)
         {

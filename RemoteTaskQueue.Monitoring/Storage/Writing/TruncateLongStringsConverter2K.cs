@@ -1,4 +1,4 @@
-﻿namespace RemoteTaskQueue.Monitoring.Storage.Writing
+﻿namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
 {
     public class TruncateLongStringsConverter2K : TruncateLongStringsConverter
     {

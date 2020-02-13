@@ -2,7 +2,7 @@
 
 using JetBrains.Annotations;
 
-namespace RemoteQueue.Handling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     public interface IRemoteTask
     {
