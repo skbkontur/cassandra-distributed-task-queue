@@ -12,7 +12,7 @@ import cn from "./TaskQueueFilter.less";
 export interface TaskQueueFilterProps {
     value: RtqMonitoringSearchRequest;
     availableTaskTypes: string[] | null;
-    onChange: (filterParams: $Shape<RtqMonitoringSearchRequest>) => void;
+    onChange: (filterParams: Partial<RtqMonitoringSearchRequest>) => void;
     onSearchButtonClick: () => void;
 }
 
