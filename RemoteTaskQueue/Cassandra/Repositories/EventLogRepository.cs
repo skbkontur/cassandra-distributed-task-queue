@@ -8,10 +8,10 @@ using GroBuf;
 using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
-using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Primitives;
 using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
+using SkbKontur.Cassandra.ThriftClient.Connections;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
@@ -19,14 +19,17 @@ using SKBKontur.Catalogue.Objects;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
-    public class EventLogRepository : ColumnFamilyRepositoryBase, IEventLogRepository, IEventSource<TaskMetaUpdatedEvent, string>
+    public class EventLogRepository : IEventLogRepository, IEventSource<TaskMetaUpdatedEvent, string>
     {
-        public EventLogRepository(ISerializer serializer, ICassandraCluster cassandraCluster, IRtqSettings rtqSettings, IMinTicksHolder minTicksHolder)
-            : base(cassandraCluster, rtqSettings, ColumnFamilyName)
+        public EventLogRepository(ISerializer serializer,
+                                  ICassandraCluster cassandraCluster,
+                                  IRtqSettings rtqSettings,
+                                  IMinTicksHolder minTicksHolder)
         {
             this.serializer = serializer;
             this.minTicksHolder = minTicksHolder;
-            var connectionParameters = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.QueueKeyspace, ColumnFamilyName).GetConnectionParameters();
+            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.QueueKeyspace, ColumnFamilyName);
+            var connectionParameters = cfConnection.GetConnectionParameters();
             UnstableZoneLength = TimeSpan.FromMilliseconds(connectionParameters.Attempts * connectionParameters.Timeout);
         }
 
@@ -43,7 +46,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
         {
             minTicksHolder.UpdateMinTicks(firstEventTicksRowName, eventTimestamp.Ticks);
             var ttl = taskMeta.GetTtl();
-            RetrieveColumnFamilyConnection().AddColumn(EventPointerFormatter.GetPartitionKey(eventTimestamp.Ticks), new Column
+            cfConnection.AddColumn(EventPointerFormatter.GetPartitionKey(eventTimestamp.Ticks), new Column
                 {
                     Name = EventPointerFormatter.GetColumnName(eventTimestamp.Ticks, eventId),
                     Value = serializer.Serialize(new TaskMetaUpdatedEvent(taskMeta.Id, eventTimestamp.Ticks)),
@@ -73,7 +76,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
             while (true)
             {
                 var columnsToFetch = eventsToFetch + 1;
-                var columnsIncludingStartColumn = RetrieveColumnFamilyConnection().GetColumns(partitionKey, exclusiveStartColumnName, toOffsetInclusive, columnsToFetch, reversed : false);
+                var columnsIncludingStartColumn = cfConnection.GetColumns(partitionKey, exclusiveStartColumnName, toOffsetInclusive, columnsToFetch, reversed : false);
                 events.AddRange(columnsIncludingStartColumn.SkipWhile(x => x.Name == exclusiveStartColumnName)
                                                            .Select(x => new EventWithOffset<TaskMetaUpdatedEvent, string>(serializer.Deserialize<TaskMetaUpdatedEvent>(x.Value), offset : x.Name))
                                                            .Take(eventsToFetch));
@@ -108,8 +111,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
         }
 
         public const string ColumnFamilyName = "RemoteTaskQueueEventLog";
+
         private const string firstEventTicksRowName = "firstEventTicksRowName";
         private readonly ISerializer serializer;
         private readonly IMinTicksHolder minTicksHolder;
+        private readonly IColumnFamilyConnection cfConnection;
     }
 }

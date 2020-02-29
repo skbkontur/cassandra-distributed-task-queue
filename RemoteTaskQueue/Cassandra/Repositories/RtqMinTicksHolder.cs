@@ -30,6 +30,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
         }
 
         public const string ColumnFamilyName = "GlobalMinTicks";
+
         private readonly MinTicksHolder minTicksHolder;
     }
 }

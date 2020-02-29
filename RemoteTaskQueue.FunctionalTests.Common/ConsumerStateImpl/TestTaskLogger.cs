@@ -1,24 +1,23 @@
 ﻿using System.Linq;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Primitives;
 using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
+using SkbKontur.Cassandra.ThriftClient.Connections;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
-    public class TestTaskLogger : ColumnFamilyRepositoryBase, ITestTaskLogger
+    public class TestTaskLogger : ITestTaskLogger
     {
         public TestTaskLogger(ICassandraCluster cassandraCluster, IRtqSettings rtqSettings)
-            :
-            base(cassandraCluster, rtqSettings, ColumnFamilies.TestTaskLoggerCfName)
         {
+            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.NewQueueKeyspace, ColumnFamilyName);
         }
 
         public void Log(string loggingTaskIdKey, string taskId)
         {
-            RetrieveColumnFamilyConnection().AddColumn(loggingTaskIdKey, new Column
+            cfConnection.AddColumn(loggingTaskIdKey, new Column
                 {
                     Name = taskId,
                     Value = new byte[] {1},
@@ -28,7 +27,11 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 
         public string[] GetAll(string loggingTaskIdKey)
         {
-            return RetrieveColumnFamilyConnection().GetRow(loggingTaskIdKey).Select(column => column.Name).ToArray();
+            return cfConnection.GetRow(loggingTaskIdKey).Select(column => column.Name).ToArray();
         }
+
+        public const string ColumnFamilyName = "TestTaskLoggerCf";
+
+        private readonly IColumnFamilyConnection cfConnection;
     }
 }

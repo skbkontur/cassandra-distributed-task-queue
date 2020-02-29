@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Primitives;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
@@ -22,7 +22,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
                 cfNames.Add(cfName);
             foreach (var cfName in TaskExceptionInfoStorage.GetColumnFamilyNames())
                 cfNames.Add(cfName);
-            cfNames.Add(RemoteTaskQueueLockConstants.LockColumnFamily);
             cfNames.Add(RtqMinTicksHolder.ColumnFamilyName);
             cfNames.Add(TaskMinimalStartTicksIndex.ColumnFamilyName);
             cfNames.Add(EventLogRepository.ColumnFamilyName);
@@ -30,10 +29,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         }
 
         [NotNull, ItemNotNull]
-        public ColumnFamily[] GetAllColumnFamilyNames()
+        public ColumnFamily[] GetAllColumnFamilyNamesExceptLocks()
         {
             return cfNames.Select(cfName => new ColumnFamily {Name = cfName}).ToArray();
         }
+
+        public const string LocksColumnFamilyName = "Locks";
+
+        [Obsolete("// todo (andrew, 01.03.2020): remove after avk/rtqLock release")]
+        public const string LegacyLocksColumnFamilyName = "RemoteTaskQueueLock";
 
         private readonly HashSet<string> cfNames = new HashSet<string>();
     }

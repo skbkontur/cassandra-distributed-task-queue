@@ -9,7 +9,6 @@ using JetBrains.Annotations;
 using SkbKontur.Cassandra.DistributedLock;
 using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
-using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Primitives;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.ChildTaskIndex;
@@ -56,9 +55,16 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             TaskDataStorage = new TaskDataStorage(cassandraCluster, rtqSettings, Logger);
             TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, rtqSettings, Logger);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, TaskDataStorage, TaskExceptionInfoStorage, rtqProfiler);
-            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(rtqSettings.QueueKeyspaceForLock, RemoteTaskQueueLockConstants.LockColumnFamily);
+            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(rtqSettings.NewQueueKeyspace, RtqColumnFamilyRegistry.LocksColumnFamilyName);
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
-            lazyRemoteLockCreator = new Lazy<RemoteLocker>(() => new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics($"{rtqSettings.QueueKeyspaceForLock}_{RemoteTaskQueueLockConstants.LockColumnFamily}"), Logger));
+            var remoteLockImplementationSettingsOld = CassandraRemoteLockImplementationSettings.Default(rtqSettings.QueueKeyspaceForLock, RtqColumnFamilyRegistry.LegacyLocksColumnFamilyName);
+            var remoteLockImplementationOld = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettingsOld);
+            lazyRemoteLockCreator = new Lazy<IRemoteLockCreator>(() =>
+                {
+                    var remoteLocker = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics($"{rtqSettings.NewQueueKeyspace}_{RtqColumnFamilyRegistry.LocksColumnFamilyName}"), Logger);
+                    var remoteLockerOld = new RemoteLocker(remoteLockImplementationOld, new RemoteLockerMetrics($"{rtqSettings.QueueKeyspaceForLock}_{RtqColumnFamilyRegistry.LegacyLocksColumnFamilyName}"), Logger);
+                    return new MigratingRemoteLocker(remoteLockerOld, remoteLocker);
+                });
             Profiler = rtqProfiler;
         }
 
@@ -251,6 +257,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         private readonly IMinTicksHolder minTicksHolder;
         private readonly IChildTaskIndex childTaskIndex;
         private readonly bool enableContinuationOptimization;
-        private readonly Lazy<RemoteLocker> lazyRemoteLockCreator;
+        private readonly Lazy<IRemoteLockCreator> lazyRemoteLockCreator;
     }
 }

@@ -3,22 +3,32 @@
 using GroBuf;
 
 using SkbKontur.Cassandra.DistributedLock;
+using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Connections;
 
+using SKBKontur.Catalogue.ServiceLib.Logging;
+
 namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
     public class TestCounterRepository : ITestCounterRepository
     {
-        public TestCounterRepository(ICassandraCluster cassandraCluster, ISerializer serializer, IRtqSettings rtqSettings, IGlobalTime globalTime, IRemoteLockCreator remoteLockCreator)
+        public TestCounterRepository(ICassandraCluster cassandraCluster,
+                                     ISerializer serializer,
+                                     IGlobalTime globalTime,
+                                     IRtqSettings rtqSettings)
         {
             this.serializer = serializer;
             this.globalTime = globalTime;
-            this.remoteLockCreator = remoteLockCreator;
-            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.QueueKeyspace, ColumnFamilies.TestCounterRepositoryCfName);
+            var keyspaceName = rtqSettings.NewQueueKeyspace;
+            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, ColumnFamilyName);
+            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(keyspaceName, RtqColumnFamilyRegistry.LocksColumnFamilyName);
+            var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
+            remoteLockCreator = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(keyspaceName), Log.DefaultLogger);
         }
 
         public int GetCounter(string taskId)
@@ -55,8 +65,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 
         private int GetCounterInternal(string taskId)
         {
-            Column column;
-            if (cfConnection.TryGetColumn(taskId, dataColumnName, out column))
+            if (cfConnection.TryGetColumn(taskId, dataColumnName, out var column))
                 return serializer.Deserialize<int>(column.Value);
             return 0;
         }
@@ -74,8 +83,10 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 
         private IRemoteLock Lock(string taskId)
         {
-            return remoteLockCreator.Lock("TestCounterRepository_" + taskId);
+            return remoteLockCreator.Lock($"TestCounterRepository_{taskId}");
         }
+
+        public const string ColumnFamilyName = "TestCounterRepositoryCf";
 
         private const string dataColumnName = "X";
         private readonly ISerializer serializer;
