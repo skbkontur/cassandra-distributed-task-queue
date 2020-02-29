@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -35,9 +34,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         }
 
         public const string LocksColumnFamilyName = "Locks";
-
-        [Obsolete("// todo (andrew, 01.03.2020): remove after avk/rtqLock release")]
-        public const string LegacyLocksColumnFamilyName = "RemoteTaskQueueLock";
 
         private readonly HashSet<string> cfNames = new HashSet<string>();
     }

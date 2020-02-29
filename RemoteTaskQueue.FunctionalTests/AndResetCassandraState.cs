@@ -26,7 +26,6 @@ namespace RemoteTaskQueue.FunctionalTests
                 {
                     new ColumnFamily {Name = GlobalTimeProxy.ColumnFamilyName},
                     new ColumnFamily {Name = RtqColumnFamilyRegistry.LocksColumnFamilyName},
-                    new ColumnFamily {Name = RtqColumnFamilyRegistry.LegacyLocksColumnFamilyName},
                     new ColumnFamily {Name = TestTaskLogger.ColumnFamilyName},
                     new ColumnFamily {Name = TestCounterRepository.ColumnFamilyName}
                 }).ToArray();

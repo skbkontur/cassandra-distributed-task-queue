@@ -55,15 +55,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             TaskDataStorage = new TaskDataStorage(cassandraCluster, rtqSettings, Logger);
             TaskExceptionInfoStorage = new TaskExceptionInfoStorage(cassandraCluster, serializer, rtqSettings, Logger);
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, TaskDataStorage, TaskExceptionInfoStorage, rtqProfiler);
-            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(rtqSettings.NewQueueKeyspace, RtqColumnFamilyRegistry.LocksColumnFamilyName);
-            var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
-            var remoteLockImplementationSettingsOld = CassandraRemoteLockImplementationSettings.Default(rtqSettings.QueueKeyspaceForLock, RtqColumnFamilyRegistry.LegacyLocksColumnFamilyName);
-            var remoteLockImplementationOld = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettingsOld);
             lazyRemoteLockCreator = new Lazy<IRemoteLockCreator>(() =>
                 {
-                    var remoteLocker = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics($"{rtqSettings.NewQueueKeyspace}_{RtqColumnFamilyRegistry.LocksColumnFamilyName}"), Logger);
-                    var remoteLockerOld = new RemoteLocker(remoteLockImplementationOld, new RemoteLockerMetrics($"{rtqSettings.QueueKeyspaceForLock}_{RtqColumnFamilyRegistry.LegacyLocksColumnFamilyName}"), Logger);
-                    return new MigratingRemoteLocker(remoteLockerOld, remoteLocker);
+                    var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(rtqSettings.NewQueueKeyspace, RtqColumnFamilyRegistry.LocksColumnFamilyName);
+                    var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
+                    var remoteLockerMetrics = new RemoteLockerMetrics($"{rtqSettings.NewQueueKeyspace}_{RtqColumnFamilyRegistry.LocksColumnFamilyName}");
+                    return new RemoteLocker(remoteLockImplementation, remoteLockerMetrics, Logger);
                 });
             Profiler = rtqProfiler;
         }

@@ -11,7 +11,6 @@ namespace RemoteTaskQueue.FunctionalTests.Common
     {
         public string QueueKeyspace { get; } = QueueKeyspaceName;
         public string NewQueueKeyspace { get; } = QueueKeyspaceName;
-        public string QueueKeyspaceForLock { get; } = QueueKeyspaceName;
         public TimeSpan TaskTtl { get; } = StandardTestTaskTtl;
         public bool EnableContinuationOptimization { get; } = true;
 
