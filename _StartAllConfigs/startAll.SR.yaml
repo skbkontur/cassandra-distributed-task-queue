@@ -2,10 +2,10 @@ baseDirectory: ..\
 deployDirectoryName: RTQRuns
 
 services:
-  - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
-  - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
-  - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
-  - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
-  - path: ExchangeService\bin\Catalogue.RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\RemoteTaskQueue.ExchangeService.exe
   - path: ElasticMonitoring.TestService\bin\Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService.exe
     name: RtqMonitoringTestService
