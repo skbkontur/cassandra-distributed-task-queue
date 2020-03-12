@@ -48,8 +48,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         [NotNull]
         public string GetTaskName([NotNull] Type type)
         {
-            string taskName;
-            if (!typeToName.TryGetValue(type, out taskName))
+            if (!typeToName.TryGetValue(type, out var taskName))
                 throw new InvalidProgramStateException(string.Format("TaskData with type '{0}' not registered", type.FullName));
             return taskName;
         }
@@ -57,8 +56,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         [NotNull]
         public Type GetTaskType([NotNull] string taskName)
         {
-            Type taskType;
-            if (!nameToType.TryGetValue(taskName, out taskType))
+            if (!nameToType.TryGetValue(taskName, out var taskType))
                 throw new InvalidProgramStateException(string.Format("TaskData with name '{0}' not registered", taskName));
             return taskType;
         }
@@ -77,8 +75,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         [NotNull]
         public string GetTaskTopic([NotNull] string taskName)
         {
-            string taskTopic;
-            if (!nameToTopic.TryGetValue(taskName, out taskTopic))
+            if (!nameToTopic.TryGetValue(taskName, out var taskTopic))
                 throw new InvalidProgramStateException(string.Format("TaskData with name '{0}' not registered", taskName));
             return taskTopic;
         }

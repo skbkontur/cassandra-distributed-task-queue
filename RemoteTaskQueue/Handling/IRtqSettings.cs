@@ -2,8 +2,9 @@
 
 using JetBrains.Annotations;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Settings
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
+    [PublicAPI]
     public interface IRtqSettings
     {
         bool EnableContinuationOptimization { get; }

@@ -38,14 +38,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             this.settings = settings;
             this.offsetInterpreter = offsetInterpreter;
             this.perfGraphiteReporter = perfGraphiteReporter;
-            Blades = settings.BladeDelays.Select((delay, index) => new BladeId($"{CompositeFeedKey}_Blade{index}", delay)).ToArray();
+            CompositeFeedKey = settings.EventFeedKey;
+            Blades = settings.BladeDelays.Select((delay, index) => new BladeId($"{settings.EventFeedKey}_Blade{index}", delay)).ToArray();
         }
 
         [NotNull, ItemNotNull]
         public BladeId[] Blades { get; }
 
         [NotNull]
-        public string CompositeFeedKey { get; } = "RtqTaskCounter";
+        public string CompositeFeedKey { get; }
 
         public bool EventFeedIsRunning { get; private set; }
 

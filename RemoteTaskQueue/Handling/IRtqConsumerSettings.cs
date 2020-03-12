@@ -1,7 +1,10 @@
 ﻿using System;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Settings
+using JetBrains.Annotations;
+
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
+    [PublicAPI]
     public interface IRtqConsumerSettings
     {
         TimeSpan PeriodicInterval { get; }

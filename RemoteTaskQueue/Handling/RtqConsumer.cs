@@ -3,46 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using GroBuf;
+using JetBrains.Annotations;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue;
-using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
-using SkbKontur.Cassandra.GlobalTimestamp;
-using SkbKontur.Cassandra.ThriftClient.Clusters;
 
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 using Vostok.Logging.Abstractions;
 
-#pragma warning disable 618
-
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-    public class RtqConsumer : IDisposable
+    [PublicAPI]
+    public class RtqConsumer : IDisposable, IRtqConsumer
     {
-        public RtqConsumer(ILog logger,
-                           IRtqConsumerSettings consumerSettings,
+        public RtqConsumer(IRtqConsumerSettings consumerSettings,
                            IPeriodicTaskRunner periodicTaskRunner,
-                           IRtqTaskDataRegistry taskDataRegistry,
                            IRtqTaskHandlerRegistry taskHandlerRegistry,
-                           ISerializer serializer,
-                           IGlobalTime globalTime,
-                           ICassandraCluster cassandraCluster,
-                           IRtqSettings rtqSettings,
-                           IRtqProfiler rtqProfiler)
+                           RemoteTaskQueue remoteTaskQueue)
         {
             this.consumerSettings = consumerSettings;
             this.periodicTaskRunner = periodicTaskRunner;
+            RtqInternals = remoteTaskQueue;
             var localQueueTaskCounter = new LocalQueueTaskCounter(consumerSettings.MaxRunningTasksCount, consumerSettings.MaxRunningContinuationsCount);
-            var remoteTaskQueue = new RemoteTaskQueue(logger, serializer, globalTime, cassandraCluster, rtqSettings, taskDataRegistry, rtqProfiler);
             localTaskQueue = new LocalTaskQueue(localQueueTaskCounter, taskHandlerRegistry, remoteTaskQueue);
             foreach (var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
-                handlerManagers.Add(new HandlerManager(taskTopic, consumerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime, remoteTaskQueue.Logger));
-            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(rtqProfiler, handlerManagers);
-            RtqBackdoor = remoteTaskQueue;
-            this.logger = remoteTaskQueue.Logger.ForContext(nameof(RtqConsumer));
+                handlerManagers.Add(new HandlerManager(remoteTaskQueue.QueueKeyspace, taskTopic, consumerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime, remoteTaskQueue.Logger));
+            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(remoteTaskQueue.Profiler, handlerManagers);
+            logger = remoteTaskQueue.Logger.ForContext(nameof(RtqConsumer));
         }
 
         public void Dispose()
@@ -58,7 +46,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
                 {
                     if (!started)
                     {
-                        RtqBackdoor.ResetTicksHolderInMemoryState();
+                        RtqInternals.ResetTicksHolderInMemoryState();
                         localTaskQueue.Start();
                         foreach (var handlerManager in handlerManagers)
                             periodicTaskRunner.Register(handlerManager, consumerSettings.PeriodicInterval);
@@ -83,7 +71,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
                         periodicTaskRunner.Unregister(reportConsumerStateToGraphiteTask.Id, 15000);
                         Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() => { periodicTaskRunner.Unregister(theHandlerManager.Id, 15000); })).ToArray());
                         localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
-                        RtqBackdoor.ResetTicksHolderInMemoryState();
+                        RtqInternals.ResetTicksHolderInMemoryState();
                         started = false;
                         logger.Info("RtqConsumer stopped");
                     }
@@ -91,8 +79,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
             }
         }
 
-        [Obsolete("Only for usage in tests")]
-        internal IRtqBackdoor RtqBackdoor { get; }
+        [NotNull]
+        internal IRtqInternals RtqInternals { get; }
 
         private volatile bool started;
         private readonly IRtqConsumerSettings consumerSettings;

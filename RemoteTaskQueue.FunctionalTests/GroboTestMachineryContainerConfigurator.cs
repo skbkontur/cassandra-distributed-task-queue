@@ -1,9 +1,12 @@
-﻿using GroboContainer.Core;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+
+using GroboContainer.Core;
 using GroboContainer.Impl;
 
 using JetBrains.Annotations;
-
-using SKBKontur.Catalogue.ServiceLib;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
@@ -13,7 +16,33 @@ namespace RemoteTaskQueue.FunctionalTests
         [NotNull]
         public static ContainerConfiguration GetContainerConfiguration([NotNull] string testSuiteName)
         {
-            return new ContainerConfiguration(AssembliesLoader.Load(), testSuiteName, ContainerMode.UseShortLog);
+            var rtqAssemblies = LoadRtqAssemblies();
+            return new ContainerConfiguration(rtqAssemblies, testSuiteName, ContainerMode.UseShortLog);
         }
+
+        [NotNull, ItemNotNull]
+        private static Assembly[] LoadRtqAssemblies()
+        {
+            return EnumerateFiles().Where(fullFileName => rtqAssemblyNames.Contains(Path.GetFileName(fullFileName)))
+                                   .Select(Assembly.LoadFrom)
+                                   .ToArray();
+        }
+
+        [NotNull, ItemNotNull]
+        private static string[] EnumerateFiles()
+        {
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDirectoryFiles = string.IsNullOrEmpty(baseDirectory)
+                                         ? new string[0]
+                                         : Directory.EnumerateFiles(baseDirectory, "*", SearchOption.TopDirectoryOnly).ToArray();
+            return baseDirectoryFiles;
+        }
+
+        private static readonly string[] rtqAssemblyNames =
+            {
+                "RemoteTaskQueue.dll",
+                "RemoteTaskQueue.Monitoring.dll",
+                "RemoteTaskQueue.FunctionalTests.Common.dll",
+            };
     }
 }

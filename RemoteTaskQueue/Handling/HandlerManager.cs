@@ -23,13 +23,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     internal class HandlerManager : IHandlerManager
     {
-        public HandlerManager([NotNull] string taskTopic,
+        public HandlerManager([NotNull] string queueKeyspace,
+                              [NotNull] string taskTopic,
                               int maxRunningTasksCount,
                               ILocalTaskQueue localTaskQueue,
                               IHandleTasksMetaStorage handleTasksMetaStorage,
                               IGlobalTime globalTime,
                               ILog logger)
         {
+            Id = $"HandlerManager_{queueKeyspace}_{taskTopic}";
             this.taskTopic = taskTopic;
             this.maxRunningTasksCount = maxRunningTasksCount;
             this.localTaskQueue = localTaskQueue;
@@ -39,9 +41,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             allTaskIndexShardKeysToRead = allTaskStatesToRead.Select(x => new TaskIndexShardKey(taskTopic, x)).ToArray();
         }
 
-        public string Id => $"HandlerManager_{taskTopic}";
-
         [NotNull]
+        public string Id { get; }
+
+        [NotNull, ItemNotNull]
         public LiveRecordTicksMarkerState[] GetCurrentLiveRecordTicksMarkers()
         {
             return allTaskIndexShardKeysToRead.Select(x => handleTasksMetaStorage.TryGetCurrentLiveRecordTicksMarker(x) ?? new LiveRecordTicksMarkerState(x, Timestamp.Now.Ticks)).ToArray();

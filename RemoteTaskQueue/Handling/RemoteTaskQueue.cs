@@ -17,7 +17,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling.ExecutionContext;
 using SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue;
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
@@ -28,9 +27,8 @@ using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-#pragma warning disable 618
-    public class RemoteTaskQueue : IRtqTaskProducer, IRtqTaskManager, IRtqInternals, IRtqBackdoor
-#pragma warning restore 618
+    [PublicAPI]
+    public class RemoteTaskQueue : IRtqTaskProducer, IRtqTaskManager, IRtqInternals
     {
         public RemoteTaskQueue(ILog logger,
                                ISerializer serializer,
@@ -40,6 +38,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                                IRtqTaskDataRegistry taskDataRegistry,
                                IRtqProfiler rtqProfiler)
         {
+            QueueKeyspace = rtqSettings.QueueKeyspace;
             TaskTtl = rtqSettings.TaskTtl;
             Logger = logger.ForContext("CassandraDistributedTaskQueue");
             Serializer = serializer;
@@ -65,6 +64,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             Profiler = rtqProfiler;
         }
 
+        [NotNull]
+        [Obsolete("todo (andrew, 17.03.2020): remove after rtq migration")]
+        public string QueueKeyspace { get; }
+
         public TimeSpan TaskTtl { get; private set; }
 
         public ILog Logger { get; }
@@ -82,6 +85,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         public IHandleTaskCollection HandleTaskCollection { get; }
         public IRemoteLockCreator RemoteLockCreator => lazyRemoteLockCreator.Value;
         public IRtqProfiler Profiler { get; }
+
         IRtqTaskProducer IRtqInternals.TaskProducer => this;
 
         public TaskManipulationResult TryCancelTask([NotNull] string taskId)
@@ -185,7 +189,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         [NotNull]
         public IRemoteTask CreateTask<T>([NotNull] T taskData, [CanBeNull] CreateTaskOptions createTaskOptions = null) where T : IRtqTaskData
         {
-            createTaskOptions = createTaskOptions ?? new CreateTaskOptions();
+            createTaskOptions ??= new CreateTaskOptions();
             var type = taskData.GetType();
             var taskId = TimeGuid.NowGuid().ToGuid().ToString();
             var taskMeta = new TaskMetaInformation(TaskDataRegistry.GetTaskName(type), taskId)
@@ -199,8 +203,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                 };
             var taskDataBytes = Serializer.Serialize(type, taskData);
             var task = new Task(taskMeta, taskDataBytes);
-            return enableContinuationOptimization && LocalTaskQueue.Instance != null
-                       ? new RemoteTaskWithContinuationOptimization(task, TaskTtl, HandleTaskCollection, LocalTaskQueue.Instance)
+            return enableContinuationOptimization && localTaskQueue != null
+                       ? new RemoteTaskWithContinuationOptimization(task, TaskTtl, HandleTaskCollection, localTaskQueue)
                        : new RemoteTask(task, TaskTtl, HandleTaskCollection);
         }
 
@@ -231,13 +235,18 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             return recentTaskIds;
         }
 
-        public void ResetTicksHolderInMemoryState()
+        void IRtqInternals.AttachLocalTaskQueue([NotNull] LocalTaskQueue localTaskQueueInstance)
+        {
+            localTaskQueue = localTaskQueueInstance;
+        }
+
+        void IRtqInternals.ResetTicksHolderInMemoryState()
         {
             GlobalTime.ResetInMemoryState();
             minTicksHolder.ResetInMemoryState();
         }
 
-        public void ChangeTaskTtl(TimeSpan ttl)
+        void IRtqInternals.ChangeTaskTtl(TimeSpan ttl)
         {
             TaskTtl = ttl;
         }
@@ -250,6 +259,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                 throw new InvalidProgramStateException(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
             return new RemoteTaskInfo<T>(task.Context, (T)task.TaskData, task.ExceptionInfos);
         }
+
+        [CanBeNull]
+        private LocalTaskQueue localTaskQueue;
 
         private readonly IMinTicksHolder minTicksHolder;
         private readonly IChildTaskIndex childTaskIndex;

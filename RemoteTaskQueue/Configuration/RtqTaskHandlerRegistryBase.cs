@@ -23,7 +23,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
             var handlerType = typeof(THandler);
             var taskDataType = TryGetTaskDataType(handlerType);
             if (taskDataType == null)
-                throw new InvalidProgramStateException(string.Format("Type '{0}' doesn't implement 'TaskHander<TTaskData>'", handlerType.FullName));
+                throw new InvalidProgramStateException(string.Format("Type '{0}' doesn't implement 'TaskHandler<TTaskData>'", handlerType.FullName));
             var taskName = taskDataRegistry.GetTaskName(taskDataType);
             if (taskHandlerCreatorsByTaskName.ContainsKey(taskName))
                 throw new InvalidProgramStateException(string.Format("There are at least two handlers for task '{0}': '{1}' and '{2}'", taskName, taskHandlerCreatorsByTaskName[taskName].HandlerType, handlerType));
@@ -45,8 +45,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         [NotNull]
         public IRtqTaskHandler CreateHandlerFor([NotNull] string taskName)
         {
-            TaskHandlerCreator taskHandlerCreator;
-            if (!taskHandlerCreatorsByTaskName.TryGetValue(taskName, out taskHandlerCreator))
+            if (!taskHandlerCreatorsByTaskName.TryGetValue(taskName, out var taskHandlerCreator))
                 throw new InvalidProgramStateException(string.Format("Handler not found for taskName: {0}", taskName));
             return taskHandlerCreator.CreateTaskHandler();
         }

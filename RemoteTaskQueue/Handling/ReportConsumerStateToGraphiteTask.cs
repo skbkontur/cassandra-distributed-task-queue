@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     internal class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
     {

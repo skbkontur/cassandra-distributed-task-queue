@@ -26,12 +26,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue
             this.taskHandlerRegistry = taskHandlerRegistry;
             this.rtqInternals = rtqInternals;
             logger = rtqInternals.Logger.ForContext(nameof(LocalTaskQueue));
-            Instance = this;
+            rtqInternals.AttachLocalTaskQueue(this);
         }
-
-        // NB! адская статика, чтобы внутри процессов consumer'ов continuation-оптимизация работала неявно
-        [CanBeNull]
-        public static ILocalTaskQueue Instance { get; private set; }
 
         public void Start()
         {

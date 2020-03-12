@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj"/>
-    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj"/>
+    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj" />
+    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +26,9 @@
     </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Catalogue.TestCore">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
   </ItemGroup>
 

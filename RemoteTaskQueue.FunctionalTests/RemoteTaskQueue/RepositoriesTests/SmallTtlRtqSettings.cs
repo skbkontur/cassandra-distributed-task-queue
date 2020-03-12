@@ -2,7 +2,7 @@
 
 using GroboContainer.Infection;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {

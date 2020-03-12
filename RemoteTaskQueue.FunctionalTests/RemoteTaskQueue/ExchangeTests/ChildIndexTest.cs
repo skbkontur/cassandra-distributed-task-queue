@@ -9,7 +9,6 @@ using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
 using RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
 {

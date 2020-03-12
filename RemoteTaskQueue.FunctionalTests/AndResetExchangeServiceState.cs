@@ -3,6 +3,8 @@ using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+
 namespace RemoteTaskQueue.FunctionalTests
 {
     [AndResetCassandraState]
@@ -10,7 +12,9 @@ namespace RemoteTaskQueue.FunctionalTests
     {
         public override sealed void SetUp(string testName, IEditableGroboTestContext suiteContext, IEditableGroboTestContext methodContext)
         {
-            suiteContext.Container.Get<SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue>().ResetTicksHolderInMemoryState();
+            var remoteTaskQueue = suiteContext.Container.Get<SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue>();
+            ((IRtqInternals)remoteTaskQueue).ResetTicksHolderInMemoryState();
+
             suiteContext.Container.Get<ExchangeServiceClient>().Start();
             suiteContext.Container.Get<ExchangeServiceClient>().ChangeTaskTtl(TestRtqSettings.StandardTestTaskTtl);
         }

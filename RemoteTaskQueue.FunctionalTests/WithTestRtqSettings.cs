@@ -5,7 +5,7 @@ using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using RemoteTaskQueue.FunctionalTests.Common;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 
 namespace RemoteTaskQueue.FunctionalTests

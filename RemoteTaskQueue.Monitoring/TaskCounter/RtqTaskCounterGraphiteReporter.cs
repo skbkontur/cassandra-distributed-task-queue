@@ -9,6 +9,7 @@ using SkbKontur.Graphite.Client;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
+    [PublicAPI]
     public class RtqTaskCounterGraphiteReporter
     {
         public RtqTaskCounterGraphiteReporter(RtqTaskCounterStateManager stateManager, IGraphiteClient graphiteClient)

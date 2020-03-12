@@ -12,10 +12,13 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 
 using SKBKontur.Catalogue.ServiceLib;
+using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 using SKBKontur.Catalogue.ServiceLib.Services;
+using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
+
+using SkbKontur.Graphite.Client;
 
 using Vostok.Logging.Abstractions;
 
@@ -32,7 +35,8 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
         private void Run()
         {
-            Container.ConfigureForTestRemoteTaskQueue();
+            WithCassandra.SetUpCassandra(Container, TestRtqSettings.QueueKeyspaceName);
+
             ConfigureRemoteLock(Container);
             Container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(new Uri("http://localhost:9205")));
             Container.Configurator.ForAbstraction<IRtqTaskCounterStateStorage>().UseType<NoOpRtqTaskCounterStateStorage>();
@@ -48,15 +52,24 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
                     StatePersistingInterval = TimeSpan.FromSeconds(1),
                     PendingTaskExecutionUpperBound = TimeSpan.FromSeconds(5)
                 });
+            Container.ConfigureRemoteTaskQueue(out var remoteTaskQueue);
+
+            var rtqMonitoringEventFeeder = Container.Create<SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue, IStatsDClient, RtqMonitoringEventFeeder>(remoteTaskQueue, NoOpStatsDClient.Instance);
+            Container.Configurator.ForAbstraction<IRtqMonitoringEventFeeder>().UseInstances(rtqMonitoringEventFeeder);
+
+            var rtqTaskCounterEventFeeder = Container.Create<SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue, IStatsDClient, RtqTaskCounterEventFeeder>(remoteTaskQueue, NoOpStatsDClient.Instance);
+            Container.Configurator.ForAbstraction<IRtqTaskCounterEventFeeder>().UseInstances(rtqTaskCounterEventFeeder);
+
             Container.Get<ElasticAvailabilityChecker>().WaitAlive();
             Container.Get<RtqElasticsearchSchema>().Actualize(local : true, bulkLoad : false);
+            Container.Configurator.ForAbstraction<IHttpHandler>().UseType<MonitoringServiceHttpHandler>();
             Container.Get<HttpService>().Run();
         }
 
         private static void ConfigureRemoteLock([NotNull] IContainer container)
         {
             var logger = container.Get<ILog>();
-            var locksKeyspace = container.Get<IRtqSettings>().NewQueueKeyspace;
+            const string locksKeyspace = TestRtqSettings.QueueKeyspaceName;
             const string locksColumnFamily = RtqColumnFamilyRegistry.LocksColumnFamilyName;
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(locksKeyspace, locksColumnFamily);
             var remoteLockImplementation = container.Create<CassandraRemoteLockImplementationSettings, CassandraRemoteLockImplementation>(remoteLockImplementationSettings);

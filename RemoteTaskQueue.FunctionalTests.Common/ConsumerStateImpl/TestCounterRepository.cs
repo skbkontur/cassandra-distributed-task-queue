@@ -5,7 +5,7 @@ using GroBuf;
 using SkbKontur.Cassandra.DistributedLock;
 using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;

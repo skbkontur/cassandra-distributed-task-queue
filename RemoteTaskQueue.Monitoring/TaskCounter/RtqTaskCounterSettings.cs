@@ -25,5 +25,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         public TimeSpan PendingTaskExecutionUpperBound { get; set; } = TimeSpan.FromMinutes(30);
 
         public TimeSpan StateGarbageTtl => BladeDelays.Max().Multiply(2);
+
+        [NotNull]
+        public string EventFeedKey { get; set; } = "RtqTaskCounter";
+
+        [NotNull]
+        public string PerfGraphitePrefix { get; set; } = "SubSystem.RemoteTaskQueue.TaskCounter.Perf";
     }
 }

@@ -40,6 +40,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
                     },
             };
 
+        [NotNull]
+        public string EventFeedKey { get; set; } = "RtqMonitoring";
+
+        [NotNull]
+        public string PerfGraphitePrefix { get; set; } = "SubSystem.RemoteTaskQueue.ElasticsearchIndexer";
+
         public override string ToString()
         {
             return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, IndexingThreadsCount: {IndexingThreadsCount}, BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";

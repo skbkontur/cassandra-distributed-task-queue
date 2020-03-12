@@ -15,13 +15,13 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 {
     public class MonitoringServiceHttpHandler : IHttpHandler
     {
-        public MonitoringServiceHttpHandler(RtqTaskCounterEventFeeder taskCounterEventFeeder,
-                                            RtqMonitoringEventFeeder monitoringEventFeeder,
+        public MonitoringServiceHttpHandler(IRtqTaskCounterEventFeeder taskCounterEventFeeder,
+                                            IRtqMonitoringEventFeeder monitoringEventFeeder,
                                             RtqElasticsearchSchema rtqElasticsearchSchema,
                                             IRtqElasticsearchClient elasticClient)
         {
-            this.taskCounterEventFeeder = taskCounterEventFeeder;
-            this.monitoringEventFeeder = monitoringEventFeeder;
+            this.taskCounterEventFeeder = (RtqTaskCounterEventFeeder)taskCounterEventFeeder;
+            this.monitoringEventFeeder = (RtqMonitoringEventFeeder)monitoringEventFeeder;
             this.rtqElasticsearchSchema = rtqElasticsearchSchema;
             this.elasticClient = elasticClient;
         }
@@ -59,7 +59,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             taskCounterEventFeeder.GlobalTime.ResetInMemoryState();
 
             monitoringFeedsRunner = monitoringEventFeeder.RunEventFeeding();
-            (taskCounterFeedsRunner, taskCounterStateManager, _) = taskCounterEventFeeder.RunEventFeeding();
+            (taskCounterFeedsRunner, taskCounterStateManager) = taskCounterEventFeeder.RunEventFeeding();
         }
 
         private void StopFeeding()

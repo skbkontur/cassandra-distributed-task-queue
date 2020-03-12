@@ -18,12 +18,12 @@ using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
-    public class RtqTaskCounterEventFeeder
+    [PublicAPI]
+    public class RtqTaskCounterEventFeeder : IRtqTaskCounterEventFeeder
     {
         public RtqTaskCounterEventFeeder(ILog logger,
                                          ISerializer serializer,
                                          IStatsDClient statsDClient,
-                                         IGraphiteClient graphiteClient,
                                          IRtqTaskDataRegistry taskDataRegistry,
                                          IRtqTaskCounterStateStorage stateStorage,
                                          EventFeedFactory eventFeedFactory,
@@ -31,7 +31,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
                                          RemoteTaskQueue remoteTaskQueue)
         {
             this.serializer = serializer;
-            this.graphiteClient = graphiteClient;
             this.taskDataRegistry = taskDataRegistry;
             this.stateStorage = stateStorage;
             this.eventFeedFactory = eventFeedFactory;
@@ -40,7 +39,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             globalTimeProvider = new DefaultGlobalTimeProvider(GlobalTime);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
-            perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.TaskCounter.Perf", statsDClient);
+            perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePrefix, statsDClient);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqTaskCounterEventFeeder));
             this.logger.Info($"Using RtqTaskCounterSettings: {settings.ToPrettyJson()}");
         }
@@ -48,7 +47,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         [NotNull]
         public IGlobalTime GlobalTime { get; }
 
-        public ( /*[NotNull]*/ IEventFeedsRunner, /*[NotNull]*/ RtqTaskCounterStateManager, /*[NotNull]*/ RtqTaskCounterGraphiteReporter) RunEventFeeding()
+        public ( /*[NotNull]*/ IEventFeedsRunner, /*[NotNull]*/ RtqTaskCounterStateManager) RunEventFeeding()
         {
             var stateManager = new RtqTaskCounterStateManager(logger, serializer, taskDataRegistry, stateStorage, settings, offsetInterpreter, perfGraphiteReporter);
             var eventConsumer = new RtqTaskCounterEventConsumer(stateManager, handleTasksMetaStorage, perfGraphiteReporter);
@@ -63,12 +62,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
                                    .WithOffsetStorageFactory(bladeId => stateManager.CreateOffsetStorage(bladeId))
                                    .WithSingleLeaderElectionKey(stateManager.CompositeFeedKey)
                                    .RunFeeds(settings.DelayBetweenEventFeedingIterations);
-            return (eventFeedsRunner, stateManager, new RtqTaskCounterGraphiteReporter(stateManager, graphiteClient));
+            return (eventFeedsRunner, stateManager);
         }
 
         private readonly ILog logger;
         private readonly ISerializer serializer;
-        private readonly IGraphiteClient graphiteClient;
         private readonly IRtqTaskDataRegistry taskDataRegistry;
         private readonly IRtqTaskCounterStateStorage stateStorage;
         private readonly EventFeedFactory eventFeedFactory;

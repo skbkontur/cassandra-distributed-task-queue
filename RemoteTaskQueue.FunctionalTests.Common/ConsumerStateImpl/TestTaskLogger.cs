@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Connections;

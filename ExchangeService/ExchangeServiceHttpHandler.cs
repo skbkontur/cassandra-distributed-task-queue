@@ -1,6 +1,6 @@
 ﻿using System;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
@@ -8,31 +8,29 @@ namespace ExchangeService
 {
     public class ExchangeServiceHttpHandler : IHttpHandler
     {
-        public ExchangeServiceHttpHandler(RtqConsumer consumer)
+        public ExchangeServiceHttpHandler(IRtqConsumer rtqConsumer)
         {
-            this.consumer = consumer;
+            this.rtqConsumer = (RtqConsumer)rtqConsumer;
         }
 
         [HttpMethod]
         public void Start()
         {
-            consumer.Start();
+            rtqConsumer.Start();
         }
 
         [HttpMethod]
         public void Stop()
         {
-            consumer.Stop();
+            rtqConsumer.Stop();
         }
 
         [HttpMethod]
         public void ChangeTaskTtl(TimeSpan ttl)
         {
-#pragma warning disable 618
-            consumer.RtqBackdoor.ChangeTaskTtl(ttl);
-#pragma warning restore 618
+            rtqConsumer.RtqInternals.ChangeTaskTtl(ttl);
         }
 
-        private readonly RtqConsumer consumer;
+        private readonly RtqConsumer rtqConsumer;
     }
 }

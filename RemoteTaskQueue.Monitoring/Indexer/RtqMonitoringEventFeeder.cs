@@ -18,7 +18,8 @@ using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
-    public class RtqMonitoringEventFeeder
+    [PublicAPI]
+    public class RtqMonitoringEventFeeder : IRtqMonitoringEventFeeder
     {
         public RtqMonitoringEventFeeder(ILog logger,
                                         EventFeedFactory eventFeedFactory,
@@ -29,10 +30,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         {
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqMonitoringEventFeeder));
             this.eventFeedFactory = eventFeedFactory;
+            this.indexerSettings = indexerSettings;
             GlobalTime = remoteTaskQueue.GlobalTime;
             globalTimeProvider = new DefaultGlobalTimeProvider(GlobalTime);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
-            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter("SubSystem.RemoteTaskQueue.ElasticsearchIndexer", statsDClient);
+            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePrefix, statsDClient);
             var taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
@@ -45,12 +47,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         [NotNull]
         public IEventFeedsRunner RunEventFeeding()
         {
-            const string key = "RtqMonitoring";
             return eventFeedFactory
                    .WithOffsetType<string>()
                    .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer, logger)
-                                               .WithBlade($"{key}_Blade0", delay : TimeSpan.FromMinutes(1))
-                                               .WithBlade($"{key}_Blade1", delay : TimeSpan.FromMinutes(15)))
+                                               .WithBlade($"{indexerSettings.EventFeedKey}_Blade0", delay : TimeSpan.FromMinutes(1))
+                                               .WithBlade($"{indexerSettings.EventFeedKey}_Blade1", delay : TimeSpan.FromMinutes(15)))
                    .WithGlobalTimeProvider(globalTimeProvider)
                    .WithOffsetInterpreter(offsetInterpreter)
                    .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey))
@@ -59,6 +60,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 
         private readonly ILog logger;
         private readonly EventFeedFactory eventFeedFactory;
+        private readonly RtqElasticsearchIndexerSettings indexerSettings;
         private readonly IGlobalTimeProvider globalTimeProvider;
         private readonly EventLogRepository eventLogRepository;
         private readonly RtqMonitoringEventConsumer eventConsumer;

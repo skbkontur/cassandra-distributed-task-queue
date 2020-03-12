@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 using MoreLinq;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
+using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 

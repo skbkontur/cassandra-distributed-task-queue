@@ -29,7 +29,5 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 
         [NotNull]
         Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery([NotNull] RtqMonitoringSearchRequest searchRequest);
-
-        void ResetTicksHolderInMemoryState();
     }
 }

@@ -13,7 +13,6 @@ using RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
-using SkbKontur.Cassandra.DistributedTaskQueue.Settings;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;

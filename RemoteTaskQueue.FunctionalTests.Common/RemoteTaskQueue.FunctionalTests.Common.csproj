@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj" />
+    <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj" />
   </ItemGroup>
 
   <ItemGroup>

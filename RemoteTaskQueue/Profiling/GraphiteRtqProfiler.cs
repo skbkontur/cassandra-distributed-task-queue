@@ -14,23 +14,22 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
 {
     public class GraphiteRtqProfiler : IRtqProfiler
     {
-        public GraphiteRtqProfiler([NotNull] IStatsDClient statsDClient, [NotNull] IGraphiteClient graphiteClient)
+        public GraphiteRtqProfiler([NotNull] IStatsDClient statsDClient, [NotNull] IGraphiteClient graphiteClient, [NotNull] string statsDKeyNamePrefix, [NotNull] string consumerGraphitePathPrefix)
         {
-            const string keyNamePrefix = "SubSystem.RemoteTaskQueueTasks";
-            this.statsDClient = statsDClient.WithScopes($"{keyNamePrefix}.{Environment.MachineName}", $"{keyNamePrefix}.Total");
+            this.statsDClient = statsDClient.WithScopes($"{statsDKeyNamePrefix}.{Environment.MachineName}", $"{statsDKeyNamePrefix}.Total");
             this.graphiteClient = graphiteClient;
-            graphitePathPrefix = FormatGraphitePathPrefix();
+            this.consumerGraphitePathPrefix = FormatGraphitePathPrefix(consumerGraphitePathPrefix);
         }
 
         [NotNull]
-        private static string FormatGraphitePathPrefix()
+        private static string FormatGraphitePathPrefix([NotNull] string graphitePathPrefix)
         {
             var processName = Process.GetCurrentProcess()
                                      .ProcessName
                                      .Replace(".exe", string.Empty)
                                      .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
                                      .Last();
-            return $"SubSystem.RemoteTaskQueueMonitoring.{Environment.MachineName}.{processName}";
+            return $"{graphitePathPrefix}.{Environment.MachineName}.{processName}";
         }
 
         public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)
@@ -53,12 +52,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
         public void ReportLiveRecordTicksMarkerLag([NotNull] Timestamp nowTimestamp, [NotNull] LiveRecordTicksMarkerState currentLiveRecordTicksMarker)
         {
             var lag = TimeSpan.FromTicks(nowTimestamp.Ticks - currentLiveRecordTicksMarker.CurrentTicks);
-            var graphitePath = $"{graphitePathPrefix}.LiveRecordTicksMarkerLag.{currentLiveRecordTicksMarker.TaskIndexShardKey.TaskState}.{currentLiveRecordTicksMarker.TaskIndexShardKey.TaskTopic}";
+            var graphitePath = $"{consumerGraphitePathPrefix}.LiveRecordTicksMarkerLag.{currentLiveRecordTicksMarker.TaskIndexShardKey.TaskState}.{currentLiveRecordTicksMarker.TaskIndexShardKey.TaskTopic}";
             graphiteClient.Send(graphitePath, (long)lag.TotalMilliseconds, nowTimestamp.ToDateTime());
         }
 
         private readonly IStatsDClient statsDClient;
         private readonly IGraphiteClient graphiteClient;
-        private readonly string graphitePathPrefix;
+        private readonly string consumerGraphitePathPrefix;
     }
 }

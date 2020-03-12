@@ -9,7 +9,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring
 {
     public class RtqMonitoringPerfGraphiteReporter
     {
-        public RtqMonitoringPerfGraphiteReporter([NotNull] string graphitePrefix, IStatsDClient statsDClient)
+        public RtqMonitoringPerfGraphiteReporter([NotNull] string graphitePrefix, [NotNull] IStatsDClient statsDClient)
         {
             this.graphitePrefix = graphitePrefix;
             this.statsDClient = statsDClient;
