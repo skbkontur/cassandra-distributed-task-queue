@@ -31,9 +31,9 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
                     <AllowCopyToClipboard>{taskMeta.id}</AllowCopyToClipboard>
                 </td>
             </tr>,
-            <tr key="TaskState">
-                <td>TaskState</td>
-                <td data-tid="TaskState">{taskMeta.state}</td>
+            <tr key="State">
+                <td>State</td>
+                <td data-tid="State">{taskMeta.state}</td>
             </tr>,
             <tr key="Name">
                 <td>Name</td>
@@ -43,17 +43,17 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
                 <td>EnqueueTime</td>
                 <td data-tid="EnqueueTime">{renderDate(taskMeta.ticks)}</td>
             </tr>,
-            <tr key="StartExecutedTime">
-                <td>StartExecutedTime</td>
-                <td data-tid="StartExecutedTime">{renderDate(taskMeta.startExecutingTicks)}</td>
+            <tr key="StartExecutingTime">
+                <td>StartExecutingTime</td>
+                <td data-tid="StartExecutingTime">{renderDate(taskMeta.startExecutingTicks)}</td>
             </tr>,
-            <tr key="FinishExecutedTime">
-                <td>FinishExecutedTime</td>
-                <td data-tid="FinishExecutedTime">{renderDate(taskMeta.finishExecutingTicks)}</td>
+            <tr key="FinishExecutingTime">
+                <td>FinishExecutingTime</td>
+                <td data-tid="FinishExecutingTime">{renderDate(taskMeta.finishExecutingTicks)}</td>
             </tr>,
-            <tr key="ExecutionDurationInMs">
-                <td>ExecutionDurationInMs</td>
-                <td data-tid="FinishExecutedTime">{executionTime == null ? "unknown" : executionTime}</td>
+            <tr key="LastExecutionDurationInMs">
+                <td>LastExecutionDurationInMs</td>
+                <td data-tid="LastExecutionDurationInMs">{executionTime == null ? "unknown" : executionTime}</td>
             </tr>,
             <tr key="MinimalStartTime">
                 <td>MinimalStartTime</td>
