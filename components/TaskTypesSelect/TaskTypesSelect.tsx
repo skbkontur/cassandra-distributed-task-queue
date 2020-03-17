@@ -26,7 +26,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
         const { disabled, value } = this.props;
         return (
             <span>
-                <Tooltip render={this.renderTooltip} trigger={"click"} pos="bottom left" data-tid="Tooltip">
+                <Tooltip render={this.renderTooltip} trigger="click" pos="bottom left" data-tid="Tooltip">
                     <Button disabled={disabled}>
                         <span className={cn("button-text")}>
                             {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}

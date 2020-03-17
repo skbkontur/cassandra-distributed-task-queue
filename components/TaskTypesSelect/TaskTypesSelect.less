@@ -1,4 +1,4 @@
-@import '~ui/styles/variables.less';
+@import "~ui/styles/variables.less";
 
 :local {
     .button-text {
@@ -23,5 +23,7 @@
     .tooltip-columns-wrapper {
         max-height: 650px;
         overflow: auto;
+        // хак, чтобы левый край чекбоксов не съедало в тултипе при overflow: auto (k.solovei, 17.03.2020)
+        padding-left: 1px;
     }
 }
