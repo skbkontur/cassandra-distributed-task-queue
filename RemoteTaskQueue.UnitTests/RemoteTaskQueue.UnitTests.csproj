@@ -5,6 +5,7 @@
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>RemoteTaskQueue.UnitTests</RootNamespace>
     <AssemblyName>RemoteTaskQueue.UnitTests</AssemblyName>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 

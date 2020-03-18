@@ -5,6 +5,7 @@
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>RemoteTaskQueue.FunctionalTests</RootNamespace>
     <AssemblyName>RemoteTaskQueue.FunctionalTests</AssemblyName>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\</OutputPath>
     <NoWarn>649</NoWarn>
   </PropertyGroup>
