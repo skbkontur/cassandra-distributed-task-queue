@@ -22,7 +22,7 @@
   <Import Project="..\Configuration\ServiceSuites.xml" />
 
   <ItemGroup>
-    <NUnitAssemblies Include="$(CatalogueRootDirectory)\RemoteTaskQueue\RemoteTaskQueue.FunctionalTests\bin\RemoteTaskQueue.FunctionalTests.dll" />
+    <NUnitAssemblies Include="$(CatalogueRootDirectory)\RemoteTaskQueue\RemoteTaskQueue.FunctionalTests\bin\net472\RemoteTaskQueue.FunctionalTests.dll" />
   </ItemGroup>
 
   <Import Project="$(CatalogueRootDirectory)\MSBuild\DeployTargets\Targets\TestWithCakeBuild.targets" />
