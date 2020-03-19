@@ -13,6 +13,7 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
     <PackageReference Include="TeamCity.VSTest.TestAdapter" Version="1.0.20" />
   </ItemGroup>
 
