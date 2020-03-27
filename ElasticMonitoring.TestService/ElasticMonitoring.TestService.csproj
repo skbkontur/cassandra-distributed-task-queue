@@ -4,6 +4,7 @@
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService</RootNamespace>
     <AssemblyName>Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService</AssemblyName>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\</OutputPath>
     <OutputType>Exe</OutputType>
     <Prefer32Bit>false</Prefer32Bit>
