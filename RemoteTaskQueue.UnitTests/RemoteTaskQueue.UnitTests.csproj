@@ -29,6 +29,9 @@
     <Reference Include="Catalogue.Core.EventFeeds">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
     </Reference>
+    <Reference Include="log4stash">
+      <HintPath>..\..\Assemblies\Kontur\log4stash\log4stash.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
