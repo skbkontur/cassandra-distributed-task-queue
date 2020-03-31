@@ -64,13 +64,14 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
     ) {
         const connectorBoxId = getByPath(target, path);
         if (typeof connectorBoxId === "string") {
-            return (
-                <Link
-                    data-tid="GoToLink"
-                    href={`/AdminTools/BusinessObjects/ConnectorBoxStorageElement/${connectorBoxId}/${connectorBoxId}`}>
-                    {connectorBoxId}
-                </Link>
-            );
+            return getBusinessObjectLink("ConnectorBoxStorageElement", connectorBoxId);
+        }
+    }
+
+    if (pathTop === "transportBoxId" && typeof target === "object") {
+        const id = getByPath(target, path);
+        if (typeof id === "string") {
+            return getBusinessObjectLink("TransportBoxStorageElement", id);
         }
     }
 
@@ -81,22 +82,13 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
     ) {
         const boxId = getByPath(target, path);
         if (typeof boxId === "string") {
-            return (
-                <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/BoxStorageElement/${boxId}/${boxId}`}>
-                    {boxId}
-                </Link>
-            );
-        }
-    }
-
-    if (pathTop === "transportBoxId" && typeof target === "object") {
-        const id = getByPath(target, path);
-        if (typeof id === "string") {
-            return (
-                <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/TransportBoxStorageElement/${id}/${id}`}>
-                    {id}
-                </Link>
-            );
+            if (containsEntityIdWithProp(target, "transportMessageId")) {
+                return getBusinessObjectLink("TransportBoxStorageElement", boxId);
+            }
+            if (containsEntityIdWithProp(target, "connectorMessageId")) {
+                return getBusinessObjectLink("ConnectorBoxStorageElement", boxId);
+            }
+            return getBusinessObjectLink("BoxStorageElement", boxId);
         }
     }
 
@@ -104,21 +96,11 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
         const id = getByPath(target, path);
         if (typeof id === "string") {
             if (["deliveryBox", "transportBox"].includes(path[path.length - 2])) {
-                return (
-                    <Link
-                        data-tid="GoToLink"
-                        href={`/AdminTools/BusinessObjects/TransportBoxStorageElement/${id}/${id}`}>
-                        {id}
-                    </Link>
-                );
+                return getBusinessObjectLink("TransportBoxStorageElement", id);
             }
 
             if (["inbox", "outbox", "box"].includes(path[path.length - 2])) {
-                return (
-                    <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/BoxStorageElement/${id}/${id}`}>
-                        {id}
-                    </Link>
-                );
+                return getBusinessObjectLink("BoxStorageElement", id);
             }
         }
     }
@@ -281,4 +263,23 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
     }
 
     return null;
+}
+
+function containsEntityIdWithProp(target: mixed, entityIdProp: string): boolean {
+    return (
+        typeof target === "object" &&
+        typeof target.content === "object" &&
+        typeof target.content.value === "object" &&
+        typeof target.content.value.entityId === "object" &&
+        typeof target.content.value.entityId[entityIdProp] === "string" &&
+        target.content.value.entityId[entityIdProp]
+    );
+}
+
+function getBusinessObjectLink(businessObjectName: string, id: string): JSX.Element {
+    return (
+        <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/${businessObjectName}/${id}/${id}`}>
+            {id}
+        </Link>
+    );
 }
