@@ -31,7 +31,7 @@ export function OrganizationLinkDropdown({
                 <CardIcon /> Открыть карточку организации
             </LinkMenuItem>
             <LinkMenuItem
-                href={`/AdminTools/BusinessObjects/Party2/${partyId}/${partyId}`}
+                href={`/AdminTools/BusinessObjects/PartyThrift/${partyId}/${partyId}`}
                 data-tid="GoToPartyBusinessObject">
                 <InfoIcon /> Открыть бизнес-объект
             </LinkMenuItem>
