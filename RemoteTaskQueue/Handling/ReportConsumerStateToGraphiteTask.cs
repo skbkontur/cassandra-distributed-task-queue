@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using JetBrains.Annotations;
+
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
@@ -8,16 +10,20 @@ using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-    internal class ReportConsumerStateToGraphiteTask : PeriodicTaskBase
+    internal class ReportConsumerStateToGraphiteTask : IPeriodicTask
     {
-        public ReportConsumerStateToGraphiteTask(IRtqProfiler rtqProfiler, List<IHandlerManager> handlerManagers)
+        public ReportConsumerStateToGraphiteTask([NotNull] string queueKeyspace, IRtqProfiler rtqProfiler, List<IHandlerManager> handlerManagers)
         {
+            Id = $"{GetType().Name}_{queueKeyspace}";
             this.rtqProfiler = rtqProfiler;
             this.handlerManagers = handlerManagers;
             startupTimestamp = Timestamp.Now;
         }
 
-        public override sealed void Run()
+        [NotNull]
+        public string Id { get; }
+
+        public void Run()
         {
             var nowTimestamp = Timestamp.Now;
             if (nowTimestamp - startupTimestamp < TimeSpan.FromMinutes(3))

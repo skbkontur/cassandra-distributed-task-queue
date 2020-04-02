@@ -29,7 +29,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             localTaskQueue = new LocalTaskQueue(localQueueTaskCounter, taskHandlerRegistry, remoteTaskQueue);
             foreach (var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
                 handlerManagers.Add(new HandlerManager(remoteTaskQueue.QueueKeyspace, taskTopic, consumerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime, remoteTaskQueue.Logger));
-            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(remoteTaskQueue.Profiler, handlerManagers);
+            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(remoteTaskQueue.QueueKeyspace, remoteTaskQueue.Profiler, handlerManagers);
             logger = remoteTaskQueue.Logger.ForContext(nameof(RtqConsumer));
         }
 
