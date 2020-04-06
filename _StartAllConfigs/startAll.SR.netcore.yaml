@@ -1,0 +1,11 @@
+baseDirectory: ..\
+deployDirectoryName: RTQRuns
+
+services:
+  - path: ExchangeService\bin\netcoreapp3.1\RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\netcoreapp3.1\RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\netcoreapp3.1\RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\netcoreapp3.1\RemoteTaskQueue.ExchangeService.exe
+  - path: ExchangeService\bin\netcoreapp3.1\RemoteTaskQueue.ExchangeService.exe
+  - path: ElasticMonitoring.TestService\bin\netcoreapp3.1\Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService.exe
+    name: RtqMonitoringTestService

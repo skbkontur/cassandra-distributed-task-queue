@@ -9,7 +9,13 @@
 
   <ItemGroup>
     <PackageReference Include="GroboContainer.NUnitExtensions" Version="1.0.38" />
+    <PackageReference Include="GroBuf" Version="1.5.5" />
+    <PackageReference Include="System.Net.Sockets" Version="4.3.0" />
+    <PackageReference Include="Vostok.Logging.File" Version="1.0.5" />
+    <PackageReference Include="Vostok.Logging.Hercules" Version="0.1.2" />
     <PackageReference Include="Vostok.Logging.Log4net" Version="1.0.3" />
+    <PackageReference Include="Vostok.ServiceDiscovery.Kontur" Version="1.0.39" />
+    <PackageReference Include="Vostok.Telemetry.Kontur" Version="1.0.32" />
   </ItemGroup>
 
   <ItemGroup>
