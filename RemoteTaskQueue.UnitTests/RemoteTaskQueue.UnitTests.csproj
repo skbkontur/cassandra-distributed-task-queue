@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PlatformTarget>x64</PlatformTarget>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFrameworks>net472;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>RemoteTaskQueue.UnitTests</RootNamespace>
     <AssemblyName>RemoteTaskQueue.UnitTests</AssemblyName>
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
