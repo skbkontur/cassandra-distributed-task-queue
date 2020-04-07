@@ -16,7 +16,7 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.ServiceLib.Logging;
-using SKBKontur.Catalogue.TestCore.Waiting;
+using SKBKontur.Catalogue.Waiting;
 
 using Vostok.Logging.Abstractions;
 
