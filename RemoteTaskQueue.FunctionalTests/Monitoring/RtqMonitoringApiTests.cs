@@ -197,7 +197,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
         private static Range<DateTime> EnqueueDateTimeRange(Timestamp t0, Timestamp t1)
         {
-            return Range.OfDate(t0.ToDateTime(), t1.ToDateTime());
+            return RangeOf.Date(t0.ToDateTime(), t1.ToDateTime());
         }
 
         private string[] QueueTasksAndWaitForActualization(params IRtqTaskData[] taskDatas)
