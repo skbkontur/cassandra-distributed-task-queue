@@ -109,7 +109,8 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                         <li>
                             Ввод значения с указанием конкретного поля, в котором его нужно искать. Поля есть двух
                             типов: Meta и Data.SomeTaskName, в полях Meta лежит общая информация по задаче, в полях
-                            Data.SomeTaskName - информация по типу задачи.<br />
+                            Data.SomeTaskName - информация по типу задачи.
+                            <br />
                             Например: <code>Meta.Id:value</code>,{" "}
                             <code>Data.FtpMessageDeliveryFinished.DocumentCirculationId:value</code>,
                             <code>Data.\*.DocumentCirculationId:(value1 OR value2)</code>. Конкретный список полей в
@@ -118,7 +119,8 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                         <li>
                             Знаки * и ?. Например, <code>Meta.Name:val*</code> или <code>Meta.Name:val?e</code>.
                             Звездочка не может быть в начале искомого значения (<code>Meta.Name:*lue</code> не
-                            работает).<br />
+                            работает).
+                            <br />
                             Знаки можно использовать не только в значениях, но и при указании полей. По запросу{" "}
                             <code>Data.DocumentCirculationId.\*Id:value</code> во всех поля даты, которые заканчиваются
                             на id найдётся value.
@@ -126,7 +128,8 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                         <li>
                             Задание интервалов для дат. Квадратные скобки при задании интервала означают, что концы
                             включены, фигурные - что исключены. Звездочка показывает, что интервал в эту сторону
-                            бесконечен.<br />
+                            бесконечен.
+                            <br />
                             Например: <code>date:[2012-01-01 TO 2012-12-31]</code>,
                             <code>date:&#123;* TO 2012-01-01&#125;.</code>
                         </li>
@@ -135,12 +138,12 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                             <code>count:[1 TO 5&#125;</code>.
                         </li>
                         <li>
-                            Сравнение чисел. Например: <code>age:&gt;=10</code>,
-                            <code>age:&lt;=10</code>, <code>age:(&gt;=10 AND &lt; 20)</code>.
+                            Сравнение чисел. Например: <code>age:&gt;=10</code>,<code>age:&lt;=10</code>,{" "}
+                            <code>age:(&gt;=10 AND &lt; 20)</code>.
                         </li>
                         <li>
-                            Проверка полей на заполненность. Например: <code>NOT _exists_:Meta.ParentTaskId</code>
-                            - поле пусто, <code>_exists_:Meta.ParentTaskId</code> - поле заполнено.
+                            Проверка полей на заполненность. Например: <code>NOT _exists_:Meta.ParentTaskId</code>- поле
+                            пусто, <code>_exists_:Meta.ParentTaskId</code> - поле заполнено.
                         </li>
                     </ol>
                 </ModalBody>

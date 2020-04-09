@@ -56,10 +56,12 @@ class TaskChainsTreeContainerInternal extends React.Component<
     public searchTasks = takeLastAndRejectPrevious(
         this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
     );
-    public getTaskByIds = takeLastAndRejectPrevious(async (ids: string[]): Promise<RtqMonitoringTaskModel[]> => {
-        const result = await Promise.all(ids.map(id => this.props.remoteTaskQueueApi.getTaskDetails(id)));
-        return result;
-    });
+    public getTaskByIds = takeLastAndRejectPrevious(
+        async (ids: string[]): Promise<RtqMonitoringTaskModel[]> => {
+            const result = await Promise.all(ids.map(id => this.props.remoteTaskQueueApi.getTaskDetails(id)));
+            return result;
+        }
+    );
 
     public isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
         const request = mapping.parse(searchQuery);
