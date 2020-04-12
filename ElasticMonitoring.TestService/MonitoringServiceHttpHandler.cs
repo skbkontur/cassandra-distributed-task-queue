@@ -8,8 +8,9 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
-using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
+
+using SkbKontur.EventFeeds;
 
 namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 {

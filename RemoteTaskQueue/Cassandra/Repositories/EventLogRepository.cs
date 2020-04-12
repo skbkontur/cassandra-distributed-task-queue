@@ -14,8 +14,9 @@ using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Connections;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Objects;
+
+using SkbKontur.EventFeeds;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {

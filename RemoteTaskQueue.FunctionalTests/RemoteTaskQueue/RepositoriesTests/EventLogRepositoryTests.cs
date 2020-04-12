@@ -13,9 +13,10 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Core.EventFeeds;
 using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.TestCore;
+
+using SkbKontur.EventFeeds;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {

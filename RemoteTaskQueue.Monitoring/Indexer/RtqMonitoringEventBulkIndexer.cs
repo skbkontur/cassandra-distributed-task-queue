@@ -8,9 +8,7 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Core.EventFeeds;
-
+using SkbKontur.EventFeeds;
 using SkbKontur.Graphite.Client;
 
 using Vostok.Logging.Abstractions;

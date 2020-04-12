@@ -11,10 +11,10 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Core.EventFeeds.Building;
-using SKBKontur.Catalogue.Core.EventFeeds.OffsetStorages;
 using SKBKontur.Catalogue.Objects.Json;
+
+using SkbKontur.EventFeeds;
+using SkbKontur.EventFeeds.Implementations;
 
 using Vostok.Logging.Abstractions;
 

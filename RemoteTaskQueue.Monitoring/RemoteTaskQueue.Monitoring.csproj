@@ -27,6 +27,9 @@
     <Reference Include="Catalogue.Core.ElasticsearchClientExtensions">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Core.ElasticsearchClientExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.ServiceLib">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

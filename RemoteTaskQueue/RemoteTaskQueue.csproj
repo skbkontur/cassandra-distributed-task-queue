@@ -12,15 +12,13 @@
     <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="SkbKontur.Cassandra.DistributedLock" Version="2.2.8" />
     <PackageReference Include="SkbKontur.Cassandra.GlobalTimestamp" Version="1.0.8" />
+    <PackageReference Include="SkbKontur.EventFeeds" Version="1.0.5" />
     <PackageReference Include="SkbKontur.Graphite.Client" Version="1.3.16" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Catalogue.Commons">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.EventFeeds">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
     </Reference>
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>

@@ -1,6 +1,6 @@
 ﻿using JetBrains.Annotations;
 
-using SKBKontur.Catalogue.Core.EventFeeds;
+using SkbKontur.EventFeeds;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {

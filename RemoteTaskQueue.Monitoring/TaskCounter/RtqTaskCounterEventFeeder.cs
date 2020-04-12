@@ -8,10 +8,10 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 
 using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.Core.EventFeeds.Building;
-using SKBKontur.Catalogue.Core.EventFeeds.Implementations;
 using SKBKontur.Catalogue.Objects.Json;
+using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
+using SkbKontur.EventFeeds;
 using SkbKontur.Graphite.Client;
 
 using Vostok.Logging.Abstractions;
@@ -23,23 +23,25 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
     {
         public RtqTaskCounterEventFeeder(ILog logger,
                                          ISerializer serializer,
-                                         IStatsDClient statsDClient,
+                                         RtqTaskCounterSettings settings,
                                          IRtqTaskDataRegistry taskDataRegistry,
                                          IRtqTaskCounterStateStorage stateStorage,
-                                         EventFeedFactory eventFeedFactory,
-                                         RtqTaskCounterSettings settings,
+                                         IGraphiteClient graphiteClient,
+                                         IStatsDClient statsDClient,
+                                         IPeriodicTaskRunner periodicTaskRunner,
+                                         IPeriodicJobRunnerWithLeaderElection periodicJobRunnerWithLeaderElection,
                                          RemoteTaskQueue remoteTaskQueue)
         {
             this.serializer = serializer;
+            this.settings = settings;
             this.taskDataRegistry = taskDataRegistry;
             this.stateStorage = stateStorage;
-            this.eventFeedFactory = eventFeedFactory;
-            this.settings = settings;
             GlobalTime = remoteTaskQueue.GlobalTime;
-            globalTimeProvider = new DefaultGlobalTimeProvider(GlobalTime);
+            eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection));
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePrefix, statsDClient);
+            graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqTaskCounterEventFeeder));
             this.logger.Info($"Using RtqTaskCounterSettings: {settings.ToPrettyJson()}");
         }
@@ -57,24 +59,26 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             var eventFeedsRunner = eventFeedFactory
                                    .WithOffsetType<string>()
                                    .WithEventType(bladesBuilder)
-                                   .WithGlobalTimeProvider(globalTimeProvider)
                                    .WithOffsetInterpreter(offsetInterpreter)
                                    .WithOffsetStorageFactory(bladeId => stateManager.CreateOffsetStorage(bladeId))
                                    .WithSingleLeaderElectionKey(stateManager.CompositeFeedKey)
                                    .RunFeeds(settings.DelayBetweenEventFeedingIterations);
+
+            graphiteLagReporter.Start(eventFeedsRunner, eventFeedsLagReportingJobName : $"{settings.EventFeedKey}-ReportActualizationLagJob");
+
             return (eventFeedsRunner, stateManager);
         }
 
         private readonly ILog logger;
         private readonly ISerializer serializer;
+        private readonly RtqTaskCounterSettings settings;
         private readonly IRtqTaskDataRegistry taskDataRegistry;
         private readonly IRtqTaskCounterStateStorage stateStorage;
         private readonly EventFeedFactory eventFeedFactory;
-        private readonly RtqTaskCounterSettings settings;
-        private readonly IGlobalTimeProvider globalTimeProvider;
         private readonly EventLogRepository eventLogRepository;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
+        private readonly EventFeedsGraphiteLagReporter graphiteLagReporter;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter = new RtqEventLogOffsetInterpreter();
     }
 }

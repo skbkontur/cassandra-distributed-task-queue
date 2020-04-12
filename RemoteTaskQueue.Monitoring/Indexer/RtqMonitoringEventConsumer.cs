@@ -7,8 +7,7 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Core.EventFeeds;
+using SkbKontur.EventFeeds;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
