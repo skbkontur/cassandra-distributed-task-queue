@@ -1,4 +1,4 @@
-﻿// Resharper CLT Ignore: почему-то Resharper CLT считает, что данная сборка зависит от System.Private.CoreLib, где в System находится свой Timestamp с операцией Multiply (https://github.com/dotnet/runtime/blob/master/src/libraries/System.Private.CoreLib/src/System/TimeSpan.cs)
+﻿// ReSharper CLT Ignore: ReSharper CLT упорно удаляет "using SKBKontur.Catalogue.Objects;", так как почему-то считает, что данная сборка зависит от System.Private.CoreLib, где в System находится свой Timestamp с операцией Multiply (https://github.com/dotnet/runtime/blob/master/src/libraries/System.Private.CoreLib/src/System/TimeSpan.cs)
 
 using System;
 using System.Collections.Generic;
