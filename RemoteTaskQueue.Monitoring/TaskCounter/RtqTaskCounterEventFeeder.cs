@@ -37,11 +37,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             this.taskDataRegistry = taskDataRegistry;
             this.stateStorage = stateStorage;
             GlobalTime = remoteTaskQueue.GlobalTime;
-            eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection));
+            var graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
+            var eventFeedPeriodicJobRunner = new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection, graphiteLagReporter);
+            eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePrefix, statsDClient);
-            graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqTaskCounterEventFeeder));
             this.logger.Info($"Using RtqTaskCounterSettings: {settings.ToPrettyJson()}");
         }
@@ -63,9 +64,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
                                    .WithOffsetStorageFactory(bladeId => stateManager.CreateOffsetStorage(bladeId))
                                    .WithSingleLeaderElectionKey(stateManager.CompositeFeedKey)
                                    .RunFeeds(settings.DelayBetweenEventFeedingIterations);
-
-            graphiteLagReporter.Start(eventFeedsRunner, eventFeedsLagReportingJobName : $"{settings.EventFeedKey}-ReportActualizationLagJob");
-
             return (eventFeedsRunner, stateManager);
         }
 
@@ -78,7 +76,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         private readonly EventLogRepository eventLogRepository;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
-        private readonly EventFeedsGraphiteLagReporter graphiteLagReporter;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter = new RtqEventLogOffsetInterpreter();
     }
 }

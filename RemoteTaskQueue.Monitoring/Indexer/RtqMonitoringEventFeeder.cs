@@ -35,12 +35,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             this.elasticsearchClient = elasticsearchClient;
             GlobalTime = remoteTaskQueue.GlobalTime;
             eventLogRepository = remoteTaskQueue.EventLogRepository;
-            eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection));
+            var graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
+            var eventFeedPeriodicJobRunner = new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection, graphiteLagReporter);
+            eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePrefix, statsDClient);
             var taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
-            offsetInterpreter = new RtqEventLogOffsetInterpreter();
-            graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
         }
 
         [NotNull]
@@ -49,18 +49,14 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         [NotNull]
         public IEventFeedsRunner RunEventFeeding()
         {
-            var eventFeedsRunner = eventFeedFactory
-                                   .WithOffsetType<string>()
-                                   .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer, logger)
-                                                               .WithBlade($"{indexerSettings.EventFeedKey}_Blade0", delay : TimeSpan.FromMinutes(1))
-                                                               .WithBlade($"{indexerSettings.EventFeedKey}_Blade1", delay : TimeSpan.FromMinutes(15)))
-                                   .WithOffsetInterpreter(offsetInterpreter)
-                                   .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey))
-                                   .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
-
-            graphiteLagReporter.Start(eventFeedsRunner, eventFeedsLagReportingJobName : $"{indexerSettings.EventFeedKey}-ReportActualizationLagJob");
-
-            return eventFeedsRunner;
+            return eventFeedFactory
+                   .WithOffsetType<string>()
+                   .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer, logger)
+                                               .WithBlade($"{indexerSettings.EventFeedKey}_Blade0", delay : TimeSpan.FromMinutes(1))
+                                               .WithBlade($"{indexerSettings.EventFeedKey}_Blade1", delay : TimeSpan.FromMinutes(15)))
+                   .WithOffsetInterpreter(offsetInterpreter)
+                   .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey))
+                   .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
         }
 
         private readonly ILog logger;
@@ -69,7 +65,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         private readonly EventLogRepository eventLogRepository;
         private readonly EventFeedFactory eventFeedFactory;
         private readonly RtqMonitoringEventConsumer eventConsumer;
-        private readonly RtqEventLogOffsetInterpreter offsetInterpreter;
-        private readonly EventFeedsGraphiteLagReporter graphiteLagReporter;
+        private readonly RtqEventLogOffsetInterpreter offsetInterpreter = new RtqEventLogOffsetInterpreter();
     }
 }
