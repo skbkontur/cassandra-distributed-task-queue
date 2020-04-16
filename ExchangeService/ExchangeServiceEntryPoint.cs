@@ -13,6 +13,7 @@ namespace ExchangeService
     public class ExchangeServiceEntryPoint : ApplicationBase
     {
         protected override string ConfigFileName => "exchangeService.csf";
+        protected override string SubProject => null;
 
         private static void Main()
         {

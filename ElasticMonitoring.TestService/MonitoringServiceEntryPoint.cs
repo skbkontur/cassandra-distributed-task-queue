@@ -27,6 +27,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
     public class MonitoringServiceEntryPoint : ApplicationBase
     {
         protected override string ConfigFileName => "monitoringService.csf";
+        protected override string SubProject => null;
 
         private static void Main()
         {
