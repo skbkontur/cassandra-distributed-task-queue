@@ -42,7 +42,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
-            perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePrefix, statsDClient);
+            perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePathPrefix, statsDClient);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqTaskCounterEventFeeder));
             this.logger.Info($"Using RtqTaskCounterSettings: {settings.ToPrettyJson()}");
         }

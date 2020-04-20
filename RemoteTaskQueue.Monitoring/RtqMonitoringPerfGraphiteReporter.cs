@@ -9,9 +9,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring
 {
     public class RtqMonitoringPerfGraphiteReporter
     {
-        public RtqMonitoringPerfGraphiteReporter([NotNull] string graphitePrefix, [NotNull] IStatsDClient statsDClient)
+        public RtqMonitoringPerfGraphiteReporter([NotNull] string graphitePathPrefix, [NotNull] IStatsDClient statsDClient)
         {
-            this.graphitePrefix = graphitePrefix;
+            this.graphitePathPrefix = graphitePathPrefix;
             this.statsDClient = statsDClient;
         }
 
@@ -22,7 +22,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring
 
         public void ReportTiming([NotNull] string actionName, [NotNull] Action action, [NotNull] out Stopwatch timer)
         {
-            statsDClient.Timing($"{graphitePrefix}.{actionName}", action, out timer);
+            statsDClient.Timing($"{graphitePathPrefix}.{actionName}", action, out timer);
         }
 
         public TResult ReportTiming<TResult>([NotNull] string actionName, [NotNull] Func<TResult> action)
@@ -32,15 +32,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring
 
         public TResult ReportTiming<TResult>([NotNull] string actionName, [NotNull] Func<TResult> action, [NotNull] out Stopwatch timer)
         {
-            return statsDClient.Timing($"{graphitePrefix}.{actionName}", action, out timer);
+            return statsDClient.Timing($"{graphitePathPrefix}.{actionName}", action, out timer);
         }
 
         public void Increment([NotNull] string counterName, int magnitude)
         {
-            statsDClient.Increment($"{graphitePrefix}.{counterName}", magnitude);
+            statsDClient.Increment($"{graphitePathPrefix}.{counterName}", magnitude);
         }
 
-        private readonly string graphitePrefix;
+        private readonly string graphitePathPrefix;
         private readonly IStatsDClient statsDClient;
     }
 }

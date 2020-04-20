@@ -38,7 +38,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             var graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
             var eventFeedPeriodicJobRunner = new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection, graphiteLagReporter);
             eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
-            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePrefix, statsDClient);
+            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePathPrefix, statsDClient);
             var taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
         }

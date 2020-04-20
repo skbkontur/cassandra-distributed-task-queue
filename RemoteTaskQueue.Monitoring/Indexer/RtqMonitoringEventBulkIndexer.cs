@@ -26,7 +26,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             this.indexerSettings = indexerSettings;
             eventLogRepository = remoteTaskQueue.EventLogRepository;
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
-            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePrefix, statsDClient);
+            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePathPrefix, statsDClient);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqMonitoringEventBulkIndexer));
             taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
         }

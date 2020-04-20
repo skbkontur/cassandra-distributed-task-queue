@@ -24,7 +24,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
         {
             this.serializer = serializer;
             this.globalTime = globalTime;
-            var keyspaceName = rtqSettings.NewQueueKeyspace;
+            var keyspaceName = rtqSettings.QueueKeyspace;
             cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, ColumnFamilyName);
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(keyspaceName, RtqColumnFamilyRegistry.LocksColumnFamilyName);
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);

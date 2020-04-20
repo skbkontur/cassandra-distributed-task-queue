@@ -12,7 +12,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
     {
         public TestTaskLogger(ICassandraCluster cassandraCluster, IRtqSettings rtqSettings)
         {
-            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.NewQueueKeyspace, ColumnFamilyName);
+            cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.QueueKeyspace, ColumnFamilyName);
         }
 
         public void Log(string loggingTaskIdKey, string taskId)

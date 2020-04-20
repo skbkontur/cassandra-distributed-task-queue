@@ -8,6 +8,9 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.TimeBasedUuid;
+
+using SKBKontur.Catalogue.Objects;
+
 using SkbKontur.Graphite.Client;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
@@ -16,6 +19,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
     {
         public GraphiteRtqProfiler([NotNull] IStatsDClient statsDClient, [NotNull] IGraphiteClient graphiteClient, [NotNull] string statsDKeyNamePrefix, [NotNull] string consumerGraphitePathPrefix)
         {
+            if (string.IsNullOrEmpty(statsDKeyNamePrefix))
+                throw new InvalidProgramStateException("statsDKeyNamePrefix is empty");
+            if (string.IsNullOrEmpty(consumerGraphitePathPrefix))
+                throw new InvalidProgramStateException("consumerGraphitePathPrefix is empty");
             this.statsDClient = statsDClient.WithScopes($"{statsDKeyNamePrefix}.{Environment.MachineName}", $"{statsDKeyNamePrefix}.Total");
             this.graphiteClient = graphiteClient;
             this.consumerGraphitePathPrefix = FormatGraphitePathPrefix(consumerGraphitePathPrefix);

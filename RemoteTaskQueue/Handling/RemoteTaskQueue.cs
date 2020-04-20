@@ -65,7 +65,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         }
 
         [NotNull]
-        [Obsolete("todo (andrew, 17.03.2020): remove after rtq migration")]
         public string QueueKeyspace { get; }
 
         public TimeSpan TaskTtl { get; private set; }

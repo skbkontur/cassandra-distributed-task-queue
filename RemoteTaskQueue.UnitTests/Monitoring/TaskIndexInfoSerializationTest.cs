@@ -81,7 +81,7 @@ namespace RemoteTaskQueue.UnitTests.Monitoring
             return sb.ToString();
         }
 
-        private readonly JsonSerializer jsonSerializer = JsonSerializer.Create(new RtqElasticsearchIndexerSettings().JsonSerializerSettings);
+        private readonly JsonSerializer jsonSerializer = JsonSerializer.Create(RtqElasticsearchIndexerSettings.DefaultJsonSerializerSettings);
 
         private class Data
         {

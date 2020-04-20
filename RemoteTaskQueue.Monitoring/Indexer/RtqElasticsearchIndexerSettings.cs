@@ -8,12 +8,29 @@ using Newtonsoft.Json.Converters;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
+using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.Objects.Json;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexerSettings
     {
+        public RtqElasticsearchIndexerSettings([NotNull] string eventFeedKey, [NotNull] string perfGraphitePathPrefix)
+        {
+            if (string.IsNullOrEmpty(eventFeedKey))
+                throw new InvalidProgramStateException("eventFeedKey is empty");
+            if (string.IsNullOrEmpty(perfGraphitePathPrefix))
+                throw new InvalidProgramStateException("perfGraphitePathPrefix is empty");
+            EventFeedKey = eventFeedKey;
+            PerfGraphitePathPrefix = perfGraphitePathPrefix;
+        }
+
+        [NotNull]
+        public string EventFeedKey { get; }
+
+        [NotNull]
+        public string PerfGraphitePathPrefix { get; }
+
         [NotNull]
         public Timestamp InitialIndexingStartTimestamp { get; set; } = new Timestamp(new DateTime(2016, 02, 01, 0, 0, 0, DateTimeKind.Utc));
 
@@ -28,7 +45,20 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         public TimeSpan BulkIndexRequestTimeout { get; set; } = TimeSpan.FromMinutes(5);
 
         [NotNull]
-        public JsonSerializerSettings JsonSerializerSettings { get; } = new JsonSerializerSettings
+        public JsonSerializerSettings JsonSerializerSettings { get; } = DefaultJsonSerializerSettings;
+
+        public override string ToString()
+        {
+            return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, " +
+                   $"MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, " +
+                   $"MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, " +
+                   $"TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, " +
+                   $"IndexingThreadsCount: {IndexingThreadsCount}, " +
+                   $"BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
+        }
+
+        [NotNull]
+        public static readonly JsonSerializerSettings DefaultJsonSerializerSettings = new JsonSerializerSettings
             {
                 ContractResolver = new OmitBinaryAndAbstractPropertiesContractResolver(),
                 Converters = new JsonConverter[]
@@ -39,16 +69,5 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
                         new TimeGuidJsonConverter()
                     },
             };
-
-        [NotNull]
-        public string EventFeedKey { get; set; } = "RtqMonitoring";
-
-        [NotNull]
-        public string PerfGraphitePrefix { get; set; } = "SubSystem.RemoteTaskQueue.ElasticsearchIndexer";
-
-        public override string ToString()
-        {
-            return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, IndexingThreadsCount: {IndexingThreadsCount}, BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
-        }
     }
 }

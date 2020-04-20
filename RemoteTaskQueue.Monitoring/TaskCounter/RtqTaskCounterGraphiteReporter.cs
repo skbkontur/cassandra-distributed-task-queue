@@ -5,6 +5,9 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
+
+using SKBKontur.Catalogue.Objects;
+
 using SkbKontur.Graphite.Client;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
@@ -12,11 +15,13 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
     [PublicAPI]
     public class RtqTaskCounterGraphiteReporter
     {
-        public RtqTaskCounterGraphiteReporter(RtqTaskCounterStateManager stateManager, IGraphiteClient graphiteClient)
+        public RtqTaskCounterGraphiteReporter(RtqTaskCounterStateManager stateManager, IGraphiteClient graphiteClient, [NotNull] string graphitePathPrefix)
         {
+            if (string.IsNullOrEmpty(graphitePathPrefix))
+                throw new InvalidProgramStateException("graphitePathPrefix is empty");
             this.stateManager = stateManager;
             this.graphiteClient = graphiteClient;
-            graphitePrefix = "SubSystem.RemoteTaskQueue.TaskCounter";
+            this.graphitePathPrefix = graphitePathPrefix;
         }
 
         public void ReportTaskCountersToGraphite()
@@ -27,10 +32,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             var now = Timestamp.Now;
             var counters = stateManager.GetTaskCounters(now);
 
-            graphiteClient.Send($"{graphitePrefix}.LostTasks", counters.LostTasksCount, now.ToDateTime());
-            ReportTaskCounts($"{graphitePrefix}.PendingTasksTotal", counters.PendingTaskCountsTotal, now);
+            graphiteClient.Send($"{graphitePathPrefix}.LostTasks", counters.LostTasksCount, now.ToDateTime());
+            ReportTaskCounts($"{graphitePathPrefix}.PendingTasksTotal", counters.PendingTaskCountsTotal, now);
             foreach (var kvp in counters.PendingTaskCountsByName)
-                ReportTaskCounts($"{graphitePrefix}.PendingTasksByName.{kvp.Key}", kvp.Value, now);
+                ReportTaskCounts($"{graphitePathPrefix}.PendingTasksByName.{kvp.Key}", kvp.Value, now);
         }
 
         private void ReportTaskCounts([NotNull] string prefix, [NotNull] Dictionary<TaskState, int> counts, [NotNull] Timestamp now)
@@ -42,6 +47,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
         private readonly RtqTaskCounterStateManager stateManager;
         private readonly IGraphiteClient graphiteClient;
-        private readonly string graphitePrefix;
+        private readonly string graphitePathPrefix;
     }
 }

@@ -40,7 +40,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             ConfigureRemoteLock(Container);
             Container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(new Uri("http://localhost:9205")));
             Container.Configurator.ForAbstraction<IRtqTaskCounterStateStorage>().UseType<NoOpRtqTaskCounterStateStorage>();
-            Container.Configurator.ForAbstraction<RtqTaskCounterSettings>().UseInstances(new RtqTaskCounterSettings
+            var rtqTaskCounterSettings = new RtqTaskCounterSettings(eventFeedKey : "RtqTaskCounterEventFeed", perfGraphitePathPrefix : "None")
                 {
                     BladeDelays = new[]
                         {
@@ -51,7 +51,10 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
                     DelayBetweenEventFeedingIterations = TimeSpan.FromSeconds(1),
                     StatePersistingInterval = TimeSpan.FromSeconds(1),
                     PendingTaskExecutionUpperBound = TimeSpan.FromSeconds(5)
-                });
+                };
+            Container.Configurator.ForAbstraction<RtqTaskCounterSettings>().UseInstances(rtqTaskCounterSettings);
+            var rtqElasticsearchIndexerSettings = new RtqElasticsearchIndexerSettings(eventFeedKey : "RtqElasticsearchIndexerEventFeed", perfGraphitePathPrefix : "None");
+            Container.Configurator.ForAbstraction<RtqElasticsearchIndexerSettings>().UseInstances(rtqElasticsearchIndexerSettings);
             Container.ConfigureRemoteTaskQueue(out var remoteTaskQueue);
 
             var rtqMonitoringEventFeeder = Container.Create<SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue, IStatsDClient, RtqMonitoringEventFeeder>(remoteTaskQueue, NoOpStatsDClient.Instance);

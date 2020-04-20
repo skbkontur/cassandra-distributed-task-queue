@@ -9,6 +9,22 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
     public class RtqTaskCounterSettings
     {
+        public RtqTaskCounterSettings([NotNull] string eventFeedKey, [NotNull] string perfGraphitePathPrefix)
+        {
+            if (string.IsNullOrEmpty(eventFeedKey))
+                throw new InvalidProgramStateException("eventFeedKey is empty");
+            if (string.IsNullOrEmpty(perfGraphitePathPrefix))
+                throw new InvalidProgramStateException("perfGraphitePathPrefix is empty");
+            EventFeedKey = eventFeedKey;
+            PerfGraphitePathPrefix = perfGraphitePathPrefix;
+        }
+
+        [NotNull]
+        public string EventFeedKey { get; }
+
+        [NotNull]
+        public string PerfGraphitePathPrefix { get; }
+
         [NotNull]
         public TimeSpan[] BladeDelays { get; set; } =
             {
@@ -25,11 +41,5 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         public TimeSpan PendingTaskExecutionUpperBound { get; set; } = TimeSpan.FromMinutes(30);
 
         public TimeSpan StateGarbageTtl => BladeDelays.Max().Multiply(2);
-
-        [NotNull]
-        public string EventFeedKey { get; set; } = "RtqTaskCounter";
-
-        [NotNull]
-        public string PerfGraphitePrefix { get; set; } = "SubSystem.RemoteTaskQueue.TaskCounter.Perf";
     }
 }
