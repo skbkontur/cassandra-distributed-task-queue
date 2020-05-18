@@ -53,7 +53,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                         periodicTaskRunner.Register(reportConsumerStateToGraphiteTask, TimeSpan.FromMinutes(1));
                         started = true;
                         var handlerManagerIds = string.Join("\r\n", handlerManagers.Select(x => x.Id));
-                        logger.Info($"Start RtqConsumer: schedule handlerManagers[{handlerManagers.Count}] with period {consumerSettings.PeriodicInterval}:\r\n{handlerManagerIds}");
+                        logger.Info("Start RtqConsumer: schedule handlerManagers[{HandlerManagersCount}] with period {Period}:\r\n{HandlerManagerIds}",
+                                    new {HandlerManagersCount = handlerManagers.Count, Period = consumerSettings.PeriodicInterval, HandlerManagerIds = handlerManagerIds});
                     }
                 }
             }

@@ -86,7 +86,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexe
             var safetyBelt = (Timestamp.Now - TimeSpan.FromHours(6)).Ticks;
             if (fromTicks < safetyBelt)
             {
-                logger.Warn(string.Format("fromTicks ({0}) < safetyBelt ({1})", new Timestamp(fromTicks), new Timestamp(safetyBelt)));
+                logger.Warn("fromTicks ({FromTicks}) < safetyBelt ({SafetyBelt})", new {FromTicks = new Timestamp(fromTicks), SafetyBelt = new Timestamp(safetyBelt)});
                 return safetyBelt;
             }
             return fromTicks;

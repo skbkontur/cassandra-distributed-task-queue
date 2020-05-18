@@ -59,12 +59,10 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var duplicate = new Exception("Message");
             var meta = NewMeta();
 
-            List<TimeGuid> ids;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out var ids), Is.True);
             Assert.That(ids.Count, Is.EqualTo(1));
 
-            List<TimeGuid> ids2;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta.With(x => x.TaskExceptionInfoIds = ids), duplicate, out ids2), Is.False);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta.With(x => x.TaskExceptionInfoIds = ids), duplicate, out var ids2), Is.False);
             Assert.That(ids2, Is.Null);
 
             Check(new[] {new Tuple<TaskMetaInformation, Exception[]>(meta, new[] {exception})});
@@ -78,16 +76,13 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var exception3 = new Exception("Message");
             var meta = NewMeta();
 
-            List<TimeGuid> ids;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out ids), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out var ids), Is.True);
             Assert.That(ids.Count, Is.EqualTo(1));
 
-            List<TimeGuid> ids2;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta.With(x => x.TaskExceptionInfoIds = ids), exception2, out ids2), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta.With(x => x.TaskExceptionInfoIds = ids), exception2, out var ids2), Is.True);
             Assert.That(ids2.Count, Is.EqualTo(2));
 
-            List<TimeGuid> ids3;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta.With(x => x.TaskExceptionInfoIds = ids2), exception3, out ids3), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta.With(x => x.TaskExceptionInfoIds = ids2), exception3, out var ids3), Is.True);
             Assert.That(ids3.Count, Is.EqualTo(3));
 
             Check(new[]
@@ -107,8 +102,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
                 for (var j = 0; j < 20; j++)
                 {
                     var e = new Exception("Message-" + Guid.NewGuid().ToString("N"));
-                    List<TimeGuid> ids;
-                    Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, e, out ids), Is.True);
+                    Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, e, out var ids), Is.True);
                     exceptions.Add(e);
                     meta.TaskExceptionInfoIds = ids;
                 }
@@ -124,8 +118,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var exception = new Exception("Message");
             var meta = NewMeta();
 
-            List<TimeGuid> ids;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out var ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
             Check(new[]
@@ -143,8 +136,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var exception2 = new Exception("Message-2");
             var meta = NewMeta();
 
-            List<TimeGuid> ids;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out ids), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out var ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception2, out ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
@@ -171,8 +163,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             for (var i = 0; i < 300; i++)
             {
                 var e = new Exception("Message-" + Guid.NewGuid().ToString("N"));
-                List<TimeGuid> ids;
-                Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, e, out ids), Is.True);
+                Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, e, out var ids), Is.True);
                 meta.TaskExceptionInfoIds = ids;
                 exceptions.Add(e);
             }
@@ -190,8 +181,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var metaTtl = TimeSpan.FromSeconds(5);
             var meta = NewMeta(metaTtl);
 
-            List<TimeGuid> ids;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out var ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
             Assert.That(taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Single().ExceptionMessageInfo, Contains.Substring(exception.Message));
@@ -205,8 +195,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             var metaTtl = TimeSpan.FromSeconds(5);
             var meta = NewMeta(metaTtl);
 
-            List<TimeGuid> ids;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out ids), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception, out var ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
             meta.SetOrUpdateTtl(TimeSpan.FromHours(1));
@@ -219,15 +208,14 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void Prolong_SeveralExceptions()
         {
-            var exception1 = new Exception(string.Format("Message1-{0}", Guid.NewGuid()));
-            var exception2 = new Exception(string.Format("Message2-{0}", Guid.NewGuid()));
+            var exception1 = new Exception($"Message1-{Guid.NewGuid()}");
+            var exception2 = new Exception($"Message2-{Guid.NewGuid()}");
             var metaTtl = TimeSpan.FromSeconds(5);
 
             var sw = Stopwatch.StartNew();
             var meta = NewMeta(metaTtl);
 
-            List<TimeGuid> ids;
-            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out ids), Is.True);
+            Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception1, out var ids), Is.True);
             meta.TaskExceptionInfoIds = ids;
 
             Assert.That(taskExceptionInfoStorage.TryAddNewExceptionInfo(meta, exception2, out ids), Is.True);
@@ -237,11 +225,11 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             taskExceptionInfoStorage.ProlongExceptionInfosTtl(meta);
 
             sw.Stop();
-            Log.For(this).Info($"sw.Elapsed: {sw.Elapsed}");
+            Log.For(this).Info("sw.Elapsed: {Elapsed}", new {Elapsed = sw.Elapsed});
 
             Thread.Sleep(metaTtl.Multiply(2));
             var taskExceptionInfos = taskExceptionInfoStorage.Read(new[] {meta})[meta.Id].Select(x => x.ExceptionMessageInfo).ToArray();
-            Assert.That(taskExceptionInfos, Is.EquivalentTo(new[] {exception1.ToString(), exception2.ToString()}), string.Format("sw.Elapsed: {0}", sw.Elapsed));
+            Assert.That(taskExceptionInfos, Is.EquivalentTo(new[] {exception1.ToString(), exception2.ToString()}), $"sw.Elapsed: {sw.Elapsed}");
         }
 
         private void Check(Tuple<TaskMetaInformation, Exception[]>[] expected)
@@ -263,7 +251,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 
         private static TaskMetaInformation TaskMeta(string taskId, TimeSpan? ttl)
         {
-            var taskMeta = new TaskMetaInformation(string.Format("Name-{0:N}", Guid.NewGuid()), taskId) {MinimalStartTicks = Timestamp.Now.Ticks};
+            var taskMeta = new TaskMetaInformation($"Name-{Guid.NewGuid():N}", taskId) {MinimalStartTicks = Timestamp.Now.Ticks};
             taskMeta.SetOrUpdateTtl(ttl ?? defaultTtl);
             return taskMeta;
         }

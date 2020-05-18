@@ -44,7 +44,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePathPrefix, statsDClient);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqTaskCounterEventFeeder));
-            this.logger.Info($"Using RtqTaskCounterSettings: {settings.ToPrettyJson()}");
+            this.logger.Info("Using RtqTaskCounterSettings: {Settings}", new {Settings = settings.ToPrettyJson()});
         }
 
         [NotNull]

@@ -53,7 +53,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 
         public void ProcessTasks([NotNull, ItemNotNull] List<string> taskIdsToProcess)
         {
-            logger.Info($"Processing tasks: {taskIdsToProcess.Count}");
+            logger.Info("Processing tasks: {ProcessingTasksCount}", new {ProcessingTasksCount = taskIdsToProcess.Count});
             taskIdsToProcess.Batch(settings.TaskIdsProcessingBatchSize, Enumerable.ToArray)
                             .AsParallel()
                             .WithDegreeOfParallelism(settings.IndexingThreadsCount)
@@ -88,7 +88,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 
         private void IndexBatch([NotNull] ( /*[NotNull]*/ TaskMetaInformation TaskMeta, /*[NotNull, ItemNotNull]*/ TaskExceptionInfo[] TaskExceptionInfos, /*[CanBeNull]*/ object TaskData)[] batch)
         {
-            logger.Info($"IndexBatch: {batch.Length} tasks");
+            logger.Info("IndexBatch: {BatchLength} tasks", new {BatchLength = batch.Length});
             var payload = new string[batch.Length * 2];
             for (var i = 0; i < batch.Length; i++)
             {
@@ -116,7 +116,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             }
             catch (Exception e)
             {
-                logger.Error(e, $"Failed to deserialize taskData for: {taskMetaInformation}");
+                logger.Error(e, "Failed to deserialize taskData for: {TaskMetaInformation}", new {TaskMetaInformation = taskMetaInformation});
                 return null;
             }
         }

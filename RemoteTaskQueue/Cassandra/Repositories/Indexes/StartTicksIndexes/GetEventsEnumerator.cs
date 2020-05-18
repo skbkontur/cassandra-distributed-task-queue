@@ -59,8 +59,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexe
                     liveRecordTicksMarker.TryMoveForward(currentLiveRecordTicks);
                     if (!loggedTooOldIndexRecord && currentLiveRecordTicks < (Timestamp.Now - TimeSpan.FromHours(1)).Ticks)
                     {
-                        logger.Warn(string.Format("Too old index record: [TaskId = {0}, ColumnName = {1}, ColumnTimestamp = {2}]",
-                                                  Current.TaskId, eventEnumerator.Current.Name, eventEnumerator.Current.Timestamp));
+                        logger.Warn("Too old index record: [TaskId = {TaskId}, ColumnName = {ColumnName}, ColumnTimestamp = {ColumnTimestamp}]",
+                                    new {TaskId = Current.TaskId, ColumnName = eventEnumerator.Current.Name, ColumnTimestamp = eventEnumerator.Current.Timestamp});
                         loggedTooOldIndexRecord = true;
                     }
                     return true;
@@ -120,10 +120,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexe
         private void PrintStatistics()
         {
             var result = new StringBuilder();
-            result.AppendLine("Statistics about a number of requested rows:");
             foreach (var statistic in statistics)
-                result.AppendLine(string.Format(" {0} {1}", statistic.Key, (double)statistic.Value.TotalProcessedRows / (statistic.Value.TotalCount + 1)));
-            logger.Info(result.ToString());
+                result.AppendLine($" {statistic.Key} {(double)statistic.Value.TotalProcessedRows / (statistic.Value.TotalCount + 1)}");
+            logger.Info($"Statistics about a number of requested rows:{Environment.NewLine}{{Result}}", new {Result = result.ToString()});
         }
 
         private static Dictionary<TaskIndexShardKey, TaskStateStatistics> statistics;

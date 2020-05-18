@@ -55,7 +55,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
                 var liveRecords = minimalStartTicksIndex.GetRecords(taskIndexShardKey, toTicks, batchSize : 2000).Take(10000).ToArray();
                 liveRecordsByKey.Add(taskIndexShardKey, liveRecords);
                 if (liveRecords.Any())
-                    logger.Info($"Got {liveRecords.Length} live minimalStartTicksIndex records for taskIndexShardKey: {taskIndexShardKey}; Oldest live record: {liveRecords.First()}");
+                    logger.Info("Got {LiveRecordsCount} live minimalStartTicksIndex records for taskIndexShardKey: {TaskIndexShardKey}; Oldest live record: {OldestLiveRecord}",
+                                new {LiveRecordsCount = liveRecords.Length, TaskIndexShardKey = taskIndexShardKey, OldestLiveRecord = liveRecords.First()});
             }
             return Shuffle(liveRecordsByKey.SelectMany(x => x.Value).ToArray());
         }

@@ -65,7 +65,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 Thread.Sleep(100);
                 var processedCountFromCounter = testCounterRepository.GetCounter("SlowTaskHandler_Started") - testCounterRepository.GetCounter("SlowTaskHandler_Finished");
                 var processingTaskCount = monitoringServiceClient.GetTaskCounters();
-                Log.For(this).Info($"InProgress={processedCountFromCounter} Counter={processingTaskCount.GetPendingTaskTotalCount()}");
+                Log.For(this).Info("InProgress={InProgressCount} Counter={Counter}", new {InProgressCount = processedCountFromCounter, Counter = processingTaskCount.GetPendingTaskTotalCount()});
             } while (w.Elapsed < TimeSpan.FromSeconds(10));
             WaitForTasks(taskIds, TimeSpan.FromMinutes(1));
             WaitFor(() => monitoringServiceClient.GetTaskCounters().GetPendingTaskTotalCount() == 0, TimeSpan.FromSeconds(10));
@@ -89,23 +89,23 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var totalTime = w.ElapsedMilliseconds;
             var addRate = 1000.0 * count / addTime; //tasks / s
             var consumeRate = 1000.0 * count / totalTime; //NOTE consumeRate занижен тк задачи добавляются последовательно
-            Log.For(this).Info($"{addRate:F0} : {consumeRate:F0}");
+            Log.For(this).Info("{AddRate} : {ConsumeRate}", new {AddRate = addRate.ToString("F0"), ConsumeRate = consumeRate.ToString("F0")});
             if (addRate < consumeRate * 2)
                 Log.For(this).Warn("WARN: Slow");
             //Assert.That(addRate > consumeRate * 2);
             var delayMs = (int)((1 / consumeRate - 1 / addRate) * 1000) / 2;
             if (delayMs < 0)
                 delayMs = 0;
-            Log.For(this).Info($"Calculated delay {delayMs} ms");
+            Log.For(this).Info("Calculated delay {DelayMs} ms", new {DelayMs = delayMs});
 
             var testTime = TimeSpan.FromTicks(eventLogRepository.UnstableZoneLength.Ticks * 5);
-            Log.For(this).Info($"test={testTime.TotalMinutes:F1} min");
+            Log.For(this).Info("test={TestTimeInMinutes} min", new {TestTimeInMinutes = testTime.TotalMinutes.ToString("F1")});
             var estimatedTaskRunTime = TimeSpan.FromMilliseconds(testTime.TotalMilliseconds * addRate / consumeRate);
-            Log.For(this).Info($"est={estimatedTaskRunTime.TotalMinutes:F1} min");
-            RunTasksAndWatiForCounterZero(false, delayMs, (long)testTime.TotalMilliseconds, TimeSpan.FromMinutes(15));
+            Log.For(this).Info("est={EstimatedTaskRunTimeInMinutes} min", new {EstimatedTaskRunTimeInMinutes = estimatedTaskRunTime.TotalMinutes.ToString("F1")});
+            RunTasksAndWaitForCounterZero(false, delayMs, (long)testTime.TotalMilliseconds, TimeSpan.FromMinutes(15));
         }
 
-        private void RunTasksAndWatiForCounterZero(bool useTaskCounter, int addDelay, long addTime, TimeSpan waitTasksTime)
+        private void RunTasksAndWaitForCounterZero(bool useTaskCounter, int addDelay, long addTime, TimeSpan waitTasksTime)
         {
             var taskIds = new List<string>();
             var w = Stopwatch.StartNew();

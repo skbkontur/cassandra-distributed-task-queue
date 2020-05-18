@@ -26,12 +26,12 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
         protected void WaitForTerminalState(string[] taskIds, TaskState terminalState, string taskName, TimeSpan timeout, TimeSpan? sleepInterval = null)
         {
             var sw = Stopwatch.StartNew();
-            sleepInterval = sleepInterval ?? TimeSpan.FromMilliseconds(Math.Max(500, (int)timeout.TotalMilliseconds / 10));
+            sleepInterval ??= TimeSpan.FromMilliseconds(Math.Max(500, (int)timeout.TotalMilliseconds / 10));
             while (true)
             {
                 var allTasksAreFinished = handleTaskCollection.GetTasks(taskIds).All(x => x.Meta.State == terminalState);
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
-                Log.For(this).Info($"CurrentCounterValues: {string.Join(", ", attempts)}");
+                Log.For(this).Info("CurrentCounterValues: {CurrentCounterValues}", new {CurrentCounterValues = string.Join(", ", attempts)});
                 var notFinishedTaskIds = taskIds.EquiZip(attempts, (taskId, attempt) => new {taskId, attempt}).Where(x => x.attempt > 0).Select(x => x.taskId).ToArray();
                 if (allTasksAreFinished)
                 {

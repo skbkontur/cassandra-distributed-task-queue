@@ -69,7 +69,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
                 var persistedLastBladeOffset = LoadPersistedState();
                 AdjustBladeOffsets(persistedLastBladeOffset);
             }
-            logger.Info($"EventFeedIsRunning flag is switched to: {EventFeedIsRunning}");
+            logger.Info("EventFeedIsRunning flag is switched to: {IsRunning}", new {IsRunning = EventFeedIsRunning});
         }
 
         private void AdjustBladeOffsets([CanBeNull] string persistedLastBladeOffset)
@@ -80,7 +80,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
                 if (bladeId == Blades.Last() && !string.IsNullOrEmpty(persistedLastBladeOffset))
                     bladeOffset = persistedLastBladeOffset;
                 bladeOffsetStorages[bladeId.BladeKey].Write(bladeOffset);
-                logger.Info($"Blade {bladeId} is moved to offset: {offsetInterpreter.Format(bladeOffset)}");
+                logger.Info("Blade {BladeId} is moved to offset: {Offset}", new {BladeId = bladeId, Offset = offsetInterpreter.Format(bladeOffset)});
             }
         }
 
@@ -88,7 +88,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         private string LoadPersistedState()
         {
             var (persistedLastBladeOffset, persistedTaskMetasCount) = perfGraphiteReporter.ReportTiming("LoadPersistedState", DoLoadPersistedState, out var timer);
-            logger.Info($"Loaded state with LastBladeOffset: {offsetInterpreter.Format(persistedLastBladeOffset)}, TaskMetas.Count: {persistedTaskMetasCount} in {timer.Elapsed}");
+            logger.Info("Loaded state with LastBladeOffset: {LastBladeOffset}, TaskMetas.Count: {TaskMetasCount} in {Elapsed}",
+                        new {LastBladeOffset = offsetInterpreter.Format(persistedLastBladeOffset), TaskMetasCount = persistedTaskMetasCount, Elapsed = timer.Elapsed});
             return persistedLastBladeOffset;
         }
 
@@ -118,7 +119,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
             var garbageTaskMetasCount = perfGraphiteReporter.ReportTiming("CollectGarbageInState", () => CollectGarbageInState(now), out var timer);
             perfGraphiteReporter.Increment("GarbageTaskMetas", garbageTaskMetasCount);
-            logger.Info($"Collected garbage in state with garbageTaskMetasCount: {garbageTaskMetasCount} in {timer.Elapsed}");
+            logger.Info("Collected garbage in state with garbageTaskMetasCount: {GarbageTaskMetasCount} in {Elapsed}",
+                        new {GarbageTaskMetasCount = garbageTaskMetasCount, Elapsed = timer.Elapsed});
 
             var lastBladeOffset = bladeOffsetStorages[Blades.Last().BladeKey].Read();
             if (string.IsNullOrEmpty(lastBladeOffset))
@@ -126,7 +128,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
             var persistedState = perfGraphiteReporter.ReportTiming("PersistState", () => DoPersistState(lastBladeOffset), out timer);
             perfGraphiteReporter.Increment("PersistedTaskMetas", persistedState.TaskMetas.Count);
-            logger.Info($"Persisted state with lastBladeOffset: {offsetInterpreter.Format(persistedState.LastBladeOffset)}, persistedTaskMetasCount: {persistedState.TaskMetas.Count} in {timer.Elapsed}");
+            logger.Info("Persisted state with lastBladeOffset: {LastBladeOffset}, persistedTaskMetasCount: {PersistedTaskMetasCount} in {Elapsed}",
+                        new {LastBladeOffset = offsetInterpreter.Format(persistedState.LastBladeOffset), PersistedTaskMetasCount = persistedState.TaskMetas.Count, Elapsed = timer.Elapsed});
 
             lastStatePersistedTimestamp = Timestamp.Now;
         }
@@ -202,7 +205,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
             var lostTasks = pendingTaskMetas.Where(x => x.MinimalStartTimestamp < now - settings.PendingTaskExecutionUpperBound).ToArray();
             if (lostTasks.Length > 0)
-                logger.Warn($"Probably {lostTasks.Length} lost tasks detected: {lostTasks.ToPrettyJson()}");
+                logger.Warn("Probably {LostTasksCount} lost tasks detected: {LostTasks}", new {LostTasksCount = lostTasks.Length, LostTasks = lostTasks.ToPrettyJson()});
 
             var taskCounters = new RtqTaskCounters
                 {
@@ -262,7 +265,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             {
                 timer.Stop();
             }
-            logger.Info($"Selected {pendingTaskMetas.Count} pendingTaskMetas from {taskMetasCount} taskMetas in {timer.Elapsed}");
+            logger.Info("Selected {PendingTaskMetasCount} pendingTaskMetas from {TaskMetasCount} taskMetas in {Elapsed}",
+                        new {PendingTaskMetasCount = pendingTaskMetas.Count, TaskMetasCount = taskMetasCount, Elapsed = timer.Elapsed});
             return pendingTaskMetas;
         }
 

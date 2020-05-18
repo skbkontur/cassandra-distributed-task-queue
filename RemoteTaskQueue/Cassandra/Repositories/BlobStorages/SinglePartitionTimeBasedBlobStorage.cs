@@ -31,9 +31,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)
         {
             if (value == null)
-                throw new InvalidProgramStateException(string.Format("value is NULL for id: {0}", columnId));
+                throw new InvalidProgramStateException($"value is NULL for id: {columnId}");
             if (value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
-                logger.Warn(string.Format("Writing extra large blob with rowKey={0} and columnId={1} of size={2} into cf: {3}.{4}", rowKey, columnId, value.Length, keyspaceName, columnFamilyName));
+                logger.Warn("Writing extra large blob with rowKey={RowKey} and columnId={ColumnId} of size={Size} into cf: {KeyspaceName}.{ColumnFamilyName}",
+                            new {RowKey = rowKey, ColumnId = columnId, Size = value.Length, KeyspaceName = keyspaceName, ColumnFamilyName = columnFamilyName});
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamilyName);
             connection.AddColumn(rowKey, new Column
                 {
@@ -54,8 +55,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public byte[] Read([NotNull] string rowKey, [NotNull] TimeGuid columnId)
         {
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamilyName);
-            Column column;
-            if (!connection.TryGetColumn(rowKey, FormatColumnName(columnId), out column) || column.Value == null)
+            if (!connection.TryGetColumn(rowKey, FormatColumnName(columnId), out var column) || column.Value == null)
                 return null;
             return column.Value;
         }
@@ -77,7 +77,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         [NotNull]
         private static string FormatColumnName([NotNull] TimeGuid columnId)
         {
-            return string.Format("{0}_{1}", columnId.GetTimestamp().Ticks.ToString("D20", CultureInfo.InvariantCulture), columnId.ToGuid());
+            return $"{columnId.GetTimestamp().Ticks.ToString("D20", CultureInfo.InvariantCulture)}_{columnId.ToGuid()}";
         }
 
         private readonly string keyspaceName;

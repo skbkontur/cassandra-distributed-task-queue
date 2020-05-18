@@ -123,7 +123,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.ExchangeTests
             while (true)
             {
                 var attempts = taskIds.Select(testCounterRepository.GetCounter).ToArray();
-                Log.For(this).Info(Now() + " CurrentValues: " + string.Join(", ", attempts));
+                Log.For(this).Info("{Now} CurrentValues: {CurrentValues}", new {Now = Now(), CurrentValues = string.Join(", ", attempts)});
                 var minValue = attempts.Min();
                 if (minValue >= criticalValue)
                     break;
