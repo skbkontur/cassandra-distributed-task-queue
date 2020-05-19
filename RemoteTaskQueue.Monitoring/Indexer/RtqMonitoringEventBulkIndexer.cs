@@ -35,11 +35,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         {
             if (indexingStartTimestamp >= indexingFinishTimestamp)
             {
-                logger.Info("IndexingFinishTimestamp is reached: {IndexingFinish}", new {IndexingFinish = indexingFinishTimestamp});
+                logger.Info("IndexingFinishTimestamp is reached: {IndexingFinishTimestamp}", new {IndexingFinishTimestamp = indexingFinishTimestamp});
                 return;
             }
-            logger.Info("Processing events from {IndexingStart} to {IndexingFinish}",
-                        new {IndexingStart = indexingStartTimestamp, IndexingFinish = indexingFinishTimestamp});
+            logger.Info("Processing events from {IndexingStartTimestamp} to {IndexingFinishTimestamp}",
+                        new {IndexingStartTimestamp = indexingStartTimestamp, IndexingFinishTimestamp = indexingFinishTimestamp});
             Timestamp lastEventsBatchStartTimestamp = null;
             var taskIdsToProcess = new HashSet<string>();
             var taskIdsToProcessInChronologicalOrder = new List<string>();

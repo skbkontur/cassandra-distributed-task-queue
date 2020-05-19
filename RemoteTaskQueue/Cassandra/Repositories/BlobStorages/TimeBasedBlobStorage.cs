@@ -38,11 +38,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
             if (value == null)
                 throw new InvalidProgramStateException($"value is NULL for id: {id}");
             if (id.Type == BlobType.Regular && value.Length > TimeBasedBlobStorageSettings.MaxRegularBlobSize)
-                logger.Error("Writing large blob with id={Id} of size={Size} into time-based cf: {CfName}",
-                             new {Id = id.Id, Size = value.Length, CfName = settings.RegularBlobsCfName});
+                logger.Error("Writing large blob with id={BlobId} of size={BlobSize} into time-based cf: {CfName}",
+                             new {BlobId = id.Id, BlobSize = value.Length, CfName = settings.RegularBlobsCfName});
             if (value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
-                logger.Warn("Writing extra large blob with id={Id} of size={Size} into time-based cf: {CfName}",
-                            new {Id = id.Id, Size = value.Length, CfName = settings.LargeBlobsCfName});
+                logger.Warn("Writing extra large blob with id={BlobId} of size={BlobSize} into time-based cf: {CfName}",
+                            new {BlobId = id.Id, BlobSize = value.Length, CfName = settings.LargeBlobsCfName});
             var columnAddress = GetColumnAddress(id);
             var connection = cassandraCluster.RetrieveColumnFamilyConnection(settings.KeyspaceName, columnAddress.CfName);
             connection.AddColumn(columnAddress.RowKey, new Column

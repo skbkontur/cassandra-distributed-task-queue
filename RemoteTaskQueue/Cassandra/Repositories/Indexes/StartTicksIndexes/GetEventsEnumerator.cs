@@ -59,8 +59,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexe
                     liveRecordTicksMarker.TryMoveForward(currentLiveRecordTicks);
                     if (!loggedTooOldIndexRecord && currentLiveRecordTicks < (Timestamp.Now - TimeSpan.FromHours(1)).Ticks)
                     {
-                        logger.Warn("Too old index record: [TaskId = {TaskId}, ColumnName = {ColumnName}, ColumnTimestamp = {ColumnTimestamp}]",
-                                    new {TaskId = Current.TaskId, ColumnName = eventEnumerator.Current.Name, ColumnTimestamp = eventEnumerator.Current.Timestamp});
+                        logger.Warn("Too old index record: [TaskId = {RtqTaskId}, ColumnName = {ColumnName}, ColumnTimestamp = {ColumnTimestamp}]",
+                                    new {RtqTaskId = Current.TaskId, ColumnName = eventEnumerator.Current.Name, ColumnTimestamp = eventEnumerator.Current.Timestamp});
                         loggedTooOldIndexRecord = true;
                     }
                     return true;

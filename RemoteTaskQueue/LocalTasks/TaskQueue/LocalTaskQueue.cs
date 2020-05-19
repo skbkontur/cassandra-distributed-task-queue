@@ -70,7 +70,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             if (taskMeta == null && taskIndexRecord.MinimalStartTicks > (Timestamp.Now - HandlerTask.MaxAllowedIndexInconsistencyDuration).Ticks)
             {
-                logger.Debug($"Мета для задачи TaskId = {{TaskId}} еще не записана, ждем {HandlerTask.MaxAllowedIndexInconsistencyDuration}", new {TaskId = taskIndexRecord.TaskId});
+                logger.Debug($"Мета для задачи TaskId = {{RtqTaskId}} еще не записана, ждем {HandlerTask.MaxAllowedIndexInconsistencyDuration}", new {RtqTaskId = taskIndexRecord.TaskId});
                 return LocalTaskQueueingResult.TaskIsSkippedResult;
             }
             if (!localQueueTaskCounter.TryIncrement(taskQueueReason))

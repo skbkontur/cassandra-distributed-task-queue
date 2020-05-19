@@ -88,8 +88,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         private string LoadPersistedState()
         {
             var (persistedLastBladeOffset, persistedTaskMetasCount) = perfGraphiteReporter.ReportTiming("LoadPersistedState", DoLoadPersistedState, out var timer);
-            logger.Info("Loaded state with LastBladeOffset: {LastBladeOffset}, TaskMetas.Count: {TaskMetasCount} in {Elapsed}",
-                        new {LastBladeOffset = offsetInterpreter.Format(persistedLastBladeOffset), TaskMetasCount = persistedTaskMetasCount, Elapsed = timer.Elapsed});
+            logger.Info("Loaded state with LastBladeOffset: {LastBladeOffset}, TaskMetas.Count: {RtqTaskMetasCount} in {Elapsed}",
+                        new {LastBladeOffset = offsetInterpreter.Format(persistedLastBladeOffset), RtqTaskMetasCount = persistedTaskMetasCount, Elapsed = timer.Elapsed});
             return persistedLastBladeOffset;
         }
 
@@ -119,8 +119,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
             var garbageTaskMetasCount = perfGraphiteReporter.ReportTiming("CollectGarbageInState", () => CollectGarbageInState(now), out var timer);
             perfGraphiteReporter.Increment("GarbageTaskMetas", garbageTaskMetasCount);
-            logger.Info("Collected garbage in state with garbageTaskMetasCount: {GarbageTaskMetasCount} in {Elapsed}",
-                        new {GarbageTaskMetasCount = garbageTaskMetasCount, Elapsed = timer.Elapsed});
+            logger.Info("Collected garbage in state with garbageTaskMetasCount: {RtqTaskMetasCount} in {Elapsed}",
+                        new {RtqTaskMetasCount = garbageTaskMetasCount, Elapsed = timer.Elapsed});
 
             var lastBladeOffset = bladeOffsetStorages[Blades.Last().BladeKey].Read();
             if (string.IsNullOrEmpty(lastBladeOffset))
@@ -128,8 +128,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
             var persistedState = perfGraphiteReporter.ReportTiming("PersistState", () => DoPersistState(lastBladeOffset), out timer);
             perfGraphiteReporter.Increment("PersistedTaskMetas", persistedState.TaskMetas.Count);
-            logger.Info("Persisted state with lastBladeOffset: {LastBladeOffset}, persistedTaskMetasCount: {PersistedTaskMetasCount} in {Elapsed}",
-                        new {LastBladeOffset = offsetInterpreter.Format(persistedState.LastBladeOffset), PersistedTaskMetasCount = persistedState.TaskMetas.Count, Elapsed = timer.Elapsed});
+            logger.Info("Persisted state with lastBladeOffset: {LastBladeOffset}, persistedTaskMetasCount: {RtqTaskMetasCount} in {Elapsed}",
+                        new {LastBladeOffset = offsetInterpreter.Format(persistedState.LastBladeOffset), RtqTaskMetasCount = persistedState.TaskMetas.Count, Elapsed = timer.Elapsed});
 
             lastStatePersistedTimestamp = Timestamp.Now;
         }
@@ -205,7 +205,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
             var lostTasks = pendingTaskMetas.Where(x => x.MinimalStartTimestamp < now - settings.PendingTaskExecutionUpperBound).ToArray();
             if (lostTasks.Length > 0)
-                logger.Warn("Probably {LostTasksCount} lost tasks detected: {LostTasks}", new {LostTasksCount = lostTasks.Length, LostTasks = lostTasks.ToPrettyJson()});
+                logger.Warn("Probably {RtqTaskMetasCount} lost tasks detected: {LostTasks}", new {RtqTaskMetasCount = lostTasks.Length, LostTasks = lostTasks.ToPrettyJson()});
 
             var taskCounters = new RtqTaskCounters
                 {
@@ -265,8 +265,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             {
                 timer.Stop();
             }
-            logger.Info("Selected {PendingTaskMetasCount} pendingTaskMetas from {TaskMetasCount} taskMetas in {Elapsed}",
-                        new {PendingTaskMetasCount = pendingTaskMetas.Count, TaskMetasCount = taskMetasCount, Elapsed = timer.Elapsed});
+            logger.Info("Selected {PendingTaskMetasCount} pendingTaskMetas from {RtqTaskMetasCount} taskMetas in {Elapsed}",
+                        new {PendingTaskMetasCount = pendingTaskMetas.Count, RtqTaskMetasCount = taskMetasCount, Elapsed = timer.Elapsed});
             return pendingTaskMetas;
         }
 

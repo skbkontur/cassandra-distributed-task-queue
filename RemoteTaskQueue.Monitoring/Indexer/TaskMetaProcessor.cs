@@ -116,7 +116,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             }
             catch (Exception e)
             {
-                logger.Error(e, "Failed to deserialize taskData for: {TaskMetaInformation}", new {TaskMetaInformation = taskMetaInformation});
+                logger.Error(e, "Failed to deserialize taskData for: {RtqTaskMeta}", new {RtqTaskMeta = taskMetaInformation});
                 return null;
             }
         }

@@ -56,8 +56,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             TaskIndexRecord[] taskIndexRecords;
             using (metricsContext.Timer("GetIndexRecords").NewContext())
                 taskIndexRecords = handleTasksMetaStorage.GetIndexRecords(toTicks, allTaskIndexShardKeysToRead);
-            logger.Info("Number of live minimalStartTicksIndex records for topic '{TaskTopic}': {RecordsCount}",
-                        new {TaskTopic = taskTopic, RecordsCount = taskIndexRecords.Length});
+            logger.Info("Number of live minimalStartTicksIndex records for topic '{RtqTaskTopic}': {RecordsCount}",
+                        new {RtqTaskTopic = taskTopic, RecordsCount = taskIndexRecords.Length});
             foreach (var taskIndexRecordsBatch in taskIndexRecords.Batch(maxRunningTasksCount, Enumerable.ToArray))
             {
                 var taskIds = taskIndexRecordsBatch.Select(x => x.TaskId).ToArray();

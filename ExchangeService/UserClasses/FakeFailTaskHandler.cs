@@ -23,12 +23,12 @@ namespace ExchangeService.UserClasses
             var counter = testCounterRepository.DecrementCounter(Context.Id);
             if (counter == 0)
             {
-                Log.For(this).Info("Finished task: {ContextId}", new {ContextId = Context.Id});
+                Log.For(this).Info("Finished task: {RtqTaskId}", new {RtqTaskId = Context.Id});
                 return Fatal(new Exception());
             }
             var rerunInterval = TimeSpan.FromTicks(Math.Min(minDelayBeforeTaskRerun.Ticks * Context.Attempts * Context.Attempts, maxDelayBeforeTaskRerun.Ticks));
-            Log.For(this).Info("Rerun task: {ContextId}, Counter: {Counter}, RerunInterval: {RerunInterval}",
-                               new {ContextId = Context.Id, Counter = counter, RerunInterval = rerunInterval});
+            Log.For(this).Info("Rerun task: {RtqTaskId}, Counter: {counter}, RerunInterval: {rerunInterval}",
+                               new {RtqTaskId = Context.Id, counter, rerunInterval});
             return RerunAfterError(new Exception(), rerunInterval);
         }
 

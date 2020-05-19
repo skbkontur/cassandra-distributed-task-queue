@@ -64,7 +64,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             if (taskMeta == null)
             {
                 taskShardMetricsContext.Meter("NoMeta").Mark();
-                logger.Error("Удаляем запись индекса, для которой мета так и не записалась: {TaskIndexRecord}", new {TaskIndexRecord = taskIndexRecord});
+                logger.Error("Удаляем запись индекса, для которой мета так и не записалась: {RtqTaskIndexRecord}", new {RtqTaskIndexRecord = taskIndexRecord});
                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTimestamp().Ticks);
                 return LocalTaskProcessingResult.Undefined;
             }
@@ -72,8 +72,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             if (taskIndexRecord != handleTasksMetaStorage.FormatIndexRecord(taskMeta) && taskIndexRecord.MinimalStartTicks > localNow.Ticks - MaxAllowedIndexInconsistencyDuration.Ticks)
             {
                 taskShardMetricsContext.Meter("InconsistentIndexRecord").Mark();
-                logger.Debug("taskIndexRecord != IndexRecord(taskMeta), поэтому ждем; taskMeta: {TaskMeta}; taskIndexRecord: {TaskIndexRecord}; localNow: {LocalNow}",
-                             new {TaskMeta = taskMeta, TaskIndexRecord = taskIndexRecord, LocalNow = localNow});
+                logger.Debug("taskIndexRecord != IndexRecord(taskMeta), поэтому ждем; taskMeta: {RtqTaskMeta}; taskIndexRecord: {RtqTaskIndexRecord}; localNow: {LocalNow}",
+                             new {RtqTaskMeta = taskMeta, RtqTaskIndexRecord = taskIndexRecord, LocalNow = localNow});
                 return LocalTaskProcessingResult.Undefined;
             }
             var metricsContext = MetricsContext.For(taskMeta).SubContext(nameof(HandlerTask));
@@ -93,7 +93,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                         if (!remoteLockCreator.TryGetLock(taskMeta.TaskGroupLock, out taskGroupRemoteLock))
                         {
                             taskShardMetricsContext.Meter("DidNotGetTaskGroupLock").Mark();
-                            logger.Debug("Не смогли взять групповую блокировку {TaskGroupLock} на задачу: {TaskId}", new {TaskGroupLock = taskMeta.TaskGroupLock, TaskId = taskIndexRecord.TaskId});
+                            logger.Debug("Не смогли взять групповую блокировку {RtqTaskGroupLock} на задачу: {RtqTaskId}", new {RtqTaskGroupLock = taskMeta.TaskGroupLock, RtqTaskId = taskIndexRecord.TaskId});
                             return LocalTaskProcessingResult.Undefined;
                         }
                     }
@@ -108,7 +108,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                         if (!remoteLockCreator.TryGetLock(taskIndexRecord.TaskId, out remoteLock))
                         {
                             taskShardMetricsContext.Meter("DidNotGetTaskLock").Mark();
-                            logger.Debug("Не смогли взять блокировку на задачу, пропускаем её: {TaskIndexRecord}", new {TaskIndexRecord = taskIndexRecord});
+                            logger.Debug("Не смогли взять блокировку на задачу, пропускаем её: {RtqTaskIndexRecord}", new {RtqTaskIndexRecord = taskIndexRecord});
                             return LocalTaskProcessingResult.Undefined;
                         }
                     }
@@ -121,14 +121,14 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     logger.Log(new LogEvent(
                                        level : isLongRunningTask ? LogLevel.Warn : LogLevel.Debug,
                                        timestamp : DateTimeOffset.Now,
-                                       messageTemplate : "Завершили выполнение задачи {TaskMetaId} с результатом {Result}. Отпустили блокировку {LockId}. Время работы с учетом взятия лока: {Elapsed}{LongRunningFlag}")
+                                       messageTemplate : "Завершили выполнение задачи {RtqTaskId} с результатом {Result}. Отпустили блокировку {LockId}. Время работы с учетом взятия лока: {Elapsed}")
                                    .WithObjectProperties(new
                                        {
-                                           TaskMetaId = taskMeta.Id,
+                                           RtqTaskId = taskMeta.Id,
                                            Result = result,
                                            LockId = taskIndexRecord.TaskId,
                                            Elapsed = sw.Elapsed,
-                                           LongRunningFlag = isLongRunningTask ? " [LONG RUNNING]" : string.Empty,
+                                           IsLongRunningTask = isLongRunningTask,
                                        }));
                     return result;
                 }
@@ -137,7 +137,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     if (taskGroupRemoteLock != null)
                     {
                         taskGroupRemoteLock.Dispose();
-                        logger.Debug("Отпустили групповую блокировку {TaskGroupLock} в процессе завершения задачи {TaskMetaId}", new {TaskGroupLock = taskMeta.TaskGroupLock, TaskMetaId = taskMeta.Id});
+                        logger.Debug("Отпустили групповую блокировку {RtqTaskGroupLock} в процессе завершения задачи {RtqTaskId}", new {RtqTaskGroupLock = taskMeta.TaskGroupLock, RtqTaskId = taskMeta.Id});
                     }
                 }
             }
@@ -158,12 +158,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     oldMeta = task.Meta;
                     taskData = task.Data;
                     if (oldMeta.NeedTtlProlongation())
-                        logger.Error("oldMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()) == true for: {OldMeta}", new {OldMeta = oldMeta});
+                        logger.Error("oldMeta.NeedTtlProlongation(oldMeta.GetExpirationTimestamp()) == true for: {RtqTaskMeta}", new {RtqTaskMeta = oldMeta});
                 }
                 catch (Exception e)
                 {
                     taskShardMetricsContext.Meter("ReadTaskException_UnderLock").Mark();
-                    logger.Error(e, "Ошибка во время чтения задачи: {TaskIndexRecord}", new {TaskIndexRecord = taskIndexRecord});
+                    logger.Error(e, "Ошибка во время чтения задачи: {RtqTaskIndexRecord}", new {RtqTaskIndexRecord = taskIndexRecord});
                     return LocalTaskProcessingResult.Undefined;
                 }
 
@@ -174,8 +174,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     if (taskIndexRecord.MinimalStartTicks > localNow.Ticks - MaxAllowedIndexInconsistencyDuration.Ticks)
                     {
                         taskShardMetricsContext.Meter("InconsistentIndexRecord_UnderLock").Mark();
-                        logger.Debug("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta), поэтому ждем; oldMeta: {OldMeta}; taskIndexRecord: {TaskIndexRecord}; localNow: {LocalNow}",
-                                     new {OldMeta = oldMeta, TaskIndexRecord = taskIndexRecord, LocalNow = localNow});
+                        logger.Debug("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta), поэтому ждем; oldMeta: {RtqTaskMeta}; taskIndexRecord: {RtqTaskIndexRecord}; localNow: {LocalNow}",
+                                     new {RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, LocalNow = localNow});
                     }
                     else
                     {
@@ -183,16 +183,16 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                         {
                             taskShardMetricsContext.Meter("TaskAlreadyFinished_UnderLock").Mark();
                             logger.Error($"После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration} и задача уже находится в терминальном состоянии, " +
-                                         "поэтому просто удаляем зависшую запись из индекса; oldMeta: {OldMeta}; taskIndexRecord: {TaskIndexRecord}; localNow: {LocalNow}",
-                                         new {OldMeta = oldMeta, TaskIndexRecord = taskIndexRecord, LocalNow = localNow});
+                                         "поэтому просто удаляем зависшую запись из индекса; oldMeta: {RtqTaskMeta}; taskIndexRecord: {RtqTaskIndexRecord}; localNow: {LocalNow}",
+                                         new {RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, LocalNow = localNow});
                             using (metricsContext.Timer("RemoveIndexRecord_Terminal").NewContext())
                                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTimestamp().Ticks);
                         }
                         else
                         {
                             logger.Error($"После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration}, поэтому чиним индекс; " +
-                                         "oldMeta: {OldMeta}; taskIndexRecord: {TaskIndexRecord}; indexRecordConsistentWithActualMeta: {IndexRecordConsistentWithActualMeta}; localNow: {LocalNow}",
-                                         new {OldMeta = oldMeta, TaskIndexRecord = taskIndexRecord, IndexRecordConsistentWithActualMeta = indexRecordConsistentWithActualMeta, LocalNow = localNow});
+                                         "oldMeta: {RtqTaskMeta}; taskIndexRecord: {RtqTaskIndexRecord}; indexRecordConsistentWithActualMeta: {IndexRecordConsistentWithActualMeta}; localNow: {LocalNow}",
+                                         new {RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, IndexRecordConsistentWithActualMeta = indexRecordConsistentWithActualMeta, LocalNow = localNow});
                             taskShardMetricsContext.Meter("FixIndex_UnderLock").Mark();
                             var globalNowTicks = globalTime.UpdateNowTimestamp().Ticks;
                             using (metricsContext.Timer("AddIndexRecord_FixIndex").NewContext())
@@ -212,15 +212,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     waitedInQueue = TimeSpan.Zero;
                 metricsContextForTaskName.Timer("TimeWaitingForExecution").Record((long)waitedInQueue.TotalMilliseconds, TimeUnit.Milliseconds);
 
-                logger.Debug("Начинаем обрабатывать задачу {OldMeta}; Reason: {Reason}; taskIndexRecord: {TaskIndexRecord}",
-                             new {OldMeta = oldMeta, Reason = reason, TaskIndexRecord = taskIndexRecord});
+                logger.Debug("Начинаем обрабатывать задачу oldMeta: {RtqTaskMeta}; Reason: {Reason}; taskIndexRecord: {RtqTaskIndexRecord}",
+                             new {RtqTaskMeta = oldMeta, Reason = reason, RtqTaskIndexRecord = taskIndexRecord});
                 TaskMetaInformation inProcessMeta;
                 using (metricsContext.Timer("TrySwitchToInProcessState").NewContext())
                     inProcessMeta = TrySwitchToInProcessState(oldMeta);
                 if (inProcessMeta == null)
                 {
                     taskShardMetricsContext.Meter("StartProcessingFailed_UnderLock").Mark();
-                    logger.Error("Не удалось начать обработку задачи: {OldMeta}", new {OldMeta = oldMeta});
+                    logger.Error("Не удалось начать обработку задачи. OldMeta: {RtqTaskMeta}", new {RtqTaskMeta = oldMeta});
                     return LocalTaskProcessingResult.Undefined;
                 }
 
@@ -230,7 +230,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                 var newMeta = processTaskResult.NewMeta;
                 if (newMeta != null && newMeta.NeedTtlProlongation())
                 {
-                    logger.Debug("Продлеваем время жизни задачи после обработки: {NewMeta}", new {NewMeta = newMeta});
+                    logger.Debug("Продлеваем время жизни задачи после обработки. NewMeta: {RtqTaskMeta}", new {RtqTaskMeta = newMeta});
                     try
                     {
                         newMeta.SetOrUpdateTtl(taskTtl);
@@ -239,7 +239,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     }
                     catch (Exception e)
                     {
-                        logger.Error(e, "Ошибка во время продления времени жизни задачи: {NewMeta}", new {NewMeta = newMeta});
+                        logger.Error(e, "Ошибка во время продления времени жизни задачи. NewMeta: {RtqTaskMeta}", new {RtqTaskMeta = newMeta});
                     }
                 }
 
@@ -316,7 +316,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         [CanBeNull]
         private List<TimeGuid> TryLogError([NotNull] Exception e, [NotNull] TaskMetaInformation inProcessMeta)
         {
-            logger.Error(e, "Ошибка во время обработки задачи: {InProcessMeta}", new {InProcessMeta = inProcessMeta});
+            logger.Error(e, "Ошибка во время обработки задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
             try
             {
                 if (taskExceptionInfoStorage.TryAddNewExceptionInfo(inProcessMeta, e, out var newExceptionInfoIds))
@@ -324,7 +324,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             }
             catch
             {
-                logger.Error(e, "Не смогли записать ошибку для задачи: {InProcessMeta}", new {InProcessMeta = inProcessMeta});
+                logger.Error(e, "Не смогли записать ошибку для задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
             }
             return null;
         }
@@ -369,12 +369,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             try
             {
                 handleTasksMetaStorage.AddMeta(newMeta, oldTaskIndexRecord);
-                logger.Debug("Changed task state. Task = {NewMeta}", new {NewMeta = newMeta});
+                logger.Debug("Changed task state. NewMeta: {RtqTaskMeta}", new {RtqTaskMeta = newMeta});
                 return newMeta;
             }
             catch (Exception e)
             {
-                logger.Error(e, "Can't update task state for: {OldMeta}", new {OldMeta = oldMeta});
+                logger.Error(e, "Can't update task state. OldMeta: {RtqTaskMeta}", new {RtqTaskMeta = oldMeta});
                 return null;
             }
         }
