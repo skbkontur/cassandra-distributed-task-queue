@@ -182,17 +182,17 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                         if (oldMeta.State == TaskState.Finished || oldMeta.State == TaskState.Fatal || oldMeta.State == TaskState.Canceled)
                         {
                             taskShardMetricsContext.Meter("TaskAlreadyFinished_UnderLock").Mark();
-                            logger.Error($"После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration} и задача уже находится в терминальном состоянии, " +
+                            logger.Error("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration} и задача уже находится в терминальном состоянии, " +
                                          "поэтому просто удаляем зависшую запись из индекса; oldMeta: {RtqTaskMeta}; taskIndexRecord: {RtqTaskIndexRecord}; localNow: {LocalNow}",
-                                         new {RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, LocalNow = localNow});
+                                         new {MaxAllowedIndexInconsistencyDuration, RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, LocalNow = localNow});
                             using (metricsContext.Timer("RemoveIndexRecord_Terminal").NewContext())
                                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTimestamp().Ticks);
                         }
                         else
                         {
-                            logger.Error($"После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration}, поэтому чиним индекс; " +
+                            logger.Error("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration}, поэтому чиним индекс; " +
                                          "oldMeta: {RtqTaskMeta}; taskIndexRecord: {RtqTaskIndexRecord}; indexRecordConsistentWithActualMeta: {IndexRecordConsistentWithActualMeta}; localNow: {LocalNow}",
-                                         new {RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, IndexRecordConsistentWithActualMeta = indexRecordConsistentWithActualMeta, LocalNow = localNow});
+                                         new {MaxAllowedIndexInconsistencyDuration, RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, IndexRecordConsistentWithActualMeta = indexRecordConsistentWithActualMeta, LocalNow = localNow});
                             taskShardMetricsContext.Meter("FixIndex_UnderLock").Mark();
                             var globalNowTicks = globalTime.UpdateNowTimestamp().Ticks;
                             using (metricsContext.Timer("AddIndexRecord_FixIndex").NewContext())
