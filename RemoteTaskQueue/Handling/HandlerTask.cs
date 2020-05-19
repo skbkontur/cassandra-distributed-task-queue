@@ -316,15 +316,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         [CanBeNull]
         private List<TimeGuid> TryLogError([NotNull] Exception e, [NotNull] TaskMetaInformation inProcessMeta)
         {
-            logger.Error(e, "Ошибка во время обработки задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+            logger.Debug(e, "Ошибка во время обработки задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
             try
             {
                 if (taskExceptionInfoStorage.TryAddNewExceptionInfo(inProcessMeta, e, out var newExceptionInfoIds))
                     return newExceptionInfoIds;
             }
-            catch
+            catch (Exception exception)
             {
-                logger.Error(e, "Не смогли записать ошибку для задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+                logger.Error(exception, "Не смогли записать ошибку для задачи: {RtqTaskMeta}. Ошибка: {Error}", new {RtqTaskMeta = inProcessMeta, Error = e});
             }
             return null;
         }
