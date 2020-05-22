@@ -261,7 +261,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                 }
                 catch (Exception e)
                 {
-                    var newExceptionInfoIds = TryLogError(e, inProcessMeta);
+                    logger.Error(e, "Ошибка во время создания обработчика задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+                    var newExceptionInfoIds = TrуAddExceptionInfo(e, inProcessMeta);
                     using (metricsContext.Timer("TrySwitchToTerminalState").NewContext())
                         return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds));
                 }
@@ -284,7 +285,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     {
                         rtqProfiler.ProcessTaskExecutionFailed(inProcessMeta, sw.Elapsed);
                         MetricsContext.For(inProcessMeta).Meter("TasksExecutionFailed").Mark();
-                        var taskExceptionInfoId = TryLogError(e, inProcessMeta);
+                        logger.Error(e, "Необработанная ошибка во время исполнения задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+                        var taskExceptionInfoId = TrуAddExceptionInfo(e, inProcessMeta);
                         using (metricsContext.Timer("TrySwitchToTerminalState").NewContext())
                             return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, taskExceptionInfoId));
                     }
@@ -301,10 +303,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             case FinishAction.Finish:
                 return new ProcessTaskResult(LocalTaskProcessingResult.Success, TrySwitchToTerminalState(inProcessMeta, TaskState.Finished, newExceptionInfoIds : null));
             case FinishAction.Fatal:
-                newExceptionInfoIds = TryLogError(handleResult.Error, inProcessMeta);
+                newExceptionInfoIds = TryAddHandleResultExceptionInfo(handleResult.Error, inProcessMeta);
                 return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds));
             case FinishAction.RerunAfterError:
-                newExceptionInfoIds = TryLogError(handleResult.Error, inProcessMeta);
+                newExceptionInfoIds = TryAddHandleResultExceptionInfo(handleResult.Error, inProcessMeta);
                 return new ProcessTaskResult(LocalTaskProcessingResult.Rerun, TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerunAfterError, handleResult.RerunDelay, newExceptionInfoIds));
             case FinishAction.Rerun:
                 return new ProcessTaskResult(LocalTaskProcessingResult.Rerun, TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerun, handleResult.RerunDelay, newExceptionInfoIds : null));
@@ -314,9 +316,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         }
 
         [CanBeNull]
-        private List<TimeGuid> TryLogError([NotNull] Exception e, [NotNull] TaskMetaInformation inProcessMeta)
+        private List<TimeGuid> TryAddHandleResultExceptionInfo([NotNull] Exception e, [NotNull] TaskMetaInformation inProcessMeta)
         {
-            logger.Error(e, "Ошибка во время обработки задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+            logger.Debug(e, "Исполнение задачи завершилось с ошибкой: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+            return TrуAddExceptionInfo(e, inProcessMeta);
+        }
+
+        [CanBeNull]
+        private List<TimeGuid> TrуAddExceptionInfo([NotNull] Exception e, [NotNull] TaskMetaInformation inProcessMeta)
+        {
             try
             {
                 if (taskExceptionInfoStorage.TryAddNewExceptionInfo(inProcessMeta, e, out var newExceptionInfoIds))
