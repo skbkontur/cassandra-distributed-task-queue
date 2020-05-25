@@ -261,7 +261,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                 }
                 catch (Exception e)
                 {
-                    logger.Error(e, "Ошибка во время создания обработчика задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+                    logger.Error(e, "TaskHandler creation error for: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
                     var newExceptionInfoIds = TrуAddExceptionInfo(e, inProcessMeta);
                     using (metricsContext.Timer("TrySwitchToTerminalState").NewContext())
                         return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, newExceptionInfoIds));
@@ -285,7 +285,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     {
                         rtqProfiler.ProcessTaskExecutionFailed(inProcessMeta, sw.Elapsed);
                         MetricsContext.For(inProcessMeta).Meter("TasksExecutionFailed").Mark();
-                        logger.Error(e, "Необработанная ошибка во время исполнения задачи: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+                        logger.Error(e, "Unhandled exception in TaskHandler for: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
                         var taskExceptionInfoId = TrуAddExceptionInfo(e, inProcessMeta);
                         using (metricsContext.Timer("TrySwitchToTerminalState").NewContext())
                             return new ProcessTaskResult(LocalTaskProcessingResult.Error, TrySwitchToTerminalState(inProcessMeta, TaskState.Fatal, taskExceptionInfoId));
@@ -318,7 +318,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         [CanBeNull]
         private List<TimeGuid> TryAddHandleResultExceptionInfo([NotNull] Exception e, [NotNull] TaskMetaInformation inProcessMeta)
         {
-            logger.Debug(e, "Исполнение задачи завершилось с ошибкой: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
+            logger.Info(e, "Task finished with error: {RtqTaskMeta}", new {RtqTaskMeta = inProcessMeta});
             return TrуAddExceptionInfo(e, inProcessMeta);
         }
 
@@ -332,7 +332,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             }
             catch (Exception exception)
             {
-                logger.Error(exception, "Не смогли записать ошибку для задачи: {RtqTaskMeta}. Ошибка: {Error}", new {RtqTaskMeta = inProcessMeta, Error = e});
+                logger.Error(exception, "Cannot add exception info for: {RtqTaskMeta}. Error: {Error}", new {RtqTaskMeta = inProcessMeta, Error = e});
             }
             return null;
         }
