@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ben.Demystifier" Version="0.1.6" />
     <PackageReference Include="CassandraCSharpDriver" Version="3.13.0" />
     <PackageReference Include="GrobExp.Mutators" Version="1.3.9" />
     <PackageReference Include="GroboContainer.NUnitExtensions" Version="1.0.38" />
