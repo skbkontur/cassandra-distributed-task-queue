@@ -38,9 +38,6 @@
     <Reference Include="Catalogue.TestCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
-    <Reference Include="log4stash">
-      <HintPath>..\..\Assemblies\Kontur\log4stash\log4stash.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

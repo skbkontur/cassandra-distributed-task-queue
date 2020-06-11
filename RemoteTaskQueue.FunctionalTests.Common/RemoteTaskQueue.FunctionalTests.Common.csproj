@@ -17,7 +17,6 @@
     <PackageReference Include="SkbKontur.Catalogue.XmlSerializer" Version="1.1.9" />
     <PackageReference Include="System.Net.Sockets" Version="4.3.0" />
     <PackageReference Include="Vostok.Core.App.Kontur" Version="1.0.25" />
-    <PackageReference Include="Vostok.Logging.Log4net" Version="1.0.3" />
   </ItemGroup>
 
   <ItemGroup>
