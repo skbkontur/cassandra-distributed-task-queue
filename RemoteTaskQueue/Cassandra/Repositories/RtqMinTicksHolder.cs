@@ -10,7 +10,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
     {
         public RtqMinTicksHolder(ICassandraCluster cassandraCluster, IRtqSettings rtqSettings)
         {
-            var minTicksCfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.NewQueueKeyspace, ColumnFamilyName);
+            var minTicksCfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.QueueKeyspace, ColumnFamilyName);
             minTicksHolder = new MinTicksHolder(minTicksCfConnection);
         }
 

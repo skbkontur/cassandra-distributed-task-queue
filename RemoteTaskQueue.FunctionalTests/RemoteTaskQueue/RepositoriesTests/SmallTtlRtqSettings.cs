@@ -17,7 +17,6 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 
         public bool EnableContinuationOptimization => baseSettings.EnableContinuationOptimization;
         public string QueueKeyspace => baseSettings.QueueKeyspace;
-        public string NewQueueKeyspace => baseSettings.QueueKeyspace;
         public TimeSpan TaskTtl { get; }
 
         private readonly IRtqSettings baseSettings;

@@ -10,7 +10,6 @@ namespace RemoteTaskQueue.FunctionalTests.Common
     public class TestRtqSettings : IRtqSettings
     {
         public string QueueKeyspace { get; } = QueueKeyspaceName;
-        public string NewQueueKeyspace { get; } = QueueKeyspaceName;
         public TimeSpan TaskTtl { get; } = StandardTestTaskTtl;
         public bool EnableContinuationOptimization { get; } = true;
 

@@ -56,9 +56,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             HandleTaskCollection = new HandleTaskCollection(HandleTasksMetaStorage, TaskDataStorage, TaskExceptionInfoStorage, rtqProfiler);
             lazyRemoteLockCreator = new Lazy<IRemoteLockCreator>(() =>
                 {
-                    var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(rtqSettings.NewQueueKeyspace, RtqColumnFamilyRegistry.LocksColumnFamilyName);
+                    var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(rtqSettings.QueueKeyspace, RtqColumnFamilyRegistry.LocksColumnFamilyName);
                     var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
-                    var remoteLockerMetrics = new RemoteLockerMetrics($"{rtqSettings.NewQueueKeyspace}_{RtqColumnFamilyRegistry.LocksColumnFamilyName}");
+                    var remoteLockerMetrics = new RemoteLockerMetrics($"{rtqSettings.QueueKeyspace}_{RtqColumnFamilyRegistry.LocksColumnFamilyName}");
                     return new RemoteLocker(remoteLockImplementation, remoteLockerMetrics, Logger);
                 });
             Profiler = rtqProfiler;
