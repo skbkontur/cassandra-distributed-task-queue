@@ -1,7 +1,7 @@
 import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
 import SearchIcon from "@skbkontur/react-icons/Search";
 import * as React from "react";
-import { Button, Checkbox, Input, Tooltip } from "ui";
+import { Button, Checkbox, Input, Tooltip } from "ui/components";
 import { ColumnStack, Fit, RowStack } from "ui/layout";
 
 import cn from "./TaskTypesSelect.less";

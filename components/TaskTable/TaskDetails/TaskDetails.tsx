@@ -2,7 +2,7 @@ import DeleteIcon from "@skbkontur/react-icons/Delete";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import { Link, RouterLink } from "ui";
+import { Link, RouterLink } from "ui/components";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";

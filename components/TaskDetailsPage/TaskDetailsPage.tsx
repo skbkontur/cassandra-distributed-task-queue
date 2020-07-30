@@ -3,7 +3,7 @@ import ListRowsIcon from "@skbkontur/react-icons/ListRows";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui";
+import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui/components";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { Accordion } from "Commons/Accordion/Accordion";
 import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";

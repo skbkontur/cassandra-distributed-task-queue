@@ -10,7 +10,7 @@ import OkIcon from "@skbkontur/react-icons/Ok";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import { ButtonLink, RouterLink } from "ui";
+import { ButtonLink, RouterLink } from "ui/components";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { TimeUtils } from "Commons/TimeUtils";

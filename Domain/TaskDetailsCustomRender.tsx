@@ -1,6 +1,6 @@
 import _ from "lodash";
 import * as React from "react";
-import { Link, LinkDropdown } from "ui";
+import { Link, LinkDropdown } from "ui/components";
 
 import CardIcon from "@skbkontur/react-icons/Card";
 import DocumentLiteIcon from "@skbkontur/react-icons/DocumentLite";
@@ -13,7 +13,6 @@ const LinkMenuItem = LinkDropdown.MenuItem;
 
 export const endsWith = (ending: string, str: string): boolean => str.slice(-ending.length) === ending;
 
-// eslint-disable-next-line flowtype/no-weak-types
 function getByPath(target: Nullable<Object>, path: string[]): mixed {
     return _.get(target, path);
 }

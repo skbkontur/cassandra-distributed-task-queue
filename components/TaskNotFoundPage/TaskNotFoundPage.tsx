@@ -1,6 +1,6 @@
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import { Link } from "ui";
+import { Link } from "ui/components";
 
 import { CommonLayout } from "Commons/Layouts";
 

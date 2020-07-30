@@ -1,6 +1,6 @@
 import { LocationDescriptor } from "history";
 import * as React from "react";
-import { RouterLink } from "ui";
+import { RouterLink } from "ui/components";
 
 import ArrowBoldLeftIcon from "@skbkontur/react-icons/ArrowBoldLeft";
 import ArrowBoldRightIcon from "@skbkontur/react-icons/ArrowBoldRight";

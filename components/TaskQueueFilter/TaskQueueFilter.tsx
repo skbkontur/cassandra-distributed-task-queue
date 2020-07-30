@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button, ButtonLink, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
+import { Button, ButtonLink, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "ui/components";
 import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
 import { DateTimeRangePicker } from "Commons/DateTimeRangePicker/DateTimeRangePicker";
 import { RtqMonitoringSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequest";

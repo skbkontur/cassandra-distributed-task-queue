@@ -3,7 +3,7 @@ import _ from "lodash";
 import { $c } from "property-chain";
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { Button, Input, Loader, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
+import { Button, Input, Loader, Modal, ModalBody, ModalFooter, ModalHeader } from "ui/components";
 import { ColumnStack, Fit, RowStack } from "ui/layout";
 import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";

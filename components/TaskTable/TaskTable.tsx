@@ -1,7 +1,7 @@
 import { LocationDescriptor } from "history";
 import _ from "lodash";
 import * as React from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "ui";
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "ui/components";
 import { Fit, RowStack } from "ui/layout";
 import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
 

@@ -1,6 +1,6 @@
 import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
 import * as React from "react";
-import { Button, Checkbox, Tooltip } from "ui";
+import { Button, Checkbox, Tooltip } from "ui/components";
 import { ColumnStack, Fit } from "ui/layout";
 import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";

@@ -6,7 +6,7 @@ import OkIcon from "@skbkontur/react-icons/Ok";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
 import * as React from "react";
-import { RouterLink } from "ui";
+import { RouterLink } from "ui/components";
 import { ColumnStack, Fit } from "ui/layout";
 import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
 import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
