@@ -16,7 +16,7 @@
     <PackageReference Include="SkbKontur.Cassandra.Primitives" Version="2.2.10" />
     <PackageReference Include="SkbKontur.Catalogue.XmlSerializer" Version="1.1.9" />
     <PackageReference Include="System.Net.Sockets" Version="4.3.0" />
-    <PackageReference Include="Vostok.Core.App.Kontur" Version="1.0.33" />
+    <PackageReference Include="Vostok.Core.App.Kontur" Version="1.0.35" />
   </ItemGroup>
 
   <ItemGroup>

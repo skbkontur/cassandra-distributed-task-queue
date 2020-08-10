@@ -22,6 +22,9 @@
     <Reference Include="Catalogue.ServiceLib">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
     </Reference>
+    <Reference Include="Catalogue.ServiceLibLegacy">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLibLegacy.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.TestCore">
       <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>

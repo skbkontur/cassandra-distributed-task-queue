@@ -11,13 +11,14 @@ using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Connections;
 
-using SKBKontur.Catalogue.ServiceLib.Logging;
+using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
 {
     public class TestCounterRepository : ITestCounterRepository
     {
-        public TestCounterRepository(ICassandraCluster cassandraCluster,
+        public TestCounterRepository(ILog log,
+                                     ICassandraCluster cassandraCluster,
                                      ISerializer serializer,
                                      IGlobalTime globalTime,
                                      IRtqSettings rtqSettings)
@@ -28,7 +29,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl
             cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, ColumnFamilyName);
             var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(keyspaceName, RtqColumnFamilyRegistry.LocksColumnFamilyName);
             var remoteLockImplementation = new CassandraRemoteLockImplementation(cassandraCluster, serializer, remoteLockImplementationSettings);
-            remoteLockCreator = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(keyspaceName), Log.DefaultLogger);
+            remoteLockCreator = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics(keyspaceName), log);
         }
 
         public int GetCounter(string taskId)

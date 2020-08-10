@@ -1,6 +1,4 @@
-﻿// ReSharper CLT Ignore: ReSharper CLT упорно удаляет "using SKBKontur.Catalogue.Objects;", так как почему-то считает, что данная сборка зависит от System.Private.CoreLib, где в System находится свой Timestamp с операцией Multiply (https://github.com/dotnet/runtime/blob/master/src/libraries/System.Private.CoreLib/src/System/TimeSpan.cs)
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -18,10 +16,13 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorag
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.ServiceLib.Logging;
 
 using Vostok.Logging.Abstractions;
+#if !NETCOREAPP
+using SKBKontur.Catalogue.Objects;
+
+#endif
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
