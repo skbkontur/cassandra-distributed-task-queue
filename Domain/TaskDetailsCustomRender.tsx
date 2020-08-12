@@ -30,7 +30,7 @@ export function OrganizationLinkDropdown({
                 <CardIcon /> Открыть карточку организации
             </LinkMenuItem>
             <LinkMenuItem
-                href={`/AdminTools/BusinessObjects/PartyThrift/${partyId}/${partyId}`}
+                href={`/AdminTools/BusinessObjects/PartyThrift/details?ScopeId=${partyId}&Id=${partyId}`}
                 data-tid="GoToPartyBusinessObject">
                 <InfoIcon /> Открыть бизнес-объект
             </LinkMenuItem>
@@ -113,8 +113,8 @@ export function taskDetailsCustomRender(target: mixed, path: string[]): JSX.Elem
                 <Link
                     data-tid="GoToLink"
                     href={
-                        "/AdminTools/BusinessObjects/ConnectorInteractionContextStorageElement/" +
-                        `${target.computedConnectorBoxId}/${target.computedConnectorInteractionId}`
+                        "/AdminTools/BusinessObjects/ConnectorInteractionContextStorageElement/details?ScopeId=" +
+                        `${target.computedConnectorBoxId}&Id=${target.computedConnectorInteractionId}`
                     }>
                     {target.computedConnectorInteractionId}
                 </Link>
@@ -277,7 +277,9 @@ function containsEntityIdWithProp(target: mixed, entityIdProp: string): boolean 
 
 function getBusinessObjectLink(businessObjectName: string, id: string): JSX.Element {
     return (
-        <Link data-tid="GoToLink" href={`/AdminTools/BusinessObjects/${businessObjectName}/${id}/${id}`}>
+        <Link
+            data-tid="GoToLink"
+            href={`/AdminTools/BusinessObjects/${businessObjectName}/details?ScopeId=${id}&Id=${id}`}>
             {id}
         </Link>
     );
