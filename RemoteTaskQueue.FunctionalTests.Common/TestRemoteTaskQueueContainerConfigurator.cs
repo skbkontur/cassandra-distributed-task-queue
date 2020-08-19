@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
@@ -38,6 +39,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common
         {
             container.Configurator.ForAbstraction<IRtqSettings>().UseType<TestRtqSettings>();
             container.Configurator.ForAbstraction<IGlobalTime>().UseType<GlobalTimeProxy>();
+            container.Configurator.ForAbstraction<IPeriodicTaskRunner>().UseType<ThreadBasedPeriodicTaskRunner>();
 
             container.Configurator.ForAbstraction<IRtqTaskDataRegistry>().UseInstances(new TestTaskDataRegistry());
             remoteTaskQueue = container.Create<IRtqProfiler, SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue>(new NoOpRtqProfiler());

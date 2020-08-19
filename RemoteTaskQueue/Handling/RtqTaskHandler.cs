@@ -7,8 +7,6 @@ using JetBrains.Annotations;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Tracing;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     [PublicAPI]
@@ -47,7 +45,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         protected string ContinueWith([NotNull] IRtqTaskData taskData, TimeSpan delay)
         {
             if (delay.Ticks < 0)
-                throw new InvalidProgramStateException($"Invalid delay: {delay}");
+                throw new InvalidOperationException($"Invalid delay: {delay}");
             return CreateNextTask(taskData).Queue(delay);
         }
 
@@ -64,7 +62,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         protected HandleResult Rerun(TimeSpan rerunDelay)
         {
             if (rerunDelay.Ticks < 0)
-                throw new InvalidProgramStateException($"Invalid rerun delay: {rerunDelay}");
+                throw new InvalidOperationException($"Invalid rerun delay: {rerunDelay}");
             return new HandleResult
                 {
                     FinishAction = FinishAction.Rerun,
@@ -76,12 +74,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         protected HandleResult RerunAfterError([NotNull] Exception e, TimeSpan rerunDelay)
         {
             if (rerunDelay.Ticks < 0)
-                throw new InvalidProgramStateException($"Invalid rerun delay: {rerunDelay}");
+                throw new InvalidOperationException($"Invalid rerun delay: {rerunDelay}");
             return new HandleResult
                 {
                     FinishAction = FinishAction.RerunAfterError,
                     RerunDelay = rerunDelay,
-                    Error = e ?? throw new InvalidProgramStateException("Exception is required")
+                    Error = e ?? throw new InvalidOperationException("Exception is required")
                 };
         }
 
@@ -91,7 +89,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             return new HandleResult
                 {
                     FinishAction = FinishAction.Fatal,
-                    Error = e ?? throw new InvalidProgramStateException("Exception is required")
+                    Error = e ?? throw new InvalidOperationException("Exception is required")
                 };
         }
 

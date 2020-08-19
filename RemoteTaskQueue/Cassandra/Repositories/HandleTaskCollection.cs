@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -7,8 +8,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
-
-using SKBKontur.Catalogue.Objects;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
@@ -54,7 +53,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
             var taskMeta = handleTasksMetaStorage.GetMeta(taskId);
             var taskData = taskDataStorage.Read(taskMeta);
             if (taskData == null)
-                throw new InvalidProgramStateException($"TaskData not found for: {taskId}");
+                throw new InvalidOperationException($"TaskData not found for: {taskId}");
             return new Task(taskMeta, taskData);
         }
 

@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.ServiceLib.Scheduling;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {

@@ -4,13 +4,11 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
+using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 using SkbKontur.Cassandra.GlobalTimestamp;
-
-using SKBKontur.Catalogue.Core.EventFeeds;
-using SKBKontur.Catalogue.ServiceLib.Scheduling;
-
 using SkbKontur.EventFeeds;
 using SkbKontur.Graphite.Client;
 

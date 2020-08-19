@@ -2,9 +2,8 @@
 
 using JetBrains.Annotations;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Core.EventFeeds.OffsetStorages;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
 {

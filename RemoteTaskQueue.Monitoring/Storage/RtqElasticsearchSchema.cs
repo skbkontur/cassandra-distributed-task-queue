@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 using Newtonsoft.Json;
 
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
 {

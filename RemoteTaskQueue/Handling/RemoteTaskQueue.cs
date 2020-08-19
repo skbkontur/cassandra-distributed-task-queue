@@ -21,8 +21,6 @@ using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
-
 using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
@@ -90,7 +88,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         public TaskManipulationResult TryCancelTask([NotNull] string taskId)
         {
             if (string.IsNullOrWhiteSpace(taskId))
-                throw new InvalidProgramStateException("TaskId is required");
+                throw new InvalidOperationException("TaskId is required");
             if (!RemoteLockCreator.TryGetLock(taskId, out var remoteLock))
                 return TaskManipulationResult.Failure_LockAcquiringFails;
             using (remoteLock)
@@ -114,9 +112,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         public TaskManipulationResult TryRerunTask([NotNull] string taskId, TimeSpan delay)
         {
             if (string.IsNullOrWhiteSpace(taskId))
-                throw new InvalidProgramStateException("TaskId is required");
+                throw new InvalidOperationException("TaskId is required");
             if (delay.Ticks < 0)
-                throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
+                throw new InvalidOperationException(string.Format("Invalid delay: {0}", delay));
             if (!RemoteLockCreator.TryGetLock(taskId, out var remoteLock))
                 return TaskManipulationResult.Failure_LockAcquiringFails;
             using (remoteLock)
@@ -150,9 +148,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         {
             var taskInfos = GetTaskInfos<T>(new[] {taskId});
             if (taskInfos.Length == 0)
-                throw new InvalidProgramStateException(string.Format("Task {0} does not exist", taskId));
+                throw new InvalidOperationException(string.Format("Task {0} does not exist", taskId));
             if (taskInfos.Length > 1)
-                throw new InvalidProgramStateException(string.Format("Expected exactly one task info for taskId = {0}, but found {1}", taskId, taskInfos.Length));
+                throw new InvalidOperationException(string.Format("Expected exactly one task info for taskId = {0}, but found {1}", taskId, taskInfos.Length));
             return taskInfos[0];
         }
 
@@ -160,7 +158,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         public RemoteTaskInfo[] GetTaskInfos([NotNull, ItemNotNull] string[] taskIds)
         {
             if (taskIds.Any(string.IsNullOrWhiteSpace))
-                throw new InvalidProgramStateException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
+                throw new InvalidOperationException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
             var tasks = HandleTaskCollection.GetTasks(taskIds);
             var taskExceptionInfos = TaskExceptionInfoStorage.Read(tasks.Select(x => x.Meta).ToArray());
             return tasks.Select(task =>
@@ -181,7 +179,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         public Dictionary<string, TaskMetaInformation> GetTaskMetas([NotNull, ItemNotNull] string[] taskIds)
         {
             if (taskIds.Any(string.IsNullOrWhiteSpace))
-                throw new InvalidProgramStateException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
+                throw new InvalidOperationException(string.Format("Every taskId must be non-empty: {0}", string.Join(", ", taskIds)));
             return HandleTasksMetaStorage.GetMetas(taskIds);
         }
 
@@ -217,7 +215,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         public string[] GetChildrenTaskIds([NotNull] string taskId)
         {
             if (string.IsNullOrWhiteSpace(taskId))
-                throw new InvalidProgramStateException("TaskId is required");
+                throw new InvalidOperationException("TaskId is required");
             return childTaskIndex.GetChildTaskIds(taskId);
         }
 
@@ -255,7 +253,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         {
             var taskType = task.TaskData.GetType();
             if (!typeof(T).IsAssignableFrom(taskType))
-                throw new InvalidProgramStateException(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
+                throw new InvalidOperationException(string.Format("Type '{0}' is not assignable from '{1}'", typeof(T).FullName, taskType.FullName));
             return new RemoteTaskInfo<T>(task.Context, (T)task.TaskData, task.ExceptionInfos);
         }
 

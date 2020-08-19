@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using GroBuf;
+using GroBuf.DataMembersExtracters;
 
 using JetBrains.Annotations;
 
@@ -21,9 +22,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue;
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.GrobufExtensions;
-using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
@@ -311,7 +309,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
             case FinishAction.Rerun:
                 return new ProcessTaskResult(LocalTaskProcessingResult.Rerun, TrySwitchToWaitingForRerunState(inProcessMeta, TaskState.WaitingForRerun, handleResult.RerunDelay, newExceptionInfoIds : null));
             default:
-                throw new InvalidProgramStateException($"Invalid FinishAction: {handleResult.FinishAction}");
+                throw new InvalidOperationException($"Invalid FinishAction: {handleResult.FinishAction}");
             }
         }
 
@@ -364,7 +362,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         [CanBeNull]
         private TaskMetaInformation TryUpdateTaskState([NotNull] TaskMetaInformation oldMeta, [NotNull] TaskIndexRecord oldTaskIndexRecord, long newMinimalStartTicks, long? startExecutingTicks, long? finishExecutingTicks, int attempts, TaskState newState, [CanBeNull] List<TimeGuid> newExceptionInfoIds)
         {
-            var newMeta = GrobufSerializers.AllFieldsSerializer.Copy(oldMeta);
+            var newMeta = allFieldsSerializer.Copy(oldMeta);
             if (newState == oldMeta.State)
                 newMinimalStartTicks = Math.Max(newMinimalStartTicks, oldMeta.MinimalStartTicks + PreciseTimestampGenerator.TicksPerMicrosecond);
             newMeta.MinimalStartTicks = newMinimalStartTicks;
@@ -402,6 +400,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         private readonly IGlobalTime globalTime;
         private readonly TimeSpan taskTtl;
         private readonly ILog logger;
+        private static readonly ISerializer allFieldsSerializer = new Serializer(new AllFieldsExtractor());
         private static readonly TimeSpan longRunningTaskDurationThreshold = TimeSpan.FromMinutes(1);
         public static readonly TimeSpan MaxAllowedIndexInconsistencyDuration = TimeSpan.FromMinutes(1);
         private readonly MetricsContext taskShardMetricsContext;

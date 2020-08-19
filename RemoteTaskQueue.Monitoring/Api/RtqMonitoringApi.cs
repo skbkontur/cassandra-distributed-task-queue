@@ -9,8 +9,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 {
     public class RtqMonitoringApi : IRtqMonitoringApi
@@ -32,9 +30,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
         public RtqMonitoringSearchResults Search([NotNull] RtqMonitoringSearchRequest searchRequest, int from, int size)
         {
             if (searchRequest.EnqueueDateTimeRange == null)
-                throw new InvalidProgramStateException("enqueueDateTimeRange should be specified");
-            if (searchRequest.EnqueueDateTimeRange.OpenType != null)
-                throw new InvalidProgramStateException("Both enqueueDateTimeRange.lowerBound and enqueueDateTimeRange.uppedBound should be specified");
+                throw new InvalidOperationException("enqueueDateTimeRange should be specified");
 
             var searchResult = FindTasks(searchRequest, from, size);
             var taskMetas = taskManager.GetTaskMetas(searchResult.Ids);

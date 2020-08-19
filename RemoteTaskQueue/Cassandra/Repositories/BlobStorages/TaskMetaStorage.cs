@@ -11,8 +11,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
-
 using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
@@ -63,7 +61,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         {
             TimeGuid timeGuid;
             if (!TimeGuid.TryParse(taskId, out timeGuid))
-                throw new InvalidProgramStateException(string.Format("Task is not time-based: {0}", taskId));
+                throw new InvalidOperationException(string.Format("Task is not time-based: {0}", taskId));
             return new BlobId(timeGuid, BlobType.Regular);
         }
 

@@ -5,10 +5,9 @@ using FluentAssertions;
 using NUnit.Framework;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.UnitTests.Monitoring
 {

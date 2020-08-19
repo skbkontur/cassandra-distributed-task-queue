@@ -18,17 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj" />
     <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Catalogue.Commons">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.Core.EventFeeds">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Core.EventFeeds.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

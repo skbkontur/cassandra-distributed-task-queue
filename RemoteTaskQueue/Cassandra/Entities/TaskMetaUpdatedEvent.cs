@@ -1,8 +1,8 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+
+using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
 {
@@ -11,7 +11,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
         public TaskMetaUpdatedEvent([NotNull] string taskId, long ticks)
         {
             if (string.IsNullOrWhiteSpace(taskId))
-                throw new InvalidProgramStateException(string.Format("TaskId is empty for ticks: {0}", ticks));
+                throw new InvalidOperationException(string.Format("TaskId is empty for ticks: {0}", ticks));
             TaskId = taskId;
             Ticks = ticks;
         }

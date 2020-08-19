@@ -7,8 +7,7 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue;
-
-using SKBKontur.Catalogue.ServiceLib.Scheduling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 
 using Vostok.Logging.Abstractions;
 

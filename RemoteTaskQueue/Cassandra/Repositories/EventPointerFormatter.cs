@@ -3,9 +3,8 @@ using System.Globalization;
 
 using JetBrains.Annotations;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {

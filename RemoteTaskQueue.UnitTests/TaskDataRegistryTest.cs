@@ -5,8 +5,6 @@ using NUnit.Framework;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace RemoteTaskQueue.UnitTests
 {
     [TestFixture]
@@ -28,7 +26,7 @@ namespace RemoteTaskQueue.UnitTests
             Assert.That(taskDataRegistry.GetTaskName(typeof(TaskData2WithTopic1)), Is.EqualTo("TaskData2WithTopic1"));
             Assert.That(taskDataRegistry.GetTaskName(typeof(TaskData3WithTopic2)), Is.EqualTo("TaskData3WithTopic2"));
             Assert.That(taskDataRegistry.GetTaskName(typeof(TaskData4WithTopic3)), Is.EqualTo("TaskData4WithTopic3"));
-            Assert.Throws<InvalidProgramStateException>(() => taskDataRegistry.GetTaskName(typeof(string)));
+            Assert.Throws<InvalidOperationException>(() => taskDataRegistry.GetTaskName(typeof(string)));
         }
 
         [Test]
@@ -41,7 +39,7 @@ namespace RemoteTaskQueue.UnitTests
             Assert.That(taskDataRegistry.GetTaskType("TaskData2WithTopic1"), Is.EqualTo(typeof(TaskData2WithTopic1)));
             Assert.That(taskDataRegistry.GetTaskType("TaskData3WithTopic2"), Is.EqualTo(typeof(TaskData3WithTopic2)));
             Assert.That(taskDataRegistry.GetTaskType("TaskData4WithTopic3"), Is.EqualTo(typeof(TaskData4WithTopic3)));
-            Assert.Throws<InvalidProgramStateException>(() => taskDataRegistry.GetTaskType("UnregisteredTask"));
+            Assert.Throws<InvalidOperationException>(() => taskDataRegistry.GetTaskType("UnregisteredTask"));
         }
 
         [Test]
@@ -80,7 +78,7 @@ namespace RemoteTaskQueue.UnitTests
             Assert.That(taskDataRegistry.GetTaskTopic("TaskData2WithTopic1"), Is.EqualTo("Topic1"));
             Assert.That(taskDataRegistry.GetTaskTopic("TaskData3WithTopic2"), Is.EqualTo("Topic2"));
             Assert.That(taskDataRegistry.GetTaskTopic("TaskData4WithTopic3"), Is.EqualTo("Topic3"));
-            Assert.Throws<InvalidProgramStateException>(() => taskDataRegistry.GetTaskTopic("UnregisteredTask"));
+            Assert.Throws<InvalidOperationException>(() => taskDataRegistry.GetTaskTopic("UnregisteredTask"));
         }
 
         [RtqTaskTopic("Topic3")]

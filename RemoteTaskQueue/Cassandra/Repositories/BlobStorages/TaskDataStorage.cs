@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -9,8 +10,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
@@ -28,7 +27,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public BlobId Write([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData)
         {
             if (!taskMeta.IsTimeBased())
-                throw new InvalidProgramStateException(string.Format("TaskId is not time-based: {0}", taskMeta.Id));
+                throw new InvalidOperationException(string.Format("TaskId is not time-based: {0}", taskMeta.Id));
             var blobId = TimeBasedBlobStorage.GenerateNewBlobId(taskData.Length);
             var timestamp = blobId.Id.GetTimestamp().Ticks;
             timeBasedBlobStorage.Write(blobId, taskData, timestamp, taskMeta.GetTtl());
@@ -38,14 +37,14 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public void Delete([NotNull] TaskMetaInformation taskMeta)
         {
             if (!taskMeta.IsTimeBased())
-                throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             timeBasedBlobStorage.Delete(taskMeta.GetTaskDataId(), timestamp : Timestamp.Now.Ticks);
         }
 
         public void Overwrite([NotNull] TaskMetaInformation taskMeta, [NotNull] byte[] taskData)
         {
             if (!taskMeta.IsTimeBased())
-                throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             timeBasedBlobStorage.Write(taskMeta.GetTaskDataId(), taskData, timestamp : Timestamp.Now.Ticks, ttl : taskMeta.GetTtl());
         }
 
@@ -53,7 +52,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public byte[] Read([NotNull] TaskMetaInformation taskMeta)
         {
             if (!taskMeta.IsTimeBased())
-                throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             return timeBasedBlobStorage.Read(taskMeta.GetTaskDataId());
         }
 
@@ -64,7 +63,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
             foreach (var taskMeta in taskMetas.DistinctBy(x => x.Id))
             {
                 if (!taskMeta.IsTimeBased())
-                    throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                    throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
                 blobIdToTaskIdMap.Add(taskMeta.GetTaskDataId(), taskMeta.Id);
             }
             var taskDatas = timeBasedBlobStorage.Read(blobIdToTaskIdMap.Keys.ToArray())

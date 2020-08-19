@@ -17,11 +17,10 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Utils;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
-
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 
 using Vostok.Logging.Abstractions;
 

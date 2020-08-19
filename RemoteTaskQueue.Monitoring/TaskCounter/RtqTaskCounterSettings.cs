@@ -3,8 +3,6 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 {
     public class RtqTaskCounterSettings
@@ -12,9 +10,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         public RtqTaskCounterSettings([NotNull] string eventFeedKey, [NotNull] string perfGraphitePathPrefix)
         {
             if (string.IsNullOrEmpty(eventFeedKey))
-                throw new InvalidProgramStateException("eventFeedKey is empty");
+                throw new InvalidOperationException("eventFeedKey is empty");
             if (string.IsNullOrEmpty(perfGraphitePathPrefix))
-                throw new InvalidProgramStateException("perfGraphitePathPrefix is empty");
+                throw new InvalidOperationException("perfGraphitePathPrefix is empty");
             EventFeedKey = eventFeedKey;
             PerfGraphitePathPrefix = perfGraphitePathPrefix;
         }
@@ -40,6 +38,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
         public TimeSpan PendingTaskExecutionUpperBound { get; set; } = TimeSpan.FromMinutes(30);
 
-        public TimeSpan StateGarbageTtl => BladeDelays.Max().Multiply(2);
+        public TimeSpan StateGarbageTtl => TimeSpan.FromTicks(BladeDelays.Max().Ticks * 2);
     }
 }

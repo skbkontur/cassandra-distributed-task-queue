@@ -7,8 +7,6 @@ using JetBrains.Annotations;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
 {
     public class TaskMetaInformation
@@ -56,7 +54,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
         internal BlobId GetTaskDataId()
         {
             if (TaskDataId == null)
-                throw new InvalidProgramStateException(string.Format("TaskDataId is not set for: {0}", this));
+                throw new InvalidOperationException(string.Format("TaskDataId is not set for: {0}", this));
             return TaskDataId;
         }
 
@@ -123,7 +121,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
         public Timestamp GetMinimalStartTimestamp()
         {
             if (MinimalStartTicks > Timestamp.MaxValue.Ticks)
-                throw new InvalidProgramStateException(string.Format("Invalid MinimalStartTicks: {0}, impossible to construct Timestamp", MinimalStartTicks));
+                throw new InvalidOperationException(string.Format("Invalid MinimalStartTicks: {0}, impossible to construct Timestamp", MinimalStartTicks));
             return MinimalStartTicks < Timestamp.MinValue.Ticks ? Timestamp.MinValue : new Timestamp(MinimalStartTicks);
         }
 

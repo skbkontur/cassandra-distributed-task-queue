@@ -5,11 +5,9 @@ using JetBrains.Annotations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.Objects.Json;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
@@ -18,9 +16,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         public RtqElasticsearchIndexerSettings([NotNull] string eventFeedKey, [NotNull] string perfGraphitePathPrefix)
         {
             if (string.IsNullOrEmpty(eventFeedKey))
-                throw new InvalidProgramStateException("eventFeedKey is empty");
+                throw new InvalidOperationException("eventFeedKey is empty");
             if (string.IsNullOrEmpty(perfGraphitePathPrefix))
-                throw new InvalidProgramStateException("perfGraphitePathPrefix is empty");
+                throw new InvalidOperationException("perfGraphitePathPrefix is empty");
             EventFeedKey = eventFeedKey;
             PerfGraphitePathPrefix = perfGraphitePathPrefix;
         }

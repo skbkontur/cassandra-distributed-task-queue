@@ -6,8 +6,6 @@ using Elasticsearch.Net;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 
-using SKBKontur.Catalogue.Objects;
-
 using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
@@ -41,7 +39,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             else
             {
                 logger.Warn("Checking FAIL. Exiting");
-                throw new InvalidProgramStateException("ElasticSearch is dead - cannot start");
+                throw new InvalidOperationException("ElasticSearch is dead - cannot start");
             }
         }
 

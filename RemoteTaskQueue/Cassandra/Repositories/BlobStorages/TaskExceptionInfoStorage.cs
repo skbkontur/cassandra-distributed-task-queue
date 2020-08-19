@@ -13,8 +13,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
-
 using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
@@ -30,7 +28,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public bool TryAddNewExceptionInfo([NotNull] TaskMetaInformation taskMeta, [NotNull] Exception exception, out List<TimeGuid> newExceptionInfoIds)
         {
             if (!taskMeta.IsTimeBased())
-                throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             newExceptionInfoIds = null;
             var newExceptionInfo = new TaskExceptionInfo(exception);
             var lastExceptionInfo = TryGetLastExceptionInfo(taskMeta);
@@ -50,7 +48,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public void ProlongExceptionInfosTtl([NotNull] TaskMetaInformation taskMeta)
         {
             if (!taskMeta.IsTimeBased())
-                throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             var oldExceptionInfos = timeBasedBlobStorage.Read(taskMeta.Id, taskMeta.GetTaskExceptionInfoIds().ToArray());
             var timestamp = Timestamp.Now.Ticks;
             foreach (var exceptionInfo in oldExceptionInfos)
@@ -61,7 +59,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         private TaskExceptionInfo TryGetLastExceptionInfo([NotNull] TaskMetaInformation taskMeta)
         {
             if (!taskMeta.IsTimeBased())
-                throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             var lastExceptionInfoId = taskMeta.GetTaskExceptionInfoIds().LastOrDefault();
             if (lastExceptionInfoId == null)
                 return null;
@@ -74,7 +72,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public void Delete([NotNull] TaskMetaInformation taskMeta)
         {
             if (!taskMeta.IsTimeBased())
-                throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
             var timestamp = Timestamp.Now.Ticks;
             foreach (var blobId in taskMeta.GetTaskExceptionInfoIds())
                 timeBasedBlobStorage.Delete(taskMeta.Id, blobId, timestamp);
@@ -87,7 +85,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
             foreach (var taskMeta in taskMetas.DistinctBy(x => x.Id))
             {
                 if (!taskMeta.IsTimeBased())
-                    throw new InvalidProgramStateException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
+                    throw new InvalidOperationException(string.Format("TaskMeta is not time-based: {0}", taskMeta));
                 var columnIds = taskMeta.GetTaskExceptionInfoIds().ToArray();
                 var blobs = timeBasedBlobStorage.Read(taskMeta.Id, columnIds);
                 var taskExceptionInfos = blobs.Select(x => serializer.Deserialize<TaskExceptionInfo>(x.Value)).ToArray();

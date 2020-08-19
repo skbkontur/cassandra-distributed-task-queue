@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using JetBrains.Annotations;
-
-using SKBKontur.Catalogue.Objects;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes
 {
@@ -66,7 +65,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexe
             {
                 long currentTicks;
                 if (!ticksByShardKey.TryGetValue(taskIndexShardKey, out currentTicks))
-                    throw new InvalidProgramStateException(string.Format("Not found CurrentTicks for: {0}", taskIndexShardKey));
+                    throw new InvalidOperationException(string.Format("Not found CurrentTicks for: {0}", taskIndexShardKey));
                 if (currentTicks < oldTicks)
                     return false;
                 ticksByShardKey[taskIndexShardKey] = newTicks;

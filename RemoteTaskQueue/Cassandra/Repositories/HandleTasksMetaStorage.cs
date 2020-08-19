@@ -14,8 +14,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
-
 using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
@@ -109,7 +107,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
         {
             var meta = taskMetaStorage.Read(taskId);
             if (meta == null)
-                throw new InvalidProgramStateException($"TaskMeta not found for: {taskId}");
+                throw new InvalidOperationException($"TaskMeta not found for: {taskId}");
             return meta;
         }
 

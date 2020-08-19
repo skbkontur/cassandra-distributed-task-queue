@@ -8,8 +8,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
 using SkbKontur.Cassandra.DistributedTaskQueue.Tracing;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
     internal class RemoteTask : IRemoteTask
@@ -47,7 +45,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         protected TaskIndexRecord Publish(TimeSpan delay)
         {
             if (delay.Ticks < 0)
-                throw new InvalidProgramStateException(string.Format("Invalid delay: {0}", delay));
+                throw new InvalidOperationException(string.Format("Invalid delay: {0}", delay));
             using (new PublishTaskTraceContext())
             {
                 task.Meta.MinimalStartTicks = (Timestamp.Now + delay).Ticks;

@@ -5,8 +5,6 @@ using NUnit.Framework;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
-using SKBKontur.Catalogue.Objects;
-
 namespace RemoteTaskQueue.UnitTests
 {
     [TestFixture]
@@ -15,7 +13,7 @@ namespace RemoteTaskQueue.UnitTests
         [Test]
         public void GetTaskName()
         {
-            Assert.Throws<InvalidProgramStateException>(() => typeof(TaskData0).GetTaskName());
+            Assert.Throws<InvalidOperationException>(() => typeof(TaskData0).GetTaskName());
             Assert.That(typeof(TaskData1).GetTaskName(), Is.EqualTo("TaskName1"));
             Assert.That(typeof(TaskData2).GetTaskName(), Is.EqualTo("TaskName2"));
             Assert.That(typeof(TaskData3).GetTaskName(), Is.EqualTo("TaskName3"));
@@ -25,7 +23,7 @@ namespace RemoteTaskQueue.UnitTests
         public void TryGetTaskTopic()
         {
             Assert.That(typeof(TaskData0).TryGetTaskTopic(false), Is.Null);
-            Assert.Throws<InvalidProgramStateException>(() => typeof(TaskData0).TryGetTaskTopic(true));
+            Assert.Throws<InvalidOperationException>(() => typeof(TaskData0).TryGetTaskTopic(true));
             Assert.That(typeof(TaskData1).TryGetTaskTopic(false), Is.EqualTo("Topic1"));
             Assert.That(typeof(TaskData2).TryGetTaskTopic(false), Is.EqualTo("Topic2"));
             Assert.Throws<InvalidOperationException>(() => typeof(TaskData3).TryGetTaskTopic(false));

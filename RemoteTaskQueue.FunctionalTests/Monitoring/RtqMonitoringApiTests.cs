@@ -15,7 +15,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Ranges;
 using SKBKontur.Catalogue.Waiting;
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
@@ -195,9 +194,9 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             rtqMonitoringApi.GetTaskDetails(taskId[2]).TaskMeta.Attempts.Should().Be(1);
         }
 
-        private static Range<DateTime> EnqueueDateTimeRange(Timestamp t0, Timestamp t1)
+        private static DateTimeRange EnqueueDateTimeRange(Timestamp t0, Timestamp t1)
         {
-            return RangeOf.Date(t0.ToDateTime(), t1.ToDateTime());
+            return new DateTimeRange {LowerBound = t0.ToDateTime(), UpperBound = t1.ToDateTime()};
         }
 
         private string[] QueueTasksAndWaitForActualization(params IRtqTaskData[] taskDatas)

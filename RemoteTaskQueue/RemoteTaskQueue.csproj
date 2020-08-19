@@ -18,17 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Catalogue.Commons">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.ServiceLib">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>$(MSBuildProjectName).FunctionalTests</_Parameter1>
+      <_Parameter1>$(MSBuildProjectName).UnitTests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 

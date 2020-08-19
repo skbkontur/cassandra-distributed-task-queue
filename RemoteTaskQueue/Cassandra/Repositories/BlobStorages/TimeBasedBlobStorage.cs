@@ -7,11 +7,10 @@ using JetBrains.Annotations;
 
 using MoreLinq;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
@@ -36,7 +35,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public void Write([NotNull] BlobId id, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)
         {
             if (value == null)
-                throw new InvalidProgramStateException($"value is NULL for id: {id}");
+                throw new InvalidOperationException($"value is NULL for id: {id}");
             if (id.Type == BlobType.Regular && value.Length > TimeBasedBlobStorageSettings.MaxRegularBlobSize)
                 logger.Error("Writing large blob with id={BlobId} of size={BlobSize} into time-based cf: {CfName}",
                              new {BlobId = id.Id, BlobSize = value.Length, CfName = settings.RegularBlobsCfName});
@@ -194,7 +193,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
                         ColumnName = largeBlobColumnName,
                     };
             default:
-                throw new InvalidProgramStateException(string.Format("Invalid BlobType in id: {0}", id));
+                throw new InvalidOperationException(string.Format("Invalid BlobType in id: {0}", id));
             }
         }
 
@@ -203,7 +202,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         {
             TimeGuid timeGuid;
             if (!TimeGuid.TryParse(columnName.Split('_')[1], out timeGuid))
-                throw new InvalidProgramStateException(string.Format("Invalid regular column name: {0}", columnName));
+                throw new InvalidOperationException(string.Format("Invalid regular column name: {0}", columnName));
             return timeGuid;
         }
 
@@ -212,7 +211,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         {
             TimeGuid timeGuid;
             if (!TimeGuid.TryParse(rowKey, out timeGuid))
-                throw new InvalidProgramStateException(string.Format("Invalid rowKey: {0}", rowKey));
+                throw new InvalidOperationException(string.Format("Invalid rowKey: {0}", rowKey));
             return timeGuid;
         }
 

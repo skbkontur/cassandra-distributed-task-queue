@@ -5,10 +5,8 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
-
-using SKBKontur.Catalogue.Objects;
-using SKBKontur.Catalogue.Strings;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
 {
@@ -24,7 +22,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
             var taskType = typeof(T);
             var taskName = taskType.GetTaskName();
             if (nameToType.ContainsKey(taskName))
-                throw new InvalidProgramStateException(string.Format("Duplicate taskName: {0}", taskName));
+                throw new InvalidOperationException(string.Format("Duplicate taskName: {0}", taskName));
             typeToName.Add(taskType, taskName);
             nameToType.Add(taskName, taskType);
             nameToTopic.Add(taskName, ResolveTopic(taskType, taskName, allTasksShouldHaveTopic));
@@ -49,7 +47,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         public string GetTaskName([NotNull] Type type)
         {
             if (!typeToName.TryGetValue(type, out var taskName))
-                throw new InvalidProgramStateException(string.Format("TaskData with type '{0}' not registered", type.FullName));
+                throw new InvalidOperationException(string.Format("TaskData with type '{0}' not registered", type.FullName));
             return taskName;
         }
 
@@ -57,7 +55,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         public Type GetTaskType([NotNull] string taskName)
         {
             if (!nameToType.TryGetValue(taskName, out var taskType))
-                throw new InvalidProgramStateException(string.Format("TaskData with name '{0}' not registered", taskName));
+                throw new InvalidOperationException(string.Format("TaskData with name '{0}' not registered", taskName));
             return taskType;
         }
 
@@ -76,7 +74,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         public string GetTaskTopic([NotNull] string taskName)
         {
             if (!nameToTopic.TryGetValue(taskName, out var taskTopic))
-                throw new InvalidProgramStateException(string.Format("TaskData with name '{0}' not registered", taskName));
+                throw new InvalidOperationException(string.Format("TaskData with name '{0}' not registered", taskName));
             return taskTopic;
         }
 

@@ -4,7 +4,7 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using SKBKontur.Catalogue.Objects;
+using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
 {
@@ -26,7 +26,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities
                 if (attrs.Any())
                     return ((CassandraNameAttribute)attrs.Single()).Name;
             }
-            throw new InvalidProgramStateException($"Не найдено значение CassandraNameAttribute для '{value}'");
+            throw new InvalidOperationException($"Не найдено значение CassandraNameAttribute для '{value}'");
         }
 
         private static readonly Hashtable cassandraNames = new Hashtable();

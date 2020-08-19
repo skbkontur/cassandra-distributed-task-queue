@@ -2,12 +2,12 @@
 
 using Elasticsearch.Net;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Core.ElasticsearchClientExtensions;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 
 using SkbKontur.EventFeeds;

@@ -9,6 +9,7 @@ using RemoteTaskQueue.FunctionalTests.Common;
 using SkbKontur.Cassandra.DistributedLock;
 using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
@@ -58,6 +59,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             Container.Configurator.ForAbstraction<RtqElasticsearchIndexerSettings>().UseInstances(rtqElasticsearchIndexerSettings);
             Container.ConfigureRemoteTaskQueue(out var remoteTaskQueue);
 
+            Container.Configurator.ForAbstraction<IPeriodicJobRunnerWithLeaderElection>().UseType<PeriodicJobRunnerWithLeaderElection>();
             var rtqMonitoringEventFeeder = Container.Create<SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue, IStatsDClient, RtqMonitoringEventFeeder>(remoteTaskQueue, NoOpStatsDClient.Instance);
             Container.Configurator.ForAbstraction<IRtqMonitoringEventFeeder>().UseInstances(rtqMonitoringEventFeeder);
 

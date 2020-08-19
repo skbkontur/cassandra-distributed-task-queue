@@ -1,8 +1,7 @@
 ﻿using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-
-using SKBKontur.Catalogue.ServiceLib.Scheduling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {

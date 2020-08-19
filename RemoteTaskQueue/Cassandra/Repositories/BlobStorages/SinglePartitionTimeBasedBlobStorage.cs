@@ -9,8 +9,6 @@ using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
-
 using Vostok.Logging.Abstractions;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages
@@ -31,7 +29,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobSt
         public void Write([NotNull] string rowKey, [NotNull] TimeGuid columnId, [NotNull] byte[] value, long timestamp, TimeSpan? ttl)
         {
             if (value == null)
-                throw new InvalidProgramStateException($"value is NULL for id: {columnId}");
+                throw new InvalidOperationException($"value is NULL for id: {columnId}");
             if (value.Length > TimeBasedBlobStorageSettings.MaxBlobSize)
                 logger.Warn("Writing extra large blob with rowKey={RowKey} and columnId={ColumnId} of size={Size} into cf: {KeyspaceName}.{ColumnFamilyName}",
                             new {RowKey = rowKey, ColumnId = columnId, Size = value.Length, KeyspaceName = keyspaceName, ColumnFamilyName = columnFamilyName});

@@ -8,13 +8,12 @@ using GroBuf;
 using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Connections;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
 
 using SkbKontur.EventFeeds;
 
@@ -60,9 +59,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
         public EventsQueryResult<TaskMetaUpdatedEvent, string> GetEvents([CanBeNull] string fromOffsetExclusive, [NotNull] string toOffsetInclusive, int estimatedCount)
         {
             if (estimatedCount <= 0)
-                throw new InvalidProgramStateException("estimatedCount <= 0");
+                throw new InvalidOperationException("estimatedCount <= 0");
             if (string.IsNullOrEmpty(toOffsetInclusive))
-                throw new InvalidProgramStateException("toOffsetInclusive is not set");
+                throw new InvalidOperationException("toOffsetInclusive is not set");
             var firstEventTicks = minTicksHolder.GetMinTicks(firstEventTicksRowName);
             if (firstEventTicks == 0)
                 return new EventsQueryResult<TaskMetaUpdatedEvent, string>(new List<EventWithOffset<TaskMetaUpdatedEvent, string>>(), lastOffset : null, noMoreEventsInSource : true);

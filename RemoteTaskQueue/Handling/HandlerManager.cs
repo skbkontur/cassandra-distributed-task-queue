@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
@@ -14,8 +15,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Tracing;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
 
 using Vostok.Logging.Abstractions;
 
@@ -67,7 +66,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                 foreach (var taskIndexRecord in taskIndexRecordsBatch)
                 {
                     if (taskMetas.TryGetValue(taskIndexRecord.TaskId, out var taskMeta) && taskMeta.Id != taskIndexRecord.TaskId)
-                        throw new InvalidProgramStateException($"taskIndexRecord.TaskId ({taskIndexRecord.TaskId}) != taskMeta.TaskId ({taskMeta.Id})");
+                        throw new InvalidOperationException($"taskIndexRecord.TaskId ({taskIndexRecord.TaskId}) != taskMeta.TaskId ({taskMeta.Id})");
                     using (var taskTraceContext = new RemoteTaskHandlingTraceContext(taskMeta))
                     {
                         LocalTaskQueueingResult result;

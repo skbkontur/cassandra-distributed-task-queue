@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
-using SKBKontur.Catalogue.Objects;
 
 using SkbKontur.Graphite.Client;
 
@@ -18,7 +17,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         public RtqTaskCounterGraphiteReporter(RtqTaskCounterStateManager stateManager, IGraphiteClient graphiteClient, [NotNull] string graphitePathPrefix)
         {
             if (string.IsNullOrEmpty(graphitePathPrefix))
-                throw new InvalidProgramStateException("graphitePathPrefix is empty");
+                throw new InvalidOperationException("graphitePathPrefix is empty");
             this.stateManager = stateManager;
             this.graphiteClient = graphiteClient;
             this.graphitePathPrefix = graphitePathPrefix;
