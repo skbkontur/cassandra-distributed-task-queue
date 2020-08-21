@@ -2,7 +2,9 @@
 
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
-using SkbKontur.Cassandra.ThriftClient.Scheme;
+using SkbKontur.Cassandra.ThriftClient.Schema;
+
+using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.FunctionalTests
 {
@@ -10,10 +12,12 @@ namespace RemoteTaskQueue.FunctionalTests
     {
         public static void ResetCassandraState(this IContainer container, string keyspaceName, ColumnFamily[] columnFamilies)
         {
+            var logger = container.Get<ILog>();
             var cassandraCluster = container.Get<ICassandraCluster>();
-            cassandraCluster.ActualizeKeyspaces(new[]
+            var actualizer = new CassandraSchemaActualizer(cassandraCluster, eventListener : null, logger);
+            actualizer.ActualizeKeyspaces(new[]
                 {
-                    new KeyspaceScheme
+                    new KeyspaceSchema
                         {
                             Name = keyspaceName,
                             Configuration =
@@ -22,7 +26,7 @@ namespace RemoteTaskQueue.FunctionalTests
                                     ColumnFamilies = columnFamilies,
                                 },
                         },
-                });
+                }, changeExistingKeyspaceMetadata : false);
             foreach (var columnFamily in columnFamilies)
                 cassandraCluster.RetrieveColumnFamilyConnection(keyspaceName, columnFamily.Name).Truncate();
         }
