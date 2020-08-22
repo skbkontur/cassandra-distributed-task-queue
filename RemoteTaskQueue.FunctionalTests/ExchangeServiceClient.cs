@@ -5,8 +5,6 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using MoreLinq;
-
 namespace RemoteTaskQueue.FunctionalTests
 {
     public class ExchangeServiceClient
@@ -19,17 +17,20 @@ namespace RemoteTaskQueue.FunctionalTests
 
         public void Start()
         {
-            replicaClients.ForEach(replica => replica.Start());
+            foreach (var replica in replicaClients)
+                replica.Start();
         }
 
         public void Stop()
         {
-            replicaClients.ForEach(replica => replica.Stop());
+            foreach (var replica in replicaClients)
+                replica.Stop();
         }
 
         public void ChangeTaskTtl(TimeSpan ttl)
         {
-            replicaClients.ForEach(replica => replica.ChangeTaskTtl(ttl));
+            foreach (var replica in replicaClients)
+                replica.ChangeTaskTtl(ttl);
         }
 
         private readonly ExchangeServiceReplicaClient[] replicaClients;
