@@ -1,6 +1,6 @@
-﻿﻿using System;
+﻿using System;
 
- namespace SkbKontur.Cassandra.DistributedTaskQueue.Scheduling
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Scheduling
 {
     public class StoppingTimeoutException : Exception
     {

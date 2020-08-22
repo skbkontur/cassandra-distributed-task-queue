@@ -8,7 +8,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
 using SkbKontur.Graphite.Client;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling

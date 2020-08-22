@@ -1,6 +1,6 @@
-﻿﻿using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
- namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions
 {
     public class ResponseBase
     {

@@ -1,4 +1,4 @@
-﻿﻿namespace SkbKontur.Cassandra.DistributedTaskQueue.Scheduling
+﻿namespace SkbKontur.Cassandra.DistributedTaskQueue.Scheduling
 {
     public interface IPeriodicTask
     {

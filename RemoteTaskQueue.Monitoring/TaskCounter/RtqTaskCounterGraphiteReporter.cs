@@ -6,7 +6,6 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
-
 using SkbKontur.Graphite.Client;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter

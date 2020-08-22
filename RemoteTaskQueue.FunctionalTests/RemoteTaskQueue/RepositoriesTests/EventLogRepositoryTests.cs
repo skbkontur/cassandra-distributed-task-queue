@@ -86,7 +86,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void GetEvents_EstimatedCount_IsNotPositive(int notPositiveEstimatedCount)
         {
             Action x = () => sut.GetEvents(null, OffsetInFarFuture(), notPositiveEstimatedCount);
-            x.Should().ThrowExactly<InvalidProgramStateException>().WithMessage("estimatedCount <= 0");
+            x.Should().ThrowExactly<InvalidOperationException>().WithMessage("estimatedCount <= 0");
         }
 
         [TestCase("")]
@@ -95,7 +95,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void GetEvents_ToOffset_IsNotSet(string emptyToOffsetInclusive)
         {
             Action x = () => sut.GetEvents(null, emptyToOffsetInclusive, 1000);
-            x.Should().ThrowExactly<InvalidProgramStateException>().WithMessage("toOffsetInclusive is not set");
+            x.Should().ThrowExactly<InvalidOperationException>().WithMessage("toOffsetInclusive is not set");
         }
 
         [Test]

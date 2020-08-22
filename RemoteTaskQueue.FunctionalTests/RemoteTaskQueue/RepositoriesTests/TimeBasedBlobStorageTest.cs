@@ -66,7 +66,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void Write_NullValue_IsForbidden()
         {
-            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(RegularBlobId(), null, Timestamp.Now.Ticks, TimeSpan.FromHours(1)));
+            Assert.Throws<InvalidOperationException>(() => timeBasedBlobStorage.Write(RegularBlobId(), null, Timestamp.Now.Ticks, TimeSpan.FromHours(1)));
         }
 
         [Test]

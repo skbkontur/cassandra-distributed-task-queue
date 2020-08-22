@@ -30,12 +30,12 @@ namespace ExchangeService
         public void ChangeTaskTtl(TimeSpan ttl)
         {
             var internals = rtqInternals.GetValue(rtqConsumer);
-            changeTtlMethod.Invoke(internals, new object[0]);
+            changeTtlMethod.Invoke(internals, new object[] {ttl});
         }
 
         private readonly RtqConsumer rtqConsumer;
 
         private static readonly PropertyInfo rtqInternals = typeof(RtqConsumer).GetProperty("RtqInternals", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly MethodInfo changeTtlMethod = rtqInternals.GetType().GetMethod("ChangeTaskTtl", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo changeTtlMethod = rtqInternals.PropertyType.GetMethod("ChangeTaskTtl");
     }
 }

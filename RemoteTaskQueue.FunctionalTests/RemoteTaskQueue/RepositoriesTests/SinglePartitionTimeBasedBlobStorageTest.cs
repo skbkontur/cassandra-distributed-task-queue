@@ -10,8 +10,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorag
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
-
 using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
@@ -44,7 +42,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void Write_NullValue_IsForbidden()
         {
-            Assert.Throws<InvalidProgramStateException>(() => timeBasedBlobStorage.Write(NewRowKey(), NewBlobId(), null, Timestamp.Now.Ticks, defaultTtl));
+            Assert.Throws<InvalidOperationException>(() => timeBasedBlobStorage.Write(NewRowKey(), NewBlobId(), null, Timestamp.Now.Ticks, defaultTtl));
         }
 
         [Test]

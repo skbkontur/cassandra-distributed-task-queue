@@ -24,6 +24,8 @@ namespace RemoteTaskQueue.FunctionalTests
             suiteContext.Container.Get<ExchangeServiceClient>().Stop();
         }
 
-        private static readonly MethodInfo resetTicksMethod = typeof(SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue).GetMethod("ResetTicksHolderInMemoryState", BindingFlags.Instance | BindingFlags.NonPublic);
+        private const string resetTicksMethodName = "SkbKontur.Cassandra.DistributedTaskQueue.Handling.IRtqInternals.ResetTicksHolderInMemoryState";
+
+        private static readonly MethodInfo resetTicksMethod = typeof(SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue).GetMethod(resetTicksMethodName, BindingFlags.Instance | BindingFlags.NonPublic);
     }
 }
