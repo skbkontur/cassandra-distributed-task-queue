@@ -57,7 +57,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
                             .AsParallel()
                             .WithDegreeOfParallelism(settings.IndexingThreadsCount)
                             .WithExecutionMode(ParallelExecutionMode.ForceParallelism)
-                            .ForEach(taskIds =>
+                            .ForAll(taskIds =>
                                 {
                                     var taskMetas = perfGraphiteReporter.ReportTiming("ReadTaskMetas", () => handleTasksMetaStorage.GetMetas(taskIds));
                                     var taskMetasToIndex = taskMetas.Values.Where(x => x.Ticks > settings.InitialIndexingStartTimestamp.Ticks).ToArray();
