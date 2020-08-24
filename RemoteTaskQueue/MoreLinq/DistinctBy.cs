@@ -1,4 +1,4 @@
-#region License and Terms
+﻿#region License and Terms
 
 // MoreLINQ - Extensions to LINQ to Objects
 // Copyright (c) 2008 Jonathan Skeet. All rights reserved.
@@ -24,7 +24,7 @@ namespace MoreLinq
     using System;
     using System.Collections.Generic;
 
-    static partial class MoreEnumerable
+    internal static partial class MoreEnumerable
     {
         /// <summary>
         ///     Returns all distinct elements of the given source, where "distinctness"

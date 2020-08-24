@@ -1,4 +1,4 @@
-#region License and Terms
+﻿#region License and Terms
 
 // MoreLINQ - Extensions to LINQ to Objects
 // Copyright (c) 2009 Atif Aziz. All rights reserved.
@@ -25,7 +25,7 @@ namespace MoreLinq
     using System.Collections.Generic;
     using System.Linq;
 
-    static partial class MoreEnumerable
+    internal static partial class MoreEnumerable
     {
         /// <summary>
         ///     Batches the source sequence into sized buckets.
