@@ -5,7 +5,6 @@ using FluentAssertions;
 using NUnit.Framework;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
-using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
@@ -18,8 +17,8 @@ namespace RemoteTaskQueue.UnitTests.Monitoring
         public void Compare_WithNull()
         {
             sut.Compare(null, null).Should().Be(0);
-            sut.Compare(null, Offset(Timestamp.MinValue, GuidHelpers.MinGuid)).Should().BeNegative();
-            sut.Compare(Offset(Timestamp.MinValue, GuidHelpers.MinGuid), null).Should().BePositive();
+            sut.Compare(null, Offset(Timestamp.MinValue, minGuid)).Should().BeNegative();
+            sut.Compare(Offset(Timestamp.MinValue, minGuid), null).Should().BePositive();
         }
 
         [Test]
@@ -42,21 +41,21 @@ namespace RemoteTaskQueue.UnitTests.Monitoring
         public void Compare_EqualTimestamps()
         {
             var ts = Timestamp.Now;
-            sut.Compare(Offset(ts, GuidHelpers.MinGuid), Offset(ts, GuidHelpers.MaxGuid)).Should().BeNegative();
-            sut.Compare(Offset(ts, GuidHelpers.MinGuid), Offset(ts, Guid.NewGuid())).Should().BeNegative();
-            sut.Compare(Offset(ts, GuidHelpers.MinGuid), Offset(ts, Guid.Parse("a0000000-0000-0000-0000-000000000000"))).Should().BeNegative();
-            sut.Compare(Offset(ts, GuidHelpers.MinGuid), Offset(ts, Guid.Parse("000000a0-0000-0000-0000-000000000000"))).Should().BeNegative();
-            sut.Compare(Offset(ts, GuidHelpers.MinGuid), Offset(ts, Guid.Parse("0000000a-0000-0000-0000-000000000000"))).Should().BeNegative();
-            sut.Compare(Offset(ts, GuidHelpers.MinGuid), Offset(ts, Guid.Parse("00000000-0000-0000-0000-00000000000a"))).Should().BeNegative();
-            sut.Compare(Offset(ts, GuidHelpers.MinGuid), Offset(ts, Guid.Parse("f0000000-0000-0000-0000-000000000000"))).Should().BeNegative();
-            sut.Compare(Offset(ts, GuidHelpers.MinGuid), Offset(ts, Guid.Parse("00000000-0000-0000-0000-00000000000f"))).Should().BeNegative();
-            sut.Compare(Offset(ts, Guid.NewGuid()), Offset(ts, GuidHelpers.MaxGuid)).Should().BeNegative();
-            sut.Compare(Offset(ts, Guid.Parse("a0000000-0000-0000-0000-000000000000")), Offset(ts, GuidHelpers.MaxGuid)).Should().BeNegative();
-            sut.Compare(Offset(ts, Guid.Parse("000000a0-0000-0000-0000-000000000000")), Offset(ts, GuidHelpers.MaxGuid)).Should().BeNegative();
-            sut.Compare(Offset(ts, Guid.Parse("0000000a-0000-0000-0000-000000000000")), Offset(ts, GuidHelpers.MaxGuid)).Should().BeNegative();
-            sut.Compare(Offset(ts, Guid.Parse("00000000-0000-0000-0000-00000000000a")), Offset(ts, GuidHelpers.MaxGuid)).Should().BeNegative();
-            sut.Compare(Offset(ts, Guid.Parse("f0000000-0000-0000-0000-000000000000")), Offset(ts, GuidHelpers.MaxGuid)).Should().BeNegative();
-            sut.Compare(Offset(ts, Guid.Parse("00000000-0000-0000-0000-00000000000f")), Offset(ts, GuidHelpers.MaxGuid)).Should().BeNegative();
+            sut.Compare(Offset(ts, minGuid), Offset(ts, maxGuid)).Should().BeNegative();
+            sut.Compare(Offset(ts, minGuid), Offset(ts, Guid.NewGuid())).Should().BeNegative();
+            sut.Compare(Offset(ts, minGuid), Offset(ts, Guid.Parse("a0000000-0000-0000-0000-000000000000"))).Should().BeNegative();
+            sut.Compare(Offset(ts, minGuid), Offset(ts, Guid.Parse("000000a0-0000-0000-0000-000000000000"))).Should().BeNegative();
+            sut.Compare(Offset(ts, minGuid), Offset(ts, Guid.Parse("0000000a-0000-0000-0000-000000000000"))).Should().BeNegative();
+            sut.Compare(Offset(ts, minGuid), Offset(ts, Guid.Parse("00000000-0000-0000-0000-00000000000a"))).Should().BeNegative();
+            sut.Compare(Offset(ts, minGuid), Offset(ts, Guid.Parse("f0000000-0000-0000-0000-000000000000"))).Should().BeNegative();
+            sut.Compare(Offset(ts, minGuid), Offset(ts, Guid.Parse("00000000-0000-0000-0000-00000000000f"))).Should().BeNegative();
+            sut.Compare(Offset(ts, Guid.NewGuid()), Offset(ts, maxGuid)).Should().BeNegative();
+            sut.Compare(Offset(ts, Guid.Parse("a0000000-0000-0000-0000-000000000000")), Offset(ts, maxGuid)).Should().BeNegative();
+            sut.Compare(Offset(ts, Guid.Parse("000000a0-0000-0000-0000-000000000000")), Offset(ts, maxGuid)).Should().BeNegative();
+            sut.Compare(Offset(ts, Guid.Parse("0000000a-0000-0000-0000-000000000000")), Offset(ts, maxGuid)).Should().BeNegative();
+            sut.Compare(Offset(ts, Guid.Parse("00000000-0000-0000-0000-00000000000a")), Offset(ts, maxGuid)).Should().BeNegative();
+            sut.Compare(Offset(ts, Guid.Parse("f0000000-0000-0000-0000-000000000000")), Offset(ts, maxGuid)).Should().BeNegative();
+            sut.Compare(Offset(ts, Guid.Parse("00000000-0000-0000-0000-00000000000f")), Offset(ts, maxGuid)).Should().BeNegative();
         }
 
         [Test]
@@ -79,5 +78,8 @@ namespace RemoteTaskQueue.UnitTests.Monitoring
         }
 
         private readonly RtqEventLogOffsetInterpreter sut = new RtqEventLogOffsetInterpreter();
+
+        private readonly Guid minGuid = Guid.Empty;
+        private readonly Guid maxGuid = EventPointerFormatter.MaxGuid;
     }
 }

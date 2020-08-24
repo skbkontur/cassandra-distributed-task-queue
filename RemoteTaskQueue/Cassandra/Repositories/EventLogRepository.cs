@@ -91,7 +91,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
                     {
                         eventsToFetch = estimatedCount - events.Count;
                         partitionKey = EventPointerFormatter.GetPartitionKey(nextPartitionStartTicks);
-                        exclusiveStartColumnName = EventPointerFormatter.GetColumnName(nextPartitionStartTicks - 1, GuidHelpers.MaxGuid);
+                        exclusiveStartColumnName = EventPointerFormatter.GetMaxColumnNameForTicks(nextPartitionStartTicks - 1);
                     }
                 }
             }
@@ -106,7 +106,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
                 if (fromTimestampExclusive.Ticks >= firstEventTicks)
                     return fromOffsetExclusive;
             }
-            return EventPointerFormatter.GetColumnName(firstEventTicks - 1, GuidHelpers.MaxGuid);
+            return EventPointerFormatter.GetMaxColumnNameForTicks(firstEventTicks - 1);
         }
 
         public const string ColumnFamilyName = "RemoteTaskQueueEventLog";

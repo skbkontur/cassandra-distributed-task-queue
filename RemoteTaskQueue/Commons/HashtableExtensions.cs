@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Commons
 {
-    public static class HashtableExtensions
+    internal static class HashtableExtensions
     {
         [NotNull]
         public static TValue GetOrAddThreadSafely<TKey, TValue>([NotNull] this Hashtable hashtable, [NotNull] TKey key, [NotNull] Func<TKey, TValue> valueFactory)

@@ -2,7 +2,7 @@
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Commons
 {
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         /// <summary>
         ///     Вычисляет хеш для строки, который никогда не меняется (в т.ч. не зависит от окружения)

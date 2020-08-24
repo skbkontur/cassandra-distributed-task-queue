@@ -3,12 +3,11 @@ using System.Globalization;
 
 using JetBrains.Annotations;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
 {
-    public static class EventPointerFormatter
+    internal static class EventPointerFormatter
     {
         [NotNull]
         public static string GetPartitionKey(long eventTicks)
@@ -28,9 +27,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
         }
 
         [NotNull]
+        public static string GetMaxColumnNameForTicks(long eventTicks)
+        {
+            return GetColumnName(eventTicks, MaxGuid);
+        }
+
+        [NotNull]
         public static string GetMaxColumnNameForTimestamp([NotNull] Timestamp timestamp)
         {
-            return GetColumnName(timestamp.Ticks, GuidHelpers.MaxGuid);
+            return GetMaxColumnNameForTicks(timestamp.Ticks);
         }
 
         [NotNull]
@@ -50,5 +55,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
         }
 
         public static readonly long PartitionDurationTicks = TimeSpan.FromMinutes(6).Ticks;
+        public static readonly Guid MaxGuid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff");
     }
 }

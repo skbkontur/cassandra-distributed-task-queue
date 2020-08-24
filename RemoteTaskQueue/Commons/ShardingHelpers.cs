@@ -2,7 +2,7 @@
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Commons
 {
-    public static class ShardingHelpers
+    internal static class ShardingHelpers
     {
         public static int GetShard(int hashCode, int shardsCount)
         {
