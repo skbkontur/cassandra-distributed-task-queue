@@ -18,4 +18,10 @@
     <ProjectReference Include="..\RemoteTaskQueue\RemoteTaskQueue.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>RemoteTaskQueue.FunctionalTests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>

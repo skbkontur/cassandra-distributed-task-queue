@@ -6,7 +6,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
-using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.EventFeeds;
 using SkbKontur.Graphite.Client;
@@ -23,8 +22,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
                                         IRtqElasticsearchClient elasticsearchClient,
                                         IGraphiteClient graphiteClient,
                                         IStatsDClient statsDClient,
-                                        IPeriodicTaskRunner periodicTaskRunner,
-                                        IPeriodicJobRunnerWithLeaderElection periodicJobRunnerWithLeaderElection,
+                                        IRtqPeriodicJobRunner rtqPeriodicJobRunner,
                                         RemoteTaskQueue remoteTaskQueue)
         {
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqMonitoringEventFeeder));
@@ -32,9 +30,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             this.elasticsearchClient = elasticsearchClient;
             GlobalTime = remoteTaskQueue.GlobalTime;
             eventSource = new RtqEventSource(remoteTaskQueue.EventLogRepository);
-            var graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
-            var eventFeedPeriodicJobRunner = new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection, graphiteLagReporter);
-            eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
+            var eventFeedPeriodicJobRunner = new RtqEventFeedPeriodicJobRunner(rtqPeriodicJobRunner, graphiteClient);
+            eventFeedFactory = new EventFeedFactory(new RtqEventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePathPrefix, statsDClient);
             var taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);

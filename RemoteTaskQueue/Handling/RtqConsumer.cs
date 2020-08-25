@@ -7,7 +7,6 @@ using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.LocalTasks.TaskQueue;
-using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 
 using Vostok.Logging.Abstractions;
 
@@ -17,18 +16,27 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
     public class RtqConsumer : IDisposable, IRtqConsumer
     {
         public RtqConsumer(IRtqConsumerSettings consumerSettings,
-                           IPeriodicTaskRunner periodicTaskRunner,
+                           IRtqPeriodicJobRunner periodicJobRunner,
                            IRtqTaskHandlerRegistry taskHandlerRegistry,
                            RemoteTaskQueue remoteTaskQueue)
         {
             this.consumerSettings = consumerSettings;
-            this.periodicTaskRunner = periodicTaskRunner;
+            this.periodicJobRunner = periodicJobRunner;
             RtqInternals = remoteTaskQueue;
             var localQueueTaskCounter = new LocalQueueTaskCounter(consumerSettings.MaxRunningTasksCount, consumerSettings.MaxRunningContinuationsCount);
             localTaskQueue = new LocalTaskQueue(localQueueTaskCounter, taskHandlerRegistry, remoteTaskQueue);
             foreach (var taskTopic in taskHandlerRegistry.GetAllTaskTopicsToHandle())
-                handlerManagers.Add(new HandlerManager(remoteTaskQueue.QueueKeyspace, taskTopic, consumerSettings.MaxRunningTasksCount, localTaskQueue, remoteTaskQueue.HandleTasksMetaStorage, remoteTaskQueue.GlobalTime, remoteTaskQueue.Logger));
-            reportConsumerStateToGraphiteTask = new ReportConsumerStateToGraphiteTask(remoteTaskQueue.QueueKeyspace, remoteTaskQueue.Profiler, handlerManagers);
+            {
+                var handlerManager = new HandlerManager(remoteTaskQueue.QueueKeyspace,
+                                                        taskTopic,
+                                                        consumerSettings.MaxRunningTasksCount,
+                                                        localTaskQueue,
+                                                        remoteTaskQueue.HandleTasksMetaStorage,
+                                                        remoteTaskQueue.GlobalTime,
+                                                        remoteTaskQueue.Logger);
+                handlerManagers.Add(handlerManager);
+            }
+            reportConsumerStateToGraphitePeriodicJob = new ReportConsumerStateToGraphitePeriodicJob(remoteTaskQueue.QueueKeyspace, remoteTaskQueue.Profiler, handlerManagers);
             logger = remoteTaskQueue.Logger.ForContext(nameof(RtqConsumer));
         }
 
@@ -48,10 +56,16 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                         RtqInternals.ResetTicksHolderInMemoryState();
                         localTaskQueue.Start();
                         foreach (var handlerManager in handlerManagers)
-                            periodicTaskRunner.Register(handlerManager, consumerSettings.PeriodicInterval);
-                        periodicTaskRunner.Register(reportConsumerStateToGraphiteTask, TimeSpan.FromMinutes(1));
+                        {
+                            periodicJobRunner.RunPeriodicJob(handlerManager.JobId,
+                                                             delayBetweenIterations : consumerSettings.PeriodicInterval,
+                                                             handlerManager.RunJobIteration);
+                        }
+                        periodicJobRunner.RunPeriodicJob(reportConsumerStateToGraphitePeriodicJob.JobId,
+                                                         delayBetweenIterations : TimeSpan.FromMinutes(1),
+                                                         reportConsumerStateToGraphitePeriodicJob.RunJobIteration);
                         started = true;
-                        var handlerManagerIds = string.Join("\r\n", handlerManagers.Select(x => x.Id));
+                        var handlerManagerIds = string.Join("\r\n", handlerManagers.Select(x => x.JobId));
                         logger.Info("Start RtqConsumer: schedule handlerManagers[{HandlerManagersCount}] with period {Period}:\r\n{HandlerManagerIds}",
                                     new {HandlerManagersCount = handlerManagers.Count, Period = consumerSettings.PeriodicInterval, HandlerManagerIds = handlerManagerIds});
                     }
@@ -68,9 +82,13 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     if (started)
                     {
                         logger.Info("Stopping RtqConsumer");
-                        periodicTaskRunner.Unregister(reportConsumerStateToGraphiteTask.Id, 15000);
-                        Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() => { periodicTaskRunner.Unregister(theHandlerManager.Id, 15000); })).ToArray());
-                        localTaskQueue.StopAndWait(TimeSpan.FromSeconds(100));
+                        periodicJobRunner.StopPeriodicJob(reportConsumerStateToGraphitePeriodicJob.JobId);
+                        Task.WaitAll(handlerManagers.Select(theHandlerManager => Task.Factory.StartNew(() =>
+                            {
+                                // comment to prevent ugly reformat
+                                periodicJobRunner.StopPeriodicJob(theHandlerManager.JobId);
+                            })).ToArray());
+                        localTaskQueue.StopAndWait(timeout : TimeSpan.FromSeconds(100));
                         RtqInternals.ResetTicksHolderInMemoryState();
                         started = false;
                         logger.Info("RtqConsumer stopped");
@@ -84,9 +102,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 
         private volatile bool started;
         private readonly IRtqConsumerSettings consumerSettings;
-        private readonly IPeriodicTaskRunner periodicTaskRunner;
+        private readonly IRtqPeriodicJobRunner periodicJobRunner;
         private readonly LocalTaskQueue localTaskQueue;
-        private readonly ReportConsumerStateToGraphiteTask reportConsumerStateToGraphiteTask;
+        private readonly ReportConsumerStateToGraphitePeriodicJob reportConsumerStateToGraphitePeriodicJob;
         private readonly ILog logger;
         private readonly object lockObject = new object();
         private readonly List<IHandlerManager> handlerManagers = new List<IHandlerManager>();

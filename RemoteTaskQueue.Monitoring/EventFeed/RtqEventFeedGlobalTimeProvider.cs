@@ -6,9 +6,9 @@ using SkbKontur.EventFeeds;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
-    public class EventFeedGlobalTimeProvider : IGlobalTimeProvider
+    internal class RtqEventFeedGlobalTimeProvider : IGlobalTimeProvider
     {
-        public EventFeedGlobalTimeProvider(IGlobalTime globalTime)
+        public RtqEventFeedGlobalTimeProvider(IGlobalTime globalTime)
         {
             this.globalTime = globalTime;
         }

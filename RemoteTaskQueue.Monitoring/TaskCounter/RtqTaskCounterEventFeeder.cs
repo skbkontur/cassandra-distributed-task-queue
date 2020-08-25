@@ -7,7 +7,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
-using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.EventFeeds;
 using SkbKontur.Graphite.Client;
@@ -26,8 +25,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
                                          IRtqTaskCounterStateStorage stateStorage,
                                          IGraphiteClient graphiteClient,
                                          IStatsDClient statsDClient,
-                                         IPeriodicTaskRunner periodicTaskRunner,
-                                         IPeriodicJobRunnerWithLeaderElection periodicJobRunnerWithLeaderElection,
+                                         IRtqPeriodicJobRunner rtqPeriodicJobRunner,
                                          RemoteTaskQueue remoteTaskQueue)
         {
             this.serializer = serializer;
@@ -35,9 +33,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             this.taskDataRegistry = taskDataRegistry;
             this.stateStorage = stateStorage;
             GlobalTime = remoteTaskQueue.GlobalTime;
-            var graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
-            var eventFeedPeriodicJobRunner = new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection, graphiteLagReporter);
-            eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
+            var eventFeedPeriodicJobRunner = new RtqEventFeedPeriodicJobRunner(rtqPeriodicJobRunner, graphiteClient);
+            eventFeedFactory = new EventFeedFactory(new RtqEventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
             eventSource = new RtqEventSource(remoteTaskQueue.EventLogRepository);
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePathPrefix, statsDClient);

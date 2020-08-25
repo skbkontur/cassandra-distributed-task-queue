@@ -1,12 +1,16 @@
 ﻿using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;
-using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-    internal interface IHandlerManager : IPeriodicTask
+    internal interface IHandlerManager
     {
+        [NotNull]
+        string JobId { get; }
+
+        void RunJobIteration();
+
         [NotNull]
         LiveRecordTicksMarkerState[] GetCurrentLiveRecordTicksMarkers();
     }

@@ -4,29 +4,29 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
-using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 {
-    internal class ReportConsumerStateToGraphiteTask : IPeriodicTask
+    internal class ReportConsumerStateToGraphitePeriodicJob
     {
-        public ReportConsumerStateToGraphiteTask([NotNull] string queueKeyspace, IRtqProfiler rtqProfiler, List<IHandlerManager> handlerManagers)
+        public ReportConsumerStateToGraphitePeriodicJob([NotNull] string queueKeyspace, IRtqProfiler rtqProfiler, List<IHandlerManager> handlerManagers)
         {
-            Id = $"{GetType().Name}_{queueKeyspace}";
+            JobId = $"{GetType().Name}_{queueKeyspace}";
             this.rtqProfiler = rtqProfiler;
             this.handlerManagers = handlerManagers;
             startupTimestamp = Timestamp.Now;
         }
 
         [NotNull]
-        public string Id { get; }
+        public string JobId { get; }
 
-        public void Run()
+        public void RunJobIteration()
         {
             var nowTimestamp = Timestamp.Now;
             if (nowTimestamp - startupTimestamp < TimeSpan.FromMinutes(3))
                 return;
+
             foreach (var handlerManager in handlerManagers)
             {
                 foreach (var currentLiveRecordTicksMarker in handlerManager.GetCurrentLiveRecordTicksMarkers())

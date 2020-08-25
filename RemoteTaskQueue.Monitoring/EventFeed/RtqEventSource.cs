@@ -11,7 +11,7 @@ using SkbKontur.EventFeeds;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
-    public class RtqEventSource : IEventSource<TaskMetaUpdatedEvent, string>
+    internal class RtqEventSource : IEventSource<TaskMetaUpdatedEvent, string>
     {
         private readonly IEventLogRepository eventLogRepository;
 
