@@ -8,7 +8,7 @@ using SkbKontur.Cassandra.TimeBasedUuid;
 using SkbKontur.EventFeeds;
 using SkbKontur.Graphite.Client;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     [UsedImplicitly]
     public class EventFeedsGraphiteLagReporter

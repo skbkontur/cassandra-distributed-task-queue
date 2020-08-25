@@ -5,7 +5,7 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using MoreLinq;
+using MoreLinqInlined;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;

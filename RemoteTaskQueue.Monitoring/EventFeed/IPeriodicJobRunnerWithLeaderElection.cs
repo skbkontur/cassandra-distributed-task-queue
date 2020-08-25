@@ -2,7 +2,7 @@
 
 using JetBrains.Annotations;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     public interface IPeriodicJobRunnerWithLeaderElection
     {

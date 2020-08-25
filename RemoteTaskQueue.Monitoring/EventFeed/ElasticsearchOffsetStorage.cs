@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions;
 using SkbKontur.EventFeeds;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     public class ElasticsearchOffsetStorage<TOffset> : IOffsetStorage<TOffset>
     {

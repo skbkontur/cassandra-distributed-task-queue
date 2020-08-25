@@ -36,6 +36,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         string[] GetChildrenTaskIds([NotNull] string taskId);
 
         [NotNull, ItemNotNull]
-        string[] GetRecentTaskIds([CanBeNull] Timestamp fromTimestampInclusive, [CanBeNull] Timestamp toTimestampInclusive, int estimatedCount);
+        string[] GetRecentTaskIds([CanBeNull] Timestamp fromTimestampExclusive, [NotNull] Timestamp toTimestampInclusive);
     }
 }

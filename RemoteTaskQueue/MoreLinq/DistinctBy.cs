@@ -19,7 +19,7 @@
 
 // copied from https://github.com/morelinq/MoreLINQ/blob/v3.3.2/MoreLinq/DistinctBy.cs
 // ReSharper disable once CheckNamespace
-namespace MoreLinq
+namespace MoreLinqInlined
 {
     using System;
     using System.Collections.Generic;

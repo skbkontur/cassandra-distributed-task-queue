@@ -19,6 +19,10 @@ using SKBKontur.Catalogue.Waiting;
 
 using Vostok.Logging.Abstractions;
 
+#if !NETCOREAPP
+using Vostok.Commons.Time;
+#endif
+
 namespace RemoteTaskQueue.FunctionalTests.Monitoring
 {
     public class TaskCounterTest : MonitoringTestBase
@@ -98,7 +102,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
                 delayMs = 0;
             Log.For(this).Info("Calculated delay {DelayMs} ms", new {DelayMs = delayMs});
 
-            var testTime = TimeSpan.FromTicks(eventLogRepository.UnstableZoneLength.Ticks * 5);
+            var testTime = eventLogRepository.GetUnstableZoneDuration().Multiply(5);
             Log.For(this).Info("test={TestTimeInMinutes} min", new {TestTimeInMinutes = testTime.TotalMinutes.ToString("F1")});
             var estimatedTaskRunTime = TimeSpan.FromMilliseconds(testTime.TotalMilliseconds * addRate / consumeRate);
             Log.For(this).Info("est={EstimatedTaskRunTimeInMinutes} min", new {EstimatedTaskRunTimeInMinutes = estimatedTaskRunTime.TotalMinutes.ToString("F1")});
@@ -137,7 +141,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
         private readonly ITestCounterRepository testCounterRepository;
 
         [Injected]
-        private readonly IEventLogRepository eventLogRepository;
+        private readonly EventLogRepository eventLogRepository;
 
         [Injected]
         private readonly ExchangeServiceClient exchangeServiceClient;

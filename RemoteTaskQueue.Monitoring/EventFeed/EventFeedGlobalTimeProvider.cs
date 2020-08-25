@@ -4,7 +4,7 @@ using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.TimeBasedUuid;
 using SkbKontur.EventFeeds;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     public class EventFeedGlobalTimeProvider : IGlobalTimeProvider
     {

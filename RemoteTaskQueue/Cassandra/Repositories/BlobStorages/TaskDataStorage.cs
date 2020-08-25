@@ -4,7 +4,7 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using MoreLinq;
+using MoreLinqInlined;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;

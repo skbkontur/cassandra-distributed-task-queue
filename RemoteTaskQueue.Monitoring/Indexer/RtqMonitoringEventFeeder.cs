@@ -2,9 +2,8 @@
 
 using JetBrains.Annotations;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
-using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
 using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
@@ -32,7 +31,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             this.indexerSettings = indexerSettings;
             this.elasticsearchClient = elasticsearchClient;
             GlobalTime = remoteTaskQueue.GlobalTime;
-            eventLogRepository = remoteTaskQueue.EventLogRepository;
+            eventSource = new RtqEventSource(remoteTaskQueue.EventLogRepository);
             var graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
             var eventFeedPeriodicJobRunner = new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection, graphiteLagReporter);
             eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
@@ -49,7 +48,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         {
             return eventFeedFactory
                    .WithOffsetType<string>()
-                   .WithEventType(BladesBuilder.New(eventLogRepository, eventConsumer, logger)
+                   .WithEventType(BladesBuilder.New(eventSource, eventConsumer, logger)
                                                .WithBlade($"{indexerSettings.EventFeedKey}_Blade0", delay : TimeSpan.FromMinutes(1))
                                                .WithBlade($"{indexerSettings.EventFeedKey}_Blade1", delay : TimeSpan.FromMinutes(15)))
                    .WithOffsetInterpreter(offsetInterpreter)
@@ -60,7 +59,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         private readonly ILog logger;
         private readonly RtqElasticsearchIndexerSettings indexerSettings;
         private readonly IRtqElasticsearchClient elasticsearchClient;
-        private readonly EventLogRepository eventLogRepository;
+        private readonly RtqEventSource eventSource;
         private readonly EventFeedFactory eventFeedFactory;
         private readonly RtqMonitoringEventConsumer eventConsumer;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter = new RtqEventLogOffsetInterpreter();

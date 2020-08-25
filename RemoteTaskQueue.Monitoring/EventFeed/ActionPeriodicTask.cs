@@ -2,7 +2,7 @@
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     public class ActionPeriodicTask : IPeriodicTask
     {

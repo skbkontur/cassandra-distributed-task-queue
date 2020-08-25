@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 
 using SkbKontur.EventFeeds;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     public class EventFeedPeriodicJobRunner : IPeriodicJobRunner
     {

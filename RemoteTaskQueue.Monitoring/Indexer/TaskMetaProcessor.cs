@@ -8,7 +8,7 @@ using GroBuf;
 
 using JetBrains.Annotations;
 
-using MoreLinq;
+using MoreLinqInlined;
 
 using Newtonsoft.Json;
 

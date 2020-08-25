@@ -2,14 +2,12 @@
 
 using GroboContainer.Core;
 
-using JetBrains.Annotations;
-
 using RemoteTaskQueue.FunctionalTests.Common;
 
 using SkbKontur.Cassandra.DistributedLock;
 using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
-using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
@@ -72,7 +70,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
             Container.Get<HttpService>().Run();
         }
 
-        private static void ConfigureRemoteLock([NotNull] IContainer container)
+        private static void ConfigureRemoteLock(IContainer container)
         {
             var logger = container.Get<ILog>();
             const string locksKeyspace = TestRtqSettings.QueueKeyspaceName;

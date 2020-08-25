@@ -4,8 +4,8 @@ using System.Linq;
 using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
-using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.TimeBasedUuid;
 using SkbKontur.EventFeeds;
@@ -24,7 +24,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
                                              IStatsDClient statsDClient)
         {
             this.indexerSettings = indexerSettings;
-            eventLogRepository = remoteTaskQueue.EventLogRepository;
+            eventSource = new RtqEventSource(remoteTaskQueue.EventLogRepository);
             offsetInterpreter = new RtqEventLogOffsetInterpreter();
             var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePathPrefix, statsDClient);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqMonitoringEventBulkIndexer));
@@ -48,7 +48,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             var toOffsetInclusive = offsetInterpreter.GetMaxOffsetForTimestamp(indexingFinishTimestamp);
             do
             {
-                eventsQueryResult = eventLogRepository.GetEvents(fromOffsetExclusive, toOffsetInclusive, estimatedCount : 10000);
+                eventsQueryResult = eventSource.GetEvents(fromOffsetExclusive, toOffsetInclusive, estimatedCount : 10000);
                 foreach (var @event in eventsQueryResult.Events)
                 {
                     if (taskIdsToProcess.Add(@event.Event.TaskId))
@@ -72,7 +72,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 
         private readonly ILog logger;
         private readonly RtqElasticsearchIndexerSettings indexerSettings;
-        private readonly EventLogRepository eventLogRepository;
+        private readonly RtqEventSource eventSource;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter;
         private readonly TaskMetaProcessor taskMetaProcessor;
     }

@@ -10,13 +10,17 @@ using NUnit.Framework;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.Objects;
 using SKBKontur.Catalogue.TestCore;
 
 using SkbKontur.EventFeeds;
+
+#if !NETCOREAPP
+using Vostok.Commons.Time;
+#endif
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
@@ -37,6 +41,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         {
             ClearEventLog();
             SetUpEventLog();
+            eventSource = new RtqEventSource(eventLogRepository);
         }
 
         private void ClearEventLog()
@@ -85,7 +90,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [TestCase(int.MinValue)]
         public void GetEvents_EstimatedCount_IsNotPositive(int notPositiveEstimatedCount)
         {
-            Action x = () => sut.GetEvents(null, OffsetInFarFuture(), notPositiveEstimatedCount);
+            Action x = () => eventSource.GetEvents(null, OffsetInFarFuture(), notPositiveEstimatedCount);
             x.Should().ThrowExactly<InvalidOperationException>().WithMessage("estimatedCount <= 0");
         }
 
@@ -94,14 +99,14 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [SuppressMessage("ReSharper", "AssignNullToNotNullAttribute")]
         public void GetEvents_ToOffset_IsNotSet(string emptyToOffsetInclusive)
         {
-            Action x = () => sut.GetEvents(null, emptyToOffsetInclusive, 1000);
+            Action x = () => eventSource.GetEvents(null, emptyToOffsetInclusive, 1000);
             x.Should().ThrowExactly<InvalidOperationException>().WithMessage("toOffsetInclusive is not set");
         }
 
         [Test]
         public void GetEvents_ToOffset_IsLessThan_FromOffset()
         {
-            var r = sut.GetEvents(e0.Offset, MinOffset(GetTimestamp(e0)), int.MaxValue);
+            var r = eventSource.GetEvents(e0.Offset, MinOffset(GetTimestamp(e0)), int.MaxValue);
             r.Events.Should().BeEmpty();
             r.LastOffset.Should().BeNull();
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -110,7 +115,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_ToOffset_IsEqualTo_FromOffset()
         {
-            var r = sut.GetEvents(e0.Offset, e0.Offset, int.MaxValue);
+            var r = eventSource.GetEvents(e0.Offset, e0.Offset, int.MaxValue);
             r.Events.Should().BeEmpty();
             r.LastOffset.Should().BeNull();
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -120,7 +125,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void GetEvents_NoEventsInLog()
         {
             ClearEventLog();
-            var r = sut.GetEvents(null, OffsetInFarFuture(), int.MaxValue);
+            var r = eventSource.GetEvents(null, OffsetInFarFuture(), int.MaxValue);
             r.Events.Should().BeEmpty();
             r.LastOffset.Should().BeNull();
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -130,7 +135,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void GetEvents_NoEventsInRange()
         {
             var toOffsetInclusive = MaxOffset(GetTimestamp(e15) - tick);
-            var r = sut.GetEvents(e14.Offset, toOffsetInclusive, int.MaxValue);
+            var r = eventSource.GetEvents(e14.Offset, toOffsetInclusive, int.MaxValue);
             r.Events.Should().BeEmpty();
             r.LastOffset.Should().Be(toOffsetInclusive);
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -143,22 +148,22 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             WriteEvents(e0);
             var toOffsetInclusive = OffsetInFarFuture();
 
-            var r = sut.GetEvents(null, toOffsetInclusive, int.MaxValue);
+            var r = eventSource.GetEvents(null, toOffsetInclusive, int.MaxValue);
             r.Events.Single().Should().BeEquivalentTo(e0);
             r.LastOffset.Should().Be(toOffsetInclusive);
             r.NoMoreEventsInSource.Should().BeTrue();
 
-            r = sut.GetEvents(MaxOffset(timeSeriesStart - tick), toOffsetInclusive, int.MaxValue);
+            r = eventSource.GetEvents(MaxOffset(timeSeriesStart - tick), toOffsetInclusive, int.MaxValue);
             r.Events.Single().Should().BeEquivalentTo(e0);
             r.LastOffset.Should().Be(toOffsetInclusive);
             r.NoMoreEventsInSource.Should().BeTrue();
 
-            r = sut.GetEvents(MinOffset(GetTimestamp(e0)), toOffsetInclusive, int.MaxValue);
+            r = eventSource.GetEvents(MinOffset(GetTimestamp(e0)), toOffsetInclusive, int.MaxValue);
             r.Events.Single().Should().BeEquivalentTo(e0);
             r.LastOffset.Should().Be(toOffsetInclusive);
             r.NoMoreEventsInSource.Should().BeTrue();
 
-            r = sut.GetEvents(e0.Offset, toOffsetInclusive, int.MaxValue);
+            r = eventSource.GetEvents(e0.Offset, toOffsetInclusive, int.MaxValue);
             r.Events.Should().BeEmpty();
             r.LastOffset.Should().Be(toOffsetInclusive);
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -167,32 +172,32 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_SameTimestamp()
         {
-            var r = sut.GetEvents(MinOffset(GetTimestamp(e11)), MaxOffset(firstPartitionEnd), int.MaxValue);
+            var r = eventSource.GetEvents(MinOffset(GetTimestamp(e11)), MaxOffset(firstPartitionEnd), int.MaxValue);
             r.Events.ShouldBeEquivalentWithOrderTo(e11, e12, e13, e14, e15, e16, e17, e18);
             r.LastOffset.Should().Be(MaxOffset(firstPartitionEnd));
             r.NoMoreEventsInSource.Should().BeTrue();
 
-            r = sut.GetEvents(e11.Offset, MaxOffset(firstPartitionEnd), int.MaxValue);
+            r = eventSource.GetEvents(e11.Offset, MaxOffset(firstPartitionEnd), int.MaxValue);
             r.Events.ShouldBeEquivalentWithOrderTo(e12, e13, e14, e15, e16, e17, e18);
             r.LastOffset.Should().Be(MaxOffset(firstPartitionEnd));
             r.NoMoreEventsInSource.Should().BeTrue();
 
-            r = sut.GetEvents(MaxOffset(GetTimestamp(e11)), MaxOffset(firstPartitionEnd), int.MaxValue);
+            r = eventSource.GetEvents(MaxOffset(GetTimestamp(e11)), MaxOffset(firstPartitionEnd), int.MaxValue);
             r.Events.ShouldBeEquivalentWithOrderTo(e13, e14, e15, e16, e17, e18);
             r.LastOffset.Should().Be(MaxOffset(firstPartitionEnd));
             r.NoMoreEventsInSource.Should().BeTrue();
 
-            r = sut.GetEvents(MinOffset(GetTimestamp(e17)), MaxOffset(firstPartitionEnd), int.MaxValue);
+            r = eventSource.GetEvents(MinOffset(GetTimestamp(e17)), MaxOffset(firstPartitionEnd), int.MaxValue);
             r.Events.ShouldBeEquivalentWithOrderTo(e17, e18);
             r.LastOffset.Should().Be(MaxOffset(firstPartitionEnd));
             r.NoMoreEventsInSource.Should().BeTrue();
 
-            r = sut.GetEvents(e17.Offset, MaxOffset(firstPartitionEnd), int.MaxValue);
+            r = eventSource.GetEvents(e17.Offset, MaxOffset(firstPartitionEnd), int.MaxValue);
             r.Events.ShouldBeEquivalentWithOrderTo(e18);
             r.LastOffset.Should().Be(MaxOffset(firstPartitionEnd));
             r.NoMoreEventsInSource.Should().BeTrue();
 
-            r = sut.GetEvents(MaxOffset(GetTimestamp(e17)), MaxOffset(firstPartitionEnd), int.MaxValue);
+            r = eventSource.GetEvents(MaxOffset(GetTimestamp(e17)), MaxOffset(firstPartitionEnd), int.MaxValue);
             r.Events.Should().BeEmpty();
             r.LastOffset.Should().BeNull();
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -202,7 +207,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void GetEvents_AllEvents()
         {
             var toOffsetInclusive = MaxOffset(lastPartitionEnd + partition + tick);
-            var r = sut.GetEvents(MaxOffset(timeSeriesStart), toOffsetInclusive, int.MaxValue);
+            var r = eventSource.GetEvents(MaxOffset(timeSeriesStart), toOffsetInclusive, int.MaxValue);
             r.Events.ShouldBeEquivalentWithOrderTo(e11, e12, e13, e14, e15, e16, e17, e18, e21, e22, e23, e24, ef1, ef2, ef3, ef4);
             r.LastOffset.Should().Be(toOffsetInclusive);
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -211,32 +216,32 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_AllEvents_WithPaging()
         {
-            var r = sut.GetEvents(e0.Offset, MaxOffset(lastPartitionEnd), 3);
+            var r = eventSource.GetEvents(e0.Offset, MaxOffset(lastPartitionEnd), 3);
             r.Events.ShouldBeEquivalentWithOrderTo(e11, e12, e13);
             r.LastOffset.Should().Be(e13.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
 
-            r = sut.GetEvents(e13.Offset, MaxOffset(lastPartitionEnd), 3);
+            r = eventSource.GetEvents(e13.Offset, MaxOffset(lastPartitionEnd), 3);
             r.Events.ShouldBeEquivalentWithOrderTo(e14, e15, e16);
             r.LastOffset.Should().Be(e16.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
 
-            r = sut.GetEvents(e16.Offset, MaxOffset(lastPartitionEnd), 3);
+            r = eventSource.GetEvents(e16.Offset, MaxOffset(lastPartitionEnd), 3);
             r.Events.ShouldBeEquivalentWithOrderTo(e17, e18, e21);
             r.LastOffset.Should().Be(e21.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
 
-            r = sut.GetEvents(e21.Offset, MaxOffset(lastPartitionEnd), 3);
+            r = eventSource.GetEvents(e21.Offset, MaxOffset(lastPartitionEnd), 3);
             r.Events.ShouldBeEquivalentWithOrderTo(e22, e23, e24);
             r.LastOffset.Should().Be(e24.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
 
-            r = sut.GetEvents(e24.Offset, MaxOffset(lastPartitionEnd), 3);
+            r = eventSource.GetEvents(e24.Offset, MaxOffset(lastPartitionEnd), 3);
             r.Events.ShouldBeEquivalentWithOrderTo(ef1, ef2, ef3);
             r.LastOffset.Should().Be(ef3.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
 
-            r = sut.GetEvents(ef3.Offset, MaxOffset(lastPartitionEnd), 3);
+            r = eventSource.GetEvents(ef3.Offset, MaxOffset(lastPartitionEnd), 3);
             r.Events.ShouldBeEquivalentWithOrderTo(ef4);
             r.LastOffset.Should().Be(MaxOffset(lastPartitionEnd));
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -245,7 +250,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_PartitionSwitch_OverEmptyPartition()
         {
-            var r = sut.GetEvents(MaxOffset(firstPartitionEnd - tick), MaxOffset(lastPartitionStart), int.MaxValue);
+            var r = eventSource.GetEvents(MaxOffset(firstPartitionEnd - tick), MaxOffset(lastPartitionStart), int.MaxValue);
             r.Events.ShouldBeEquivalentWithOrderTo(e17, e18, e21, e22, e23, e24, ef1);
             r.LastOffset.Should().Be(MaxOffset(lastPartitionStart));
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -254,7 +259,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_ExclusiveStart_OnLowerPartitionBoundary_WithEventAtCursor()
         {
-            var r = sut.GetEvents(Offset(firstPartitionStart, GetEventId(e11)), MaxOffset(lastPartitionEnd), 1);
+            var r = eventSource.GetEvents(Offset(firstPartitionStart, GetEventId(e11)), MaxOffset(lastPartitionEnd), 1);
             r.Events.Single().Should().BeEquivalentTo(e12);
             r.LastOffset.Should().Be(e12.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
@@ -263,7 +268,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_ExclusiveStart_OnLowerPartitionBoundary_WithNoEventAtCursor()
         {
-            var r = sut.GetEvents(MinOffset(secondPartitionStart), MaxOffset(lastPartitionEnd), 1);
+            var r = eventSource.GetEvents(MinOffset(secondPartitionStart), MaxOffset(lastPartitionEnd), 1);
             r.Events.Single().Should().BeEquivalentTo(e21);
             r.LastOffset.Should().Be(e21.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
@@ -272,7 +277,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_ExclusiveStart_InsidePartition_WithEventAtCursor()
         {
-            var r = sut.GetEvents(e14.Offset, MaxOffset(lastPartitionEnd), 1);
+            var r = eventSource.GetEvents(e14.Offset, MaxOffset(lastPartitionEnd), 1);
             r.Events.Single().Should().BeEquivalentTo(e15);
             r.LastOffset.Should().Be(e15.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
@@ -281,7 +286,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_ExclusiveStart_InsidePartition_WithNoEventAtCursor()
         {
-            var r = sut.GetEvents(MinOffset(GetTimestamp(e14) + second), MaxOffset(lastPartitionEnd), 1);
+            var r = eventSource.GetEvents(MinOffset(GetTimestamp(e14) + second), MaxOffset(lastPartitionEnd), 1);
             r.Events.Single().Should().BeEquivalentTo(e15);
             r.LastOffset.Should().Be(e15.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
@@ -290,7 +295,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_ExclusiveStart_OnUpperPartitionBoundary_WithEventAtCursor()
         {
-            var r = sut.GetEvents(Offset(firstPartitionEnd, GetEventId(e18)), MaxOffset(lastPartitionEnd), 1);
+            var r = eventSource.GetEvents(Offset(firstPartitionEnd, GetEventId(e18)), MaxOffset(lastPartitionEnd), 1);
             r.Events.Single().Should().BeEquivalentTo(e21);
             r.LastOffset.Should().Be(e21.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
@@ -299,7 +304,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_ExclusiveStart_OnUpperPartitionBoundary_WithNoEventAtCursor()
         {
-            var r = sut.GetEvents(MinOffset(secondPartitionEnd), MaxOffset(lastPartitionEnd), 1);
+            var r = eventSource.GetEvents(MinOffset(secondPartitionEnd), MaxOffset(lastPartitionEnd), 1);
             r.Events.Single().Should().BeEquivalentTo(ef1);
             r.LastOffset.Should().Be(ef1.Offset);
             r.NoMoreEventsInSource.Should().BeFalse();
@@ -308,7 +313,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_InclusiveEnd_OnLowerPartitionBoundary_WithEventAtCursor()
         {
-            var r = sut.GetEvents(MinOffset(timeSeriesStart), MaxOffset(lastPartitionStart), int.MaxValue);
+            var r = eventSource.GetEvents(MinOffset(timeSeriesStart), MaxOffset(lastPartitionStart), int.MaxValue);
             r.Events.Last().Should().BeEquivalentTo(ef1);
             r.LastOffset.Should().Be(MaxOffset(lastPartitionStart));
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -317,7 +322,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_InclusiveEnd_OnLowerPartitionBoundary_WithNoEventAtCursor()
         {
-            var r = sut.GetEvents(MinOffset(timeSeriesStart), MaxOffset(secondPartitionStart), int.MaxValue);
+            var r = eventSource.GetEvents(MinOffset(timeSeriesStart), MaxOffset(secondPartitionStart), int.MaxValue);
             r.Events.Last().Should().BeEquivalentTo(e18);
             r.LastOffset.Should().Be(MaxOffset(secondPartitionStart));
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -326,7 +331,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_InclusiveEnd_InsidePartition_WithEventAtCursor()
         {
-            var r = sut.GetEvents(MinOffset(timeSeriesStart), MaxOffset(GetTimestamp(e15)), int.MaxValue);
+            var r = eventSource.GetEvents(MinOffset(timeSeriesStart), MaxOffset(GetTimestamp(e15)), int.MaxValue);
             r.Events.Last().Should().BeEquivalentTo(e15);
             r.LastOffset.Should().Be(MaxOffset(GetTimestamp(e15)));
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -335,7 +340,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_InclusiveEnd_InsidePartition_WithNoEventAtCursor()
         {
-            var r = sut.GetEvents(MinOffset(timeSeriesStart), MaxOffset(GetTimestamp(e15) - tick), int.MaxValue);
+            var r = eventSource.GetEvents(MinOffset(timeSeriesStart), MaxOffset(GetTimestamp(e15) - tick), int.MaxValue);
             r.Events.Last().Should().BeEquivalentTo(e14);
             r.LastOffset.Should().Be(MaxOffset(GetTimestamp(e15) - tick));
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -344,7 +349,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_InclusiveEnd_OnUpperPartitionBoundary_WithEventAtCursor()
         {
-            var r = sut.GetEvents(e16.Offset, MaxOffset(firstPartitionEnd), int.MaxValue);
+            var r = eventSource.GetEvents(e16.Offset, MaxOffset(firstPartitionEnd), int.MaxValue);
             r.Events.ShouldBeEquivalentWithOrderTo(e17, e18);
             r.LastOffset.Should().Be(MaxOffset(firstPartitionEnd));
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -353,7 +358,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         [Test]
         public void GetEvents_InclusiveEnd_OnUpperPartitionBoundary_WithNoEventAtCursor()
         {
-            var r = sut.GetEvents(MinOffset(timeSeriesStart), MaxOffset(secondPartitionEnd), int.MaxValue);
+            var r = eventSource.GetEvents(MinOffset(timeSeriesStart), MaxOffset(secondPartitionEnd), int.MaxValue);
             r.Events.Last().Should().BeEquivalentTo(e24);
             r.LastOffset.Should().Be(MaxOffset(secondPartitionEnd));
             r.NoMoreEventsInSource.Should().BeTrue();
@@ -366,19 +371,19 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             return new EventWithOffset<TaskMetaUpdatedEvent, string>(new TaskMetaUpdatedEvent(taskId, eventTimestamp.Ticks), offset);
         }
 
-        private static string OffsetInFarFuture()
+        private string OffsetInFarFuture()
         {
             return MaxOffset(Timestamp.Now.AddDays(1));
         }
 
-        private static string MaxOffset(Timestamp timestamp)
+        private string MaxOffset(Timestamp timestamp)
         {
-            return Offset(timestamp, GuidHelpers.MaxGuid);
+            return Offset(timestamp, maxGuid);
         }
 
-        private static string MinOffset(Timestamp timestamp)
+        private string MinOffset(Timestamp timestamp)
         {
-            return Offset(timestamp, GuidHelpers.MinGuid);
+            return Offset(timestamp, minGuid);
         }
 
         private static string Offset(Timestamp eventTimestamp, Guid eventId)
@@ -391,7 +396,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
             foreach (var eventWithOffset in events)
             {
                 var taskMeta = new TaskMetaInformation("taskName", eventWithOffset.Event.TaskId);
-                sut.AddEvent(taskMeta, GetTimestamp(eventWithOffset), GetEventId(eventWithOffset));
+                eventLogRepository.AddEvent(taskMeta, GetTimestamp(eventWithOffset), GetEventId(eventWithOffset));
             }
         }
 
@@ -406,11 +411,15 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         }
 
         [Injected]
-        private readonly EventLogRepository sut;
+        private readonly EventLogRepository eventLogRepository;
+
+        private RtqEventSource eventSource;
 
         private readonly TimeSpan tick = TimeSpan.FromTicks(1);
         private readonly TimeSpan second = TimeSpan.FromSeconds(1);
         private readonly TimeSpan minute = TimeSpan.FromMinutes(1);
+        private readonly Guid minGuid = Guid.Empty;
+        private readonly Guid maxGuid = EventPointerFormatter.MaxGuid;
 
         private TimeSpan partition;
         private Timestamp timeSeriesStart;

@@ -7,7 +7,7 @@ using SkbKontur.Cassandra.DistributedLock;
 
 using Vostok.Logging.Abstractions;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     public class PeriodicJobRunnerWithLeaderElection : IPeriodicJobRunnerWithLeaderElection, IDisposable
     {

@@ -9,7 +9,7 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 
 using Vostok.Logging.Abstractions;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     public class PeriodicJobWithLeaderElection
     {

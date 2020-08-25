@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
-using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeeds;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 using SkbKontur.Cassandra.DistributedTaskQueue.Scheduling;
 using SkbKontur.Cassandra.GlobalTimestamp;
@@ -38,7 +38,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             var graphiteLagReporter = new EventFeedsGraphiteLagReporter(graphiteClient, periodicTaskRunner);
             var eventFeedPeriodicJobRunner = new EventFeedPeriodicJobRunner(periodicJobRunnerWithLeaderElection, graphiteLagReporter);
             eventFeedFactory = new EventFeedFactory(new EventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
-            eventLogRepository = remoteTaskQueue.EventLogRepository;
+            eventSource = new RtqEventSource(remoteTaskQueue.EventLogRepository);
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
             perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePathPrefix, statsDClient);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqTaskCounterEventFeeder));
@@ -52,7 +52,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         {
             var stateManager = new RtqTaskCounterStateManager(logger, serializer, taskDataRegistry, stateStorage, settings, offsetInterpreter, perfGraphiteReporter);
             var eventConsumer = new RtqTaskCounterEventConsumer(stateManager, handleTasksMetaStorage, perfGraphiteReporter);
-            IBladesBuilder<string> bladesBuilder = BladesBuilder.New(eventLogRepository, eventConsumer, logger);
+            IBladesBuilder<string> bladesBuilder = BladesBuilder.New(eventSource, eventConsumer, logger);
             foreach (var bladeId in stateManager.Blades)
                 bladesBuilder = bladesBuilder.WithBlade(bladeId.BladeKey, bladeId.Delay);
             var eventFeedsRunner = eventFeedFactory
@@ -71,7 +71,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         private readonly IRtqTaskDataRegistry taskDataRegistry;
         private readonly IRtqTaskCounterStateStorage stateStorage;
         private readonly EventFeedFactory eventFeedFactory;
-        private readonly EventLogRepository eventLogRepository;
+        private readonly RtqEventSource eventSource;
         private readonly IHandleTasksMetaStorage handleTasksMetaStorage;
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter = new RtqEventLogOffsetInterpreter();

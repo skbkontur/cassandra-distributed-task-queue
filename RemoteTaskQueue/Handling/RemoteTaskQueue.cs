@@ -74,7 +74,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         public ITaskMinimalStartTicksIndex TaskMinimalStartTicksIndex { get; }
 
         [NotNull]
-        public EventLogRepository EventLogRepository { get; }
+        public IEventLogRepository EventLogRepository { get; }
 
         public IHandleTasksMetaStorage HandleTasksMetaStorage { get; }
         public ITaskDataStorage TaskDataStorage { get; }
@@ -220,16 +220,38 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
         }
 
         [NotNull, ItemNotNull]
-        public string[] GetRecentTaskIds([CanBeNull] Timestamp fromTimestampInclusive, [CanBeNull] Timestamp toTimestampInclusive, int estimatedCount)
+        public string[] GetRecentTaskIds([CanBeNull] Timestamp fromTimestampExclusive, [NotNull] Timestamp toTimestampInclusive)
         {
-            var fromOffsetExclusive = fromTimestampInclusive == null ? null : EventPointerFormatter.GetMaxColumnNameForTimestamp(fromTimestampInclusive.AddTicks(-1));
-            var toOffsetInclusive = EventPointerFormatter.GetMaxColumnNameForTimestamp(toTimestampInclusive ?? Timestamp.Now);
-            var recentTaskIds = EventLogRepository.GetEvents(fromOffsetExclusive, toOffsetInclusive, estimatedCount)
-                                                  .Events
-                                                  .Select(x => x.Event.TaskId)
-                                                  .Distinct()
-                                                  .ToArray();
-            return recentTaskIds;
+            if (fromTimestampExclusive >= toTimestampInclusive)
+                return new string[0];
+
+            var firstEventTicks = EventLogRepository.GetFirstEventTicks();
+            if (firstEventTicks == 0)
+                return new string[0];
+
+            var recentTaskIds = new HashSet<string>();
+            var exclusiveStartColumnName = fromTimestampExclusive == null || fromTimestampExclusive.Ticks < firstEventTicks
+                                               ? EventPointerFormatter.GetMaxColumnNameForTicks(firstEventTicks - 1)
+                                               : EventPointerFormatter.GetMaxColumnNameForTimestamp(fromTimestampExclusive);
+            var inclusiveEndColumnName = EventPointerFormatter.GetMaxColumnNameForTimestamp(toTimestampInclusive);
+            var partitionKey = EventPointerFormatter.GetPartitionKey(EventPointerFormatter.GetTimestamp(exclusiveStartColumnName).Ticks);
+            const int eventsToFetch = int.MaxValue - 1;
+            while (true)
+            {
+                var eventsBatch = EventLogRepository.GetEvents(partitionKey, exclusiveStartColumnName, inclusiveEndColumnName, eventsToFetch, out var currentPartitionIsExhausted);
+                foreach (var (@event, _) in eventsBatch)
+                    recentTaskIds.Add(@event.TaskId);
+
+                if (!currentPartitionIsExhausted)
+                    throw new InvalidOperationException("currentPartitionIsExhausted == false");
+
+                var nextPartitionStartTicks = (EventPointerFormatter.ParsePartitionKey(partitionKey) + 1) * EventPointerFormatter.PartitionDurationTicks;
+                if (nextPartitionStartTicks > toTimestampInclusive.Ticks)
+                    return recentTaskIds.ToArray();
+
+                partitionKey = EventPointerFormatter.GetPartitionKey(nextPartitionStartTicks);
+                exclusiveStartColumnName = EventPointerFormatter.GetMaxColumnNameForTicks(nextPartitionStartTicks - 1);
+            }
         }
 
         void IRtqInternals.AttachLocalTaskQueue([NotNull] LocalTaskQueue localTaskQueueInstance)
