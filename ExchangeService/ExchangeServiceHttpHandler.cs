@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
@@ -29,13 +28,9 @@ namespace ExchangeService
         [HttpMethod]
         public void ChangeTaskTtl(TimeSpan ttl)
         {
-            var internals = rtqInternals.GetValue(rtqConsumer);
-            changeTtlMethod.Invoke(internals, new object[] {ttl});
+            rtqConsumer.RtqInternals.ChangeTaskTtl(ttl);
         }
 
         private readonly RtqConsumer rtqConsumer;
-
-        private static readonly PropertyInfo rtqInternals = typeof(RtqConsumer).GetProperty("RtqInternals", BindingFlags.Instance | BindingFlags.NonPublic);
-        private static readonly MethodInfo changeTtlMethod = rtqInternals.PropertyType.GetMethod("ChangeTaskTtl");
     }
 }
