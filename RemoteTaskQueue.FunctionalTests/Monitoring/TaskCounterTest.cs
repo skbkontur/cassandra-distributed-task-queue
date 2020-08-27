@@ -18,9 +18,9 @@ using SKBKontur.Catalogue.ServiceLib.Logging;
 using SKBKontur.Catalogue.Waiting;
 
 using Vostok.Logging.Abstractions;
-
 #if !NETCOREAPP
 using Vostok.Commons.Time;
+
 #endif
 
 namespace RemoteTaskQueue.FunctionalTests.Monitoring

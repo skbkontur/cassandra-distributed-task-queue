@@ -17,9 +17,9 @@ using SkbKontur.Cassandra.TimeBasedUuid;
 using SKBKontur.Catalogue.TestCore;
 
 using SkbKontur.EventFeeds;
-
 #if !NETCOREAPP
 using Vostok.Commons.Time;
+
 #endif
 
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests

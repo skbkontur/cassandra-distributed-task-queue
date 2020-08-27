@@ -13,8 +13,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     internal class RtqEventSource : IEventSource<TaskMetaUpdatedEvent, string>
     {
-        private readonly IEventLogRepository eventLogRepository;
-
         public RtqEventSource(IEventLogRepository eventLogRepository)
         {
             this.eventLogRepository = eventLogRepository;
@@ -79,5 +77,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
             return EventPointerFormatter.GetMaxColumnNameForTicks(firstEventTicks - 1);
         }
 
+        private readonly IEventLogRepository eventLogRepository;
     }
 }

@@ -24,7 +24,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories
             this.serializer = serializer;
             this.minTicksHolder = minTicksHolder;
             cfConnection = cassandraCluster.RetrieveColumnFamilyConnection(rtqSettings.QueueKeyspace, ColumnFamilyName);
-            
         }
 
         public TimeSpan GetUnstableZoneDuration()
