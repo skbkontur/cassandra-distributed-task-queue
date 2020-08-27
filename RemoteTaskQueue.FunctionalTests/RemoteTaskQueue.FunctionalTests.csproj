@@ -23,6 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Catalogue.CassandraStorageCore">
+      <HintPath>..\..\Assemblies\Temp\Catalogue.CassandraStorageCore.dll</HintPath>
+    </Reference>
     <Reference Include="Catalogue.Commons">
       <HintPath>..\..\Assemblies\Temp\Catalogue.Commons.dll</HintPath>
     </Reference>

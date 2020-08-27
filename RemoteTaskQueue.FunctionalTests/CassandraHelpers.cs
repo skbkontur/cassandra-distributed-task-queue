@@ -4,6 +4,8 @@ using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Schema;
 
+using SKBKontur.Catalogue.CassandraStorageCore.MultipleCassandraCluster;
+
 using Vostok.Logging.Abstractions;
 
 namespace RemoteTaskQueue.FunctionalTests
@@ -13,9 +15,9 @@ namespace RemoteTaskQueue.FunctionalTests
         public static void ResetCassandraState(this IContainer container, string keyspaceName, ColumnFamily[] columnFamilies)
         {
             var logger = container.Get<ILog>();
-            var cassandraCluster = container.Get<ICassandraCluster>();
-            var actualizer = new CassandraSchemaActualizer(cassandraCluster, eventListener : null, logger);
-            actualizer.ActualizeKeyspaces(new[]
+            var cassandraCluster = ((MultipleCassandraCluster)container.Get<ICassandraCluster>()).GetCassandraClusterForKeyspace(keyspaceName);
+            var schemaActualizer = new CassandraSchemaActualizer(cassandraCluster, eventListener : null, logger);
+            schemaActualizer.ActualizeKeyspaces(new[]
                 {
                     new KeyspaceSchema
                         {
