@@ -34,7 +34,7 @@ interface TaskChainsTreeContainerState {
 }
 
 const mapping: QueryStringMapping<RtqMonitoringSearchRequest> = queryStringMapping<RtqMonitoringSearchRequest>()
-    .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
+    .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")
     .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))

@@ -26,7 +26,7 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
     };
 
     public render(): JSX.Element {
-        const { enqueueDateTimeRange, queryString, states, names } = this.props.value;
+        const { enqueueTimestampRange, queryString, states, names } = this.props.value;
         const { availableTaskTypes, onChange, onSearchButtonClick } = this.props;
         const { openedModal } = this.state;
         const defaultEnqueueDateTimeRange = {
@@ -62,8 +62,8 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                     <DateTimeRangePicker
                         data-tid={"DateTimeRangePicker"}
                         hideTime
-                        value={enqueueDateTimeRange || defaultEnqueueDateTimeRange}
-                        onChange={(e, value) => onChange({ enqueueDateTimeRange: value })}
+                        value={enqueueTimestampRange || defaultEnqueueDateTimeRange}
+                        onChange={(e, value) => onChange({ enqueueTimestampRange: value })}
                     />
                 </Fit>
                 <Fit>

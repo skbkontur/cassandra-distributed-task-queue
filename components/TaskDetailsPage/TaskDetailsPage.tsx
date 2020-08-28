@@ -110,7 +110,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
             return {
                 pathname: "/AdminTools/Tasks/Tree",
                 search: buildSearchQueryForRequest({
-                    enqueueDateTimeRange: rangeSelector.getMonthOf(TimeUtils.ticksToDate(taskDetails.taskMeta.ticks)),
+                    enqueueTimestampRange: rangeSelector.getMonthOf(TimeUtils.ticksToDate(taskDetails.taskMeta.ticks)),
                     queryString: `Data.\\*.DocumentCirculationId:"${documentCirculationId || ""}"`,
                     names: [],
                     states: [],

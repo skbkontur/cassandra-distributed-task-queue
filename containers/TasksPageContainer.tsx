@@ -48,7 +48,7 @@ interface TasksPageContainerState {
 const provisionalMapping: QueryStringMapping<RtqMonitoringSearchRequest> = queryStringMapping<
     RtqMonitoringSearchRequest
 >()
-    .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
+    .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")
     .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
@@ -60,7 +60,7 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
         return result;
     }, {});
     return queryStringMapping<RtqMonitoringSearchRequest>()
-        .mapToDateTimeRange(x => x.enqueueDateTimeRange, "enqueue")
+        .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
         .mapToString(x => x.queryString, "q")
         .mapToSet(x => x.names, "types", availableTaskNamesMap, true)
         .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
