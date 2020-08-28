@@ -29,8 +29,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
         [NotNull]
         public RtqMonitoringSearchResults Search([NotNull] RtqMonitoringSearchRequest searchRequest, int from, int size)
         {
-            if (searchRequest.EnqueueDateTimeRange == null)
-                throw new InvalidOperationException("enqueueDateTimeRange should be specified");
+            if (searchRequest.EnqueueTimestampRange == null)
+                throw new InvalidOperationException("searchRequest.EnqueueTimestampRange is not set");
 
             var searchResult = FindTasks(searchRequest, from, size);
             var taskMetas = taskManager.GetTaskMetas(searchResult.Ids);
@@ -77,8 +77,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
                     TaskStates = searchRequest.States?.Select(x => x.ToString()).ToArray(),
                     TaskNames = searchRequest.Names,
                     QueryString = string.IsNullOrWhiteSpace(searchRequest.QueryString) ? "*" : searchRequest.QueryString,
-                    FromTicksUtc = searchRequest.EnqueueDateTimeRange.LowerBound.Ticks,
-                    ToTicksUtc = searchRequest.EnqueueDateTimeRange.UpperBound.Ticks,
+                    FromTicksUtc = searchRequest.EnqueueTimestampRange.LowerBound.Ticks,
+                    ToTicksUtc = searchRequest.EnqueueTimestampRange.UpperBound.Ticks,
                 };
         }
 

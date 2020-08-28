@@ -1,8 +1,8 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Get
 {
-    public class GetResponse<T>
+    internal class GetResponse<T>
     {
         [JsonProperty(PropertyName = "_index")]
         public string Index { get; set; }

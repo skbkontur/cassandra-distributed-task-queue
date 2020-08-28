@@ -8,12 +8,14 @@ using JetBrains.Annotations;
 
 using Newtonsoft.Json;
 
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses;
+using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Bulk;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions
 {
     // todo (andrew, 11.11.2018): maybe enable ConnectionConfiguration.ThrowExceptions() instead of all this boilerplate
-    public static class ElasticsearchResponseWrapperExtensions
+    internal static class ElasticsearchResponseWrapperExtensions
     {
         [NotNull]
         public static T EnsureSuccess<T>([NotNull] this T response)

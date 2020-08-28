@@ -7,7 +7,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
     public class RtqMonitoringSearchRequest
     {
         [NotNull]
-        public DateTimeRange EnqueueDateTimeRange { get; set; }
+        public TimestampRange EnqueueTimestampRange { get; set; }
 
         [CanBeNull]
         public string QueryString { get; set; }

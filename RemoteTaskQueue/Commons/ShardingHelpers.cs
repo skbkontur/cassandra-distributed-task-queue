@@ -8,6 +8,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Commons
         {
             if (shardsCount <= 0)
                 throw new InvalidOperationException($"ShardsCount should be positive: {shardsCount}");
+
             var longAbsHashCode = Math.Abs((long)hashCode);
             return (int)(longAbsHashCode % shardsCount);
         }

@@ -7,7 +7,7 @@ using Newtonsoft.Json.Converters;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
 {
-    public static class JsonObjectExtensions
+    internal static class JsonObjectExtensions
     {
         [NotNull]
         public static string ToPrettyJson<T>([CanBeNull] this T o, [NotNull] params JsonConverter[] converters)

@@ -31,12 +31,12 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t1 = Timestamp.Now;
             var searchResults1 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                 }, 0, 10);
             searchResults1.TotalCount.Should().Be(20);
             var searchResults2 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                 }, 10, 10);
             searchResults2.TotalCount.Should().Be(20);
             searchResults1.TaskMetas.Select(x => x.Id).Concat(searchResults2.TaskMetas.Select(x => x.Id)).Should().BeEquivalentTo(taskIds);
@@ -52,7 +52,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t1 = Timestamp.Now;
             var searchResults = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                 }, 0, 20);
             searchResults.TotalCount.Should().Be(20);
             searchResults.TaskMetas.Select(x => x.Id).Should().BeEquivalentTo(taskIds);
@@ -69,7 +69,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t1 = Timestamp.Now;
             var searchResults1 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     Names = new[] {typeof(AlphaTaskData).Name},
                 }, 0, 20);
             searchResults1.TotalCount.Should().Be(1);
@@ -77,7 +77,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             var searchResults2 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     Names = new[] {typeof(BetaTaskData).Name},
                 }, 0, 20);
             searchResults2.TotalCount.Should().Be(1);
@@ -85,7 +85,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             var searchResults3 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     Names = new[] {typeof(BetaTaskData).Name, typeof(DeltaTaskData).Name},
                 }, 0, 20);
             searchResults3.TotalCount.Should().Be(2);
@@ -106,7 +106,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t1 = Timestamp.Now;
             var searchResults1 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     States = new[] {TaskState.Finished},
                 }, 0, 20);
             searchResults1.TotalCount.Should().Be(1);
@@ -114,7 +114,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             var searchResults2 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     States = new[] {TaskState.Fatal},
                 }, 0, 20);
             searchResults2.TotalCount.Should().Be(1);
@@ -131,7 +131,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             var t1 = Timestamp.Now;
             var searchResults1 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     States = new[] {TaskState.Finished},
                     Names = new[] {typeof(AlphaTaskData).Name},
                 }, 0, 20);
@@ -140,7 +140,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             var searchResults2 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     States = new[] {TaskState.Fatal},
                     Names = new[] {typeof(AlphaTaskData).Name},
                 }, 0, 20);
@@ -149,7 +149,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             var searchResults3 = rtqMonitoringApi.Search(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     States = new[] {TaskState.Finished},
                     Names = new[] {typeof(FailingTaskData).Name},
                 }, 0, 20);
@@ -183,7 +183,7 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
 
             rtqMonitoringApi.RerunTasksBySearchQuery(new RtqMonitoringSearchRequest
                 {
-                    EnqueueDateTimeRange = EnqueueDateTimeRange(t0, t1),
+                    EnqueueTimestampRange = EnqueueTimestampRange(t0, t1),
                     Names = new[] {typeof(AlphaTaskData).Name},
                 });
 
@@ -194,9 +194,9 @@ namespace RemoteTaskQueue.FunctionalTests.Monitoring
             rtqMonitoringApi.GetTaskDetails(taskId[2]).TaskMeta.Attempts.Should().Be(1);
         }
 
-        private static DateTimeRange EnqueueDateTimeRange(Timestamp t0, Timestamp t1)
+        private static TimestampRange EnqueueTimestampRange(Timestamp t0, Timestamp t1)
         {
-            return new DateTimeRange {LowerBound = t0.ToDateTime(), UpperBound = t1.ToDateTime()};
+            return new TimestampRange {LowerBound = t0, UpperBound = t1};
         }
 
         private string[] QueueTasksAndWaitForActualization(params IRtqTaskData[] taskDatas)

@@ -6,7 +6,7 @@ using SkbKontur.Cassandra.TimeBasedUuid;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
 {
-    public class TimeGuidJsonConverter : JsonConverter
+    internal class TimeGuidJsonConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

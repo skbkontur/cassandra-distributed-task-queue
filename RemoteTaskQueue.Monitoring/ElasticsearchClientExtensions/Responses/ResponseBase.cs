@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses
 {
-    public class ResponseBase
+    internal class ResponseBase
     {
         [JsonProperty(PropertyName = "status")]
         public int Status { get; set; }
