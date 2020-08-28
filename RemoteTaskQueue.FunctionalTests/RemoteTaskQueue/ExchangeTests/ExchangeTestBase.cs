@@ -7,8 +7,6 @@ using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes.StartTicksIndexes;

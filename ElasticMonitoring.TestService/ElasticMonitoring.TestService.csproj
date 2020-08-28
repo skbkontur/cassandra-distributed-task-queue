@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="SkbKontur.Catalogue.XmlSerializer" Version="1.1.9" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj" />
     <ProjectReference Include="..\RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj" />
   </ItemGroup>
@@ -18,9 +22,6 @@
   <ItemGroup>
     <Reference Include="Catalogue.ServiceLibLegacy">
       <HintPath>..\..\Assemblies\Temp\Catalogue.ServiceLibLegacy.dll</HintPath>
-    </Reference>
-    <Reference Include="Catalogue.TestCore">
-      <HintPath>..\..\Assemblies\Temp\Catalogue.TestCore.dll</HintPath>
     </Reference>
   </ItemGroup>
 

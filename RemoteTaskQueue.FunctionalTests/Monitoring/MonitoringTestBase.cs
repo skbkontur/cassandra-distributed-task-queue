@@ -4,8 +4,6 @@ using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client;
 using SkbKontur.Cassandra.TimeBasedUuid;
 

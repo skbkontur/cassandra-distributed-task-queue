@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GroBuf" Version="1.5.5" />
     <PackageReference Include="SkbKontur.Cassandra.DistributedLock" Version="2.2.8" />
     <PackageReference Include="SkbKontur.Cassandra.GlobalTimestamp" Version="1.0.8" />
     <PackageReference Include="SkbKontur.Cassandra.ThriftClient" Version="2.4.9" />

@@ -9,7 +9,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
 using SKBKontur.Catalogue.ServiceLib;
 using SKBKontur.Catalogue.ServiceLib.HttpHandlers;
 using SKBKontur.Catalogue.ServiceLib.Services;
-using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
 
 using SkbKontur.Graphite.Client;
 
@@ -27,7 +26,7 @@ namespace SKBKontur.Catalogue.RemoteTaskQueue.ElasticMonitoring.TestService
 
         private void Run()
         {
-            WithCassandra.SetUpCassandra(Container, TestRtqSettings.QueueKeyspaceName);
+            Container.ConfigureCassandra();
 
             Container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(new Uri("http://localhost:9205")));
             Container.Configurator.ForAbstraction<IRtqTaskCounterStateStorage>().UseType<NoOpRtqTaskCounterStateStorage>();

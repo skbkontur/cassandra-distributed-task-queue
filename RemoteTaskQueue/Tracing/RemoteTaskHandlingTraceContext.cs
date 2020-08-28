@@ -57,7 +57,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tracing
             case LocalTaskProcessingResult.Undefined:
                 break;
             default:
-                throw new InvalidProgramStateException(string.Format("Invalid LocalTaskProcessingResult: {0}", result));
+                throw new InvalidOperationException(string.Format("Invalid LocalTaskProcessingResult: {0}", result));
             }
             TraceContext.Current.RecordTimepoint(Timepoint.Finish, new DateTime(finishTaskProcessingTicks, DateTimeKind.Utc));
             Trace.FinishCurrentContext();*/

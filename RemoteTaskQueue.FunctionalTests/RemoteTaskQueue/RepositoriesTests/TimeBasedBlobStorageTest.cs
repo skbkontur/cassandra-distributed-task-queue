@@ -6,6 +6,8 @@ using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
 
+using RemoteTaskQueue.FunctionalTests.Common;
+
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.TimeBasedUuid;
@@ -23,7 +25,7 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         public void SetUp()
         {
             ResetCassandraState();
-            var settings = new TimeBasedBlobStorageSettings(QueueKeyspaceName, largeCfName, regularCfName);
+            var settings = new TimeBasedBlobStorageSettings(TestRtqSettings.QueueKeyspaceName, largeCfName, regularCfName);
             timeBasedBlobStorage = new TimeBasedBlobStorage(settings, cassandraCluster, new SilentLog());
         }
 

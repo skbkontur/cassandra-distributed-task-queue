@@ -5,7 +5,6 @@ using GroBuf;
 using JetBrains.Annotations;
 
 using SKBKontur.Catalogue.GrobufExtensions;
-using SKBKontur.Catalogue.Objects;
 
 namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData
 {
@@ -14,7 +13,7 @@ namespace RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskDat
         public ContentTypeNameAttribute([NotNull] string typeName)
         {
             if (string.IsNullOrWhiteSpace(typeName))
-                throw new InvalidProgramStateException("TypeName is empty");
+                throw new InvalidOperationException("TypeName is empty");
             Type = typeName;
         }
 

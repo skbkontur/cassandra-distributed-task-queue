@@ -14,8 +14,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.TestCore;
-
 using SkbKontur.EventFeeds;
 #if !NETCOREAPP
 using Vostok.Commons.Time;
@@ -367,8 +365,15 @@ namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
         private static EventWithOffset<TaskMetaUpdatedEvent, string> Event(Timestamp eventTimestamp, byte eventId)
         {
             var taskId = Guid.NewGuid().ToString();
-            var offset = Offset(eventTimestamp, GuidTestingHelpers.Guid(eventId));
+            var offset = Offset(eventTimestamp, GuidWithLastByte(eventId));
             return new EventWithOffset<TaskMetaUpdatedEvent, string>(new TaskMetaUpdatedEvent(taskId, eventTimestamp.Ticks), offset);
+        }
+
+        private static Guid GuidWithLastByte(byte lastByte)
+        {
+            var bytes = new byte[16];
+            bytes[15] = lastByte;
+            return new Guid(bytes);
         }
 
         private string OffsetInFarFuture()

@@ -29,7 +29,7 @@ namespace RemoteTaskQueue.FunctionalTests
                     new ColumnFamily {Name = TestTaskLogger.ColumnFamilyName},
                     new ColumnFamily {Name = TestCounterRepository.ColumnFamilyName}
                 }).ToArray();
-            suiteContext.Container.ResetCassandraState(TestRtqSettings.QueueKeyspaceName, columnFamilies);
+            suiteContext.Container.ResetCassandraState(columnFamilies);
             suiteContext.Container.Get<IGlobalTime>().ResetInMemoryState();
             suiteContext.Container.Get<IMinTicksHolder>().ResetInMemoryState();
         }

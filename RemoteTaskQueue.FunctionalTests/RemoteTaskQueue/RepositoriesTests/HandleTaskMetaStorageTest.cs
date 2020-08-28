@@ -8,20 +8,16 @@ using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.Indexes;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-using SKBKontur.Catalogue.TestCore.NUnit.Extensions;
-
 namespace RemoteTaskQueue.FunctionalTests.RemoteTaskQueue.RepositoriesTests
 {
     [GroboTestFixture]
-    [WithDefaultSerializer, WithTestRtqSettings, WithCassandra(TestRtqSettings.QueueKeyspaceName), AndResetCassandraState]
+    [WithDefaultSerializer, WithTestRtqSettings, AndResetCassandraState]
     public class HandleTaskMetaStorageTest
     {
         [GroboTestFixtureSetUp]

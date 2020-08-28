@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 using GroboContainer.Core;
 
@@ -10,6 +11,8 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
 using SkbKontur.Cassandra.GlobalTimestamp;
+using SkbKontur.Cassandra.ThriftClient.Abstractions;
+using SkbKontur.Cassandra.ThriftClient.Clusters;
 
 using Vostok.Logging.Abstractions;
 
@@ -17,6 +20,24 @@ namespace RemoteTaskQueue.FunctionalTests.Common
 {
     public static class TestRemoteTaskQueueContainerConfigurator
     {
+        public static void ConfigureCassandra([NotNull] this IContainer container)
+        {
+            var localEndPoint = new IPEndPoint(IPAddress.Loopback, 9160);
+            var cassandraClusterSettings = new CassandraClusterSettings
+                {
+                    Endpoints = new[] {localEndPoint},
+                    EndpointForFierceCommands = localEndPoint,
+                    ReadConsistencyLevel = ConsistencyLevel.QUORUM,
+                    WriteConsistencyLevel = ConsistencyLevel.QUORUM,
+                    Attempts = 5,
+                    Timeout = 6000,
+                    FierceTimeout = 6000,
+                    ConnectionIdleTimeout = TimeSpan.FromMinutes(10),
+                };
+            var cassandraCluster = new CassandraCluster(cassandraClusterSettings, container.Get<ILog>());
+            container.Configurator.ForAbstraction<ICassandraCluster>().UseInstances(cassandraCluster);
+        }
+
         [NotNull]
         public static IContainer ConfigureRemoteTaskQueueForConsumer<TRtqConsumerSettings, TTaskHandlerRegistry>([NotNull] this IContainer container)
             where TRtqConsumerSettings : IRtqConsumerSettings

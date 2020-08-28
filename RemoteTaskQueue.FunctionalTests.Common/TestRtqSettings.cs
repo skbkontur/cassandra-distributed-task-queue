@@ -2,7 +2,12 @@
 
 using GroboContainer.Infection;
 
+using GroBuf;
+using GroBuf.DataMembersExtracters;
+
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+
+using SKBKontur.Catalogue.GrobufExtensions;
 
 namespace RemoteTaskQueue.FunctionalTests.Common
 {
@@ -14,6 +19,9 @@ namespace RemoteTaskQueue.FunctionalTests.Common
         public bool EnableContinuationOptimization { get; } = true;
 
         public const string QueueKeyspaceName = "TestRtqKeyspace";
-        public static TimeSpan StandardTestTaskTtl = TimeSpan.FromHours(24);
+
+        public static readonly TimeSpan StandardTestTaskTtl = TimeSpan.FromHours(24);
+
+        public static readonly ISerializer MergeOnReadInstance = new Serializer(new AllPropertiesExtractor(), new CatalogueGroBufCustomSerializerCollection(), GroBufOptions.MergeOnRead);
     }
 }
