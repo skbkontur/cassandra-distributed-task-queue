@@ -33,11 +33,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             this.taskDataRegistry = taskDataRegistry;
             this.stateStorage = stateStorage;
             GlobalTime = remoteTaskQueue.GlobalTime;
-            var eventFeedPeriodicJobRunner = new RtqEventFeedPeriodicJobRunner(rtqPeriodicJobRunner, graphiteClient);
+            var eventFeedPeriodicJobRunner = new RtqEventFeedPeriodicJobRunner(rtqPeriodicJobRunner, graphiteClient, settings.EventFeedGraphitePathPrefix);
             eventFeedFactory = new EventFeedFactory(new RtqEventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
             eventSource = new RtqEventSource(remoteTaskQueue.EventLogRepository);
             handleTasksMetaStorage = remoteTaskQueue.HandleTasksMetaStorage;
-            perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(settings.PerfGraphitePathPrefix, statsDClient);
+            perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(statsDClient, settings.PerfGraphitePathPrefix);
             this.logger = logger.ForContext("CassandraDistributedTaskQueue").ForContext(nameof(RtqTaskCounterEventFeeder));
             this.logger.Info("Using RtqTaskCounterSettings: {RtqTaskCounterSettings}", new {RtqTaskCounterSettings = settings.ToPrettyJson()});
         }

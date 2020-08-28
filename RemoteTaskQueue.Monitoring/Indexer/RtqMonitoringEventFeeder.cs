@@ -30,9 +30,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             this.elasticsearchClient = elasticsearchClient;
             GlobalTime = remoteTaskQueue.GlobalTime;
             eventSource = new RtqEventSource(remoteTaskQueue.EventLogRepository);
-            var eventFeedPeriodicJobRunner = new RtqEventFeedPeriodicJobRunner(rtqPeriodicJobRunner, graphiteClient);
+            var eventFeedPeriodicJobRunner = new RtqEventFeedPeriodicJobRunner(rtqPeriodicJobRunner, graphiteClient, indexerSettings.EventFeedGraphitePathPrefix);
             eventFeedFactory = new EventFeedFactory(new RtqEventFeedGlobalTimeProvider(GlobalTime), eventFeedPeriodicJobRunner);
-            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(indexerSettings.PerfGraphitePathPrefix, statsDClient);
+            var perfGraphiteReporter = new RtqMonitoringPerfGraphiteReporter(statsDClient, indexerSettings.PerfGraphitePathPrefix);
             var taskMetaProcessor = new TaskMetaProcessor(this.logger, indexerSettings, elasticsearchClient, remoteTaskQueue, perfGraphiteReporter);
             eventConsumer = new RtqMonitoringEventConsumer(indexerSettings, taskMetaProcessor);
         }

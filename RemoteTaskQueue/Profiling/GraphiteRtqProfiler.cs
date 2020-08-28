@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 
 using JetBrains.Annotations;
 
@@ -14,13 +15,16 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
 {
     public class GraphiteRtqProfiler : IRtqProfiler
     {
-        public GraphiteRtqProfiler([NotNull] IStatsDClient statsDClient, [NotNull] IGraphiteClient graphiteClient, [NotNull] string statsDKeyNamePrefix, [NotNull] string consumerGraphitePathPrefix)
+        public GraphiteRtqProfiler([NotNull] IStatsDClient statsDClient,
+                                   [NotNull] IGraphiteClient graphiteClient,
+                                   [NotNull] string statsDKeyNamePrefix,
+                                   [NotNull] string consumerGraphitePathPrefix)
         {
             if (string.IsNullOrEmpty(statsDKeyNamePrefix))
                 throw new InvalidOperationException("statsDKeyNamePrefix is empty");
             if (string.IsNullOrEmpty(consumerGraphitePathPrefix))
                 throw new InvalidOperationException("consumerGraphitePathPrefix is empty");
-            this.statsDClient = statsDClient.WithScopes($"{statsDKeyNamePrefix}.{Environment.MachineName}", $"{statsDKeyNamePrefix}.Total");
+            this.statsDClient = statsDClient.WithScopes($"{statsDKeyNamePrefix}.{Dns.GetHostName()}", $"{statsDKeyNamePrefix}.Total");
             this.graphiteClient = graphiteClient;
             this.consumerGraphitePathPrefix = FormatGraphitePathPrefix(consumerGraphitePathPrefix);
         }
@@ -33,7 +37,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
                                      .Replace(".exe", string.Empty)
                                      .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
                                      .Last();
-            return $"{graphitePathPrefix}.{Environment.MachineName}.{processName}";
+            return $"{graphitePathPrefix}.{Dns.GetHostName()}.{processName}";
         }
 
         public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)

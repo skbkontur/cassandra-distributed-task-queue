@@ -13,21 +13,28 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 {
     public class RtqElasticsearchIndexerSettings
     {
-        public RtqElasticsearchIndexerSettings([NotNull] string eventFeedKey, [NotNull] string perfGraphitePathPrefix)
+        public RtqElasticsearchIndexerSettings([NotNull] string eventFeedKey, [NotNull] string rtqGraphitePathPrefix)
         {
             if (string.IsNullOrEmpty(eventFeedKey))
                 throw new InvalidOperationException("eventFeedKey is empty");
-            if (string.IsNullOrEmpty(perfGraphitePathPrefix))
-                throw new InvalidOperationException("perfGraphitePathPrefix is empty");
+            if (string.IsNullOrEmpty(rtqGraphitePathPrefix))
+                throw new InvalidOperationException("rtqGraphitePathPrefix is empty");
+
             EventFeedKey = eventFeedKey;
-            PerfGraphitePathPrefix = perfGraphitePathPrefix;
+            RtqGraphitePathPrefix = rtqGraphitePathPrefix;
         }
 
         [NotNull]
         public string EventFeedKey { get; }
 
         [NotNull]
-        public string PerfGraphitePathPrefix { get; }
+        public string RtqGraphitePathPrefix { get; }
+
+        [NotNull]
+        public string PerfGraphitePathPrefix => $"{RtqGraphitePathPrefix}.ElasticsearchIndexer.Perf";
+
+        [NotNull]
+        public string EventFeedGraphitePathPrefix => $"{RtqGraphitePathPrefix}.ElasticsearchIndexer.EventFeed";
 
         [NotNull]
         public Timestamp InitialIndexingStartTimestamp { get; set; } = new Timestamp(new DateTime(2016, 02, 01, 0, 0, 0, DateTimeKind.Utc));

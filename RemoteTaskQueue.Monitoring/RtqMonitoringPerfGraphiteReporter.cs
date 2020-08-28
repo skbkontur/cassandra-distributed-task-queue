@@ -9,10 +9,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring
 {
     public class RtqMonitoringPerfGraphiteReporter
     {
-        public RtqMonitoringPerfGraphiteReporter([NotNull] string graphitePathPrefix, [NotNull] IStatsDClient statsDClient)
+        public RtqMonitoringPerfGraphiteReporter([NotNull] IStatsDClient statsDClient, [NotNull] string graphitePathPrefix)
         {
-            this.graphitePathPrefix = graphitePathPrefix;
             this.statsDClient = statsDClient;
+            this.graphitePathPrefix = graphitePathPrefix;
         }
 
         public void ReportTiming([NotNull] string actionName, [NotNull] Action action)
@@ -40,7 +40,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring
             statsDClient.Increment($"{graphitePathPrefix}.{counterName}", magnitude);
         }
 
-        private readonly string graphitePathPrefix;
         private readonly IStatsDClient statsDClient;
+        private readonly string graphitePathPrefix;
     }
 }

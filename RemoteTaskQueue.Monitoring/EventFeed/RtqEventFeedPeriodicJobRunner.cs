@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 
 using JetBrains.Annotations;
 
@@ -12,10 +13,13 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 {
     internal class RtqEventFeedPeriodicJobRunner : IPeriodicJobRunner
     {
-        public RtqEventFeedPeriodicJobRunner(IRtqPeriodicJobRunner rtqPeriodicJobRunner, IGraphiteClient graphiteClient)
+        public RtqEventFeedPeriodicJobRunner(IRtqPeriodicJobRunner rtqPeriodicJobRunner,
+                                             IGraphiteClient graphiteClient,
+                                             [NotNull] string eventFeedGraphitePathPrefix)
         {
             this.rtqPeriodicJobRunner = rtqPeriodicJobRunner;
             this.graphiteClient = graphiteClient;
+            graphitePathPrefix = $"{eventFeedGraphitePathPrefix}.ActualizationLag.{Dns.GetHostName()}";
         }
 
         public void RunPeriodicJobWithLeaderElection([NotNull] string jobName,
@@ -69,8 +73,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 
         private readonly IRtqPeriodicJobRunner rtqPeriodicJobRunner;
         private readonly IGraphiteClient graphiteClient;
-
-        // todo (andrew, 25.08.2020): extract
-        private readonly string graphitePathPrefix = $"SubSystem.EventFeeds.ActualizationLag.{Environment.MachineName}";
+        private readonly string graphitePathPrefix;
     }
 }
