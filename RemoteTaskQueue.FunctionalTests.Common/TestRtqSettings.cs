@@ -7,8 +7,6 @@ using GroBuf.DataMembersExtracters;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
-using SKBKontur.Catalogue.GrobufExtensions;
-
 namespace RemoteTaskQueue.FunctionalTests.Common
 {
     [IgnoredImplementation]
@@ -22,6 +20,6 @@ namespace RemoteTaskQueue.FunctionalTests.Common
 
         public static readonly TimeSpan StandardTestTaskTtl = TimeSpan.FromHours(24);
 
-        public static readonly ISerializer MergeOnReadInstance = new Serializer(new AllPropertiesExtractor(), new CatalogueGroBufCustomSerializerCollection(), GroBufOptions.MergeOnRead);
+        public static readonly ISerializer MergeOnReadInstance = new Serializer(new AllPropertiesExtractor(), new DefaultGroBufCustomSerializerCollection(), GroBufOptions.MergeOnRead);
     }
 }
