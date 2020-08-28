@@ -14,7 +14,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.TimeBasedUuid;
 using SkbKontur.EventFeeds;
-
 #if !NETCOREAPP
 using Vostok.Commons.Time;
 
