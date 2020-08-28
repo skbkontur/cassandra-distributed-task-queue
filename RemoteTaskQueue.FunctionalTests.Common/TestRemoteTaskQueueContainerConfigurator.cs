@@ -5,8 +5,6 @@ using GroboContainer.Core;
 
 using JetBrains.Annotations;
 
-using SkbKontur.Cassandra.DistributedLock;
-using SkbKontur.Cassandra.DistributedLock.RemoteLocker;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Profiling;
@@ -61,7 +59,6 @@ namespace RemoteTaskQueue.FunctionalTests.Common
         [NotNull]
         public static IContainer ConfigureRemoteTaskQueue([NotNull] this IContainer container, out SkbKontur.Cassandra.DistributedTaskQueue.Handling.RemoteTaskQueue remoteTaskQueue)
         {
-            ConfigureRemoteLock(container);
             container.Configurator.ForAbstraction<IRtqSettings>().UseType<TestRtqSettings>();
             container.Configurator.ForAbstraction<IGlobalTime>().UseType<GlobalTimeProxy>();
             container.Configurator.ForAbstraction<IRtqPeriodicJobRunner>().UseType<TestRtqPeriodicJobRunner>();
@@ -71,17 +68,6 @@ namespace RemoteTaskQueue.FunctionalTests.Common
             container.Configurator.ForAbstraction<IRtqTaskProducer>().UseInstances(remoteTaskQueue);
             container.Configurator.ForAbstraction<IRtqTaskManager>().UseInstances(remoteTaskQueue);
             return container;
-        }
-
-        private static void ConfigureRemoteLock(IContainer container)
-        {
-            var logger = container.Get<ILog>();
-            const string locksKeyspace = TestRtqSettings.QueueKeyspaceName;
-            const string locksColumnFamily = RtqColumnFamilyRegistry.LocksColumnFamilyName;
-            var remoteLockImplementationSettings = CassandraRemoteLockImplementationSettings.Default(locksKeyspace, locksColumnFamily);
-            var remoteLockImplementation = container.Create<CassandraRemoteLockImplementationSettings, CassandraRemoteLockImplementation>(remoteLockImplementationSettings);
-            var remoteLockCreator = new RemoteLocker(remoteLockImplementation, new RemoteLockerMetrics($"{locksKeyspace}_{locksColumnFamily}"), logger);
-            container.Configurator.ForAbstraction<IRemoteLockCreator>().UseInstances(remoteLockCreator);
         }
     }
 }

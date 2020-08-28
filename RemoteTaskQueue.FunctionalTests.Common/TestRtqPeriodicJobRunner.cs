@@ -10,10 +10,10 @@ namespace RemoteTaskQueue.FunctionalTests.Common
 {
     public class TestRtqPeriodicJobRunner : IRtqPeriodicJobRunner
     {
-        public TestRtqPeriodicJobRunner(IPeriodicTaskRunner periodicTaskRunner, IPeriodicJobRunnerWithLeaderElection jobRunnerWithLeaderElection)
+        public TestRtqPeriodicJobRunner(IPeriodicTaskRunner periodicTaskRunner, Lazy<IPeriodicJobRunnerWithLeaderElection> lazyJobRunnerWithLeaderElection)
         {
             this.periodicTaskRunner = periodicTaskRunner;
-            this.jobRunnerWithLeaderElection = jobRunnerWithLeaderElection;
+            this.lazyJobRunnerWithLeaderElection = lazyJobRunnerWithLeaderElection;
         }
 
         public void RunPeriodicJob([NotNull] string jobId, TimeSpan delayBetweenIterations, [NotNull] Action jobAction)
@@ -32,15 +32,15 @@ namespace RemoteTaskQueue.FunctionalTests.Common
                                                      [NotNull] Action onTakeTheLead,
                                                      [NotNull] Action onLoseTheLead)
         {
-            jobRunnerWithLeaderElection.RunPeriodicJob(jobId, delayBetweenIterations, jobAction, onTakeTheLead, onLoseTheLead);
+            lazyJobRunnerWithLeaderElection.Value.RunPeriodicJob(jobId, delayBetweenIterations, jobAction, onTakeTheLead, onLoseTheLead);
         }
 
         public void StopPeriodicJobWithLeaderElection([NotNull] string jobId)
         {
-            jobRunnerWithLeaderElection.StopPeriodicJob(jobId);
+            lazyJobRunnerWithLeaderElection.Value.StopPeriodicJob(jobId);
         }
 
         private readonly IPeriodicTaskRunner periodicTaskRunner;
-        private readonly IPeriodicJobRunnerWithLeaderElection jobRunnerWithLeaderElection;
+        private readonly Lazy<IPeriodicJobRunnerWithLeaderElection> lazyJobRunnerWithLeaderElection;
     }
 }
