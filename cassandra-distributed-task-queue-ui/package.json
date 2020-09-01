@@ -20,7 +20,7 @@
   ],
   "author": "Andrew Kostousov, Eugene Tihonov",
   "scripts": {
-    "build": "echo Success",
+    "build": "mkdir dist",
     "build:clean": "rimraf dist",
     "build:tsc": "tsc --project tsconfig.prod.json",
     "build:patch": "node ./patch-version",
