@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Search;
 
-namespace RemoteTaskQueue.UnitTests.Monitoring
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.Monitoring
 {
     [TestFixture]
     public class SearchIndexNameFactoryTest

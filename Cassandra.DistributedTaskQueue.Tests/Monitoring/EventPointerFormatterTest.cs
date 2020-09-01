@@ -7,7 +7,7 @@ using NUnit.Framework;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace RemoteTaskQueue.UnitTests.Monitoring
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.Monitoring
 {
     [TestFixture]
     public class EventPointerFormatterTest

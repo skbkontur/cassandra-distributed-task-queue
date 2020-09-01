@@ -2,7 +2,7 @@
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace RemoteTaskQueue.UnitTests
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests
 {
     [TestFixture]
     public class EnumExtensionsTest

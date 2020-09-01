@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Utils;
 
-namespace RemoteTaskQueue.UnitTests.Monitoring
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.Monitoring
 {
     public class UtcTicksDateConverterTest
     {

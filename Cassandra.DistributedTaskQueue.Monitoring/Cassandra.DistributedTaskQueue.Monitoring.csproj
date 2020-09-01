@@ -2,8 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>SkbKontur.Cassandra.DistributedTaskQueue.Monitoring</AssemblyName>
     <RootNamespace>SkbKontur.Cassandra.DistributedTaskQueue.Monitoring</RootNamespace>
-    <OutputPath>..\..\Assemblies\Temp\</OutputPath>
+    <PackageId>SkbKontur.Cassandra.DistributedTaskQueue.Monitoring</PackageId>
   </PropertyGroup>
 
   <ItemGroup>

@@ -7,7 +7,7 @@ using NUnit.Framework;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace RemoteTaskQueue.UnitTests
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests
 {
     [TestFixture]
     public class TaskMetaInformationTest
