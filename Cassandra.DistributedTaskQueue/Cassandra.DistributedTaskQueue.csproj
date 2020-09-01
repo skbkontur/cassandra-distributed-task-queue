@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>RemoteTaskQueue</AssemblyName>
     <RootNamespace>SkbKontur.Cassandra.DistributedTaskQueue</RootNamespace>
     <OutputPath>..\..\Assemblies\Temp\</OutputPath>
   </PropertyGroup>
@@ -17,19 +16,19 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>$(MSBuildProjectName).Tests</_Parameter1>
+    </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>$(MSBuildProjectName).Monitoring</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>$(MSBuildProjectName).UnitTests</_Parameter1>
+      <_Parameter1>RemoteTaskQueue.FunctionalTests.Common</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>$(MSBuildProjectName).FunctionalTests.Common</_Parameter1>
+      <_Parameter1>RemoteTaskQueue.FunctionalTests</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>$(MSBuildProjectName).FunctionalTests</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>$(MSBuildProjectName).ExchangeService</_Parameter1>
+      <_Parameter1>RemoteTaskQueue.ExchangeService</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 

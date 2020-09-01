@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteTaskQueue", "RemoteTaskQueue\RemoteTaskQueue.csproj", "{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQueue", "Cassandra.DistributedTaskQueue\Cassandra.DistributedTaskQueue.csproj", "{D8D12AC6-EC15-4EA9-92BE-80EE41A1E152}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteTaskQueue.Monitoring", "RemoteTaskQueue.Monitoring\RemoteTaskQueue.Monitoring.csproj", "{977B80E5-2EC8-4394-BE5A-907BCA3C02EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQueue.Monitoring", "Cassandra.DistributedTaskQueue.Monitoring\Cassandra.DistributedTaskQueue.Monitoring.csproj", "{977B80E5-2EC8-4394-BE5A-907BCA3C02EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteTaskQueue.UnitTests", "RemoteTaskQueue.UnitTests\RemoteTaskQueue.UnitTests.csproj", "{014A7EB7-6F4B-4998-A54E-9ECEB8915F7F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQueue.Tests", "Cassandra.DistributedTaskQueue.Tests\Cassandra.DistributedTaskQueue.Tests.csproj", "{014A7EB7-6F4B-4998-A54E-9ECEB8915F7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
