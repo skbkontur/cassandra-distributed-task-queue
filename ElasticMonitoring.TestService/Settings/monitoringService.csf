@@ -1,5 +1,0 @@
-@importSettings "edi\graphite.csf"
-@importSettings "edi\environment.csf"
-
-LogDirectory = logs
-ListeningPort = 4413
