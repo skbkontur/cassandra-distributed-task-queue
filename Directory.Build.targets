@@ -7,4 +7,16 @@
     </ItemGroup>
   </Target>
 
+  <Target Name="SetNuSpecProperties" BeforeTargets="GenerateNuspec" DependsOnTargets="GetBuildVersion">
+    <PropertyGroup>
+      <Authors>Andrew Kostousov, Eugene Tihonov</Authors>
+      <PackageDescription>Distributed Task Queue</PackageDescription>
+      <PackageTags>Distributed Task Queue Cassandra</PackageTags>
+      <RepositoryType>git</RepositoryType>
+      <RepositoryUrl>https://github.com/skbkontur/cassandra-distributed-task-queue</RepositoryUrl>
+      <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+      <PackageReleaseNotes>$(RepositoryUrl)/releases/tag/v$(MajorMinorVersion)-release</PackageReleaseNotes>
+    </PropertyGroup>
+  </Target>
+
 </Project>
