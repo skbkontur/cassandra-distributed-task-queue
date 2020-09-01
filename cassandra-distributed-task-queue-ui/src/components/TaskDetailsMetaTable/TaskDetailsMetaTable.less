@@ -1,0 +1,23 @@
+@import '~ui/styles/variables.less';
+
+:local {
+    .ticks {
+        color: @double-muted-text;
+    }
+
+    .table {
+        max-width: 100%;
+        min-width: 600px;
+
+        td {
+            padding: 2 * @base-size 2 * @base-size 2 * @base-size 4 * @base-size;
+            border: @table-cell-border;
+        }
+
+        tr {
+            &:hover {
+                background-color: @menu-panel-background;
+            }
+        }
+    }
+}

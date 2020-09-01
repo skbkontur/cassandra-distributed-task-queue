@@ -1,0 +1,35 @@
+@import '~ui/styles/variables.less';
+
+:local {
+    .task-data-container {
+        max-width: 100%;
+    }
+
+    .exception {
+        background: @warning-panel-background;
+        border: 1px solid darken(@warning-panel-background, 10%);
+        display: block;
+        padding: 3 * @base-size;
+        overflow-x: auto;
+        border-radius: @base-size;
+    }
+
+    .exception + .exception {
+        margin-top: 10px;
+    }
+
+    .exception-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .error {
+        background: @error-panel-background;
+        border: 1px solid darken(@error-panel-background, 10%);
+        display: block;
+        width: 600px;
+        padding: 3 * @base-size;
+        overflow-x: auto;
+        border-radius: @base-size;
+    }
+}
