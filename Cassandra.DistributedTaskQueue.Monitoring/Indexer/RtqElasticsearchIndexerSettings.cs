@@ -37,15 +37,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         public string EventFeedGraphitePathPrefix => $"{RtqGraphitePathPrefix}.ElasticsearchIndexer.EventFeed";
 
         [NotNull]
-        public Timestamp InitialIndexingStartTimestamp { get; set; } = new Timestamp(new DateTime(2016, 02, 01, 0, 0, 0, DateTimeKind.Utc));
+        public Timestamp InitialIndexingStartTimestamp { get; set; } = new Timestamp(new DateTime(2020, 01, 01, 0, 0, 0, DateTimeKind.Utc));
 
         public TimeSpan MaxEventsProcessingTimeWindow { get; set; } = TimeSpan.FromHours(1);
 
-        public int MaxEventsProcessingTasksCount { get; set; } = 60000; // slightly less than TaskIdsProcessingBatchSize * IndexingThreadsCount
+        public int MaxEventsProcessingTasksCount { get; set; } = 60000;
 
         public int TaskIdsProcessingBatchSize { get; set; } = 4000;
 
-        public int IndexingThreadsCount { get; set; } = 16;
+        public int IndexingThreadsCount { get; set; } = 2;
 
         public TimeSpan BulkIndexRequestTimeout { get; set; } = TimeSpan.FromMinutes(5);
 
