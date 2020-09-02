@@ -1,23 +1,24 @@
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import ListRowsIcon from "@skbkontur/react-icons/ListRows";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
-import { LocationDescriptor } from "history";
-import * as React from "react";
-import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui/components";
-import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
-import { Accordion } from "Commons/Accordion/Accordion";
+import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
+import Button from "@skbkontur/react-ui/Button";
+import Modal from "@skbkontur/react-ui/Modal";
 import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";
-import { CommonLayout } from "Commons/Layouts";
-import { TimeUtils } from "Commons/TimeUtils";
-import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
-import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
+import { LocationDescriptor } from "history";
+import React from "react";
 
-import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
+import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
+import { cancelableStates, rerunableStates } from "../../Domain/Api/TaskStateExtensions";
 import { taskDetailsCustomRender } from "../../Domain/TaskDetailsCustomRender";
+import { TimeUtils } from "../../Domain/Utils/TimeUtils";
+import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
+import { Accordion } from "../Accordion/Accordion";
+import { CommonLayout } from "../Layouts/CommonLayout";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import { TaskTimeLine } from "../TaskTimeLine/TaskTimeLine";
 
-import cn from "./TaskDetailsPage.less";
+import styles from "./TaskDetailsPage.less";
 
 export interface TaskDetailsPageProps {
     parentLocation: LocationDescriptor;
@@ -74,7 +75,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                                 </Fit>
                             )}
                             {taskDetails && (
-                                <Fit className={cn("task-data-container")}>
+                                <Fit className={styles.taskDataContainer}>
                                     <Accordion
                                         customRender={taskDetailsCustomRender}
                                         value={taskDetails.taskData}
@@ -83,9 +84,9 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                                 </Fit>
                             )}
                             {taskDetails && taskDetails.exceptionInfos && (
-                                <Fit className={cn("exception-container")} data-tid="Exceptions">
+                                <Fit className={styles.exceptionContainer} data-tid="Exceptions">
                                     {taskDetails.exceptionInfos.map((exception, index) => (
-                                        <pre data-tid="Exception" key={index} className={cn("exception")}>
+                                        <pre data-tid="Exception" key={index} className={styles.exception}>
                                             {exception.exceptionMessageInfo}
                                         </pre>
                                     ))}
@@ -172,15 +173,15 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
         }
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmOperationModal">
-                <ModalHeader>Нужно подтверждение</ModalHeader>
-                <ModalBody>
+                <Modal.Header>Нужно подтверждение</Modal.Header>
+                <Modal.Body>
                     <span data-tid="ModalText">
                         {modalType === "Rerun"
                             ? "Уверен, что таску надо перезапустить?"
                             : "Уверен, что таску надо остановить?"}
                     </span>
-                </ModalBody>
-                <ModalFooter>
+                </Modal.Body>
+                <Modal.Footer>
                     <RowStack gap={2}>
                         <Fit>
                             {modalType === "Rerun" ? (
@@ -211,7 +212,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                             </Button>
                         </Fit>
                     </RowStack>
-                </ModalFooter>
+                </Modal.Footer>
             </Modal>
         );
     }

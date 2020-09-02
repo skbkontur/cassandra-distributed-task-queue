@@ -1,13 +1,15 @@
-import * as React from "react";
-import { Button, ButtonLink, Input, Modal, ModalBody, ModalFooter, ModalHeader } from "ui/components";
-import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
+import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
+import Button from "@skbkontur/react-ui/Button";
+import Input from "@skbkontur/react-ui/Input";
+import Modal from "@skbkontur/react-ui/Modal";
 import { DateTimeRangePicker } from "Commons/DateTimeRangePicker/DateTimeRangePicker";
-import { RtqMonitoringSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequest";
+import React from "react";
 
+import { RtqMonitoringSearchRequest } from "../../Domain/Api/RtqMonitoringSearchRequest";
 import { TaskStatesSelect } from "../TaskStatesSelect/TaskStatesSelect";
 import { TaskTypesSelect } from "../TaskTypesSelect/TaskTypesSelect";
 
-import cn from "./TaskQueueFilter.less";
+import styles from "./TaskQueueFilter.less";
 
 export interface TaskQueueFilterProps {
     value: RtqMonitoringSearchRequest;
@@ -94,10 +96,10 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
     public renderModal(): JSX.Element {
         return (
             <Modal data-tid="Modal" onClose={() => this.closeModal()} width={900}>
-                <ModalHeader>Справка</ModalHeader>
-                <ModalBody>
+                <Modal.Header>Справка</Modal.Header>
+                <Modal.Body>
                     При поиске задач можно пользоваться следующими инструментами поиска:
-                    <ol className={cn("modal-list")}>
+                    <ol className={styles.modalList}>
                         <li>
                             Ввод значения без дополнительных указаний. В этом случае найдутся все задачи, в текстовых
                             полях которых встречается это значение.
@@ -146,12 +148,12 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                             пусто, <code>_exists_:Meta.ParentTaskId</code> - поле заполнено.
                         </li>
                     </ol>
-                </ModalBody>
-                <ModalFooter>
-                    <div className={cn("modal-footer")}>
+                </Modal.Body>
+                <Modal.Footer>
+                    <div className={styles.modalFooter}>
                         <Button onClick={() => this.closeModal()}>Закрыть</Button>
                     </div>
-                </ModalFooter>
+                </Modal.Footer>
             </Modal>
         );
     }

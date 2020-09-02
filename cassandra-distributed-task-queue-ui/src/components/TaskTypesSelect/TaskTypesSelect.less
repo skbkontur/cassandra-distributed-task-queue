@@ -1,17 +1,14 @@
 @import "~ui/styles/variables.less";
 
 :local {
-    .button-text {
+    .buttonText {
         display: inline-block;
         width: 138px;
     }
 
-    .tooltip-columns {
-        //Все хорошо с колонками, он обманывает :-)
-        // stylelint-disable plugin/no-unsupported-browser-features
+    .tooltipColumns {
         column-count: 2;
         column-gap: 30px;
-        // stylelint-enable plugin/no-unsupported-browser-features
         max-width: 800px;
 
         label {
@@ -20,7 +17,7 @@
         }
     }
 
-    .tooltip-columns-wrapper {
+    .tooltipColumnsWrapper {
         max-height: 650px;
         overflow: auto;
         // хак, чтобы левый край чекбоксов не съедало в тултипе при overflow: auto (k.solovei, 17.03.2020)

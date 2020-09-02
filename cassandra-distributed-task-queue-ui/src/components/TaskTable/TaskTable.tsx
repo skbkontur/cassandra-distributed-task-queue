@@ -1,12 +1,14 @@
+import { Fit, RowStack } from "@skbkontur/react-stack-layout";
+import Button from "@skbkontur/react-ui/Button";
+import Modal from "@skbkontur/react-ui/Modal";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
-import * as React from "react";
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from "ui/components";
-import { Fit, RowStack } from "ui/layout";
-import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
+import React from "react";
+
+import { TaskMetaInformation } from "../../Domain/Api/TaskMetaInformation";
 
 import { TaskDetails } from "./TaskDetails/TaskDetails";
-import cn from "./TaskTable.less";
+import styles from "./TaskTable.less";
 
 export interface TaskTableProps {
     taskInfos: TaskMetaInformation[];
@@ -53,7 +55,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
     public renderRow(item: TaskMetaInformation): JSX.Element {
         const { allowRerunOrCancel, getTaskLocation } = this.props;
         return (
-            <div key={item.id} className={cn("task-details-row")}>
+            <div key={item.id} className={styles.taskDetailsRow}>
                 <TaskDetails
                     getTaskLocation={getTaskLocation}
                     data-tid="Task"
@@ -72,15 +74,15 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
 
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmOperationModal">
-                <ModalHeader>Нужно подтверждение</ModalHeader>
-                <ModalBody>
+                <Modal.Header>Нужно подтверждение</Modal.Header>
+                <Modal.Body>
                     <span data-tid="ModalText">
                         {modalType === "Rerun"
                             ? "Уверен, что таску надо перезапустить?"
                             : "Уверен, что таску надо остановить?"}
                     </span>
-                </ModalBody>
-                <ModalFooter>
+                </Modal.Body>
+                <Modal.Footer>
                     <RowStack gap={2}>
                         <Fit>
                             {modalType === "Rerun" ? (
@@ -111,7 +113,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
                             </Button>
                         </Fit>
                     </RowStack>
-                </ModalFooter>
+                </Modal.Footer>
             </Modal>
         );
     }

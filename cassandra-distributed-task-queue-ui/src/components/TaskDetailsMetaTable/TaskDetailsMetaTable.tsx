@@ -1,11 +1,12 @@
-import * as React from "react";
-import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { ticksToMilliseconds } from "Commons/ConvertTimeUtil";
 import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
-import { Ticks } from "Domain/DataTypes/Time";
-import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
+import React from "react";
 
-import cn from "./TaskDetailsMetaTable.less";
+import { TaskMetaInformation } from "../../Domain/Api/TaskMetaInformation";
+import { Ticks } from "../../Domain/DataTypes/Time";
+import { ticksToMilliseconds } from "../../Domain/Utils/ConvertTimeUtil";
+import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
+
+import styles from "./TaskDetailsMetaTable.less";
 
 export interface TaskDetailsMetaTableProps {
     taskMeta: TaskMetaInformation;
@@ -15,7 +16,7 @@ export interface TaskDetailsMetaTableProps {
 export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps> {
     public render(): JSX.Element {
         return (
-            <table className={cn("table")}>
+            <table className={styles.table}>
                 <tbody>{this.renderMetaInfo()}</tbody>
             </table>
         );
@@ -104,7 +105,7 @@ function renderDate(date?: Nullable<Ticks>): JSX.Element {
         <span>
             <DateTimeView value={date} />{" "}
             {date && (
-                <span className={cn("ticks")}>
+                <span className={styles.ticks}>
                     (<AllowCopyToClipboard>{date}</AllowCopyToClipboard>)
                 </span>
             )}

@@ -1,25 +1,25 @@
-import { LocationDescriptor } from "history";
-import _ from "lodash";
-import * as React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
 import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
 import { ErrorHandlingContainer } from "Commons/ErrorHandling";
-import { CommonLayout } from "Commons/Layouts";
 import { queryStringMapping, QueryStringMapping } from "Commons/QueryStringMapping";
 import { getEnumValues } from "Commons/QueryStringMapping/QueryStringMappingExtensions";
 import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
-import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { RtqMonitoringSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequest";
+import { LocationDescriptor } from "history";
+import _ from "lodash";
+import React from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+
+import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "../Domain/Api/RemoteTaskQueue";
+import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
-} from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequestUtils";
-import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-
+} from "../Domain/Api/RtqMonitoringSearchRequestUtils";
+import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
+import { TaskState } from "../Domain/Api/TaskState";
+import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 
-interface TaskChainsTreeContainerProps extends RouteComponentProps<any> {
+interface TaskChainsTreeContainerProps extends RouteComponentProps {
     searchQuery: string;
     remoteTaskQueueApi: IRemoteTaskQueueApi;
     taskDetails: Nullable<RtqMonitoringTaskModel[]>;

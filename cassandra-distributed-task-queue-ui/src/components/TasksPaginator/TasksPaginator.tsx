@@ -1,9 +1,8 @@
-import { LocationDescriptor } from "history";
-import * as React from "react";
-import { RouterLink } from "ui/components";
-
 import ArrowBoldLeftIcon from "@skbkontur/react-icons/ArrowBoldLeft";
 import ArrowBoldRightIcon from "@skbkontur/react-icons/ArrowBoldRight";
+import { LocationDescriptor } from "history";
+import React from "react";
+import { RouterLink } from "ui/components";
 
 export interface TasksPaginatorProps {
     nextPageLocation: LocationDescriptor | null;
