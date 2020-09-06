@@ -1,14 +1,14 @@
-import { TimeUtils } from "Commons/TimeUtils";
-import { delay } from "Commons/Utils/PromiseUtils";
 import moment from "moment";
 
-import { IRemoteTaskQueueApi } from "./src/Domain/Api/RemoteTaskQueue";
+import { IRtqMonitoringApi } from "./src/Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "./src/Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringSearchResults } from "./src/Domain/Api/RtqMonitoringSearchResults";
 import { RtqMonitoringTaskModel } from "./src/Domain/Api/RtqMonitoringTaskModel";
 import { TaskManipulationResult } from "./src/Domain/Api/TaskManipulationResult";
 import { TaskMetaInformation } from "./src/Domain/Api/TaskMetaInformation";
 import { TaskState } from "./src/Domain/Api/TaskState";
+import { delay } from "./src/Domain/Utils/PromiseUtils";
+import { TimeUtils } from "./src/Domain/Utils/TimeUtils";
 
 let requestCount = 1;
 function emulateErrors() {
@@ -46,7 +46,7 @@ export function createTask(override: Partial<TaskMetaInformation>): TaskMetaInfo
     return result;
 }
 
-export class RemoteTaskQueueApiFake implements IRemoteTaskQueueApi {
+export class RtqMonitoringApiFake implements IRtqMonitoringApi {
     public async getAllTaskNames(): Promise<string[]> {
         await delay(1300);
         emulateErrors();

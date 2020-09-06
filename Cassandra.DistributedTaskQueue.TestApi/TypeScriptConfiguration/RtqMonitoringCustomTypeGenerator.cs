@@ -26,7 +26,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi.TypeScriptConfigurati
             if (type.Equals(TypeInfo.From<Timestamp>()))
                 return TypeBuilding.RedirectToType("Timestamp", @"..\DataTypes\Timestamp", type);
             if (type.Equals(TypeInfo.From<TimestampRange>()))
-                return TypeBuilding.RedirectToType("TimestampRange", @"..\DataTypes\TimestampRange", type);
+                return TypeBuilding.RedirectToType("DateTimeRange", @"..\DataTypes\DateTimeRange", type);
             if (InternalApiTypeBuildingContext.Accept(type))
                 return new InternalApiTypeBuildingContext(unitFactory.GetOrCreateTypeUnit(initialUnitPath), type);
             return null;

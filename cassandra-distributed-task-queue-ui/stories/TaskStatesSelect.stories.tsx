@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
-import * as React from "react";
+import React from "react";
 
-import { TaskStatesSelect } from "../../src/RemoteTaskQueueMonitoring/components/TaskStatesSelect/TaskStatesSelect";
+import { TaskStatesSelect } from "../src/components/TaskStatesSelect/TaskStatesSelect";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskStatesSelect",

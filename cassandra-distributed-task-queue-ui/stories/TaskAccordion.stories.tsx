@@ -1,7 +1,7 @@
 import _ from "lodash";
-import * as React from "react";
+import React from "react";
 
-import { Accordion } from "Commons/Accordion/Accordion";
+import { Accordion } from "../src/components/Accordion/Accordion";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskAccordion",
@@ -35,7 +35,7 @@ ToggleAllHiddenNothingToToggle.story = {
     name: "Toggle all hidden, nothing to toggle",
 };
 
-function customRender(target: { [key: string]: mixed }, path: string[]): JSX.Element | null {
+function customRender(target: { [key: string]: any }, path: string[]): JSX.Element | null {
     const boxId = target.details?.box && typeof target.details.box === "object" && target.details.box.id;
     if (_.isEqual(path, ["details", "box", "id"]) && boxId != null && typeof boxId === "string") {
         return <a href={`/zzzz/${boxId}`}>{boxId}</a>;

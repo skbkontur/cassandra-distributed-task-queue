@@ -1,9 +1,9 @@
 import _ from "lodash";
-import * as React from "react";
+import React from "react";
 import StoryRouter from "storybook-react-router";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import { TaskTimeLine } from "../../src/RemoteTaskQueueMonitoring/components/TaskTimeLine/TaskTimeLine";
+import { TaskState } from "../src/Domain/Api/TaskState";
+import { TaskTimeLine } from "../src/components/TaskTimeLine/TaskTimeLine";
 
 import { createTask } from "./TaskMetaInformationUtils";
 

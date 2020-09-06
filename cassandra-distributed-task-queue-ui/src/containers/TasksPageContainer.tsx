@@ -1,38 +1,39 @@
+import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
+import Button from "@skbkontur/react-ui/Button";
+import Input from "@skbkontur/react-ui/Input";
+import Loader from "@skbkontur/react-ui/Loader";
+import Modal from "@skbkontur/react-ui/Modal";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
-import { $c } from "property-chain";
-import * as React from "react";
+import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { Button, Input, Loader, Modal, ModalBody, ModalFooter, ModalHeader } from "ui/components";
-import { ColumnStack, Fit, RowStack } from "ui/layout";
-import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
-import { ErrorHandlingContainer } from "Commons/ErrorHandling";
-import { CommonLayout } from "Commons/Layouts";
-import { QueryStringMapping, queryStringMapping, SearchQuery } from "Commons/QueryStringMapping";
-import { getEnumValues } from "Commons/QueryStringMapping/QueryStringMappingExtensions";
-import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
-import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { RtqMonitoringSearchRequest } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequest";
+
+import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
+import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
+import { RtqMonitoringSearchResults } from "../Domain/Api/RtqMonitoringSearchResults";
+import { TaskState } from "../Domain/Api/TaskState";
+import { QueryStringMapping } from "../Domain/QueryStringMapping/QueryStringMapping";
+import { QueryStringMappingBuilder } from "../Domain/QueryStringMapping/QueryStringMappingBuilder";
+import { getEnumValues } from "../Domain/QueryStringMapping/QueryStringMappingExtensions";
+import { SearchQuery } from "../Domain/QueryStringMapping/SearchQuery";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
-} from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchRequestUtils";
-import { RtqMonitoringSearchResults } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringSearchResults";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { SuperUserAccessLevel } from "Domain/EDI/Auth/SuperUserAccessLevel";
-import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
-
-import { TasksPaginator } from "../components/TasksPaginator/TasksPaginator";
+} from "../Domain/RtqMonitoringSearchRequestUtils";
+import { takeLastAndRejectPrevious } from "../Domain/Utils/PromiseUtils";
+import { numberToString } from "../Domain/numberToString";
+import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
+import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskQueueFilter } from "../components/TaskQueueFilter/TaskQueueFilter";
 import { TasksTable } from "../components/TaskTable/TaskTable";
-import { numberToString } from "../Domain/numberToString";
+import { TasksPaginator } from "../components/TasksPaginator/TasksPaginator";
 
-interface TasksPageContainerProps extends RouteComponentProps<any> {
+interface TasksPageContainerProps extends RouteComponentProps {
     searchQuery: string;
-    remoteTaskQueueApi: IRemoteTaskQueueApi;
+    rtqMonitoringApi: IRtqMonitoringApi;
+    isSuperUser: boolean;
     results: Nullable<RtqMonitoringSearchResults>;
     requestParams: Nullable<string>;
-    userInfo: ReactApplicationUserInfo;
 }
 
 interface TasksPageContainerState {
@@ -45,7 +46,7 @@ interface TasksPageContainerState {
     searchRequested: boolean;
 }
 
-const provisionalMapping: QueryStringMapping<RtqMonitoringSearchRequest> = queryStringMapping<
+const provisionalMapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<
     RtqMonitoringSearchRequest
 >()
     .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
@@ -59,7 +60,7 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
         result[name] = name;
         return result;
     }, {});
-    return queryStringMapping<RtqMonitoringSearchRequest>()
+    return new QueryStringMappingBuilder<RtqMonitoringSearchRequest>()
         .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
         .mapToString(x => x.queryString, "q")
         .mapToSet(x => x.names, "types", availableTaskNamesMap, true)
@@ -67,7 +68,10 @@ function createSearchRequestMapping(availableTaskNames: string[]): QueryStringMa
         .build();
 }
 
-const pagingMapping: QueryStringMapping<{ from: Nullable<number>; size: Nullable<number> }> = queryStringMapping<{
+const pagingMapping: QueryStringMapping<{
+    from: Nullable<number>;
+    size: Nullable<number>;
+}> = new QueryStringMappingBuilder<{
     from: Nullable<number>;
     size: Nullable<number>;
 }>()
@@ -93,7 +97,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         searchRequested: false,
     };
     public searchTasks = takeLastAndRejectPrevious(
-        this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
+        this.props.rtqMonitoringApi.search.bind(this.props.rtqMonitoringApi)
     );
 
     public isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
@@ -131,7 +135,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
 
     public async updateAvailableTaskNamesIfNeed(): Promise<void> {
         if (this.state.availableTaskNames === null) {
-            const availableTaskNames = await this.props.remoteTaskQueueApi.getAllTaskNames();
+            const availableTaskNames = await this.props.rtqMonitoringApi.getAllTaskNames();
             this.setState({ availableTaskNames: availableTaskNames });
         }
     }
@@ -248,44 +252,44 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
     }
 
     public async handleRerunTask(id: string): Promise<void> {
-        const { remoteTaskQueueApi } = this.props;
+        const { rtqMonitoringApi } = this.props;
         this.setState({ loading: true });
         try {
-            await remoteTaskQueueApi.rerunTasks([id]);
+            await rtqMonitoringApi.rerunTasks([id]);
         } finally {
             this.setState({ loading: false });
         }
     }
 
     public async handleCancelTask(id: string): Promise<void> {
-        const { remoteTaskQueueApi } = this.props;
+        const { rtqMonitoringApi } = this.props;
         this.setState({ loading: true });
         try {
-            await remoteTaskQueueApi.cancelTasks([id]);
+            await rtqMonitoringApi.cancelTasks([id]);
         } finally {
             this.setState({ loading: false });
         }
     }
 
     public async handleRerunAll(): Promise<void> {
-        const { searchQuery, remoteTaskQueueApi } = this.props;
+        const { searchQuery, rtqMonitoringApi } = this.props;
         const request = this.getRequestBySearchQuery(searchQuery);
 
         this.setState({ loading: true });
         try {
-            await remoteTaskQueueApi.rerunTasksBySearchQuery(request);
+            await rtqMonitoringApi.rerunTasksBySearchQuery(request);
         } finally {
             this.setState({ loading: false });
         }
     }
 
     public async handleCancelAll(): Promise<void> {
-        const { searchQuery, remoteTaskQueueApi } = this.props;
+        const { searchQuery, rtqMonitoringApi } = this.props;
         const request = this.getRequestBySearchQuery(searchQuery);
 
         this.setState({ loading: true });
         try {
-            await remoteTaskQueueApi.cancelTasksBySearchQuery(request);
+            await rtqMonitoringApi.cancelTasksBySearchQuery(request);
         } finally {
             this.setState({ loading: false });
         }
@@ -299,8 +303,8 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
 
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmMultipleOperationModal">
-                <ModalHeader>Нужно подтверждение</ModalHeader>
-                <ModalBody>
+                <Modal.Header>Нужно подтверждение</Modal.Header>
+                <Modal.Body>
                     <ColumnStack gap={2}>
                         <Fit>
                             <span data-tid="ModalText">
@@ -323,8 +327,8 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                             </Fit>,
                         ]}
                     </ColumnStack>
-                </ModalBody>
-                <ModalFooter>
+                </Modal.Body>
+                <Modal.Footer>
                     <RowStack gap={2}>
                         <Fit>
                             {modalType === "Rerun" ? (
@@ -365,7 +369,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                             </Button>
                         </Fit>
                     </RowStack>
-                </ModalFooter>
+                </Modal.Footer>
             </Modal>
         );
     }
@@ -391,20 +395,14 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
     }
 
     public render(): JSX.Element {
-        const currentUser = this.props.userInfo;
-        const allowRerunOrCancel = $c(currentUser)
-            .with(x => x.superUserAccessLevel)
-            .with(x => [SuperUserAccessLevel.God, SuperUserAccessLevel.Developer].includes(x))
-            .return(false);
-
         const { availableTaskNames, request, loading } = this.state;
-        const { results } = this.props;
+        const { results, isSuperUser } = this.props;
         const isStateCompletelyLoaded = results && availableTaskNames;
         const counter = (results && results.totalCount) || 0;
 
         return (
             <CommonLayout>
-                <CommonLayout.GoBack href="/AdminTools">Вернуться к инструментам администратора</CommonLayout.GoBack>
+                <CommonLayout.GoBack to="/AdminTools">Вернуться к инструментам администратора</CommonLayout.GoBack>
                 <CommonLayout.Header data-tid="Header" title="Список задач" />
                 <CommonLayout.Content>
                     <ErrorHandlingContainer />
@@ -422,7 +420,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                                 {results && isStateCompletelyLoaded && (
                                     <ColumnStack block stretch gap={2}>
                                         {counter > 0 && <Fit>Всего результатов: {counter}</Fit>}
-                                        {counter > 0 && allowRerunOrCancel && (
+                                        {counter > 0 && isSuperUser && (
                                             <Fit>
                                                 <RowStack gap={2} data-tid={"ButtonsWrapper"}>
                                                     <Fit>
@@ -447,7 +445,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                                         <Fit>
                                             <TasksTable
                                                 getTaskLocation={id => this.getTaskLocation(id)}
-                                                allowRerunOrCancel={allowRerunOrCancel}
+                                                allowRerunOrCancel={isSuperUser}
                                                 taskInfos={results.taskMetas}
                                                 onRerun={id => {
                                                     this.handleRerunTask(id);
@@ -475,4 +473,4 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
     }
 }
 
-export const TasksPageContainer = withUserInfoStrict(withRouter(withRemoteTaskQueueApi(TasksPageContainerInternal)));
+export const TasksPageContainer = withRouter(TasksPageContainerInternal);

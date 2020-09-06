@@ -1,27 +1,28 @@
-import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
-import { ErrorHandlingContainer } from "Commons/ErrorHandling";
-import { queryStringMapping, QueryStringMapping } from "Commons/QueryStringMapping";
-import { getEnumValues } from "Commons/QueryStringMapping/QueryStringMappingExtensions";
-import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
+import Loader from "@skbkontur/react-ui/Loader";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "../Domain/Api/RemoteTaskQueue";
+import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
+import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
+import { TaskState } from "../Domain/Api/TaskState";
+import { QueryStringMapping } from "../Domain/QueryStringMapping/QueryStringMapping";
+import { QueryStringMappingBuilder } from "../Domain/QueryStringMapping/QueryStringMappingBuilder";
+import { getEnumValues } from "../Domain/QueryStringMapping/QueryStringMappingExtensions";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
-} from "../Domain/Api/RtqMonitoringSearchRequestUtils";
-import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
-import { TaskState } from "../Domain/Api/TaskState";
+} from "../Domain/RtqMonitoringSearchRequestUtils";
+import { takeLastAndRejectPrevious } from "../Domain/Utils/PromiseUtils";
+import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 
 interface TaskChainsTreeContainerProps extends RouteComponentProps {
     searchQuery: string;
-    remoteTaskQueueApi: IRemoteTaskQueueApi;
+    rtqMonitoringApi: IRtqMonitoringApi;
     taskDetails: Nullable<RtqMonitoringTaskModel[]>;
     parentLocation: LocationDescriptor;
     searchedQuery: Nullable<string>;
@@ -33,14 +34,16 @@ interface TaskChainsTreeContainerState {
     request: RtqMonitoringSearchRequest;
 }
 
-const mapping: QueryStringMapping<RtqMonitoringSearchRequest> = queryStringMapping<RtqMonitoringSearchRequest>()
+const mapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<
+    RtqMonitoringSearchRequest
+>()
     .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")
     .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
     .build();
 
-function isNotNullOrUndefined<T extends Object>(input: null | undefined | T): input is T {
+function isNotNullOrUndefined<T>(input: null | undefined | T): input is T {
     return input != null;
 }
 
@@ -54,11 +57,11 @@ class TaskChainsTreeContainerInternal extends React.Component<
         request: createDefaultRemoteTaskQueueSearchRequest(),
     };
     public searchTasks = takeLastAndRejectPrevious(
-        this.props.remoteTaskQueueApi.search.bind(this.props.remoteTaskQueueApi)
+        this.props.rtqMonitoringApi.search.bind(this.props.rtqMonitoringApi)
     );
     public getTaskByIds = takeLastAndRejectPrevious(
         async (ids: string[]): Promise<RtqMonitoringTaskModel[]> => {
-            const result = await Promise.all(ids.map(id => this.props.remoteTaskQueueApi.getTaskDetails(id)));
+            const result = await Promise.all(ids.map(id => this.props.rtqMonitoringApi.getTaskDetails(id)));
             return result;
         }
     );
@@ -164,7 +167,7 @@ class TaskChainsTreeContainerInternal extends React.Component<
                 </CommonLayout.GoBack>
                 <CommonLayout.Header title="Дерево задач" />
                 <CommonLayout.Content>
-                    <DelayedLoader type="big" active={loading} caption={loaderText}>
+                    <Loader type="big" active={loading} caption={loaderText}>
                         <div style={{ overflowX: "auto" }}>
                             {taskDetails && (
                                 <TaskChainTree
@@ -173,7 +176,7 @@ class TaskChainsTreeContainerInternal extends React.Component<
                                 />
                             )}
                         </div>
-                    </DelayedLoader>
+                    </Loader>
                     <ErrorHandlingContainer />
                 </CommonLayout.Content>
             </CommonLayout>
@@ -181,4 +184,4 @@ class TaskChainsTreeContainerInternal extends React.Component<
     }
 }
 
-export const TaskChainsTreeContainer = withRouter(withRemoteTaskQueueApi(TaskChainsTreeContainerInternal));
+export const TaskChainsTreeContainer = withRouter(TaskChainsTreeContainerInternal);

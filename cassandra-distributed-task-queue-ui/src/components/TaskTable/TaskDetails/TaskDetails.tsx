@@ -2,16 +2,16 @@ import DeleteIcon from "@skbkontur/react-icons/Delete";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import Link from "@skbkontur/react-ui/Link";
-import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import { LocationDescriptor } from "history";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 import { TaskMetaInformation } from "../../../Domain/Api/TaskMetaInformation";
 import { TaskState } from "../../../Domain/Api/TaskState";
-import { cancelableStates, rerunableStates } from "../../../Domain/Api/TaskStateExtensions";
 import { Ticks } from "../../../Domain/DataTypes/Time";
+import { cancelableStates, rerunableStates } from "../../../Domain/TaskStateExtensions";
 import { AllowCopyToClipboard } from "../../AllowCopyToClipboard";
+import { DateTimeView } from "../../DateTimeView/DateTimeView";
 
 import styles from "./TaskDetails.less";
 
@@ -44,14 +44,14 @@ function taskDate(
 }
 
 const stateClassNames = {
-    Unknown: "state-unknown",
-    New: "state-new",
-    WaitingForRerun: "state-waiting-for-rerun",
-    WaitingForRerunAfterError: "state-waiting-for-rerun-after-error",
-    Finished: "state-finished",
-    InProcess: "state-in-process",
-    Fatal: "state-fatal",
-    Canceled: "state-canceled",
+    Unknown: "stateUnknown",
+    New: "stateNew",
+    WaitingForRerun: "stateWaitingForRerun",
+    WaitingForRerunAfterError: "stateWaitingForRerunAfterError",
+    Finished: "stateFinished",
+    InProcess: "stateInProcess",
+    Fatal: "stateFatal",
+    Canceled: "stateCanceled",
 };
 
 function getStateClassName(taskState: TaskState): string {
@@ -61,9 +61,9 @@ function getStateClassName(taskState: TaskState): string {
 export function TaskDetails(props: TaskDetailsProps): JSX.Element {
     const { allowRerunOrCancel, taskInfo, onCancel, onRerun, getTaskLocation } = props;
     return (
-        <ColumnStack block gap={1} className={cn("task-details", getStateClassName(taskInfo.state))}>
+        <ColumnStack block gap={1} className={`${styles.taskDetails} ${styles[getStateClassName(taskInfo.state)]}`}>
             <Fit className={styles.name}>
-                <RouterLink data-tid="Name" to={getTaskLocation(taskInfo.id)}>
+                <RouterLink className={styles.routerLink} data-tid="Name" to={getTaskLocation(taskInfo.id)}>
                     {taskInfo.name}
                 </RouterLink>
             </Fit>

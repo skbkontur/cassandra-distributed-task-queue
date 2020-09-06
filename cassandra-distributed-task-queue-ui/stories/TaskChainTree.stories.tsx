@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import StoryRouter from "storybook-react-router";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import { TaskChainTree } from "../../src/RemoteTaskQueueMonitoring/components/TaskChainTree/TaskChainTree";
+import { TaskState } from "../src/Domain/Api/TaskState";
+import { TaskChainTree } from "../src/components/TaskChainTree/TaskChainTree";
 
 import { createTask } from "./TaskMetaInformationUtils";
 

@@ -4,39 +4,41 @@ import ReactDom from "react-dom";
 import { Switch, Redirect, Route } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 
-import { RemoteTaskQueueApiFake } from "./RemoteTaskQueueApiFake";
-import { RemoteTaskQueueApplication, RemoteTaskQueueApi } from "./src";
+import { RtqMonitoringApiFake } from "./RtqMonitoringApiFake";
+import { RemoteTaskQueueApplication, RtqMonitoringApi } from "./src";
 
 const rtqApiPrefix = "/remote-task-queue/";
 
-export const dbViewerApi = process.env.API === "fake" ? new RemoteTaskQueueApiFake() : new DbViewerApi(rtqApiPrefix);
+export const rtqMonitoringApi =
+    process.env.API === "fake" ? new RtqMonitoringApiFake() : new RtqMonitoringApi(rtqApiPrefix);
 
 function AdminToolsEntryPoint() {
     return (
         <BrowserRouter>
             <Switch>
                 <Route
-                    path="/BusinessObjects"
+                    path="/AdminTools/Tasks"
                     render={props => (
                         <RemoteTaskQueueApplication
-                            identifierKeywords={["Cql", "StorageElement"]}
-                            customRenderer={new NullCustomRenderer()}
+                            // identifierKeywords={["Cql", "StorageElement"]}
+                            // customRenderer={new NullCustomRenderer()}
+                            rtqMonitoringApi={rtqMonitoringApi}
                             useErrorHandlingContainer
                             isSuperUser={localStorage.getItem("isSuperUser") === "true"}
-                            dbViewerApi={dbViewerApi}
+                            // dbViewerApi={dbViewerApi}
                             {...props}
                         />
                     )}
                 />
                 <Route exact path="/">
-                    <Redirect to="/BusinessObjects" />
+                    <Redirect to="/AdminTools/Tasks" />
                 </Route>
                 <Route
                     exact
                     path="/Admin"
                     render={() => {
                         localStorage.setItem("isSuperUser", "true");
-                        return <Redirect to="/BusinessObjects" />;
+                        return <Redirect to="/AdminTools/Tasks" />;
                     }}
                 />
             </Switch>

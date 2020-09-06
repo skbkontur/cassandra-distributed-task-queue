@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
-import * as React from "react";
+import React from "react";
 
-import { TaskQueueFilter } from "../../src/RemoteTaskQueueMonitoring/components/TaskQueueFilter/TaskQueueFilter";
+import { TaskQueueFilter } from "../src/components/TaskQueueFilter/TaskQueueFilter";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskQueueFilter",

@@ -30,7 +30,7 @@ interface TimeLineEntryProps {
 
 TimeLine.Branch = function TimeLineBranch({ children }: TimeLineProps): JSX.Element {
     return (
-        <div className={cn("root", "branch")}>
+        <div className={`${styles.root} ${styles.branch}`}>
             <div className={styles.lineUp} />
             {children}
         </div>

@@ -1,9 +1,9 @@
 import { action } from "@storybook/addon-actions";
-import * as React from "react";
+import React from "react";
 import StoryRouter from "storybook-react-router";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import { TaskDetailsPage } from "../../src/RemoteTaskQueueMonitoring/components/TaskDetailsPage/TaskDetailsPage";
+import { TaskState } from "../src/Domain/Api/TaskState";
+import { TaskDetailsPage } from "../src/components/TaskDetailsPage/TaskDetailsPage";
 
 import { createTask } from "./TaskMetaInformationUtils";
 

@@ -1,10 +1,11 @@
-import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
 import React from "react";
+import { Link } from "react-router-dom";
 
 import { TaskMetaInformation } from "../../Domain/Api/TaskMetaInformation";
 import { Ticks } from "../../Domain/DataTypes/Time";
 import { ticksToMilliseconds } from "../../Domain/Utils/ConvertTimeUtil";
 import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
+import { DateTimeView } from "../DateTimeView/DateTimeView";
 
 import styles from "./TaskDetailsMetaTable.less";
 
@@ -80,7 +81,9 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
                 <td>ParentTaskId</td>
                 <td data-tid="ParentTaskId">
                     {taskMeta.parentTaskId && (
-                        <a href={"/AdminTools/Tasks/" + taskMeta.parentTaskId}>{taskMeta.parentTaskId}</a>
+                        <Link className={styles.routerLink} to={"/AdminTools/Tasks/" + taskMeta.parentTaskId}>
+                            {taskMeta.parentTaskId}
+                        </Link>
                     )}
                 </td>
             </tr>,
@@ -90,7 +93,9 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
                     {childTaskIds &&
                         childTaskIds.map(item => (
                             <span key={item}>
-                                <a href={"/AdminTools/Tasks/" + item}>{item}</a>
+                                <Link className={styles.routerLink} to={"/AdminTools/Tasks/" + item}>
+                                    {item}
+                                </Link>
                                 <br />
                             </span>
                         ))}

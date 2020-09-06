@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 
-import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
-import { TimeUtils } from "Commons/TimeUtils";
+import { TimeUtils } from "../src/Domain/Utils/TimeUtils";
+import { DateTimeView } from "../src/components/DateTimeView/DateTimeView";
 
 export default {
     title: "RemoteTaskQueueMonitoring/DateTimeView",

@@ -1,24 +1,20 @@
+import Loader from "@skbkontur/react-ui/Loader";
 import { LocationDescriptor } from "history";
-import { $c } from "property-chain";
-import * as React from "react";
-import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
-import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
-import { ErrorHandlingContainer } from "Commons/ErrorHandling";
-import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
-import { ApiError } from "Domain/ApiBase/ApiBase";
-import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
-import { SuperUserAccessLevel } from "Domain/EDI/Auth/SuperUserAccessLevel";
-import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
+import React from "react";
 
+import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
+import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
+import { ApiError } from "../Domain/ApiBase/ApiError";
+import { takeLastAndRejectPrevious } from "../Domain/Utils/PromiseUtils";
+import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
 import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";
 
 interface TaskDetailsPageContainerProps {
     id: string;
-    remoteTaskQueueApi: IRemoteTaskQueueApi;
+    rtqMonitoringApi: IRtqMonitoringApi;
+    isSuperUser: boolean;
     parentLocation: Nullable<LocationDescriptor>;
-    userInfo: ReactApplicationUserInfo;
 }
 
 interface TaskDetailsPageContainerState {
@@ -27,7 +23,7 @@ interface TaskDetailsPageContainerState {
     notFoundError: boolean;
 }
 
-class TaskDetailsPageContainerInternal extends React.Component<
+export class TaskDetailsPageContainer extends React.Component<
     TaskDetailsPageContainerProps,
     TaskDetailsPageContainerState
 > {
@@ -37,7 +33,7 @@ class TaskDetailsPageContainerInternal extends React.Component<
         notFoundError: false,
     };
     public getTaskDetails = takeLastAndRejectPrevious(
-        this.props.remoteTaskQueueApi.getTaskDetails.bind(this.props.remoteTaskQueueApi)
+        this.props.rtqMonitoringApi.getTaskDetails.bind(this.props.rtqMonitoringApi)
     );
 
     public componentWillMount() {
@@ -80,10 +76,10 @@ class TaskDetailsPageContainerInternal extends React.Component<
     }
 
     public async handlerRerun(): Promise<void> {
-        const { remoteTaskQueueApi, id } = this.props;
+        const { rtqMonitoringApi, id } = this.props;
         this.setState({ loading: true });
         try {
-            await remoteTaskQueueApi.rerunTasks([id]);
+            await rtqMonitoringApi.rerunTasks([id]);
             const taskDetails = await this.getTaskDetails(id);
             this.setState({ taskDetails: taskDetails });
         } finally {
@@ -92,10 +88,10 @@ class TaskDetailsPageContainerInternal extends React.Component<
     }
 
     public async handlerCancel(): Promise<void> {
-        const { remoteTaskQueueApi, id } = this.props;
+        const { rtqMonitoringApi, id } = this.props;
         this.setState({ loading: true });
         try {
-            await remoteTaskQueueApi.cancelTasks([id]);
+            await rtqMonitoringApi.cancelTasks([id]);
             const taskDetails = await this.getTaskDetails(id);
             this.setState({ taskDetails: taskDetails });
         } finally {
@@ -111,11 +107,10 @@ class TaskDetailsPageContainerInternal extends React.Component<
 
     public render(): JSX.Element {
         const { taskDetails, loading, notFoundError } = this.state;
-        const { parentLocation } = this.props;
-        const currentUser = this.props.userInfo;
+        const { parentLocation, isSuperUser } = this.props;
 
         return (
-            <DelayedLoader active={loading} type="big" simulateHeightToEnablePageScroll data-tid="Loader">
+            <Loader active={loading} type="big" data-tid="Loader">
                 {notFoundError && (
                     <TaskNotFoundPage parentLocation={parentLocation || this.getDefaultParetnLocation()} />
                 )}
@@ -123,10 +118,7 @@ class TaskDetailsPageContainerInternal extends React.Component<
                     <TaskDetailsPage
                         getTaskLocation={id => this.getTaskLocation(id)}
                         parentLocation={parentLocation || this.getDefaultParetnLocation()}
-                        allowRerunOrCancel={$c(currentUser)
-                            .with(x => x.superUserAccessLevel)
-                            .with(x => [SuperUserAccessLevel.God, SuperUserAccessLevel.Developer].includes(x))
-                            .return(false)}
+                        allowRerunOrCancel={isSuperUser}
                         taskDetails={taskDetails}
                         onRerun={() => {
                             this.handlerRerun();
@@ -137,9 +129,7 @@ class TaskDetailsPageContainerInternal extends React.Component<
                     />
                 )}
                 <ErrorHandlingContainer />
-            </DelayedLoader>
+            </Loader>
         );
     }
 }
-
-export const TaskDetailsPageContainer = withUserInfoStrict(withRemoteTaskQueueApi(TaskDetailsPageContainerInternal));

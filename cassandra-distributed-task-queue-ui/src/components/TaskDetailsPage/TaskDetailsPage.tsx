@@ -3,17 +3,18 @@ import ListRowsIcon from "@skbkontur/react-icons/ListRows";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import Button from "@skbkontur/react-ui/Button";
+import Link from "@skbkontur/react-ui/Link";
 import Modal from "@skbkontur/react-ui/Modal";
-import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";
 import { LocationDescriptor } from "history";
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 
 import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
-import { cancelableStates, rerunableStates } from "../../Domain/Api/TaskStateExtensions";
-import { taskDetailsCustomRender } from "../../Domain/TaskDetailsCustomRender";
+import { cancelableStates, rerunableStates } from "../../Domain/TaskStateExtensions";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
 import { Accordion } from "../Accordion/Accordion";
+import { RangeSelector } from "../DateTimeRangePicker/RangeSelector";
 import { CommonLayout } from "../Layouts/CommonLayout";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import { TaskTimeLine } from "../TaskTimeLine/TaskTimeLine";
@@ -77,7 +78,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                             {taskDetails && (
                                 <Fit className={styles.taskDataContainer}>
                                     <Accordion
-                                        customRender={taskDetailsCustomRender}
+                                        customRender={() => null}
                                         value={taskDetails.taskData}
                                         title="TaskData"
                                     />
@@ -138,27 +139,32 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                 <Fill />
                 {relatedTasksLocation && (
                     <Fit>
-                        <RouterLink icon={<ListRowsIcon />} data-tid={"RelatedTaskTree"} to={relatedTasksLocation}>
+                        <RouterLink
+                            className={styles.routerLink}
+                            data-tid={"RelatedTaskTree"}
+                            to={relatedTasksLocation}>
+                            <ListRowsIcon />
+                            {"\u00A0"}
                             View related tasks tree
                         </RouterLink>
                     </Fit>
                 )}
                 {isCancelable && (
                     <Fit>
-                        <ButtonLink
+                        <Link
                             icon={<DeleteIcon />}
                             use="danger"
                             data-tid={"CancelButton"}
                             onClick={() => this.cancel()}>
                             Cancel task
-                        </ButtonLink>
+                        </Link>
                     </Fit>
                 )}
                 {isRerunable && (
                     <Fit>
-                        <ButtonLink icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={() => this.rerun()}>
+                        <Link icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={() => this.rerun()}>
                             Rerun task
-                        </ButtonLink>
+                        </Link>
                     </Fit>
                 )}
             </RowStack>

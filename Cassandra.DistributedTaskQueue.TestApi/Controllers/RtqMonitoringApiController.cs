@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+
+using JetBrains.Annotations;
 
 using Microsoft.AspNetCore.Mvc;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
+
+using NotNullAttribute = JetBrains.Annotations.NotNullAttribute;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi.Controllers
 {
@@ -18,19 +21,22 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi.Controllers
         }
 
         [HttpGet]
+        [NotNull, ItemNotNull]
         [Route("available-task-names")]
         public string[] GetAllTaskNames()
         {
             return rtqMonitoringApi.GetAllTasksNames();
         }
 
+        [NotNull]
         [HttpPost]
         [Route("tasks/search")]
-        public RtqMonitoringSearchResults Search([FromBody] RtqMonitoringSearchRequest searchRequest, int from, int size)
+        public RtqMonitoringSearchResults Search([NotNull] [FromBody] RtqMonitoringSearchRequest searchRequest, int from, int size)
         {
             return rtqMonitoringApi.Search(searchRequest, from, size);
         }
 
+        [NotNull]
         [HttpGet]
         [Route("tasks/{taskId}")]
         public RtqMonitoringTaskModel GetTaskDetails([NotNull] string taskId)
@@ -38,30 +44,34 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi.Controllers
             return rtqMonitoringApi.GetTaskDetails(taskId);
         }
 
+        [NotNull]
         [HttpPost]
         [Route("tasks/cancel")]
-        public Dictionary<string, TaskManipulationResult> CancelTasks([FromBody] string[] ids)
+        public Dictionary<string, TaskManipulationResult> CancelTasks([NotNull, ItemNotNull] [FromBody] string[] ids)
         {
             return rtqMonitoringApi.CancelTasks(ids);
         }
 
+        [NotNull]
         [HttpPost]
         [Route("tasks/rerun")]
-        public Dictionary<string, TaskManipulationResult> RerunTasks([FromBody] string[] ids)
+        public Dictionary<string, TaskManipulationResult> RerunTasks([NotNull, ItemNotNull] [FromBody] string[] ids)
         {
             return rtqMonitoringApi.RerunTasks(ids);
         }
 
+        [NotNull]
         [HttpPost]
         [Route("tasks/rerun-by-request")]
-        public Dictionary<string, TaskManipulationResult> RerunTasksBySearchQuery([FromBody] RtqMonitoringSearchRequest searchRequest)
+        public Dictionary<string, TaskManipulationResult> RerunTasksBySearchQuery([NotNull] [FromBody] RtqMonitoringSearchRequest searchRequest)
         {
             return rtqMonitoringApi.RerunTasksBySearchQuery(searchRequest);
         }
 
+        [NotNull]
         [HttpPost]
         [Route("tasks/cancel-by-request")]
-        public Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery([FromBody] RtqMonitoringSearchRequest searchRequest)
+        public Dictionary<string, TaskManipulationResult> CancelTasksBySearchQuery([NotNull] [FromBody] RtqMonitoringSearchRequest searchRequest)
         {
             return rtqMonitoringApi.CancelTasksBySearchQuery(searchRequest);
         }

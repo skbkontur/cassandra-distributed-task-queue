@@ -6,7 +6,7 @@ import Tooltip from "@skbkontur/react-ui/Tooltip";
 import React from "react";
 
 import { TaskState } from "../../Domain/Api/TaskState";
-import { getAllTaskStates } from "../../Domain/Api/TaskStateExtensions";
+import { getAllTaskStates } from "../../Domain/TaskStateExtensions";
 
 import styles from "./TaskStatesSelect.less";
 

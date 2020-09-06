@@ -1,4 +1,4 @@
-import { TaskState } from "./TaskState";
+import { TaskState } from "./Api/TaskState";
 
 export function getAllTaskStates(): TaskState[] {
     return Object.values(TaskState);

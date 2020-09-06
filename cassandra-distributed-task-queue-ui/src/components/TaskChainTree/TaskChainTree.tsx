@@ -92,7 +92,7 @@ export class TaskChainTree extends React.Component<TaskChainTreeProps> {
         return (
             <TimeLineEntry {...iconAndColorProps} key={taskMeta.id} data-tid="TimeLineTaskItem">
                 <div className={styles.taskName} data-tid="TaskName">
-                    <Link to={getTaskLocation(taskMeta.id)}>{taskMeta.name}</Link>
+                    <Link className={styles.routerLink} to={getTaskLocation(taskMeta.id)}>{taskMeta.name}</Link>
                 </div>
                 <div className={styles.taskId} data-tid="TaskId">
                     <AllowCopyToClipboard>{taskMeta.id}</AllowCopyToClipboard>

@@ -1,11 +1,11 @@
 import { action } from "@storybook/addon-actions";
-import * as React from "react";
+import React from "react";
 import StoryRouter from "storybook-react-router";
-import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import { TaskDetails } from "../../src/RemoteTaskQueueMonitoring/components/TaskTable/TaskDetails/TaskDetails";
-import { TasksTable } from "../../src/RemoteTaskQueueMonitoring/components/TaskTable/TaskTable";
+import { TaskMetaInformation } from "../src/Domain/Api/TaskMetaInformation";
+import { TaskState } from "../src/Domain/Api/TaskState";
+import { TaskDetails } from "../src/components/TaskTable/TaskDetails/TaskDetails";
+import { TasksTable } from "../src/components/TaskTable/TaskTable";
 
 import { createTask } from "./TaskMetaInformationUtils";
 

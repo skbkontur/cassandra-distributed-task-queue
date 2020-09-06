@@ -1,7 +1,7 @@
-import * as React from "react";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import React from "react";
 
-import { TaskDetailsMetaTable } from "../../src/RemoteTaskQueueMonitoring/components/TaskDetailsMetaTable/TaskDetailsMetaTable";
+import { TaskState } from "../src/Domain/Api/TaskState";
+import { TaskDetailsMetaTable } from "../src/components/TaskDetailsMetaTable/TaskDetailsMetaTable";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskDetailsMetaTable",

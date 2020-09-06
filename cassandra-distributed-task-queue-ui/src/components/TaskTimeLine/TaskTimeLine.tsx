@@ -8,16 +8,17 @@ import DeleteIcon from "@skbkontur/react-icons/Delete";
 import DownloadIcon from "@skbkontur/react-icons/Download";
 import OkIcon from "@skbkontur/react-icons/Ok";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
-import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
+import Link from "@skbkontur/react-ui/Link";
 import { LocationDescriptor } from "history";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 import { TaskMetaInformation } from "../../Domain/Api/TaskMetaInformation";
 import { TaskState } from "../../Domain/Api/TaskState";
 import { Ticks } from "../../Domain/DataTypes/Time";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
+import { DateTimeView } from "../DateTimeView/DateTimeView";
 
 import styles from "./TaskTimeLine.less";
 import { TimeLine } from "./TimeLine/TimeLine";
@@ -75,7 +76,7 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
 
         return (
             <TimeLineEntry key={entry.title} icon={entry.icon} iconColor={this.getIconColor(severity)}>
-                <div className={cn("entry", severity)}>
+                <div className={`${styles.entry} ${styles[severity]}`}>
                     <div className={styles.title}>{entry.title}</div>
                     {entry.date && (
                         <div className={styles.date}>
@@ -243,23 +244,24 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
 
             return (
                 <TimeLineEntry key="Children" icon={<ArrowBoldDown />} iconColor={IconColors.grey}>
-                    <div className={cn("entry", "waiting")} data-tid="EnqueuedTasks">
+                    <div className={`${styles.entry} ${styles.waiting}`} data-tid="EnqueuedTasks">
                         <div>Enqueued tasks:</div>
                         {childTaskIds.slice(0, visibleTaskIdsCount).map(x => (
                             <div key={x} data-tid="TaskLink">
                                 <AllowCopyToClipboard>
-                                    <Link to={getHrefToTask(x)}>{x}</Link>
+                                    <RouterLink className={styles.routerLink} to={getHrefToTask(x)}>
+                                        {x}
+                                    </RouterLink>
                                 </AllowCopyToClipboard>
                             </div>
                         ))}
 
                         {hiddenTaskIdsCount > 0 && (
-                            <ButtonLink
-                                data-tid={"ShowAllTasks"}
-                                rightIcon={<ArrowTriangleDownIcon />}
-                                onClick={this.showAllMessages}>
+                            <Link data-tid="ShowAllTasks" onClick={this.showAllMessages}>
                                 ...and {hiddenTaskIdsCount} more
-                            </ButtonLink>
+                                {"\u00A0"}
+                                <ArrowTriangleDownIcon />
+                            </Link>
                         )}
                     </div>
                 </TimeLineEntry>
@@ -275,10 +277,12 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
         }
         return (
             <TimeLineEntry key="Parent" icon={<ArrowBoldUpIcon />} iconColor={IconColors.grey}>
-                <div className={cn("entry", "waiting")}>
+                <div className={`${styles.entry} ${styles.waiting}`}>
                     Parent:{" "}
                     <AllowCopyToClipboard>
-                        <Link to={getHrefToTask(taskMeta.parentTaskId)}>{taskMeta.parentTaskId}</Link>
+                        <RouterLink className={styles.routerLink} to={getHrefToTask(taskMeta.parentTaskId)}>
+                            {taskMeta.parentTaskId}
+                        </RouterLink>
                     </AllowCopyToClipboard>
                 </div>
             </TimeLineEntry>

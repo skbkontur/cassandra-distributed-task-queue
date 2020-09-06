@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import StoryRouter from "storybook-react-router";
 
-import { TasksPaginator } from "../../src/RemoteTaskQueueMonitoring/components/TasksPaginator/TasksPaginator";
+import { TasksPaginator } from "../src/components/TasksPaginator/TasksPaginator";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TasksPaginator",

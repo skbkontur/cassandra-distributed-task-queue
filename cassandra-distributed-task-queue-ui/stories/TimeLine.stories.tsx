@@ -1,9 +1,9 @@
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import OkIcon from "@skbkontur/react-icons/Ok";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
-import * as React from "react";
+import React from "react";
 
-import { TimeLine } from "../../src/RemoteTaskQueueMonitoring/components/TaskTimeLine/TimeLine/TimeLine";
+import { TimeLine } from "../src/components/TaskTimeLine/TimeLine/TimeLine";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TimeLine",

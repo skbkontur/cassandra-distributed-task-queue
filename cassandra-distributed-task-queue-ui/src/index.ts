@@ -1,2 +1,2 @@
 export { RemoteTaskQueueApplication } from "./RemoteTaskQueueApplication";
-export { IRemoteTaskQueueApi, RemoteTaskQueueApi } from "./Domain/Api/RemoteTaskQueue";
+export { IRtqMonitoringApi, RtqMonitoringApi } from "./Domain/Api/RtqMonitoringApi";

@@ -1,11 +1,12 @@
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import Button from "@skbkontur/react-ui/Button";
 import Input from "@skbkontur/react-ui/Input";
+import Link from "@skbkontur/react-ui/Link";
 import Modal from "@skbkontur/react-ui/Modal";
-import { DateTimeRangePicker } from "Commons/DateTimeRangePicker/DateTimeRangePicker";
 import React from "react";
 
 import { RtqMonitoringSearchRequest } from "../../Domain/Api/RtqMonitoringSearchRequest";
+import { DateTimeRangePicker } from "../DateTimeRangePicker/DateTimeRangePicker";
 import { TaskStatesSelect } from "../TaskStatesSelect/TaskStatesSelect";
 import { TaskTypesSelect } from "../TaskTypesSelect/TaskTypesSelect";
 
@@ -52,10 +53,10 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                                 }}
                             />
                         </Fit>
-                        <Fit>
-                            <ButtonLink onClick={() => this.openModal()} data-tid="OpenModalButton">
+                        <Fit className={styles.searchLink}>
+                            <Link onClick={() => this.openModal()} data-tid="OpenModalButton">
                                 Что можно ввести в строку поиска
-                            </ButtonLink>
+                            </Link>
                             {openedModal && this.renderModal()}
                         </Fit>
                     </ColumnStack>

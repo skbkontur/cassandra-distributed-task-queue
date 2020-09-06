@@ -1,7 +1,7 @@
 import { action } from "@storybook/addon-actions";
-import * as React from "react";
+import React from "react";
 
-import { TaskTypesSelect } from "../../src/RemoteTaskQueueMonitoring/components/TaskTypesSelect/TaskTypesSelect";
+import { TaskTypesSelect } from "../src/components/TaskTypesSelect/TaskTypesSelect";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskTypesSelect",

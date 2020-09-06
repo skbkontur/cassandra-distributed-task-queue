@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import StoryRouter from "storybook-react-router";
 
-import { TaskNotFoundPage } from "../../src/RemoteTaskQueueMonitoring/components/TaskNotFoundPage/TaskNotFoundPage";
+import { TaskNotFoundPage } from "../src/components/TaskNotFoundPage/TaskNotFoundPage";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskNotFoundPage",

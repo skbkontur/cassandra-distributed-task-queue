@@ -1,8 +1,8 @@
-import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";
-import { TimeUtils } from "Commons/TimeUtils";
-import { DateTimeRange } from "Domain/DataTypes/DateTimeRange";
+import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 
-import { RtqMonitoringSearchRequest } from "./RtqMonitoringSearchRequest";
+import { RtqMonitoringSearchRequest } from "./Api/RtqMonitoringSearchRequest";
+import { DateTimeRange } from "./DataTypes/DateTimeRange";
+import { TimeUtils } from "./Utils/TimeUtils";
 
 function isDateTimeRangeEmpty(range: Nullable<DateTimeRange>): boolean {
     return !(range && (range.lowerBound || range.upperBound));

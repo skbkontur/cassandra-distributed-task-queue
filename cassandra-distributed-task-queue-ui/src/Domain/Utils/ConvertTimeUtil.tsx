@@ -19,6 +19,14 @@ export function timestampToTicks(timeStr: Nullable<string> | Nullable<Date>): Nu
     return commonTime.mul(10000).plus(offset).plus(end).toString();
 }
 
+export function ticksToMilliseconds(timeStr: Nullable<string>): Nullable<number> {
+    if (!timeStr) {
+        return null;
+    }
+    const commonTime = new Decimal(timeStr);
+    return commonTime.div(10000).toNumber();
+}
+
 export function ticksToTimestamp(timeStr: Nullable<string>): Nullable<Date> {
     if (!timeStr) {
         return null;

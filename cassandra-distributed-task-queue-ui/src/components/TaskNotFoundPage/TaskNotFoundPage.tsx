@@ -1,11 +1,11 @@
+import Link from "@skbkontur/react-ui/Link";
 import { LocationDescriptor } from "history";
 import React from "react";
-import { Link } from "ui/components";
 
-import { CommonLayout } from "Commons/Layouts";
+import { CommonLayout } from "../Layouts/CommonLayout";
 
 import SorryImage from "./Sorry.png";
-import cn from "./TaskNotFoundPage.less";
+import styles from "./TaskNotFoundPage.less";
 
 interface TaskNotFoundPageProps {
     parentLocation: LocationDescriptor;
@@ -21,7 +21,7 @@ export class TaskNotFoundPage extends React.Component<TaskNotFoundPageProps> {
                 <CommonLayout.Header title="По этому адресу задачи нет" />
                 <CommonLayout.Content>
                     Это могло произойти по двум причинам:
-                    <ul className={cn("list")}>
+                    <ul className={styles.list}>
                         <li>Неправильный URL. Возможно вы не полностью скопировали ссылку.</li>
                         <li>
                             Задача удалена, потому что она старше 200 дней. Если вам нужна информация из этой задачи,
@@ -29,7 +29,7 @@ export class TaskNotFoundPage extends React.Component<TaskNotFoundPageProps> {
                             <Link href="mailto:ask.edi@skbkontur.ru">ask.edi@skbkontur.ru</Link>.
                         </li>
                     </ul>
-                    <img className={cn("sorry-image")} width={1190} height={515} src={SorryImage} />
+                    <img className={styles.sorryImage} width={1190} height={515} src={SorryImage} />
                 </CommonLayout.Content>
             </CommonLayout>
         );

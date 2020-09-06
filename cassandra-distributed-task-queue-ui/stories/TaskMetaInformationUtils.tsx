@@ -1,8 +1,8 @@
 import moment from "moment";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
 
-import { TimeUtils } from "Commons/TimeUtils";
-import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
+import { TaskMetaInformation } from "../src/Domain/Api/TaskMetaInformation";
+import { TaskState } from "../src/Domain/Api/TaskState";
+import { TimeUtils } from "../src/Domain/Utils/TimeUtils";
 
 export function createTask(override: Partial<TaskMetaInformation>): TaskMetaInformation {
     const defaultTaskMeta: TaskMetaInformation = {

@@ -1,8 +1,8 @@
 import ArrowBoldLeftIcon from "@skbkontur/react-icons/ArrowBoldLeft";
 import ArrowBoldRightIcon from "@skbkontur/react-icons/ArrowBoldRight";
+import Link from "@skbkontur/react-ui/Link";
 import { LocationDescriptor } from "history";
 import React from "react";
-import { RouterLink } from "ui/components";
 
 export interface TasksPaginatorProps {
     nextPageLocation: LocationDescriptor | null;
@@ -15,14 +15,14 @@ export class TasksPaginator extends React.Component<TasksPaginatorProps> {
         return (
             <div>
                 {prevPageLocation && (
-                    <RouterLink to={prevPageLocation} icon={<ArrowBoldLeftIcon />} data-tid="PrevLink">
+                    <Link to={prevPageLocation} icon={<ArrowBoldLeftIcon />} data-tid="PrevLink">
                         Предыдущая
-                    </RouterLink>
+                    </Link>
                 )}
                 {nextPageLocation && (
-                    <RouterLink to={nextPageLocation} icon={<ArrowBoldRightIcon />} data-tid="NextLink">
+                    <Link to={nextPageLocation} icon={<ArrowBoldRightIcon />} data-tid="NextLink">
                         Следующая
-                    </RouterLink>
+                    </Link>
                 )}
             </div>
         );
