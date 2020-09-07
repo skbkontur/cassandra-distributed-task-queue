@@ -17,5 +17,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 
         [CanBeNull, ItemNotNull]
         public string[] Names { get; set; }
+        
+        public int? Offset { get; set; }
+        public int? Count { get; set; }
     }
 }

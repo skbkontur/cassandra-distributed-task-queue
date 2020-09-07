@@ -55,7 +55,7 @@ module.exports = function (env) {
         mode: "development",
         devServer: {
             proxy: {
-                "/db-viewer/**": {
+                "/remote-task-queue/**": {
                     target: "http://localhost:5000/",
                 },
                 "*": {

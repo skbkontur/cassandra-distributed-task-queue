@@ -1,4 +1,3 @@
-import DatePicker from "@skbkontur/react-ui/DatePicker";
 import moment from "moment";
 import React, { SyntheticEvent } from "react";
 
@@ -7,6 +6,7 @@ import { Time, TimeZone } from "../../Domain/DataTypes/Time";
 import { DateUtils } from "../../Domain/Utils/DateUtils";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
+import { DatePicker } from "./DatePicker";
 import styles from "./DateTimeRangePicker.less";
 import { TimePicker } from "./TimePicker";
 

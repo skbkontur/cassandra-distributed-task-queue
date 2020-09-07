@@ -27,12 +27,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
         }
 
         [NotNull]
-        public RtqMonitoringSearchResults Search([NotNull] RtqMonitoringSearchRequest searchRequest, int from, int size)
+        public RtqMonitoringSearchResults Search([NotNull] RtqMonitoringSearchRequest searchRequest)
         {
             if (searchRequest.EnqueueTimestampRange == null)
                 throw new InvalidOperationException("searchRequest.EnqueueTimestampRange is not set");
 
-            var searchResult = FindTasks(searchRequest, from, size);
+            var searchResult = FindTasks(searchRequest);
             var taskMetas = taskManager.GetTaskMetas(searchResult.Ids);
             var taskListItems = new List<TaskMetaInformation>();
             foreach (var taskId in searchResult.Ids)
@@ -48,9 +48,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
         }
 
         [NotNull]
-        private TaskSearchResponse FindTasks([NotNull] RtqMonitoringSearchRequest searchRequest, int from, int size)
+        private TaskSearchResponse FindTasks([NotNull] RtqMonitoringSearchRequest searchRequest)
         {
-            return taskSearchClient.Search(CreateTaskSearchRequest(searchRequest), from, size);
+            if (searchRequest.Offset == null || searchRequest.Count == null)
+                throw new InvalidOperationException("Offset and Count should have value");
+            return taskSearchClient.Search(CreateTaskSearchRequest(searchRequest), searchRequest.Offset.Value, searchRequest.Count.Value);
         }
 
         private IEnumerable<string> FindAllTasks([NotNull] RtqMonitoringSearchRequest searchRequest)

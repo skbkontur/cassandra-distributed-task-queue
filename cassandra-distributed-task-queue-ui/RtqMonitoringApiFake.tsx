@@ -13,9 +13,9 @@ import { TimeUtils } from "./src/Domain/Utils/TimeUtils";
 let requestCount = 1;
 function emulateErrors() {
     requestCount++;
-    if (requestCount % 3 === 0) {
-        throw new Error();
-    }
+    // if (requestCount % 3 === 0) {
+    //     throw new Error();
+    // }
 }
 
 export function createTask(override: Partial<TaskMetaInformation>): TaskMetaInformation {
@@ -53,11 +53,7 @@ export class RtqMonitoringApiFake implements IRtqMonitoringApi {
         return ["Name1", "Name2", "Name3", "Name4", "Name5"];
     }
 
-    public async search(
-        _searchRequest: RtqMonitoringSearchRequest,
-        _from: number,
-        _size: number
-    ): Promise<RtqMonitoringSearchResults> {
+    public async search(_searchRequest: RtqMonitoringSearchRequest): Promise<RtqMonitoringSearchResults> {
         emulateErrors();
         await delay(1000);
         const taskMetaSources: Array<Partial<TaskMetaInformation>> = [

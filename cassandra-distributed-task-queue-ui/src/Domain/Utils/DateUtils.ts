@@ -16,4 +16,8 @@ export class DateUtils {
     ): string {
         return moment.utc(date).utcOffset(timeZone).format(format);
     }
+
+    public static convertStringToDate(date: RussianDateFormat): Date {
+        return moment(date, this.datePickerFormat).toDate();
+    }
 }

@@ -1,5 +1,4 @@
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
-import DatePicker from "@skbkontur/react-ui/DatePicker";
 import React, { SyntheticEvent } from "react";
 
 import { DateTimeRange, DateTimeRangeChange, ICanBeValidated } from "../../Domain/DataTypes/DateTimeRange";
@@ -9,6 +8,7 @@ import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 import { DateTimePicker } from "./DateTimePicker";
 import styles from "./DateTimeRangePicker.less";
 import { RangeSelector } from "./RangeSelector";
+import { DatePicker } from './DatePicker';
 
 export interface PredefinedRangeDefinition {
     tid?: string;

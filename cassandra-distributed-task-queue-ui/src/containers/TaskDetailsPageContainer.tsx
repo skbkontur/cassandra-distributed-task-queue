@@ -4,8 +4,7 @@ import React from "react";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
-import { ApiError } from "../Domain/ApiBase/ApiError";
-import { takeLastAndRejectPrevious } from "../Domain/Utils/PromiseUtils";
+import { ICustomRenderer } from "../Domain/CustomRenderer";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
 import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";
@@ -13,8 +12,10 @@ import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPag
 interface TaskDetailsPageContainerProps {
     id: string;
     rtqMonitoringApi: IRtqMonitoringApi;
+    customRenderer: ICustomRenderer;
     isSuperUser: boolean;
-    parentLocation: Nullable<LocationDescriptor>;
+    path: string;
+    parentLocation: Nullable<string>;
 }
 
 interface TaskDetailsPageContainerState {
@@ -32,21 +33,42 @@ export class TaskDetailsPageContainer extends React.Component<
         taskDetails: null,
         notFoundError: false,
     };
-    public getTaskDetails = takeLastAndRejectPrevious(
-        this.props.rtqMonitoringApi.getTaskDetails.bind(this.props.rtqMonitoringApi)
-    );
 
-    public componentWillMount() {
+    public componentDidMount(): void {
         this.loadData(this.props.id);
     }
 
-    public componentWillReceiveProps(nextProps: TaskDetailsPageContainerProps) {
-        if (this.props.id !== nextProps.id) {
-            this.loadData(nextProps.id);
+    public componentDidUpdate(prevProps: TaskDetailsPageContainerProps): void {
+        if (prevProps.id !== this.props.id) {
+            this.loadData(this.props.id);
         }
     }
 
-    public getTaskLocation(id: string): LocationDescriptor {
+    public render(): JSX.Element {
+        const { taskDetails, loading, notFoundError } = this.state;
+        const { parentLocation, isSuperUser, customRenderer, path } = this.props;
+
+        return (
+            <Loader active={loading} type="big" data-tid="Loader">
+                {notFoundError && <TaskNotFoundPage parentLocation={parentLocation || path} />}
+                {taskDetails && (
+                    <TaskDetailsPage
+                        getTaskLocation={id => this.getTaskLocation(id)}
+                        parentLocation={parentLocation || path}
+                        allowRerunOrCancel={isSuperUser}
+                        taskDetails={taskDetails}
+                        customRenderer={customRenderer}
+                        onRerun={this.handlerRerun}
+                        onCancel={this.handlerCancel}
+                        path={path}
+                    />
+                )}
+                <ErrorHandlingContainer />
+            </Loader>
+        );
+    }
+
+    private getTaskLocation(id: string): LocationDescriptor {
         const { parentLocation } = this.props;
 
         return {
@@ -55,81 +77,43 @@ export class TaskDetailsPageContainer extends React.Component<
         };
     }
 
-    public async loadData(id: string): Promise<void> {
+    private async loadData(id: string): Promise<void> {
+        const { rtqMonitoringApi } = this.props;
+
         this.setState({ loading: true, notFoundError: false });
         try {
-            try {
-                const taskDetails = await this.getTaskDetails(id);
+            const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
+            if (taskDetails) {
                 this.setState({ taskDetails: taskDetails });
-            } catch (e) {
-                if (e instanceof ApiError) {
-                    if (e.statusCode === 404) {
-                        this.setState({ notFoundError: true });
-                        return;
-                    }
-                }
-                throw e;
+                return;
             }
+            this.setState({ notFoundError: true });
         } finally {
             this.setState({ loading: false });
         }
     }
 
-    public async handlerRerun(): Promise<void> {
+    private readonly handlerRerun = async (): Promise<void> => {
         const { rtqMonitoringApi, id } = this.props;
         this.setState({ loading: true });
         try {
             await rtqMonitoringApi.rerunTasks([id]);
-            const taskDetails = await this.getTaskDetails(id);
+            const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
             this.setState({ taskDetails: taskDetails });
         } finally {
             this.setState({ loading: false });
         }
-    }
+    };
 
-    public async handlerCancel(): Promise<void> {
+    private readonly handlerCancel = async (): Promise<void> => {
         const { rtqMonitoringApi, id } = this.props;
         this.setState({ loading: true });
         try {
             await rtqMonitoringApi.cancelTasks([id]);
-            const taskDetails = await this.getTaskDetails(id);
+            const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
             this.setState({ taskDetails: taskDetails });
         } finally {
             this.setState({ loading: false });
         }
-    }
-
-    public getDefaultParetnLocation(): LocationDescriptor {
-        return {
-            pathname: "/AdminTools/Tasks",
-        };
-    }
-
-    public render(): JSX.Element {
-        const { taskDetails, loading, notFoundError } = this.state;
-        const { parentLocation, isSuperUser } = this.props;
-
-        return (
-            <Loader active={loading} type="big" data-tid="Loader">
-                {notFoundError && (
-                    <TaskNotFoundPage parentLocation={parentLocation || this.getDefaultParetnLocation()} />
-                )}
-                {taskDetails && (
-                    <TaskDetailsPage
-                        getTaskLocation={id => this.getTaskLocation(id)}
-                        parentLocation={parentLocation || this.getDefaultParetnLocation()}
-                        allowRerunOrCancel={isSuperUser}
-                        taskDetails={taskDetails}
-                        onRerun={() => {
-                            this.handlerRerun();
-                        }}
-                        onCancel={() => {
-                            this.handlerCancel();
-                        }}
-                    />
-                )}
-                <ErrorHandlingContainer />
-            </Loader>
-        );
-    }
+    };
 }

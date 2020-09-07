@@ -2,7 +2,6 @@ import Loader from "@skbkontur/react-ui/Loader";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
 import React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
@@ -15,23 +14,21 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
-import { takeLastAndRejectPrevious } from "../Domain/Utils/PromiseUtils";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 
-interface TaskChainsTreeContainerProps extends RouteComponentProps {
+interface TaskChainsTreeContainerProps {
     searchQuery: string;
     rtqMonitoringApi: IRtqMonitoringApi;
-    taskDetails: Nullable<RtqMonitoringTaskModel[]>;
-    parentLocation: LocationDescriptor;
-    searchedQuery: Nullable<string>;
+    path: string;
 }
 
 interface TaskChainsTreeContainerState {
     loading: boolean;
     loaderText: string;
     request: RtqMonitoringSearchRequest;
+    taskDetails: RtqMonitoringTaskModel[];
 }
 
 const mapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<
@@ -47,7 +44,7 @@ function isNotNullOrUndefined<T>(input: null | undefined | T): input is T {
     return input != null;
 }
 
-class TaskChainsTreeContainerInternal extends React.Component<
+export class TaskChainsTreeContainer extends React.Component<
     TaskChainsTreeContainerProps,
     TaskChainsTreeContainerState
 > {
@@ -55,16 +52,8 @@ class TaskChainsTreeContainerInternal extends React.Component<
         loading: false,
         loaderText: "",
         request: createDefaultRemoteTaskQueueSearchRequest(),
+        taskDetails: [],
     };
-    public searchTasks = takeLastAndRejectPrevious(
-        this.props.rtqMonitoringApi.search.bind(this.props.rtqMonitoringApi)
-    );
-    public getTaskByIds = takeLastAndRejectPrevious(
-        async (ids: string[]): Promise<RtqMonitoringTaskModel[]> => {
-            const result = await Promise.all(ids.map(id => this.props.rtqMonitoringApi.getTaskDetails(id)));
-            return result;
-        }
-    );
 
     public isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
         const request = mapping.parse(searchQuery);
@@ -79,24 +68,23 @@ class TaskChainsTreeContainerInternal extends React.Component<
         return request;
     }
 
-    public componentWillMount() {
-        const { searchQuery, searchedQuery } = this.props;
+    public componentDidMount(): void {
+        const { searchQuery } = this.props;
         const request = this.getRequestBySearchQuery(searchQuery);
-        if (searchedQuery !== searchQuery) {
+        this.setState({ request: request });
+        if (!this.isSearchRequestEmpty(searchQuery)) {
+            this.loadData(searchQuery, request);
+        }
+    }
+
+    public componentDidUpdate(prevProps: TaskChainsTreeContainerProps): void {
+        if (prevProps.searchQuery !== this.props.searchQuery) {
+            const { searchQuery } = this.props;
+            const request = this.getRequestBySearchQuery(searchQuery);
             this.setState({ request: request });
             if (!this.isSearchRequestEmpty(searchQuery)) {
                 this.loadData(searchQuery, request);
             }
-        }
-    }
-
-    public componentWillReceiveProps(nextProps: TaskChainsTreeContainerProps) {
-        const { searchQuery, taskDetails } = nextProps;
-        const request = this.getRequestBySearchQuery(searchQuery);
-
-        this.setState({ request: request });
-        if (!this.isSearchRequestEmpty(searchQuery) && !taskDetails) {
-            this.loadData(searchQuery, request);
         }
     }
 
@@ -109,21 +97,23 @@ class TaskChainsTreeContainerInternal extends React.Component<
     }
 
     public async loadData(searchQuery: undefined | string, request: RtqMonitoringSearchRequest): Promise<void> {
-        const { history } = this.props;
+        const { rtqMonitoringApi } = this.props;
         let iterationCount = 0;
 
         this.setState({ loading: true, loaderText: "Загрузка задач: 0" });
         try {
             let taskDetails: RtqMonitoringTaskModel[] = [];
             let allTaskIds: string[] = [];
-            const results = await this.searchTasks(request, 0, 100);
-            let taskIdsToLoad = results.taskMetas.map((x: any) => x.id);
+            const results = await rtqMonitoringApi.search(request);
+            let taskIdsToLoad = results.taskMetas.map(x => x.id);
             while (taskIdsToLoad.length > 0) {
                 iterationCount++;
                 if (taskIdsToLoad.length > 100) {
                     throw new Error("Количство задач в дереве превысило допустимый предел: 100 зачад");
                 }
-                const loadedTaskDetails = await this.getTaskByIds(taskIdsToLoad);
+                const loadedTaskDetails = await Promise.all(
+                    taskIdsToLoad.map(id => rtqMonitoringApi.getTaskDetails(id))
+                );
                 allTaskIds = [...allTaskIds, ...taskIdsToLoad];
                 this.setState({ loading: true, loaderText: `Загрузка задач: ${taskDetails.length}` });
                 const parentAndChildrenTaskIds = this.getParentAndChildrenTaskIds(loadedTaskDetails);
@@ -133,14 +123,7 @@ class TaskChainsTreeContainerInternal extends React.Component<
                     break;
                 }
             }
-            history.replace({
-                pathname: "/AdminTools/Tasks/Tree",
-                search: searchQuery,
-                state: {
-                    taskDetails: taskDetails,
-                    searchedQuery: searchQuery,
-                },
-            });
+            this.setState({ taskDetails: taskDetails });
         } finally {
             this.setState({ loading: false });
         }
@@ -151,18 +134,11 @@ class TaskChainsTreeContainerInternal extends React.Component<
     }
 
     public render(): JSX.Element {
-        const { taskDetails, searchQuery, parentLocation } = this.props;
-        const { loaderText, loading } = this.state;
+        const { searchQuery } = this.props;
+        const { loaderText, loading, taskDetails } = this.state;
         return (
             <CommonLayout>
-                <CommonLayout.GoBack
-                    data-tid={"GoBack"}
-                    to={
-                        parentLocation || {
-                            pathname: "/AdminTools/Tasks",
-                            search: searchQuery,
-                        }
-                    }>
+                <CommonLayout.GoBack data-tid="GoBack" to={`/AdminTools/Tasks?${searchQuery}`}>
                     Вернуться к поиску задач
                 </CommonLayout.GoBack>
                 <CommonLayout.Header title="Дерево задач" />
@@ -183,5 +159,3 @@ class TaskChainsTreeContainerInternal extends React.Component<
         );
     }
 }
-
-export const TaskChainsTreeContainer = withRouter(TaskChainsTreeContainerInternal);

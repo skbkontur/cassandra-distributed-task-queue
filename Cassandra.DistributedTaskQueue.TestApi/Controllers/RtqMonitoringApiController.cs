@@ -31,9 +31,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi.Controllers
         [NotNull]
         [HttpPost]
         [Route("tasks/search")]
-        public RtqMonitoringSearchResults Search([NotNull] [FromBody] RtqMonitoringSearchRequest searchRequest, int from, int size)
+        public RtqMonitoringSearchResults Search([NotNull] [FromBody] RtqMonitoringSearchRequest searchRequest)
         {
-            return rtqMonitoringApi.Search(searchRequest, from, size);
+            return rtqMonitoringApi.Search(searchRequest);
         }
 
         [NotNull]

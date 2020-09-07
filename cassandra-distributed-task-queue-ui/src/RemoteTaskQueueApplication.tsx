@@ -1,20 +1,20 @@
-import { LocationDescriptor } from "history";
 import React from "react";
 import { Route, RouteComponentProps, Switch, withRouter } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "./Domain/Api/RtqMonitoringApi";
+import { ICustomRenderer } from "./Domain/CustomRenderer";
 import { TaskChainsTreeContainer } from "./containers/TaskChainsTreeContainer";
 import { TaskDetailsPageContainer } from "./containers/TaskDetailsPageContainer";
 import { TasksPageContainer } from "./containers/TasksPageContainer";
 
 interface RemoteTaskQueueApplicationProps extends RouteComponentProps {
     rtqMonitoringApi: IRtqMonitoringApi;
-    // customRenderer: ICustomRenderer;
+    customRenderer: ICustomRenderer;
     useErrorHandlingContainer: boolean;
     isSuperUser: boolean;
 }
 
-function tryGetParentLocationFromHistoryState(location: any): Nullable<LocationDescriptor> {
+function tryGetParentLocationFromHistoryState(location: any): null | string {
     if (location.state == null) {
         return null;
     }
@@ -26,10 +26,7 @@ function tryGetParentLocationFromHistoryState(location: any): Nullable<LocationD
         if (typeof parentLocation === "object") {
             const { pathname, search } = parentLocation;
             if (typeof pathname === "string" && (search == null || typeof search === "string")) {
-                return {
-                    pathname: pathname,
-                    search: search,
-                };
+                return `${pathname}${search}`;
             }
         }
     }
@@ -40,6 +37,7 @@ export function RemoteTaskQueueApplicationInternal({
     match,
     isSuperUser,
     rtqMonitoringApi,
+    customRenderer,
 }: RemoteTaskQueueApplicationProps): JSX.Element {
     return (
         <Switch>
@@ -50,8 +48,8 @@ export function RemoteTaskQueueApplicationInternal({
                     <TasksPageContainer
                         isSuperUser={isSuperUser}
                         rtqMonitoringApi={rtqMonitoringApi}
-                        searchQuery={location.search}
-                        {...location.state}
+                        searchQuery={location.search || ""}
+                        path={match.url}
                     />
                 )}
             />
@@ -62,8 +60,7 @@ export function RemoteTaskQueueApplicationInternal({
                     <TaskChainsTreeContainer
                         rtqMonitoringApi={rtqMonitoringApi}
                         searchQuery={location.search}
-                        {...location.state}
-                        parentLocation={tryGetParentLocationFromHistoryState(location)}
+                        path={match.url}
                     />
                 )}
             />
@@ -73,8 +70,10 @@ export function RemoteTaskQueueApplicationInternal({
                     <TaskDetailsPageContainer
                         isSuperUser={isSuperUser}
                         rtqMonitoringApi={rtqMonitoringApi}
+                        path={match.url}
                         id={params.id || ""}
                         parentLocation={tryGetParentLocationFromHistoryState(location)}
+                        customRenderer={customRenderer}
                     />
                 )}
             />
