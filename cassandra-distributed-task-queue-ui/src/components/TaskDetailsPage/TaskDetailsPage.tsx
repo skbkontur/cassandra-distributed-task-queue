@@ -40,7 +40,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
     public state: TaskDetailsPageState = { openedModal: false, modalType: "Cancel" };
 
     public render(): JSX.Element {
-        const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation, customRenderer } = this.props;
+        const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation, customRenderer, path } = this.props;
         const { openedModal } = this.state;
 
         return (
@@ -68,6 +68,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                                     <TaskDetailsMetaTable
                                         taskMeta={taskDetails.taskMeta}
                                         childTaskIds={taskDetails.childTaskIds}
+                                        path={path}
                                     />
                                 </Fit>
                             )}
@@ -85,7 +86,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                                 <Fit className={styles.exceptionContainer} data-tid="Exceptions">
                                     {taskDetails.exceptionInfos.map((exception, index) => (
                                         <pre data-tid="Exception" key={index} className={styles.exception}>
-                                            {exception.exceptionMessageInfo}
+                                            {exception}
                                         </pre>
                                     ))}
                                 </Fit>

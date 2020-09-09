@@ -69,10 +69,10 @@ export class TaskDetailsPageContainer extends React.Component<
     }
 
     private getTaskLocation(id: string): LocationDescriptor {
-        const { parentLocation } = this.props;
+        const { path, parentLocation } = this.props;
 
         return {
-            pathname: `/AdminTools/Tasks/${id}`,
+            pathname: `${path}/${id}`,
             state: { parentLocation: parentLocation },
         };
     }

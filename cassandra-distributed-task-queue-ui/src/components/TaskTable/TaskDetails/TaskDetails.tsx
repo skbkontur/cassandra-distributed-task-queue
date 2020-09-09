@@ -6,7 +6,7 @@ import { LocationDescriptor } from "history";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { TaskMetaInformation } from "../../../Domain/Api/TaskMetaInformation";
+import { RtqMonitoringTaskMeta } from "../../../Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../../../Domain/Api/TaskState";
 import { Ticks } from "../../../Domain/DataTypes/Time";
 import { cancelableStates, rerunableStates } from "../../../Domain/TaskStateExtensions";
@@ -16,7 +16,7 @@ import { DateTimeView } from "../../DateTimeView/DateTimeView";
 import styles from "./TaskDetails.less";
 
 interface TaskDetailsProps {
-    taskInfo: TaskMetaInformation;
+    taskInfo: RtqMonitoringTaskMeta;
     allowRerunOrCancel: boolean;
     onRerun: () => any;
     onCancel: () => any;
@@ -24,16 +24,16 @@ interface TaskDetailsProps {
 }
 
 function dateFormatter(
-    item: TaskMetaInformation,
-    selector: (obj: TaskMetaInformation) => Nullable<Ticks>
+    item: RtqMonitoringTaskMeta,
+    selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
 ): JSX.Element {
     return <DateTimeView value={selector(item)} />;
 }
 
 function taskDate(
-    taskInfo: TaskMetaInformation,
+    taskInfo: RtqMonitoringTaskMeta,
     caption: string,
-    selector: (obj: TaskMetaInformation) => Nullable<Ticks>
+    selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
 ): JSX.Element {
     return (
         <div className={styles.date}>

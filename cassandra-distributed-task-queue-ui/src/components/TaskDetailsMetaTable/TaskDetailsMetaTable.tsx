@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { TaskMetaInformation } from "../../Domain/Api/TaskMetaInformation";
+import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 import { Ticks } from "../../Domain/DataTypes/Time";
 import { ticksToMilliseconds } from "../../Domain/Utils/ConvertTimeUtil";
 import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
@@ -10,8 +10,9 @@ import { DateTimeView } from "../DateTimeView/DateTimeView";
 import styles from "./TaskDetailsMetaTable.less";
 
 export interface TaskDetailsMetaTableProps {
-    taskMeta: TaskMetaInformation;
+    taskMeta: RtqMonitoringTaskMeta;
     childTaskIds: string[];
+    path: string;
 }
 
 export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps> {
@@ -24,7 +25,7 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
     }
 
     public renderMetaInfo(): JSX.Element[] {
-        const { taskMeta, childTaskIds } = this.props;
+        const { taskMeta, childTaskIds, path } = this.props;
         const executionTime = ticksToMilliseconds(taskMeta.executionDurationTicks);
         return [
             <tr key="TaskId">
@@ -81,7 +82,7 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
                 <td>ParentTaskId</td>
                 <td data-tid="ParentTaskId">
                     {taskMeta.parentTaskId && (
-                        <Link className={styles.routerLink} to={"/AdminTools/Tasks/" + taskMeta.parentTaskId}>
+                        <Link className={styles.routerLink} to={`${path}/${taskMeta.parentTaskId}`}>
                             {taskMeta.parentTaskId}
                         </Link>
                     )}
@@ -93,7 +94,7 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
                     {childTaskIds &&
                         childTaskIds.map(item => (
                             <span key={item}>
-                                <Link className={styles.routerLink} to={"/AdminTools/Tasks/" + item}>
+                                <Link className={styles.routerLink} to={`${path}/${item}`}>
                                     {item}
                                 </Link>
                                 <br />

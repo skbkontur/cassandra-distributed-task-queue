@@ -20,16 +20,12 @@ export const Default = () => (
             executionDurationTicks: "0",
             state: TaskState.Finished,
             attempts: 1,
-            taskDataId: null,
-            taskExceptionInfoIds: null,
             lastModificationTicks: null,
             expirationTimestampTicks: null,
             expirationModificationTicks: null,
             parentTaskId: null,
-            taskGroupLock: null,
-            traceId: null,
-            traceIsActive: false,
         }}
         childTaskIds={["1e813176-a672-11e6-8c67-1218c2e5c7a5", "1e813176-a672-11e6-8c67-1218c2e5cwew"]}
+        path="/Tasks"
     />
 );

@@ -1,5 +1,4 @@
 import Link from "@skbkontur/react-ui/Link";
-import { LocationDescriptor } from "history";
 import React from "react";
 
 import { CommonLayout } from "../Layouts/CommonLayout";
@@ -8,7 +7,7 @@ import SorryImage from "./Sorry.png";
 import styles from "./TaskNotFoundPage.less";
 
 interface TaskNotFoundPageProps {
-    parentLocation: LocationDescriptor;
+    parentLocation: string;
 }
 
 export class TaskNotFoundPage extends React.Component<TaskNotFoundPageProps> {

@@ -5,6 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+using Newtonsoft.Json.Serialization;
+
 namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi
 {
     public class Startup
@@ -19,7 +21,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.AddSingleton<IControllerFactory>(new GroboControllerFactory());
         }
 

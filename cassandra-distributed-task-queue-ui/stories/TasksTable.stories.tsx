@@ -2,7 +2,7 @@ import { action } from "@storybook/addon-actions";
 import React from "react";
 import StoryRouter from "storybook-react-router";
 
-import { TaskMetaInformation } from "../src/Domain/Api/TaskMetaInformation";
+import { RtqMonitoringTaskMeta } from "../src/Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../src/Domain/Api/TaskState";
 import { TaskDetails } from "../src/components/TaskTable/TaskDetails/TaskDetails";
 import { TasksTable } from "../src/components/TaskTable/TaskTable";
@@ -34,7 +34,7 @@ export const OneTask = () => (
     />
 );
 
-const testTaskInfoSources: Array<Partial<TaskMetaInformation>> = [
+const testTaskInfoSources: Array<Partial<RtqMonitoringTaskMeta>> = [
     {
         name: "SynchronizeUserPartiesToPortalTaskData",
         id: "1e813176-a672-11e6-8c67-1218c2e5c7a2",

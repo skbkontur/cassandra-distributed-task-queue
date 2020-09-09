@@ -130,15 +130,15 @@ export class TaskChainsTreeContainer extends React.Component<
     }
 
     public getTaskLocation(id: string): LocationDescriptor {
-        return { pathname: `/AdminTools/Tasks/${id}` };
+        return { pathname: `${this.props.path}/${id}` };
     }
 
     public render(): JSX.Element {
-        const { searchQuery } = this.props;
+        const { path, searchQuery } = this.props;
         const { loaderText, loading, taskDetails } = this.state;
         return (
             <CommonLayout>
-                <CommonLayout.GoBack data-tid="GoBack" to={`/AdminTools/Tasks?${searchQuery}`}>
+                <CommonLayout.GoBack data-tid="GoBack" to={`${path}${searchQuery}`}>
                     Вернуться к поиску задач
                 </CommonLayout.GoBack>
                 <CommonLayout.Header title="Дерево задач" />

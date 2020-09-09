@@ -20,8 +20,8 @@ export const rtqMonitoringApi =
 class CustomRenderer implements ICustomRenderer {
     public getRelatedTasksLocation(taskDetails: RtqMonitoringTaskModel): Nullable<RtqMonitoringSearchRequest> {
         const documentCirculationId =
-            taskDetails.taskData && typeof taskDetails.taskData["documentCirculationId"] === "string"
-                ? taskDetails.taskData["documentCirculationId"]
+            taskDetails.taskData && typeof taskDetails.taskData["DocumentCirculationId"] === "string"
+                ? taskDetails.taskData["DocumentCirculationId"]
                 : null;
         if (documentCirculationId != null && taskDetails.taskMeta.ticks != null) {
             const rangeSelector = new RangeSelector(TimeUtils.TimeZones.UTC);
@@ -46,7 +46,7 @@ function AdminToolsEntryPoint() {
         <BrowserRouter>
             <Switch>
                 <Route
-                    path="/AdminTools/Tasks"
+                    path="/Tasks"
                     render={props => (
                         <RemoteTaskQueueApplication
                             rtqMonitoringApi={rtqMonitoringApi}
@@ -58,14 +58,14 @@ function AdminToolsEntryPoint() {
                     )}
                 />
                 <Route exact path="/">
-                    <Redirect to="/AdminTools/Tasks" />
+                    <Redirect to="/Tasks" />
                 </Route>
                 <Route
                     exact
                     path="/Admin"
                     render={() => {
                         localStorage.setItem("isSuperUser", "true");
-                        return <Redirect to="/AdminTools/Tasks" />;
+                        return <Redirect to="/Tasks" />;
                     }}
                 />
             </Switch>

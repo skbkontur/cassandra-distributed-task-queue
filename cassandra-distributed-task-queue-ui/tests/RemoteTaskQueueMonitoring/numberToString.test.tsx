@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { numberToString } from "../../../src/RemoteTaskQueueMonitoring/Domain/numberToString";
+import { numberToString } from "../../src/Domain/numberToString";
 
 describe("numberToString", () => {
     it("должен возвращать false, если передан 0", () => {

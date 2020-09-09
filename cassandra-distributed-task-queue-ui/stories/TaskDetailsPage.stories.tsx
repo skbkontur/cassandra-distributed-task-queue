@@ -2,7 +2,9 @@ import { action } from "@storybook/addon-actions";
 import React from "react";
 import StoryRouter from "storybook-react-router";
 
+import { RtqMonitoringTaskModel } from "../src/Domain/Api/RtqMonitoringTaskModel";
 import { TaskState } from "../src/Domain/Api/TaskState";
+import { NullCustomRenderer } from "../src/Domain/CustomRenderer";
 import { TaskDetailsPage } from "../src/components/TaskDetailsPage/TaskDetailsPage";
 
 import { createTask } from "./TaskMetaInformationUtils";
@@ -15,6 +17,8 @@ export default {
 
 export const Default = () => (
     <TaskDetailsPage
+        path="/Tasks"
+        customRenderer={new NullCustomRenderer()}
         parentLocation="/"
         allowRerunOrCancel
         taskDetails={taskDetails}
@@ -24,7 +28,7 @@ export const Default = () => (
     />
 );
 
-const taskDetails = {
+const taskDetails: RtqMonitoringTaskModel = {
     taskMeta: createTask({
         name: "SynchronizeUserPartiesToPortalTaskData",
         id: "1231312312312312",
@@ -37,10 +41,7 @@ const taskDetails = {
     }),
     childTaskIds: ["1e813176-a672-11e6-8c67-1218c2e5c7a5", "1e813176-a672-11e6-8c67-1218c2e5cwew"],
     exceptionInfos: [
-        {
-            exceptionMessageInfo:
-                "SKBKontur.Catalogue.EDI.Domain.New.Documents.Mutators.Validation.DocumentValidationException: Документ содержит ошибки\r\nЗначение «GLN грузополучателя» (C082_E3039 в NAD+CN) обязательно\r\nЗначение «Номер ТД» '10113100140317ОБ001710000' (C506_E1154 в RFF+ABT для LIN+10) не соответствует формату 'Число(2-8)/ДДММГГ(ДДММГГГГ)/Строка(=7)/Число(0-3)'\r\n   at SKBKontur.Catalogue.EDI.Domain.EdiHandling.BoxTasks.OutboxValidatingTaskHandler.HandleInternal[TDocument](TDocument document, OutboxValidatingTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\EdiHandling\\BoxTasks\\OutboxValidatingTaskHandler.cs:line 42\r\n   at HandleInternal_04007e42-d51f-45d0-bc41-5a461a2e735c(Object , Object[] )\r\n   at SKBKontur.Catalogue.EDI.Domain.EdiHandling.BoxTasks.OutboxValidatingTaskHandler.Handle(OutboxValidatingTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\EdiHandling\\BoxTasks\\OutboxValidatingTaskHandler.cs:line 32\r\n   at SKBKontur.Catalogue.EDI.Domain.RemoteTaskQueue.Handling.DampedRerunPeriodicityTaskHandler`1.HandleTask(TTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\RemoteTaskQueue.Handling\\DampedRerunPeriodicityTaskHandler.cs:line 24",
-        },
+        "SKBKontur.Catalogue.EDI.Domain.New.Documents.Mutators.Validation.DocumentValidationException: Документ содержит ошибки\r\nЗначение «GLN грузополучателя» (C082_E3039 в NAD+CN) обязательно\r\nЗначение «Номер ТД» '10113100140317ОБ001710000' (C506_E1154 в RFF+ABT для LIN+10) не соответствует формату 'Число(2-8)/ДДММГГ(ДДММГГГГ)/Строка(=7)/Число(0-3)'\r\n   at SKBKontur.Catalogue.EDI.Domain.EdiHandling.BoxTasks.OutboxValidatingTaskHandler.HandleInternal[TDocument](TDocument document, OutboxValidatingTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\EdiHandling\\BoxTasks\\OutboxValidatingTaskHandler.cs:line 42\r\n   at HandleInternal_04007e42-d51f-45d0-bc41-5a461a2e735c(Object , Object[] )\r\n   at SKBKontur.Catalogue.EDI.Domain.EdiHandling.BoxTasks.OutboxValidatingTaskHandler.Handle(OutboxValidatingTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\EdiHandling\\BoxTasks\\OutboxValidatingTaskHandler.cs:line 32\r\n   at SKBKontur.Catalogue.EDI.Domain.RemoteTaskQueue.Handling.DampedRerunPeriodicityTaskHandler`1.HandleTask(TTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\RemoteTaskQueue.Handling\\DampedRerunPeriodicityTaskHandler.cs:line 24",
     ],
     taskData: {
         deliveryContext: {

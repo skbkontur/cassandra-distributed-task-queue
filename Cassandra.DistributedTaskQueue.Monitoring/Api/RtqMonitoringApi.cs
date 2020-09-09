@@ -4,7 +4,6 @@ using System.Linq;
 
 using JetBrains.Annotations;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client;
@@ -34,11 +33,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 
             var searchResult = FindTasks(searchRequest);
             var taskMetas = taskManager.GetTaskMetas(searchResult.Ids);
-            var taskListItems = new List<TaskMetaInformation>();
+            var taskListItems = new List<RtqMonitoringTaskMeta>();
             foreach (var taskId in searchResult.Ids)
             {
                 if (taskMetas.TryGetValue(taskId, out var taskMeta))
-                    taskListItems.Add(taskMeta);
+                    taskListItems.Add(taskMeta.ToMonitoringTaskMeta());
             }
             return new RtqMonitoringSearchResults
                 {
@@ -93,9 +92,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 
             return new RtqMonitoringTaskModel
                 {
-                    ExceptionInfos = result.ExceptionInfos,
+                    ExceptionInfos = result.ExceptionInfos.Select(x => x.ExceptionMessageInfo).ToArray(),
                     TaskData = result.TaskData,
-                    TaskMeta = result.Context,
+                    TaskMeta = result.Context.ToMonitoringTaskMeta(),
                     ChildTaskIds = taskManager.GetChildrenTaskIds(taskId),
                 };
         }

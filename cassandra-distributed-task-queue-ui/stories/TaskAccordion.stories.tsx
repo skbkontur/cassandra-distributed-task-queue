@@ -8,16 +8,26 @@ export default {
     component: Accordion,
 };
 
-export const Default = () => <Accordion value={document} title="taskData" />;
+export const Default = () => <Accordion renderCaption={null} renderValue={null} value={document} title="taskData" />;
 
-export const WithCustomRender = () => <Accordion customRender={customRender} value={document} title="taskData" />;
+export const WithCustomRender = () => (
+    <Accordion renderCaption={null} renderValue={customRender} value={document} title="taskData" />
+);
 
 export const ToggleAllMultipleItemsWithTitle = () => (
     <div>
         {Array(10)
             .fill(document)
             .map((x, index) => (
-                <Accordion value={x} title={`taskData[${index}]`} showToggleAll defaultCollapsed />
+                <Accordion
+                    key={index}
+                    renderCaption={null}
+                    renderValue={null}
+                    value={x}
+                    title={`taskData[${index}]`}
+                    showToggleAll
+                    defaultCollapsed
+                />
             ))}
     </div>
 );
@@ -25,12 +35,23 @@ ToggleAllMultipleItemsWithTitle.story = {
     name: "Toggle all, multiple items with title",
 };
 
-export const ToggleAllWithoutTitle = () => <Accordion value={document} showToggleAll defaultCollapsed />;
+export const ToggleAllWithoutTitle = () => (
+    <Accordion renderCaption={null} renderValue={null} title={null} value={document} showToggleAll defaultCollapsed />
+);
 ToggleAllWithoutTitle.story = {
     name: "Toggle all, without title",
 };
 
-export const ToggleAllHiddenNothingToToggle = () => <Accordion value={flatDocument} showToggleAll defaultCollapsed />;
+export const ToggleAllHiddenNothingToToggle = () => (
+    <Accordion
+        renderCaption={null}
+        renderValue={null}
+        title={null}
+        value={flatDocument}
+        showToggleAll
+        defaultCollapsed
+    />
+);
 ToggleAllHiddenNothingToToggle.story = {
     name: "Toggle all hidden, nothing to toggle",
 };

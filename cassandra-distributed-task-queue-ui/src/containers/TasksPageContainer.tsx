@@ -19,7 +19,6 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
-import { takeLastAndRejectPrevious } from "../Domain/Utils/PromiseUtils";
 import { numberToString } from "../Domain/numberToString";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
@@ -67,9 +66,6 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         modalType: "Rerun",
         manyTaskConfirm: "",
     };
-    public searchTasks = takeLastAndRejectPrevious(
-        this.props.rtqMonitoringApi.search.bind(this.props.rtqMonitoringApi)
-    );
 
     public componentDidMount() {
         const { searchQuery } = this.props;
@@ -91,21 +87,21 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         const counter = (results && results.totalCount) || 0;
         return (
             <CommonLayout>
-                <CommonLayout.GoBack to="/AdminTools">Вернуться к инструментам администратора</CommonLayout.GoBack>
+                <CommonLayout.GoBack to="..">Вернуться к инструментам администратора</CommonLayout.GoBack>
                 <CommonLayout.Header data-tid="Header" title="Список задач" />
                 <CommonLayout.Content>
                     <ErrorHandlingContainer />
                     <ColumnStack block stretch gap={2}>
-                        <Fit>
-                            <TaskQueueFilter
-                                value={request}
-                                availableTaskTypes={availableTaskNames}
-                                onChange={value => this.setState({ request: { ...this.state.request, ...value } })}
-                                onSearchButtonClick={this.handleSearch}
-                            />
-                        </Fit>
-                        <Fit>
-                            <Loader type="big" active={loading} data-tid={"Loader"}>
+                        <Loader type="big" active={loading} data-tid={"Loader"}>
+                            <Fit>
+                                <TaskQueueFilter
+                                    value={request}
+                                    availableTaskTypes={availableTaskNames}
+                                    onChange={value => this.setState({ request: { ...this.state.request, ...value } })}
+                                    onSearchButtonClick={this.handleSearch}
+                                />
+                            </Fit>
+                            <Fit>
                                 {results && isStateCompletelyLoaded && (
                                     <ColumnStack block stretch gap={2}>
                                         {counter > 0 && <Fit>Всего результатов: {counter}</Fit>}
@@ -152,8 +148,8 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                                         </Fit>
                                     </ColumnStack>
                                 )}
-                            </Loader>
-                        </Fit>
+                            </Fit>
+                        </Loader>
                     </ColumnStack>
                     {this.state.confirmMultipleModalOpened && this.renderModal()}
                 </CommonLayout.Content>
@@ -251,7 +247,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
 
         this.setState({ loading: true });
         try {
-            const results = await this.searchTasks(request);
+            const results = await this.props.rtqMonitoringApi.search(request);
             this.setState({ results: results });
         } finally {
             this.setState({ loading: false });
@@ -262,10 +258,10 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         const { request } = this.state;
 
         return {
-            pathname: `/AdminTools/Tasks/${id}`,
+            pathname: `${this.props.path}/${id}`,
             state: {
                 parentLocation: {
-                    pathname: "/AdminTools/Tasks",
+                    pathname: this.props.path,
                     search: searchRequestMapping.stringify(request),
                 },
             },

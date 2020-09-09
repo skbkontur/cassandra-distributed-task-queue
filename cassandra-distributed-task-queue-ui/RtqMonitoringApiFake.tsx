@@ -3,27 +3,25 @@ import moment from "moment";
 import { IRtqMonitoringApi } from "./src/Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "./src/Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringSearchResults } from "./src/Domain/Api/RtqMonitoringSearchResults";
+import { RtqMonitoringTaskMeta } from "./src/Domain/Api/RtqMonitoringTaskMeta";
 import { RtqMonitoringTaskModel } from "./src/Domain/Api/RtqMonitoringTaskModel";
 import { TaskManipulationResult } from "./src/Domain/Api/TaskManipulationResult";
-import { TaskMetaInformation } from "./src/Domain/Api/TaskMetaInformation";
 import { TaskState } from "./src/Domain/Api/TaskState";
 import { delay } from "./src/Domain/Utils/PromiseUtils";
 import { TimeUtils } from "./src/Domain/Utils/TimeUtils";
 
-let requestCount = 1;
+// let requestCount = 1;
 function emulateErrors() {
-    requestCount++;
+    // requestCount++;
     // if (requestCount % 3 === 0) {
     //     throw new Error();
     // }
 }
 
-export function createTask(override: Partial<TaskMetaInformation>): TaskMetaInformation {
-    const defaultTaskMeta: TaskMetaInformation = {
+export function createTask(override: Partial<RtqMonitoringTaskMeta>): RtqMonitoringTaskMeta {
+    const defaultTaskMeta: RtqMonitoringTaskMeta = {
         name: "Task",
         id: "Id",
-        taskDataId: null,
-        taskExceptionInfoIds: null,
         ticks: TimeUtils.dateToTicks(moment().toDate()),
         minimalStartTicks: TimeUtils.dateToTicks(moment().toDate()),
         startExecutingTicks: TimeUtils.dateToTicks(moment().toDate()),
@@ -35,9 +33,6 @@ export function createTask(override: Partial<TaskMetaInformation>): TaskMetaInfo
         state: TaskState.Finished,
         attempts: 1,
         parentTaskId: "ParentTaskId",
-        taskGroupLock: "",
-        traceId: "",
-        traceIsActive: false,
     };
     const result = {
         ...defaultTaskMeta,
@@ -56,7 +51,7 @@ export class RtqMonitoringApiFake implements IRtqMonitoringApi {
     public async search(_searchRequest: RtqMonitoringSearchRequest): Promise<RtqMonitoringSearchResults> {
         emulateErrors();
         await delay(1000);
-        const taskMetaSources: Array<Partial<TaskMetaInformation>> = [
+        const taskMetaSources: Array<Partial<RtqMonitoringTaskMeta>> = [
             {
                 name: "SynchronizeUserPartiesToPortalTaskData",
                 id: "1e813176-a672-11e6-8c67-1218c2e5c7a2",

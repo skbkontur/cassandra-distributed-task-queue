@@ -5,13 +5,13 @@ import { LocationDescriptor } from "history";
 import _ from "lodash";
 import React from "react";
 
-import { TaskMetaInformation } from "../../Domain/Api/TaskMetaInformation";
+import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 
 import { TaskDetails } from "./TaskDetails/TaskDetails";
 import styles from "./TaskTable.less";
 
 export interface TaskTableProps {
-    taskInfos: TaskMetaInformation[];
+    taskInfos: RtqMonitoringTaskMeta[];
     allowRerunOrCancel: boolean;
     onRerun: (x0: string) => void;
     onCancel: (x0: string) => void;
@@ -52,7 +52,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         );
     }
 
-    public renderRow(item: TaskMetaInformation): JSX.Element {
+    public renderRow(item: RtqMonitoringTaskMeta): JSX.Element {
         const { allowRerunOrCancel, getTaskLocation } = this.props;
         return (
             <div key={item.id} className={styles.taskDetailsRow}>

@@ -1,15 +1,13 @@
 import moment from "moment";
 
-import { TaskMetaInformation } from "../src/Domain/Api/TaskMetaInformation";
+import { RtqMonitoringTaskMeta } from "../src/Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../src/Domain/Api/TaskState";
 import { TimeUtils } from "../src/Domain/Utils/TimeUtils";
 
-export function createTask(override: Partial<TaskMetaInformation>): TaskMetaInformation {
-    const defaultTaskMeta: TaskMetaInformation = {
+export function createTask(override: Partial<RtqMonitoringTaskMeta>): RtqMonitoringTaskMeta {
+    const defaultTaskMeta: RtqMonitoringTaskMeta = {
         name: "Task",
         id: "Id",
-        taskDataId: null,
-        taskExceptionInfoIds: null,
         ticks: TimeUtils.dateToTicks(moment().toDate()),
         minimalStartTicks: TimeUtils.dateToTicks(moment().toDate()),
         startExecutingTicks: TimeUtils.dateToTicks(moment().toDate()),
@@ -21,9 +19,6 @@ export function createTask(override: Partial<TaskMetaInformation>): TaskMetaInfo
         state: TaskState.Finished,
         attempts: 1,
         parentTaskId: "ParentTaskId",
-        taskGroupLock: "",
-        traceId: "",
-        traceIsActive: false,
     };
     const result = {
         ...defaultTaskMeta,

@@ -5,10 +5,10 @@ import { DateTimeRange, DateTimeRangeChange, ICanBeValidated } from "../../Domai
 import { TimeZone } from "../../Domain/DataTypes/Time";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
+import { DatePicker } from "./DatePicker";
 import { DateTimePicker } from "./DateTimePicker";
 import styles from "./DateTimeRangePicker.less";
 import { RangeSelector } from "./RangeSelector";
-import { DatePicker } from './DatePicker';
 
 export interface PredefinedRangeDefinition {
     tid?: string;

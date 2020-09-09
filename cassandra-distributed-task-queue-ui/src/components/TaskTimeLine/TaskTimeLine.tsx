@@ -13,7 +13,7 @@ import { LocationDescriptor } from "history";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-import { TaskMetaInformation } from "../../Domain/Api/TaskMetaInformation";
+import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../../Domain/Api/TaskState";
 import { Ticks } from "../../Domain/DataTypes/Time";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
@@ -34,7 +34,7 @@ const IconColors = {
 const alwaysVisibleTaskIdsCount = 3;
 
 interface TaskTimeLineProps {
-    taskMeta: TaskMetaInformation;
+    taskMeta: RtqMonitoringTaskMeta;
     childTaskIds: string[];
     getHrefToTask: (id: string) => LocationDescriptor;
 }
