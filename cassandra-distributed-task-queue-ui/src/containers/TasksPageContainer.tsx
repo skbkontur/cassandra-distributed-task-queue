@@ -19,7 +19,10 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
+import { RouteUtils } from "../Domain/Utils/RouteUtils";
+import { TimeUtils } from "../Domain/Utils/TimeUtils";
 import { numberToString } from "../Domain/numberToString";
+import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskQueueFilter } from "../components/TaskQueueFilter/TaskQueueFilter";
@@ -87,7 +90,9 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         const counter = (results && results.totalCount) || 0;
         return (
             <CommonLayout>
-                <CommonLayout.GoBack to="..">Вернуться к инструментам администратора</CommonLayout.GoBack>
+                <CommonLayout.GoBack to={RouteUtils.backUrl(this.props)}>
+                    Вернуться к инструментам администратора
+                </CommonLayout.GoBack>
                 <CommonLayout.Header data-tid="Header" title="Список задач" />
                 <CommonLayout.Content>
                     <ErrorHandlingContainer />
@@ -269,10 +274,16 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
     }
 
     private readonly handleSearch = () => {
-        let query = this.getQuery();
-        if (isRemoteTaskQueueSearchRequestEmpty(this.state.request)) {
-            query = this.getQuery(createDefaultRemoteTaskQueueSearchRequest());
+        let request = this.state.request;
+        if (isRemoteTaskQueueSearchRequestEmpty(request)) {
+            request = createDefaultRemoteTaskQueueSearchRequest();
         }
+        if (request.enqueueTimestampRange.lowerBound == null || request.enqueueTimestampRange.upperBound == null) {
+            const rangeSelector = new RangeSelector(TimeUtils.TimeZones.UTC);
+            request.enqueueTimestampRange = rangeSelector.getToday();
+        }
+
+        const query = this.getQuery(request);
         if (query === this.props.path + this.props.searchQuery) {
             this.loadData();
             return;
