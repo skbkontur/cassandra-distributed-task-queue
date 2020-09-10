@@ -38,6 +38,7 @@ export function RemoteTaskQueueApplicationInternal({
     isSuperUser,
     rtqMonitoringApi,
     customRenderer,
+    useErrorHandlingContainer,
 }: RemoteTaskQueueApplicationProps): JSX.Element {
     return (
         <Switch>
@@ -50,6 +51,7 @@ export function RemoteTaskQueueApplicationInternal({
                         rtqMonitoringApi={rtqMonitoringApi}
                         searchQuery={location.search || ""}
                         path={match.url}
+                        useErrorHandlingContainer={useErrorHandlingContainer}
                     />
                 )}
             />
@@ -61,6 +63,7 @@ export function RemoteTaskQueueApplicationInternal({
                         rtqMonitoringApi={rtqMonitoringApi}
                         searchQuery={location.search}
                         path={match.url}
+                        useErrorHandlingContainer={useErrorHandlingContainer}
                     />
                 )}
             />
@@ -74,6 +77,7 @@ export function RemoteTaskQueueApplicationInternal({
                         id={params.id || ""}
                         parentLocation={tryGetParentLocationFromHistoryState(location)}
                         customRenderer={customRenderer}
+                        useErrorHandlingContainer={useErrorHandlingContainer}
                     />
                 )}
             />

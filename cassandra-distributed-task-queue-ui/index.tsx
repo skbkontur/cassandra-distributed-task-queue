@@ -5,10 +5,9 @@ import { Switch, Redirect, Route } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 
 import { RtqMonitoringApiFake } from "./RtqMonitoringApiFake";
-import { RemoteTaskQueueApplication, RtqMonitoringApi } from "./src";
+import { RemoteTaskQueueApplication, RtqMonitoringApi, ICustomRenderer } from "./src";
 import { RtqMonitoringSearchRequest } from "./src/Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringTaskModel } from "./src/Domain/Api/RtqMonitoringTaskModel";
-import { ICustomRenderer } from "./src/Domain/CustomRenderer";
 import { TimeUtils } from "./src/Domain/Utils/TimeUtils";
 import { RangeSelector } from "./src/components/DateTimeRangePicker/RangeSelector";
 

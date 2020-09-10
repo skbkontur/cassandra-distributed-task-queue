@@ -6,10 +6,6 @@ import React from "react";
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
-import { TaskState } from "../Domain/Api/TaskState";
-import { QueryStringMapping } from "../Domain/QueryStringMapping/QueryStringMapping";
-import { QueryStringMappingBuilder } from "../Domain/QueryStringMapping/QueryStringMappingBuilder";
-import { getEnumValues } from "../Domain/QueryStringMapping/QueryStringMappingExtensions";
 import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
@@ -18,10 +14,13 @@ import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlin
 import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 
+import { searchRequestMapping } from "./TasksPageContainer";
+
 interface TaskChainsTreeContainerProps {
     searchQuery: string;
     rtqMonitoringApi: IRtqMonitoringApi;
     path: string;
+    useErrorHandlingContainer: boolean;
 }
 
 interface TaskChainsTreeContainerState {
@@ -30,15 +29,6 @@ interface TaskChainsTreeContainerState {
     request: RtqMonitoringSearchRequest;
     taskDetails: RtqMonitoringTaskModel[];
 }
-
-const mapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<
-    RtqMonitoringSearchRequest
->()
-    .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
-    .mapToString(x => x.queryString, "q")
-    .mapToStringArray(x => x.names, "types")
-    .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
-    .build();
 
 function isNotNullOrUndefined<T>(input: null | undefined | T): input is T {
     return input != null;
@@ -56,12 +46,12 @@ export class TaskChainsTreeContainer extends React.Component<
     };
 
     public isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
-        const request = mapping.parse(searchQuery);
+        const request = searchRequestMapping.parse(searchQuery);
         return isRemoteTaskQueueSearchRequestEmpty(request);
     }
 
     public getRequestBySearchQuery(searchQuery: Nullable<string>): RtqMonitoringSearchRequest {
-        const request = mapping.parse(searchQuery);
+        const request = searchRequestMapping.parse(searchQuery);
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
             return createDefaultRemoteTaskQueueSearchRequest();
         }
@@ -134,7 +124,7 @@ export class TaskChainsTreeContainer extends React.Component<
     }
 
     public render(): JSX.Element {
-        const { path, searchQuery } = this.props;
+        const { path, searchQuery, useErrorHandlingContainer } = this.props;
         const { loaderText, loading, taskDetails } = this.state;
         return (
             <CommonLayout>
@@ -153,7 +143,7 @@ export class TaskChainsTreeContainer extends React.Component<
                             )}
                         </div>
                     </Loader>
-                    <ErrorHandlingContainer />
+                    {useErrorHandlingContainer && <ErrorHandlingContainer />}
                 </CommonLayout.Content>
             </CommonLayout>
         );

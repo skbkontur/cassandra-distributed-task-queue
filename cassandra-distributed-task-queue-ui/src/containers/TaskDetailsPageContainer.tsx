@@ -16,6 +16,7 @@ interface TaskDetailsPageContainerProps {
     isSuperUser: boolean;
     path: string;
     parentLocation: Nullable<string>;
+    useErrorHandlingContainer: boolean;
 }
 
 interface TaskDetailsPageContainerState {
@@ -46,7 +47,7 @@ export class TaskDetailsPageContainer extends React.Component<
 
     public render(): JSX.Element {
         const { taskDetails, loading, notFoundError } = this.state;
-        const { parentLocation, isSuperUser, customRenderer, path } = this.props;
+        const { parentLocation, isSuperUser, customRenderer, path, useErrorHandlingContainer } = this.props;
 
         return (
             <Loader active={loading} type="big" data-tid="Loader">
@@ -63,7 +64,7 @@ export class TaskDetailsPageContainer extends React.Component<
                         path={path}
                     />
                 )}
-                <ErrorHandlingContainer />
+                {useErrorHandlingContainer && <ErrorHandlingContainer />}
             </Loader>
         );
     }

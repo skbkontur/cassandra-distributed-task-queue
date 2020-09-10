@@ -33,6 +33,7 @@ interface TasksPageContainerProps extends RouteComponentProps {
     rtqMonitoringApi: IRtqMonitoringApi;
     isSuperUser: boolean;
     path: string;
+    useErrorHandlingContainer: boolean;
 }
 
 interface TasksPageContainerState {
@@ -83,7 +84,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
 
     public render(): JSX.Element {
         const { availableTaskNames, request, loading, results } = this.state;
-        const { isSuperUser } = this.props;
+        const { isSuperUser, useErrorHandlingContainer } = this.props;
         const isStateCompletelyLoaded = results && availableTaskNames;
         const count = request.count || 20;
         const offset = request.offset || 0;
@@ -95,7 +96,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                 </CommonLayout.GoBack>
                 <CommonLayout.Header data-tid="Header" title="Список задач" />
                 <CommonLayout.Content>
-                    <ErrorHandlingContainer />
+                    {useErrorHandlingContainer && <ErrorHandlingContainer />}
                     <ColumnStack block stretch gap={2}>
                         <Loader type="big" active={loading} data-tid={"Loader"}>
                             <Fit>
