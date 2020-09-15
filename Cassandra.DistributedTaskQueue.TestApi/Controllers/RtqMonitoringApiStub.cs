@@ -25,6 +25,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi.Controllers
 
         public RtqMonitoringTaskModel GetTaskDetails(string taskId)
         {
+            if (!tasks.TryGetValue(taskId, out var meta))
+                return new RtqMonitoringTaskModel();
             return new RtqMonitoringTaskModel
                 {
                     ExceptionInfos = new string[0],
@@ -35,7 +37,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.TestApi.Controllers
                             TestEnum = TestEnum.Value1,
                             DocumentCirculationId = Guid.NewGuid().ToString()
                         },
-                    TaskMeta = tasks[taskId],
+                    TaskMeta = meta,
                     ChildTaskIds = new string[0],
                 };
         }

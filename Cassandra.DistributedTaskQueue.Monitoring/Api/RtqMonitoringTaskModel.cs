@@ -9,6 +9,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 {
     public class RtqMonitoringTaskModel
     {
+        public static RtqMonitoringTaskModel Empty => new RtqMonitoringTaskModel();
+
         [NotNull]
         [JsonProperty("taskMeta")]
         public RtqMonitoringTaskMeta TaskMeta { get; set; }

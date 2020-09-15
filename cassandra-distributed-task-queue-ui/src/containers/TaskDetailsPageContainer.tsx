@@ -48,10 +48,12 @@ export class TaskDetailsPageContainer extends React.Component<
     public render(): JSX.Element {
         const { taskDetails, loading, notFoundError } = this.state;
         const { parentLocation, isSuperUser, customRenderer, path, useErrorHandlingContainer } = this.props;
+        if (notFoundError) {
+            return <TaskNotFoundPage parentLocation={parentLocation || path} />;
+        }
 
         return (
             <Loader active={loading} type="big" data-tid="Loader">
-                {notFoundError && <TaskNotFoundPage parentLocation={parentLocation || path} />}
                 {taskDetails && (
                     <TaskDetailsPage
                         getTaskLocation={id => this.getTaskLocation(id)}
@@ -84,7 +86,7 @@ export class TaskDetailsPageContainer extends React.Component<
         this.setState({ loading: true, notFoundError: false });
         try {
             const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
-            if (taskDetails) {
+            if (taskDetails?.taskMeta) {
                 this.setState({ taskDetails: taskDetails });
                 return;
             }
