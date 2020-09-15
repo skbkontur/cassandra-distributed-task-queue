@@ -125,7 +125,7 @@ export class TaskNotFoundPage extends React.Component<TaskNotFoundPageProps> {
 
         return (
             <>
-                <CommonLayout data-tid="ObjectNotFoundPage" style={{ display: "block" }}>
+                <CommonLayout data-tid="ObjectNotFoundPage" style={{ display: "block", height: "initial" }}>
                     <CommonLayout.GoBack to={parentLocation}>Вернуться к поиску задач</CommonLayout.GoBack>
                     <CommonLayout.Content className={styles.content}>
                         <h2 className={styles.headerTitle} data-tid="Header">

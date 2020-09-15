@@ -83,12 +83,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
                 };
         }
 
-        [CanBeNull]
+        [NotNull]
         public RtqMonitoringTaskModel GetTaskDetails([NotNull] string taskId)
         {
             var result = taskManager.TryGetTaskInfo(taskId);
             if (result == null)
-                return null;
+                return RtqMonitoringTaskModel.Empty;
 
             return new RtqMonitoringTaskModel
                 {

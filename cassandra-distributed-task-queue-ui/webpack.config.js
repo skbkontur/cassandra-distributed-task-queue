@@ -2,6 +2,7 @@
 
 const path = require("path");
 
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const webpack = require("webpack");
 
 module.exports = function (env) {
@@ -17,7 +18,12 @@ module.exports = function (env) {
             rules: [
                 {
                     test: /\.[jt]sx?$/,
-                    use: require.resolve("babel-loader"),
+                    use: {
+                        loader: require.resolve("babel-loader"),
+                        options: {
+                            plugins: [require.resolve("react-refresh/babel")],
+                        },
+                    },
                     exclude: /node_modules/,
                 },
                 {
@@ -51,9 +57,14 @@ module.exports = function (env) {
                 "process.env.NODE_ENV": JSON.stringify("development"),
             }),
             new webpack.NamedModulesPlugin(),
+            new webpack.HotModuleReplacementPlugin(),
+            new ReactRefreshWebpackPlugin(),
         ],
         mode: "development",
         devServer: {
+            hot: true,
+            host: "0.0.0.0",
+            port: 8080,
             proxy: {
                 "/remote-task-queue/**": {
                     target: "http://localhost:5000/",
