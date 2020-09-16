@@ -3,18 +3,18 @@ import ClockIcon from "@skbkontur/react-icons/Clock";
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import HelpLiteIcon from "@skbkontur/react-icons/HelpLite";
 import OkIcon from "@skbkontur/react-icons/Ok";
+import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
-import * as React from "react";
-import { RouterLink } from "ui/components";
-import { ColumnStack, Fit } from "ui/layout";
-import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import React from "react";
+import { Link } from "react-router-dom";
 
+import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
+import { TaskState } from "../../Domain/Api/TaskState";
+import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
 import { TimeLine } from "../TaskTimeLine/TimeLine/TimeLine";
 
-import cn from "./TaskChainTree.less";
+import styles from "./TaskChainTree.less";
 
 const IconColors = {
     red: "#d43517",
@@ -91,10 +91,12 @@ export class TaskChainTree extends React.Component<TaskChainTreeProps> {
         const TimeLineEntry = TimeLine.Entry;
         return (
             <TimeLineEntry {...iconAndColorProps} key={taskMeta.id} data-tid="TimeLineTaskItem">
-                <div className={cn("task-name")} data-tid="TaskName">
-                    <RouterLink to={getTaskLocation(taskMeta.id)}>{taskMeta.name}</RouterLink>
+                <div className={styles.taskName} data-tid="TaskName">
+                    <Link className={styles.routerLink} to={getTaskLocation(taskMeta.id)}>
+                        {taskMeta.name}
+                    </Link>
                 </div>
-                <div className={cn("task-id")} data-tid="TaskId">
+                <div className={styles.taskId} data-tid="TaskId">
                     <AllowCopyToClipboard>{taskMeta.id}</AllowCopyToClipboard>
                 </div>
             </TimeLineEntry>

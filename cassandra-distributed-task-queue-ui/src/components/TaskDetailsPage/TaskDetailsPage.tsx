@@ -1,31 +1,34 @@
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import ListRowsIcon from "@skbkontur/react-icons/ListRows";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
+import Button from "@skbkontur/react-ui/Button";
+import Link from "@skbkontur/react-ui/Link";
+import Modal from "@skbkontur/react-ui/Modal";
 import { LocationDescriptor } from "history";
-import * as React from "react";
-import { Button, ButtonLink, Modal, ModalBody, ModalFooter, ModalHeader, RouterLink } from "ui/components";
-import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
-import { Accordion } from "Commons/Accordion/Accordion";
-import { RangeSelector } from "Commons/DateTimeRangePicker/RangeSelector";
-import { CommonLayout } from "Commons/Layouts";
-import { TimeUtils } from "Commons/TimeUtils";
-import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
-import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
+import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import { buildSearchQueryForRequest } from "../../containers/TasksPageContainer";
-import { taskDetailsCustomRender } from "../../Domain/TaskDetailsCustomRender";
+import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
+import { ICustomRenderer } from "../../Domain/CustomRenderer";
+import { cancelableStates, rerunableStates } from "../../Domain/TaskStateExtensions";
+import { searchRequestMapping } from "../../containers/TasksPageContainer";
+import { Accordion } from "../Accordion/Accordion";
+import { CommonLayout } from "../Layouts/CommonLayout";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import { TaskTimeLine } from "../TaskTimeLine/TaskTimeLine";
 
-import cn from "./TaskDetailsPage.less";
+import styles from "./TaskDetailsPage.less";
 
 export interface TaskDetailsPageProps {
-    parentLocation: LocationDescriptor;
+    parentLocation: string;
     taskDetails: Nullable<RtqMonitoringTaskModel>;
+    customRenderer: ICustomRenderer;
     getTaskLocation: (id: string) => LocationDescriptor;
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => void;
     onCancel: (id: string) => void;
+    path: string;
 }
 
 interface TaskDetailsPageState {
@@ -34,15 +37,10 @@ interface TaskDetailsPageState {
 }
 
 export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskDetailsPageState> {
-    public componentWillMount() {
-        this.setState({
-            openedModal: false,
-            modalType: "Cancel",
-        });
-    }
+    public state: TaskDetailsPageState = { openedModal: false, modalType: "Cancel" };
 
     public render(): JSX.Element {
-        const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation } = this.props;
+        const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation, customRenderer, path } = this.props;
         const { openedModal } = this.state;
 
         return (
@@ -70,23 +68,25 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                                     <TaskDetailsMetaTable
                                         taskMeta={taskDetails.taskMeta}
                                         childTaskIds={taskDetails.childTaskIds}
+                                        path={path}
                                     />
                                 </Fit>
                             )}
                             {taskDetails && (
-                                <Fit className={cn("task-data-container")}>
+                                <Fit className={styles.taskDataContainer}>
                                     <Accordion
-                                        customRender={taskDetailsCustomRender}
+                                        renderCaption={null}
+                                        renderValue={customRenderer.renderDetails}
                                         value={taskDetails.taskData}
                                         title="TaskData"
                                     />
                                 </Fit>
                             )}
                             {taskDetails && taskDetails.exceptionInfos && (
-                                <Fit className={cn("exception-container")} data-tid="Exceptions">
+                                <Fit className={styles.exceptionContainer} data-tid="Exceptions">
                                     {taskDetails.exceptionInfos.map((exception, index) => (
-                                        <pre data-tid="Exception" key={index} className={cn("exception")}>
-                                            {exception.exceptionMessageInfo}
+                                        <pre data-tid="Exception" key={index} className={styles.exception}>
+                                            {exception}
                                         </pre>
                                     ))}
                                 </Fit>
@@ -99,65 +99,49 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
         );
     }
 
-    public getRelatedTasksLocation(taskDetails: RtqMonitoringTaskModel): Nullable<LocationDescriptor> {
-        const documentCirculationId =
-            taskDetails.taskData && typeof taskDetails.taskData["documentCirculationId"] === "string"
-                ? taskDetails.taskData["documentCirculationId"]
-                : null;
-        if (documentCirculationId != null && taskDetails.taskMeta.ticks != null) {
-            const rangeSelector = new RangeSelector(TimeUtils.TimeZones.UTC);
-
-            return {
-                pathname: "/AdminTools/Tasks/Tree",
-                search: buildSearchQueryForRequest({
-                    enqueueTimestampRange: rangeSelector.getMonthOf(TimeUtils.ticksToDate(taskDetails.taskMeta.ticks)),
-                    queryString: `Data.\\*.DocumentCirculationId:"${documentCirculationId || ""}"`,
-                    names: [],
-                    states: [],
-                }),
-            };
-        }
-        return null;
-    }
-
     public renderButtons(): JSX.Element | null {
-        const { taskDetails } = this.props;
+        const { taskDetails, customRenderer, path } = this.props;
         if (!taskDetails) {
             return null;
         }
         const isCancelable = cancelableStates.includes(taskDetails.taskMeta.state);
         const isRerunable = rerunableStates.includes(taskDetails.taskMeta.state);
-        const relatedTasksLocation = this.getRelatedTasksLocation(taskDetails);
-        if (!isCancelable && !isRerunable && relatedTasksLocation == null) {
+        const relatedTasksRequest = customRenderer.getRelatedTasksLocation(taskDetails);
+        if (!isCancelable && !isRerunable && relatedTasksRequest == null) {
             return null;
         }
 
         return (
             <RowStack baseline block gap={2}>
                 <Fill />
-                {relatedTasksLocation && (
+                {relatedTasksRequest && (
                     <Fit>
-                        <RouterLink icon={<ListRowsIcon />} data-tid={"RelatedTaskTree"} to={relatedTasksLocation}>
+                        <RouterLink
+                            className={styles.routerLink}
+                            data-tid={"RelatedTaskTree"}
+                            to={`${path}/Tree${searchRequestMapping.stringify(relatedTasksRequest)}`}>
+                            <ListRowsIcon />
+                            {"\u00A0"}
                             View related tasks tree
                         </RouterLink>
                     </Fit>
                 )}
                 {isCancelable && (
                     <Fit>
-                        <ButtonLink
+                        <Link
                             icon={<DeleteIcon />}
                             use="danger"
                             data-tid={"CancelButton"}
                             onClick={() => this.cancel()}>
                             Cancel task
-                        </ButtonLink>
+                        </Link>
                     </Fit>
                 )}
                 {isRerunable && (
                     <Fit>
-                        <ButtonLink icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={() => this.rerun()}>
+                        <Link icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={() => this.rerun()}>
                             Rerun task
-                        </ButtonLink>
+                        </Link>
                     </Fit>
                 )}
             </RowStack>
@@ -172,15 +156,15 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
         }
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmOperationModal">
-                <ModalHeader>Нужно подтверждение</ModalHeader>
-                <ModalBody>
+                <Modal.Header>Нужно подтверждение</Modal.Header>
+                <Modal.Body>
                     <span data-tid="ModalText">
                         {modalType === "Rerun"
                             ? "Уверен, что таску надо перезапустить?"
                             : "Уверен, что таску надо остановить?"}
                     </span>
-                </ModalBody>
-                <ModalFooter>
+                </Modal.Body>
+                <Modal.Footer>
                     <RowStack gap={2}>
                         <Fit>
                             {modalType === "Rerun" ? (
@@ -211,7 +195,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                             </Button>
                         </Fit>
                     </RowStack>
-                </ModalFooter>
+                </Modal.Footer>
             </Modal>
         );
     }

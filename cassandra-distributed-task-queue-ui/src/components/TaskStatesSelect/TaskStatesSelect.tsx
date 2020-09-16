@@ -1,11 +1,14 @@
 import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
-import * as React from "react";
-import { Button, Checkbox, Tooltip } from "ui/components";
-import { ColumnStack, Fit } from "ui/layout";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { getAllTaskStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
+import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
+import Button from "@skbkontur/react-ui/Button";
+import Checkbox from "@skbkontur/react-ui/Checkbox";
+import Tooltip from "@skbkontur/react-ui/Tooltip";
+import React from "react";
 
-import cn from "./TaskStatesSelect.less";
+import { TaskState } from "../../Domain/Api/TaskState";
+import { getAllTaskStates } from "../../Domain/TaskStateExtensions";
+
+import styles from "./TaskStatesSelect.less";
 
 export interface TaskStatesSelectProps {
     value: TaskState[];
@@ -30,7 +33,7 @@ export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
             <span>
                 <Tooltip render={this.renderTooltip} trigger="click" pos="bottom left">
                     <Button>
-                        <span data-tid="ButtonText" className={cn("button-text")}>
+                        <span data-tid="ButtonText" className={styles.buttonText}>
                             {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
                         </span>
                         <ArrowTriangleDownIcon />

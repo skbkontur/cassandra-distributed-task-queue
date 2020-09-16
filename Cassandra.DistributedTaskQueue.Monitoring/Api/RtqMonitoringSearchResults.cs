@@ -1,14 +1,16 @@
 ﻿using JetBrains.Annotations;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using Newtonsoft.Json;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 {
     public class RtqMonitoringSearchResults
     {
+        [JsonProperty("totalCount")]
         public int TotalCount { get; set; }
 
         [NotNull, ItemNotNull]
-        public TaskMetaInformation[] TaskMetas { get; set; }
+        [JsonProperty("taskMetas")]
+        public RtqMonitoringTaskMeta[] TaskMetas { get; set; }
     }
 }

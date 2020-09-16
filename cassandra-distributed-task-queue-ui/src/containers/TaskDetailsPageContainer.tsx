@@ -1,24 +1,22 @@
+import Loader from "@skbkontur/react-ui/Loader";
 import { LocationDescriptor } from "history";
-import { $c } from "property-chain";
-import * as React from "react";
-import { withUserInfoStrict } from "Commons/AuthProviders/AuthProviders";
-import { DelayedLoader } from "Commons/DelayedLoader/DelayedLoader";
-import { ErrorHandlingContainer } from "Commons/ErrorHandling";
-import { takeLastAndRejectPrevious } from "Commons/Utils/PromiseUtils";
-import { ApiError } from "Domain/ApiBase/ApiBase";
-import { IRemoteTaskQueueApi, withRemoteTaskQueueApi } from "Domain/EDI/Api/RemoteTaskQueue/RemoteTaskQueue";
-import { RtqMonitoringTaskModel } from "Domain/EDI/Api/RemoteTaskQueue/RtqMonitoringTaskModel";
-import { SuperUserAccessLevel } from "Domain/EDI/Auth/SuperUserAccessLevel";
-import { ReactApplicationUserInfo } from "Domain/EDI/ReactApplicationUserInfo";
+import React from "react";
 
+import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
+import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
+import { ICustomRenderer } from "../Domain/CustomRenderer";
+import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
 import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";
 
 interface TaskDetailsPageContainerProps {
     id: string;
-    remoteTaskQueueApi: IRemoteTaskQueueApi;
-    parentLocation: Nullable<LocationDescriptor>;
-    userInfo: ReactApplicationUserInfo;
+    rtqMonitoringApi: IRtqMonitoringApi;
+    customRenderer: ICustomRenderer;
+    isSuperUser: boolean;
+    path: string;
+    parentLocation: Nullable<string>;
+    useErrorHandlingContainer: boolean;
 }
 
 interface TaskDetailsPageContainerState {
@@ -27,7 +25,7 @@ interface TaskDetailsPageContainerState {
     notFoundError: boolean;
 }
 
-class TaskDetailsPageContainerInternal extends React.Component<
+export class TaskDetailsPageContainer extends React.Component<
     TaskDetailsPageContainerProps,
     TaskDetailsPageContainerState
 > {
@@ -36,110 +34,89 @@ class TaskDetailsPageContainerInternal extends React.Component<
         taskDetails: null,
         notFoundError: false,
     };
-    public getTaskDetails = takeLastAndRejectPrevious(
-        this.props.remoteTaskQueueApi.getTaskDetails.bind(this.props.remoteTaskQueueApi)
-    );
 
-    public componentWillMount() {
+    public componentDidMount(): void {
         this.loadData(this.props.id);
     }
 
-    public componentWillReceiveProps(nextProps: TaskDetailsPageContainerProps) {
-        if (this.props.id !== nextProps.id) {
-            this.loadData(nextProps.id);
+    public componentDidUpdate(prevProps: TaskDetailsPageContainerProps): void {
+        if (prevProps.id !== this.props.id) {
+            this.loadData(this.props.id);
         }
-    }
-
-    public getTaskLocation(id: string): LocationDescriptor {
-        const { parentLocation } = this.props;
-
-        return {
-            pathname: `/AdminTools/Tasks/${id}`,
-            state: { parentLocation: parentLocation },
-        };
-    }
-
-    public async loadData(id: string): Promise<void> {
-        this.setState({ loading: true, notFoundError: false });
-        try {
-            try {
-                const taskDetails = await this.getTaskDetails(id);
-                this.setState({ taskDetails: taskDetails });
-            } catch (e) {
-                if (e instanceof ApiError) {
-                    if (e.statusCode === 404) {
-                        this.setState({ notFoundError: true });
-                        return;
-                    }
-                }
-                throw e;
-            }
-        } finally {
-            this.setState({ loading: false });
-        }
-    }
-
-    public async handlerRerun(): Promise<void> {
-        const { remoteTaskQueueApi, id } = this.props;
-        this.setState({ loading: true });
-        try {
-            await remoteTaskQueueApi.rerunTasks([id]);
-            const taskDetails = await this.getTaskDetails(id);
-            this.setState({ taskDetails: taskDetails });
-        } finally {
-            this.setState({ loading: false });
-        }
-    }
-
-    public async handlerCancel(): Promise<void> {
-        const { remoteTaskQueueApi, id } = this.props;
-        this.setState({ loading: true });
-        try {
-            await remoteTaskQueueApi.cancelTasks([id]);
-            const taskDetails = await this.getTaskDetails(id);
-            this.setState({ taskDetails: taskDetails });
-        } finally {
-            this.setState({ loading: false });
-        }
-    }
-
-    public getDefaultParetnLocation(): LocationDescriptor {
-        return {
-            pathname: "/AdminTools/Tasks",
-        };
     }
 
     public render(): JSX.Element {
         const { taskDetails, loading, notFoundError } = this.state;
-        const { parentLocation } = this.props;
-        const currentUser = this.props.userInfo;
+        const { parentLocation, isSuperUser, customRenderer, path, useErrorHandlingContainer } = this.props;
+        if (notFoundError) {
+            return <TaskNotFoundPage parentLocation={parentLocation || path} />;
+        }
 
         return (
-            <DelayedLoader active={loading} type="big" simulateHeightToEnablePageScroll data-tid="Loader">
-                {notFoundError && (
-                    <TaskNotFoundPage parentLocation={parentLocation || this.getDefaultParetnLocation()} />
-                )}
+            <Loader active={loading} type="big" data-tid="Loader">
                 {taskDetails && (
                     <TaskDetailsPage
                         getTaskLocation={id => this.getTaskLocation(id)}
-                        parentLocation={parentLocation || this.getDefaultParetnLocation()}
-                        allowRerunOrCancel={$c(currentUser)
-                            .with(x => x.superUserAccessLevel)
-                            .with(x => [SuperUserAccessLevel.God, SuperUserAccessLevel.Developer].includes(x))
-                            .return(false)}
+                        parentLocation={parentLocation || path}
+                        allowRerunOrCancel={isSuperUser}
                         taskDetails={taskDetails}
-                        onRerun={() => {
-                            this.handlerRerun();
-                        }}
-                        onCancel={() => {
-                            this.handlerCancel();
-                        }}
+                        customRenderer={customRenderer}
+                        onRerun={this.handlerRerun}
+                        onCancel={this.handlerCancel}
+                        path={path}
                     />
                 )}
-                <ErrorHandlingContainer />
-            </DelayedLoader>
+                {useErrorHandlingContainer && <ErrorHandlingContainer />}
+            </Loader>
         );
     }
-}
 
-export const TaskDetailsPageContainer = withUserInfoStrict(withRemoteTaskQueueApi(TaskDetailsPageContainerInternal));
+    private getTaskLocation(id: string): LocationDescriptor {
+        const { path, parentLocation } = this.props;
+
+        return {
+            pathname: `${path}/${id}`,
+            state: { parentLocation: parentLocation },
+        };
+    }
+
+    private async loadData(id: string): Promise<void> {
+        const { rtqMonitoringApi } = this.props;
+
+        this.setState({ loading: true, notFoundError: false });
+        try {
+            const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
+            if (taskDetails.taskMeta) {
+                this.setState({ taskDetails: taskDetails });
+                return;
+            }
+            this.setState({ notFoundError: true });
+        } finally {
+            this.setState({ loading: false });
+        }
+    }
+
+    private readonly handlerRerun = async (): Promise<void> => {
+        const { rtqMonitoringApi, id } = this.props;
+        this.setState({ loading: true });
+        try {
+            await rtqMonitoringApi.rerunTasks([id]);
+            const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
+            this.setState({ taskDetails: taskDetails });
+        } finally {
+            this.setState({ loading: false });
+        }
+    };
+
+    private readonly handlerCancel = async (): Promise<void> => {
+        const { rtqMonitoringApi, id } = this.props;
+        this.setState({ loading: true });
+        try {
+            await rtqMonitoringApi.cancelTasks([id]);
+            const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
+            this.setState({ taskDetails: taskDetails });
+        } finally {
+            this.setState({ loading: false });
+        }
+    };
+}

@@ -1,28 +1,31 @@
-import * as React from "react";
-import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { ticksToMilliseconds } from "Commons/ConvertTimeUtil";
-import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
-import { Ticks } from "Domain/DataTypes/Time";
-import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
+import React from "react";
+import { Link } from "react-router-dom";
 
-import cn from "./TaskDetailsMetaTable.less";
+import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
+import { Ticks } from "../../Domain/DataTypes/Time";
+import { ticksToMilliseconds } from "../../Domain/Utils/ConvertTimeUtil";
+import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
+import { DateTimeView } from "../DateTimeView/DateTimeView";
+
+import styles from "./TaskDetailsMetaTable.less";
 
 export interface TaskDetailsMetaTableProps {
-    taskMeta: TaskMetaInformation;
+    taskMeta: RtqMonitoringTaskMeta;
     childTaskIds: string[];
+    path: string;
 }
 
 export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTableProps> {
     public render(): JSX.Element {
         return (
-            <table className={cn("table")}>
+            <table className={styles.table}>
                 <tbody>{this.renderMetaInfo()}</tbody>
             </table>
         );
     }
 
     public renderMetaInfo(): JSX.Element[] {
-        const { taskMeta, childTaskIds } = this.props;
+        const { taskMeta, childTaskIds, path } = this.props;
         const executionTime = ticksToMilliseconds(taskMeta.executionDurationTicks);
         return [
             <tr key="TaskId">
@@ -79,7 +82,9 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
                 <td>ParentTaskId</td>
                 <td data-tid="ParentTaskId">
                     {taskMeta.parentTaskId && (
-                        <a href={"/AdminTools/Tasks/" + taskMeta.parentTaskId}>{taskMeta.parentTaskId}</a>
+                        <Link className={styles.routerLink} to={`${path}/${taskMeta.parentTaskId}`}>
+                            {taskMeta.parentTaskId}
+                        </Link>
                     )}
                 </td>
             </tr>,
@@ -89,7 +94,9 @@ export class TaskDetailsMetaTable extends React.Component<TaskDetailsMetaTablePr
                     {childTaskIds &&
                         childTaskIds.map(item => (
                             <span key={item}>
-                                <a href={"/AdminTools/Tasks/" + item}>{item}</a>
+                                <Link className={styles.routerLink} to={`${path}/${item}`}>
+                                    {item}
+                                </Link>
                                 <br />
                             </span>
                         ))}
@@ -104,7 +111,7 @@ function renderDate(date?: Nullable<Ticks>): JSX.Element {
         <span>
             <DateTimeView value={date} />{" "}
             {date && (
-                <span className={cn("ticks")}>
+                <span className={styles.ticks}>
                     (<AllowCopyToClipboard>{date}</AllowCopyToClipboard>)
                 </span>
             )}

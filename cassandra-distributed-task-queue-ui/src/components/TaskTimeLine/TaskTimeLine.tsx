@@ -8,17 +8,19 @@ import DeleteIcon from "@skbkontur/react-icons/Delete";
 import DownloadIcon from "@skbkontur/react-icons/Download";
 import OkIcon from "@skbkontur/react-icons/Ok";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import Link from "@skbkontur/react-ui/Link";
 import { LocationDescriptor } from "history";
-import * as React from "react";
-import { ButtonLink, RouterLink } from "ui/components";
-import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
-import { TimeUtils } from "Commons/TimeUtils";
-import { Ticks } from "Domain/DataTypes/Time";
-import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
+import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import cn from "./TaskTimeLine.less";
+import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
+import { TaskState } from "../../Domain/Api/TaskState";
+import { Ticks } from "../../Domain/DataTypes/Time";
+import { TimeUtils } from "../../Domain/Utils/TimeUtils";
+import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
+import { DateTimeView } from "../DateTimeView/DateTimeView";
+
+import styles from "./TaskTimeLine.less";
 import { TimeLine } from "./TimeLine/TimeLine";
 
 const TimeLineEntry = TimeLine.Entry;
@@ -32,7 +34,7 @@ const IconColors = {
 const alwaysVisibleTaskIdsCount = 3;
 
 interface TaskTimeLineProps {
-    taskMeta: TaskMetaInformation;
+    taskMeta: RtqMonitoringTaskMeta;
     childTaskIds: string[];
     getHrefToTask: (id: string) => LocationDescriptor;
 }
@@ -74,10 +76,10 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
 
         return (
             <TimeLineEntry key={entry.title} icon={entry.icon} iconColor={this.getIconColor(severity)}>
-                <div className={cn("entry", severity)}>
-                    <div className={cn("title")}>{entry.title}</div>
+                <div className={`${styles.entry} ${styles[severity]}`}>
+                    <div className={styles.title}>{entry.title}</div>
                     {entry.date && (
-                        <div className={cn("date")}>
+                        <div className={styles.date}>
                             <DateTimeView value={entry.date} />
                         </div>
                     )}
@@ -242,23 +244,24 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
 
             return (
                 <TimeLineEntry key="Children" icon={<ArrowBoldDown />} iconColor={IconColors.grey}>
-                    <div className={cn("entry", "waiting")} data-tid="EnqueuedTasks">
+                    <div className={`${styles.entry} ${styles.waiting}`} data-tid="EnqueuedTasks">
                         <div>Enqueued tasks:</div>
                         {childTaskIds.slice(0, visibleTaskIdsCount).map(x => (
                             <div key={x} data-tid="TaskLink">
                                 <AllowCopyToClipboard>
-                                    <RouterLink to={getHrefToTask(x)}>{x}</RouterLink>
+                                    <RouterLink className={styles.routerLink} to={getHrefToTask(x)}>
+                                        {x}
+                                    </RouterLink>
                                 </AllowCopyToClipboard>
                             </div>
                         ))}
 
                         {hiddenTaskIdsCount > 0 && (
-                            <ButtonLink
-                                data-tid={"ShowAllTasks"}
-                                rightIcon={<ArrowTriangleDownIcon />}
-                                onClick={this.showAllMessages}>
+                            <Link data-tid="ShowAllTasks" onClick={this.showAllMessages}>
                                 ...and {hiddenTaskIdsCount} more
-                            </ButtonLink>
+                                {"\u00A0"}
+                                <ArrowTriangleDownIcon />
+                            </Link>
                         )}
                     </div>
                 </TimeLineEntry>
@@ -274,10 +277,12 @@ export class TaskTimeLine extends React.Component<TaskTimeLineProps, TaskTimeLin
         }
         return (
             <TimeLineEntry key="Parent" icon={<ArrowBoldUpIcon />} iconColor={IconColors.grey}>
-                <div className={cn("entry", "waiting")}>
+                <div className={`${styles.entry} ${styles.waiting}`}>
                     Parent:{" "}
                     <AllowCopyToClipboard>
-                        <RouterLink to={getHrefToTask(taskMeta.parentTaskId)}>{taskMeta.parentTaskId}</RouterLink>
+                        <RouterLink className={styles.routerLink} to={getHrefToTask(taskMeta.parentTaskId)}>
+                            {taskMeta.parentTaskId}
+                        </RouterLink>
                     </AllowCopyToClipboard>
                 </div>
             </TimeLineEntry>

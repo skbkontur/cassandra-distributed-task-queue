@@ -1,10 +1,13 @@
 import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
 import SearchIcon from "@skbkontur/react-icons/Search";
-import * as React from "react";
-import { Button, Checkbox, Input, Tooltip } from "ui/components";
-import { ColumnStack, Fit, RowStack } from "ui/layout";
+import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
+import Button from "@skbkontur/react-ui/Button";
+import Checkbox from "@skbkontur/react-ui/Checkbox";
+import Input from "@skbkontur/react-ui/Input";
+import Tooltip from "@skbkontur/react-ui/Tooltip";
+import React from "react";
 
-import cn from "./TaskTypesSelect.less";
+import styles from "./TaskTypesSelect.less";
 
 export interface TaskTypesSelectProps {
     availableTaskTypes: string[];
@@ -28,7 +31,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
             <span>
                 <Tooltip render={this.renderTooltip} trigger="click" pos="bottom left" data-tid="Tooltip">
                     <Button disabled={disabled}>
-                        <span className={cn("button-text")}>
+                        <span className={styles.buttonText}>
                             {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
                         </span>
                         <ArrowTriangleDownIcon />
@@ -98,8 +101,8 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                     </RowStack>
                 </Fit>
                 <Fit>
-                    <div className={cn("tooltip-columns-wrapper")}>
-                        <div className={cn("tooltip-columns")}>
+                    <div className={styles.tooltipColumnsWrapper}>
+                        <div className={styles.tooltipColumns}>
                             {filteredTaskTypes.map((item, index) => (
                                 <Checkbox
                                     data-tid={item}

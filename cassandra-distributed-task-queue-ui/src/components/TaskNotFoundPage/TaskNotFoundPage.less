@@ -1,17 +1,27 @@
-@import '~ui/styles/variables.less';
+@import '../../styles/variables.less';
 
 :local {
-    .list {
-        list-style-type: decimal;
-        list-style-position: outside;
-        max-width: 600px;
-
-        > li {
-            margin-left: @base-size * 3;
-        }
+    .content {
+        margin: 100px auto 10px auto;
+        max-width: 930px;
     }
 
-    .sorry-image {
-        margin: @base-size * 10 0;
+    .headerTitle {
+        margin: 25px 0;
+        font-weight: 300;
+        font-size: 50px;
+        line-height: 52px;
+    }
+
+    .headerCode {
+        vertical-align: super;
+        color: @double-muted-text;
+        font-size: 18px;
+        line-height: 27px;
+    }
+
+    .message {
+        font-size: 18px;
+        line-height: 25px;
     }
 }

@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 
-import cn from "./TimeLine.less";
+import styles from "./TimeLine.less";
 import { TimeLineCycled, TimeLineCycledProps } from "./TimeLineCycled";
 
 interface TimeLineProps {
@@ -15,7 +15,7 @@ export class TimeLine extends React.Component<TimeLineProps> {
     public render(): JSX.Element {
         const { children } = this.props;
         return (
-            <div className={cn("root")} data-tid={"InnerTimeLine"}>
+            <div className={styles.root} data-tid={"InnerTimeLine"}>
                 {children}
             </div>
         );
@@ -30,8 +30,8 @@ interface TimeLineEntryProps {
 
 TimeLine.Branch = function TimeLineBranch({ children }: TimeLineProps): JSX.Element {
     return (
-        <div className={cn("root", "branch")}>
-            <div className={cn("line-up")} />
+        <div className={`${styles.root} ${styles.branch}`}>
+            <div className={styles.lineUp} />
             {children}
         </div>
     );
@@ -64,9 +64,9 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineP
     public render(): JSX.Element {
         const { children } = this.props;
         return (
-            <div className={cn("branch-node")}>
-                <div className={cn("hor-line")} ref={el => (this.line = el)} />
-                <div className={cn("branch-nodes")} ref={el => (this.branches = el)}>
+            <div className={styles.branchNode}>
+                <div className={styles.horLine} ref={el => (this.line = el)} />
+                <div className={styles.branchNodes} ref={el => (this.branches = el)}>
                     {children}
                 </div>
             </div>
@@ -76,12 +76,12 @@ TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineP
 
 TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineEntryProps): JSX.Element {
     return (
-        <div className={cn("entry")}>
-            <div className={cn("icon")}>
+        <div className={styles.entry}>
+            <div className={styles.icon}>
                 {React.cloneElement(icon, { color: iconColor })}
-                <div className={cn("line")} />
+                <div className={styles.line} />
             </div>
-            <div className={cn("content")}>{children}</div>
+            <div className={styles.content}>{children}</div>
         </div>
     );
 };

@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 
-import cn from "./TimeLine.less";
+import styles from "./TimeLine.less";
 
 export interface TimeLineCycledProps {
     children?: any;
@@ -36,17 +36,17 @@ export class TimeLineCycled extends React.Component<TimeLineCycledProps> {
         const { children, content, icon } = this.props;
 
         return (
-            <div className={cn("cycle")}>
-                <div ref={el => (this.entries = el)} className={cn("entries")}>
+            <div className={styles.cycle}>
+                <div ref={el => (this.entries = el)} className={styles.entries}>
                     {children}
                 </div>
-                <div className={cn("lines")} ref={el => (this.lines = el)}>
-                    <div className={cn("line-1")} />
-                    <div className={cn("line-2")} />
-                    <div className={cn("line-3")} />
+                <div className={styles.lines} ref={el => (this.lines = el)}>
+                    <div className={styles.line1} />
+                    <div className={styles.line2} />
+                    <div className={styles.line3} />
                 </div>
-                {icon && <div className={cn("icon")}>{icon}</div>}
-                {content && <div className={cn("info")}>{content}</div>}
+                {icon && <div className={styles.icon}>{icon}</div>}
+                {content && <div className={styles.info}>{content}</div>}
             </div>
         );
     }

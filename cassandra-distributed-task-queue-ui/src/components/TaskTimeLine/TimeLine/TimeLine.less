@@ -1,11 +1,26 @@
-@import '~ui/styles/variables.less';
+@import '../../../styles/variables.less';
 
 :local {
-    .branch-node {
+    .branch {
+        padding-top: 10px;
+        position: relative;
+
+        .lineUp {
+            position: absolute;
+            top: 0;
+            left: 6px;
+            bottom: 0;
+            height: 10px;
+            width: 1px;
+            background-color: @primary-divider-color;
+        }
+    }
+
+    .branchNode {
         position: relative;
         display: inline-block;
 
-        .hor-line {
+        .horLine {
             position: absolute;
             top: 0;
             left: 6px;
@@ -14,28 +29,13 @@
             background-color: @primary-divider-color;
         }
 
-        .branch-nodes {
+        .branchNodes {
             display: flex;
             flex-direction: row;
 
             .branch + .branch {
                 margin-left: 10px;
             }
-        }
-    }
-
-    .branch {
-        padding-top: 10px;
-        position: relative;
-
-        .line-up {
-            position: absolute;
-            top: 0;
-            left: 6px;
-            bottom: 0;
-            height: 10px;
-            width: 1px;
-            background-color: @primary-divider-color;
         }
     }
 
@@ -63,7 +63,7 @@
                 position: absolute;
             }
 
-            .line-2 {
+            .line2 {
                 position: absolute;
                 top: 10px;
                 right: 0;
@@ -71,39 +71,19 @@
                 width: 1px;
             }
 
-            .line-1 {
+            .line1 {
                 top: 10px;
                 left: 0;
                 right: 0;
                 height: 1px;
             }
 
-            .line-3 {
+            .line3 {
                 bottom: 10px;
                 left: 0;
                 right: 0;
                 height: 1px;
             }
-        }
-    }
-
-    .root > .entry:last-child {
-        .line {
-            display: none;
-        }
-
-        .content {
-            margin-bottom: 0;
-        }
-    }
-
-    .root > .cycle:last-child > .entries > .entry:last-child {
-        .line {
-            display: none;
-        }
-
-        .content {
-            margin-bottom: 0;
         }
     }
 
@@ -128,6 +108,26 @@
         .content {
             margin-left: 10px;
             margin-bottom: 10px;
+        }
+    }
+
+    .root > .entry:last-child {
+        .line {
+            display: none;
+        }
+
+        .content {
+            margin-bottom: 0;
+        }
+    }
+
+    .root > .cycle:last-child > .entries > .entry:last-child {
+        .line {
+            display: none;
+        }
+
+        .content {
+            margin-bottom: 0;
         }
     }
 }

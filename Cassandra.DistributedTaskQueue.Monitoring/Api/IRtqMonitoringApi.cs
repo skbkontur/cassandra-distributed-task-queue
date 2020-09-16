@@ -13,9 +13,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
         string[] GetAllTasksNames();
 
         [NotNull]
-        RtqMonitoringSearchResults Search([NotNull] RtqMonitoringSearchRequest searchRequest, int from, int size);
+        RtqMonitoringSearchResults Search([NotNull] RtqMonitoringSearchRequest searchRequest);
 
-        [CanBeNull]
+        [NotNull]
         RtqMonitoringTaskModel GetTaskDetails([NotNull] string taskId);
 
         [NotNull]

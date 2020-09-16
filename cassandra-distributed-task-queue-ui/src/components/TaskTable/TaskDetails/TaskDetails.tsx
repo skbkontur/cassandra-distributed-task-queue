@@ -1,20 +1,22 @@
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
+import Link from "@skbkontur/react-ui/Link";
 import { LocationDescriptor } from "history";
-import * as React from "react";
-import { Link, RouterLink } from "ui/components";
-import { ColumnStack, Fill, Fit, RowStack } from "ui/layout";
-import { AllowCopyToClipboard } from "Commons/AllowCopyToClipboard";
-import { DateTimeView } from "Commons/DateTimeView/DateTimeView";
-import { Ticks } from "Domain/DataTypes/Time";
-import { TaskMetaInformation } from "Domain/EDI/Api/RemoteTaskQueue/TaskMetaInformation";
-import { TaskState } from "Domain/EDI/Api/RemoteTaskQueue/TaskState";
-import { cancelableStates, rerunableStates } from "Domain/EDI/Api/RemoteTaskQueue/TaskStateExtensions";
+import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 
-import cn from "./TaskDetails.less";
+import { RtqMonitoringTaskMeta } from "../../../Domain/Api/RtqMonitoringTaskMeta";
+import { TaskState } from "../../../Domain/Api/TaskState";
+import { Ticks } from "../../../Domain/DataTypes/Time";
+import { cancelableStates, rerunableStates } from "../../../Domain/TaskStateExtensions";
+import { AllowCopyToClipboard } from "../../AllowCopyToClipboard";
+import { DateTimeView } from "../../DateTimeView/DateTimeView";
+
+import styles from "./TaskDetails.less";
 
 interface TaskDetailsProps {
-    taskInfo: TaskMetaInformation;
+    taskInfo: RtqMonitoringTaskMeta;
     allowRerunOrCancel: boolean;
     onRerun: () => any;
     onCancel: () => any;
@@ -22,34 +24,34 @@ interface TaskDetailsProps {
 }
 
 function dateFormatter(
-    item: TaskMetaInformation,
-    selector: (obj: TaskMetaInformation) => Nullable<Ticks>
+    item: RtqMonitoringTaskMeta,
+    selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
 ): JSX.Element {
     return <DateTimeView value={selector(item)} />;
 }
 
 function taskDate(
-    taskInfo: TaskMetaInformation,
+    taskInfo: RtqMonitoringTaskMeta,
     caption: string,
-    selector: (obj: TaskMetaInformation) => Nullable<Ticks>
+    selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
 ): JSX.Element {
     return (
-        <div className={cn("date")}>
-            <span className={cn("caption")}>{caption}</span>
-            <span className={cn("value")}>{dateFormatter(taskInfo, selector)}</span>
+        <div className={styles.date}>
+            <span className={styles.caption}>{caption}</span>
+            <span className={styles.value}>{dateFormatter(taskInfo, selector)}</span>
         </div>
     );
 }
 
 const stateClassNames = {
-    Unknown: "state-unknown",
-    New: "state-new",
-    WaitingForRerun: "state-waiting-for-rerun",
-    WaitingForRerunAfterError: "state-waiting-for-rerun-after-error",
-    Finished: "state-finished",
-    InProcess: "state-in-process",
-    Fatal: "state-fatal",
-    Canceled: "state-canceled",
+    Unknown: "stateUnknown",
+    New: "stateNew",
+    WaitingForRerun: "stateWaitingForRerun",
+    WaitingForRerunAfterError: "stateWaitingForRerunAfterError",
+    Finished: "stateFinished",
+    InProcess: "stateInProcess",
+    Fatal: "stateFatal",
+    Canceled: "stateCanceled",
 };
 
 function getStateClassName(taskState: TaskState): string {
@@ -59,29 +61,29 @@ function getStateClassName(taskState: TaskState): string {
 export function TaskDetails(props: TaskDetailsProps): JSX.Element {
     const { allowRerunOrCancel, taskInfo, onCancel, onRerun, getTaskLocation } = props;
     return (
-        <ColumnStack block gap={1} className={cn("task-details", getStateClassName(taskInfo.state))}>
-            <Fit className={cn("name")}>
-                <RouterLink data-tid="Name" to={getTaskLocation(taskInfo.id)}>
+        <ColumnStack block gap={1} className={`${styles.taskDetails} ${styles[getStateClassName(taskInfo.state)]}`}>
+            <Fit className={styles.name}>
+                <RouterLink className={styles.routerLink} data-tid="Name" to={getTaskLocation(taskInfo.id)}>
                     {taskInfo.name}
                 </RouterLink>
             </Fit>
             <Fit>
                 <RowStack verticalAlign="stretch" block gap={2}>
-                    <Fit tag={ColumnStack} className={cn("info-block-1")}>
-                        <Fit className={cn("id")}>
+                    <Fit tag={ColumnStack} className={styles.infoBlock1}>
+                        <Fit className={styles.id}>
                             <AllowCopyToClipboard>
                                 <span data-tid="TaskId">{taskInfo.id}</span>
                             </AllowCopyToClipboard>
                         </Fit>
-                        <Fit className={cn("state")}>
-                            <span className={cn("state-name")} data-tid="State">
+                        <Fit className={styles.state}>
+                            <span className={styles.stateName} data-tid="State">
                                 {TaskState[taskInfo.state]}
                             </span>
-                            <span className={cn("attempts")}>
+                            <span className={styles.attempts}>
                                 Attempts: <span data-tid="Attempts">{taskInfo.attempts}</span>
                             </span>
                         </Fit>
-                        <Fill className={cn("parent-task")}>
+                        <Fill className={styles.parentTask}>
                             <div>
                                 Parent:{" "}
                                 {taskInfo.parentTaskId ? (
@@ -92,7 +94,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                             </div>
                         </Fill>
                         {allowRerunOrCancel && (
-                            <Fit className={cn("actions")}>
+                            <Fit className={styles.actions}>
                                 <RowStack baseline block gap={2}>
                                     <Fit>
                                         <Link
@@ -116,7 +118,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                             </Fit>
                         )}
                     </Fit>
-                    <Fit className={cn("dates")}>
+                    <Fit className={styles.dates}>
                         {taskDate(taskInfo, "Enqueued", x => x.ticks)}
                         {taskDate(taskInfo, "Started", x => x.startExecutingTicks)}
                         {taskDate(taskInfo, "Finished", x => x.finishExecutingTicks)}
