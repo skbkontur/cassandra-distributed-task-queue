@@ -1,6 +1,6 @@
 # cassandra-distributed-task-queue
 
-Distributed Task Queue
+.NET library implementing distributed task queue machinery using Apache Cassandra
 
 |              | Build Status
 |--------------|:--------------:
