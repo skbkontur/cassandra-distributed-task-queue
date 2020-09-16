@@ -1,4 +1,5 @@
 import React from "react";
+import StoryRouter from "storybook-react-router";
 
 import { TaskState } from "../src/Domain/Api/TaskState";
 import { TaskDetailsMetaTable } from "../src/components/TaskDetailsMetaTable/TaskDetailsMetaTable";
@@ -6,6 +7,7 @@ import { TaskDetailsMetaTable } from "../src/components/TaskDetailsMetaTable/Tas
 export default {
     title: "RemoteTaskQueueMonitoring/TaskDetailsMetaTable",
     component: TaskDetailsMetaTable,
+    decorators: [StoryRouter()],
 };
 
 export const Default = () => (

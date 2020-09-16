@@ -62,7 +62,6 @@ after_test:
       if ($env:SHOULD_PUBLISH_NUGET_PACKAGE -eq "true")
       {
         npm config set '//registry.npmjs.org/:_authToken' $env:NPM_TOKEN
-        npm config set access public
         $fileNames = Get-ChildItem -Path "cassandra-distributed-task-queue-ui/dist" -Recurse -Include *.tgz
         foreach ($file in $fileNames)
         {
