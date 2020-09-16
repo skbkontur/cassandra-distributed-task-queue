@@ -147,7 +147,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                                                 <Paging
                                                     data-tid="Paging"
                                                     activePage={Math.floor(offset / count) + 1}
-                                                    pagesCount={Math.ceil(counter / count)}
+                                                    pagesCount={Math.ceil(Math.min(counter, 10000) / count)}
                                                     onPageChange={this.goToPage}
                                                 />
                                             )}
