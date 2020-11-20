@@ -31,7 +31,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
         }
 
         [NotNull]
-        private static string FormatGraphitePathPrefix([NotNull] string graphitePathPrefix, [CanBeNull] string consumerName = null)
+        private static string FormatGraphitePathPrefix([NotNull] string graphitePathPrefix, [CanBeNull] string consumerName)
         {
             var processName = Process.GetCurrentProcess()
                                      .ProcessName
