@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -18,7 +18,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
         public GraphiteRtqProfiler([NotNull] IStatsDClient statsDClient,
                                    [NotNull] IGraphiteClient graphiteClient,
                                    [NotNull] string statsDKeyNamePrefix,
-                                   [NotNull] string consumerGraphitePathPrefix)
+                                   [NotNull] string consumerGraphitePathPrefix,
+                                   [CanBeNull] string consumerName = null)
         {
             if (string.IsNullOrEmpty(statsDKeyNamePrefix))
                 throw new InvalidOperationException("statsDKeyNamePrefix is empty");
@@ -26,18 +27,18 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Profiling
                 throw new InvalidOperationException("consumerGraphitePathPrefix is empty");
             this.statsDClient = statsDClient.WithScopes($"{statsDKeyNamePrefix}.{Dns.GetHostName()}", $"{statsDKeyNamePrefix}.Total");
             this.graphiteClient = graphiteClient;
-            this.consumerGraphitePathPrefix = FormatGraphitePathPrefix(consumerGraphitePathPrefix);
+            this.consumerGraphitePathPrefix = FormatGraphitePathPrefix(consumerGraphitePathPrefix, consumerName);
         }
 
         [NotNull]
-        private static string FormatGraphitePathPrefix([NotNull] string graphitePathPrefix)
+        private static string FormatGraphitePathPrefix([NotNull] string graphitePathPrefix, [CanBeNull] string consumerName = null)
         {
             var processName = Process.GetCurrentProcess()
                                      .ProcessName
                                      .Replace(".exe", string.Empty)
                                      .Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries)
                                      .Last();
-            return $"{graphitePathPrefix}.{Dns.GetHostName()}.{processName}";
+            return $"{graphitePathPrefix}.{Dns.GetHostName()}.{consumerName ?? processName}";
         }
 
         public void ProcessTaskCreation([NotNull] TaskMetaInformation meta)
