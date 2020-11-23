@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.8 - 2020.11.23
+- More customisation for Graphite profiler prefixes.
+
 ## v1.0.3 - 2020.09.24
 - Publish `@skbkontur/cassandra-distributed-task-queue-ui` package.
 - More reasonable Elasticsearch indexer default settings.
