@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading;
 
 using JetBrains.Annotations;
 
@@ -15,7 +16,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
 
         void RunPeriodicJobWithLeaderElection([NotNull] string jobId,
                                               TimeSpan delayBetweenIterations,
-                                              [NotNull] Action jobAction,
+                                              [NotNull] Action<CancellationToken> jobAction,
                                               [NotNull] Action onTakeTheLead,
                                               [NotNull] Action onLoseTheLead);
 

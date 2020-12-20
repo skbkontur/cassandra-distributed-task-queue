@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 
 using JetBrains.Annotations;
 
@@ -24,7 +25,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
 
         public void RunPeriodicJobWithLeaderElection([NotNull] string jobName,
                                                      TimeSpan delayBetweenIterations,
-                                                     [NotNull] Action jobAction,
+                                                     [NotNull] Action<CancellationToken> jobAction,
                                                      [NotNull] Func<IRunningEventFeed> onTakeTheLead,
                                                      [NotNull] Func<IRunningEventFeed> onLoseTheLead)
         {
