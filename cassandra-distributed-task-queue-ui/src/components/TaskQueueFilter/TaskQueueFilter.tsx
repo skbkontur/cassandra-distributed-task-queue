@@ -63,7 +63,7 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                         data-tid={"DateTimeRangePicker"}
                         hideTime
                         value={enqueueTimestampRange || defaultEnqueueDateTimeRange}
-                        onChange={(e, value) => onChange({ enqueueTimestampRange: value })}
+                        onChange={value => onChange({ enqueueTimestampRange: value })}
                     />
                 </Fit>
                 <Fit>

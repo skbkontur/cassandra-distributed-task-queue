@@ -1,7 +1,7 @@
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
-import React, { SyntheticEvent } from "react";
+import React from "react";
 
-import { DateTimeRange, DateTimeRangeChange, ICanBeValidated } from "../../Domain/DataTypes/DateTimeRange";
+import { DateTimeRange, ICanBeValidated } from "../../Domain/DataTypes/DateTimeRange";
 import { TimeZone } from "../../Domain/DataTypes/Time";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
@@ -19,7 +19,7 @@ export interface PredefinedRangeDefinition {
 export interface DateTimeRangePickerProps {
     error?: boolean;
     value: DateTimeRange;
-    onChange: DateTimeRangeChange;
+    onChange: (value: DateTimeRange) => void;
     disabled?: boolean;
     timeZone?: TimeZone;
     hideTime?: boolean;
@@ -71,10 +71,10 @@ export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProp
         }
     }
 
-    public handleClickPredefinedRange(e: SyntheticEvent<any>, value: DateTimeRange) {
+    public handleClickPredefinedRange(value: DateTimeRange) {
         const { disabled, onChange } = this.props;
         if (!disabled) {
-            onChange(e, value);
+            onChange(value);
         }
     }
 
@@ -114,8 +114,8 @@ export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProp
                             disabled={disabled}
                             defaultTime={lowerBoundDefaultTime}
                             timeZone={fixedTimezone}
-                            onChange={(e: SyntheticEvent<any>, nextValue: Nullable<Date>) =>
-                                onChange(e, { lowerBound: nextValue, upperBound: upperBound })
+                            onChange={(nextValue: Nullable<Date>) =>
+                                onChange({ lowerBound: nextValue, upperBound: upperBound })
                             }
                         />
                     </span>
@@ -130,8 +130,8 @@ export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProp
                             disabled={disabled}
                             defaultTime={upperBoundDefaultTime}
                             timeZone={fixedTimezone}
-                            onChange={(e: SyntheticEvent<any>, nextValue: Nullable<Date>) =>
-                                onChange(e, { upperBound: nextValue, lowerBound: lowerBound })
+                            onChange={(nextValue: Nullable<Date>) =>
+                                onChange({ upperBound: nextValue, lowerBound: lowerBound })
                             }
                         />
                     </span>
@@ -140,7 +140,7 @@ export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProp
                     {(predefinedRanges || defaultPredefinedRanges).map(x => (
                         <span
                             key={x.tid}
-                            onClick={e => this.handleClickPredefinedRange(e, x.getRange(this.props.timeZone))}
+                            onClick={_ => this.handleClickPredefinedRange(x.getRange(this.props.timeZone))}
                             data-tid={x.tid}>
                             {x.caption}
                         </span>
