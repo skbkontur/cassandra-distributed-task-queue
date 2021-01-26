@@ -38,7 +38,7 @@
   },
   "peerDependencies": {
     "@skbkontur/react-icons": ">=3 <=4",
-    "@skbkontur/react-ui": "2.0.0",
+    "@skbkontur/react-ui": ">=2 <3",
     "react": ">=15 <=16",
     "react-dom": ">=15 <=16",
     "react-router": ">=4 <=5",
