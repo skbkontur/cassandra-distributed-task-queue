@@ -1,8 +1,6 @@
 import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
-import Button from "@skbkontur/react-ui/Button";
-import Checkbox from "@skbkontur/react-ui/Checkbox";
-import Tooltip from "@skbkontur/react-ui/Tooltip";
+import { Button, Checkbox, Tooltip } from "@skbkontur/react-ui";
 import React from "react";
 
 import { TaskState } from "../../Domain/Api/TaskState";
@@ -50,7 +48,7 @@ export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
                     <Checkbox
                         data-tid={item}
                         checked={this.isItemSelected(item)}
-                        onChange={(e, val) => this.selectItem(val, item)}>
+                        onValueChange={val => this.selectItem(val, item)}>
                         {TaskStateCaptions[item]}
                     </Checkbox>
                 </Fit>

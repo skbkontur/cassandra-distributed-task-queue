@@ -1,10 +1,7 @@
 import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
 import SearchIcon from "@skbkontur/react-icons/Search";
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import Button from "@skbkontur/react-ui/Button";
-import Checkbox from "@skbkontur/react-ui/Checkbox";
-import Input from "@skbkontur/react-ui/Input";
-import Tooltip from "@skbkontur/react-ui/Tooltip";
+import { Button, Checkbox, Input, Tooltip } from "@skbkontur/react-ui";
 import React from "react";
 
 import styles from "./TaskTypesSelect.less";
@@ -89,7 +86,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                             <Input
                                 value={query}
                                 rightIcon={<SearchIcon />}
-                                onChange={(e, val) => this.setState({ query: val })}
+                                onValueChange={val => this.setState({ query: val })}
                             />
                         </Fit>
                         <Fit>
@@ -108,7 +105,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                                     data-tid={item}
                                     checked={this.isItemSelected(item)}
                                     key={index}
-                                    onChange={(e, val) => this.selectItem(val, item)}>
+                                    onValueChange={val => this.selectItem(val, item)}>
                                     {item}
                                 </Checkbox>
                             ))}
