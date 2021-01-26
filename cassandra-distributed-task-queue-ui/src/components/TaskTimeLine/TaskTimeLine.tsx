@@ -8,7 +8,7 @@ import DeleteIcon from "@skbkontur/react-icons/Delete";
 import DownloadIcon from "@skbkontur/react-icons/Download";
 import OkIcon from "@skbkontur/react-icons/Ok";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
-import Link from "@skbkontur/react-ui/Link";
+import { Link } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";

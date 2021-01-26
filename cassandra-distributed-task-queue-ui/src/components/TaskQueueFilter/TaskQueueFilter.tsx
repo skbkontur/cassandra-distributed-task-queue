@@ -1,8 +1,5 @@
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import Button from "@skbkontur/react-ui/Button";
-import Input from "@skbkontur/react-ui/Input";
-import Link from "@skbkontur/react-ui/Link";
-import Modal from "@skbkontur/react-ui/Modal";
+import { Button, Input, Link, Modal } from "@skbkontur/react-ui";
 import React from "react";
 
 import { RtqMonitoringSearchRequest } from "../../Domain/Api/RtqMonitoringSearchRequest";
@@ -45,7 +42,7 @@ export class TaskQueueFilter extends React.Component<TaskQueueFilterProps, TaskQ
                                 width="100%"
                                 data-tid={"SearchStringInput"}
                                 value={queryString || ""}
-                                onChange={(e, value) => onChange({ queryString: value })}
+                                onValueChange={value => onChange({ queryString: value })}
                                 onKeyPress={e => {
                                     if (e.key === "Enter") {
                                         onSearchButtonClick();

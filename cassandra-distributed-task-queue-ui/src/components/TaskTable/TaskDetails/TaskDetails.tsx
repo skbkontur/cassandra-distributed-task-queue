@@ -1,7 +1,7 @@
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import Link from "@skbkontur/react-ui/Link";
+import { Link } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
