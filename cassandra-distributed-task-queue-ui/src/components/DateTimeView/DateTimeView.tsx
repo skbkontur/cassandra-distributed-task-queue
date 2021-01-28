@@ -88,18 +88,18 @@ export class DateTimeView extends React.Component<DateTimeViewProps, DateTimeVie
         timezone: storage.get(),
     };
 
-    public handleUpdateGlobalTimeZone = () => {
+    private handleUpdateGlobalTimeZone = () => {
         this.setState({
             defaultTimezone: storage.get(),
             timezone: storage.get(),
         });
     };
 
-    public componentWillMount() {
+    public componentDidMount(): void {
         storage.subscribe(this.handleUpdateGlobalTimeZone);
     }
 
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         storage.unsubscribe(this.handleUpdateGlobalTimeZone);
     }
 
@@ -123,7 +123,7 @@ export class DateTimeView extends React.Component<DateTimeViewProps, DateTimeVie
             .format("DD.MM.YYYY HH:mm:ss.SSS");
     }
 
-    public handleChangeDefault() {
+    private handleChangeDefault() {
         storage.set(this.state.timezone);
     }
 
