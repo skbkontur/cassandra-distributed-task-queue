@@ -42,9 +42,7 @@ interface TasksPageContainerState {
     results: RtqMonitoringSearchResults;
 }
 
-export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<
-    RtqMonitoringSearchRequest
->()
+export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<RtqMonitoringSearchRequest>()
     .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")

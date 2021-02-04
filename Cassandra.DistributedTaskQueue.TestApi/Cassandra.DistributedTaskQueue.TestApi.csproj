@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GroboContainer" Version="1.2.45" />
+    <PackageReference Include="GroboContainer" Version="1.2.52" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.7" />
     <PackageReference Include="SkbKontur.TypeScript.ContractGenerator" Version="2.0.81" />
   </ItemGroup>

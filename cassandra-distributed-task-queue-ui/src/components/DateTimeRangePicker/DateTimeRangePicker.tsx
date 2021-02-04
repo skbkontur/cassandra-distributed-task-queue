@@ -1,12 +1,11 @@
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import React from "react";
 
-import { DateTimeRange, ICanBeValidated } from "../../Domain/DataTypes/DateTimeRange";
+import { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
 import { TimeZone } from "../../Domain/DataTypes/Time";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
 import { DatePicker } from "./DatePicker";
-import { DateTimePicker } from "./DateTimePicker";
 import styles from "./DateTimeRangePicker.less";
 import { RangeSelector } from "./RangeSelector";
 
@@ -56,31 +55,19 @@ const defaultPredefinedRanges: PredefinedRangeDefinition[] = [
     },
 ];
 
-export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProps> implements ICanBeValidated {
+export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProps> {
     public static defaultProps = {
         lowerBoundDefaultTime: "00:00",
         upperBoundDefaultTime: "23:59",
         predefinedRanges: defaultPredefinedRanges,
     };
 
-    public fromDatePicker: DatePicker | DateTimePicker | null = null;
-
-    public focus() {
-        if (this.fromDatePicker != null) {
-            this.fromDatePicker.focus();
-        }
-    }
-
-    public handleClickPredefinedRange(value: DateTimeRange) {
+    private handleClickPredefinedRange(value: DateTimeRange) {
         const { disabled, onChange } = this.props;
         if (!disabled) {
             onChange(value);
         }
     }
-
-    public setRefToFromDatePicker = (el: DatePicker) => {
-        this.fromDatePicker = el;
-    };
 
     public render(): JSX.Element {
         const {
@@ -89,26 +76,20 @@ export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProp
             error,
             onChange,
             timeZone,
-            hideTime,
             lowerBoundDefaultTime,
             upperBoundDefaultTime,
             predefinedRanges,
             ...rest
         } = this.props;
         const { lowerBound, upperBound } = value;
-        const Picker = hideTime ? DatePicker : DateTimePicker;
-
         const fixedTimezone = TimeUtils.getTimeZoneOffsetOrDefault(timeZone);
 
         return (
             <ColumnStack className={styles.dateRange} {...rest}>
                 <Fit>
                     <span className={styles.dateRangeItem}>
-                        {/* отдельно позже разобрать и пофиксить это место
-                        // @ts-ignore */}
-                        <Picker
+                        <DatePicker
                             data-tid="From"
-                            ref={this.setRefToFromDatePicker}
                             error={error}
                             value={lowerBound}
                             disabled={disabled}
@@ -121,9 +102,7 @@ export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProp
                     </span>
                     <span className={styles.dateRangeItem}>&mdash;</span>
                     <span className={styles.dateRangeItem}>
-                        {/* отдельно позже разобрать и пофиксить это место
-                        // @ts-ignore */}
-                        <Picker
+                        <DatePicker
                             data-tid="To"
                             error={error}
                             value={upperBound}
@@ -136,7 +115,7 @@ export class DateTimeRangePicker extends React.Component<DateTimeRangePickerProp
                         />
                     </span>
                 </Fit>
-                <Fit className={`${styles.templates} ${hideTime && styles.smallGap} ${disabled && styles.disabled}`}>
+                <Fit className={`${styles.templates} ${styles.smallGap} ${disabled && styles.disabled}`}>
                     {(predefinedRanges || defaultPredefinedRanges).map(x => (
                         <span
                             key={x.tid}
