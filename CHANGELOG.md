@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.1.11 - 2021.02.25
+- Update `@skbkontur/react-ui` package
+- Remove deprecated react lifecycle methods
+
 ## v1.0.8 - 2020.11.23
 - More customisation for Graphite profiler prefixes.
 
