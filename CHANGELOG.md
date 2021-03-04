@@ -1,4 +1,6 @@
 # Changelog
+## v1.1.1 - 2021.03.05
+- Add cancelation token to the RtqPeriodicJobRunner.
 
 ## v1.0.8 - 2020.11.23
 - More customisation for Graphite profiler prefixes.

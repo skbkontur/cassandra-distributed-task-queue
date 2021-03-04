@@ -18,7 +18,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                                               TimeSpan delayBetweenIterations,
                                               [NotNull] Action<CancellationToken> jobAction,
                                               [NotNull] Action onTakeTheLead,
-                                              [NotNull] Action onLoseTheLead);
+                                              [NotNull] Action onLoseTheLead,
+                                              CancellationToken cancellationToken);
 
         void StopPeriodicJobWithLeaderElection([NotNull] string jobId);
     }

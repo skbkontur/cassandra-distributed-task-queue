@@ -27,7 +27,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
                                                      TimeSpan delayBetweenIterations,
                                                      [NotNull] Action<CancellationToken> jobAction,
                                                      [NotNull] Func<IRunningEventFeed> onTakeTheLead,
-                                                     [NotNull] Func<IRunningEventFeed> onLoseTheLead)
+                                                     [NotNull] Func<IRunningEventFeed> onLoseTheLead,
+                                                     CancellationToken cancellationToken)
         {
             rtqPeriodicJobRunner.RunPeriodicJobWithLeaderElection(jobName,
                                                                   delayBetweenIterations,
@@ -45,7 +46,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.EventFeed
                                                                           var runningEventFeed = onLoseTheLead();
                                                                           var lagReportingJobId = FormatLagReportingJobId(runningEventFeed.FeedKey);
                                                                           rtqPeriodicJobRunner.StopPeriodicJob(lagReportingJobId);
-                                                                      });
+                                                                      },
+                                                                  cancellationToken);
         }
 
         public void StopPeriodicJobWithLeaderElection([NotNull] string jobName)

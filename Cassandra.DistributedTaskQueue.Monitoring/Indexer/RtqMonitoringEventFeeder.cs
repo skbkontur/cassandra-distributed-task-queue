@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading;
 
 using JetBrains.Annotations;
 
@@ -41,7 +42,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         public IGlobalTime GlobalTime { get; }
 
         [NotNull]
-        public IEventFeedsRunner RunEventFeeding()
+        public IEventFeedsRunner RunEventFeeding(CancellationToken cancellationToken)
         {
             return eventFeedFactory
                    .WithOffsetType<string>()
@@ -50,7 +51,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
                                                .WithBlade($"{indexerSettings.EventFeedKey}_Blade1", delay : TimeSpan.FromMinutes(15)))
                    .WithOffsetInterpreter(offsetInterpreter)
                    .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey))
-                   .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1));
+                   .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1), cancellationToken);
         }
 
         private readonly ILog logger;

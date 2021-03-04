@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+using System.Threading;
+
+using JetBrains.Annotations;
 
 using SkbKontur.EventFeeds;
 
@@ -8,6 +10,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
     public interface IRtqMonitoringEventFeeder
     {
         [NotNull]
-        IEventFeedsRunner RunEventFeeding();
+        IEventFeedsRunner RunEventFeeding(CancellationToken cancellationToken);
     }
 }
