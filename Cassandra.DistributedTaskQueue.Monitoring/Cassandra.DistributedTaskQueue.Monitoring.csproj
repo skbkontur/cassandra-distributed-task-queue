@@ -11,7 +11,7 @@
     <PackageReference Include="Elasticsearch.Net" Version="6.6.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SkbKontur.EventFeeds" Version="1.0.9" />
+    <PackageReference Include="SkbKontur.EventFeeds" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup>

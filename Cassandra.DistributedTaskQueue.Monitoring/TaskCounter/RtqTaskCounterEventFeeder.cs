@@ -1,4 +1,6 @@
-﻿using GroBuf;
+using System.Threading;
+
+using GroBuf;
 
 using JetBrains.Annotations;
 
@@ -45,7 +47,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         [NotNull]
         public IGlobalTime GlobalTime { get; }
 
-        public ( /*[NotNull]*/ IEventFeedsRunner, /*[NotNull]*/ RtqTaskCounterStateManager) RunEventFeeding()
+        public ( /*[NotNull]*/ IEventFeedsRunner, /*[NotNull]*/ RtqTaskCounterStateManager) RunEventFeeding(CancellationToken cancellationToken)
         {
             var stateManager = new RtqTaskCounterStateManager(logger, serializer, taskDataRegistry, stateStorage, settings, offsetInterpreter, perfGraphiteReporter);
             var eventConsumer = new RtqTaskCounterEventConsumer(stateManager, handleTasksMetaStorage, perfGraphiteReporter);
@@ -58,7 +60,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
                                    .WithOffsetInterpreter(offsetInterpreter)
                                    .WithOffsetStorageFactory(bladeId => stateManager.CreateOffsetStorage(bladeId))
                                    .WithSingleLeaderElectionKey(stateManager.CompositeFeedKey)
-                                   .RunFeeds(settings.DelayBetweenEventFeedingIterations);
+                                   .RunFeeds(settings.DelayBetweenEventFeedingIterations, cancellationToken);
             return (eventFeedsRunner, stateManager);
         }
 

@@ -1,4 +1,6 @@
 # Changelog
+## v1.2.1 - 2021.03.05
+- Add cancelation token to the RtqPeriodicJobRunner.
 
 ## v1.1.11 - 2021.02.25
 - Update `@skbkontur/react-ui` package
