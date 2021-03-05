@@ -1,8 +1,7 @@
 import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
 import ArrowTriangleRightIcon from "@skbkontur/react-icons/ArrowTriangleRight";
 import { Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import Hint from "@skbkontur/react-ui/Hint";
-import Link from "@skbkontur/react-ui/Link";
+import { Hint, Link } from "@skbkontur/react-ui";
 import isArray from "lodash/isArray";
 import isEqual from "lodash/isEqual";
 import isPlainObject from "lodash/isPlainObject";
@@ -56,11 +55,7 @@ export class Accordion extends React.Component<TaskAccordionProps, TaskAccordion
         }
     }
 
-    public shouldComponentUpdate(
-        nextProps: Readonly<TaskAccordionProps>,
-        nextState: Readonly<TaskAccordionState>,
-        nextContext: any
-    ): boolean {
+    public shouldComponentUpdate(nextProps: TaskAccordionProps, nextState: TaskAccordionState): boolean {
         const isValueChanged = !isEqual(this.props.value, nextProps.value);
         const isForceCollapsedChanged = this.props._internalForceCollapsed !== nextProps._internalForceCollapsed;
         const isDefaultCollapsedChanged = this.props.defaultCollapsed !== nextProps.defaultCollapsed;
@@ -68,19 +63,19 @@ export class Accordion extends React.Component<TaskAccordionProps, TaskAccordion
         return isValueChanged || isForceCollapsedChanged || isDefaultCollapsedChanged || isStateChanged;
     }
 
-    public componentWillReceiveProps(nextProps: Readonly<TaskAccordionProps>, nextContext: any): void {
-        const isForcedRecursively = nextProps._internalForceCollapsed !== undefined;
-        if (isForcedRecursively && nextProps._internalForceCollapsed !== this.props._internalForceCollapsed) {
+    public componentDidUpdate(prevProps: TaskAccordionProps): void {
+        const isForcedRecursively = this.props._internalForceCollapsed !== undefined;
+        if (isForcedRecursively && this.props._internalForceCollapsed !== prevProps._internalForceCollapsed) {
             this.setState({
-                collapsedSelf: nextProps._internalForceCollapsed as boolean,
-                collapsedRecursive: nextProps._internalForceCollapsed as boolean,
+                collapsedSelf: this.props._internalForceCollapsed as boolean,
+                collapsedRecursive: this.props._internalForceCollapsed as boolean,
                 isForced: true,
             });
         }
-        if (nextProps.defaultCollapsed !== this.props.defaultCollapsed) {
+        if (prevProps.defaultCollapsed !== this.props.defaultCollapsed) {
             this.setState({
-                collapsedSelf: nextProps.defaultCollapsed as boolean,
-                collapsedRecursive: nextProps.defaultCollapsed as boolean,
+                collapsedSelf: this.props.defaultCollapsed as boolean,
+                collapsedRecursive: this.props.defaultCollapsed as boolean,
                 isForced: true,
             });
         }

@@ -1,6 +1,4 @@
-import Button from "@skbkontur/react-ui/Button";
-import RadioGroup from "@skbkontur/react-ui/RadioGroup";
-import Tooltip from "@skbkontur/react-ui/Tooltip";
+import { Button, RadioGroup, Tooltip } from "@skbkontur/react-ui";
 import moment from "moment";
 import React from "react";
 
@@ -90,18 +88,18 @@ export class DateTimeView extends React.Component<DateTimeViewProps, DateTimeVie
         timezone: storage.get(),
     };
 
-    public handleUpdateGlobalTimeZone = () => {
+    private handleUpdateGlobalTimeZone = () => {
         this.setState({
             defaultTimezone: storage.get(),
             timezone: storage.get(),
         });
     };
 
-    public componentWillMount() {
+    public componentDidMount(): void {
         storage.subscribe(this.handleUpdateGlobalTimeZone);
     }
 
-    public componentWillUnmount() {
+    public componentWillUnmount(): void {
         storage.unsubscribe(this.handleUpdateGlobalTimeZone);
     }
 
@@ -125,7 +123,7 @@ export class DateTimeView extends React.Component<DateTimeViewProps, DateTimeVie
             .format("DD.MM.YYYY HH:mm:ss.SSS");
     }
 
-    public handleChangeDefault() {
+    private handleChangeDefault() {
         storage.set(this.state.timezone);
     }
 
@@ -137,7 +135,7 @@ export class DateTimeView extends React.Component<DateTimeViewProps, DateTimeVie
                         items={TimeUtils.getAllTimeZones()}
                         value={this.state.timezone}
                         data-tid="TimeZones"
-                        onChange={(e, value) => this.setState({ timezone: value })}
+                        onValueChange={value => this.setState({ timezone: value })}
                         renderItem={value => (
                             <>
                                 {this.renderWithTimeZone(value)} ({this.getTimeZoneShortName(value)})

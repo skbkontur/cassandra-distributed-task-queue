@@ -1,4 +1,4 @@
-import Loader from "@skbkontur/react-ui/Loader";
+import { Loader } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
 

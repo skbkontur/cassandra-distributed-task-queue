@@ -1,8 +1,8 @@
-import DefaultDatePicker from "@skbkontur/react-ui/DatePicker";
+import { DatePicker as DefaultDatePicker } from "@skbkontur/react-ui";
 import moment from "moment";
 import React from "react";
 
-import { ICanBeValidated, RussianDateFormat } from "../../Domain/DataTypes/DateTimeRange";
+import { RussianDateFormat } from "../../Domain/DataTypes/DateTimeRange";
 import { Time, TimeZone } from "../../Domain/DataTypes/Time";
 import { DateUtils } from "../../Domain/Utils/DateUtils";
 import { StringUtils } from "../../Domain/Utils/StringUtils";
@@ -10,7 +10,7 @@ import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
 interface DatePickerProps {
     value: Nullable<Date>;
-    onChange: (e: React.SyntheticEvent<any>, value: Nullable<Date>) => void;
+    onChange: (value: Nullable<Date>) => void;
     width?: React.ReactText;
     minDate?: Date | string;
     maxDate?: Date | string;
@@ -34,7 +34,7 @@ const DatePickerDefaultProps = {
 
 const defaultTime = "00:00";
 
-export class DatePicker extends React.Component<DatePickerProps, DatePickerState> implements ICanBeValidated {
+export class DatePicker extends React.Component<DatePickerProps, DatePickerState> {
     public state = {
         date: "",
     };
@@ -43,15 +43,13 @@ export class DatePicker extends React.Component<DatePickerProps, DatePickerState
         timeZone: TimeUtils.TimeZones.UTC,
     };
 
-    private datePicker: Nullable<DefaultDatePicker>;
-
-    public componentDidMount() {
+    public componentDidMount(): void {
         const { value, timeZone } = this.props;
         const stringifiedDate = this.convertDateToStringWithTimezone(value, timeZone);
         this.setState({ date: stringifiedDate });
     }
 
-    public componentDidUpdate(prevProps: DatePickerProps, prevState: DatePickerState) {
+    public componentDidUpdate(prevProps: DatePickerProps): void {
         const { value, timeZone } = this.props;
         if (prevProps.value !== this.props.value) {
             const stringifiedDate = this.convertDateToStringWithTimezone(value, timeZone);
@@ -68,23 +66,16 @@ export class DatePicker extends React.Component<DatePickerProps, DatePickerState
                 {...this.props}
                 maxDate={this.convertDateToStringWithTimezone(maxDate, timeZone)}
                 minDate={this.convertDateToStringWithTimezone(minDate, timeZone)}
-                ref={el => (this.datePicker = el)}
                 value={this.state.date}
-                onChange={this.handleChange}
+                onValueChange={this.handleChange}
             />
         );
     }
 
-    public focus = (): void => {
-        if (this.datePicker != null) {
-            this.datePicker.focus();
-        }
-    };
-
-    private readonly handleChange = (e: any, newStringifiedDate: RussianDateFormat): void => {
+    private readonly handleChange = (newStringifiedDate: RussianDateFormat): void => {
         this.setState({ date: newStringifiedDate });
         if (StringUtils.isNullOrWhitespace(newStringifiedDate)) {
-            this.props.onChange(e, null);
+            this.props.onChange(null);
             return;
         }
 
@@ -93,7 +84,7 @@ export class DatePicker extends React.Component<DatePickerProps, DatePickerState
         }
 
         const newDate = this.convertStringToDate(newStringifiedDate);
-        this.props.onChange(e, newDate);
+        this.props.onChange(newDate);
     };
 
     private readonly convertStringToDate = (newStringifiedDate: RussianDateFormat): Date => {

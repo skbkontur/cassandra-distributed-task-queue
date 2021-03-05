@@ -1,9 +1,5 @@
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import Button from "@skbkontur/react-ui/Button";
-import Input from "@skbkontur/react-ui/Input";
-import Loader from "@skbkontur/react-ui/Loader";
-import Modal from "@skbkontur/react-ui/Modal";
-import Paging from "@skbkontur/react-ui/Paging";
+import { Button, Input, Loader, Modal, Paging } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
@@ -46,9 +42,7 @@ interface TasksPageContainerState {
     results: RtqMonitoringSearchResults;
 }
 
-export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<
-    RtqMonitoringSearchRequest
->()
+export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<RtqMonitoringSearchRequest>()
     .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
     .mapToString(x => x.queryString, "q")
     .mapToStringArray(x => x.names, "types")
@@ -189,7 +183,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                                 <Input
                                     data-tid="ConfirmationInput"
                                     value={manyTaskConfirm}
-                                    onChange={(e, val) => this.setState({ manyTaskConfirm: val })}
+                                    onValueChange={val => this.setState({ manyTaskConfirm: val })}
                                 />
                             </Fit>,
                         ]}

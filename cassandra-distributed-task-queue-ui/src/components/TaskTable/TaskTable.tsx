@@ -1,6 +1,5 @@
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
-import Button from "@skbkontur/react-ui/Button";
-import Modal from "@skbkontur/react-ui/Modal";
+import { Button, Modal } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
 import React from "react";
