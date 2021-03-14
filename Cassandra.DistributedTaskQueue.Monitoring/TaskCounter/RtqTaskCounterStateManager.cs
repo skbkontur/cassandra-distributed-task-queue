@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,7 +12,6 @@ using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 using SkbKontur.Cassandra.TimeBasedUuid;
 using SkbKontur.EventFeeds;
-using SkbKontur.EventFeeds.Implementations;
 
 using Vostok.Logging.Abstractions;
 

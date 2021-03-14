@@ -1,6 +1,11 @@
 # Changelog
-## v1.2.1 - 2021.03.05
-- Add cancelation token to the RtqPeriodicJobRunner.
+
+## v1.2.3 - 2021.03.14
+- Update dependencies.
+- Run tests against net5.0 tfm.
+
+## v1.2.2 - 2021.03.05
+- Add cancelation token to the `RtqPeriodicJobRunner`.
 
 ## v1.1.11 - 2021.02.25
 - Update `@skbkontur/react-ui` package
