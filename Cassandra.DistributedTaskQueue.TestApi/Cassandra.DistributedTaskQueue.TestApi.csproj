@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
     <AssemblyName>SkbKontur.Cassandra.DistributedTaskQueue.TestApi</AssemblyName>
     <RootNamespace>SkbKontur.Cassandra.DistributedTaskQueue.TestApi</RootNamespace>
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
