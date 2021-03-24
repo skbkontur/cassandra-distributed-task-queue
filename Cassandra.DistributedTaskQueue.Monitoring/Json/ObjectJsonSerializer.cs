@@ -26,6 +26,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
 
         public override bool CanRead => false;
 
-        private static readonly JsonSerializer staticSerializer = new JsonSerializer {Converters = {new StringEnumConverter()}};
+        private static readonly JsonSerializer staticSerializer = new JsonSerializer
+            {
+                Converters = {new StringEnumConverter(), new TimeGuidJsonConverter(), new TimestampJsonConverter()}
+            };
     }
 }
