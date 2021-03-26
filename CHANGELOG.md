@@ -1,7 +1,7 @@
 # Changelog
 
 ## v1.2.7 - 2021.03.26
-- Bug fixes
+- Fix bug with TaskDataJsonSerializer: add TimeGuid and Timestamp converters
 
 ## v1.2.4 - 2021.03.14
 - Update dependencies.
