@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.2.7 - 2021.03.26
+- Bug fixes
+
 ## v1.2.4 - 2021.03.14
 - Update dependencies.
 - Run tests against net5.0 tfm.
