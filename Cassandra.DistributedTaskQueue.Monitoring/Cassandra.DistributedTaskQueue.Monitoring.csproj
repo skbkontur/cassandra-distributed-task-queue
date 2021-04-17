@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>RemoteTaskQueue.FunctionalTests</_Parameter1>
+      <_Parameter1>SkbKontur.Cassandra.DistributedTaskQueue.Tests</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>RemoteTaskQueue.Monitoring.TestService</_Parameter1>

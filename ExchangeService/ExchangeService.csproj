@@ -3,6 +3,7 @@
   <PropertyGroup>
     <PlatformTarget>x64</PlatformTarget>
     <TargetFrameworks>net472;net5.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
     <RootNamespace>ExchangeService</RootNamespace>
     <AssemblyName>RemoteTaskQueue.ExchangeService</AssemblyName>
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>

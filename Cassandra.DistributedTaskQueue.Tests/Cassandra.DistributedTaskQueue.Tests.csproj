@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;net5.0</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <AssemblyName>SkbKontur.Cassandra.DistributedTaskQueue.Tests</AssemblyName>
     <RootNamespace>SkbKontur.Cassandra.DistributedTaskQueue.Tests</RootNamespace>
@@ -9,13 +9,15 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="GroboContainer.NUnitExtensions" Version="1.0.44" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
-    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="Vostok.ClusterClient.Transport" Version="0.1.17" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cassandra.DistributedTaskQueue.Monitoring\Cassandra.DistributedTaskQueue.Monitoring.csproj" />
+    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj" />
   </ItemGroup>
 
 </Project>
