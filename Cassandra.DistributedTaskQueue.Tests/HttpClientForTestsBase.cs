@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 using Newtonsoft.Json;
 
-using RemoteTaskQueue.FunctionalTests.Common;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
 
 using Vostok.Clusterclient.Core;
 using Vostok.Clusterclient.Core.Model;

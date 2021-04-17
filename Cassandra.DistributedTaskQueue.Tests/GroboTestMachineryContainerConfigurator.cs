@@ -42,7 +42,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests
             {
                 "SkbKontur.Cassandra.DistributedTaskQueue.dll",
                 "SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.dll",
-                "RemoteTaskQueue.FunctionalTests.Common.dll",
+                "SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.dll",
             };
     }
 }

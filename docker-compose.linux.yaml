@@ -1,0 +1,20 @@
+version: "3"
+services:
+  cassandra:
+    container_name: rtq-cassandra
+    image: cassandra:3.11
+    environment:
+      - CASSANDRA_START_RPC=true
+    ports:
+      - 9042:9042
+      - 9160:9160
+  elasticsearch:
+    container_name: rtq-elasticsearch
+    image: elasticsearch:6.8.14
+    environment:
+      - discovery.type=single-node
+      - http.port=9205
+      - http.publish_host=_local_
+    ports:
+      - 9205:9205
+      - 9300:9300

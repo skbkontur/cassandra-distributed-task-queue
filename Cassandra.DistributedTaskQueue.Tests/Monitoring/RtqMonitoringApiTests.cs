@@ -8,9 +8,8 @@ using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
 using SkbKontur.Cassandra.TimeBasedUuid;

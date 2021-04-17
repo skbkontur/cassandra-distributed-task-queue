@@ -11,12 +11,11 @@ using GroBuf;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories.BlobStorages;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client;

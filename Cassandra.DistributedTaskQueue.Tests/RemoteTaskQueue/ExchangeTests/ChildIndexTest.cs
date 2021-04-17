@@ -4,9 +4,8 @@ using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.TaskDatas;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 using SkbKontur.Cassandra.DistributedTaskQueue.Tests.RemoteTaskQueue.RepositoriesTests;
 

@@ -3,11 +3,10 @@
 using GroboContainer.NUnitExtensions;
 using GroboContainer.NUnitExtensions.Impl.TestContext;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 using SkbKontur.Cassandra.GlobalTimestamp;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 

@@ -2,9 +2,8 @@
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common.TaskDatas;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.TaskDatas;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.RemoteTaskQueue.ExchangeTests

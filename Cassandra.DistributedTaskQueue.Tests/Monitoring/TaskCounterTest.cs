@@ -8,12 +8,11 @@ using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
-using RemoteTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.TaskDatas.MonitoringTestTaskData;
 
 using Vostok.Logging.Abstractions;
 

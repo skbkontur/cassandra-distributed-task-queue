@@ -10,11 +10,10 @@ using MoreLinq;
 
 using NUnit.Framework;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-using RemoteTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Repositories;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common.ConsumerStateImpl;
 
 using Vostok.Logging.Abstractions;
 

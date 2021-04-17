@@ -57,12 +57,12 @@ build_script:
   - cmd: yarn build
 
 before_test:
-  - ps: Start-Process ./ExchangeService/bin/net5.0/RemoteTaskQueue.ExchangeService.exe -ArgumentList "--urls http://localhost:4403"
-  - ps: Start-Process ./ExchangeService/bin/net5.0/RemoteTaskQueue.ExchangeService.exe -ArgumentList "--urls http://localhost:4404"
-  - ps: Start-Process ./ExchangeService/bin/net5.0/RemoteTaskQueue.ExchangeService.exe -ArgumentList "--urls http://localhost:4405"
-  - ps: Start-Process ./ExchangeService/bin/net5.0/RemoteTaskQueue.ExchangeService.exe -ArgumentList "--urls http://localhost:4406"
-  - ps: Start-Process ./ExchangeService/bin/net5.0/RemoteTaskQueue.ExchangeService.exe -ArgumentList "--urls http://localhost:4407"
-  - ps: Start-Process ./ElasticMonitoring.TestService/bin/net5.0/RemoteTaskQueue.Monitoring.TestService.exe -ArgumentList "--urls http://localhost:4413"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4403"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4404"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4405"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4406"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4407"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.Monitoring.TestService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService.exe -ArgumentList "--urls http://localhost:4413"
 
 test_script:
   - cmd: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN

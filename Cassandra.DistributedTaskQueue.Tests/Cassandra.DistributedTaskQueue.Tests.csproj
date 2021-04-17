@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RemoteTaskQueue.FunctionalTests.Common\RemoteTaskQueue.FunctionalTests.Common.csproj" />
+    <ProjectReference Include="..\Cassandra.DistributedTaskQueue.FunctionalTests.Common\Cassandra.DistributedTaskQueue.FunctionalTests.Common.csproj" />
   </ItemGroup>
 
 </Project>

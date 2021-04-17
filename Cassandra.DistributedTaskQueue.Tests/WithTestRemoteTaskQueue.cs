@@ -5,9 +5,8 @@ using GroboContainer.NUnitExtensions.Impl.TestContext;
 
 using JetBrains.Annotations;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Configuration;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests
 {

@@ -1,7 +1,6 @@
 ﻿using GroboContainer.Core;
 
-using RemoteTaskQueue.FunctionalTests.Common;
-
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
 using SkbKontur.Cassandra.ThriftClient.Abstractions;
 using SkbKontur.Cassandra.ThriftClient.Clusters;
 using SkbKontur.Cassandra.ThriftClient.Schema;

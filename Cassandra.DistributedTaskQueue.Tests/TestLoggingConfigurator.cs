@@ -5,7 +5,7 @@ using System.Threading;
 
 using JetBrains.Annotations;
 
-using RemoteTaskQueue.FunctionalTests.Common;
+using SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common;
 
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console;
