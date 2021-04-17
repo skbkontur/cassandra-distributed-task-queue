@@ -13,17 +13,17 @@ nuget:
   disable_publish_on_pr: true
 
 environment:
-  NODEJS_VERSION: 12
   NPM_TOKEN:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
 
 install:
-  - cmd: powershell Install-Product node $env:NODEJS_VERSION
+  # Increase the Linux VM memory from the default 2 GB to 4 GB
+  # - ps: Get-VM 'MobyLinuxVM' | Set-VMMemory -DynamicMemoryEnabled $true -MaximumBytes (4*1024*1024*1024)
   - cmd: docker-switch-linux
   # - cmd: docker pull selenoid/vnc:chrome_84.0
   # - cmd: docker-compose up -d
-  - cmd: systeminfo
-  - cmd: docker info
+  # - cmd: systeminfo
+  # - cmd: docker info
 
 before_build:
   - ps: |
