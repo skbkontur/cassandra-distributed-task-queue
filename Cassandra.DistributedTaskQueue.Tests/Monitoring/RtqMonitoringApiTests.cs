@@ -228,7 +228,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.Monitoring
                 taskIds.Add(task.Id);
             }
             WaitForTasks(taskIds.ToArray(), TimeSpan.FromSeconds(60));
-            monitoringServiceClient.ExecuteForcedFeeding();
+            ExecuteForcedFeedingWithRetries();
             return taskIds.ToArray();
         }
 
@@ -240,6 +240,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.Monitoring
                                 return tasks.All(t => t.Meta.State == TaskState.Finished || t.Meta.State == TaskState.Fatal);
                             },
                         Is.True.After((int)timeSpan.TotalMilliseconds, 100));
+        }
+
+        private void ExecuteForcedFeedingWithRetries()
+        {
+            Assert.That(() => monitoringServiceClient.ExecuteForcedFeeding(), Throws.Nothing.After(20000, 1000));
         }
 
         [Injected]
