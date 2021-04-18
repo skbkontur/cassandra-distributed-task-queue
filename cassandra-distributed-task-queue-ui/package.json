@@ -26,7 +26,7 @@
     "build:copy:src": "copyfiles --up 1 \"src/**/*.js\" \"src/**/*.less\" dist",
     "build:copy:meta": "copyfiles --flat package.json \"../*.md\" ../LICENSE dist",
     "build:pack": "cd dist && npm pack",
-    "build:types": "dotnet ts-gen --assembly ./../Cassandra.DistributedTaskQueue.TestApi/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestApi.dll --outputDir ./src/Domain/Api --nullabilityMode Pessimistic",
+    "build:types": "dotnet ts-gen --assembly ./../Cassandra.DistributedTaskQueue.Monitoring.TestService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService.dll --outputDir ./src/Domain/Api --nullabilityMode Pessimistic",
     "start": "webpack serve --env api=fake",
     "start:prod": "webpack serve --env api=real",
     "storybook": "start-storybook -p 6006 -s .",

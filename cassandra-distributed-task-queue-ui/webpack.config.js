@@ -67,7 +67,7 @@ module.exports = function (env) {
             port: 8080,
             proxy: {
                 "/remote-task-queue/**": {
-                    target: "http://localhost:5000/",
+                    target: "http://localhost:4413/",
                 },
                 "*": {
                     secure: false,

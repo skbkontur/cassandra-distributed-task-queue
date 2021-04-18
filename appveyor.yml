@@ -13,12 +13,11 @@ nuget:
   disable_publish_on_pr: true
 
 environment:
-  NODEJS_VERSION: 12
   NPM_TOKEN:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
 
 install:
-  - cmd: powershell Install-Product node $env:NODEJS_VERSION
+  - cmd: docker-compose up -d
 
 before_build:
   - ps: |
@@ -50,6 +49,14 @@ build_script:
   - cmd: dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln
   - cmd: dotnet pack --no-build --configuration Release ./Cassandra.DistributedTaskQueue.sln
   - cmd: yarn build
+
+before_test:
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4403"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4404"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4405"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4406"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4407"
+  - ps: Start-Process ./Cassandra.DistributedTaskQueue.Monitoring.TestService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService.exe -ArgumentList "--urls http://localhost:4413"
 
 test_script:
   - cmd: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN

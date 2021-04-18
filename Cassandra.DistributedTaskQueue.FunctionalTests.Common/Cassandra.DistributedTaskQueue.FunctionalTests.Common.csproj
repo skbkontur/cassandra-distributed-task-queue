@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <AssemblyName>SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common</AssemblyName>
+    <RootNamespace>SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common</RootNamespace>
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GroboContainer" Version="1.2.60" />
+    <PackageReference Include="SkbKontur.Cassandra.DistributedLock" Version="2.2.14" />
+    <PackageReference Include="Vostok.Logging.Console" Version="1.0.5" />
+    <PackageReference Include="Vostok.Logging.File" Version="1.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cassandra.DistributedTaskQueue.Monitoring\Cassandra.DistributedTaskQueue.Monitoring.csproj" />
+  </ItemGroup>
+
+</Project>

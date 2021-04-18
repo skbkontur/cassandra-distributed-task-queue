@@ -9,7 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQueue.Tests", "Cassandra.DistributedTaskQueue.Tests\Cassandra.DistributedTaskQueue.Tests.csproj", "{014A7EB7-6F4B-4998-A54E-9ECEB8915F7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQueue.TestApi", "Cassandra.DistributedTaskQueue.TestApi\Cassandra.DistributedTaskQueue.TestApi.csproj", "{E96E8B54-ED81-4AFE-85EA-C568BFA9AE03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQueue.Monitoring.TestService", "Cassandra.DistributedTaskQueue.Monitoring.TestService\Cassandra.DistributedTaskQueue.Monitoring.TestService.csproj", "{0D887551-8BB0-4F8E-8094-D1D014C597BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQueue.TestExchangeService", "Cassandra.DistributedTaskQueue.TestExchangeService\Cassandra.DistributedTaskQueue.TestExchangeService.csproj", "{157923C1-551F-4F42-AA71-468440E99D4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cassandra.DistributedTaskQueue.FunctionalTests.Common", "Cassandra.DistributedTaskQueue.FunctionalTests.Common\Cassandra.DistributedTaskQueue.FunctionalTests.Common.csproj", "{3C5AFA83-F8DB-471F-82EC-58BE5ECA3136}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +33,18 @@ Global
 		{014A7EB7-6F4B-4998-A54E-9ECEB8915F7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{014A7EB7-6F4B-4998-A54E-9ECEB8915F7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{014A7EB7-6F4B-4998-A54E-9ECEB8915F7F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E96E8B54-ED81-4AFE-85EA-C568BFA9AE03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E96E8B54-ED81-4AFE-85EA-C568BFA9AE03}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E96E8B54-ED81-4AFE-85EA-C568BFA9AE03}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E96E8B54-ED81-4AFE-85EA-C568BFA9AE03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D887551-8BB0-4F8E-8094-D1D014C597BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D887551-8BB0-4F8E-8094-D1D014C597BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D887551-8BB0-4F8E-8094-D1D014C597BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D887551-8BB0-4F8E-8094-D1D014C597BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{157923C1-551F-4F42-AA71-468440E99D4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{157923C1-551F-4F42-AA71-468440E99D4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{157923C1-551F-4F42-AA71-468440E99D4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{157923C1-551F-4F42-AA71-468440E99D4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C5AFA83-F8DB-471F-82EC-58BE5ECA3136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C5AFA83-F8DB-471F-82EC-58BE5ECA3136}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C5AFA83-F8DB-471F-82EC-58BE5ECA3136}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C5AFA83-F8DB-471F-82EC-58BE5ECA3136}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
