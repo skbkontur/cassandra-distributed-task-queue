@@ -1,17 +1,8 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
-#if NET472
-using Microsoft.AspNetCore.Hosting;
-
-using HostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
-
-#else
 using Microsoft.Extensions.Hosting;
-
-using HostingEnvironment = Microsoft.AspNetCore.Hosting.IWebHostEnvironment;
-
-#endif
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService
 {
@@ -19,25 +10,17 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService
     {
         public void ConfigureServices(IServiceCollection services)
         {
-#if NET472
-            services.AddMvc();
-#else
             services.AddControllers().AddNewtonsoftJson();
-#endif
             services.AddSingleton<IControllerFactory>(new GroboControllerFactory());
         }
 
-        public void Configure(IApplicationBuilder app, HostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
 
-#if NET472
-            app.UseMvc();
-#else
             app.UseRouting();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
-#endif
         }
     }
 }
