@@ -4,7 +4,7 @@ import ReactDom from "react-dom";
 import { Switch, Redirect, Route } from "react-router";
 import { BrowserRouter } from "react-router-dom";
 
-import { RtqMonitoringApiFake } from "./RtqMonitoringApiFake";
+import { RtqMonitoringApiFake } from "./stories/Api/RtqMonitoringApiFake";
 import { RemoteTaskQueueApplication, RtqMonitoringApi, ICustomRenderer } from "./src";
 import { RtqMonitoringSearchRequest } from "./src/Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringTaskModel } from "./src/Domain/Api/RtqMonitoringTaskModel";
@@ -16,7 +16,7 @@ const rtqApiPrefix = "/remote-task-queue/";
 export const rtqMonitoringApi =
     process.env.API === "fake" ? new RtqMonitoringApiFake() : new RtqMonitoringApi(rtqApiPrefix);
 
-class CustomRenderer implements ICustomRenderer {
+export class CustomRenderer implements ICustomRenderer {
     public getRelatedTasksLocation(taskDetails: RtqMonitoringTaskModel): Nullable<RtqMonitoringSearchRequest> {
         const documentCirculationId =
             taskDetails.taskData && typeof taskDetails.taskData["DocumentCirculationId"] === "string"

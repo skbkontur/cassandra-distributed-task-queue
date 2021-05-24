@@ -1,14 +1,20 @@
 import moment from "moment";
 
-import { IRtqMonitoringApi } from "./src/Domain/Api/RtqMonitoringApi";
-import { RtqMonitoringSearchRequest } from "./src/Domain/Api/RtqMonitoringSearchRequest";
-import { RtqMonitoringSearchResults } from "./src/Domain/Api/RtqMonitoringSearchResults";
-import { RtqMonitoringTaskMeta } from "./src/Domain/Api/RtqMonitoringTaskMeta";
-import { RtqMonitoringTaskModel } from "./src/Domain/Api/RtqMonitoringTaskModel";
-import { TaskManipulationResult } from "./src/Domain/Api/TaskManipulationResult";
-import { TaskState } from "./src/Domain/Api/TaskState";
-import { delay } from "./src/Domain/Utils/PromiseUtils";
-import { TimeUtils } from "./src/Domain/Utils/TimeUtils";
+import { IRtqMonitoringApi } from "../../src/Domain/Api/RtqMonitoringApi";
+import { RtqMonitoringSearchRequest } from "../../src/Domain/Api/RtqMonitoringSearchRequest";
+import { RtqMonitoringSearchResults } from "../../src/Domain/Api/RtqMonitoringSearchResults";
+import { RtqMonitoringTaskMeta } from "../../src/Domain/Api/RtqMonitoringTaskMeta";
+import { RtqMonitoringTaskModel } from "../../src/Domain/Api/RtqMonitoringTaskModel";
+import { TaskManipulationResult } from "../../src/Domain/Api/TaskManipulationResult";
+import { TaskState } from "../../src/Domain/Api/TaskState";
+import { delay } from "../../src/Domain/Utils/PromiseUtils";
+import { TimeUtils } from "../../src/Domain/Utils/TimeUtils";
+
+import names from "./names.json";
+import task from "./task.json";
+import tasks from "./tasks.json";
+import treeTaskDetails from "./treeTaskDetails.json";
+import treeTasks from "./treeTasks.json";
 
 // let requestCount = 1;
 function emulateErrors() {
@@ -43,12 +49,18 @@ export function createTask(override: Partial<RtqMonitoringTaskMeta>): RtqMonitor
 
 export class RtqMonitoringApiFake implements IRtqMonitoringApi {
     public async getAllTaskNames(): Promise<string[]> {
-        await delay(1300);
-        emulateErrors();
-        return ["Name1", "Name2", "Name3", "Name4", "Name5"];
+        return names;
     }
 
-    public async search(_searchRequest: RtqMonitoringSearchRequest): Promise<RtqMonitoringSearchResults> {
+    public async search(searchRequest: RtqMonitoringSearchRequest): Promise<RtqMonitoringSearchResults> {
+        if (searchRequest.queryString === "AllTasks") {
+            return tasks;
+        }
+
+        if (searchRequest.queryString?.includes("DocumentCirculationId")) {
+            return treeTasks;
+        }
+
         emulateErrors();
         await delay(1000);
         const taskMetaSources: Array<Partial<RtqMonitoringTaskMeta>> = [
@@ -120,6 +132,14 @@ export class RtqMonitoringApiFake implements IRtqMonitoringApi {
     }
 
     public async getTaskDetails(taskId: string): Promise<RtqMonitoringTaskModel> {
+        if (taskId === "Current") {
+            return task;
+        }
+
+        if (treeTaskDetails[taskId]) {
+            return treeTaskDetails[taskId];
+        }
+
         await delay(1000);
         emulateErrors();
         return {

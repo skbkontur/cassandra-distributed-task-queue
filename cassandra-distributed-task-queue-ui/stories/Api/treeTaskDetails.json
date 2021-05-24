@@ -1,0 +1,527 @@
+{
+  "f4669064-bc8f-11eb-80c9-15c54f677ff7": {
+    "taskMeta": {
+      "name": "BuildEntityRelations",
+      "id": "f4669064-bc8f-11eb-80c9-15c54f677ff7",
+      "ticks": "637574580031639709",
+      "minimalStartTicks": "637574580032597845",
+      "startExecutingTicks": "637574580032249752",
+      "finishExecutingTicks": "637574580032597845",
+      "lastModificationTicks": "637574580032631102",
+      "expirationTimestampTicks": "637660980031639776",
+      "expirationModificationTicks": "637574580031639776",
+      "executionDurationTicks": "348093",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f27719c9-bc8f-11eb-8553-6065c9081ce2"
+    },
+    "taskData": {
+      "EntityIdentifier": {
+        "BoxId": "a739b572-a120-42d3-a5d4-5d158db39d24",
+        "EntityId": "f1b9629b-bc8f-11eb-b3ed-8a56b1401691"
+      },
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [],
+    "exceptionInfos": []
+  },
+  "f463679b-bc8f-11eb-a473-4da8d38e0949": {
+    "taskMeta": {
+      "name": "NotifyAboutDocumentStateTaskData",
+      "id": "f463679b-bc8f-11eb-a473-4da8d38e0949",
+      "ticks": "637574580031432681",
+      "minimalStartTicks": "637574580032245072",
+      "startExecutingTicks": "637574580032062866",
+      "finishExecutingTicks": "637574580032245072",
+      "lastModificationTicks": "637574580032269119",
+      "expirationTimestampTicks": "637660980031432828",
+      "expirationModificationTicks": "637574580031432828",
+      "executionDurationTicks": "182206",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f27719c9-bc8f-11eb-8553-6065c9081ce2"
+    },
+    "taskData": {
+      "DocumentStateDetails": {
+        "GeneralDocumentNumber": "",
+        "GeneralDocumentDate": "2021-05-24T13:00:03.1432026Z",
+        "DocumentMeta": {
+          "IsTest": true
+        },
+        "OutboxBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35",
+        "OutboxEntityId": "f18f1210-bc8f-11eb-83ef-52333f76c547",
+        "TaskChainId": "f066ce99-bc8f-11eb-956b-892067e4381a",
+        "LastEventDateTime": "2021-05-24T13:00:03.0831804Z",
+        "State": "Ok",
+        "Stage": "Delivery",
+        "ReportDateTime": "2021-05-24T13:00:03.1432026Z",
+        "OriginalMessageRecipientPartyId": "f03881e3-0014-4a2c-9fb4-574525945074",
+        "OriginalMessageSenderPartyId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+        "StatusReportRecipientId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+        "ChainCommonState": "SentWithoutReceipt",
+        "ChainType": "Orders",
+        "DocumentNumber": "2000000011011_53116",
+        "MessageId": "cf9cd670-d9b3-4ac0-8ca2-e4b947067050",
+        "DocumentId": "cf9cd670-d9b3-4ac0-8ca2-e4b947067050",
+        "OutgoingMessageId": "18342b37-549d-4298-9eee-f2fb31abc06f",
+        "Errors": null,
+        "DocumentDateTime": "2021-05-24T00:00:00Z",
+        "ReceivedDateTime": "2021-05-24T12:59:56.4541377Z",
+        "RevocationInitiatorGln": null,
+        "OrderNumber": "2000000011011_53116",
+        "DiadocInvoiceIdentifiers": null,
+        "DiadocDocumentUrls": null,
+        "StatusReportRecipientBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35"
+      },
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [],
+    "exceptionInfos": []
+  },
+  "f27719c9-bc8f-11eb-8553-6065c9081ce2": {
+    "taskMeta": {
+      "name": "ApiMessageDeliveryFinishedWithNoDeliveryNotification",
+      "id": "f27719c9-bc8f-11eb-8553-6065c9081ce2",
+      "ticks": "637574579999169066",
+      "minimalStartTicks": "637574580031812561",
+      "startExecutingTicks": "637574580028145781",
+      "finishExecutingTicks": "637574580031812561",
+      "lastModificationTicks": "637574580031870272",
+      "expirationTimestampTicks": "637660979999169250",
+      "expirationModificationTicks": "637574579999169250",
+      "executionDurationTicks": "3666780",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": null
+    },
+    "taskData": {
+      "DeliveryTimestamp": "2021-05-24T12:59:59.9168229Z",
+      "EntityInfos": [
+        {
+          "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a",
+          "TransportBoxId": {
+            "BoxId": "200ae317-2eac-4419-86a8-2022588baba2",
+            "PartyId": "f03881e3-0014-4a2c-9fb4-574525945074"
+          },
+          "EntityId": {
+            "EntityId": null,
+            "TransportMessageId": "f1e8b2a6-bc8f-11eb-b8ee-6237898e9f60",
+            "ConnectorMessageId": null
+          },
+          "EntityContentType": "Orders"
+        }
+      ]
+    },
+    "childTaskIds": [
+      "f463679b-bc8f-11eb-a473-4da8d38e0949",
+      "f4669064-bc8f-11eb-80c9-15c54f677ff7"
+    ],
+    "exceptionInfos": []
+  },
+  "f1dc3197-bc8f-11eb-b9b6-361c7c7e06d6": {
+    "taskMeta": {
+      "name": "TransportBox_DeliveryMessageToTransportBoxTaskData",
+      "id": "f1dc3197-bc8f-11eb-b9b6-361c7c7e06d6",
+      "ticks": "637574579989017074",
+      "minimalStartTicks": "637574579990186418",
+      "startExecutingTicks": "637574579989542722",
+      "finishExecutingTicks": "637574579990186418",
+      "lastModificationTicks": "637574579990211182",
+      "expirationTimestampTicks": "637660979989017331",
+      "expirationModificationTicks": "637574579989017331",
+      "executionDurationTicks": "643696",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f1ce638d-bc8f-11eb-8fa7-d2b149045cda"
+    },
+    "taskData": {
+      "WebTransportOnly": false,
+      "EdiDocumentIdentifier": {
+        "DocumentId": "18342b37-549d-4298-9eee-f2fb31abc06f",
+        "MessageId": "18342b37-549d-4298-9eee-f2fb31abc06f",
+        "Number": "2000000011011_53116",
+        "Date": "2021-05-24T00:00:00Z",
+        "IsEmpty": false
+      },
+      "TransportBox": {
+        "Id": "dfd3629f-1afa-4eff-bfca-317dcc120c77",
+        "PartyId": "f03881e3-0014-4a2c-9fb4-574525945074",
+        "RelatedBoxId": "a739b572-a120-42d3-a5d4-5d158db39d24",
+        "Inactive": false,
+        "PrimaryKey": {
+          "DocumentType": null,
+          "ForBoxId": "a739b572-a120-42d3-a5d4-5d158db39d24"
+        },
+        "Settings": {
+          "CustomMessageFormat": null,
+          "TransportBoxEndpoints": [
+            "200ae317-2eac-4419-86a8-2022588baba2"
+          ]
+        }
+      },
+      "RawMessageId": "f1cb5d28-bc8f-11eb-8436-4455142929f2",
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [],
+    "exceptionInfos": []
+  },
+  "f1ce638d-bc8f-11eb-8fa7-d2b149045cda": {
+    "taskMeta": {
+      "name": "TransportBox_DeliveryMessageTaskData",
+      "id": "f1ce638d-bc8f-11eb-8fa7-d2b149045cda",
+      "ticks": "637574579988112368",
+      "minimalStartTicks": "637574579989223933",
+      "startExecutingTicks": "637574579988843846",
+      "finishExecutingTicks": "637574579989223933",
+      "lastModificationTicks": "637574579989256459",
+      "expirationTimestampTicks": "637660979988112613",
+      "expirationModificationTicks": "637574579988112613",
+      "executionDurationTicks": "380087",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f1be146b-bc8f-11eb-865d-ae84c9347651"
+    },
+    "taskData": {
+      "WebTransportOnly": false,
+      "DocumentTypeOfMessage": "Title: Orders, MainTitle: Orders",
+      "EdiDocumentIdentifier": {
+        "DocumentId": "18342b37-549d-4298-9eee-f2fb31abc06f",
+        "MessageId": "18342b37-549d-4298-9eee-f2fb31abc06f",
+        "Number": "2000000011011_53116",
+        "Date": "2021-05-24T00:00:00Z",
+        "IsEmpty": false
+      },
+      "TransportBox": {
+        "Id": "dfd3629f-1afa-4eff-bfca-317dcc120c77",
+        "PartyId": "f03881e3-0014-4a2c-9fb4-574525945074",
+        "RelatedBoxId": "a739b572-a120-42d3-a5d4-5d158db39d24",
+        "Inactive": false,
+        "PrimaryKey": {
+          "DocumentType": null,
+          "ForBoxId": "a739b572-a120-42d3-a5d4-5d158db39d24"
+        },
+        "Settings": {
+          "CustomMessageFormat": null,
+          "TransportBoxEndpoints": [
+            "200ae317-2eac-4419-86a8-2022588baba2"
+          ]
+        }
+      },
+      "RawMessageId": "f1cb5d28-bc8f-11eb-8436-4455142929f2",
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [
+      "f1dc3197-bc8f-11eb-b9b6-361c7c7e06d6"
+    ],
+    "exceptionInfos": []
+  },
+  "f1be146b-bc8f-11eb-865d-ae84c9347651": {
+    "taskMeta": {
+      "name": "Box_InboxProcessingTaskData",
+      "id": "f1be146b-bc8f-11eb-865d-ae84c9347651",
+      "ticks": "637574579987043534",
+      "minimalStartTicks": "637574579988312608",
+      "startExecutingTicks": "637574579987581538",
+      "finishExecutingTicks": "637574579988312608",
+      "lastModificationTicks": "637574579988354146",
+      "expirationTimestampTicks": "637660979987043815",
+      "expirationModificationTicks": "637574579987043815",
+      "executionDurationTicks": "731070",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f1a2d8a0-bc8f-11eb-8824-09f1d964cc9c"
+    },
+    "taskData": {
+      "DeliveryContext": {
+        "DocumentType": "Title: Orders, MainTitle: Orders",
+        "Outbox": {
+          "Id": "1de8f08d-3220-4886-b9ed-41b582c7ce35",
+          "Gln": "2222222343569",
+          "IsTest": false,
+          "PartyId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+          "Inactive": false
+        },
+        "Inbox": {
+          "Id": "a739b572-a120-42d3-a5d4-5d158db39d24",
+          "Gln": "2222222222253",
+          "IsTest": false,
+          "PartyId": "f03881e3-0014-4a2c-9fb4-574525945074",
+          "Inactive": false
+        },
+        "DeliveryBox": {
+          "Id": "dfd3629f-1afa-4eff-bfca-317dcc120c77",
+          "PartyId": "f03881e3-0014-4a2c-9fb4-574525945074",
+          "RelatedBoxId": "a739b572-a120-42d3-a5d4-5d158db39d24",
+          "Inactive": false,
+          "PrimaryKey": {
+            "DocumentType": null,
+            "ForBoxId": "a739b572-a120-42d3-a5d4-5d158db39d24"
+          },
+          "Settings": {
+            "CustomMessageFormat": null,
+            "TransportBoxEndpoints": [
+              "200ae317-2eac-4419-86a8-2022588baba2"
+            ]
+          }
+        },
+        "DeliverySettings": {
+          "MessageFormat": {
+            "Title": "EdiXml",
+            "MainTitle": "EdiXml"
+          },
+          "XmlEncoding": "utf-8",
+          "FtpEdifactFilesExtension": "txt"
+        },
+        "TradingPartnersSettings": {
+          "BuyerId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+          "SupplierId": "f03881e3-0014-4a2c-9fb4-574525945074",
+          "BuyerSettings": null,
+          "SupplierSettings": null,
+          "SendingInvoicPattern": "MetroOkNotOk",
+          "SendingRetinvPattern": "DiadocSimple",
+          "SendingCoinvoicPattern": "MetroOkNotOk",
+          "FactoringSettings": {
+            "UseFactoring": false,
+            "FactoringEncription": "",
+            "FactorId": null
+          },
+          "DiadocDocumentsPattern": "Utd",
+          "ReturnDiadocDocumentsPattern": "Utd",
+          "CorrectionDiadocDocumentsPattern": "InvoiceInUtdFormat",
+          "DiadocPriceListPattern": "None",
+          "DiadocDelforPattern": "None",
+          "MigrationToUtd": false,
+          "MigrationToUtdDate": null,
+          "DiadocPatternBeforeUtd": "None",
+          "DiadocUtdFormat": "Utd820",
+          "ReturnDiadocUtdFormat": "Utd820",
+          "DiadocUcdFormat": "Ucd189",
+          "UsedMessages": [
+            "Ordrsp",
+            "Desadv",
+            "Alcrpt",
+            "Recadv",
+            "Invoic",
+            "Coinvoic",
+            "Retann",
+            "Retins",
+            "Retdes",
+            "Retrec",
+            "Retinv",
+            "PriceList",
+            "Orders",
+            "POrders"
+          ],
+          "GtinIsNotRequired": true,
+          "IsTestEdiExchange": true,
+          "TrafficType": "Test",
+          "ApplyingDate": "2021-02-26T13:54:59.317Z"
+        },
+        "ProviderPartyGln": null,
+        "WebTransportOnly": false
+      },
+      "DocumentEntityIdentifier": {
+        "BoxId": "a739b572-a120-42d3-a5d4-5d158db39d24",
+        "EntityId": "f1b9629b-bc8f-11eb-b3ed-8a56b1401691"
+      },
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [
+      "f1ce638d-bc8f-11eb-8fa7-d2b149045cda"
+    ],
+    "exceptionInfos": []
+  },
+  "f1a2d8a0-bc8f-11eb-8824-09f1d964cc9c": {
+    "taskMeta": {
+      "name": "Box_OutboxProcessingTaskData",
+      "id": "f1a2d8a0-bc8f-11eb-8824-09f1d964cc9c",
+      "ticks": "637574579985258760",
+      "minimalStartTicks": "637574579987205129",
+      "startExecutingTicks": "637574579985853351",
+      "finishExecutingTicks": "637574579987205129",
+      "lastModificationTicks": "637574579987229796",
+      "expirationTimestampTicks": "637660979985258818",
+      "expirationModificationTicks": "637574579985258818",
+      "executionDurationTicks": "1351778",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f192dbd9-bc8f-11eb-8ead-ce3663bc86fe"
+    },
+    "taskData": {
+      "DocumentType": "Title: Orders, MainTitle: Orders",
+      "DocumentEntityIdentifier": {
+        "BoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35",
+        "EntityId": "f18f1210-bc8f-11eb-83ef-52333f76c547"
+      },
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [
+      "f1be146b-bc8f-11eb-865d-ae84c9347651"
+    ],
+    "exceptionInfos": []
+  },
+  "f192dbd9-bc8f-11eb-8ead-ce3663bc86fe": {
+    "taskMeta": {
+      "name": "Box_OutboxValidatingTaskData",
+      "id": "f192dbd9-bc8f-11eb-8ead-ce3663bc86fe",
+      "ticks": "637574579984210990",
+      "minimalStartTicks": "637574579985442930",
+      "startExecutingTicks": "637574579984866308",
+      "finishExecutingTicks": "637574579985442930",
+      "lastModificationTicks": "637574579985460407",
+      "expirationTimestampTicks": "637660979984211323",
+      "expirationModificationTicks": "637574579984211323",
+      "executionDurationTicks": "576622",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f16fe317-bc8f-11eb-94b5-a7316d7b03df"
+    },
+    "taskData": {
+      "DocumentType": "Title: Orders, MainTitle: Orders",
+      "RoutingInfo": {
+        "FromPartyId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+        "ToPartyId": "f03881e3-0014-4a2c-9fb4-574525945074"
+      },
+      "MessageFormatForValidationPathMigration": {
+        "Title": "EdiXml",
+        "MainTitle": "EdiXml"
+      },
+      "DocumentEntityIdentifier": {
+        "BoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35",
+        "EntityId": "f18f1210-bc8f-11eb-83ef-52333f76c547"
+      },
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [
+      "f1a2d8a0-bc8f-11eb-8824-09f1d964cc9c"
+    ],
+    "exceptionInfos": []
+  },
+  "f16fe317-bc8f-11eb-94b5-a7316d7b03df": {
+    "taskMeta": {
+      "name": "TransportBox_DispatchMessageTaskData",
+      "id": "f16fe317-bc8f-11eb-94b5-a7316d7b03df",
+      "ticks": "637574579981919091",
+      "minimalStartTicks": "637574579984449933",
+      "startExecutingTicks": "637574579982488881",
+      "finishExecutingTicks": "637574579984449933",
+      "lastModificationTicks": "637574579984496050",
+      "expirationTimestampTicks": "637660979981919397",
+      "expirationModificationTicks": "637574579981919397",
+      "executionDurationTicks": "1961052",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f150c1cf-bc8f-11eb-933b-3fb7335a04d3"
+    },
+    "taskData": {
+      "MessageInfo": {
+        "MessageFormat": {
+          "Title": "EdiXml",
+          "MainTitle": "EdiXml"
+        },
+        "EdifactMessageEncoding": null,
+        "DocumentType": "Title: Orders, MainTitle: Orders",
+        "IsContainer": false,
+        "RoutingInfo": {
+          "FromPartyId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+          "ToPartyId": "f03881e3-0014-4a2c-9fb4-574525945074"
+        }
+      },
+      "TransportBox": {
+        "Id": "be7dc7ca-4a8a-4536-8c81-892eeff25364",
+        "PartyId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+        "RelatedBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35",
+        "Inactive": false,
+        "PrimaryKey": {
+          "ForBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35"
+        },
+        "Settings": {
+          "EnableDeliveryNotification": false
+        }
+      },
+      "RawMessageId": "f0680641-bc8f-11eb-a32e-89d4835c2bcd",
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [
+      "f192dbd9-bc8f-11eb-8ead-ce3663bc86fe"
+    ],
+    "exceptionInfos": []
+  },
+  "f150c1cf-bc8f-11eb-933b-3fb7335a04d3": {
+    "taskMeta": {
+      "name": "TransportBox_RecognizeMessageTaskData",
+      "id": "f150c1cf-bc8f-11eb-933b-3fb7335a04d3",
+      "ticks": "637574579979878966",
+      "minimalStartTicks": "637574579982090318",
+      "startExecutingTicks": "637574579980586887",
+      "finishExecutingTicks": "637574579982090318",
+      "lastModificationTicks": "637574579982110409",
+      "expirationTimestampTicks": "637660979979879251",
+      "expirationModificationTicks": "637574579979879251",
+      "executionDurationTicks": "1503431",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": "f06846a2-bc8f-11eb-be0d-9bccc691e0d8"
+    },
+    "taskData": {
+      "SkipDuplicateCheck": false,
+      "TransportBox": {
+        "Id": "be7dc7ca-4a8a-4536-8c81-892eeff25364",
+        "PartyId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+        "RelatedBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35",
+        "Inactive": false,
+        "PrimaryKey": {
+          "ForBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35"
+        },
+        "Settings": {
+          "EnableDeliveryNotification": false
+        }
+      },
+      "RawMessageId": "f0680641-bc8f-11eb-a32e-89d4835c2bcd",
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [
+      "f16fe317-bc8f-11eb-94b5-a7316d7b03df"
+    ],
+    "exceptionInfos": []
+  },
+  "f06846a2-bc8f-11eb-be0d-9bccc691e0d8": {
+    "taskMeta": {
+      "name": "TransportBox_SendMessageFromOutboxTaskData",
+      "id": "f06846a2-bc8f-11eb-be0d-9bccc691e0d8",
+      "ticks": "637574579964643057",
+      "minimalStartTicks": "637574579980078058",
+      "startExecutingTicks": "637574579978940452",
+      "finishExecutingTicks": "637574579980078058",
+      "lastModificationTicks": "637574579980117000",
+      "expirationTimestampTicks": "637660979964643642",
+      "expirationModificationTicks": "637574579964643642",
+      "executionDurationTicks": "1137606",
+      "state": "Finished",
+      "attempts": 1,
+      "parentTaskId": null
+    },
+    "taskData": {
+      "DocumentCirculationStartTimestamp": "2021-05-24T12:59:56.4541377Z",
+      "SentFromMonitoring": false,
+      "TransportBox": {
+        "Id": "be7dc7ca-4a8a-4536-8c81-892eeff25364",
+        "PartyId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+        "RelatedBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35",
+        "Inactive": false,
+        "PrimaryKey": {
+          "ForBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35"
+        },
+        "Settings": {
+          "EnableDeliveryNotification": false
+        }
+      },
+      "RawMessageId": "f0680641-bc8f-11eb-a32e-89d4835c2bcd",
+      "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+    },
+    "childTaskIds": [
+      "f150c1cf-bc8f-11eb-933b-3fb7335a04d3"
+    ],
+    "exceptionInfos": []
+  }
+}

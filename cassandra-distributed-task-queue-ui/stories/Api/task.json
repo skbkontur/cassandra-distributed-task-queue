@@ -1,0 +1,53 @@
+{
+  "taskMeta": {
+    "name": "NotifyAboutDocumentStateTaskData",
+    "id": "f463679b-bc8f-11eb-a473-4da8d38e0949",
+    "ticks": "637574580031432681",
+    "minimalStartTicks": "637574580032245072",
+    "startExecutingTicks": "637574580032062866",
+    "finishExecutingTicks": "637574580032245072",
+    "lastModificationTicks": "637574580032269119",
+    "expirationTimestampTicks": "637660980031432828",
+    "expirationModificationTicks": "637574580031432828",
+    "executionDurationTicks": "182206",
+    "state": "Finished",
+    "attempts": 1,
+    "parentTaskId": "f27719c9-bc8f-11eb-8553-6065c9081ce2"
+  },
+  "taskData": {
+    "DocumentStateDetails": {
+      "GeneralDocumentNumber": "",
+      "GeneralDocumentDate": "2021-05-24T13:00:03.1432026Z",
+      "DocumentMeta": {
+        "IsTest": true
+      },
+      "OutboxBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35",
+      "OutboxEntityId": "f18f1210-bc8f-11eb-83ef-52333f76c547",
+      "TaskChainId": "f066ce99-bc8f-11eb-956b-892067e4381a",
+      "LastEventDateTime": "2021-05-24T13:00:03.0831804Z",
+      "State": "Ok",
+      "Stage": "Delivery",
+      "ReportDateTime": "2021-05-24T13:00:03.1432026Z",
+      "OriginalMessageRecipientPartyId": "f03881e3-0014-4a2c-9fb4-574525945074",
+      "OriginalMessageSenderPartyId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+      "StatusReportRecipientId": "14a12119-d6cb-468f-ac19-be3eb2093e2c",
+      "ChainCommonState": "SentWithoutReceipt",
+      "ChainType": "Orders",
+      "DocumentNumber": "2000000011011_53116",
+      "MessageId": "cf9cd670-d9b3-4ac0-8ca2-e4b947067050",
+      "DocumentId": "cf9cd670-d9b3-4ac0-8ca2-e4b947067050",
+      "OutgoingMessageId": "18342b37-549d-4298-9eee-f2fb31abc06f",
+      "Errors": null,
+      "DocumentDateTime": "2021-05-24T00:00:00Z",
+      "ReceivedDateTime": "2021-05-24T12:59:56.4541377Z",
+      "RevocationInitiatorGln": null,
+      "OrderNumber": "2000000011011_53116",
+      "DiadocInvoiceIdentifiers": null,
+      "DiadocDocumentUrls": null,
+      "StatusReportRecipientBoxId": "1de8f08d-3220-4886-b9ed-41b582c7ce35"
+    },
+    "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
+  },
+  "childTaskIds": [],
+  "exceptionInfos": []
+}
