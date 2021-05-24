@@ -5,7 +5,7 @@ import React from "react";
 import { Ticks, TimeZone } from "../../Domain/DataTypes/Time";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
-import styles from "./DateTimeView.less";
+import { jsStyles } from "./DateTimeView.styles";
 
 interface DateTimeViewProps {
     value: Nullable<Ticks>;
@@ -162,7 +162,7 @@ export class DateTimeView extends React.Component<DateTimeViewProps, DateTimeVie
             <span>
                 {this.renderWithTimeZone(defaultTimezone)} (
                 <Tooltip data-tid="TimeZone" render={() => this.selectTimeZone()} trigger="click" pos="right top">
-                    <span className={styles.timezone}>{this.getTimeZoneShortName(defaultTimezone)}</span>
+                    <span className={jsStyles.timezone()}>{this.getTimeZoneShortName(defaultTimezone)}</span>
                 </Tooltip>
                 )
             </span>

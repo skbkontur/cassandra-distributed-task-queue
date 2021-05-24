@@ -85,7 +85,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         const counter = (results && results.totalCount) || 0;
         return (
             <CommonLayout>
-                <CommonLayout.GoBack to={RouteUtils.backUrl(this.props)}>
+                <CommonLayout.GoBack to={RouteUtils.backUrl(this.props.match)}>
                     Вернуться к инструментам администратора
                 </CommonLayout.GoBack>
                 <CommonLayout.Header data-tid="Header" title="Список задач" />

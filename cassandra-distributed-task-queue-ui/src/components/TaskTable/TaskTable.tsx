@@ -7,7 +7,7 @@ import React from "react";
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 
 import { TaskDetails } from "./TaskDetails/TaskDetails";
-import styles from "./TaskTable.less";
+import { jsStyles } from "./TaskTable.styles";
 
 export interface TaskTableProps {
     taskInfos: RtqMonitoringTaskMeta[];
@@ -54,7 +54,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
     public renderRow(item: RtqMonitoringTaskMeta): JSX.Element {
         const { allowRerunOrCancel, getTaskLocation } = this.props;
         return (
-            <div key={item.id} className={styles.taskDetailsRow}>
+            <div key={item.id} className={jsStyles.taskDetailsRow()}>
                 <TaskDetails
                     getTaskLocation={getTaskLocation}
                     data-tid="Task"

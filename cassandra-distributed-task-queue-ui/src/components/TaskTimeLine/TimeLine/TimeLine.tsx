@@ -78,7 +78,7 @@ TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineE
     return (
         <div className={styles.entry}>
             <div className={styles.icon}>
-                {React.cloneElement(icon, { color: iconColor })}
+                {icon}
                 <div className={styles.line} />
             </div>
             <div className={styles.content}>{children}</div>

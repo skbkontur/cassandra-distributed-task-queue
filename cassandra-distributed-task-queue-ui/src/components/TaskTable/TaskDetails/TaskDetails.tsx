@@ -4,7 +4,6 @@ import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout"
 import { Link } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import { RtqMonitoringTaskMeta } from "../../../Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../../../Domain/Api/TaskState";
@@ -12,6 +11,7 @@ import { Ticks } from "../../../Domain/DataTypes/Time";
 import { cancelableStates, rerunableStates } from "../../../Domain/TaskStateExtensions";
 import { AllowCopyToClipboard } from "../../AllowCopyToClipboard";
 import { DateTimeView } from "../../DateTimeView/DateTimeView";
+import { RouterLink } from "../../RouterLink/RouterLink";
 
 import styles from "./TaskDetails.less";
 
@@ -63,7 +63,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
     return (
         <ColumnStack block gap={1} className={`${styles.taskDetails} ${styles[getStateClassName(taskInfo.state)]}`}>
             <Fit className={styles.name}>
-                <RouterLink className={styles.routerLink} data-tid="Name" to={getTaskLocation(taskInfo.id)}>
+                <RouterLink data-tid="Name" to={getTaskLocation(taskInfo.id)}>
                     {taskInfo.name}
                 </RouterLink>
             </Fit>

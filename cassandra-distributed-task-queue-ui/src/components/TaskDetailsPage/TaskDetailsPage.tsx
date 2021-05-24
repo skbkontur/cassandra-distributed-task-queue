@@ -5,7 +5,6 @@ import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout"
 import { Button, Link, Modal } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
 import { ICustomRenderer } from "../../Domain/CustomRenderer";
@@ -13,6 +12,7 @@ import { cancelableStates, rerunableStates } from "../../Domain/TaskStateExtensi
 import { searchRequestMapping } from "../../containers/TasksPageContainer";
 import { Accordion } from "../Accordion/Accordion";
 import { CommonLayout } from "../Layouts/CommonLayout";
+import { RouterLink } from "../RouterLink/RouterLink";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import { TaskTimeLine } from "../TaskTimeLine/TaskTimeLine";
 
@@ -115,7 +115,6 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                 {relatedTasksRequest && (
                     <Fit>
                         <RouterLink
-                            className={styles.routerLink}
                             data-tid={"RelatedTaskTree"}
                             to={`${path}/Tree${searchRequestMapping.stringify(relatedTasksRequest)}`}>
                             <ListRowsIcon />

@@ -6,7 +6,7 @@ import React from "react";
 import { TaskState } from "../../Domain/Api/TaskState";
 import { getAllTaskStates } from "../../Domain/TaskStateExtensions";
 
-import styles from "./TaskStatesSelect.less";
+import { jsStyles } from "./TaskStatesSelect.styles";
 
 export interface TaskStatesSelectProps {
     value: TaskState[];
@@ -31,7 +31,7 @@ export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
             <span>
                 <Tooltip render={this.renderTooltip} trigger="click" pos="bottom left">
                     <Button>
-                        <span data-tid="ButtonText" className={styles.buttonText}>
+                        <span data-tid="ButtonText" className={jsStyles.buttonText()}>
                             {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
                         </span>
                         <ArrowTriangleDownIcon />

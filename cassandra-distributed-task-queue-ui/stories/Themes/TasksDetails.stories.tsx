@@ -11,7 +11,7 @@ import { infraUiDark } from "./infraUiDark";
 import { reactUiDark } from "./reactUiDark";
 
 export default {
-    title: "Themes/TaskDetails",
+    title: "Themes/TasksDetails",
     decorators: [StoryRouter()],
 };
 

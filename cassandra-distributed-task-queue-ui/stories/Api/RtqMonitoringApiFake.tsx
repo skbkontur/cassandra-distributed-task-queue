@@ -136,6 +136,17 @@ export class RtqMonitoringApiFake implements IRtqMonitoringApi {
             return task;
         }
 
+        if (taskId === "Error") {
+            await delay(100);
+            throw new Error("Api Error");
+        }
+
+        if (taskId === "NotFound") {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            return {};
+        }
+
         if (treeTaskDetails[taskId]) {
             return treeTaskDetails[taskId];
         }
