@@ -49,5 +49,8 @@
     "DocumentCirculationId": "f066ce99-bc8f-11eb-956b-892067e4381a"
   },
   "childTaskIds": [],
-  "exceptionInfos": []
+  "exceptionInfos": [
+    "SKBKontur.Catalogue.EDI.Domain.New.Documents.Mutators.Validation.DocumentValidationException: Документ содержит ошибки\r\nЗначение «GLN грузополучателя» (C082_E3039 в NAD+CN) обязательно\r\nЗначение «Номер ТД» '10113100140317ОБ001710000' (C506_E1154 в RFF+ABT для LIN+10) не соответствует формату 'Число(2-8)/ДДММГГ(ДДММГГГГ)/Строка(=7)/Число(0-3)'\r\n   at SKBKontur.Catalogue.EDI.Domain.EdiHandling.BoxTasks.OutboxValidatingTaskHandler.HandleInternal[TDocument](TDocument document, OutboxValidatingTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\EdiHandling\\BoxTasks\\OutboxValidatingTaskHandler.cs:line 42\r\n   at HandleInternal_04007e42-d51f-45d0-bc41-5a461a2e735c(Object , Object[] )\r\n   at SKBKontur.Catalogue.EDI.Domain.EdiHandling.BoxTasks.OutboxValidatingTaskHandler.Handle(OutboxValidatingTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\EdiHandling\\BoxTasks\\OutboxValidatingTaskHandler.cs:line 32\r\n   at SKBKontur.Catalogue.EDI.Domain.RemoteTaskQueue.Handling.DampedRerunPeriodicityTaskHandler`1.HandleTask(TTaskData taskData) in c:\\BuildAgent\\work\\EDIDeploymentCheckout\\EDI\\Domain\\RemoteTaskQueue.Handling\\DampedRerunPeriodicityTaskHandler.cs:line 24",
+    "SKBKontur.Catalogue.EDI.OtherException"
+  ]
 }

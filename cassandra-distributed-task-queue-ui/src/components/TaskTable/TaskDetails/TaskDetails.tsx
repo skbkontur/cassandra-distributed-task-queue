@@ -1,7 +1,7 @@
 import DeleteIcon from "@skbkontur/react-icons/Delete";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import { Link } from "@skbkontur/react-ui";
+import { Link, ThemeContext } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
 
@@ -13,13 +13,13 @@ import { AllowCopyToClipboard } from "../../AllowCopyToClipboard";
 import { DateTimeView } from "../../DateTimeView/DateTimeView";
 import { RouterLink } from "../../RouterLink/RouterLink";
 
-import styles from "./TaskDetails.less";
+import { jsStyles } from "./TaskDetails.styles";
 
 interface TaskDetailsProps {
     taskInfo: RtqMonitoringTaskMeta;
     allowRerunOrCancel: boolean;
-    onRerun: () => any;
-    onCancel: () => any;
+    onRerun: () => void;
+    onCancel: () => void;
     getTaskLocation: (id: string) => LocationDescriptor;
 }
 
@@ -30,60 +30,47 @@ function dateFormatter(
     return <DateTimeView value={selector(item)} />;
 }
 
-function taskDate(
-    taskInfo: RtqMonitoringTaskMeta,
-    caption: string,
-    selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
-): JSX.Element {
-    return (
-        <div className={styles.date}>
-            <span className={styles.caption}>{caption}</span>
-            <span className={styles.value}>{dateFormatter(taskInfo, selector)}</span>
-        </div>
-    );
-}
-
-const stateClassNames = {
-    Unknown: "stateUnknown",
-    New: "stateNew",
-    WaitingForRerun: "stateWaitingForRerun",
-    WaitingForRerunAfterError: "stateWaitingForRerunAfterError",
-    Finished: "stateFinished",
-    InProcess: "stateInProcess",
-    Fatal: "stateFatal",
-    Canceled: "stateCanceled",
-};
-
-function getStateClassName(taskState: TaskState): string {
-    return stateClassNames[taskState];
-}
-
 export function TaskDetails(props: TaskDetailsProps): JSX.Element {
     const { allowRerunOrCancel, taskInfo, onCancel, onRerun, getTaskLocation } = props;
+    const theme = React.useContext(ThemeContext);
+
+    const renderTaskDate = (
+        taskInfo: RtqMonitoringTaskMeta,
+        caption: string,
+        selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
+    ): JSX.Element => {
+        return (
+            <div>
+                <span className={jsStyles.dateCaption(theme)}>{caption}</span>
+                <span>{dateFormatter(taskInfo, selector)}</span>
+            </div>
+        );
+    };
+
     return (
-        <ColumnStack block gap={1} className={`${styles.taskDetails} ${styles[getStateClassName(taskInfo.state)]}`}>
-            <Fit className={styles.name}>
+        <ColumnStack block gap={1} className={`${jsStyles.taskDetails()} ${jsStyles.state(theme, taskInfo.state)}`}>
+            <Fit className={jsStyles.name()}>
                 <RouterLink data-tid="Name" to={getTaskLocation(taskInfo.id)}>
                     {taskInfo.name}
                 </RouterLink>
             </Fit>
             <Fit>
                 <RowStack verticalAlign="stretch" block gap={2}>
-                    <Fit tag={ColumnStack} className={styles.infoBlock1}>
-                        <Fit className={styles.id}>
+                    <Fit tag={ColumnStack} className={jsStyles.infoBlock1()}>
+                        <Fit className={jsStyles.id()}>
                             <AllowCopyToClipboard>
                                 <span data-tid="TaskId">{taskInfo.id}</span>
                             </AllowCopyToClipboard>
                         </Fit>
-                        <Fit className={styles.state}>
-                            <span className={styles.stateName} data-tid="State">
+                        <Fit>
+                            <span className={jsStyles.stateName()} data-tid="State">
                                 {TaskState[taskInfo.state]}
                             </span>
-                            <span className={styles.attempts}>
+                            <span className={jsStyles.attempts()}>
                                 Attempts: <span data-tid="Attempts">{taskInfo.attempts}</span>
                             </span>
                         </Fit>
-                        <Fill className={styles.parentTask}>
+                        <Fill className={jsStyles.parentTask()}>
                             <div>
                                 Parent:{" "}
                                 {taskInfo.parentTaskId ? (
@@ -94,7 +81,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                             </div>
                         </Fill>
                         {allowRerunOrCancel && (
-                            <Fit className={styles.actions}>
+                            <Fit>
                                 <RowStack baseline block gap={2}>
                                     <Fit>
                                         <Link
@@ -118,12 +105,12 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                             </Fit>
                         )}
                     </Fit>
-                    <Fit className={styles.dates}>
-                        {taskDate(taskInfo, "Enqueued", x => x.ticks)}
-                        {taskDate(taskInfo, "Started", x => x.startExecutingTicks)}
-                        {taskDate(taskInfo, "Finished", x => x.finishExecutingTicks)}
-                        {taskDate(taskInfo, "StateTime", x => x.minimalStartTicks)}
-                        {taskDate(taskInfo, "Expiration", x => x.expirationTimestampTicks)}
+                    <Fit className={jsStyles.dates()}>
+                        {renderTaskDate(taskInfo, "Enqueued", x => x.ticks)}
+                        {renderTaskDate(taskInfo, "Started", x => x.startExecutingTicks)}
+                        {renderTaskDate(taskInfo, "Finished", x => x.finishExecutingTicks)}
+                        {renderTaskDate(taskInfo, "StateTime", x => x.minimalStartTicks)}
+                        {renderTaskDate(taskInfo, "Expiration", x => x.expirationTimestampTicks)}
                     </Fit>
                 </RowStack>
             </Fit>

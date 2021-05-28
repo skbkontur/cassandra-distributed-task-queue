@@ -2,7 +2,7 @@ import DeleteIcon from "@skbkontur/react-icons/Delete";
 import ListRowsIcon from "@skbkontur/react-icons/ListRows";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import { Button, Link, Modal } from "@skbkontur/react-ui";
+import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
 
@@ -16,7 +16,7 @@ import { RouterLink } from "../RouterLink/RouterLink";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import { TaskTimeLine } from "../TaskTimeLine/TaskTimeLine";
 
-import styles from "./TaskDetailsPage.less";
+import { jsStyles } from "./TaskDetailsPage.styles";
 
 export interface TaskDetailsPageProps {
     parentLocation: string;
@@ -29,76 +29,35 @@ export interface TaskDetailsPageProps {
     path: string;
 }
 
-interface TaskDetailsPageState {
-    openedModal: boolean;
-    modalType: "Cancel" | "Rerun";
-}
+export function TaskDetailsPage({
+    parentLocation,
+    taskDetails,
+    customRenderer,
+    getTaskLocation,
+    allowRerunOrCancel,
+    onRerun,
+    onCancel,
+    path,
+}: TaskDetailsPageProps): JSX.Element {
+    const [openedModal, setOpenedModal] = React.useState(false);
+    const [modalType, setModalType] = React.useState<"Cancel" | "Rerun">("Cancel");
+    const theme = React.useContext(ThemeContext)
 
-export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskDetailsPageState> {
-    public state: TaskDetailsPageState = { openedModal: false, modalType: "Cancel" };
+    const rerun = () => {
+        setOpenedModal(true);
+        setModalType("Rerun");
+    };
 
-    public render(): JSX.Element {
-        const { allowRerunOrCancel, getTaskLocation, taskDetails, parentLocation, customRenderer, path } = this.props;
-        const { openedModal } = this.state;
+    const cancel = () => {
+        setOpenedModal(true);
+        setModalType("Cancel");
+    };
 
-        return (
-            <div>
-                <CommonLayout>
-                    {taskDetails && (
-                        <CommonLayout.GoBack to={parentLocation}>Вернуться к поиску задач</CommonLayout.GoBack>
-                    )}
-                    {taskDetails && (
-                        <CommonLayout.GreyLineHeader
-                            data-tid="Header"
-                            title={`Задача ${taskDetails.taskMeta.name}`}
-                            tools={taskDetails && allowRerunOrCancel ? this.renderButtons() : null}>
-                            <TaskTimeLine
-                                getHrefToTask={getTaskLocation}
-                                taskMeta={taskDetails.taskMeta}
-                                childTaskIds={taskDetails.childTaskIds}
-                            />
-                        </CommonLayout.GreyLineHeader>
-                    )}
-                    <CommonLayout.Content>
-                        <ColumnStack block stretch gap={2}>
-                            {taskDetails && (
-                                <Fit>
-                                    <TaskDetailsMetaTable
-                                        taskMeta={taskDetails.taskMeta}
-                                        childTaskIds={taskDetails.childTaskIds}
-                                        path={path}
-                                    />
-                                </Fit>
-                            )}
-                            {taskDetails && (
-                                <Fit className={styles.taskDataContainer}>
-                                    <Accordion
-                                        renderCaption={null}
-                                        renderValue={customRenderer.renderDetails}
-                                        value={taskDetails.taskData}
-                                        title="TaskData"
-                                    />
-                                </Fit>
-                            )}
-                            {taskDetails && taskDetails.exceptionInfos && (
-                                <Fit className={styles.exceptionContainer} data-tid="Exceptions">
-                                    {taskDetails.exceptionInfos.map((exception, index) => (
-                                        <pre data-tid="Exception" key={index} className={styles.exception}>
-                                            {exception}
-                                        </pre>
-                                    ))}
-                                </Fit>
-                            )}
-                        </ColumnStack>
-                    </CommonLayout.Content>
-                </CommonLayout>
-                {openedModal && this.renderModal()}
-            </div>
-        );
-    }
+    const closeModal = () => {
+        setOpenedModal(false);
+    };
 
-    public renderButtons(): JSX.Element | null {
-        const { taskDetails, customRenderer, path } = this.props;
+    const renderButtons = (): JSX.Element | null => {
         if (!taskDetails) {
             return null;
         }
@@ -125,34 +84,28 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                 )}
                 {isCancelable && (
                     <Fit>
-                        <Link
-                            icon={<DeleteIcon />}
-                            use="danger"
-                            data-tid={"CancelButton"}
-                            onClick={() => this.cancel()}>
+                        <Link icon={<DeleteIcon />} use="danger" data-tid={"CancelButton"} onClick={cancel}>
                             Cancel task
                         </Link>
                     </Fit>
                 )}
                 {isRerunable && (
                     <Fit>
-                        <Link icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={() => this.rerun()}>
+                        <Link icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={rerun}>
                             Rerun task
                         </Link>
                     </Fit>
                 )}
             </RowStack>
         );
-    }
+    };
 
-    public renderModal(): JSX.Element | null {
-        const { onCancel, onRerun, taskDetails } = this.props;
-        const { modalType } = this.state;
+    const renderModal = (): JSX.Element | null => {
         if (!taskDetails) {
             return null;
         }
         return (
-            <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmOperationModal">
+            <Modal onClose={closeModal} width={500} data-tid="ConfirmOperationModal">
                 <Modal.Header>Нужно подтверждение</Modal.Header>
                 <Modal.Body>
                     <span data-tid="ModalText">
@@ -170,7 +123,7 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                                     use="success"
                                     onClick={() => {
                                         onRerun(taskDetails.taskMeta.id);
-                                        this.closeModal();
+                                        closeModal();
                                     }}>
                                     Перезапустить
                                 </Button>
@@ -180,14 +133,14 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                                     use="danger"
                                     onClick={() => {
                                         onCancel(taskDetails.taskMeta.id);
-                                        this.closeModal();
+                                        closeModal();
                                     }}>
                                     Остановить
                                 </Button>
                             )}
                         </Fit>
                         <Fit>
-                            <Button data-tid="CloseButton" onClick={() => this.closeModal()}>
+                            <Button data-tid="CloseButton" onClick={closeModal}>
                                 Закрыть
                             </Button>
                         </Fit>
@@ -195,25 +148,58 @@ export class TaskDetailsPage extends React.Component<TaskDetailsPageProps, TaskD
                 </Modal.Footer>
             </Modal>
         );
-    }
+    };
 
-    public rerun() {
-        this.setState({
-            openedModal: true,
-            modalType: "Rerun",
-        });
-    }
-
-    public cancel() {
-        this.setState({
-            openedModal: true,
-            modalType: "Cancel",
-        });
-    }
-
-    public closeModal() {
-        this.setState({
-            openedModal: false,
-        });
-    }
+    return (
+        <div>
+            <CommonLayout>
+                {taskDetails && <CommonLayout.GoBack to={parentLocation}>Вернуться к поиску задач</CommonLayout.GoBack>}
+                {taskDetails && (
+                    <CommonLayout.GreyLineHeader
+                        data-tid="Header"
+                        title={`Задача ${taskDetails.taskMeta.name}`}
+                        tools={taskDetails && allowRerunOrCancel ? renderButtons() : null}>
+                        <TaskTimeLine
+                            getHrefToTask={getTaskLocation}
+                            taskMeta={taskDetails.taskMeta}
+                            childTaskIds={taskDetails.childTaskIds}
+                        />
+                    </CommonLayout.GreyLineHeader>
+                )}
+                <CommonLayout.Content>
+                    <ColumnStack block stretch gap={2}>
+                        {taskDetails && (
+                            <Fit>
+                                <TaskDetailsMetaTable
+                                    taskMeta={taskDetails.taskMeta}
+                                    childTaskIds={taskDetails.childTaskIds}
+                                    path={path}
+                                />
+                            </Fit>
+                        )}
+                        {taskDetails && (
+                            <Fit className={jsStyles.taskDataContainer()}>
+                                <Accordion
+                                    renderCaption={null}
+                                    renderValue={customRenderer.renderDetails}
+                                    value={taskDetails.taskData}
+                                    title="TaskData"
+                                />
+                            </Fit>
+                        )}
+                        {taskDetails && taskDetails.exceptionInfos && (
+                            <Fit className={jsStyles.exceptionContainer()} data-tid="Exceptions">
+                                {taskDetails.exceptionInfos.map((exception, index) => (
+                                    <pre data-tid="Exception" key={index} className={jsStyles.exception(theme)}>
+                                        {exception}
+                                    </pre>
+                                ))}
+                            </Fit>
+                        )}
+                    </ColumnStack>
+                </CommonLayout.Content>
+            </CommonLayout>
+            {openedModal && renderModal()}
+        </div>
+    );
 }

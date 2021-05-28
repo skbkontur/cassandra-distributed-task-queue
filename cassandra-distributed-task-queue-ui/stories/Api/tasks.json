@@ -27,7 +27,7 @@
       "expirationTimestampTicks": "637660980031432828",
       "expirationModificationTicks": "637574580031432828",
       "executionDurationTicks": "182206",
-      "state": "Finished",
+      "state": "Unknown",
       "attempts": 1,
       "parentTaskId": "f27719c9-bc8f-11eb-8553-6065c9081ce2"
     },
@@ -42,7 +42,7 @@
       "expirationTimestampTicks": "637660979999169250",
       "expirationModificationTicks": "637574579999169250",
       "executionDurationTicks": "3666780",
-      "state": "Finished",
+      "state": "InProcess",
       "attempts": 1,
       "parentTaskId": null
     },
@@ -57,7 +57,7 @@
       "expirationTimestampTicks": "637660979989017331",
       "expirationModificationTicks": "637574579989017331",
       "executionDurationTicks": "643696",
-      "state": "Finished",
+      "state": "WaitingForRerunAfterError",
       "attempts": 1,
       "parentTaskId": "f1ce638d-bc8f-11eb-8fa7-d2b149045cda"
     },

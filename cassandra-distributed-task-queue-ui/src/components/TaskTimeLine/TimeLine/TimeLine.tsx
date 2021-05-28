@@ -1,6 +1,7 @@
+import { ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
 
-import styles from "./TimeLine.less";
+import { jsStyles } from "./TimeLine.styles";
 import { TimeLineCycled, TimeLineCycledProps } from "./TimeLineCycled";
 
 interface TimeLineProps {
@@ -15,7 +16,7 @@ export class TimeLine extends React.Component<TimeLineProps> {
     public render(): JSX.Element {
         const { children } = this.props;
         return (
-            <div className={styles.root} data-tid={"InnerTimeLine"}>
+            <div className={jsStyles.root()} data-tid={"InnerTimeLine"}>
                 {children}
             </div>
         );
@@ -29,59 +30,51 @@ interface TimeLineEntryProps {
 }
 
 TimeLine.Branch = function TimeLineBranch({ children }: TimeLineProps): JSX.Element {
+    const theme = React.useContext(ThemeContext);
     return (
-        <div className={`${styles.root} ${styles.branch}`}>
-            <div className={styles.lineUp} />
+        <div className={`${jsStyles.root()} ${jsStyles.branch()}`}>
+            <div className={jsStyles.lineUp(theme)} />
             {children}
         </div>
     );
 };
 
-TimeLine.BranchNode = class TimeLineBranchNode extends React.Component<TimeLineProps> {
-    public branches: HTMLElement | null = null;
-    public line: HTMLElement | null = null;
+TimeLine.BranchNode = function TimeLineBranchNode({ children }: TimeLineProps) {
+    const branches = React.useRef<HTMLDivElement>(null);
+    const line = React.useRef<HTMLDivElement>(null);
+    const theme = React.useContext(ThemeContext);
 
-    public componentDidUpdate() {
-        this.updateLinesHeight();
-    }
-
-    public componentDidMount() {
-        this.updateLinesHeight();
-    }
-
-    public updateLinesHeight() {
-        if (this.branches != null) {
-            const branches = this.branches.children;
-            const lastEntry = branches[branches.length - 1];
+    React.useEffect(() => {
+        if (branches.current != null) {
+            const children = branches.current.children;
+            const lastEntry = children[children.length - 1];
             const lastEntryWidth = lastEntry.clientWidth;
-            const line = this.line;
-            if (!isNaN(lastEntryWidth) && line != null) {
-                line.style.marginRight = (lastEntryWidth - 7).toString() + "px";
+            const currentLine = line.current;
+            if (!isNaN(lastEntryWidth) && currentLine != null) {
+                currentLine.style.marginRight = (lastEntryWidth - 7).toString() + "px";
             }
         }
-    }
+    });
 
-    public render(): JSX.Element {
-        const { children } = this.props;
-        return (
-            <div className={styles.branchNode}>
-                <div className={styles.horLine} ref={el => (this.line = el)} />
-                <div className={styles.branchNodes} ref={el => (this.branches = el)}>
-                    {children}
-                </div>
+    return (
+        <div className={jsStyles.branchNode()}>
+            <div className={jsStyles.horLine(theme)} ref={line} />
+            <div className={jsStyles.branchNodes()} ref={branches}>
+                {children}
             </div>
-        );
-    }
+        </div>
+    );
 };
 
-TimeLine.Entry = function TimeLineEntry({ children, icon, iconColor }: TimeLineEntryProps): JSX.Element {
+TimeLine.Entry = function TimeLineEntry({ children, icon }: TimeLineEntryProps): JSX.Element {
+    const theme = React.useContext(ThemeContext);
     return (
-        <div className={styles.entry}>
-            <div className={styles.icon}>
+        <div className={`__root-entry ${jsStyles.entry()}`}>
+            <div className={jsStyles.icon()}>
                 {icon}
-                <div className={styles.line} />
+                <div className={`__root-entry-line ${jsStyles.line(theme)}`} />
             </div>
-            <div className={styles.content}>{children}</div>
+            <div className={`__root-entry-content ${jsStyles.content()}`}>{children}</div>
         </div>
     );
 };
