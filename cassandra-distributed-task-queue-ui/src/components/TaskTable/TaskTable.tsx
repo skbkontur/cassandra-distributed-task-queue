@@ -1,5 +1,6 @@
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
-import { Button, Modal } from "@skbkontur/react-ui";
+import { ThemeContext, Button, Modal } from "@skbkontur/react-ui";
+import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
 import React from "react";
@@ -30,6 +31,8 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         actionTask: "",
     };
 
+    private theme!: Theme;
+
     public shouldComponentUpdate(nextProps: TaskTableProps, nextState: TasksTableState): boolean {
         return (
             !_.isEqual(this.props.taskInfos, nextProps.taskInfos) ||
@@ -44,10 +47,17 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         const { taskInfos } = this.props;
         const { openedModal } = this.state;
         return (
-            <div>
-                <div data-tid="Tasks">{taskInfos.map(item => this.renderRow(item))}</div>
-                {openedModal && this.renderModal()}
-            </div>
+            <ThemeContext.Consumer>
+                {theme => {
+                    this.theme = theme;
+                    return (
+                        <div>
+                            <div data-tid="Tasks">{taskInfos.map(item => this.renderRow(item))}</div>
+                            {openedModal && this.renderModal()}
+                        </div>
+                    );
+                }}
+            </ThemeContext.Consumer>
         );
     }
 
@@ -73,9 +83,11 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
 
         return (
             <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmOperationModal">
-                <Modal.Header>Нужно подтверждение</Modal.Header>
+                <Modal.Header>
+                    <span className={jsStyles.modalText(this.theme)}>Нужно подтверждение</span>
+                </Modal.Header>
                 <Modal.Body>
-                    <span data-tid="ModalText">
+                    <span data-tid="ModalText" className={jsStyles.modalText(this.theme)}>
                         {modalType === "Rerun"
                             ? "Уверен, что таску надо перезапустить?"
                             : "Уверен, что таску надо остановить?"}

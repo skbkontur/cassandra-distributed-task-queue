@@ -49,7 +49,7 @@ export class TaskDetailsPageContainer extends React.Component<
         const { taskDetails, loading, notFoundError } = this.state;
         const { parentLocation, isSuperUser, customRenderer, path, useErrorHandlingContainer } = this.props;
         if (notFoundError) {
-            return <TaskNotFoundPage parentLocation={parentLocation || path} />;
+            return <TaskNotFoundPage />;
         }
 
         return (

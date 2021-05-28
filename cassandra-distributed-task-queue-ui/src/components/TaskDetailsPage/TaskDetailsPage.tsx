@@ -41,7 +41,7 @@ export function TaskDetailsPage({
 }: TaskDetailsPageProps): JSX.Element {
     const [openedModal, setOpenedModal] = React.useState(false);
     const [modalType, setModalType] = React.useState<"Cancel" | "Rerun">("Cancel");
-    const theme = React.useContext(ThemeContext)
+    const theme = React.useContext(ThemeContext);
 
     const rerun = () => {
         setOpenedModal(true);
@@ -106,9 +106,11 @@ export function TaskDetailsPage({
         }
         return (
             <Modal onClose={closeModal} width={500} data-tid="ConfirmOperationModal">
-                <Modal.Header>Нужно подтверждение</Modal.Header>
+                <Modal.Header>
+                    <span className={jsStyles.modalText(theme)}>Нужно подтверждение</span>
+                </Modal.Header>
                 <Modal.Body>
-                    <span data-tid="ModalText">
+                    <span data-tid="ModalText" className={jsStyles.modalText(theme)}>
                         {modalType === "Rerun"
                             ? "Уверен, что таску надо перезапустить?"
                             : "Уверен, что таску надо остановить?"}

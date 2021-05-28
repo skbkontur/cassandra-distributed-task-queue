@@ -27,4 +27,10 @@ export const jsStyles = {
             overflow-x: auto;
         `;
     },
+
+    modalText(t: Theme): string {
+        return css`
+            color: ${t.textColorDefault};
+        `;
+    },
 };
