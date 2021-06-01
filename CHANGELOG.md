@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.3.x - 2021.05.31
+## v1.3.3 - 2021.06.01
 - Add support for dark theme using react-ui ThemeContext
 - Update supported peerDependencies versions range
 
