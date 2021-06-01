@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.x - 2021.05.31
+- Add support for dark theme using react-ui ThemeContext
+- Update supported peerDependencies versions range
+
 ## v1.2.7 - 2021.03.26
 - Fix bug with TaskDataJsonSerializer: add TimeGuid and Timestamp converters
 

@@ -1,53 +1,43 @@
+import { ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
 
-import styles from "./TimeLine.less";
+import { jsStyles } from "./TimeLine.styles";
 
 export interface TimeLineCycledProps {
-    children?: any;
+    children?: React.ReactNode;
     content?: Nullable<JSX.Element> | Nullable<string>;
     icon?: JSX.Element;
 }
 
-export class TimeLineCycled extends React.Component<TimeLineCycledProps> {
-    public entries: HTMLElement | null = null;
-    public lines: HTMLElement | null = null;
+export function TimeLineCycled({ children, content, icon }: TimeLineCycledProps): JSX.Element {
+    const entries = React.useRef<HTMLDivElement>(null);
+    const lines = React.useRef<HTMLDivElement>(null);
+    const theme = React.useContext(ThemeContext);
 
-    public componentDidUpdate() {
-        this.updateLinesHeight();
-    }
-
-    public componentDidMount() {
-        this.updateLinesHeight();
-    }
-
-    public updateLinesHeight() {
-        if (this.entries != null) {
-            const entries = this.entries.children;
-            const lastEntry = entries[entries.length - 1];
+    React.useEffect(() => {
+        if (entries.current != null) {
+            const children = entries.current.children;
+            const lastEntry = children[children.length - 1];
             const lastEntryHeight = lastEntry.clientHeight;
-            const lines = this.lines;
-            if (!isNaN(lastEntryHeight) && lines != null) {
-                lines.style.marginBottom = (lastEntryHeight - 22).toString() + "px";
+            const currentLines = lines.current;
+            if (!isNaN(lastEntryHeight) && currentLines != null) {
+                currentLines.style.marginBottom = (lastEntryHeight - 22).toString() + "px";
             }
         }
-    }
+    });
 
-    public render(): JSX.Element {
-        const { children, content, icon } = this.props;
-
-        return (
-            <div className={styles.cycle}>
-                <div ref={el => (this.entries = el)} className={styles.entries}>
-                    {children}
-                </div>
-                <div className={styles.lines} ref={el => (this.lines = el)}>
-                    <div className={styles.line1} />
-                    <div className={styles.line2} />
-                    <div className={styles.line3} />
-                </div>
-                {icon && <div className={styles.icon}>{icon}</div>}
-                {content && <div className={styles.info}>{content}</div>}
+    return (
+        <div className={`__root-cycle ${jsStyles.cycle()}`}>
+            <div ref={entries} className="__root-cycle-entries">
+                {children}
             </div>
-        );
-    }
+            <div className={jsStyles.lines(theme)} ref={lines}>
+                <div className={jsStyles.line1()} />
+                <div className={jsStyles.line2()} />
+                <div className={jsStyles.line3()} />
+            </div>
+            {icon && <div className={jsStyles.cycleIcon()}>{icon}</div>}
+            {content && <div className={jsStyles.cycleInfo()}>{content}</div>}
+        </div>
+    );
 }

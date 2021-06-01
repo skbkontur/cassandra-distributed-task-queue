@@ -4,7 +4,7 @@ import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Input, Tooltip } from "@skbkontur/react-ui";
 import React from "react";
 
-import styles from "./TaskTypesSelect.less";
+import { jsStyles } from "./TaskTypesSelect.styles";
 
 export interface TaskTypesSelectProps {
     availableTaskTypes: string[];
@@ -28,7 +28,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
             <span>
                 <Tooltip render={this.renderTooltip} trigger="click" pos="bottom left" data-tid="Tooltip">
                     <Button disabled={disabled}>
-                        <span className={styles.buttonText}>
+                        <span className={jsStyles.buttonText()}>
                             {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
                         </span>
                         <ArrowTriangleDownIcon />
@@ -38,7 +38,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
         );
     }
 
-    public selectItem(val: boolean, taskType: string) {
+    private selectItem(val: boolean, taskType: string) {
         const { value, onChange } = this.props;
         const newSelectedArray = value.slice();
         if (val) {
@@ -50,20 +50,20 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
         onChange(newSelectedArray);
     }
 
-    public clear() {
+    private clear() {
         const { onChange } = this.props;
         onChange([]);
         this.setState({ query: "" });
     }
 
-    public invert() {
+    private invert() {
         const { onChange, availableTaskTypes, value } = this.props;
         this.setState({ query: "" });
         const inverseValues = availableTaskTypes.filter(item => !value.includes(item));
         onChange(inverseValues);
     }
 
-    public isItemSelected(item: string): boolean {
+    private isItemSelected(item: string): boolean {
         const { value } = this.props;
         return Boolean(value.find(i => i === item));
     }
@@ -98,8 +98,8 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                     </RowStack>
                 </Fit>
                 <Fit>
-                    <div className={styles.tooltipColumnsWrapper}>
-                        <div className={styles.tooltipColumns}>
+                    <div className={jsStyles.tooltipColumnsWrapper()}>
+                        <div className={jsStyles.tooltipColumns()}>
                             {filteredTaskTypes.map((item, index) => (
                                 <Checkbox
                                     data-tid={item}

@@ -9,4 +9,4 @@ export default {
     decorators: [StoryRouter()],
 };
 
-export const Default = () => <TaskNotFoundPage parentLocation="http://google.com" />;
+export const Default = () => <TaskNotFoundPage />;

@@ -1,5 +1,5 @@
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import { Button, Input, Loader, Modal, Paging } from "@skbkontur/react-ui";
+import { Button, Loader, Paging } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
@@ -17,12 +17,12 @@ import {
 } from "../Domain/RtqMonitoringSearchRequestUtils";
 import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { TimeUtils } from "../Domain/Utils/TimeUtils";
-import { numberToString } from "../Domain/numberToString";
 import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskQueueFilter } from "../components/TaskQueueFilter/TaskQueueFilter";
 import { TasksTable } from "../components/TaskTable/TaskTable";
+import { TasksModal } from "../components/TaskTable/TasksModal";
 
 interface TasksPageContainerProps extends RouteComponentProps {
     searchQuery: string;
@@ -38,7 +38,6 @@ interface TasksPageContainerState {
     availableTaskNames: string[];
     confirmMultipleModalOpened: boolean;
     modalType: "Rerun" | "Cancel";
-    manyTaskConfirm: string;
     results: RtqMonitoringSearchResults;
 }
 
@@ -62,7 +61,6 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         },
         confirmMultipleModalOpened: false,
         modalType: "Rerun",
-        manyTaskConfirm: "",
     };
 
     public componentDidMount() {
@@ -77,7 +75,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
     }
 
     public render(): JSX.Element {
-        const { availableTaskNames, request, loading, results } = this.state;
+        const { availableTaskNames, request, loading, results, modalType, confirmMultipleModalOpened } = this.state;
         const { isSuperUser, useErrorHandlingContainer } = this.props;
         const isStateCompletelyLoaded = results && availableTaskNames;
         const count = request.count || 20;
@@ -85,7 +83,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         const counter = (results && results.totalCount) || 0;
         return (
             <CommonLayout>
-                <CommonLayout.GoBack to={RouteUtils.backUrl(this.props)}>
+                <CommonLayout.GoBack to={RouteUtils.backUrl(this.props.match)}>
                     Вернуться к инструментам администратора
                 </CommonLayout.GoBack>
                 <CommonLayout.Header data-tid="Header" title="Список задач" />
@@ -151,81 +149,17 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
                             </Fit>
                         </Loader>
                     </ColumnStack>
-                    {this.state.confirmMultipleModalOpened && this.renderModal()}
+                    {confirmMultipleModalOpened && (
+                        <TasksModal
+                            modalType={modalType}
+                            counter={counter}
+                            onCancelAll={this.handleCancelAll}
+                            onRerunAll={this.handleRerunAll}
+                            onCloseModal={this.closeModal}
+                        />
+                    )}
                 </CommonLayout.Content>
             </CommonLayout>
-        );
-    }
-
-    private renderModal(): JSX.Element {
-        const { modalType, manyTaskConfirm, results } = this.state;
-        const confirmedRegExp = /б.*л.*я/i;
-        const counter = (results && results.totalCount) || 0;
-
-        return (
-            <Modal onClose={this.closeModal} width={500} data-tid="ConfirmMultipleOperationModal">
-                <Modal.Header>Нужно подтверждение</Modal.Header>
-                <Modal.Body>
-                    <ColumnStack gap={2}>
-                        <Fit>
-                            <span data-tid="ModalText">
-                                {modalType === "Rerun"
-                                    ? "Уверен, что все эти таски надо перезапустить?"
-                                    : "Уверен, что все эти таски надо остановить?"}
-                            </span>
-                        </Fit>
-                        {counter > 100 && [
-                            <Fit key="text">
-                                Это действие может задеть больше 100 тасок, если это точно надо сделать, то напиши
-                                прописью количество тасок (их {counter}):
-                            </Fit>,
-                            <Fit key="input">
-                                <Input
-                                    data-tid="ConfirmationInput"
-                                    value={manyTaskConfirm}
-                                    onValueChange={val => this.setState({ manyTaskConfirm: val })}
-                                />
-                            </Fit>,
-                        ]}
-                    </ColumnStack>
-                </Modal.Body>
-                <Modal.Footer>
-                    <RowStack gap={2}>
-                        <Fit>
-                            {modalType === "Rerun" ? (
-                                <Button
-                                    data-tid="RerunButton"
-                                    use="success"
-                                    disabled={
-                                        counter > 100 &&
-                                        !confirmedRegExp.test(manyTaskConfirm) &&
-                                        manyTaskConfirm !== numberToString(counter)
-                                    }
-                                    onClick={this.handleRerunAll}>
-                                    Перезапустить все
-                                </Button>
-                            ) : (
-                                <Button
-                                    data-tid="CancelButton"
-                                    use="danger"
-                                    disabled={
-                                        counter > 100 &&
-                                        !confirmedRegExp.test(manyTaskConfirm) &&
-                                        manyTaskConfirm !== numberToString(counter)
-                                    }
-                                    onClick={this.handleCancelAll}>
-                                    Остановить все
-                                </Button>
-                            )}
-                        </Fit>
-                        <Fit>
-                            <Button data-tid="CloseButton" onClick={this.closeModal}>
-                                Закрыть
-                            </Button>
-                        </Fit>
-                    </RowStack>
-                </Modal.Footer>
-            </Modal>
         );
     }
 
