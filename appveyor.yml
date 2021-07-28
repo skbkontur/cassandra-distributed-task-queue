@@ -43,7 +43,7 @@ before_build:
   - cmd: dotnet --info
   - cmd: dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
   - cmd: dotnet tool restore
-  - cmd: cd cassandra-distributed-task-queue-ui && yarn install --frozen-lockfile
+  - cmd: cd cassandra-distributed-task-queue-ui && yarn install --immutable
 
 build_script:
   - cmd: dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln

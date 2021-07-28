@@ -2,6 +2,7 @@
 
 const path = require("path");
 
+const PnpWebpackPlugin = require(`pnp-webpack-plugin`);
 const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const webpack = require("webpack");
 
@@ -49,6 +50,10 @@ module.exports = function (env) {
         resolve: {
             modules: ["node_modules"],
             extensions: [".js", ".jsx", ".ts", ".tsx"],
+            plugins: [PnpWebpackPlugin],
+        },
+        resolveLoader: {
+            plugins: [PnpWebpackPlugin.moduleLoader(module)],
         },
         plugins: [
             new webpack.DefinePlugin({
