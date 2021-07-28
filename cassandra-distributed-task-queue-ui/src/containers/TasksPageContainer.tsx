@@ -41,14 +41,15 @@ interface TasksPageContainerState {
     results: RtqMonitoringSearchResults;
 }
 
-export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest> = new QueryStringMappingBuilder<RtqMonitoringSearchRequest>()
-    .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
-    .mapToString(x => x.queryString, "q")
-    .mapToStringArray(x => x.names, "types")
-    .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
-    .mapToInteger(x => x.offset, "from")
-    .mapToInteger(x => x.count, "size")
-    .build();
+export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest> =
+    new QueryStringMappingBuilder<RtqMonitoringSearchRequest>()
+        .mapToDateTimeRange(x => x.enqueueTimestampRange, "enqueue")
+        .mapToString(x => x.queryString, "q")
+        .mapToStringArray(x => x.names, "types")
+        .mapToSet(x => x.states, "states", getEnumValues(Object.keys(TaskState)))
+        .mapToInteger(x => x.offset, "from")
+        .mapToInteger(x => x.count, "size")
+        .build();
 
 class TasksPageContainerInternal extends React.Component<TasksPageContainerProps, TasksPageContainerState> {
     public state: TasksPageContainerState = {

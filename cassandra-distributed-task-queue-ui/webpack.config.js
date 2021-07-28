@@ -55,10 +55,12 @@ module.exports = function (env) {
                 "process.env.API": JSON.stringify(env.api || "real"),
                 "process.env.NODE_ENV": JSON.stringify("development"),
             }),
-            new webpack.NamedModulesPlugin(),
             new webpack.HotModuleReplacementPlugin(),
             new ReactRefreshWebpackPlugin(),
         ],
+        optimization: {
+            moduleIds: "named",
+        },
         mode: "development",
         devServer: {
             hot: true,

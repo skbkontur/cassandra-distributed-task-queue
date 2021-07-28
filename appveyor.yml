@@ -43,12 +43,12 @@ before_build:
   - cmd: dotnet --info
   - cmd: dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
   - cmd: dotnet tool restore
-  - cmd: yarn install --frozen-lockfile
+  - cmd: cd cassandra-distributed-task-queue-ui && yarn install --frozen-lockfile
 
 build_script:
   - cmd: dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln
   - cmd: dotnet pack --no-build --configuration Release ./Cassandra.DistributedTaskQueue.sln
-  - cmd: yarn build
+  - cmd: cd cassandra-distributed-task-queue-ui && yarn build
 
 before_test:
   - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4403"
@@ -62,7 +62,7 @@ test_script:
   - cmd: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN
   - cmd: git diff --exit-code
   - cmd: dotnet test --no-build --configuration Release ./Cassandra.DistributedTaskQueue.Tests/Cassandra.DistributedTaskQueue.Tests.csproj
-  - cmd: yarn lint
+  - cmd: cd cassandra-distributed-task-queue-ui && yarn lint
 
 after_test:
   - ps: |
