@@ -1,7 +1,5 @@
 ﻿using System;
 
-using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter;
-
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests
 {
     public class MonitoringServiceClient : HttpClientForTestsBase
@@ -11,9 +9,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests
         {
         }
 
-        public RtqTaskCounters GetTaskCounters()
+        public RtqTaskCountersForTests GetTaskCounters()
         {
-            return Post("GetTaskCounters").ThenReturn<RtqTaskCounters>();
+            return Post("GetTaskCounters").ThenReturn<RtqTaskCountersForTests>();
         }
 
         public void ExecuteForcedFeeding()
