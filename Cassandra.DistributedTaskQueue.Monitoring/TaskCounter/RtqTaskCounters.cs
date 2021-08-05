@@ -12,7 +12,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         public int LostTasksCount { get; set; }
 
         public Dictionary<TaskState, int> PendingTaskCountsTotal { get; set; } = null!;
-        
+
         public Dictionary<(string TaskName, string TaskTopic), Dictionary<TaskState, int>> PendingTaskCountsByNameAndTopic { get; set; } = null!;
 
         public int GetPendingTaskTotalCount()

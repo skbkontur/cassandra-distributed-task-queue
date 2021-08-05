@@ -278,7 +278,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
         private readonly RtqTaskCounterState state = new RtqTaskCounterState();
         private readonly Dictionary<string, InMemoryOffsetStorage<string>> bladeOffsetStorages = new Dictionary<string, InMemoryOffsetStorage<string>>();
-        
+
         private static readonly TaskState[] allTaskStates = Enum.GetValues(typeof(TaskState)).Cast<TaskState>().ToArray();
     }
 }

@@ -27,7 +27,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
             nameToType.Add(taskName, taskType);
             nameToTopic.Add(taskName, ResolveTopic(taskType, taskName, allTasksShouldHaveTopic));
         }
-        
+
         private static string ResolveTopic(Type taskType, string taskName, bool taskTopicIsRequired)
         {
             var taskTopic = taskType.TryGetTaskTopic(taskTopicIsRequired);
@@ -35,19 +35,19 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
                 return taskTopic!;
             return ShardingHelpers.GetShard(taskName.GetPersistentHashCode(), topicsCount).ToString(CultureInfo.InvariantCulture);
         }
-        
+
         public string[] GetAllTaskNames()
         {
             return nameToType.Keys.ToArray();
         }
-        
+
         public string GetTaskName(Type type)
         {
             if (!typeToName.TryGetValue(type, out var taskName))
                 throw new InvalidOperationException($"TaskData with type '{type.FullName}' not registered");
             return taskName;
         }
-        
+
         public Type GetTaskType(string taskName)
         {
             if (!nameToType.TryGetValue(taskName, out var taskType))
@@ -59,7 +59,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         {
             return nameToType.TryGetValue(taskName, out taskType);
         }
-        
+
         public string[] GetAllTaskTopics()
         {
             return nameToTopic.Values.Distinct().ToArray();
@@ -69,7 +69,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         {
             return nameToTopic.Select(kvp => (kvp.Key, kvp.Value)).OrderBy(x => x).ToArray();
         }
-        
+
         public string GetTaskTopic(string taskName)
         {
             if (!nameToTopic.TryGetValue(taskName, out var taskTopic))
