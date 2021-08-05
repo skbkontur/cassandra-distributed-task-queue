@@ -209,9 +209,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
                     LostTasksCount = lostTasks.Length,
                     PendingTaskCountsTotal = pendingTaskMetas.GroupBy(x => x.State)
                                                              .ToDictionary(g => g.Key, g => g.Count()),
-                    PendingTaskCountsByName = pendingTaskMetas.GroupBy(x => x.Name)
-                                                              .ToDictionary(g => g.Key, g => g.GroupBy(x => x.State)
-                                                                                              .ToDictionary(gg => gg.Key, gg => gg.Count()))
+                    PendingTaskCountsByNameAndTopic = pendingTaskMetas.GroupBy(x => (TaskName : x.Name, TaskTopic : taskDataRegistry.GetTaskTopic(x.Name)))
+                                                                      .ToDictionary(g => g.Key, g => g.GroupBy(x => x.State)
+                                                                                                      .ToDictionary(gg => gg.Key, gg => gg.Count()))
                 };
             NormalizeTaskCounters(taskCounters);
 
@@ -220,19 +220,19 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
         private void NormalizeTaskCounters([NotNull] RtqTaskCounters taskCounters)
         {
-            foreach (var taskName in taskDataRegistry.GetAllTaskNames())
+            foreach (var taskNameWithTopic in taskDataRegistry.GetAllTaskNamesWithTopics())
             {
-                if (!taskCounters.PendingTaskCountsByName.ContainsKey(taskName))
-                    taskCounters.PendingTaskCountsByName.Add(taskName, new Dictionary<TaskState, int>());
+                if (!taskCounters.PendingTaskCountsByNameAndTopic.ContainsKey(taskNameWithTopic))
+                    taskCounters.PendingTaskCountsByNameAndTopic.Add(taskNameWithTopic, new Dictionary<TaskState, int>());
             }
-            foreach (var taskState in Enum.GetValues(typeof(TaskState)).Cast<TaskState>().Where(x => !IsTaskStateTerminal(x)))
+            foreach (var taskState in allTaskStates.Where(x => !IsTaskStateTerminal(x)))
             {
-                NormalizeTaskCounters(taskCounters.PendingTaskCountsTotal, taskState);
-                foreach (var kvp in taskCounters.PendingTaskCountsByName)
-                    NormalizeTaskCounters(kvp.Value, taskState);
+                NormalizeTaskStateCounters(taskCounters.PendingTaskCountsTotal, taskState);
+                foreach (var kvp in taskCounters.PendingTaskCountsByNameAndTopic)
+                    NormalizeTaskStateCounters(kvp.Value, taskState);
             }
 
-            void NormalizeTaskCounters(Dictionary<TaskState, int> taskCountsByState, TaskState taskState)
+            void NormalizeTaskStateCounters(Dictionary<TaskState, int> taskCountsByState, TaskState taskState)
             {
                 if (!taskCountsByState.ContainsKey(taskState))
                     taskCountsByState.Add(taskState, 0);
@@ -278,5 +278,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
         private readonly RtqMonitoringPerfGraphiteReporter perfGraphiteReporter;
         private readonly RtqTaskCounterState state = new RtqTaskCounterState();
         private readonly Dictionary<string, InMemoryOffsetStorage<string>> bladeOffsetStorages = new Dictionary<string, InMemoryOffsetStorage<string>>();
+        
+        private static readonly TaskState[] allTaskStates = Enum.GetValues(typeof(TaskState)).Cast<TaskState>().ToArray();
     }
 }

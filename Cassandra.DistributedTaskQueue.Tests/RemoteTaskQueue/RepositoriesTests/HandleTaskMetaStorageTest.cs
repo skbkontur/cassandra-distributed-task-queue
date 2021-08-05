@@ -187,6 +187,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.RemoteTaskQueue.Reposit
                 throw new NotImplementedException();
             }
 
+            public (string TaskName, string TopicName)[] GetAllTaskNamesWithTopics()
+            {
+                throw new NotImplementedException();
+            }
+
             public string GetTaskTopic(string taskName)
             {
                 return taskName;
