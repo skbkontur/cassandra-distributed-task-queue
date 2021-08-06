@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-using JetBrains.Annotations;
-
 using SkbKontur.Cassandra.DistributedTaskQueue.Commons;
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
+
+#nullable enable
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
 {
@@ -22,59 +22,58 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
             var taskType = typeof(T);
             var taskName = taskType.GetTaskName();
             if (nameToType.ContainsKey(taskName))
-                throw new InvalidOperationException(string.Format("Duplicate taskName: {0}", taskName));
+                throw new InvalidOperationException($"Duplicate taskName: {taskName}");
             typeToName.Add(taskType, taskName);
             nameToType.Add(taskName, taskType);
             nameToTopic.Add(taskName, ResolveTopic(taskType, taskName, allTasksShouldHaveTopic));
         }
 
-        [NotNull]
-        private static string ResolveTopic([NotNull] Type taskType, [NotNull] string taskName, bool taskTopicIsRequired)
+        private static string ResolveTopic(Type taskType, string taskName, bool taskTopicIsRequired)
         {
             var taskTopic = taskType.TryGetTaskTopic(taskTopicIsRequired);
             if (!string.IsNullOrWhiteSpace(taskTopic))
-                return taskTopic;
+                return taskTopic!;
             return ShardingHelpers.GetShard(taskName.GetPersistentHashCode(), topicsCount).ToString(CultureInfo.InvariantCulture);
         }
 
-        [NotNull, ItemNotNull]
         public string[] GetAllTaskNames()
         {
             return nameToType.Keys.ToArray();
         }
 
-        [NotNull]
-        public string GetTaskName([NotNull] Type type)
+        public string GetTaskName(Type type)
         {
             if (!typeToName.TryGetValue(type, out var taskName))
-                throw new InvalidOperationException(string.Format("TaskData with type '{0}' not registered", type.FullName));
+                throw new InvalidOperationException($"TaskData with type '{type.FullName}' not registered");
             return taskName;
         }
 
-        [NotNull]
-        public Type GetTaskType([NotNull] string taskName)
+        public Type GetTaskType(string taskName)
         {
             if (!nameToType.TryGetValue(taskName, out var taskType))
-                throw new InvalidOperationException(string.Format("TaskData with name '{0}' not registered", taskName));
+                throw new InvalidOperationException($"TaskData with name '{taskName}' not registered");
             return taskType;
         }
 
-        public bool TryGetTaskType([NotNull] string taskName, out Type taskType)
+        public bool TryGetTaskType(string taskName, out Type? taskType)
         {
             return nameToType.TryGetValue(taskName, out taskType);
         }
 
-        [NotNull, ItemNotNull]
         public string[] GetAllTaskTopics()
         {
             return nameToTopic.Values.Distinct().ToArray();
         }
 
-        [NotNull]
-        public string GetTaskTopic([NotNull] string taskName)
+        public (string TaskName, string TopicName)[] GetAllTaskNamesWithTopics()
+        {
+            return nameToTopic.Select(kvp => (kvp.Key, kvp.Value)).OrderBy(x => x).ToArray();
+        }
+
+        public string GetTaskTopic(string taskName)
         {
             if (!nameToTopic.TryGetValue(taskName, out var taskTopic))
-                throw new InvalidOperationException(string.Format("TaskData with name '{0}' not registered", taskName));
+                throw new InvalidOperationException($"TaskData with name '{taskName}' not registered");
             return taskTopic;
         }
 

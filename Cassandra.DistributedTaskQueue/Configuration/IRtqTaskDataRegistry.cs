@@ -1,26 +1,23 @@
 ﻿using System;
 
-using JetBrains.Annotations;
+#nullable enable
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
 {
     public interface IRtqTaskDataRegistry
     {
-        [NotNull, ItemNotNull]
         string[] GetAllTaskNames();
 
-        [NotNull]
-        string GetTaskName([NotNull] Type type);
+        string GetTaskName(Type type);
 
-        [NotNull]
-        Type GetTaskType([NotNull] string taskName);
+        Type GetTaskType(string taskName);
 
-        bool TryGetTaskType([NotNull] string taskName, out Type taskType);
+        bool TryGetTaskType(string taskName, out Type? taskType);
 
-        [NotNull, ItemNotNull]
         string[] GetAllTaskTopics();
 
-        [NotNull]
-        string GetTaskTopic([NotNull] string taskName);
+        (string TaskName, string TopicName)[] GetAllTaskNamesWithTopics();
+
+        string GetTaskTopic(string taskName);
     }
 }

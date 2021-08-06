@@ -32,8 +32,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
 
             graphiteClient.Send($"{graphitePathPrefix}.LostTasks", counters.LostTasksCount, now.ToDateTime());
             ReportTaskCounts($"{graphitePathPrefix}.PendingTasksTotal", counters.PendingTaskCountsTotal, now);
-            foreach (var kvp in counters.PendingTaskCountsByName)
-                ReportTaskCounts($"{graphitePathPrefix}.PendingTasksByName.{kvp.Key}", kvp.Value, now);
+            foreach (var kvp in counters.PendingTaskCountsByNameAndTopic)
+                ReportTaskCounts($"{graphitePathPrefix}.PendingTasksByTopicAndName.{kvp.Key.TaskTopic}.{kvp.Key.TaskName}", kvp.Value, now);
         }
 
         private void ReportTaskCounts([NotNull] string prefix, [NotNull] Dictionary<TaskState, int> counts, [NotNull] Timestamp now)

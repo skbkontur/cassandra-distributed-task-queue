@@ -69,6 +69,22 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.UnitTests
         }
 
         [Test]
+        public void GetAllTaskNamesWithTopics()
+        {
+            Assert.That(taskDataRegistry.GetAllTaskNamesWithTopics(),
+                        Is.EquivalentTo(new[]
+                            {
+                                ("TaskData1", "0"),
+                                ("TaskData1WithTopic1", "Topic1"),
+                                ("TaskData2", "1"),
+                                ("TaskData2WithTopic1", "Topic1"),
+                                ("TaskData3", "0"),
+                                ("TaskData3WithTopic2", "Topic2"),
+                                ("TaskData4WithTopic3", "Topic3"),
+                            }));
+        }
+
+        [Test]
         public void GetTaskTopic()
         {
             Assert.That(taskDataRegistry.GetTaskTopic("TaskData1"), Is.EqualTo("0"));

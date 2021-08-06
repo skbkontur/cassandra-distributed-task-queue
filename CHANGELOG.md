@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.4.X - 2021.08.06
+- Reporting pending tasks count by topic and name
+
 ## v1.3.3 - 2021.06.01
 - Add support for dark theme using react-ui ThemeContext
 - Update supported peerDependencies versions range
