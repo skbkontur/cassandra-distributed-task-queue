@@ -60,12 +60,13 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TaskCounter
             if (++resetLocalStateCalls % Blades.Length != 1)
                 return;
 
-            EventFeedIsRunning = !EventFeedIsRunning;
-            if (EventFeedIsRunning)
+            var willBeRunning = !EventFeedIsRunning;
+            if (willBeRunning)
             {
                 var persistedLastBladeOffset = LoadPersistedState();
                 AdjustBladeOffsets(persistedLastBladeOffset);
             }
+            EventFeedIsRunning = willBeRunning;
             logger.Info("EventFeedIsRunning flag is switched to: {IsRunning}", new {IsRunning = EventFeedIsRunning});
         }
 
