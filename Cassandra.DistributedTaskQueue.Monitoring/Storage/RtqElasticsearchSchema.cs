@@ -24,7 +24,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
 
             var templateSettings = GetTaskIndicesTemplateSettings(local, bulkLoad);
             var templateSettingsPostData = PostData.String(JsonConvert.SerializeObject(templateSettings));
-            elasticClient.Indices.PutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData, new PutIndexTemplateRequestParameters {IncludeTypeName = true}).EnsureSuccess();
+            var requestParameters = elasticClient.UseElastic7 ? new PutIndexTemplateRequestParameters {IncludeTypeName = true} : null;
+            elasticClient.Indices.PutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData, requestParameters).EnsureSuccess();
         }
 
         [NotNull]

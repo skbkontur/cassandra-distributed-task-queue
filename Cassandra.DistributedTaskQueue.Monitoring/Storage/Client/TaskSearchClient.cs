@@ -18,6 +18,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client
         public TaskSearchClient(IRtqElasticsearchClient elasticClient)
         {
             this.elasticClient = elasticClient;
+            ignoreUnavailableIndices = new SearchRequestParameters {IgnoreUnavailable = true};
+            if (elasticClient.UseElastic7)
+            {
+                ignoreUnavailableIndices.TotalHitsAsInteger = true;
+            }
         }
 
         [NotNull]
@@ -102,6 +107,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client
         }
 
         private readonly IRtqElasticsearchClient elasticClient;
-        private readonly SearchRequestParameters ignoreUnavailableIndices = new SearchRequestParameters {IgnoreUnavailable = true, TotalHitsAsInteger = true};
+        private readonly SearchRequestParameters ignoreUnavailableIndices;
     }
 }
