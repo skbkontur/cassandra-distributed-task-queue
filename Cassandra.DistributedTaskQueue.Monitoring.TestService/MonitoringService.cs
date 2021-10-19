@@ -2,6 +2,8 @@
 using System.Threading;
 
 using Elasticsearch.Net;
+using Elasticsearch.Net.Specification.ClusterApi;
+using Elasticsearch.Net.Specification.IndicesApi;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer;
@@ -39,7 +41,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService
         {
             monitoringFeedsRunner.ResetLocalState();
             monitoringFeedsRunner.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
-            elasticClient.IndicesRefresh<StringResponse>("_all").EnsureSuccess();
+            elasticClient.Indices.Refresh<StringResponse>("_all").EnsureSuccess();
 
             taskCounterFeedsRunner.ExecuteForcedFeeding(delayUpperBound : TimeSpan.MaxValue);
         }
@@ -74,9 +76,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService
 
         private void DeleteAllElasticEntities()
         {
-            elasticClient.IndicesDelete<StringResponse>(RtqElasticsearchConsts.AllIndicesWildcard, new DeleteIndexRequestParameters {RequestConfiguration = allowNotFoundStatusCode}).EnsureSuccess();
-            elasticClient.IndicesDeleteTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, new DeleteIndexTemplateRequestParameters {RequestConfiguration = allowNotFoundStatusCode}).EnsureSuccess();
-            elasticClient.ClusterHealth<StringResponse>(new ClusterHealthRequestParameters {WaitForStatus = WaitForStatus.Green}).EnsureSuccess();
+            elasticClient.Indices.Delete<StringResponse>(RtqElasticsearchConsts.AllIndicesWildcard, new DeleteIndexRequestParameters {RequestConfiguration = allowNotFoundStatusCode}).EnsureSuccess();
+            elasticClient.Indices.DeleteTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, new DeleteIndexTemplateRequestParameters {RequestConfiguration = allowNotFoundStatusCode}).EnsureSuccess();
+            elasticClient.Cluster.Health<StringResponse>(new ClusterHealthRequestParameters {WaitForStatus = WaitForStatus.Green}).EnsureSuccess();
         }
 
         private IEventFeedsRunner monitoringFeedsRunner;

@@ -15,7 +15,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common
             var elasticUrl = Environment.GetEnvironmentVariable("ES_URL") ?? "http://localhost:9205";
             var connectionPool = new SingleNodeConnectionPool(new Uri(elasticUrl));
             var configuration = new ConnectionConfiguration(connectionPool).DisableDirectStreaming();
-            container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(configuration));
+            var elasticVersion = Environment.GetEnvironmentVariable("ES_VERSION") ?? "6.2";
+            container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(configuration)
+                {
+                    UseElastic7 = elasticVersion.StartsWith("7"),
+                });
         }
     }
 }
