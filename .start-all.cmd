@@ -1,6 +1,2 @@
-start .\Cassandra.DistributedTaskQueue.TestExchangeService\bin\net6.0\SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe --urls http://localhost:4403
-start .\Cassandra.DistributedTaskQueue.TestExchangeService\bin\net6.0\SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe --urls http://localhost:4404
-start .\Cassandra.DistributedTaskQueue.TestExchangeService\bin\net6.0\SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe --urls http://localhost:4405
-start .\Cassandra.DistributedTaskQueue.TestExchangeService\bin\net6.0\SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe --urls http://localhost:4406
-start .\Cassandra.DistributedTaskQueue.TestExchangeService\bin\net6.0\SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe --urls http://localhost:4407
-start .\Cassandra.DistributedTaskQueue.Monitoring.TestService\bin\net6.0\SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService.exe --urls http://localhost:4413
+wsl -u root sh -c "service docker status || (service docker start && echo 'artificially waiting 20s for docker to warmup...' && sleep 20s)"
+wsl docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
