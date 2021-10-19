@@ -34,13 +34,13 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
         {
             var payload = new OffsetStorageElement {Offset = newOffset};
             var postData = PostData.String(JsonConvert.SerializeObject(payload));
-            elasticsearchClient.Index<StringResponse>(elasticIndexName, elasticTypeName, bladeKey, postData).EnsureSuccess();
+            elasticsearchClient.IndexUsingType<StringResponse>(elasticIndexName, elasticTypeName, bladeKey, postData).EnsureSuccess();
         }
 
         [CanBeNull]
         public string Read()
         {
-            var stringResponse = elasticsearchClient.Get<StringResponse>(elasticIndexName, elasticTypeName, bladeKey, allowNotFoundStatusCode).EnsureSuccess();
+            var stringResponse = elasticsearchClient.GetUsingType<StringResponse>(elasticIndexName, elasticTypeName, bladeKey, allowNotFoundStatusCode).EnsureSuccess();
             if (string.IsNullOrEmpty(stringResponse.Body))
                 return GetDefaultOffset();
 

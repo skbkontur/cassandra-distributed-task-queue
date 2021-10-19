@@ -10,7 +10,7 @@ services:
       - 9160:9160
   elasticsearch:
     container_name: rtq-elasticsearch
-    image: elasticsearch:6.8.14
+    image: elasticsearch:7.10.2
     environment:
       - discovery.type=single-node
       - http.port=9205

@@ -1,4 +1,5 @@
 ﻿using Elasticsearch.Net;
+using Elasticsearch.Net.Specification.IndicesApi;
 
 using JetBrains.Annotations;
 
@@ -19,11 +20,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
         {
             var indexSettings = new {settings = GetIndexingProgressIndexSettings(local, bulkLoad)};
             var indexSettingsPostData = PostData.String(JsonConvert.SerializeObject(indexSettings));
-            elasticClient.IndicesCreate<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, indexSettingsPostData, allowResourceAlreadyExistsStatus).EnsureSuccess();
+            elasticClient.Indices.Create<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, indexSettingsPostData, allowResourceAlreadyExistsStatus).EnsureSuccess();
 
             var templateSettings = GetTaskIndicesTemplateSettings(local, bulkLoad);
             var templateSettingsPostData = PostData.String(JsonConvert.SerializeObject(templateSettings));
-            elasticClient.IndicesPutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData).EnsureSuccess();
+            elasticClient.Indices.PutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData, new PutIndexTemplateRequestParameters { IncludeTypeName = true }).EnsureSuccess();
         }
 
         [NotNull]
