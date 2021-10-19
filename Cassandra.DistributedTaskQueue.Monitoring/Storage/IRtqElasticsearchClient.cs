@@ -4,5 +4,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
 {
     public interface IRtqElasticsearchClient : IElasticLowLevelClient
     {
+        bool UseElastic7 { get; }
     }
 }

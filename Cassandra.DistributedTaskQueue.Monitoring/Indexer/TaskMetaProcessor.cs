@@ -91,19 +91,30 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
             var payload = new string[batch.Length * 2];
             for (var i = 0; i < batch.Length; i++)
             {
-                payload[2 * i] = JsonConvert.SerializeObject(new
-                    {
-                        index = new
-                            {
-                                _index = DateTimeFormatter.DateFromTicks(batch[i].TaskMeta.Ticks).ToString(RtqElasticsearchConsts.DataIndexNameFormat),
-                                _type = "doc_type_is_deprecated", // see https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
-                                _id = batch[i].TaskMeta.Id
-                            }
-                    });
+                payload[2 * i] = JsonConvert.SerializeObject(new {index = CreateIndexInfo(batch[i].TaskMeta)});
                 var taskIndexedInfo = BuildTaskIndexedInfo(batch[i].TaskMeta, batch[i].TaskExceptionInfos, batch[i].TaskData);
                 payload[2 * i + 1] = JsonConvert.SerializeObject(taskIndexedInfo, settings.JsonSerializerSettings);
             }
             perfGraphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticClient.Bulk<StringResponse>(PostData.MultiJson(payload), bulkRequestTimeout).DieIfBulkRequestFailed());
+        }
+
+        private object CreateIndexInfo(TaskMetaInformation taskMeta)
+        {
+            var indexName = DateTimeFormatter.DateFromTicks(taskMeta.Ticks).ToString(RtqElasticsearchConsts.DataIndexNameFormat);
+            if (elasticClient.UseElastic7)
+            {
+                return new
+                    {
+                        _index = indexName,
+                        _id = taskMeta.Id,
+                    };
+            }
+            return new
+                {
+                    _index = indexName,
+                    _type = RtqElasticsearchConsts.RtqIndexTypeName, // see https://www.elastic.co/guide/en/elasticsearch/reference/current/removal-of-types.html
+                    _id = taskMeta.Id,
+                };
         }
 
         [CanBeNull]

@@ -1,4 +1,7 @@
-﻿using Elasticsearch.Net;
+﻿using System.Collections.Generic;
+
+using Elasticsearch.Net;
+using Elasticsearch.Net.Specification.IndicesApi;
 
 using JetBrains.Annotations;
 
@@ -19,11 +22,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
         {
             var indexSettings = new {settings = GetIndexingProgressIndexSettings(local, bulkLoad)};
             var indexSettingsPostData = PostData.String(JsonConvert.SerializeObject(indexSettings));
-            elasticClient.IndicesCreate<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, indexSettingsPostData, allowResourceAlreadyExistsStatus).EnsureSuccess();
+            elasticClient.Indices.Create<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, indexSettingsPostData, allowResourceAlreadyExistsStatus).EnsureSuccess();
 
-            var templateSettings = GetTaskIndicesTemplateSettings(local, bulkLoad);
+            var templateSettings = GetTaskIndicesTemplateSettings(local, bulkLoad, includeTypeName : !elasticClient.UseElastic7);
             var templateSettingsPostData = PostData.String(JsonConvert.SerializeObject(templateSettings));
-            elasticClient.IndicesPutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData).EnsureSuccess();
+            elasticClient.Indices.PutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData).EnsureSuccess();
         }
 
         [NotNull]
@@ -46,94 +49,98 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
         }
 
         [NotNull]
-        private static object GetTaskIndicesTemplateSettings(bool local, bool bulkLoad)
+        private static object GetTaskIndicesTemplateSettings(bool local, bool bulkLoad, bool includeTypeName)
         {
             return new
                 {
                     index_patterns = RtqElasticsearchConsts.AllIndicesWildcard,
                     settings = GetIndexingProgressIndexSettings(local, bulkLoad),
-                    mappings = new
+                    mappings = includeTypeName
+                                   ? new Dictionary<string, object>(1) {[RtqElasticsearchConsts.RtqIndexTypeName] = GetTaskIndexMappings()}
+                                   : GetTaskIndexMappings()
+                };
+        }
+
+        private static object GetTaskIndexMappings()
+        {
+            return new
+                {
+                    date_detection = false,
+                    dynamic_templates = new object[]
                         {
-                            doc_type_is_deprecated = new
+                            new
                                 {
-                                    date_detection = false,
-                                    dynamic_templates = new object[]
+                                    template_strings = new
                                         {
-                                            new
-                                                {
-                                                    template_strings = new
-                                                        {
-                                                            path_match = "Data.*",
-                                                            match_mapping_type = "string",
-                                                            mapping = KeywordTypeWithCopy(),
-                                                        }
-                                                },
-                                            new
-                                                {
-                                                    template_integer = new
-                                                        {
-                                                            path_match = "Data.*",
-                                                            match_mapping_type = "long",
-                                                            mapping = KeywordType()
-                                                        }
-                                                },
-                                            new
-                                                {
-                                                    template_double = new
-                                                        {
-                                                            path_match = "Data.*",
-                                                            match_mapping_type = "double",
-                                                            mapping = KeywordType()
-                                                        }
-                                                },
-                                            new
-                                                {
-                                                    template_boolean = new
-                                                        {
-                                                            path_match = "Data.*",
-                                                            match_mapping_type = "boolean",
-                                                            mapping = KeywordType()
-                                                        }
-                                                }
-                                        },
+                                            path_match = "Data.*",
+                                            match_mapping_type = "string",
+                                            mapping = KeywordTypeWithCopy(),
+                                        }
+                                },
+                            new
+                                {
+                                    template_integer = new
+                                        {
+                                            path_match = "Data.*",
+                                            match_mapping_type = "long",
+                                            mapping = KeywordType()
+                                        }
+                                },
+                            new
+                                {
+                                    template_double = new
+                                        {
+                                            path_match = "Data.*",
+                                            match_mapping_type = "double",
+                                            mapping = KeywordType()
+                                        }
+                                },
+                            new
+                                {
+                                    template_boolean = new
+                                        {
+                                            path_match = "Data.*",
+                                            match_mapping_type = "boolean",
+                                            mapping = KeywordType()
+                                        }
+                                }
+                        },
+                    properties = new
+                        {
+                            Data = new
+                                {
+                                    type = "object"
+                                },
+                            DataAsText = new
+                                {
+                                    type = "text",
+                                    store = false,
+                                    index = true
+                                },
+                            ExceptionInfo = new
+                                {
+                                    type = "text",
+                                    store = false,
+                                    index = true,
+                                    copy_to = "DataAsText",
+                                },
+                            Meta = new
+                                {
                                     properties = new
                                         {
-                                            Data = new
-                                                {
-                                                    type = "object"
-                                                },
-                                            DataAsText = new
-                                                {
-                                                    type = "text",
-                                                    store = false,
-                                                    index = true
-                                                },
-                                            ExceptionInfo = new
-                                                {
-                                                    type = "text",
-                                                    store = false,
-                                                    index = true,
-                                                    copy_to = "DataAsText",
-                                                },
-                                            Meta = new
-                                                {
-                                                    properties = new
-                                                        {
-                                                            Name = KeywordTypeWithCopy(),
-                                                            Id = KeywordTypeWithCopy(),
-                                                            State = KeywordTypeWithCopy(),
-                                                            ParentTaskId = KeywordTypeWithCopy(),
-                                                            TaskGroupLock = KeywordTypeWithCopy(),
-                                                            Attempts = new {type = "integer", store = false},
-                                                            EnqueueTime = DateType(),
-                                                            MinimalStartTime = DateType(),
-                                                            StartExecutingTime = DateType(),
-                                                            FinishExecutingTime = DateType(),
-                                                            LastModificationTime = DateType(),
-                                                            ExpirationTime = DateType(),
-                                                            LastExecutionDurationInMs = DoubleType(),
-                                                        }
-                                                }
+                                            Name = KeywordTypeWithCopy(),
+                                            Id = KeywordTypeWithCopy(),
+                                            State = KeywordTypeWithCopy(),
+                                            ParentTaskId = KeywordTypeWithCopy(),
+                                            TaskGroupLock = KeywordTypeWithCopy(),
+                                            Attempts = new {type = "integer", store = false},
+                                            EnqueueTime = DateType(),
+                                            MinimalStartTime = DateType(),
+                                            StartExecutingTime = DateType(),
+                                            FinishExecutingTime = DateType(),
+                                            LastModificationTime = DateType(),
+                                            ExpirationTime = DateType(),
+                                            LastExecutionDurationInMs = DoubleType(),
                                         }
                                 }
                         }

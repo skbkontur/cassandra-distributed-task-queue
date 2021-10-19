@@ -126,7 +126,7 @@ export class RtqMonitoringApiFake implements IRtqMonitoringApi {
             },
         ];
         return {
-            totalCount: 100500,
+            totalCount: "100500",
             taskMetas: taskMetaSources.map(createTask),
         };
     }
