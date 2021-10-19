@@ -102,6 +102,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Client
         }
 
         private readonly IRtqElasticsearchClient elasticClient;
-        private readonly SearchRequestParameters ignoreUnavailableIndices = new SearchRequestParameters { IgnoreUnavailable = true, TotalHitsAsInteger = true };
+        private readonly SearchRequestParameters ignoreUnavailableIndices = new SearchRequestParameters {IgnoreUnavailable = true, TotalHitsAsInteger = true};
     }
 }
