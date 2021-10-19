@@ -4,11 +4,67 @@ services:
     container_name: rtq-cassandra
     image: fakefeik/edi-cassandra:3.11
     ports:
-      - 9042:9042
-      - 9160:9160
+      - "9042:9042"
+      - "9160:9160"
   elasticsearch:
     container_name: rtq-elasticsearch
     image: fakefeik/edi-elasticsearch:6.2
     ports:
-      - 9205:9205
-      - 9305:9305
+      - "9205:9205"
+      - "9305:9305"
+  exchange_service1:
+      image: test-exchange-service
+      build:
+        context: .
+        dockerfile: Cassandra.DistributedTaskQueue.TestExchangeService/Dockerfile
+      environment:
+        - CASSANDRA_ADDRESS=cassandra
+      ports:
+        - "4403:80"
+      depends_on:
+        - cassandra
+  exchange_service2:
+    image: test-exchange-service
+    ports:
+      - "4404:80"
+    environment:
+      - CASSANDRA_ADDRESS=cassandra
+    depends_on:
+      - cassandra
+  exchange_service3:
+    image: test-exchange-service
+    ports:
+      - "4405:80"
+    environment:
+      - CASSANDRA_ADDRESS=cassandra
+    depends_on:
+      - cassandra
+  exchange_service4:
+    image: test-exchange-service
+    ports:
+      - "4406:80"
+    environment:
+      - CASSANDRA_ADDRESS=cassandra
+    depends_on:
+      - cassandra
+  exchange_service5:
+    image: test-exchange-service
+    ports:
+      - "4407:80"
+    environment:
+      - CASSANDRA_ADDRESS=cassandra
+    depends_on:
+      - cassandra
+  monitoring-service:
+    image: test-monitoring-service
+    build:
+      context: .
+      dockerfile: Cassandra.DistributedTaskQueue.Monitoring.TestService/Dockerfile
+    environment:
+      - ES_URL=http://elasticsearch:9205
+      - CASSANDRA_ADDRESS=cassandra
+    ports:
+      - "4413:80"
+    depends_on:
+      - cassandra
+      - elasticsearch

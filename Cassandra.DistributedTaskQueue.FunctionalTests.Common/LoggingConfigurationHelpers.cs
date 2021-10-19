@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Console;
 using Vostok.Logging.File;
 using Vostok.Logging.File.Configuration;
 using Vostok.Logging.Formatting;
@@ -26,7 +27,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common
             var errorFileLog = CreateFileLog("ErrorLog")
                 .WithMinimumLevel(LogLevel.Error);
 
-            var defaultLog = new CompositeLog(totalFileLog, errorFileLog).WithThreadName();
+            var consoleLog = new ConsoleLog();
+            var defaultLog = new CompositeLog(totalFileLog, errorFileLog, consoleLog).WithThreadName();
 
             LogProvider.Configure(defaultLog, canOverwrite : true);
         }

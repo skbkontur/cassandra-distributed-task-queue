@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 
 using Elasticsearch.Net;
+using Elasticsearch.Net.Specification.ClusterApi;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage;
 
@@ -47,7 +48,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         {
             try
             {
-                var response = elasticClient.RootNodeInfo<StringResponse>();
+                var response = elasticClient.Cluster.Health<StringResponse>(new ClusterHealthRequestParameters {WaitForStatus = WaitForStatus.Green});
                 if (!response.Success)
                     return false;
                 return response.HttpStatusCode == 200;
