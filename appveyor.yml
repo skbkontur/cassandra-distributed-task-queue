@@ -4,6 +4,10 @@ skip_commits:
   files:
     - '**/*.md'
 
+image:
+  - Visual Studio 2019
+  - Ubuntu2004
+
 init:
   - git config --global core.autocrlf false
 
@@ -16,23 +20,26 @@ environment:
   NPM_TOKEN:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
   matrix:
-    - job_name: Windows build
-      appveyor_build_worker_image: Visual Studio 2019
-      
-    - job_name: Linux build
-      appveyor_build_worker_image: Ubuntu2004
+    - ES_VERSION: 6.8.20
+    - ES_VERSION: 7.14.2
+
+matrix:
+  exclude:
+    - image: Visual Studio 2019
+      ES_VERSION: 7.14.2
 for:
   -
     matrix:
       only:
-        - job_name: Linux build
+        - image: Ubuntu2004
     install:
       - docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
 
   -
     matrix:
       only:
-        - job_name: Windows build
+        - image: Visual Studio 2019
+          ES_VERSION: 6.8.20
     install:
       - docker-compose -f docker-compose.yaml up -d --build
 
