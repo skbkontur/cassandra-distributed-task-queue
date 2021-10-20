@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0.401 AS build
 WORKDIR /src
 COPY ["Cassandra.DistributedTaskQueue.Monitoring.TestService/Cassandra.DistributedTaskQueue.Monitoring.TestService.csproj", "Cassandra.DistributedTaskQueue.Monitoring.TestService/"]
 RUN dotnet restore "Cassandra.DistributedTaskQueue.Monitoring.TestService/Cassandra.DistributedTaskQueue.Monitoring.TestService.csproj"

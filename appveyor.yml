@@ -23,14 +23,14 @@ for:
       only:
         - image: Ubuntu2004
     install:
-      - ps: docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5
+      - ps: docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
 
   -
     matrix:
       only:
         - image: Visual Studio 2019
     install:
-      - ps: docker-compose -f docker-compose.yaml up -d
+      - ps: docker-compose -f docker-compose.yaml up -d --build
 
 before_build:
   - ps: |
