@@ -9,7 +9,7 @@ image:
   - Ubuntu2004
 
 init:
-  - ps: git config --global core.autocrlf false
+  - git config --global core.autocrlf false
 
 nuget:
   disable_publish_on_pr: true
@@ -23,14 +23,14 @@ for:
       only:
         - image: Ubuntu2004
     install:
-      - ps: docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
+      - docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
 
   -
     matrix:
       only:
         - image: Visual Studio 2019
     install:
-      - ps: docker-compose -f docker-compose.yaml up -d --build
+      - docker-compose -f docker-compose.yaml up -d --build
 
 before_build:
   - ps: |
@@ -53,21 +53,21 @@ before_build:
           Write-Error "Version in tag ($version) does not match version in version.json"
         }
       }
-  - ps: dotnet --info
-  - ps: dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
-  - ps: dotnet tool restore
-  - ps: cd cassandra-distributed-task-queue-ui && yarn install --frozen-lockfile
+  - dotnet --info
+  - dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
+  - dotnet tool restore
+  - cd cassandra-distributed-task-queue-ui && yarn install --frozen-lockfile
 
 build_script:
-  - ps: dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln
-  - ps: dotnet pack --no-build --configuration Release ./Cassandra.DistributedTaskQueue.sln
-  - ps: cd cassandra-distributed-task-queue-ui && yarn build
+  - dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln
+  - dotnet pack --no-build --configuration Release ./Cassandra.DistributedTaskQueue.sln
+  - cd cassandra-distributed-task-queue-ui && yarn build
 
 test_script:
-  - ps: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN
-  - ps: git diff --exit-code
-  - ps: dotnet test --no-build --configuration Release ./Cassandra.DistributedTaskQueue.Tests/Cassandra.DistributedTaskQueue.Tests.csproj
-  - ps: cd cassandra-distributed-task-queue-ui && yarn lint
+  - dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN
+  - git diff --exit-code
+  - dotnet test --no-build --configuration Release ./Cassandra.DistributedTaskQueue.Tests/Cassandra.DistributedTaskQueue.Tests.csproj
+  - cd cassandra-distributed-task-queue-ui && yarn lint
 
 after_test:
   - ps: |
