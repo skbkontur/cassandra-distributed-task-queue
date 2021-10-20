@@ -4,7 +4,7 @@ skip_commits:
   files:
     - '**/*.md'
 
-image: 
+image:
   - Visual Studio 2019
   - Ubuntu2004
 
@@ -17,9 +17,20 @@ nuget:
 environment:
   NPM_TOKEN:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
+for:
+  -
+    matrix:
+      only:
+        - image: Ubuntu2004
+    install:
+      - ps: docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5
 
-install:
-  - ps: docker-compose up -d --scale exchange-service=5
+  -
+    matrix:
+      only:
+        - image: Visual Studio 2019
+    install:
+      - ps: docker-compose -f docker-compose.yaml up -d
 
 before_build:
   - ps: |
