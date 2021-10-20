@@ -37,11 +37,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService
             var container = ApplicationBase.Initialize();
             container.ConfigureCassandra();
             ConfigureRemoteLock(container);
-            var elasticSearchUrl = new Uri(Environment.GetEnvironmentVariable("ES_URL") ?? "http://localhost:9205");
-            container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(elasticSearchUrl)
-                {
-                    UseElastic7 = Environment.GetEnvironmentVariable("ES_VERSION")?.StartsWith("7") == true,
-                });
+            container.ConfigureRtqElasticClient();
             container.Configurator.ForAbstraction<IRtqTaskCounterStateStorage>().UseType<NoOpRtqTaskCounterStateStorage>();
             var rtqTaskCounterSettings = new RtqTaskCounterSettings(eventFeedKey : "RtqTaskCounterEventFeed", rtqGraphitePathPrefix : "None")
                 {

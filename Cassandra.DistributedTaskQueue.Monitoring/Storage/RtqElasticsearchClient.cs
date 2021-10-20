@@ -10,12 +10,12 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
     public class RtqElasticsearchClient : ElasticLowLevelClient, IRtqElasticsearchClient
     {
         public RtqElasticsearchClient([NotNull, ItemNotNull] IEnumerable<Uri> uris)
-            : base(new ConnectionConfiguration(new SniffingConnectionPool(uris)).DisableDirectStreaming())
+            : this(new SniffingConnectionPool(uris))
         {
         }
 
-        public RtqElasticsearchClient(Uri uri)
-            : base(new ConnectionConfiguration(new SingleNodeConnectionPool(uri)).DisableDirectStreaming())
+        public RtqElasticsearchClient(IConnectionPool connectionPool)
+            : base(new ConnectionConfiguration(connectionPool).DisableDirectStreaming())
         {
         }
 
