@@ -13,7 +13,7 @@ nuget:
 environment:
   NPM_TOKEN:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
-  nodejs_version: "14"
+  nodejs_version: "14.8.1"
   matrix:
     - job_name: Windows build
       appveyor_build_worker_image: Visual Studio 2019
@@ -26,6 +26,7 @@ for:
       only:
         - job_name: Linux build
     install:
+      - ps: Install-Product node $env:nodejs_version
       - docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
 
   -
@@ -33,6 +34,7 @@ for:
       only:
         - job_name: Windows build
     install:
+      - ps: Install-Product node $env:nodejs_version
       - docker-compose -f docker-compose.yaml up -d --build
 
 before_build:
