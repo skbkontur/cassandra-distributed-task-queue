@@ -10,10 +10,11 @@ init:
 nuget:
   disable_publish_on_pr: true
 
+stack: node 14
+
 environment:
   NPM_TOKEN:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
-  nodejs_version: "14.8.1"
   matrix:
     - job_name: Windows build
       appveyor_build_worker_image: Visual Studio 2019
@@ -26,7 +27,6 @@ for:
       only:
         - job_name: Linux build
     install:
-      - ps: Install-Product node $env:nodejs_version
       - docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
 
   -
@@ -34,7 +34,6 @@ for:
       only:
         - job_name: Windows build
     install:
-      - ps: Install-Product node $env:nodejs_version
       - docker-compose -f docker-compose.yaml up -d --build
 
 before_build:
@@ -59,20 +58,21 @@ before_build:
         }
       }
   - dotnet --info
+  - node --version
   - dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
   - dotnet tool restore
-  - cd cassandra-distributed-task-queue-ui && yarn install --frozen-lockfile
+  - yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
 
 build_script:
   - dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln
   - dotnet pack --no-build --configuration Release ./Cassandra.DistributedTaskQueue.sln
-  - cd cassandra-distributed-task-queue-ui && yarn build
+  - yarn --cwd cassandra-distributed-task-queue-ui build
 
 test_script:
   - dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN
   - git diff --exit-code
   - dotnet test --no-build --configuration Release ./Cassandra.DistributedTaskQueue.Tests/Cassandra.DistributedTaskQueue.Tests.csproj
-  - cd cassandra-distributed-task-queue-ui && yarn lint
+  - yarn --cwd cassandra-distributed-task-queue-ui lint
 
 after_test:
   - ps: |
