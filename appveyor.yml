@@ -39,7 +39,7 @@ before_build:
   - ps: |
       $ErrorActionPreference = "Stop"
       $tagName = $env:APPVEYOR_REPO_TAG_NAME
-      if ($tagName -match '^v\d+\.\d+') # tag name starts with 'vX.Y'
+      if ($isWindows -and ($tagName -match '^v\d+\.\d+')) # tag name starts with 'vX.Y'
       {
         $version = $tagName.Substring(1)
         $env:SHOULD_PUBLISH_NUGET_PACKAGE = "true"
