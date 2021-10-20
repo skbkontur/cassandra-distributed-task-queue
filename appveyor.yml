@@ -23,14 +23,14 @@ for:
   -
     matrix:
       only:
-        - job_name: Windows build
+        - job_name: Linux build
     install:
       - docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
 
   -
     matrix:
       only:
-        - job_name: Linux build
+        - job_name: Windows build
     install:
       - docker-compose -f docker-compose.yaml up -d --build
 
