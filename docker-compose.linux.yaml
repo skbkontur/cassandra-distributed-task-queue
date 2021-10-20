@@ -10,7 +10,7 @@ services:
       - 9160:9160
   elasticsearch:
     container_name: rtq-elasticsearch
-    image: elasticsearch:7.10.2
+    image: elasticsearch:${ES_VERSION:-7.14.2}
     environment:
       - discovery.type=single-node
       - http.port=9205
@@ -18,3 +18,29 @@ services:
     ports:
       - 9205:9205
       - 9300:9300
+  exchange-service:
+    image: test-exchange-service
+    build:
+      context: .
+      dockerfile: Cassandra.DistributedTaskQueue.TestExchangeService/Dockerfile
+    environment:
+      - CASSANDRA_ADDRESS=cassandra
+      - ES_VERSION=${ES_VERSION:-7.14.2}
+    ports:
+      - "4403-4407:80"
+    depends_on:
+      - cassandra
+  monitoring-service:
+    image: test-monitoring-service
+    build:
+      context: .
+      dockerfile: Cassandra.DistributedTaskQueue.Monitoring.TestService/Dockerfile
+    environment:
+      - ES_URL=http://elasticsearch:9205
+      - ES_VERSION=${ES_VERSION:-7.14.2}
+      - CASSANDRA_ADDRESS=cassandra
+    ports:
+      - "4413:80"
+    depends_on:
+      - cassandra
+      - elasticsearch

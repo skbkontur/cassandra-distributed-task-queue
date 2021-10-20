@@ -14,7 +14,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests
     {
         public override sealed void SetUp([NotNull] string suiteName, [NotNull] Assembly testAssembly, [NotNull] IEditableGroboTestContext suiteContext)
         {
-            suiteContext.Container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(new Uri("http://localhost:9205")));
+            suiteContext.Container.Configurator.ForAbstraction<IRtqElasticsearchClient>().UseInstances(new RtqElasticsearchClient(new Uri("http://localhost:9205"))
+                {
+                    UseElastic7 = Environment.GetEnvironmentVariable("ES_VERSION")?.StartsWith("7") == true,
+                });
         }
     }
 }
