@@ -14,3 +14,7 @@
 *.config      text
 *.props       text
 *.targets     text
+
+*.js          text eol=lf
+*.ts          text eol=lf
+*.tsx         text eol=lf
