@@ -24,6 +24,7 @@ environment:
     - ES_VERSION: 7.14.2
 
 matrix:
+  fast_finish: true
   exclude:
     - image: Visual Studio 2019
       ES_VERSION: 7.14.2
