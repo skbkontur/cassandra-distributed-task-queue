@@ -25,7 +25,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common
             var localEndPoint = new IPEndPoint(GetIpV4Address(cassandraAddress), 9160);
             var cassandraClusterSettings = new CassandraClusterSettings
                 {
-                    Endpoints = new[] {localEndPoint},
+                    Endpoints = new[] { localEndPoint },
                     EndpointForFierceCommands = localEndPoint,
                     ReadConsistencyLevel = ConsistencyLevel.QUORUM,
                     WriteConsistencyLevel = ConsistencyLevel.QUORUM,
@@ -71,7 +71,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common
             container.Configurator.ForAbstraction<IRtqTaskManager>().UseInstances(remoteTaskQueue);
             return container;
         }
-        
+
         private static IPAddress GetIpV4Address([NotNull] string hostNameOrIpAddress)
         {
             if (IPAddress.TryParse(hostNameOrIpAddress, out var res))
