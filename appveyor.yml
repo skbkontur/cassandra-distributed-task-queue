@@ -22,8 +22,6 @@ environment:
 
 matrix:
   fast_finish: true
-  exclude:
-    - image: Visual Studio 2019
 for:
   -
     matrix:
