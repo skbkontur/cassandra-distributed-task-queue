@@ -18,3 +18,27 @@ services:
     ports:
       - 9205:9205
       - 9300:9300
+  exchange-service:
+    image: test-exchange-service
+    build:
+      context: .
+      dockerfile: Cassandra.DistributedTaskQueue.TestExchangeService/Dockerfile
+    environment:
+      - CASSANDRA_ADDRESS=cassandra
+    ports:
+      - "4403-4407:80"
+    depends_on:
+      - cassandra
+  monitoring-service:
+    image: test-monitoring-service
+    build:
+      context: .
+      dockerfile: Cassandra.DistributedTaskQueue.Monitoring.TestService/Dockerfile
+    environment:
+      - ES_URL=http://elasticsearch:9205
+      - CASSANDRA_ADDRESS=cassandra
+    ports:
+      - "4413:80"
+    depends_on:
+      - cassandra
+      - elasticsearch

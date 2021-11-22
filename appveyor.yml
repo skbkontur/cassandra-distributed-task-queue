@@ -4,26 +4,46 @@ skip_commits:
   files:
     - '**/*.md'
 
-image: Visual Studio 2019
+image:
+  - Visual Studio 2019
+  - Ubuntu2004
 
 init:
-  - cmd: git config --global core.autocrlf false
+  - git config --global core.autocrlf false
 
 nuget:
   disable_publish_on_pr: true
+
+stack: node 14
 
 environment:
   NPM_TOKEN:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
 
-install:
-  - cmd: docker-compose up -d
+matrix:
+  fast_finish: true
+  exclude:
+    - image: Visual Studio 2019
+for:
+  -
+    matrix:
+      only:
+        - image: Ubuntu2004
+    install:
+      - docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
+
+  -
+    matrix:
+      only:
+        - image: Visual Studio 2019
+    install:
+      - docker-compose -f docker-compose.yaml up -d --build
 
 before_build:
   - ps: |
       $ErrorActionPreference = "Stop"
       $tagName = $env:APPVEYOR_REPO_TAG_NAME
-      if ($tagName -match '^v\d+\.\d+') # tag name starts with 'vX.Y'
+      if ($isWindows -and ($tagName -match '^v\d+\.\d+')) # tag name starts with 'vX.Y'
       {
         $version = $tagName.Substring(1)
         $env:SHOULD_PUBLISH_NUGET_PACKAGE = "true"
@@ -40,29 +60,22 @@ before_build:
           Write-Error "Version in tag ($version) does not match version in version.json"
         }
       }
-  - cmd: dotnet --info
-  - cmd: dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
-  - cmd: dotnet tool restore
-  - cmd: cd cassandra-distributed-task-queue-ui && yarn install --frozen-lockfile
+  - dotnet --info
+  - node --version
+  - dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
+  - dotnet tool restore
+  - yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
 
 build_script:
-  - cmd: dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln
-  - cmd: dotnet pack --no-build --configuration Release ./Cassandra.DistributedTaskQueue.sln
-  - cmd: cd cassandra-distributed-task-queue-ui && yarn build
-
-before_test:
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4403"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4404"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4405"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4406"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4407"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.Monitoring.TestService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService.exe -ArgumentList "--urls http://localhost:4413"
+  - dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln
+  - dotnet pack --no-build --configuration Release ./Cassandra.DistributedTaskQueue.sln
+  - yarn --cwd cassandra-distributed-task-queue-ui build
 
 test_script:
-  - cmd: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN
-  - cmd: git diff --exit-code
-  - cmd: dotnet test --no-build --configuration Release ./Cassandra.DistributedTaskQueue.Tests/Cassandra.DistributedTaskQueue.Tests.csproj
-  - cmd: cd cassandra-distributed-task-queue-ui && yarn lint
+  - dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN
+  - git diff --exit-code
+  - dotnet test --no-build --configuration Release ./Cassandra.DistributedTaskQueue.Tests/Cassandra.DistributedTaskQueue.Tests.csproj
+  - yarn --cwd cassandra-distributed-task-queue-ui lint
 
 after_test:
   - ps: |
@@ -76,7 +89,6 @@ after_test:
           npm publish $file.FullName --quiet
         }
       }
-
 artifacts:
   - path: './Cassandra.DistributedTaskQueue*/bin/Release/*.nupkg'
   - path: './cassandra-distributed-task-queue-ui/dist/*.tgz'
