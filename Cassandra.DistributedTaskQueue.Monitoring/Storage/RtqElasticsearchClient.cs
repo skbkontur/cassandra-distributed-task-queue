@@ -1,4 +1,7 @@
-﻿using Elasticsearch.Net;
+﻿using System;
+using System.Collections.Generic;
+
+using Elasticsearch.Net;
 
 using JetBrains.Annotations;
 
@@ -23,6 +26,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
 
         public RtqElasticsearchClient(ITransport<IConnectionConfigurationValues> transport)
             : base(transport)
+        {
+        }
+
+        public RtqElasticsearchClient([NotNull, ItemNotNull] IEnumerable<Uri> uris)
+            : base(new ConnectionConfiguration(new SniffingConnectionPool(uris)).DisableDirectStreaming())
         {
         }
     }
