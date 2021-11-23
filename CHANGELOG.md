@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.5.X - 2021.11.23
+- Update Elasticsearch.NET to v6.8.9
+
 ## v1.4.X - 2021.08.06
 - Reporting pending tasks count by topic and name
 
