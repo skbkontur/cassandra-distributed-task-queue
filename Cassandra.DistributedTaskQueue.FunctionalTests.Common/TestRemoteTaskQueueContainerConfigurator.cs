@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 
 using GroboContainer.Core;
@@ -20,7 +21,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common
     {
         public static void ConfigureCassandra([NotNull] this IContainer container)
         {
-            var localEndPoint = new IPEndPoint(IPAddress.Loopback, 9160);
+            var cassandraAddress = Environment.GetEnvironmentVariable("CASSANDRA_ADDRESS") ?? "127.0.0.1";
+            var localEndPoint = new IPEndPoint(GetIpV4Address(cassandraAddress), 9160);
             var cassandraClusterSettings = new CassandraClusterSettings
                 {
                     Endpoints = new[] {localEndPoint},
@@ -68,6 +70,14 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common
             container.Configurator.ForAbstraction<IRtqTaskProducer>().UseInstances(remoteTaskQueue);
             container.Configurator.ForAbstraction<IRtqTaskManager>().UseInstances(remoteTaskQueue);
             return container;
+        }
+
+        private static IPAddress GetIpV4Address([NotNull] string hostNameOrIpAddress)
+        {
+            if (IPAddress.TryParse(hostNameOrIpAddress, out var res))
+                return res;
+
+            return Dns.GetHostEntry(hostNameOrIpAddress).AddressList.First(address => !address.ToString().Contains(':'));
         }
     }
 }

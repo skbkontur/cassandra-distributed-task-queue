@@ -47,12 +47,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
         {
             try
             {
-                var response = elasticClient.Info<DynamicResponse>();
+                var response = elasticClient.Ping<StringResponse>();
                 if (!response.Success)
                     return false;
-                var legacyStatus = response.Body["status"];
-                if (legacyStatus != null)
-                    return (int)legacyStatus == 200;
                 return response.HttpStatusCode == 200;
             }
             catch (Exception e)
