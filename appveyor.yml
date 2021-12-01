@@ -17,7 +17,9 @@ environment:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
 
 install:
-  - cmd: docker-compose up -d
+  - cmd: docker-switch-windows
+  - cmd: docker info
+  - cmd: docker-compose -f docker-compose.yaml up -d
 
 before_build:
   - ps: |
