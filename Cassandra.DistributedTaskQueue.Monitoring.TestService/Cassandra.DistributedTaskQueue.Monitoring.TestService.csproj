@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <AssemblyName>SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService</AssemblyName>
     <RootNamespace>SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService</RootNamespace>
@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.4" />
-    <PackageReference Include="SkbKontur.TypeScript.ContractGenerator" Version="2.0.94" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.0" />
+    <PackageReference Include="SkbKontur.TypeScript.ContractGenerator" Version="2.0.105" />
   </ItemGroup>
 
   <ItemGroup>

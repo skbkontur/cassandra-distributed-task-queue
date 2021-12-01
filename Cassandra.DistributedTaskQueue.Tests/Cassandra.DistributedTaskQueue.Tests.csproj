@@ -1,19 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <AssemblyName>SkbKontur.Cassandra.DistributedTaskQueue.Tests</AssemblyName>
     <RootNamespace>SkbKontur.Cassandra.DistributedTaskQueue.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="GroboContainer.NUnitExtensions" Version="1.0.44" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="FluentAssertions" Version="6.2.0" />
+    <PackageReference Include="GroboContainer.NUnitExtensions" Version="1.0.56" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="morelinq" Version="3.3.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="Vostok.ClusterClient.Transport" Version="0.1.17" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
+    <PackageReference Include="Vostok.ClusterClient.Transport" Version="0.1.21" />
   </ItemGroup>
 
   <ItemGroup>
