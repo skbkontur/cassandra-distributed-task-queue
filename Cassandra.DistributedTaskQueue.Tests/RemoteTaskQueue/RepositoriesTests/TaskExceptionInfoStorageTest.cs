@@ -7,8 +7,6 @@ using System.Threading;
 
 using GroboContainer.NUnitExtensions;
 
-using MoreLinq;
-
 using NUnit.Framework;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;

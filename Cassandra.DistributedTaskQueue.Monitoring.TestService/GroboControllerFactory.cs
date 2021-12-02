@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 using GroboContainer.Core;
 
@@ -30,6 +31,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService
 
         public void ReleaseController(ControllerContext context, object controller)
         {
+        }
+
+        public ValueTask ReleaseControllerAsync(ControllerContext context, object controller)
+        {
+            return default;
         }
 
         private static IContainer ConfigureContainer()
