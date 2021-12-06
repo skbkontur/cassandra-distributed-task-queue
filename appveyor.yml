@@ -12,13 +12,6 @@ init:
 nuget:
   disable_publish_on_pr: true
 
-environment:
-  NPM_TOKEN:
-    secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
-
-install:
-  - cmd: docker-compose up -d
-
 before_build:
   - ps: |
       $ErrorActionPreference = "Stop"
@@ -42,50 +35,19 @@ before_build:
       }
   - cmd: dotnet --info
   - cmd: dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
-  - cmd: dotnet tool restore
-  - cmd: cd cassandra-distributed-task-queue-ui && yarn install --frozen-lockfile
 
 build_script:
   - cmd: dotnet build --configuration Release ./Cassandra.DistributedTaskQueue.sln
   - cmd: dotnet pack --no-build --configuration Release ./Cassandra.DistributedTaskQueue.sln
-  - cmd: cd cassandra-distributed-task-queue-ui && yarn build
-
-before_test:
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4403"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4404"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4405"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4406"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.TestExchangeService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.TestExchangeService.exe -ArgumentList "--urls http://localhost:4407"
-  - ps: Start-Process ./Cassandra.DistributedTaskQueue.Monitoring.TestService/bin/net5.0/SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService.exe -ArgumentList "--urls http://localhost:4413"
-
-test_script:
-  - cmd: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN
-  - cmd: git diff --exit-code
-  - cmd: dotnet test --no-build --configuration Release ./Cassandra.DistributedTaskQueue.Tests/Cassandra.DistributedTaskQueue.Tests.csproj
-  - cmd: cd cassandra-distributed-task-queue-ui && yarn lint
-
-after_test:
-  - ps: |
-      if ($env:SHOULD_PUBLISH_NUGET_PACKAGE -eq "true")
-      {
-        npm config set '//registry.npmjs.org/:_authToken' $env:NPM_TOKEN
-        $fileNames = Get-ChildItem -Path "cassandra-distributed-task-queue-ui/dist" -Recurse -Include *.tgz
-        foreach ($file in $fileNames)
-        {
-          Write-Host "Will publish npm package $($file.Name)" -ForegroundColor "Green"
-          npm publish $file.FullName --quiet
-        }
-      }
 
 artifacts:
   - path: './Cassandra.DistributedTaskQueue*/bin/Release/*.nupkg'
-  - path: './cassandra-distributed-task-queue-ui/dist/*.tgz'
 
 deploy:
   - provider: NuGet
     server: https://nuget.org
     api_key:
-      secure: y2RPf+gBBqffQVm8pg9qZcg99m7K8hsSa4z7VHvIE6t+kuO7r/oIqTVcryZzL93D
+      secure: 3Myenol+seNdEnkmH7tadxQLsmOE7VWQSp6vQii4vt2dX1S7XwjNV4T24HQTUsrr
     skip_symbols: true
     on:
       SHOULD_PUBLISH_NUGET_PACKAGE: true

@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
+using FluentAssertions;
+
 using GroboContainer.NUnitExtensions;
 
 using NUnit.Framework;
@@ -162,15 +164,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests.RemoteTaskQueue.Reposit
             WriteByte(id21, 21);
             WriteByte(id22, 22);
 
-            Assert.That(timeBasedBlobStorage.ReadAll(1).Select(x => Tuple.Create(x.Item1, x.Item2.Single())).ToArray(),
-                        Is.EquivalentTo(new[]
-                            {
-                                new Tuple<BlobId, byte>(idLarge, 255),
-                                new Tuple<BlobId, byte>(id11, 11),
-                                new Tuple<BlobId, byte>(id12, 12),
-                                new Tuple<BlobId, byte>(id21, 21),
-                                new Tuple<BlobId, byte>(id22, 22),
-                            }));
+            var result = timeBasedBlobStorage.ReadAll(1).Select(x => Tuple.Create(x.Item1, x.Item2.Single())).ToArray();
+            result.Should().BeEquivalentTo(new[]
+                {
+                    new Tuple<BlobId, byte>(idLarge, 255),
+                    new Tuple<BlobId, byte>(id11, 11),
+                    new Tuple<BlobId, byte>(id12, 12),
+                    new Tuple<BlobId, byte>(id21, 21),
+                    new Tuple<BlobId, byte>(id22, 22),
+                });
         }
 
         [Test]
