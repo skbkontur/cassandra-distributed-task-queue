@@ -12,5 +12,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
             : base(new ConnectionConfiguration(new SniffingConnectionPool(uris)).DisableDirectStreaming())
         {
         }
+
+        public RtqElasticsearchClient(ITransport<IConnectionConfigurationValues> confTransport)
+            : base(confTransport)
+        {
+        }
     }
 }
