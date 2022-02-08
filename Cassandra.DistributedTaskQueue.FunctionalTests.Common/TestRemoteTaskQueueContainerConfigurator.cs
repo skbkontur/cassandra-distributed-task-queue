@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading;
 
 using GroboContainer.Core;
 
@@ -22,19 +24,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common
         public static void ConfigureCassandra([NotNull] this IContainer container)
         {
             var cassandraAddress = Environment.GetEnvironmentVariable("CASSANDRA_ADDRESS") ?? "127.0.0.1";
-            var localEndPoint = new IPEndPoint(GetIpV4Address(cassandraAddress), 9160);
-            var cassandraClusterSettings = new CassandraClusterSettings
-                {
-                    Endpoints = new[] {localEndPoint},
-                    EndpointForFierceCommands = localEndPoint,
-                    ReadConsistencyLevel = ConsistencyLevel.QUORUM,
-                    WriteConsistencyLevel = ConsistencyLevel.QUORUM,
-                    Attempts = 5,
-                    Timeout = 6000,
-                    FierceTimeout = 6000,
-                    ConnectionIdleTimeout = TimeSpan.FromMinutes(10),
-                };
-            var cassandraCluster = new CassandraCluster(cassandraClusterSettings, container.Get<ILog>());
+            var cassandraCluster = TryConnectToCassandra(cassandraAddress, container.Get<ILog>());
             container.Configurator.ForAbstraction<ICassandraCluster>().UseInstances(cassandraCluster);
         }
 
@@ -78,6 +68,44 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.FunctionalTests.Common
                 return res;
 
             return Dns.GetHostEntry(hostNameOrIpAddress).AddressList.First(address => !address.ToString().Contains(':'));
+        }
+
+        // todo (a.dobrynin, 08.02.2022): replace with depends_on.condition.service_healthy when appveyor updates docker compose to 1.29+ on windows hosts
+        private static ICassandraCluster TryConnectToCassandra(string cassandraAddress, ILog log)
+        {
+            var timeout = TimeSpan.FromMinutes(2);
+            var interval = TimeSpan.FromSeconds(10);
+            var sw = Stopwatch.StartNew();
+            while (sw.Elapsed < timeout)
+            {
+                try
+                {
+                    var localEndPoint = new IPEndPoint(GetIpV4Address(cassandraAddress), 9160);
+                    var cassandraClusterSettings = new CassandraClusterSettings
+                        {
+                            Endpoints = new[] {localEndPoint},
+                            EndpointForFierceCommands = localEndPoint,
+                            ReadConsistencyLevel = ConsistencyLevel.QUORUM,
+                            WriteConsistencyLevel = ConsistencyLevel.QUORUM,
+                            Attempts = 5,
+                            Timeout = 6000,
+                            FierceTimeout = 6000,
+                            ConnectionIdleTimeout = TimeSpan.FromMinutes(10),
+                        };
+                    ICassandraCluster cassandraCluster = new CassandraCluster(cassandraClusterSettings, log);
+                    _ = cassandraCluster.RetrieveClusterConnection().DescribeVersion();
+                    log.Info($"Successfully connected to cassandra after {sw.Elapsed.TotalSeconds} seconds");
+                    return cassandraCluster;
+                }
+                catch (Exception e)
+                {
+                    log.Info(e, "Connection attempt failed");
+                }
+
+                Thread.Sleep(interval);
+            }
+
+            throw new Exception($"Failed to wait for local cassandra node to start in {timeout.TotalSeconds} seconds");
         }
     }
 }
