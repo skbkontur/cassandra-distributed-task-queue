@@ -3,6 +3,9 @@ services:
   cassandra:
     container_name: rtq-cassandra
     build: cassandra
+    environment:
+      - CASSANDRA_START_RPC=true
+      - JAVA_OPTS=-Xms2G -Xmx2G
     ports:
       - 9042:9042
       - 9160:9160
@@ -36,6 +39,8 @@ services:
       - CASSANDRA_ADDRESS=cassandra
     ports:
       - "4403-4407:80"
+    deploy:
+      replicas: 5
     depends_on:
       cassandra:
         condition: service_healthy

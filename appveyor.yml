@@ -26,7 +26,7 @@ for:
         - image: Ubuntu2004
     before_test:
       - docker info
-      - docker-compose -f docker-compose.linux.yaml up -d --scale exchange-service=5 --build
+      - docker-compose -f docker-compose.linux.yaml up -d --build
 
   - matrix:
       only:
