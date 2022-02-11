@@ -20,6 +20,11 @@ environment:
   NPM_TOKEN:
     secure: Gx5yyFrlELZY4DNW/uAuiXdhUADacNqi3LptQwldv8O61KpYyiDUniA8lBJ5jfne
 
+matrix:
+  fast_finish: true
+  allow_failures:
+    - image: Ubuntu2004
+
 for:
   - matrix:
       only:
