@@ -11,6 +11,10 @@ image:
 init:
   - git config --global core.autocrlf false
 
+branches:
+  only:
+    - master
+
 nuget:
   disable_publish_on_pr: true
 
