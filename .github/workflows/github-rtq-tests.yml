@@ -1,0 +1,17 @@
+on: [push]
+jobs:
+  rtq-tests:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "6.0.1"
+      - name: Check docker version
+        run: docker info
+      - name: Build docker-compose environment
+        run: docker-compose -f docker-compose.linux.yaml up -d --build
+      - name: Check containers
+        run: docker ps -a
+      - name: Run tests
+        run: dotnet test --configuration Release
