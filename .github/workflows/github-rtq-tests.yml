@@ -7,7 +7,7 @@ jobs:
         include:
           - os: ubuntu-20.04
             compose: docker-compose.linux.yaml
-          - os: windows-2022
+          - os: windows-2019
             compose: docker-compose.yaml
     steps:
       - uses: actions/checkout@v2
