@@ -17,11 +17,31 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
+      - name: Setup node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
       - name: Check docker version
         run: docker info
+      - name: Restore dotnet packages
+        run: dotnet restore ./Cassandra.DistributedTaskQueue.sln --verbosity minimal
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+      - name: Install node dependencies
+        run: yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
+      - name: Build dotnet
+        run: dotnet build --configuration Release
+      - name: Pack dotnet
+        run: dotnet pack --no-build --configuration Release
+      - name: Build front
+        run: yarn --cwd cassandra-distributed-task-queue-ui build
+      - name: Cleanup code
+        run: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN && git diff --exit-code
+      - name: Check front code
+        run: yarn --cwd cassandra-distributed-task-queue-ui lint
       - name: Build docker-compose environment
         run: docker-compose -f ${{ matrix.compose }} up -d --build
       - name: Check containers
         run: docker ps -a
       - name: Run tests
-        run: dotnet test --configuration Release
+        run: dotnet test --no-build --configuration Release
