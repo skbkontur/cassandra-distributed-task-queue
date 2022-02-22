@@ -48,3 +48,10 @@ jobs:
       - name: Stop docker-compose
         if: always()
         run: docker-compose -f ${{ matrix.compose }} down
+      - uses: actions/upload-artifact@v2
+        if: runner.os == 'Windows'
+        with:
+          path: |
+            Cassandra.DistributedTaskQueue*/bin/Release/*.nupkg
+            cassandra-distributed-task-queue-ui/dist/*.tgz
+          if-no-files-found: error
