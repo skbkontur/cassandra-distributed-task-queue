@@ -1,0 +1,100 @@
+on:
+  push:
+    paths-ignore:
+      - "**/*.md"
+env:
+  DOTNET_VERSION: 6.0.x
+  NODE_VERSION: 14
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            compose: docker-compose.linux.yaml
+          - os: windows-2019
+            compose: docker-compose.yaml
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install node dependencies
+        run: yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+      - name: Install node dependencies
+        run: yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
+      - name: Build dotnet
+        run: dotnet build --configuration Release --verbosity minimal
+      - name: Build front
+        run: yarn --cwd cassandra-distributed-task-queue-ui build
+      - name: Check C# code style
+        run: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN && git diff --exit-code
+      - name: Check front code
+        run: yarn --cwd cassandra-distributed-task-queue-ui lint
+      - name: Build docker-compose environment
+        run: docker-compose -f ${{ matrix.compose }} up -d --build
+      - name: Run tests
+        run: dotnet test --no-build --configuration Release
+      - name: Stop docker-compose
+        if: always()
+        run: docker-compose -f ${{ matrix.compose }} down
+  publish:
+    runs-on: windows-2019
+    needs: test
+    if: startsWith(github.event.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      - name: Setup node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install node dependencies
+        run: yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+      - name: Build dotnet
+        run: dotnet build --configuration Release --verbosity minimal
+      - name: Check version
+        run: |
+          $ErrorActionPreference = "Stop"
+          $tagName = "${{ github.ref_name }}"
+          $version = $tagName.Substring(1)
+          Write-Host "Will publish nuget package for $tagName tag" -ForegroundColor "Green"
+          if ($tagName -match '^v\d+\.\d+-release') # tag name starts with 'vX.Y-release' (e.g. use 'v4.2-release.1' tag for the first patch for release v4.2)
+          {
+            $version = $version.Substring(0, $version.IndexOf("-release"))
+            $env:SHOULD_CREATE_RELEASE = "true"
+            Write-Host "Will create release for $tagName tag" -ForegroundColor "Green"
+          }
+          $matchVersion = Select-String -Path ./version.json -Pattern "`"version`": `"$version`""
+          if ($matchVersion -eq $null)
+          {
+            Write-Error "Version in tag ($version) does not match version in version.json"
+          }
+      - name: Pack dotnet
+        run: dotnet pack --no-build --configuration Release
+      - name: Build front
+        run: yarn --cwd cassandra-distributed-task-queue-ui build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: |
+            Cassandra.DistributedTaskQueue*/bin/Release/*.nupkg
+            cassandra-distributed-task-queue-ui/dist/*.tgz
+          if-no-files-found: error
