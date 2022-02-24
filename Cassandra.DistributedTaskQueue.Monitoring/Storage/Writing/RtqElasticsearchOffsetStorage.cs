@@ -27,20 +27,20 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
         [NotNull]
         public string GetDescription()
         {
-            return $"RtqElasticsearchOffsetStorage with IndexName: {elasticIndexName}, ElasticType: {elasticTypeName}, BladeKey: {bladeKey}";
+            return $"RtqElasticsearchOffsetStorage with IndexName: {elasticIndexName}, BladeKey: {bladeKey}";
         }
 
         public void Write([CanBeNull] string newOffset)
         {
             var payload = new OffsetStorageElement {Offset = newOffset};
             var postData = PostData.String(JsonConvert.SerializeObject(payload));
-            elasticsearchClient.IndexUsingType<StringResponse>(elasticIndexName, elasticTypeName, bladeKey, postData).EnsureSuccess();
+            elasticsearchClient.Index<StringResponse>(elasticIndexName, bladeKey, postData).EnsureSuccess();
         }
 
         [CanBeNull]
         public string Read()
         {
-            var stringResponse = elasticsearchClient.GetUsingType<StringResponse>(elasticIndexName, elasticTypeName, bladeKey, allowNotFoundStatusCode).EnsureSuccess();
+            var stringResponse = elasticsearchClient.Get<StringResponse>(elasticIndexName, bladeKey, allowNotFoundStatusCode).EnsureSuccess();
             if (string.IsNullOrEmpty(stringResponse.Body))
                 return GetDefaultOffset();
 
@@ -58,7 +58,6 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
         }
 
         private const string elasticIndexName = RtqElasticsearchConsts.IndexingProgressIndexName;
-        private const string elasticTypeName = "MultiRazorEventFeedOffset";
 
         private readonly IElasticLowLevelClient elasticsearchClient;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter;
