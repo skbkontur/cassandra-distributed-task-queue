@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.X - 2022.05.04
+- Update Elasticsearch.NET to v7.17.0
+- Add Elasticsearch v7.x compatibility
+
 ## v1.5.X - 2021.11.23
 - Update Elasticsearch.NET to v6.8.9
 
