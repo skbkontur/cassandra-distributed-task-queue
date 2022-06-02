@@ -50,7 +50,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
                                                .WithBlade($"{indexerSettings.EventFeedKey}_Blade0", delay : TimeSpan.FromMinutes(1))
                                                .WithBlade($"{indexerSettings.EventFeedKey}_Blade1", delay : TimeSpan.FromMinutes(15)))
                    .WithOffsetInterpreter(offsetInterpreter)
-                   .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey))
+                   .WithOffsetStorageFactory(bladeId => new RtqElasticsearchOffsetStorage(elasticsearchClient, offsetInterpreter, bladeId.BladeKey, indexerSettings.InitialIndexingOffsetFromNow))
                    .RunFeeds(delayBetweenIterations : TimeSpan.FromMinutes(1), cancellationToken);
         }
 

@@ -17,11 +17,13 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
     {
         public RtqElasticsearchOffsetStorage(IRtqElasticsearchClient elasticsearchClient,
                                              RtqEventLogOffsetInterpreter offsetInterpreter,
-                                             [NotNull] string bladeKey)
+                                             [NotNull] string bladeKey,
+                                             TimeSpan initialIndexingOffsetFromNow)
         {
             this.elasticsearchClient = elasticsearchClient;
             this.offsetInterpreter = offsetInterpreter;
             this.bladeKey = bladeKey;
+            this.initialIndexingOffsetFromNow = initialIndexingOffsetFromNow;
         }
 
         [NotNull]
@@ -34,7 +36,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
         {
             var payload = new OffsetStorageElement {Offset = newOffset};
             var postData = PostData.String(JsonConvert.SerializeObject(payload));
-            
+
             if (elasticsearchClient.UseElastic7)
                 elasticsearchClient.Index<StringResponse>(elasticIndexName, bladeKey, postData).EnsureSuccess();
             else
@@ -64,7 +66,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
         [CanBeNull]
         private string GetDefaultOffset()
         {
-            return offsetInterpreter.GetMaxOffsetForTimestamp(Timestamp.Now - TimeSpan.FromDays(3));
+            return offsetInterpreter.GetMaxOffsetForTimestamp(Timestamp.Now - initialIndexingOffsetFromNow);
         }
 
         private const string elasticIndexName = RtqElasticsearchConsts.IndexingProgressIndexName;
@@ -73,6 +75,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
         private readonly IRtqElasticsearchClient elasticsearchClient;
         private readonly RtqEventLogOffsetInterpreter offsetInterpreter;
         private readonly string bladeKey;
+        private readonly TimeSpan initialIndexingOffsetFromNow;
 
         private readonly GetRequestParameters allowNotFoundStatusCode = new GetRequestParameters
             {
