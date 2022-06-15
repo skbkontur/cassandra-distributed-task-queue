@@ -118,10 +118,10 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Create release
         uses: softprops/action-gh-release@v1
-        if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
+#        if: ${{ env.SHOULD_CREATE_RELEASE == 'true' }}
         with:
           fail_on_unmatched_files: true
-          draft: false
+          draft: true
           prerelease: false
           files: |
             **/*.nupkg
