@@ -33,5 +33,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
             : base(new ConnectionConfiguration(new SniffingConnectionPool(uris)).DisableDirectStreaming())
         {
         }
+
+        public bool UseElastic7 { get; set; }
     }
 }

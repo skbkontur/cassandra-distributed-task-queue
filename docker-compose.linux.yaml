@@ -21,7 +21,7 @@ services:
       retries: 60
   elasticsearch:
     container_name: rtq-elasticsearch
-    image: elasticsearch:6.8.20
+    image: elasticsearch:${ES_VERSION:-6.8.20}
     environment:
       - discovery.type=single-node
       - http.port=9205
@@ -42,6 +42,7 @@ services:
       dockerfile: Cassandra.DistributedTaskQueue.TestExchangeService/Dockerfile
     environment:
       - CASSANDRA_ADDRESS=cassandra
+      - ES_VERSION=${ES_VERSION:-6.8.20}
     ports:
       - "4403-4407:80"
     deploy:
@@ -60,6 +61,7 @@ services:
       dockerfile: Cassandra.DistributedTaskQueue.Monitoring.TestService/Dockerfile
     environment:
       - ES_URL=http://elasticsearch:9205
+      - ES_VERSION=${ES_VERSION:-6.8.20}
       - CASSANDRA_ADDRESS=cassandra
     ports:
       - "4413:80"

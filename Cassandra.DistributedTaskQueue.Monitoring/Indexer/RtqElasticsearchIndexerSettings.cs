@@ -49,6 +49,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
 
         public TimeSpan BulkIndexRequestTimeout { get; set; } = TimeSpan.FromMinutes(5);
 
+        public TimeSpan InitialIndexingOffsetFromNow { get; set; } = TimeSpan.FromMinutes(30);
+
         [NotNull]
         public JsonSerializerSettings JsonSerializerSettings { get; } = DefaultJsonSerializerSettings;
 

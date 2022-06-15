@@ -6,5 +6,6 @@
         public const string TemplateName = "rtq-template";
         public const string DataIndexNameFormat = @"\r\t\q-yyyy.MM.dd";
         public const string IndexingProgressIndexName = "rtq-indexingprogress";
+        public const string RtqIndexTypeName = "doc_type_is_deprecated";
     }
 }

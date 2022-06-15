@@ -58,7 +58,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         availableTaskNames: [],
         results: {
             taskMetas: [],
-            totalCount: 0,
+            totalCount: "0",
         },
         confirmMultipleModalOpened: false,
         modalType: "Rerun",
@@ -81,7 +81,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         const isStateCompletelyLoaded = results && availableTaskNames;
         const count = request.count || 20;
         const offset = request.offset || 0;
-        const counter = (results && results.totalCount) || 0;
+        const counter = Number((results && results.totalCount) || 0);
         return (
             <CommonLayout>
                 <CommonLayout.GoBack to={RouteUtils.backUrl(this.props.match)}>

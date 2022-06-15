@@ -7,7 +7,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
     public class RtqMonitoringSearchResults
     {
         [JsonProperty("totalCount")]
-        public int TotalCount { get; set; }
+        public long TotalCount { get; set; }
 
         [NotNull, ItemNotNull]
         [JsonProperty("taskMetas")]
