@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.6.X - 2022.06.15
+- Update `Elasticsearch.NET` to 7.17.2
+- Monitoring compatibility with elasticsearch v6.x and v7.x
+
+## v1.5.27 - 2022.06.15
+- Update packages:
+  - `@skbkontur/react-ui` 3.3.1 => 4.1.0
+  - `@skbkontur/react-icons` 5.1.0 => 5.2.4
+  - `@skbkontur/react-ui-validations` 1.4.0 => 1.8.3
 
 ## v1.5.X - 2021.11.23
 - Update Elasticsearch.NET to v6.8.9
