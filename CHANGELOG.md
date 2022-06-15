@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## v1.5.X - 2021.11.23
 - Update Elasticsearch.NET to v6.8.9
 
