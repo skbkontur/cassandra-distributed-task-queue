@@ -14,8 +14,13 @@ jobs:
         include:
           - os: ubuntu-20.04
             compose: docker-compose.linux.yaml
+            es-version: 6.8.20
+          - os: ubuntu-20.04
+            compose: docker-compose.linux.yaml
+            es-version: 7.17.4
           - os: windows-2019
             compose: docker-compose.yaml
+            es-version: 6.2
     steps:
       - uses: actions/checkout@v2
         with:
@@ -45,11 +50,17 @@ jobs:
         run: yarn --cwd cassandra-distributed-task-queue-ui lint
       - name: Build docker-compose environment
         run: docker-compose -f ${{ matrix.compose }} up -d --build
+        env:
+          ES_VERSION: ${{ matrix.es-version }}
       - name: Run tests
         run: dotnet test --no-build --configuration Release
+        env:
+          ES_VERSION: ${{ matrix.es-version }}
       - name: Stop docker-compose
         if: always()
         run: docker-compose -f ${{ matrix.compose }} down
+        env:
+          ES_VERSION: ${{ matrix.es-version }}
   publish:
     runs-on: windows-2019
     needs: test
