@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 
 using Elasticsearch.Net;
 using Elasticsearch.Net.Specification.IndicesApi;
-
-using JetBrains.Annotations;
 
 using Newtonsoft.Json;
 
@@ -24,12 +23,15 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
             var indexSettingsPostData = PostData.String(JsonConvert.SerializeObject(indexSettings));
             elasticClient.Indices.Create<StringResponse>(RtqElasticsearchConsts.IndexingProgressIndexName, indexSettingsPostData, allowResourceAlreadyExistsStatus).EnsureSuccess();
 
-            var templateSettings = GetTaskIndicesTemplateSettings(local, bulkLoad, includeTypeName : !elasticClient.UseElastic7);
+            var templateSettings = elasticClient.UseElastic7 ? GetTaskIndicesTemplateV2Settings(local, bulkLoad) : GetTaskIndicesTemplateSettings(local, bulkLoad);
             var templateSettingsPostData = PostData.String(JsonConvert.SerializeObject(templateSettings));
-            elasticClient.Indices.PutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData).EnsureSuccess();
+
+            if (elasticClient.UseElastic7)
+                elasticClient.Indices.PutTemplateV2ForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData).EnsureSuccess();
+            else
+                elasticClient.Indices.PutTemplateForAll<StringResponse>(RtqElasticsearchConsts.TemplateName, templateSettingsPostData).EnsureSuccess();
         }
 
-        [NotNull]
         private static object GetIndexingProgressIndexSettings(bool local, bool bulkLoad)
         {
             return new
@@ -48,16 +50,27 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
                 };
         }
 
-        [NotNull]
-        private static object GetTaskIndicesTemplateSettings(bool local, bool bulkLoad, bool includeTypeName)
+        private static object GetTaskIndicesTemplateV2Settings(bool local, bool bulkLoad)
+        {
+            return new
+                {
+                    index_patterns = RtqElasticsearchConsts.AllIndicesWildcard,
+                    template = new
+                        {
+                            settings = GetIndexingProgressIndexSettings(local, bulkLoad),
+                            mappings = GetTaskIndexMappings()
+                        },
+                    priority = 500,
+                };
+        }
+
+        private static object GetTaskIndicesTemplateSettings(bool local, bool bulkLoad)
         {
             return new
                 {
                     index_patterns = RtqElasticsearchConsts.AllIndicesWildcard,
                     settings = GetIndexingProgressIndexSettings(local, bulkLoad),
-                    mappings = includeTypeName
-                                   ? new Dictionary<string, object>(1) {[RtqElasticsearchConsts.RtqIndexTypeName] = GetTaskIndexMappings()}
-                                   : GetTaskIndexMappings()
+                    mappings = new Dictionary<string, object>(1) {[RtqElasticsearchConsts.RtqIndexTypeName] = GetTaskIndexMappings()}
                 };
         }
 
@@ -147,25 +160,21 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage
                 };
         }
 
-        [NotNull]
         private static object DateType()
         {
             return new {type = "date", store = false, format = "dateOptionalTime"};
         }
 
-        [NotNull]
         private static object KeywordType()
         {
             return new {type = "keyword", store = false, index = true};
         }
 
-        [NotNull]
         private static object DoubleType()
         {
             return new {type = "double", store = false};
         }
 
-        [NotNull]
         private static object KeywordTypeWithCopy()
         {
             return new
