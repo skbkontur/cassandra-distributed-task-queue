@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 using Elasticsearch.Net;
 using Elasticsearch.Net.Specification.IndicesApi;
+
 using Newtonsoft.Json;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions;
