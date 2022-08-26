@@ -1,7 +1,8 @@
+import { isValid, parse as parseDateInternal } from "date-fns";
 import _ from "lodash";
-import moment from "moment";
 
 import { DateTimeRange } from "../DataTypes/DateTimeRange";
+import { DateUtils } from "../Utils/DateUtils";
 
 export type QueryObject = any;
 
@@ -123,21 +124,15 @@ export class DateTimeRangeMapper {
     }
 
     public parseDate(parameterValue: Nullable<string>): Nullable<Date> {
-        if (parameterValue == undefined || parameterValue === "") {
+        if (!parameterValue) {
             return null;
         }
-        const parsedValue = moment.utc(parameterValue, "YYYY-MM-DD");
-        if (!parsedValue.isValid()) {
-            return null;
-        }
-        return parsedValue.toDate();
+        const parsedValue = parseDateInternal(parameterValue, "yyyy-MM-dd", new Date());
+        return isValid(parsedValue) ? parsedValue : null;
     }
 
     public stringifyDate(value: Nullable<Date>): Nullable<string> {
-        if (value === null || value === undefined) {
-            return undefined;
-        }
-        return moment(value).format("YYYY-MM-DD");
+        return value ? DateUtils.convertDateToString(value, undefined, "yyyy-MM-dd") : undefined;
     }
 
     public parse(parsedQueryString: QueryObject): Nullable<DateTimeRange> {

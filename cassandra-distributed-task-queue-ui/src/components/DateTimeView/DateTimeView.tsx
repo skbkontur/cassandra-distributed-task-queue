@@ -1,8 +1,8 @@
 import { Button, RadioGroup, Tooltip } from "@skbkontur/react-ui";
-import moment from "moment";
 import React from "react";
 
 import { Ticks, TimeZone } from "../../Domain/DataTypes/Time";
+import { DateUtils } from "../../Domain/Utils/DateUtils";
 import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
 import { jsStyles } from "./DateTimeView.styles";
@@ -118,9 +118,11 @@ export class DateTimeView extends React.Component<DateTimeViewProps, DateTimeVie
 
     public renderWithTimeZone(timezone: TimeZone): string {
         const { value } = this.props;
-        return moment(value ? TimeUtils.ticksToDate(value) : undefined)
-            .utcOffset(timezone)
-            .format("DD.MM.YYYY HH:mm:ss.SSS");
+        return DateUtils.convertDateToString(
+            value ? TimeUtils.ticksToDate(value) : new Date(),
+            timezone,
+            "dd.MM.yyyy HH:mm:ss.SSS"
+        );
     }
 
     private handleChangeDefault() {
