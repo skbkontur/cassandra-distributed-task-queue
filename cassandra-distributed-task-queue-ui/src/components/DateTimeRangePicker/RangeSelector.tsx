@@ -3,10 +3,9 @@ import { endOfDay, startOfDay, subDays, subMonths, subYears } from "date-fns";
 import { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
 import { TimeZone } from "../../Domain/DataTypes/Time";
 import { DateUtils } from "../../Domain/Utils/DateUtils";
-import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
-function utc(): Date {
-    return DateUtils.toTimeZone(new Date(), TimeUtils.TimeZones.UTC);
+function now(): Date {
+    return new Date();
 }
 
 export class RangeSelector {
@@ -26,26 +25,26 @@ export class RangeSelector {
     }
 
     public getYesterday(): DateTimeRange {
-        return this.setBounds(subDays(utc(), 1));
+        return this.setBounds(subDays(now(), 1));
     }
 
     public getToday(): DateTimeRange {
-        return this.setBounds(utc());
+        return this.setBounds(now());
     }
 
     public getWeek(): DateTimeRange {
-        return this.setBounds(subDays(utc(), 6), utc());
+        return this.setBounds(subDays(now(), 6), now());
     }
 
     public getMonth(): DateTimeRange {
-        return this.setBounds(subMonths(utc(), 1), utc());
+        return this.setBounds(subMonths(now(), 1), now());
     }
 
     public getMonthOf(date: Date | string): DateTimeRange {
-        return this.setBounds(subMonths(DateUtils.toTimeZone(date, TimeUtils.TimeZones.UTC), 1), utc());
+        return this.setBounds(subMonths(new Date(date), 1), now());
     }
 
     public getYear(): DateTimeRange {
-        return this.setBounds(subYears(utc(), 1), utc());
+        return this.setBounds(subYears(now(), 1), now());
     }
 }
