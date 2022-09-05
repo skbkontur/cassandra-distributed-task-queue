@@ -1,5 +1,3 @@
-import moment from "moment";
-
 import { IRtqMonitoringApi } from "../../src/Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "../../src/Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringSearchResults } from "../../src/Domain/Api/RtqMonitoringSearchResults";
@@ -28,14 +26,14 @@ export function createTask(override: Partial<RtqMonitoringTaskMeta>): RtqMonitor
     const defaultTaskMeta: RtqMonitoringTaskMeta = {
         name: "Task",
         id: "Id",
-        ticks: TimeUtils.dateToTicks(moment().toDate()),
-        minimalStartTicks: TimeUtils.dateToTicks(moment().toDate()),
-        startExecutingTicks: TimeUtils.dateToTicks(moment().toDate()),
-        finishExecutingTicks: TimeUtils.dateToTicks(moment().toDate()),
+        ticks: TimeUtils.dateToTicks(new Date()),
+        minimalStartTicks: TimeUtils.dateToTicks(new Date()),
+        startExecutingTicks: TimeUtils.dateToTicks(new Date()),
+        finishExecutingTicks: TimeUtils.dateToTicks(new Date()),
         executionDurationTicks: null,
-        lastModificationTicks: TimeUtils.dateToTicks(moment().toDate()),
-        expirationTimestampTicks: TimeUtils.dateToTicks(moment().toDate()),
-        expirationModificationTicks: TimeUtils.dateToTicks(moment().toDate()),
+        lastModificationTicks: TimeUtils.dateToTicks(new Date()),
+        expirationTimestampTicks: TimeUtils.dateToTicks(new Date()),
+        expirationModificationTicks: TimeUtils.dateToTicks(new Date()),
         state: TaskState.Finished,
         attempts: 1,
         parentTaskId: "ParentTaskId",

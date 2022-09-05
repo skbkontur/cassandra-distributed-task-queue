@@ -1,54 +1,46 @@
-import moment, { Moment } from "moment";
+import { endOfDay, startOfDay, subDays, subMonths, subYears } from "date-fns";
 
 import { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
 import { TimeZone } from "../../Domain/DataTypes/Time";
-import { TimeUtils } from "../../Domain/Utils/TimeUtils";
-
-export function offset(offsetValue: number, date: Date): Date {
-    return moment(date).utc().add(offsetValue, "m").toDate();
-}
-
-function utc(): Moment {
-    return moment.utc();
-}
+import { DateUtils } from "../../Domain/Utils/DateUtils";
 
 export class RangeSelector {
-    public timeZoneOffset: number;
+    public timeZone: TimeZone | number;
 
     public constructor(timeZone: Nullable<TimeZone>) {
-        this.timeZoneOffset = -TimeUtils.getTimeZoneOffsetOrDefault(timeZone);
+        this.timeZone = timeZone == null ? -new Date().getTimezoneOffset() : timeZone;
     }
 
-    public setBounds(start: Moment, end: Moment = start): DateTimeRange {
-        const lower = start.hour(0).minute(0).second(0).toDate();
-        const upper = end.hour(23).minute(59).second(59).toDate();
+    public setBounds(start: Date, end: Date = start): DateTimeRange {
+        const lower = startOfDay(start);
+        const upper = endOfDay(end);
         return {
-            lowerBound: offset(this.timeZoneOffset, lower),
-            upperBound: offset(this.timeZoneOffset, upper),
+            lowerBound: DateUtils.toTimeZone(lower, this.timeZone),
+            upperBound: DateUtils.toTimeZone(upper, this.timeZone),
         };
     }
 
     public getYesterday(): DateTimeRange {
-        return this.setBounds(utc().add(-1, "days"));
+        return this.setBounds(subDays(new Date(), 1));
     }
 
     public getToday(): DateTimeRange {
-        return this.setBounds(utc());
+        return this.setBounds(new Date());
     }
 
     public getWeek(): DateTimeRange {
-        return this.setBounds(utc().subtract(6, "d"), utc());
+        return this.setBounds(subDays(new Date(), 6), new Date());
     }
 
     public getMonth(): DateTimeRange {
-        return this.setBounds(utc().subtract(1, "months"), utc());
+        return this.setBounds(subMonths(new Date(), 1), new Date());
     }
 
     public getMonthOf(date: Date | string): DateTimeRange {
-        return this.setBounds(moment(date).utc().subtract(1, "months"), utc());
+        return this.setBounds(subMonths(new Date(date), 1), new Date());
     }
 
     public getYear(): DateTimeRange {
-        return this.setBounds(utc().subtract(1, "y"), utc());
+        return this.setBounds(subYears(new Date(), 1), new Date());
     }
 }

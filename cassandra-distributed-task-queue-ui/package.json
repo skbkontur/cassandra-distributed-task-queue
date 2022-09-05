@@ -46,9 +46,9 @@
   "dependencies": {
     "@skbkontur/react-stack-layout": "^1.0.3",
     "copy-to-clipboard": "^3.3.1",
+    "date-fns": "^2.29.2",
     "decimal.js": "^10.2.1",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1",
     "qs": "^6.9.6",
     "tslib": "^2.4.0",
     "whatwg-fetch": "^3.5.0"
