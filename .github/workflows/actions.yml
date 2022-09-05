@@ -113,12 +113,9 @@ jobs:
             **/*.nupkg
             **/*.tgz
           if-no-files-found: error
-      - name: Publish NuGet
-        run: dotnet nuget push "**/*.nupkg" --source https://api.nuget.org/v3/index.json --no-symbols --api-key $env:NUGET_API_KEY
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
       - name: Publish NPM
         run: |
+          npm config set '//registry.npmjs.org/:_authToken' $env:NODE_AUTH_TOKEN
           npm whoami
           $fileNames = Get-ChildItem -Path "cassandra-distributed-task-queue-ui/dist" -Recurse -Include *.tgz
           foreach ($file in $fileNames)
