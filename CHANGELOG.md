@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.6.15 - 2022.09.05
+- Replace `moment.js` with `date-fns`
+- Fast date filters (front) now work in local time
+
 ## v1.6.8 - 2022.07.06
 
 - `SkbKontur.Cassandra.DistributedTaskQueue.Monitoring` explicitly sets `track_total_hits=true` when searching in elasticsearch (since v7.0 it defaults to 10000 - https://www.elastic.co/guide/en/elasticsearch/reference/7.17/breaking-changes-7.0.html#track-total-hits-10000-default)
