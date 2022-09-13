@@ -15,6 +15,7 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
+import { DateUtils } from "../Domain/Utils/DateUtils";
 import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
@@ -181,7 +182,18 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
 
         this.setState({ loading: true });
         try {
-            const results = await this.props.rtqMonitoringApi.search(request);
+            const requestWithUtcDates = {
+                ...request,
+                enqueueTimestampRange: {
+                    lowerBound: request.enqueueTimestampRange.lowerBound
+                        ? DateUtils.fromLocalToUtc(request.enqueueTimestampRange.lowerBound)
+                        : request.enqueueTimestampRange.lowerBound,
+                    upperBound: request.enqueueTimestampRange.upperBound
+                        ? DateUtils.fromLocalToUtc(request.enqueueTimestampRange.upperBound)
+                        : request.enqueueTimestampRange.upperBound,
+                },
+            };
+            const results = await this.props.rtqMonitoringApi.search(requestWithUtcDates);
             this.setState({ results: results });
         } finally {
             this.setState({ loading: false });
