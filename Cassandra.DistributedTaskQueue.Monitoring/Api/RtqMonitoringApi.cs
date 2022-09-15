@@ -15,8 +15,8 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
         public RtqMonitoringApi(IRtqTaskManager taskManager, TaskSearchClient taskSearchClient, IRtqTaskDataRegistry taskDataRegistry)
         {
             this.taskManager = taskManager;
-            this.taskSearchClient = taskSearchClient;
             this.taskDataRegistry = taskDataRegistry;
+            this.taskSearchClient = taskSearchClient;
         }
 
         [NotNull, ItemNotNull]
