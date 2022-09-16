@@ -221,7 +221,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         }
         if (request.enqueueTimestampRange.lowerBound == null || request.enqueueTimestampRange.upperBound == null) {
             const rangeSelector = new RangeSelector(undefined);
-            request.enqueueTimestampRange = rangeSelector.getToday();
+            request.enqueueTimestampRange = rangeSelector.getTodayConsideringUtc();
         }
 
         const query = this.getQuery(request);
