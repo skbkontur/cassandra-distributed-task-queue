@@ -1,4 +1,4 @@
-import { endOfDay, startOfDay, subDays, subMonths, subYears } from "date-fns";
+import { endOfDay, max, min, startOfDay, subDays, subMonths, subYears } from "date-fns";
 
 import { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
 import { TimeZone } from "../../Domain/DataTypes/Time";
@@ -26,6 +26,14 @@ export class RangeSelector {
 
     public getToday(): DateTimeRange {
         return this.setBounds(new Date());
+    }
+
+    public getTodayConsideringUtc(): DateTimeRange {
+        const now = new Date();
+        const utcNow = DateUtils.toTimeZone(now, 0);
+        const lower = min([now, utcNow]);
+        const upper = max([now, utcNow]);
+        return this.setBounds(lower, upper);
     }
 
     public getWeek(): DateTimeRange {
