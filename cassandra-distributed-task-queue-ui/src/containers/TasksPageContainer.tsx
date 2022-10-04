@@ -15,8 +15,8 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
-import { DateUtils } from "../Domain/Utils/DateUtils";
 import { RouteUtils } from "../Domain/Utils/RouteUtils";
+import { TimeUtils } from "../Domain/Utils/TimeUtils";
 import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
@@ -182,18 +182,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
 
         this.setState({ loading: true });
         try {
-            const requestWithUtcDates = {
-                ...request,
-                enqueueTimestampRange: {
-                    lowerBound: request.enqueueTimestampRange.lowerBound
-                        ? DateUtils.fromLocalToUtc(request.enqueueTimestampRange.lowerBound)
-                        : request.enqueueTimestampRange.lowerBound,
-                    upperBound: request.enqueueTimestampRange.upperBound
-                        ? DateUtils.fromLocalToUtc(request.enqueueTimestampRange.upperBound)
-                        : request.enqueueTimestampRange.upperBound,
-                },
-            };
-            const results = await this.props.rtqMonitoringApi.search(requestWithUtcDates);
+            const results = await this.props.rtqMonitoringApi.search(request);
             this.setState({ results: results });
         } finally {
             this.setState({ loading: false });
@@ -220,8 +209,8 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
             request = createDefaultRemoteTaskQueueSearchRequest();
         }
         if (request.enqueueTimestampRange.lowerBound == null || request.enqueueTimestampRange.upperBound == null) {
-            const rangeSelector = new RangeSelector(undefined);
-            request.enqueueTimestampRange = rangeSelector.getTodayConsideringUtc();
+            const rangeSelector = new RangeSelector(TimeUtils.TimeZones.UTC);
+            request.enqueueTimestampRange = rangeSelector.getToday();
         }
 
         const query = this.getQuery(request);
