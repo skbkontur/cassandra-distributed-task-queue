@@ -128,7 +128,7 @@ export class DateTimeRangeMapper {
             return null;
         }
         const parsedValue = parseDateInternal(parameterValue, "yyyy-MM-dd", new Date());
-        return isValid(parsedValue) ? parsedValue : null;
+        return isValid(parsedValue) ? DateUtils.fromLocalToUtc(parsedValue) : null;
     }
 
     public stringifyDate(value: Nullable<Date>): Nullable<string> {
