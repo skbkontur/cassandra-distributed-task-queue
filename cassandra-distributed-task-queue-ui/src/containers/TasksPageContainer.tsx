@@ -209,7 +209,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
             request = createDefaultRemoteTaskQueueSearchRequest();
         }
         if (request.enqueueTimestampRange.lowerBound == null || request.enqueueTimestampRange.upperBound == null) {
-            const rangeSelector = new RangeSelector(TimeUtils.TimeZones.UTC);
+            const rangeSelector = new RangeSelector(undefined);
             request.enqueueTimestampRange = rangeSelector.getToday();
         }
 
