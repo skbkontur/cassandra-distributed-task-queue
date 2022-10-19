@@ -18,14 +18,19 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Configuration
         protected void Register<THandler>([NotNull] Func<THandler> createTaskHandler)
             where THandler : IRtqTaskHandler
         {
-            var handlerType = typeof(THandler);
+            Register(typeof(THandler), () => createTaskHandler());
+        }
+
+        [UsedImplicitly]
+        protected void Register(Type handlerType, Func<IRtqTaskHandler> createTaskHandler)
+        {
             var taskDataType = TryGetTaskDataType(handlerType);
             if (taskDataType == null)
-                throw new InvalidOperationException(string.Format("Type '{0}' doesn't implement 'TaskHandler<TTaskData>'", handlerType.FullName));
+                throw new InvalidOperationException($"Type '{handlerType.FullName}' doesn't implement 'TaskHandler<TTaskData>'");
             var taskName = taskDataRegistry.GetTaskName(taskDataType);
             if (taskHandlerCreatorsByTaskName.ContainsKey(taskName))
-                throw new InvalidOperationException(string.Format("There are at least two handlers for task '{0}': '{1}' and '{2}'", taskName, taskHandlerCreatorsByTaskName[taskName].HandlerType, handlerType));
-            var taskHandlerCreator = new TaskHandlerCreator(handlerType, () => (IRtqTaskHandler)createTaskHandler());
+                throw new InvalidOperationException($"There are at least two handlers for task '{taskName}': '{taskHandlerCreatorsByTaskName[taskName].HandlerType}' and '{handlerType}'");
+            var taskHandlerCreator = new TaskHandlerCreator(handlerType, createTaskHandler);
             taskHandlerCreatorsByTaskName.Add(taskName, taskHandlerCreator);
         }
 
