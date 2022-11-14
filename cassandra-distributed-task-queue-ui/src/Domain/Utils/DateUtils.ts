@@ -1,4 +1,4 @@
-import { addMinutes, format, parse } from "date-fns";
+import { addMinutes, format, parse, subMinutes } from "date-fns";
 
 import { RussianDateFormat } from "../DataTypes/DateTimeRange";
 import { TimeZone } from "../DataTypes/Time";
@@ -26,5 +26,10 @@ export class DateUtils {
     public static toTimeZone(date: Date | string, timeZone: TimeZone | number): Date {
         const dateDate = new Date(date);
         return addMinutes(dateDate, dateDate.getTimezoneOffset() + timeZone);
+    }
+
+    public static fromLocalToUtc(date: Date | string): Date {
+        const dateDate = new Date(date);
+        return subMinutes(dateDate, dateDate.getTimezoneOffset());
     }
 }

@@ -16,7 +16,6 @@ import {
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
 import { RouteUtils } from "../Domain/Utils/RouteUtils";
-import { TimeUtils } from "../Domain/Utils/TimeUtils";
 import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
@@ -209,7 +208,7 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
             request = createDefaultRemoteTaskQueueSearchRequest();
         }
         if (request.enqueueTimestampRange.lowerBound == null || request.enqueueTimestampRange.upperBound == null) {
-            const rangeSelector = new RangeSelector(TimeUtils.TimeZones.UTC);
+            const rangeSelector = new RangeSelector(undefined);
             request.enqueueTimestampRange = rangeSelector.getToday();
         }
 
