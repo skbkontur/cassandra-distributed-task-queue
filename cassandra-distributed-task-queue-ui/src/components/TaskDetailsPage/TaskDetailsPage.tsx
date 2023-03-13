@@ -11,6 +11,7 @@ import { ICustomRenderer } from "../../Domain/CustomRenderer";
 import { cancelableStates, rerunableStates } from "../../Domain/TaskStateExtensions";
 import { searchRequestMapping } from "../../containers/TasksPageContainer";
 import { Accordion } from "../Accordion/Accordion";
+import { GoBackLink } from "../GoBack/GoBackLink";
 import { CommonLayout } from "../Layouts/CommonLayout";
 import { RouterLink } from "../RouterLink/RouterLink";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
@@ -155,11 +156,15 @@ export function TaskDetailsPage({
     return (
         <div>
             <CommonLayout>
-                {taskDetails && <CommonLayout.GoBack to={parentLocation}>Вернуться к поиску задач</CommonLayout.GoBack>}
                 {taskDetails && (
                     <CommonLayout.GreyLineHeader
                         data-tid="Header"
-                        title={`Задача ${taskDetails.taskMeta.name}`}
+                        title={
+                            <RowStack gap={3} verticalAlign="bottom">
+                                <GoBackLink backUrl={parentLocation} />
+                                <span>Задача ${taskDetails.taskMeta.name}</span>
+                            </RowStack>
+                        }
                         tools={taskDetails && allowRerunOrCancel ? renderButtons() : null}>
                         <TaskTimeLine
                             getHrefToTask={getTaskLocation}

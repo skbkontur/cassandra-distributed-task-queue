@@ -1,3 +1,4 @@
+import { RowStack } from "@skbkontur/react-stack-layout";
 import { Loader } from "@skbkontur/react-ui";
 import { LocationDescriptor } from "history";
 import _ from "lodash";
@@ -11,6 +12,7 @@ import {
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
+import { GoBackLink } from "../components/GoBack/GoBackLink";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 
@@ -128,10 +130,14 @@ export class TaskChainsTreeContainer extends React.Component<
         const { loaderText, loading, taskDetails } = this.state;
         return (
             <CommonLayout>
-                <CommonLayout.GoBack data-tid="GoBack" to={`${path}${searchQuery}`}>
-                    Вернуться к поиску задач
-                </CommonLayout.GoBack>
-                <CommonLayout.Header title="Дерево задач" />
+                <CommonLayout.Header
+                    title={
+                        <RowStack gap={3} verticalAlign="bottom">
+                            <GoBackLink backUrl={`${path}${searchQuery}`} />
+                            <span>Дерево задач</span>
+                        </RowStack>
+                    }
+                />
                 <CommonLayout.Content>
                     <Loader type="big" active={loading} caption={loaderText}>
                         <div style={{ overflowX: "auto" }}>
