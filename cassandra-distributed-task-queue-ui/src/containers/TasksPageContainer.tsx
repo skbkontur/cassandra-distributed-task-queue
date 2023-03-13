@@ -15,7 +15,6 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
-import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
@@ -83,9 +82,6 @@ class TasksPageContainerInternal extends React.Component<TasksPageContainerProps
         const counter = Number((results && results.totalCount) || 0);
         return (
             <CommonLayout>
-                <CommonLayout.GoBack to={RouteUtils.backUrl(this.props.match)}>
-                    Вернуться к инструментам администратора
-                </CommonLayout.GoBack>
                 <CommonLayout.Header data-tid="Header" title="Список задач" />
                 <CommonLayout.Content>
                     {useErrorHandlingContainer && <ErrorHandlingContainer />}
