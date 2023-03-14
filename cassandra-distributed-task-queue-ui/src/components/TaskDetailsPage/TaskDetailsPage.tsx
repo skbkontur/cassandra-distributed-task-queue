@@ -31,6 +31,7 @@ export interface TaskDetailsPageProps {
 }
 
 export function TaskDetailsPage({
+    parentLocation,
     taskDetails,
     customRenderer,
     getTaskLocation,
@@ -160,7 +161,7 @@ export function TaskDetailsPage({
                         data-tid="Header"
                         title={
                             <RowStack gap={3} verticalAlign="bottom">
-                                <GoBackLink />
+                                <GoBackLink backUrl={parentLocation} />
                                 <span>Задача ${taskDetails.taskMeta.name}</span>
                             </RowStack>
                         }

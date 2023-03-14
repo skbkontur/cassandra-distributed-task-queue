@@ -126,14 +126,14 @@ export class TaskChainsTreeContainer extends React.Component<
     }
 
     public render(): JSX.Element {
-        const { useErrorHandlingContainer } = this.props;
+        const { path, searchQuery, useErrorHandlingContainer } = this.props;
         const { loaderText, loading, taskDetails } = this.state;
         return (
             <CommonLayout>
                 <CommonLayout.Header
                     title={
                         <RowStack gap={3} verticalAlign="bottom">
-                            <GoBackLink />
+                            <GoBackLink backUrl={`${path}${searchQuery}`} />
                             <span>Дерево задач</span>
                         </RowStack>
                     }
