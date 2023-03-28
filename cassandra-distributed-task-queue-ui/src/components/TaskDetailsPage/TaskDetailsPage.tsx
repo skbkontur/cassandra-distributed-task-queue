@@ -162,7 +162,7 @@ export function TaskDetailsPage({
                         title={
                             <RowStack gap={3} verticalAlign="bottom">
                                 <GoBackLink backUrl={parentLocation} />
-                                <span>Задача ${taskDetails.taskMeta.name}</span>
+                                <span>Задача {taskDetails.taskMeta.name}</span>
                             </RowStack>
                         }
                         tools={taskDetails && allowRerunOrCancel ? renderButtons() : null}>
