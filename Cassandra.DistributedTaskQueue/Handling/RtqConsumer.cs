@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -88,7 +88,7 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                                 // comment to prevent ugly reformat
                                 periodicJobRunner.StopPeriodicJob(theHandlerManager.JobId);
                             })).ToArray());
-                        localTaskQueue.StopAndWait(timeout : TimeSpan.FromSeconds(100));
+                        localTaskQueue.StopAndWait(timeout : TimeSpan.FromSeconds(300));
                         RtqInternals.ResetTicksHolderInMemoryState();
                         started = false;
                         logger.Info("RtqConsumer stopped");
