@@ -30,8 +30,6 @@ jobs:
         run: yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
       - name: Restore dotnet tools
         run: dotnet tool restore
-      - name: Install node dependencies
-        run: yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
       - name: Build dotnet
         run: dotnet build --configuration Release --verbosity minimal
       - name: Build front
