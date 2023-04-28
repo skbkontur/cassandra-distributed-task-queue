@@ -1,8 +1,9 @@
 import { ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
-import { useRouteMatch } from "react-router-dom";
+import { useRouteMatch } from "react-router";
 
 import { RouteUtils } from "../../Domain/Utils/RouteUtils";
+import { GoBackLink } from "../GoBack/GoBackLink";
 import { CommonLayout } from "../Layouts/CommonLayout";
 
 import { CloudsFar, CloudsMed, CloudsNear } from "./Clouds";
@@ -14,7 +15,7 @@ export function TaskNotFoundPage(): JSX.Element {
     return (
         <div style={{ backgroundColor: theme.bgDefault }}>
             <CommonLayout data-tid="ObjectNotFoundPage" style={{ display: "block", height: "initial" }}>
-                <CommonLayout.GoBack to={RouteUtils.backUrl(match)}>Вернуться к списку объектов</CommonLayout.GoBack>
+                <GoBackLink backUrl={RouteUtils.backUrl(match)} />
                 <CommonLayout.Content className={jsStyles.content()}>
                     <h2 className={jsStyles.headerTitle()} data-tid="Header">
                         Страница не найдена
