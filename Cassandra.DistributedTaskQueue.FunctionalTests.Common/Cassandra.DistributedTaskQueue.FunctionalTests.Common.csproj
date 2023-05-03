@@ -10,9 +10,9 @@
 
   <ItemGroup>
     <PackageReference Include="GroboContainer" Version="1.2.62" />
-    <PackageReference Include="SkbKontur.Cassandra.DistributedLock" Version="2.2.16" />
-    <PackageReference Include="Vostok.Logging.Console" Version="1.0.6" />
-    <PackageReference Include="Vostok.Logging.File" Version="1.0.16" />
+    <PackageReference Include="SkbKontur.Cassandra.DistributedLock" Version="2.2.24" />
+    <PackageReference Include="Vostok.Logging.Console" Version="1.0.9" />
+    <PackageReference Include="Vostok.Logging.File" Version="1.0.22" />
   </ItemGroup>
 
   <ItemGroup>
