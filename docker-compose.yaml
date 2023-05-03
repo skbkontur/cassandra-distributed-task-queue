@@ -1,70 +1,59 @@
-version: "3"
+version: "3.8"
 services:
   cassandra:
     container_name: rtq-cassandra
-    image: fakefeik/edi-cassandra:3.11
+    build: cassandra
+    environment:
+      - CASSANDRA_START_RPC=true
+      - JAVA_OPTS=-Xms2G -Xmx2G
     ports:
       - "9042:9042"
       - "9160:9160"
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+          memory: 2048m
     healthcheck:
-      test: [ "CMD", "C:/cassandra/nodetool", "status"]
+      test: [ "CMD", "nodetool", "status" ]
       interval: 5s
       timeout: 5s
       retries: 60
   elasticsearch:
     container_name: rtq-elasticsearch
-    image: fakefeik/edi-elasticsearch:6.2
-    ports:
-      - "9205:9205"
-      - "9305:9305"
+    image: elasticsearch:${ES_VERSION:-6.8.20}
+    environment:
+      - discovery.type=single-node
+      - http.port=9205
+      - http.publish_host=_local_
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m
     healthcheck:
       test: [ "CMD", "curl", "localhost:9205" ]
-      interval: 5s
-      timeout: 5s
-      retries: 60
-  exchange_service1:
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    ports:
+      - "9205:9205"
+      - "9300:9300"
+  exchange-service:
     image: test-exchange-service
     build:
       context: .
       dockerfile: Cassandra.DistributedTaskQueue.TestExchangeService/Dockerfile
     environment:
       - CASSANDRA_ADDRESS=cassandra
+      - ES_VERSION=${ES_VERSION:-6.8.20}
     ports:
-      - "4403:80"
+      - "4403-4407:80"
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: 0.25
+          memory: 200m
     depends_on:
-      - cassandra
-  exchange_service2:
-    image: test-exchange-service
-    ports:
-      - "4404:80"
-    environment:
-      - CASSANDRA_ADDRESS=cassandra
-    depends_on:
-      - cassandra
-  exchange_service3:
-    image: test-exchange-service
-    ports:
-      - "4405:80"
-    environment:
-      - CASSANDRA_ADDRESS=cassandra
-    depends_on:
-      - cassandra
-  exchange_service4:
-    image: test-exchange-service
-    ports:
-      - "4406:80"
-    environment:
-      - CASSANDRA_ADDRESS=cassandra
-    depends_on:
-      - cassandra
-  exchange_service5:
-    image: test-exchange-service
-    ports:
-      - "4407:80"
-    environment:
-      - CASSANDRA_ADDRESS=cassandra
-    depends_on:
-      - cassandra
+      cassandra:
+        condition: service_healthy
   monitoring-service:
     image: test-monitoring-service
     build:
@@ -72,9 +61,12 @@ services:
       dockerfile: Cassandra.DistributedTaskQueue.Monitoring.TestService/Dockerfile
     environment:
       - ES_URL=http://elasticsearch:9205
+      - ES_VERSION=${ES_VERSION:-6.8.20}
       - CASSANDRA_ADDRESS=cassandra
     ports:
       - "4413:80"
     depends_on:
-      - cassandra
-      - elasticsearch
+      cassandra:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
