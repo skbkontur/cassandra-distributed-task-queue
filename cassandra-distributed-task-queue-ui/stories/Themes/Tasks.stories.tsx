@@ -7,7 +7,7 @@ import {
 } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import React from "react";
-import StoryRouter from "storybook-react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { TasksPageContainer } from "../../src/containers/TasksPageContainer";
 import { RtqMonitoringApiFake } from "../Api/RtqMonitoringApiFake";
@@ -16,19 +16,25 @@ import { reactUiDark } from "./reactUiDark";
 
 export default {
     title: "Themes/Tasks",
-    decorators: [StoryRouter()],
 };
 
 const TypesContainer = ({ theme }: { theme: Theme }) => (
-    <ThemeContext.Provider value={theme}>
-        <TasksPageContainer
-            rtqMonitoringApi={new RtqMonitoringApiFake()}
-            searchQuery="?q=AllTasks"
-            useErrorHandlingContainer
-            isSuperUser
-            path="/AdminTools"
-        />
-    </ThemeContext.Provider>
+    <MemoryRouter initialEntries={["/AdminTools?q=AllTasks"]}>
+        <Routes>
+            <Route
+                path="/AdminTools"
+                element={
+                    <ThemeContext.Provider value={theme}>
+                        <TasksPageContainer
+                            rtqMonitoringApi={new RtqMonitoringApiFake()}
+                            useErrorHandlingContainer
+                            isSuperUser
+                        />
+                    </ThemeContext.Provider>
+                }
+            />
+        </Routes>
+    </MemoryRouter>
 );
 
 export const Default = (): JSX.Element => <TypesContainer theme={DEFAULT_THEME} />;

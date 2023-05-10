@@ -1,12 +1,12 @@
 import React from "react";
-import StoryRouter from "storybook-react-router";
+import { withRouter } from "storybook-addon-react-router-v6";
 
 import { TaskNotFoundPage } from "../src/components/TaskNotFoundPage/TaskNotFoundPage";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskNotFoundPage",
     component: TaskNotFoundPage,
-    decorators: [StoryRouter()],
+    decorators: [withRouter],
 };
 
 export const Default = () => <TaskNotFoundPage />;

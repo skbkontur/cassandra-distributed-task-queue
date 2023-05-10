@@ -62,7 +62,7 @@ export const TaskChainsTreeContainer = ({
         return _.uniq(linkedIds);
     };
 
-    const getTaskLocation = (id: string): Partial<Location> => ({ pathname: `${pathname}/${id}` });
+    const getTaskLocation = (id: string): string | Partial<Location> => ({ pathname: `${pathname}/${id}` });
 
     return (
         <CommonLayout>

@@ -15,7 +15,7 @@ export interface TaskTableProps {
     allowRerunOrCancel: boolean;
     onRerun: (x0: string) => void;
     onCancel: (x0: string) => void;
-    getTaskLocation: (x0: string) => Partial<Location>;
+    getTaskLocation: (x0: string) => string | Partial<Location>;
 }
 
 interface TasksTableState {

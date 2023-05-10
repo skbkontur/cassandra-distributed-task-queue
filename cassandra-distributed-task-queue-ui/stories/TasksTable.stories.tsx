@@ -1,6 +1,6 @@
 import { action } from "@storybook/addon-actions";
 import React from "react";
-import StoryRouter from "storybook-react-router";
+import { withRouter } from "storybook-addon-react-router-v6";
 
 import { RtqMonitoringTaskMeta } from "../src/Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../src/Domain/Api/TaskState";
@@ -11,7 +11,7 @@ import { createTask } from "./TaskMetaInformationUtils";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TasksTable",
-    decorators: [StoryRouter()],
+    decorators: [withRouter],
 };
 
 export const SeveralTasks = () => (

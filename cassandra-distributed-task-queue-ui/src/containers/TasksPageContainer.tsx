@@ -60,7 +60,7 @@ export const TasksPageContainer = ({
         setRequest(newRequest);
     }, [search]);
 
-    const getTaskLocation = (id: string): Partial<Location> => ({
+    const getTaskLocation = (id: string): string | Partial<Location> => ({
         pathname: `${pathname}/${id}`,
         state: {
             parentLocation: {

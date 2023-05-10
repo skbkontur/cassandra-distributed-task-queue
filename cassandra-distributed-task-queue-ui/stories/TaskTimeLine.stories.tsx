@@ -1,6 +1,6 @@
 import _ from "lodash";
 import React from "react";
-import StoryRouter from "storybook-react-router";
+import { withRouter } from "storybook-addon-react-router-v6";
 
 import { TaskState } from "../src/Domain/Api/TaskState";
 import { TaskTimeLine } from "../src/components/TaskTimeLine/TaskTimeLine";
@@ -10,7 +10,7 @@ import { createTask } from "./TaskMetaInformationUtils";
 export default {
     title: "RemoteTaskQueueMonitoring/TaskTimeLine",
     component: TaskTimeLine,
-    decorators: [StoryRouter()],
+    decorators: [withRouter],
 };
 
 export const RegularTask = () => (

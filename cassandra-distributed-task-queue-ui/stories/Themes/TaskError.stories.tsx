@@ -7,7 +7,7 @@ import {
 } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import React from "react";
-import StoryRouter from "storybook-react-router";
+import { Route, Routes, MemoryRouter } from "react-router";
 
 import { CustomRenderer } from "../../index";
 import { TaskDetailsPageContainer } from "../../src/containers/TaskDetailsPageContainer";
@@ -17,20 +17,25 @@ import { reactUiDark } from "./reactUiDark";
 
 export default {
     title: "Themes/TaskError",
-    decorators: [StoryRouter()],
 };
 
 const TaskDetailsContainer = ({ theme }: { theme: Theme }) => (
     <ThemeContext.Provider value={theme}>
-        <TaskDetailsPageContainer
-            rtqMonitoringApi={new RtqMonitoringApiFake()}
-            id="Error"
-            customRenderer={new CustomRenderer()}
-            useErrorHandlingContainer
-            isSuperUser
-            path="/AdminTools"
-            parentLocation="/"
-        />
+        <MemoryRouter initialEntries={["/AdminTools/Error"]}>
+            <Routes>
+                <Route
+                    path="/AdminTools/:id"
+                    element={
+                        <TaskDetailsPageContainer
+                            rtqMonitoringApi={new RtqMonitoringApiFake()}
+                            customRenderer={new CustomRenderer()}
+                            useErrorHandlingContainer
+                            isSuperUser
+                        />
+                    }
+                />
+            </Routes>
+        </MemoryRouter>
     </ThemeContext.Provider>
 );
 

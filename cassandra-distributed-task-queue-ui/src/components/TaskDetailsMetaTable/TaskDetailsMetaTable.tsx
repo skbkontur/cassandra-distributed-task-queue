@@ -16,37 +16,66 @@ export interface TaskDetailsMetaTableProps {
     path: string;
 }
 
-export function TaskDetailsMetaTable({ taskMeta, childTaskIds, path }: TaskDetailsMetaTableProps): JSX.Element {
+export const TaskDetailsMetaTable = ({
+    taskMeta: {
+        attempts,
+        executionDurationTicks,
+        expirationModificationTicks,
+        expirationTimestampTicks,
+        finishExecutingTicks,
+        id,
+        lastModificationTicks,
+        minimalStartTicks,
+        name,
+        parentTaskId,
+        startExecutingTicks,
+        state,
+        ticks,
+    },
+    childTaskIds,
+    path,
+}: TaskDetailsMetaTableProps): JSX.Element => {
     const theme = React.useContext(ThemeContext);
 
+    const renderDate = (date?: Nullable<Ticks>): JSX.Element => (
+        <span>
+            <DateTimeView value={date} />{" "}
+            {date && (
+                <span className={jsStyles.ticks(theme)}>
+                    (<AllowCopyToClipboard>{date}</AllowCopyToClipboard>)
+                </span>
+            )}
+        </span>
+    );
+
     const renderMetaInfo = (): JSX.Element[] => {
-        const executionTime = ticksToMilliseconds(taskMeta.executionDurationTicks);
+        const executionTime = ticksToMilliseconds(executionDurationTicks);
         return [
             <tr key="TaskId">
                 <td>TaskId</td>
                 <td data-tid="TaskId">
-                    <AllowCopyToClipboard>{taskMeta.id}</AllowCopyToClipboard>
+                    <AllowCopyToClipboard>{id}</AllowCopyToClipboard>
                 </td>
             </tr>,
             <tr key="State">
                 <td>State</td>
-                <td data-tid="State">{taskMeta.state}</td>
+                <td data-tid="State">{state}</td>
             </tr>,
             <tr key="Name">
                 <td>Name</td>
-                <td data-tid="Name">{taskMeta.name}</td>
+                <td data-tid="Name">{name}</td>
             </tr>,
             <tr key="EnqueueTime">
                 <td>EnqueueTime</td>
-                <td data-tid="EnqueueTime">{renderDate(taskMeta.ticks)}</td>
+                <td data-tid="EnqueueTime">{renderDate(ticks)}</td>
             </tr>,
             <tr key="StartExecutingTime">
                 <td>StartExecutingTime</td>
-                <td data-tid="StartExecutingTime">{renderDate(taskMeta.startExecutingTicks)}</td>
+                <td data-tid="StartExecutingTime">{renderDate(startExecutingTicks)}</td>
             </tr>,
             <tr key="FinishExecutingTime">
                 <td>FinishExecutingTime</td>
-                <td data-tid="FinishExecutingTime">{renderDate(taskMeta.finishExecutingTicks)}</td>
+                <td data-tid="FinishExecutingTime">{renderDate(finishExecutingTicks)}</td>
             </tr>,
             <tr key="LastExecutionDurationInMs">
                 <td>LastExecutionDurationInMs</td>
@@ -54,30 +83,28 @@ export function TaskDetailsMetaTable({ taskMeta, childTaskIds, path }: TaskDetai
             </tr>,
             <tr key="MinimalStartTime">
                 <td>MinimalStartTime</td>
-                <td data-tid="MinimalStartTime">{renderDate(taskMeta.minimalStartTicks)}</td>
+                <td data-tid="MinimalStartTime">{renderDate(minimalStartTicks)}</td>
             </tr>,
             <tr key="ExpirationTime">
                 <td>ExpirationTime</td>
-                <td data-tid="ExpirationTime">{renderDate(taskMeta.expirationTimestampTicks)}</td>
+                <td data-tid="ExpirationTime">{renderDate(expirationTimestampTicks)}</td>
             </tr>,
             <tr key="ExpirationModificationTime">
                 <td>ExpirationModificationTime</td>
-                <td data-tid="ExpirationModificationTime">{renderDate(taskMeta.expirationModificationTicks)}</td>
+                <td data-tid="ExpirationModificationTime">{renderDate(expirationModificationTicks)}</td>
             </tr>,
             <tr key="LastModificationTime">
                 <td>LastModificationTime</td>
-                <td data-tid="LastModificationTime">{renderDate(taskMeta.lastModificationTicks)}</td>
+                <td data-tid="LastModificationTime">{renderDate(lastModificationTicks)}</td>
             </tr>,
             <tr key="Attempts">
                 <td>Attempts</td>
-                <td data-tid="Attempts">{taskMeta.attempts}</td>
+                <td data-tid="Attempts">{attempts}</td>
             </tr>,
             <tr key="ParentTaskId">
                 <td>ParentTaskId</td>
                 <td data-tid="ParentTaskId">
-                    {taskMeta.parentTaskId && (
-                        <RouterLink to={`${path}/${taskMeta.parentTaskId}`}>{taskMeta.parentTaskId}</RouterLink>
-                    )}
+                    {parentTaskId && <RouterLink to={`${path}/${parentTaskId}`}>{parentTaskId}</RouterLink>}
                 </td>
             </tr>,
             <tr key="ChildTaskIds">
@@ -95,22 +122,9 @@ export function TaskDetailsMetaTable({ taskMeta, childTaskIds, path }: TaskDetai
         ];
     };
 
-    const renderDate = (date?: Nullable<Ticks>): JSX.Element => {
-        return (
-            <span>
-                <DateTimeView value={date} />{" "}
-                {date && (
-                    <span className={jsStyles.ticks(theme)}>
-                        (<AllowCopyToClipboard>{date}</AllowCopyToClipboard>)
-                    </span>
-                )}
-            </span>
-        );
-    };
-
     return (
         <table className={jsStyles.table(theme)}>
             <tbody>{renderMetaInfo()}</tbody>
         </table>
     );
-}
+};

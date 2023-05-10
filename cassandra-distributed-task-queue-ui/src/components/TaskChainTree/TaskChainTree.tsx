@@ -14,7 +14,7 @@ import { TaskStateIcon } from "./TaskStateIcon";
 
 interface TaskChainTreeProps {
     taskDetails: RtqMonitoringTaskModel[];
-    getTaskLocation: (id: string) => Partial<Location>;
+    getTaskLocation: (id: string) => string | Partial<Location>;
 }
 
 export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreeProps): JSX.Element {

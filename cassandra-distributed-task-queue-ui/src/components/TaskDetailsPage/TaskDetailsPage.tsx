@@ -23,7 +23,7 @@ export interface TaskDetailsPageProps {
     parentLocation: string;
     taskDetails: Nullable<RtqMonitoringTaskModel>;
     customRenderer: ICustomRenderer;
-    getTaskLocation: (id: string) => Partial<Location>;
+    getTaskLocation: (id: string) => string | Partial<Location>;
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => void;
     onCancel: (id: string) => void;

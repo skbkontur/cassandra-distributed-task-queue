@@ -30,7 +30,7 @@ const alwaysVisibleTaskIdsCount = 3;
 interface TaskTimeLineProps {
     taskMeta: RtqMonitoringTaskMeta;
     childTaskIds: string[];
-    getHrefToTask: (id: string) => Partial<Location>;
+    getHrefToTask: (id: string) => string | Partial<Location>;
 }
 
 export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTimeLineProps): JSX.Element {

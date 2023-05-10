@@ -1,6 +1,6 @@
 import { action } from "@storybook/addon-actions";
 import React from "react";
-import StoryRouter from "storybook-react-router";
+import { withRouter } from "storybook-addon-react-router-v6";
 
 import { RtqMonitoringTaskModel } from "../src/Domain/Api/RtqMonitoringTaskModel";
 import { TaskState } from "../src/Domain/Api/TaskState";
@@ -11,7 +11,7 @@ import { createTask } from "./TaskMetaInformationUtils";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskDetailsPage",
-    decorators: [StoryRouter(), (story: any) => <div style={{ maxWidth: 1000 }}>{story()}</div>],
+    decorators: [withRouter, (story: any) => <div style={{ maxWidth: 1000 }}>{story()}</div>],
     component: TaskDetailsPage,
 };
 

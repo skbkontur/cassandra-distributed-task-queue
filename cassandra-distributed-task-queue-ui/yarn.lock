@@ -8777,7 +8777,7 @@ react-input-mask@2.0.4:
     invariant "^2.2.4"
     warning "^4.0.2"
 
-react-inspector@^5.1.0:
+react-inspector@^5.1.0, react-inspector@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/react-inspector/-/react-inspector-5.1.1.tgz#58476c78fde05d5055646ed8ec02030af42953c8"
   dependencies:
@@ -9817,11 +9817,12 @@ store2@^2.12.0, store2@^2.7.1:
   version "2.12.0"
   resolved "https://registry.yarnpkg.com/store2/-/store2-2.12.0.tgz#e1f1b7e1a59b6083b2596a8d067f6ee88fd4d3cf"
 
-storybook-react-router@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/storybook-react-router/-/storybook-react-router-1.0.8.tgz#8d174eba1c38fff2c7e459c3d0c2463bc0cd9c6a"
+storybook-addon-react-router-v6@^0.3.6:
+  version "0.3.6"
+  resolved "https://registry.yarnpkg.com/storybook-addon-react-router-v6/-/storybook-addon-react-router-v6-0.3.6.tgz#4fea6273ddba512a08917bfa8fa7e44b0be57011"
+  integrity sha512-IYgUXG0QMWWpt4XyHbbbRGsfgQ17HvUzS3MBbXRpAIFiRcqvka4V0ZTuJQyThsLffEKlmML8hqDwsti/yDx20w==
   dependencies:
-    prop-types "^15.7.2"
+    react-inspector "^5.1.1"
 
 stream-browserify@^2.0.1:
   version "2.0.2"

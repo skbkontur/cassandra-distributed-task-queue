@@ -7,7 +7,7 @@ import {
 } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import React from "react";
-import StoryRouter from "storybook-react-router";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { TaskChainsTreeContainer } from "../../src/containers/TaskChainsTreeContainer";
 import { RtqMonitoringApiFake } from "../Api/RtqMonitoringApiFake";
@@ -16,18 +16,24 @@ import { reactUiDark } from "./reactUiDark";
 
 export default {
     title: "Themes/TaskTree",
-    decorators: [StoryRouter()],
 };
 
 const TaskTreeContainer = ({ theme }: { theme: Theme }) => (
-    <ThemeContext.Provider value={theme}>
-        <TaskChainsTreeContainer
-            rtqMonitoringApi={new RtqMonitoringApiFake()}
-            searchQuery={"?q=DocumentCirculationId"}
-            useErrorHandlingContainer
-            path="/AdminTools"
-        />
-    </ThemeContext.Provider>
+    <MemoryRouter initialEntries={["/AdminTools?q=DocumentCirculationId"]}>
+        <Routes>
+            <Route
+                path="/AdminTools"
+                element={
+                    <ThemeContext.Provider value={theme}>
+                        <TaskChainsTreeContainer
+                            rtqMonitoringApi={new RtqMonitoringApiFake()}
+                            useErrorHandlingContainer
+                        />
+                    </ThemeContext.Provider>
+                }
+            />
+        </Routes>
+    </MemoryRouter>
 );
 
 export const Default = (): JSX.Element => <TaskTreeContainer theme={DEFAULT_THEME} />;

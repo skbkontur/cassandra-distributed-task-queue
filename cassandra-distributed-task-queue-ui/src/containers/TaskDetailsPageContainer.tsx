@@ -34,7 +34,7 @@ export const TaskDetailsPageContainer = ({
         loadData(id);
     }, [id]);
 
-    const getTaskLocation = (id: string): Partial<Location> => {
+    const getTaskLocation = (id: string): string | Partial<Location> => {
         return {
             pathname: `${pathname}/${id}`,
             state: { parentLocation },

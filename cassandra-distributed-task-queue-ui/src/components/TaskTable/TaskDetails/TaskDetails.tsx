@@ -20,7 +20,7 @@ interface TaskDetailsProps {
     allowRerunOrCancel: boolean;
     onRerun: () => void;
     onCancel: () => void;
-    getTaskLocation: (id: string) => Partial<Location>;
+    getTaskLocation: (id: string) => string | Partial<Location>;
 }
 
 function dateFormatter(
