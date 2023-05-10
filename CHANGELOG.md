@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.0.0 - 2023.05.10
+- update react-router-dom library to version 6
+
 ## v1.6.15 - 2022.09.05
 - Replace `moment.js` with `date-fns`
 - Fast date filters (front) now work in local time
