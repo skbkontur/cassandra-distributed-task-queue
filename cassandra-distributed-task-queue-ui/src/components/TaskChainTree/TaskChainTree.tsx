@@ -1,8 +1,8 @@
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { ThemeContext } from "@skbkontur/react-ui";
-import { LocationDescriptor } from "history";
 import _ from "lodash";
 import React from "react";
+import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
 import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
@@ -14,7 +14,7 @@ import { TaskStateIcon } from "./TaskStateIcon";
 
 interface TaskChainTreeProps {
     taskDetails: RtqMonitoringTaskModel[];
-    getTaskLocation: (id: string) => LocationDescriptor;
+    getTaskLocation: (id: string) => Partial<Location>;
 }
 
 export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreeProps): JSX.Element {

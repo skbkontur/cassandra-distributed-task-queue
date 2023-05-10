@@ -1,9 +1,9 @@
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { ThemeContext, Button, Modal } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
-import { LocationDescriptor } from "history";
 import _ from "lodash";
 import React from "react";
+import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 
@@ -15,7 +15,7 @@ export interface TaskTableProps {
     allowRerunOrCancel: boolean;
     onRerun: (x0: string) => void;
     onCancel: (x0: string) => void;
-    getTaskLocation: (x0: string) => LocationDescriptor;
+    getTaskLocation: (x0: string) => Partial<Location>;
 }
 
 interface TasksTableState {
@@ -129,7 +129,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         );
     }
 
-    public rerun(id: string) {
+    public rerun(id: string): void {
         this.setState({
             openedModal: true,
             modalType: "Rerun",
@@ -137,7 +137,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         });
     }
 
-    public cancel(id: string) {
+    public cancel(id: string): void {
         this.setState({
             openedModal: true,
             modalType: "Cancel",
@@ -145,7 +145,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         });
     }
 
-    public closeModal() {
+    public closeModal(): void {
         this.setState({
             openedModal: false,
         });

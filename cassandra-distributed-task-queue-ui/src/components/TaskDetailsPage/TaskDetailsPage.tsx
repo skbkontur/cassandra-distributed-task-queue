@@ -3,8 +3,8 @@ import ListRowsIcon from "@skbkontur/react-icons/ListRows";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
-import { LocationDescriptor } from "history";
 import React from "react";
+import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
 import { ICustomRenderer } from "../../Domain/CustomRenderer";
@@ -23,7 +23,7 @@ export interface TaskDetailsPageProps {
     parentLocation: string;
     taskDetails: Nullable<RtqMonitoringTaskModel>;
     customRenderer: ICustomRenderer;
-    getTaskLocation: (id: string) => LocationDescriptor;
+    getTaskLocation: (id: string) => Partial<Location>;
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => void;
     onCancel: (id: string) => void;
@@ -54,9 +54,7 @@ export function TaskDetailsPage({
         setModalType("Cancel");
     };
 
-    const closeModal = () => {
-        setOpenedModal(false);
-    };
+    const closeModal = () => setOpenedModal(false);
 
     const renderButtons = (): JSX.Element | null => {
         if (!taskDetails) {

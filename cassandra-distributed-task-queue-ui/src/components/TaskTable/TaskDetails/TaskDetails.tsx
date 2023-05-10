@@ -2,8 +2,8 @@ import DeleteIcon from "@skbkontur/react-icons/Delete";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
-import { LocationDescriptor } from "history";
 import React from "react";
+import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskMeta } from "../../../Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../../../Domain/Api/TaskState";
@@ -20,7 +20,7 @@ interface TaskDetailsProps {
     allowRerunOrCancel: boolean;
     onRerun: () => void;
     onCancel: () => void;
-    getTaskLocation: (id: string) => LocationDescriptor;
+    getTaskLocation: (id: string) => Partial<Location>;
 }
 
 function dateFormatter(

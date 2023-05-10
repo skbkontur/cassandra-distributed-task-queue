@@ -1,12 +1,11 @@
 import { ThemeContext } from "@skbkontur/react-ui";
-import { LocationDescriptor } from "history";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Location } from "react-router-dom";
 
 import { jsStyles } from "./RouterLink.styles";
 
 interface RouterLinkProps {
-    to: string | LocationDescriptor;
+    to: string | Partial<Location>;
     children?: React.ReactNode;
     className?: string;
 }
