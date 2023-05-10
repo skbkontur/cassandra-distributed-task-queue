@@ -1,8 +1,7 @@
 import "./react-selenium-testing";
 import React from "react";
 import ReactDom from "react-dom";
-import { Route, Navigate, Routes } from "react-router";
-import { BrowserRouter } from "react-router-dom";
+import { Route, Navigate, Routes, BrowserRouter } from "react-router-dom";
 
 import { RemoteTaskQueueApplication, RtqMonitoringApi, ICustomRenderer } from "./src";
 import { RtqMonitoringSearchRequest } from "./src/Domain/Api/RtqMonitoringSearchRequest";
