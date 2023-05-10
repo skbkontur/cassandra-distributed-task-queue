@@ -11,6 +11,7 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
+import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { GoBackLink } from "../components/GoBack/GoBackLink";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
@@ -62,14 +63,14 @@ export const TaskChainsTreeContainer = ({
         return _.uniq(linkedIds);
     };
 
-    const getTaskLocation = (id: string): string | Partial<Location> => ({ pathname: `${pathname}/${id}` });
+    const getTaskLocation = (id: string): string | Partial<Location> => ({ pathname: `../${id}` });
 
     return (
         <CommonLayout>
             <CommonLayout.Header
                 title={
                     <RowStack gap={3} verticalAlign="bottom">
-                        <GoBackLink backUrl={`${pathname}${search}`} />
+                        <GoBackLink backUrl={`${RouteUtils.backUrl(pathname)}${search}`} />
                         <span>Дерево задач</span>
                     </RowStack>
                 }

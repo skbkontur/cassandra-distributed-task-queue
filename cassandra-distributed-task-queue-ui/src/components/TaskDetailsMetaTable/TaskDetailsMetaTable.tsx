@@ -13,7 +13,6 @@ import { jsStyles } from "./TaskDetailsMetaTable.styles";
 export interface TaskDetailsMetaTableProps {
     taskMeta: RtqMonitoringTaskMeta;
     childTaskIds: string[];
-    path: string;
 }
 
 export const TaskDetailsMetaTable = ({
@@ -33,7 +32,6 @@ export const TaskDetailsMetaTable = ({
         ticks,
     },
     childTaskIds,
-    path,
 }: TaskDetailsMetaTableProps): JSX.Element => {
     const theme = React.useContext(ThemeContext);
 
@@ -104,7 +102,7 @@ export const TaskDetailsMetaTable = ({
             <tr key="ParentTaskId">
                 <td>ParentTaskId</td>
                 <td data-tid="ParentTaskId">
-                    {parentTaskId && <RouterLink to={`${path}/${parentTaskId}`}>{parentTaskId}</RouterLink>}
+                    {parentTaskId && <RouterLink to={`/Tasks/${parentTaskId}`}>{parentTaskId}</RouterLink>}
                 </td>
             </tr>,
             <tr key="ChildTaskIds">
@@ -113,7 +111,7 @@ export const TaskDetailsMetaTable = ({
                     {childTaskIds &&
                         childTaskIds.map(item => (
                             <span key={item}>
-                                <RouterLink to={`${path}/${item}`}>{item}</RouterLink>
+                                <RouterLink to={`../${item}`}>{item}</RouterLink>
                                 <br />
                             </span>
                         ))}

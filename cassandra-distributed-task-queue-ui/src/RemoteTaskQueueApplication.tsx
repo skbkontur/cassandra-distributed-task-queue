@@ -1,6 +1,5 @@
 import React from "react";
-import { Routes } from "react-router";
-import { Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "./Domain/Api/RtqMonitoringApi";
 import { ICustomRenderer } from "./Domain/CustomRenderer";
@@ -33,7 +32,7 @@ export const RemoteTaskQueueApplication = ({
             }
         />
         <Route
-            path="/Tree"
+            path="Tree"
             element={
                 <TaskChainsTreeContainer
                     rtqMonitoringApi={rtqMonitoringApi}

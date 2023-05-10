@@ -7,7 +7,7 @@ import {
 } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import React from "react";
-import { Route, Routes, MemoryRouter } from "react-router";
+import { Route, Routes, MemoryRouter } from "react-router-dom";
 
 import { CustomRenderer } from "../../index";
 import { TaskDetailsPageContainer } from "../../src/containers/TaskDetailsPageContainer";

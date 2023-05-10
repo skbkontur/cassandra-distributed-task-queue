@@ -1,8 +1,7 @@
 import "./react-selenium-testing";
 import React from "react";
 import ReactDom from "react-dom";
-import { Route, Navigate, Routes } from "react-router";
-import { BrowserRouter } from "react-router-dom";
+import { Route, Navigate, Routes, BrowserRouter } from "react-router-dom";
 
 import { RemoteTaskQueueApplication, RtqMonitoringApi, ICustomRenderer } from "./src";
 import { RtqMonitoringSearchRequest } from "./src/Domain/Api/RtqMonitoringSearchRequest";
@@ -42,14 +41,14 @@ export class CustomRenderer implements ICustomRenderer {
 
 const AdminRedirect = (): JSX.Element => {
     localStorage.setItem("isSuperUser", "true");
-    return <Navigate to="/Tasks" replace />;
+    return <Navigate to="../Tasks" replace />;
 };
 
 const AdminToolsEntryPoint = () => (
     <BrowserRouter>
         <Routes>
             <Route
-                path="/Tasks"
+                path="Tasks/*"
                 element={
                     <RemoteTaskQueueApplication
                         rtqMonitoringApi={rtqMonitoringApi}
@@ -59,8 +58,8 @@ const AdminToolsEntryPoint = () => (
                     />
                 }
             />
-            <Route path="/" element={<Navigate to="/Tasks" />} />
-            <Route path="/Admin" element={<AdminRedirect />} />
+            <Route path="/" element={<Navigate to="../Tasks" />} />
+            <Route path="Admin" element={<AdminRedirect />} />
         </Routes>
     </BrowserRouter>
 );
