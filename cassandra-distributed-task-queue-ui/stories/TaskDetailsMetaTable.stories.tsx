@@ -28,6 +28,5 @@ export const Default = () => (
             parentTaskId: null,
         }}
         childTaskIds={["1e813176-a672-11e6-8c67-1218c2e5c7a5", "1e813176-a672-11e6-8c67-1218c2e5cwew"]}
-        path="/Tasks"
     />
 );

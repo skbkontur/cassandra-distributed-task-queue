@@ -2,9 +2,9 @@ import { action } from "@storybook/addon-actions";
 import React from "react";
 import { withRouter } from "storybook-addon-react-router-v6";
 
+import { NullCustomRenderer } from "../src";
 import { RtqMonitoringTaskModel } from "../src/Domain/Api/RtqMonitoringTaskModel";
 import { TaskState } from "../src/Domain/Api/TaskState";
-import { NullCustomRenderer } from "../src/Domain/CustomRenderer";
 import { TaskDetailsPage } from "../src/components/TaskDetailsPage/TaskDetailsPage";
 
 import { createTask } from "./TaskMetaInformationUtils";
@@ -17,7 +17,6 @@ export default {
 
 export const Default = () => (
     <TaskDetailsPage
-        path="/Tasks"
         customRenderer={new NullCustomRenderer()}
         parentLocation="/"
         allowRerunOrCancel

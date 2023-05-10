@@ -27,7 +27,6 @@ export interface TaskDetailsPageProps {
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => void;
     onCancel: (id: string) => void;
-    path: string;
 }
 
 export function TaskDetailsPage({
@@ -38,7 +37,6 @@ export function TaskDetailsPage({
     allowRerunOrCancel,
     onRerun,
     onCancel,
-    path,
 }: TaskDetailsPageProps): JSX.Element {
     const [openedModal, setOpenedModal] = React.useState(false);
     const [modalType, setModalType] = React.useState<"Cancel" | "Rerun">("Cancel");
@@ -74,7 +72,7 @@ export function TaskDetailsPage({
                     <Fit>
                         <RouterLink
                             data-tid={"RelatedTaskTree"}
-                            to={`${path}/Tree${searchRequestMapping.stringify(relatedTasksRequest)}`}>
+                            to={`/Tasks/Tree${searchRequestMapping.stringify(relatedTasksRequest)}`}>
                             <ListRowsIcon />
                             {"\u00A0"}
                             View related tasks tree
@@ -178,7 +176,6 @@ export function TaskDetailsPage({
                                 <TaskDetailsMetaTable
                                     taskMeta={taskDetails.taskMeta}
                                     childTaskIds={taskDetails.childTaskIds}
-                                    path={path}
                                 />
                             </Fit>
                         )}

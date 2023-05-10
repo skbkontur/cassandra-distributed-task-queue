@@ -33,7 +33,7 @@ export const RemoteTaskQueueApplication = ({
             }
         />
         <Route
-            path="/Tree"
+            path="Tree"
             element={
                 <TaskChainsTreeContainer
                     rtqMonitoringApi={rtqMonitoringApi}

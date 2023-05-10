@@ -49,7 +49,7 @@ const AdminToolsEntryPoint = () => (
     <BrowserRouter>
         <Routes>
             <Route
-                path="/Tasks"
+                path="/Tasks/*"
                 element={
                     <RemoteTaskQueueApplication
                         rtqMonitoringApi={rtqMonitoringApi}

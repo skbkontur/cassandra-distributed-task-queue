@@ -13,7 +13,10 @@ interface RouterLinkProps {
 export function RouterLink({ to, children, className }: RouterLinkProps): JSX.Element {
     const theme = React.useContext(ThemeContext);
     return (
-        <Link className={`${className} ${jsStyles.routerLink(theme)}`} to={to}>
+        <Link
+            className={`${className} ${jsStyles.routerLink(theme)}`}
+            to={to}
+            state={Object.prototype.hasOwnProperty.call(to, "state") && to["state"]}>
             {children}
         </Link>
     );

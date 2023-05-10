@@ -5,6 +5,7 @@ import { useLocation, Location, useParams } from "react-router-dom";
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
 import { ICustomRenderer } from "../Domain/CustomRenderer";
+import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
 import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";
@@ -34,12 +35,10 @@ export const TaskDetailsPageContainer = ({
         loadData(id);
     }, [id]);
 
-    const getTaskLocation = (id: string): string | Partial<Location> => {
-        return {
-            pathname: `${pathname}/${id}`,
-            state: { parentLocation },
-        };
-    };
+    const getTaskLocation = (id: string): string | Partial<Location> => ({
+        pathname: `/Tasks/${id}`,
+        state: { parentLocation },
+    });
 
     const handlerRerun = async (): Promise<void> => {
         setLoading(true);
@@ -72,13 +71,12 @@ export const TaskDetailsPageContainer = ({
             {taskDetails && (
                 <TaskDetailsPage
                     getTaskLocation={getTaskLocation}
-                    parentLocation={parentLocation || pathname}
+                    parentLocation={parentLocation || RouteUtils.backUrl(pathname)}
                     allowRerunOrCancel={isSuperUser}
                     taskDetails={taskDetails}
                     customRenderer={customRenderer}
                     onRerun={handlerRerun}
                     onCancel={handlerCancel}
-                    path={pathname}
                 />
             )}
             {useErrorHandlingContainer && <ErrorHandlingContainer />}
