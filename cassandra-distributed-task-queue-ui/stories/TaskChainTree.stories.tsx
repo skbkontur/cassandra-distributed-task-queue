@@ -1,5 +1,5 @@
 import React from "react";
-import StoryRouter from "storybook-react-router";
+import { withRouter } from "storybook-addon-react-router-v6";
 
 import { TaskState } from "../src/Domain/Api/TaskState";
 import { TaskChainTree } from "../src/components/TaskChainTree/TaskChainTree";
@@ -9,7 +9,7 @@ import { createTask } from "./TaskMetaInformationUtils";
 export default {
     title: "RemoteTaskQueueMonitoring/TaskChainTree",
     component: TaskChainTree,
-    decorators: [StoryRouter()],
+    decorators: [withRouter],
 };
 
 export const Direct = () => <TaskChainTree getTaskLocation={id => id} taskDetails={[regularSuccessfulTask, newTask]} />;

@@ -1,8 +1,8 @@
 import { RowStack } from "@skbkontur/react-stack-layout";
 import { Loader } from "@skbkontur/react-ui";
-import { LocationDescriptor } from "history";
 import _ from "lodash";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Location, useLocation } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
@@ -11,6 +11,7 @@ import {
     createDefaultRemoteTaskQueueSearchRequest,
     isRemoteTaskQueueSearchRequestEmpty,
 } from "../Domain/RtqMonitoringSearchRequestUtils";
+import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { GoBackLink } from "../components/GoBack/GoBackLink";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
@@ -19,80 +20,76 @@ import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 import { searchRequestMapping } from "./TasksPageContainer";
 
 interface TaskChainsTreeContainerProps {
-    searchQuery: string;
     rtqMonitoringApi: IRtqMonitoringApi;
-    path: string;
     useErrorHandlingContainer: boolean;
 }
 
-interface TaskChainsTreeContainerState {
-    loading: boolean;
-    loaderText: string;
-    request: RtqMonitoringSearchRequest;
-    taskDetails: RtqMonitoringTaskModel[];
-}
+const isNotNullOrUndefined = <T extends {}>(input: null | undefined | T): input is T => Boolean(input);
 
-function isNotNullOrUndefined<T>(input: null | undefined | T): input is T {
-    return input != null;
-}
+export const TaskChainsTreeContainer = ({
+    useErrorHandlingContainer,
+    rtqMonitoringApi,
+}: TaskChainsTreeContainerProps): JSX.Element => {
+    const { search, pathname } = useLocation();
+    const [loading, setLoading] = useState(false);
+    const [loaderText, setLoaderText] = useState("");
+    const [taskDetails, setTaskDetails] = useState<RtqMonitoringTaskModel[]>([]);
 
-export class TaskChainsTreeContainer extends React.Component<
-    TaskChainsTreeContainerProps,
-    TaskChainsTreeContainerState
-> {
-    public state: TaskChainsTreeContainerState = {
-        loading: false,
-        loaderText: "",
-        request: createDefaultRemoteTaskQueueSearchRequest(),
-        taskDetails: [],
-    };
+    useEffect(() => {
+        const request = getRequestBySearchQuery(search);
+        if (!isSearchRequestEmpty(search)) {
+            loadData(search, request);
+        }
+    }, [search]);
 
-    public isSearchRequestEmpty(searchQuery: Nullable<string>): boolean {
+    const isSearchRequestEmpty = (searchQuery: Nullable<string>): boolean => {
         const request = searchRequestMapping.parse(searchQuery);
         return isRemoteTaskQueueSearchRequestEmpty(request);
-    }
+    };
 
-    public getRequestBySearchQuery(searchQuery: Nullable<string>): RtqMonitoringSearchRequest {
+    const getRequestBySearchQuery = (searchQuery: Nullable<string>): RtqMonitoringSearchRequest => {
         const request = searchRequestMapping.parse(searchQuery);
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
             return createDefaultRemoteTaskQueueSearchRequest();
         }
         return request;
-    }
+    };
 
-    public componentDidMount(): void {
-        const { searchQuery } = this.props;
-        const request = this.getRequestBySearchQuery(searchQuery);
-        this.setState({ request: request });
-        if (!this.isSearchRequestEmpty(searchQuery)) {
-            this.loadData(searchQuery, request);
-        }
-    }
-
-    public componentDidUpdate(prevProps: TaskChainsTreeContainerProps): void {
-        if (prevProps.searchQuery !== this.props.searchQuery) {
-            const { searchQuery } = this.props;
-            const request = this.getRequestBySearchQuery(searchQuery);
-            this.setState({ request: request });
-            if (!this.isSearchRequestEmpty(searchQuery)) {
-                this.loadData(searchQuery, request);
-            }
-        }
-    }
-
-    public getParentAndChildrenTaskIds(taskDetails: RtqMonitoringTaskModel[]): string[] {
+    const getParentAndChildrenTaskIds = (taskDetails: RtqMonitoringTaskModel[]): string[] => {
         const linkedIds = taskDetails
-            .map(x => [x.taskMeta.parentTaskId, ...(x.childTaskIds || [])])
+            .map(({ childTaskIds, taskMeta: { parentTaskId } }) => [parentTaskId, ...(childTaskIds || [])])
             .flat()
             .filter(isNotNullOrUndefined);
         return _.uniq(linkedIds);
-    }
+    };
 
-    public async loadData(searchQuery: undefined | string, request: RtqMonitoringSearchRequest): Promise<void> {
-        const { rtqMonitoringApi } = this.props;
+    const getTaskLocation = (id: string): string | Partial<Location> => ({ pathname: `../${id}` });
+
+    return (
+        <CommonLayout>
+            <CommonLayout.Header
+                title={
+                    <RowStack gap={3} verticalAlign="bottom">
+                        <GoBackLink backUrl={`${RouteUtils.backUrl(pathname)}${search}`} />
+                        <span>Дерево задач</span>
+                    </RowStack>
+                }
+            />
+            <CommonLayout.Content>
+                <Loader type="big" active={loading} caption={loaderText}>
+                    <div style={{ overflowX: "auto" }}>
+                        {taskDetails && <TaskChainTree getTaskLocation={getTaskLocation} taskDetails={taskDetails} />}
+                    </div>
+                </Loader>
+                {useErrorHandlingContainer && <ErrorHandlingContainer />}
+            </CommonLayout.Content>
+        </CommonLayout>
+    );
+
+    async function loadData(searchQuery: undefined | string, request: RtqMonitoringSearchRequest): Promise<void> {
         let iterationCount = 0;
-
-        this.setState({ loading: true, loaderText: "Загрузка задач: 0" });
+        setLoading(true);
+        setLoaderText("Загрузка задач: 0");
         try {
             let taskDetails: RtqMonitoringTaskModel[] = [];
             let allTaskIds: string[] = [];
@@ -107,51 +104,18 @@ export class TaskChainsTreeContainer extends React.Component<
                     taskIdsToLoad.map(id => rtqMonitoringApi.getTaskDetails(id))
                 );
                 allTaskIds = [...allTaskIds, ...taskIdsToLoad];
-                this.setState({ loading: true, loaderText: `Загрузка задач: ${taskDetails.length}` });
-                const parentAndChildrenTaskIds = this.getParentAndChildrenTaskIds(loadedTaskDetails);
+                setLoading(true);
+                setLoaderText(`Загрузка задач: ${taskDetails.length}`);
+                const parentAndChildrenTaskIds = getParentAndChildrenTaskIds(loadedTaskDetails);
                 taskIdsToLoad = _.difference(parentAndChildrenTaskIds, allTaskIds);
                 taskDetails = [...taskDetails, ...loadedTaskDetails];
                 if (iterationCount > 50) {
                     break;
                 }
             }
-            this.setState({ taskDetails: taskDetails });
+            setTaskDetails(taskDetails);
         } finally {
-            this.setState({ loading: false });
+            setLoading(false);
         }
     }
-
-    public getTaskLocation(id: string): LocationDescriptor {
-        return { pathname: `${this.props.path}/${id}` };
-    }
-
-    public render(): JSX.Element {
-        const { path, searchQuery, useErrorHandlingContainer } = this.props;
-        const { loaderText, loading, taskDetails } = this.state;
-        return (
-            <CommonLayout>
-                <CommonLayout.Header
-                    title={
-                        <RowStack gap={3} verticalAlign="bottom">
-                            <GoBackLink backUrl={`${path}${searchQuery}`} />
-                            <span>Дерево задач</span>
-                        </RowStack>
-                    }
-                />
-                <CommonLayout.Content>
-                    <Loader type="big" active={loading} caption={loaderText}>
-                        <div style={{ overflowX: "auto" }}>
-                            {taskDetails && (
-                                <TaskChainTree
-                                    getTaskLocation={id => this.getTaskLocation(id)}
-                                    taskDetails={taskDetails}
-                                />
-                            )}
-                        </div>
-                    </Loader>
-                    {useErrorHandlingContainer && <ErrorHandlingContainer />}
-                </CommonLayout.Content>
-            </CommonLayout>
-        );
-    }
-}
+};

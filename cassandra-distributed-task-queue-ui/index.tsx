@@ -1,8 +1,7 @@
 import "./react-selenium-testing";
 import React from "react";
 import ReactDom from "react-dom";
-import { Switch, Redirect, Route } from "react-router";
-import { BrowserRouter } from "react-router-dom";
+import { Route, Navigate, Routes, BrowserRouter } from "react-router-dom";
 
 import { RemoteTaskQueueApplication, RtqMonitoringApi, ICustomRenderer } from "./src";
 import { RtqMonitoringSearchRequest } from "./src/Domain/Api/RtqMonitoringSearchRequest";
@@ -40,36 +39,29 @@ export class CustomRenderer implements ICustomRenderer {
     }
 }
 
-function AdminToolsEntryPoint() {
-    return (
-        <BrowserRouter>
-            <Switch>
-                <Route
-                    path="/Tasks"
-                    render={props => (
-                        <RemoteTaskQueueApplication
-                            rtqMonitoringApi={rtqMonitoringApi}
-                            customRenderer={new CustomRenderer()}
-                            useErrorHandlingContainer
-                            isSuperUser={localStorage.getItem("isSuperUser") === "true"}
-                            {...props}
-                        />
-                    )}
-                />
-                <Route exact path="/">
-                    <Redirect to="/Tasks" />
-                </Route>
-                <Route
-                    exact
-                    path="/Admin"
-                    render={() => {
-                        localStorage.setItem("isSuperUser", "true");
-                        return <Redirect to="/Tasks" />;
-                    }}
-                />
-            </Switch>
-        </BrowserRouter>
-    );
-}
+const AdminRedirect = (): JSX.Element => {
+    localStorage.setItem("isSuperUser", "true");
+    return <Navigate to="../Tasks" replace />;
+};
+
+const AdminToolsEntryPoint = () => (
+    <BrowserRouter>
+        <Routes>
+            <Route
+                path="Tasks/*"
+                element={
+                    <RemoteTaskQueueApplication
+                        rtqMonitoringApi={rtqMonitoringApi}
+                        customRenderer={new CustomRenderer()}
+                        useErrorHandlingContainer
+                        isSuperUser={localStorage.getItem("isSuperUser") === "true"}
+                    />
+                }
+            />
+            <Route path="/" element={<Navigate to="../Tasks" />} />
+            <Route path="Admin" element={<AdminRedirect />} />
+        </Routes>
+    </BrowserRouter>
+);
 
 ReactDom.render(<AdminToolsEntryPoint />, document.getElementById("content"));

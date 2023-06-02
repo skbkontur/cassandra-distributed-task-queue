@@ -1,122 +1,117 @@
 import { Loader } from "@skbkontur/react-ui";
-import { LocationDescriptor } from "history";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation, Location, useParams } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
 import { ICustomRenderer } from "../Domain/CustomRenderer";
+import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
 import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPage";
 
 interface TaskDetailsPageContainerProps {
-    id: string;
     rtqMonitoringApi: IRtqMonitoringApi;
     customRenderer: ICustomRenderer;
     isSuperUser: boolean;
-    path: string;
-    parentLocation: Nullable<string>;
     useErrorHandlingContainer: boolean;
 }
 
-interface TaskDetailsPageContainerState {
-    taskDetails: Nullable<RtqMonitoringTaskModel>;
-    loading: boolean;
-    notFoundError: boolean;
-}
+export const TaskDetailsPageContainer = ({
+    rtqMonitoringApi,
+    useErrorHandlingContainer,
+    isSuperUser,
+    customRenderer,
+}: TaskDetailsPageContainerProps): JSX.Element => {
+    const { pathname, state } = useLocation();
+    const parentLocation = tryGetParentLocationFromHistoryState(state);
+    const { id = "" } = useParams<"id">();
 
-export class TaskDetailsPageContainer extends React.Component<
-    TaskDetailsPageContainerProps,
-    TaskDetailsPageContainerState
-> {
-    public state: TaskDetailsPageContainerState = {
-        loading: false,
-        taskDetails: null,
-        notFoundError: false,
-    };
+    const [loading, setLoading] = useState(false);
+    const [taskDetails, setTaskDetails] = useState<Nullable<RtqMonitoringTaskModel>>(null);
+    const [notFoundError, setNotFoundError] = useState(false);
 
-    public componentDidMount(): void {
-        this.loadData(this.props.id);
-    }
+    useEffect(() => {
+        loadData(id);
+    }, [id]);
 
-    public componentDidUpdate(prevProps: TaskDetailsPageContainerProps): void {
-        if (prevProps.id !== this.props.id) {
-            this.loadData(this.props.id);
-        }
-    }
+    const getTaskLocation = (id: string): string | Partial<Location> => ({
+        pathname: `../${id}`,
+        state: { parentLocation },
+    });
 
-    public render(): JSX.Element {
-        const { taskDetails, loading, notFoundError } = this.state;
-        const { parentLocation, isSuperUser, customRenderer, path, useErrorHandlingContainer } = this.props;
-        if (notFoundError) {
-            return <TaskNotFoundPage />;
-        }
-
-        return (
-            <Loader active={loading} type="big" data-tid="Loader">
-                {taskDetails && (
-                    <TaskDetailsPage
-                        getTaskLocation={id => this.getTaskLocation(id)}
-                        parentLocation={parentLocation || path}
-                        allowRerunOrCancel={isSuperUser}
-                        taskDetails={taskDetails}
-                        customRenderer={customRenderer}
-                        onRerun={this.handlerRerun}
-                        onCancel={this.handlerCancel}
-                        path={path}
-                    />
-                )}
-                {useErrorHandlingContainer && <ErrorHandlingContainer />}
-            </Loader>
-        );
-    }
-
-    private getTaskLocation(id: string): LocationDescriptor {
-        const { path, parentLocation } = this.props;
-
-        return {
-            pathname: `${path}/${id}`,
-            state: { parentLocation: parentLocation },
-        };
-    }
-
-    private async loadData(id: string): Promise<void> {
-        const { rtqMonitoringApi } = this.props;
-
-        this.setState({ loading: true, notFoundError: false });
-        try {
-            const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
-            if (taskDetails.taskMeta) {
-                this.setState({ taskDetails: taskDetails });
-                return;
-            }
-            this.setState({ notFoundError: true });
-        } finally {
-            this.setState({ loading: false });
-        }
-    }
-
-    private readonly handlerRerun = async (): Promise<void> => {
-        const { rtqMonitoringApi, id } = this.props;
-        this.setState({ loading: true });
+    const handlerRerun = async (): Promise<void> => {
+        setLoading(true);
         try {
             await rtqMonitoringApi.rerunTasks([id]);
             const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
-            this.setState({ taskDetails: taskDetails });
+            setTaskDetails(taskDetails);
         } finally {
-            this.setState({ loading: false });
+            setLoading(false);
         }
     };
 
-    private readonly handlerCancel = async (): Promise<void> => {
-        const { rtqMonitoringApi, id } = this.props;
-        this.setState({ loading: true });
+    const handlerCancel = async (): Promise<void> => {
+        setLoading(true);
         try {
             await rtqMonitoringApi.cancelTasks([id]);
             const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
-            this.setState({ taskDetails: taskDetails });
+            setTaskDetails(taskDetails);
         } finally {
-            this.setState({ loading: false });
+            setLoading(false);
         }
     };
+
+    if (notFoundError) {
+        return <TaskNotFoundPage />;
+    }
+
+    return (
+        <Loader active={loading} type="big" data-tid="Loader">
+            {taskDetails && (
+                <TaskDetailsPage
+                    getTaskLocation={getTaskLocation}
+                    parentLocation={parentLocation || RouteUtils.backUrl(pathname)}
+                    allowRerunOrCancel={isSuperUser}
+                    taskDetails={taskDetails}
+                    customRenderer={customRenderer}
+                    onRerun={handlerRerun}
+                    onCancel={handlerCancel}
+                />
+            )}
+            {useErrorHandlingContainer && <ErrorHandlingContainer />}
+        </Loader>
+    );
+
+    async function loadData(id: string): Promise<void> {
+        setLoading(true);
+        setNotFoundError(false);
+        try {
+            const taskDetails = await rtqMonitoringApi.getTaskDetails(id);
+            if (taskDetails.taskMeta) {
+                setTaskDetails(taskDetails);
+                return;
+            }
+            setNotFoundError(true);
+        } finally {
+            setLoading(false);
+        }
+    }
+};
+
+function tryGetParentLocationFromHistoryState(state: Nullable<{ parentLocation: string | Location }>): null | string {
+    if (!state) {
+        return null;
+    }
+    if (state.parentLocation) {
+        const parentLocation = state.parentLocation;
+        if (typeof parentLocation === "string") {
+            return parentLocation;
+        }
+        if (typeof parentLocation === "object") {
+            const { pathname, search } = parentLocation;
+            return `${pathname}${search}`;
+        }
+    }
+    return null;
 }

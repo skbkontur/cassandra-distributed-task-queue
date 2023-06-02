@@ -1,8 +1,7 @@
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Loader, Paging } from "@skbkontur/react-ui";
-import { LocationDescriptor } from "history";
-import React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Location, useLocation, useNavigate } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
@@ -22,21 +21,10 @@ import { TaskQueueFilter } from "../components/TaskQueueFilter/TaskQueueFilter";
 import { TasksTable } from "../components/TaskTable/TaskTable";
 import { TasksModal } from "../components/TaskTable/TasksModal";
 
-interface TasksPageContainerProps extends RouteComponentProps {
-    searchQuery: string;
+interface TasksPageContainerProps {
     rtqMonitoringApi: IRtqMonitoringApi;
     isSuperUser: boolean;
-    path: string;
     useErrorHandlingContainer: boolean;
-}
-
-interface TasksPageContainerState {
-    loading: boolean;
-    request: RtqMonitoringSearchRequest;
-    availableTaskNames: string[];
-    confirmMultipleModalOpened: boolean;
-    modalType: "Rerun" | "Cancel";
-    results: RtqMonitoringSearchResults;
 }
 
 export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest> =
@@ -49,246 +37,228 @@ export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest
         .mapToInteger(x => x.count, "size")
         .build();
 
-class TasksPageContainerInternal extends React.Component<TasksPageContainerProps, TasksPageContainerState> {
-    public state: TasksPageContainerState = {
-        loading: false,
-        request: createDefaultRemoteTaskQueueSearchRequest(),
-        availableTaskNames: [],
-        results: {
-            taskMetas: [],
-            totalCount: "0",
-        },
-        confirmMultipleModalOpened: false,
-        modalType: "Rerun",
-    };
+export const TasksPageContainer = ({
+    rtqMonitoringApi,
+    isSuperUser,
+    useErrorHandlingContainer,
+}: TasksPageContainerProps): JSX.Element => {
+    const navigate = useNavigate();
+    const { search, pathname } = useLocation();
+    const [loading, setLoading] = useState(false);
+    const [request, setRequest] = useState<RtqMonitoringSearchRequest>(createDefaultRemoteTaskQueueSearchRequest());
+    const [availableTaskNames, setAvailableTaskNames] = useState<string[]>([]);
+    const [confirmMultipleModalOpened, setConfirmMultipleModalOpened] = useState(false);
+    const [modalType, setModalType] = useState<"Rerun" | "Cancel">("Rerun");
+    const [results, setResults] = useState<RtqMonitoringSearchResults>({
+        taskMetas: [],
+        totalCount: "0",
+    });
 
-    public componentDidMount() {
-        const { searchQuery } = this.props;
-        this.setState({ request: this.getRequestBySearchQuery(searchQuery) }, this.loadData);
-    }
+    useEffect(() => {
+        const newRequest = getRequestBySearchQuery(search);
+        loadData(newRequest);
+        setRequest(newRequest);
+    }, [search]);
 
-    public componentDidUpdate(prevProps: TasksPageContainerProps) {
-        if (prevProps.searchQuery !== this.props.searchQuery) {
-            this.setState({ request: this.getRequestBySearchQuery(this.props.searchQuery) }, this.loadData);
-        }
-    }
-
-    public render(): JSX.Element {
-        const { availableTaskNames, request, loading, results, modalType, confirmMultipleModalOpened } = this.state;
-        const { isSuperUser, useErrorHandlingContainer } = this.props;
-        const isStateCompletelyLoaded = results && availableTaskNames;
-        const count = request.count || 20;
-        const offset = request.offset || 0;
-        const counter = Number((results && results.totalCount) || 0);
-        return (
-            <CommonLayout>
-                <CommonLayout.Header data-tid="Header" title="Список задач" />
-                <CommonLayout.Content>
-                    {useErrorHandlingContainer && <ErrorHandlingContainer />}
-                    <ColumnStack block stretch gap={2}>
-                        <Loader type="big" active={loading} data-tid={"Loader"}>
-                            <Fit>
-                                <TaskQueueFilter
-                                    value={request}
-                                    availableTaskTypes={availableTaskNames}
-                                    onChange={value => this.setState({ request: { ...this.state.request, ...value } })}
-                                    onSearchButtonClick={this.handleSearch}
-                                />
-                            </Fit>
-                            <Fit>
-                                {results && isStateCompletelyLoaded && (
-                                    <ColumnStack block stretch gap={2}>
-                                        {counter > 0 && <Fit>Всего результатов: {counter}</Fit>}
-                                        {counter > 0 && isSuperUser && (
-                                            <Fit>
-                                                <RowStack gap={2} data-tid={"ButtonsWrapper"}>
-                                                    <Fit>
-                                                        <Button
-                                                            use="danger"
-                                                            data-tid={"CancelAllButton"}
-                                                            onClick={this.clickCancelAll}>
-                                                            Cancel All
-                                                        </Button>
-                                                    </Fit>
-                                                    <Fit>
-                                                        <Button
-                                                            use="success"
-                                                            data-tid={"RerunAllButton"}
-                                                            onClick={this.clickRerunAll}>
-                                                            Rerun All
-                                                        </Button>
-                                                    </Fit>
-                                                </RowStack>
-                                            </Fit>
-                                        )}
-                                        <Fit>
-                                            <TasksTable
-                                                getTaskLocation={id => this.getTaskLocation(id)}
-                                                allowRerunOrCancel={isSuperUser}
-                                                taskInfos={results.taskMetas}
-                                                onRerun={this.handleRerunTask}
-                                                onCancel={this.handleCancelTask}
-                                            />
-                                        </Fit>
-                                        <Fit>
-                                            {Math.ceil(counter / count) > 1 && (
-                                                <Paging
-                                                    data-tid="Paging"
-                                                    activePage={Math.floor(offset / count) + 1}
-                                                    pagesCount={Math.ceil(Math.min(counter, 10000) / count)}
-                                                    onPageChange={this.goToPage}
-                                                />
-                                            )}
-                                        </Fit>
-                                    </ColumnStack>
-                                )}
-                            </Fit>
-                        </Loader>
-                    </ColumnStack>
-                    {confirmMultipleModalOpened && (
-                        <TasksModal
-                            modalType={modalType}
-                            counter={counter}
-                            onCancelAll={this.handleCancelAll}
-                            onRerunAll={this.handleRerunAll}
-                            onCloseModal={this.closeModal}
-                        />
-                    )}
-                </CommonLayout.Content>
-            </CommonLayout>
-        );
-    }
-
-    private async loadData(): Promise<void> {
-        const { request } = this.state;
-
-        let availableTaskNames = this.state.availableTaskNames;
-        if (availableTaskNames.length === 0) {
-            availableTaskNames = await this.props.rtqMonitoringApi.getAllTaskNames();
-            if (availableTaskNames.length === 0) {
-                throw new Error("Expected availableTaskNames to contain elements");
-            }
-            this.setState({ availableTaskNames: availableTaskNames });
-        }
-
-        if (isRemoteTaskQueueSearchRequestEmpty(request)) {
-            return;
-        }
-
-        this.setState({ loading: true });
-        try {
-            const results = await this.props.rtqMonitoringApi.search(request);
-            this.setState({ results: results });
-        } finally {
-            this.setState({ loading: false });
-        }
-    }
-
-    private getTaskLocation(id: string): LocationDescriptor {
-        const { request } = this.state;
-
-        return {
-            pathname: `${this.props.path}/${id}`,
-            state: {
-                parentLocation: {
-                    pathname: this.props.path,
-                    search: searchRequestMapping.stringify(request),
-                },
+    const getTaskLocation = (id: string): string | Partial<Location> => ({
+        pathname: `${pathname}/${id}`,
+        state: {
+            parentLocation: {
+                pathname,
+                search: searchRequestMapping.stringify(request),
             },
-        };
-    }
+        },
+    });
 
-    private readonly handleSearch = () => {
-        let request = this.state.request;
+    const handleSearch = () => {
+        let newRequest = { ...request };
         if (isRemoteTaskQueueSearchRequestEmpty(request)) {
-            request = createDefaultRemoteTaskQueueSearchRequest();
+            newRequest = createDefaultRemoteTaskQueueSearchRequest();
         }
-        if (request.enqueueTimestampRange.lowerBound == null || request.enqueueTimestampRange.upperBound == null) {
+        if (!newRequest.enqueueTimestampRange.lowerBound || !newRequest.enqueueTimestampRange.upperBound) {
             const rangeSelector = new RangeSelector(undefined);
-            request.enqueueTimestampRange = rangeSelector.getToday();
+            newRequest.enqueueTimestampRange = rangeSelector.getToday();
         }
 
-        const query = this.getQuery(request);
-        if (query === this.props.path + this.props.searchQuery) {
-            this.loadData();
+        const query = getQuery(newRequest);
+        if (query === pathname + search) {
+            loadData(newRequest);
             return;
         }
-        this.props.history.push(query);
+        navigate(query);
     };
 
-    private readonly clickRerunAll = () => {
-        this.setState({ confirmMultipleModalOpened: true, modalType: "Rerun" });
+    const clickRerunAll = () => {
+        setConfirmMultipleModalOpened(true);
+        setModalType("Rerun");
     };
 
-    private readonly clickCancelAll = () => {
-        this.setState({ confirmMultipleModalOpened: true, modalType: "Cancel" });
+    const clickCancelAll = () => {
+        setConfirmMultipleModalOpened(true);
+        setModalType("Cancel");
     };
 
-    private readonly closeModal = () => {
-        this.setState({ confirmMultipleModalOpened: false });
-    };
+    const closeModal = () => setConfirmMultipleModalOpened(false);
 
-    private readonly handleRerunTask = async (id: string): Promise<void> => {
-        const { rtqMonitoringApi } = this.props;
-        this.setState({ loading: true });
+    const handleRerunTask = async (id: string): Promise<void> => {
+        setLoading(true);
         try {
             await rtqMonitoringApi.rerunTasks([id]);
         } finally {
-            this.setState({ loading: false });
+            setLoading(false);
         }
     };
 
-    private readonly handleCancelTask = async (id: string): Promise<void> => {
-        const { rtqMonitoringApi } = this.props;
-        this.setState({ loading: true });
+    const handleCancelTask = async (id: string): Promise<void> => {
+        setLoading(true);
         try {
             await rtqMonitoringApi.cancelTasks([id]);
         } finally {
-            this.setState({ loading: false });
+            setLoading(false);
         }
     };
 
-    private readonly handleRerunAll = async (): Promise<void> => {
-        const { searchQuery, rtqMonitoringApi } = this.props;
-        const request = this.getRequestBySearchQuery(searchQuery);
-
-        this.setState({ loading: true });
+    const handleRerunAll = async (): Promise<void> => {
+        const request = getRequestBySearchQuery(search);
+        setLoading(true);
         try {
             await rtqMonitoringApi.rerunTasksBySearchQuery(request);
         } finally {
-            this.setState({ loading: false, confirmMultipleModalOpened: false });
+            setLoading(false);
+            setConfirmMultipleModalOpened(false);
         }
     };
 
-    private readonly handleCancelAll = async (): Promise<void> => {
-        const { searchQuery, rtqMonitoringApi } = this.props;
-        const request = this.getRequestBySearchQuery(searchQuery);
-
-        this.setState({ loading: true });
+    const handleCancelAll = async (): Promise<void> => {
+        const request = getRequestBySearchQuery(search);
+        setLoading(true);
         try {
             await rtqMonitoringApi.cancelTasksBySearchQuery(request);
         } finally {
-            this.setState({ loading: false, confirmMultipleModalOpened: false });
+            setLoading(false);
+            setConfirmMultipleModalOpened(false);
         }
     };
 
-    private readonly getRequestBySearchQuery = (searchQuery: string): RtqMonitoringSearchRequest => {
+    const getRequestBySearchQuery = (searchQuery: string): RtqMonitoringSearchRequest => {
         const request: RtqMonitoringSearchRequest = searchRequestMapping.parse(searchQuery);
-        request.offset = request.offset || 0;
-        request.count = request.count || 20;
+        request.offset ||= 0;
+        request.count ||= 20;
         return request;
     };
 
-    private readonly getQuery = (overrides: Partial<RtqMonitoringSearchRequest> = {}): string => {
-        const { request } = this.state;
-        const { path } = this.props;
-        return path + searchRequestMapping.stringify({ ...request, ...overrides });
+    const getQuery = (overrides: Partial<RtqMonitoringSearchRequest> = {}): string =>
+        pathname + searchRequestMapping.stringify({ ...request, ...overrides });
+
+    const goToPage = (page: number) => {
+        const count = request.count || 20;
+        navigate(getQuery({ offset: (page - 1) * count }));
     };
 
-    private readonly goToPage = (page: number) => {
-        const count = this.state.request.count || 20;
-        this.props.history.push(this.getQuery({ offset: (page - 1) * count }));
-    };
-}
+    const onChangeFilter = (value: Partial<RtqMonitoringSearchRequest>) => setRequest({ ...request, ...value });
 
-export const TasksPageContainer = withRouter(TasksPageContainerInternal);
+    const isStateCompletelyLoaded = results && availableTaskNames;
+    const count = request.count || 20;
+    const offset = request.offset || 0;
+    const counter = Number((results && results.totalCount) || 0);
+
+    return (
+        <CommonLayout>
+            <CommonLayout.Header data-tid="Header" title="Список задач" />
+            <CommonLayout.Content>
+                {useErrorHandlingContainer && <ErrorHandlingContainer />}
+                <ColumnStack block stretch gap={2}>
+                    <Loader type="big" active={loading} data-tid={"Loader"}>
+                        <Fit>
+                            <TaskQueueFilter
+                                value={request}
+                                availableTaskTypes={availableTaskNames}
+                                onChange={onChangeFilter}
+                                onSearchButtonClick={handleSearch}
+                            />
+                        </Fit>
+                        <Fit>
+                            {results && isStateCompletelyLoaded && (
+                                <ColumnStack block stretch gap={2}>
+                                    {counter > 0 && <Fit>Всего результатов: {counter}</Fit>}
+                                    {counter > 0 && isSuperUser && (
+                                        <Fit>
+                                            <RowStack gap={2} data-tid={"ButtonsWrapper"}>
+                                                <Fit>
+                                                    <Button
+                                                        use="danger"
+                                                        data-tid={"CancelAllButton"}
+                                                        onClick={clickCancelAll}>
+                                                        Cancel All
+                                                    </Button>
+                                                </Fit>
+                                                <Fit>
+                                                    <Button
+                                                        use="success"
+                                                        data-tid={"RerunAllButton"}
+                                                        onClick={clickRerunAll}>
+                                                        Rerun All
+                                                    </Button>
+                                                </Fit>
+                                            </RowStack>
+                                        </Fit>
+                                    )}
+                                    <Fit>
+                                        <TasksTable
+                                            getTaskLocation={getTaskLocation}
+                                            allowRerunOrCancel={isSuperUser}
+                                            taskInfos={results.taskMetas}
+                                            onRerun={handleRerunTask}
+                                            onCancel={handleCancelTask}
+                                        />
+                                    </Fit>
+                                    <Fit>
+                                        {Math.ceil(counter / count) > 1 && (
+                                            <Paging
+                                                data-tid="Paging"
+                                                activePage={Math.floor(offset / count) + 1}
+                                                pagesCount={Math.ceil(Math.min(counter, 10000) / count)}
+                                                onPageChange={goToPage}
+                                            />
+                                        )}
+                                    </Fit>
+                                </ColumnStack>
+                            )}
+                        </Fit>
+                    </Loader>
+                </ColumnStack>
+                {confirmMultipleModalOpened && (
+                    <TasksModal
+                        modalType={modalType}
+                        counter={counter}
+                        onCancelAll={handleCancelAll}
+                        onRerunAll={handleRerunAll}
+                        onCloseModal={closeModal}
+                    />
+                )}
+            </CommonLayout.Content>
+        </CommonLayout>
+    );
+
+    async function loadData(request: RtqMonitoringSearchRequest): Promise<void> {
+        if (availableTaskNames.length === 0) {
+            const newAvailableTaskNames = await rtqMonitoringApi.getAllTaskNames();
+            if (newAvailableTaskNames.length === 0) {
+                throw new Error("Expected availableTaskNames to contain elements");
+            }
+            setAvailableTaskNames(newAvailableTaskNames);
+        }
+
+        if (isRemoteTaskQueueSearchRequestEmpty(request)) {
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const results = await rtqMonitoringApi.search(request);
+            setResults(results);
+        } finally {
+            setLoading(false);
+        }
+    }
+};

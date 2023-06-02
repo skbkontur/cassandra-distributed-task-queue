@@ -9,8 +9,8 @@ import DownloadIcon from "@skbkontur/react-icons/Download";
 import OkIcon from "@skbkontur/react-icons/Ok";
 import RefreshIcon from "@skbkontur/react-icons/Refresh";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
-import { LocationDescriptor } from "history";
 import React from "react";
+import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../../Domain/Api/TaskState";
@@ -30,7 +30,7 @@ const alwaysVisibleTaskIdsCount = 3;
 interface TaskTimeLineProps {
     taskMeta: RtqMonitoringTaskMeta;
     childTaskIds: string[];
-    getHrefToTask: (id: string) => LocationDescriptor;
+    getHrefToTask: (id: string) => string | Partial<Location>;
 }
 
 export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTimeLineProps): JSX.Element {
