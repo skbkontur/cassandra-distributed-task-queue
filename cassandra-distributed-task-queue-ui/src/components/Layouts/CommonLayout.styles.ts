@@ -21,6 +21,12 @@ export const jsStyles = {
         `;
     },
 
+    withArrow(): string {
+        return css`
+            padding: ${globalVerticalPadding}px ${newBaseSize * 12}px 0;
+        `;
+    },
+
     topRightTools(): string {
         return css`
             position: absolute;
@@ -41,9 +47,9 @@ export const jsStyles = {
         `;
     },
 
-    greyContent(): string {
+    headerContent(): string {
         return css`
-            margin-top: ${2 * baseSize}px;
+            margin-top: ${3 * newBaseSize}px;
         `;
     },
 
@@ -61,20 +67,43 @@ export const jsStyles = {
             display: flex;
             flex-direction: column;
             flex: 1 1 auto;
-            padding-bottom: ${globalVerticalPadding}px;
+            padding-bottom: ${newBaseSize * 5}px;
         `;
     },
 
     header(): string {
         return css`
-            margin-bottom: ${3 * baseSize}px;
+            margin-bottom: ${5 * newBaseSize}px;
         `;
     },
 
-    backLinkContainer(): string {
+    borderBottom(t: Theme): string {
         return css`
-            margin-bottom: ${3 * baseSize}px;
-            margin-left: -4px;
+            border-bottom: 2px solid ${t.grayXLight};
+        `;
+    },
+
+    backLink(): string {
+        return css`
+            position: absolute;
+            left: 2px;
+            opacity: 0.7;
+            height: ${newBaseSize * 7}px;
+            width: ${newBaseSize * 7}px;
+            padding: ${newBaseSize * 2}px 0 ${newBaseSize * 2}px ${newBaseSize * 2}px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                opacity: 1;
+            }
+        `;
+    },
+
+    backLinkIcon(): string {
+        return css`
+            display: block;
         `;
     },
 

@@ -11,7 +11,6 @@ import { ICustomRenderer } from "../../Domain/CustomRenderer";
 import { cancelableStates, rerunableStates } from "../../Domain/TaskStateExtensions";
 import { searchRequestMapping } from "../../containers/TasksPageContainer";
 import { Accordion } from "../Accordion/Accordion";
-import { GoBackLink } from "../GoBack/GoBackLink";
 import { CommonLayout } from "../Layouts/CommonLayout";
 import { RouterLink } from "../RouterLink/RouterLink";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
@@ -151,23 +150,20 @@ export function TaskDetailsPage({
 
     return (
         <div>
-            <CommonLayout>
+            <CommonLayout withArrow>
+                <CommonLayout.GoBack to={parentLocation} />
                 {taskDetails && (
-                    <CommonLayout.GreyLineHeader
+                    <CommonLayout.Header
+                        borderBottom
                         data-tid="Header"
-                        title={
-                            <RowStack gap={3} verticalAlign="bottom">
-                                <GoBackLink backUrl={parentLocation} />
-                                <span>Задача {taskDetails.taskMeta.name}</span>
-                            </RowStack>
-                        }
+                        title={`Задача ${taskDetails.taskMeta.name}`}
                         tools={taskDetails && allowRerunOrCancel ? renderButtons() : null}>
                         <TaskTimeLine
                             getHrefToTask={getTaskLocation}
                             taskMeta={taskDetails.taskMeta}
                             childTaskIds={taskDetails.childTaskIds}
                         />
-                    </CommonLayout.GreyLineHeader>
+                    </CommonLayout.Header>
                 )}
                 <CommonLayout.Content>
                     <ColumnStack block stretch gap={2}>

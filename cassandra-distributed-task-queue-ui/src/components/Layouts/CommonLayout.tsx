@@ -1,7 +1,8 @@
-import { ArrowCLeftIcon } from "@skbkontur/icons/esm/icons/ArrowCLeftIcon";
+import { ArrowALeftIcon24Regular } from "@skbkontur/icons/esm/icons/ArrowALeftIcon";
 import { Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Loader, ThemeContext } from "@skbkontur/react-ui";
-import React from "react";
+import React, { CSSProperties } from "react";
+import { To } from "react-router-dom";
 
 import { RouterLink } from "../RouterLink/RouterLink";
 
@@ -10,13 +11,14 @@ import { jsStyles } from "./CommonLayout.styles";
 interface CommonLayoutProps {
     topRightTools?: Nullable<JSX.Element> | string;
     children?: React.ReactNode;
-    style?: any;
+    withArrow?: boolean;
+    style?: CSSProperties;
 }
 
-export function CommonLayout({ children, topRightTools, ...restProps }: CommonLayoutProps): JSX.Element {
+export function CommonLayout({ children, topRightTools, withArrow, ...restProps }: CommonLayoutProps): JSX.Element {
     const theme = React.useContext(ThemeContext);
     return (
-        <div className={jsStyles.commonLayout(theme)} {...restProps}>
+        <div className={`${jsStyles.commonLayout(theme)} ${withArrow ? jsStyles.withArrow() : ""}`} {...restProps}>
             {topRightTools && <div className={jsStyles.topRightTools()}>{topRightTools}</div>}
             {children}
         </div>
@@ -38,12 +40,21 @@ CommonLayout.Content = function Content({ children, ...restProps }: CommonLayout
 
 interface CommonLayoutHeaderProps {
     title: string | JSX.Element;
-    tools?: JSX.Element;
+    tools?: JSX.Element | null;
+    children?: JSX.Element;
+    borderBottom?: boolean;
 }
 
-CommonLayout.Header = function Header({ title, tools, ...restProps }: CommonLayoutHeaderProps): JSX.Element {
+CommonLayout.Header = function Header({
+    title,
+    tools,
+    children,
+    borderBottom,
+    ...restProps
+}: CommonLayoutHeaderProps): JSX.Element {
+    const theme = React.useContext(ThemeContext);
     return (
-        <div className={jsStyles.header()} {...restProps}>
+        <div className={`${jsStyles.header()} ${borderBottom ? jsStyles.borderBottom(theme) : ""}`} {...restProps}>
             <RowStack baseline block gap={2}>
                 <Fit>
                     <h2 className={jsStyles.headerTitle()} data-tid="Header">
@@ -52,52 +63,21 @@ CommonLayout.Header = function Header({ title, tools, ...restProps }: CommonLayo
                 </Fit>
                 {tools && <Fill>{tools}</Fill>}
             </RowStack>
-        </div>
-    );
-};
-
-interface CommonLayoutGreyLineHeaderProps {
-    "data-tid"?: Nullable<string>;
-    children?: Nullable<JSX.Element>;
-    title: string | JSX.Element;
-    tools?: null | JSX.Element;
-}
-
-CommonLayout.GreyLineHeader = function GreyLineHeader({
-    children,
-    title,
-    tools,
-}: CommonLayoutGreyLineHeaderProps): JSX.Element {
-    const theme = React.useContext(ThemeContext);
-    return (
-        <div className={jsStyles.greyLineHeader(theme)}>
-            <RowStack baseline block gap={2}>
-                <Fill>
-                    <h2 className={jsStyles.headerTitle()} data-tid="Header">
-                        {title}
-                    </h2>
-                </Fill>
-                {tools && <Fit>{tools}</Fit>}
-            </RowStack>
-            {children && <div className={`${jsStyles.content()} ${jsStyles.greyContent()}`}>{children}</div>}
+            {children && <div className={`${jsStyles.content()} ${jsStyles.headerContent()}`}>{children}</div>}
         </div>
     );
 };
 
 interface CommonLayoutGoBackProps {
-    children?: React.ReactNode;
-    to: string;
+    to: To;
 }
 
-CommonLayout.GoBack = function CommonLayoutGoBack({ children, to }: CommonLayoutGoBackProps): JSX.Element {
+CommonLayout.GoBack = function CommonLayoutGoBack({ to }: CommonLayoutGoBackProps): JSX.Element {
+    const theme = React.useContext(ThemeContext);
     return (
-        <div className={jsStyles.backLinkContainer()}>
-            <RouterLink data-tid="GoBack" to={to}>
-                <ArrowCLeftIcon />
-                {"\u00A0"}
-                {children}
-            </RouterLink>
-        </div>
+        <RouterLink data-tid="GoBack" to={to} className={jsStyles.backLink()}>
+            <ArrowALeftIcon24Regular color={theme.gray} className={jsStyles.backLinkIcon()} />
+        </RouterLink>
     );
 };
 

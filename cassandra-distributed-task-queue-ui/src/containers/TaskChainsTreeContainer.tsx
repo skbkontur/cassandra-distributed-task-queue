@@ -1,4 +1,3 @@
-import { RowStack } from "@skbkontur/react-stack-layout";
 import { Loader } from "@skbkontur/react-ui";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
@@ -13,7 +12,6 @@ import {
 } from "../Domain/RtqMonitoringSearchRequestUtils";
 import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
-import { GoBackLink } from "../components/GoBack/GoBackLink";
 import { CommonLayout } from "../components/Layouts/CommonLayout";
 import { TaskChainTree } from "../components/TaskChainTree/TaskChainTree";
 
@@ -66,15 +64,9 @@ export const TaskChainsTreeContainer = ({
     const getTaskLocation = (id: string): string | Partial<Location> => ({ pathname: `../${id}` });
 
     return (
-        <CommonLayout>
-            <CommonLayout.Header
-                title={
-                    <RowStack gap={3} verticalAlign="bottom">
-                        <GoBackLink backUrl={`${RouteUtils.backUrl(pathname)}${search}`} />
-                        <span>Дерево задач</span>
-                    </RowStack>
-                }
-            />
+        <CommonLayout withArrow>
+            <CommonLayout.GoBack to={`${RouteUtils.backUrl(pathname)}${search}`} />
+            <CommonLayout.Header title="Дерево задач" />
             <CommonLayout.Content>
                 <Loader type="big" active={loading} caption={loaderText}>
                     <div style={{ overflowX: "auto" }}>
