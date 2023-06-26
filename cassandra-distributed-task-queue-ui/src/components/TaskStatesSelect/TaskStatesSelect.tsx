@@ -1,4 +1,4 @@
-import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
+import { ArrowShapeTriangleADownIcon } from "@skbkontur/icons/esm/icons/ArrowShapeTriangleADownIcon";
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Tooltip } from "@skbkontur/react-ui";
 import React from "react";
@@ -34,7 +34,7 @@ export class TaskStatesSelect extends React.Component<TaskStatesSelectProps> {
                         <span data-tid="ButtonText" className={jsStyles.buttonText()}>
                             {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
                         </span>
-                        <ArrowTriangleDownIcon />
+                        <ArrowShapeTriangleADownIcon />
                     </Button>
                 </Tooltip>
             </span>

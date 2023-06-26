@@ -1,5 +1,5 @@
-import DeleteIcon from "@skbkontur/react-icons/Delete";
-import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import { ArrowRoundTimeForwardIcon } from "@skbkontur/icons/esm/icons/ArrowRoundTimeForwardIcon";
+import { XIcon } from "@skbkontur/icons/esm/icons/XIcon";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
@@ -88,7 +88,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                             data-tid="Cancel"
                                             disabled={!cancelableStates.includes(taskInfo.state)}
                                             onClick={onCancel}
-                                            icon={<DeleteIcon />}>
+                                            icon={<XIcon />}>
                                             Cancel
                                         </Link>
                                     </Fit>
@@ -97,7 +97,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                             data-tid="Rerun"
                                             disabled={!rerunableStates.includes(taskInfo.state)}
                                             onClick={onRerun}
-                                            icon={<RefreshIcon />}>
+                                            icon={<ArrowRoundTimeForwardIcon />}>
                                             Rerun
                                         </Link>
                                     </Fit>

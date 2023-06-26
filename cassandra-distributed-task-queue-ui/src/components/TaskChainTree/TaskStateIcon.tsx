@@ -1,8 +1,8 @@
-import ClearIcon from "@skbkontur/react-icons/Clear";
-import ClockIcon from "@skbkontur/react-icons/Clock";
-import DeleteIcon from "@skbkontur/react-icons/Delete";
-import HelpLiteIcon from "@skbkontur/react-icons/HelpLite";
-import OkIcon from "@skbkontur/react-icons/Ok";
+import { CheckAIcon } from "@skbkontur/icons/esm/icons/CheckAIcon";
+import { QuestionSquareIcon } from "@skbkontur/icons/esm/icons/QuestionSquareIcon";
+import { TimeClockIcon } from "@skbkontur/icons/esm/icons/TimeClockIcon";
+import { XCircleIcon } from "@skbkontur/icons/esm/icons/XCircleIcon";
+import { XIcon } from "@skbkontur/icons/esm/icons/XIcon";
 import { ThemeContext } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import React from "react";
@@ -33,22 +33,22 @@ export function TaskStateIcon({ taskState }: TaskStateIconProps): JSX.Element {
 
     switch (taskState) {
         case TaskState.Unknown:
-            return <HelpLiteIcon color={getIconColor(theme, "warning")} />;
+            return <QuestionSquareIcon color={getIconColor(theme, "warning")} />;
         case TaskState.New:
-            return <ClockIcon color={getIconColor(theme, "waiting")} />;
+            return <TimeClockIcon color={getIconColor(theme, "waiting")} />;
         case TaskState.WaitingForRerun:
-            return <ClockIcon color={getIconColor(theme, "waiting")} />;
+            return <TimeClockIcon color={getIconColor(theme, "waiting")} />;
         case TaskState.WaitingForRerunAfterError:
-            return <ClockIcon color={getIconColor(theme, "error")} />;
+            return <TimeClockIcon color={getIconColor(theme, "error")} />;
         case TaskState.Finished:
-            return <OkIcon color={getIconColor(theme, "success")} />;
+            return <CheckAIcon color={getIconColor(theme, "success")} />;
         case TaskState.InProcess:
-            return <ClockIcon color={getIconColor(theme, "waiting")} />;
+            return <TimeClockIcon color={getIconColor(theme, "waiting")} />;
         case TaskState.Fatal:
-            return <ClearIcon color={getIconColor(theme, "error")} />;
+            return <XCircleIcon color={getIconColor(theme, "error")} />;
         case TaskState.Canceled:
-            return <DeleteIcon color={getIconColor(theme, "error")} />;
+            return <XIcon color={getIconColor(theme, "error")} />;
         default:
-            return <OkIcon />;
+            return <CheckAIcon />;
     }
 }

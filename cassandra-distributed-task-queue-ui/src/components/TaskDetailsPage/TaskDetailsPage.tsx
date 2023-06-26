@@ -1,6 +1,6 @@
-import DeleteIcon from "@skbkontur/react-icons/Delete";
-import ListRowsIcon from "@skbkontur/react-icons/ListRows";
-import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import { ArrowRoundTimeForwardIcon } from "@skbkontur/icons/esm/icons/ArrowRoundTimeForwardIcon";
+import { TextAlignCenterJustifyIcon } from "@skbkontur/icons/esm/icons/TextAlignCenterJustifyIcon";
+import { XIcon } from "@skbkontur/icons/esm/icons/XIcon";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
@@ -71,9 +71,9 @@ export function TaskDetailsPage({
                 {relatedTasksRequest && (
                     <Fit>
                         <RouterLink
-                            data-tid={"RelatedTaskTree"}
+                            data-tid="RelatedTaskTree"
                             to={`../Tree${searchRequestMapping.stringify(relatedTasksRequest)}`}>
-                            <ListRowsIcon />
+                            <TextAlignCenterJustifyIcon />
                             {"\u00A0"}
                             View related tasks tree
                         </RouterLink>
@@ -81,14 +81,14 @@ export function TaskDetailsPage({
                 )}
                 {isCancelable && (
                     <Fit>
-                        <Link icon={<DeleteIcon />} use="danger" data-tid={"CancelButton"} onClick={cancel}>
+                        <Link icon={<XIcon />} use="danger" data-tid={"CancelButton"} onClick={cancel}>
                             Cancel task
                         </Link>
                     </Fit>
                 )}
                 {isRerunable && (
                     <Fit>
-                        <Link icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={rerun}>
+                        <Link icon={<ArrowRoundTimeForwardIcon />} data-tid={"RerunButton"} onClick={rerun}>
                             Rerun task
                         </Link>
                     </Fit>

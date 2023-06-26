@@ -1,13 +1,13 @@
-import { ArrowBoldDown } from "@skbkontur/react-icons";
-import ArrowBoldUpIcon from "@skbkontur/react-icons/ArrowBoldUp";
-import ArrowCorner1Icon from "@skbkontur/react-icons/ArrowCorner1";
-import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
-import ClearIcon from "@skbkontur/react-icons/Clear";
-import ClockIcon from "@skbkontur/react-icons/Clock";
-import DeleteIcon from "@skbkontur/react-icons/Delete";
-import DownloadIcon from "@skbkontur/react-icons/Download";
-import OkIcon from "@skbkontur/react-icons/Ok";
-import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import { ArrowADownIcon } from "@skbkontur/icons/esm/icons/ArrowADownIcon";
+import { ArrowAUpIcon } from "@skbkontur/icons/esm/icons/ArrowAUpIcon";
+import { ArrowDCornerDownRightIcon } from "@skbkontur/icons/esm/icons/ArrowDCornerDownRightIcon";
+import { ArrowRoundTimeForwardIcon } from "@skbkontur/icons/esm/icons/ArrowRoundTimeForwardIcon";
+import { ArrowShapeTriangleADownIcon } from "@skbkontur/icons/esm/icons/ArrowShapeTriangleADownIcon";
+import { CheckAIcon } from "@skbkontur/icons/esm/icons/CheckAIcon";
+import { NetDownloadIcon } from "@skbkontur/icons/esm/icons/NetDownloadIcon";
+import { TimeClockIcon } from "@skbkontur/icons/esm/icons/TimeClockIcon";
+import { XCircleIcon } from "@skbkontur/icons/esm/icons/XCircleIcon";
+import { XIcon } from "@skbkontur/icons/esm/icons/XIcon";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
 import { Location } from "react-router-dom";
@@ -61,7 +61,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         }
         return createSimpleEntry({
             title: "Started",
-            icon: <ArrowCorner1Icon />,
+            icon: <ArrowDCornerDownRightIcon />,
             date: taskMeta.startExecutingTicks,
         });
     };
@@ -77,7 +77,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                 getStartedEntry(),
                 createSimpleEntry({
                     title: "Finished",
-                    icon: <OkIcon />,
+                    icon: <CheckAIcon />,
                     date: taskMeta.finishExecutingTicks,
                 })
             );
@@ -87,7 +87,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                 getStartedEntry(),
                 createSimpleEntry({
                     title: "Failed",
-                    icon: <ClearIcon color={color} />,
+                    icon: <XCircleIcon color={color} />,
                     color: color,
                     date: taskMeta.finishExecutingTicks,
                 })
@@ -101,7 +101,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 <TimeLineCycled
                     key="FewAttempts"
-                    icon={<RefreshIcon />}
+                    icon={<ArrowRoundTimeForwardIcon />}
                     content={`Restarted for ${taskMeta.attempts} times`}>
                     {shouldStartAndStartEntries}
                 </TimeLineCycled>,
@@ -113,7 +113,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
     const getShouldStartedEntry = (): null | JSX.Element => {
         return createSimpleEntry({
             title: "Start scheduled",
-            icon: <ClockIcon />,
+            icon: <TimeClockIcon />,
             date: taskMeta.minimalStartTicks,
         });
     };
@@ -124,7 +124,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Finished",
-                    icon: <OkIcon color={color} />,
+                    icon: <CheckAIcon color={color} />,
                     color: color,
                     date: taskMeta.finishExecutingTicks,
                 }),
@@ -135,7 +135,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Failed",
-                    icon: <ClearIcon color={color} />,
+                    icon: <XCircleIcon color={color} />,
                     color: color,
                     date: taskMeta.finishExecutingTicks,
                 }),
@@ -146,7 +146,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Canceled",
-                    icon: <DeleteIcon color={color} />,
+                    icon: <XIcon color={color} />,
                     color: color,
                     date: taskMeta.finishExecutingTicks || taskMeta.lastModificationTicks,
                 }),
@@ -158,7 +158,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                 getShouldStartedEntry(),
                 createSimpleEntry({
                     title: "Waiting for next run",
-                    icon: <ClockIcon color={color} />,
+                    icon: <TimeClockIcon color={color} />,
                     color: color,
                 }),
             ];
@@ -168,7 +168,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Waiting for complete",
-                    icon: <ClockIcon color={color} />,
+                    icon: <TimeClockIcon color={color} />,
                     color: color,
                 }),
             ];
@@ -178,7 +178,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Waiting for start",
-                    icon: <ClockIcon color={color} />,
+                    icon: <TimeClockIcon color={color} />,
                     color: color,
                 }),
             ];
@@ -192,7 +192,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
     const getEnqueuedEntry = (): null | JSX.Element => {
         return createSimpleEntry({
             title: "Enqueued",
-            icon: <DownloadIcon />,
+            icon: <NetDownloadIcon />,
             date: taskMeta.ticks,
         });
     };
@@ -203,7 +203,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             const hiddenTaskIdsCount = childTaskIds.length - visibleTaskIdsCount;
             const color = getIconColor(theme, "waiting");
             return (
-                <TimeLineEntry key="Children" icon={<ArrowBoldDown color={color} />}>
+                <TimeLineEntry key="Children" icon={<ArrowADownIcon color={color} />}>
                     <div style={{ color: color }} data-tid="EnqueuedTasks">
                         <div>Enqueued tasks:</div>
                         {childTaskIds.slice(0, visibleTaskIdsCount).map(x => (
@@ -218,7 +218,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                             <Link data-tid="ShowAllTasks" onClick={() => setShowAllErrors(true)}>
                                 ...and {hiddenTaskIdsCount} more
                                 {"\u00A0"}
-                                <ArrowTriangleDownIcon />
+                                <ArrowShapeTriangleADownIcon />
                             </Link>
                         )}
                     </div>
@@ -234,7 +234,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         }
         const color = getIconColor(theme, "waiting");
         return (
-            <TimeLineEntry key="Parent" icon={<ArrowBoldUpIcon color={color} />}>
+            <TimeLineEntry key="Parent" icon={<ArrowAUpIcon color={color} />}>
                 <div style={{ color: color }}>
                     Parent:{" "}
                     <AllowCopyToClipboard>
