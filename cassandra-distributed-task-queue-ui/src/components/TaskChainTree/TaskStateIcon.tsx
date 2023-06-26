@@ -1,8 +1,10 @@
-import { CheckAIcon } from "@skbkontur/icons/esm/icons/CheckAIcon";
-import { QuestionSquareIcon } from "@skbkontur/icons/esm/icons/QuestionSquareIcon";
-import { TimeClockIcon } from "@skbkontur/icons/esm/icons/TimeClockIcon";
-import { XCircleIcon } from "@skbkontur/icons/esm/icons/XCircleIcon";
-import { XIcon } from "@skbkontur/icons/esm/icons/XIcon";
+import {
+    CheckAIcon16Regular,
+    QuestionSquareIcon16Regular,
+    TimeClockIcon16Regular,
+    XCircleIcon16Regular,
+    XIcon16Regular,
+} from "@skbkontur/icons";
 import { ThemeContext } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import React from "react";
@@ -33,22 +35,22 @@ export function TaskStateIcon({ taskState }: TaskStateIconProps): JSX.Element {
 
     switch (taskState) {
         case TaskState.Unknown:
-            return <QuestionSquareIcon color={getIconColor(theme, "warning")} />;
+            return <QuestionSquareIcon16Regular color={getIconColor(theme, "warning")} />;
         case TaskState.New:
-            return <TimeClockIcon color={getIconColor(theme, "waiting")} />;
+            return <TimeClockIcon16Regular color={getIconColor(theme, "waiting")} />;
         case TaskState.WaitingForRerun:
-            return <TimeClockIcon color={getIconColor(theme, "waiting")} />;
+            return <TimeClockIcon16Regular color={getIconColor(theme, "waiting")} />;
         case TaskState.WaitingForRerunAfterError:
-            return <TimeClockIcon color={getIconColor(theme, "error")} />;
+            return <TimeClockIcon16Regular color={getIconColor(theme, "error")} />;
         case TaskState.Finished:
-            return <CheckAIcon color={getIconColor(theme, "success")} />;
+            return <CheckAIcon16Regular color={getIconColor(theme, "success")} />;
         case TaskState.InProcess:
-            return <TimeClockIcon color={getIconColor(theme, "waiting")} />;
+            return <TimeClockIcon16Regular color={getIconColor(theme, "waiting")} />;
         case TaskState.Fatal:
-            return <XCircleIcon color={getIconColor(theme, "error")} />;
+            return <XCircleIcon16Regular color={getIconColor(theme, "error")} />;
         case TaskState.Canceled:
-            return <XIcon color={getIconColor(theme, "error")} />;
+            return <XIcon16Regular color={getIconColor(theme, "error")} />;
         default:
-            return <CheckAIcon />;
+            return <CheckAIcon16Regular />;
     }
 }

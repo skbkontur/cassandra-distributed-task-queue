@@ -1,5 +1,4 @@
-import { ArrowRoundTimeForwardIcon } from "@skbkontur/icons/esm/icons/ArrowRoundTimeForwardIcon";
-import { XIcon } from "@skbkontur/icons/esm/icons/XIcon";
+import { ArrowRoundTimeForwardIcon16Regular, XIcon16Regular } from "@skbkontur/icons";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
@@ -88,7 +87,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                             data-tid="Cancel"
                                             disabled={!cancelableStates.includes(taskInfo.state)}
                                             onClick={onCancel}
-                                            icon={<XIcon />}>
+                                            icon={<XIcon16Regular />}>
                                             Cancel
                                         </Link>
                                     </Fit>
@@ -97,7 +96,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                             data-tid="Rerun"
                                             disabled={!rerunableStates.includes(taskInfo.state)}
                                             onClick={onRerun}
-                                            icon={<ArrowRoundTimeForwardIcon />}>
+                                            icon={<ArrowRoundTimeForwardIcon16Regular />}>
                                             Rerun
                                         </Link>
                                     </Fit>
