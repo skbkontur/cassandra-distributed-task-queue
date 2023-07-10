@@ -102,7 +102,7 @@ export const TaskDetailsMetaTable = ({
             <tr key="ParentTaskId">
                 <td>ParentTaskId</td>
                 <td data-tid="ParentTaskId">
-                    {parentTaskId && <RouterLink to={`/Tasks/${parentTaskId}`}>{parentTaskId}</RouterLink>}
+                    {parentTaskId && <RouterLink to={`../${parentTaskId}`}>{parentTaskId}</RouterLink>}
                 </td>
             </tr>,
             <tr key="ChildTaskIds">
