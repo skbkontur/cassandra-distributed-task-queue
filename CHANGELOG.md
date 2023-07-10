@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.1.3 - 2023.07.10
+- fix link to parent task
+
 ## v2.0.0 - 2023.05.10
 - update react-router-dom library to version 6
 
