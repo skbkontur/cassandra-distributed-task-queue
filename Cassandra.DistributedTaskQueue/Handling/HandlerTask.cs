@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -179,10 +179,13 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Handling
                     {
                         if (oldMeta.State == TaskState.Finished || oldMeta.State == TaskState.Fatal || oldMeta.State == TaskState.Canceled)
                         {
+                            var actualIndexRecord = handleTasksMetaStorage.GetIndexRecords(localNow.Ticks, new[] {taskIndexRecord.TaskIndexShardKey})
+                                                                          .FirstOrDefault(x => x.TaskId == taskIndexRecord.TaskId);
+
                             taskShardMetricsContext.Meter("TaskAlreadyFinished_UnderLock").Mark();
                             logger.Error("После перечитывания меты под локом taskIndexRecord != IndexRecord(oldMeta) в течение {MaxAllowedIndexInconsistencyDuration} и задача уже находится в терминальном состоянии, " +
-                                         "поэтому просто удаляем зависшую запись из индекса; oldMeta: {RtqTaskMeta}; taskIndexRecord: {RtqTaskIndexRecord}; localNow: {LocalNow}",
-                                         new {MaxAllowedIndexInconsistencyDuration, RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, LocalNow = localNow});
+                                         "поэтому просто удаляем зависшую запись из индекса; oldMeta: {RtqTaskMeta}; taskIndexRecord: {RtqTaskIndexRecord}; localNow: {LocalNow}; actualIndexRecord: {ActualIndexRecord}",
+                                         new {MaxAllowedIndexInconsistencyDuration, RtqTaskMeta = oldMeta, RtqTaskIndexRecord = taskIndexRecord, LocalNow = localNow, ActualIndexRecord = actualIndexRecord});
                             using (metricsContext.Timer("RemoveIndexRecord_Terminal").NewContext())
                                 taskMinimalStartTicksIndex.RemoveRecord(taskIndexRecord, globalTime.UpdateNowTimestamp().Ticks);
                         }
