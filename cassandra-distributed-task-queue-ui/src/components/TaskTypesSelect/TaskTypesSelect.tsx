@@ -1,4 +1,5 @@
-import { ArrowShapeTriangleADownIcon16Regular, SearchLoupeIcon16Regular } from "@skbkontur/icons";
+import { ArrowShapeTriangleADownIcon16Regular } from "@skbkontur/icons/ArrowShapeTriangleADownIcon16Regular";
+import { SearchLoupeIcon16Regular } from "@skbkontur/icons/SearchLoupeIcon16Regular";
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Input, Tooltip } from "@skbkontur/react-ui";
 import React from "react";

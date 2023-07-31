@@ -1,4 +1,5 @@
-import { ArrowRoundTimeForwardIcon16Regular, XIcon16Regular } from "@skbkontur/icons";
+import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
+import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";

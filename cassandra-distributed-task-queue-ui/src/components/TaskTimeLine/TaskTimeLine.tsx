@@ -1,15 +1,13 @@
-import {
-    ArrowADownIcon16Regular,
-    ArrowAUpIcon16Regular,
-    ArrowDCornerDownRightIcon16Regular,
-    ArrowRoundTimeForwardIcon16Regular,
-    ArrowShapeTriangleADownIcon16Regular,
-    CheckAIcon16Regular,
-    NetDownloadIcon16Regular,
-    TimeClockIcon16Regular,
-    XCircleIcon16Regular,
-    XIcon16Regular,
-} from "@skbkontur/icons";
+import { ArrowADownIcon16Regular } from "@skbkontur/icons/ArrowADownIcon16Regular";
+import { ArrowAUpIcon16Regular } from "@skbkontur/icons/ArrowAUpIcon16Regular";
+import { ArrowDCornerDownRightIcon16Regular } from "@skbkontur/icons/ArrowDCornerDownRightIcon16Regular";
+import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
+import { ArrowShapeTriangleADownIcon16Regular } from "@skbkontur/icons/ArrowShapeTriangleADownIcon16Regular";
+import { CheckAIcon16Regular } from "@skbkontur/icons/CheckAIcon16Regular";
+import { NetDownloadIcon16Regular } from "@skbkontur/icons/NetDownloadIcon16Regular";
+import { TimeClockIcon16Regular } from "@skbkontur/icons/TimeClockIcon16Regular";
+import { XCircleIcon16Regular } from "@skbkontur/icons/XCircleIcon16Regular";
+import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
 import { Location } from "react-router-dom";

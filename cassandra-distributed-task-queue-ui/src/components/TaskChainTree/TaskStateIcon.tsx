@@ -1,10 +1,8 @@
-import {
-    CheckAIcon16Regular,
-    QuestionSquareIcon16Regular,
-    TimeClockIcon16Regular,
-    XCircleIcon16Regular,
-    XIcon16Regular,
-} from "@skbkontur/icons";
+import { CheckAIcon16Regular } from "@skbkontur/icons/CheckAIcon16Regular";
+import { QuestionSquareIcon16Regular } from "@skbkontur/icons/QuestionSquareIcon16Regular";
+import { TimeClockIcon16Regular } from "@skbkontur/icons/TimeClockIcon16Regular";
+import { XCircleIcon16Regular } from "@skbkontur/icons/XCircleIcon16Regular";
+import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { ThemeContext } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import React from "react";
