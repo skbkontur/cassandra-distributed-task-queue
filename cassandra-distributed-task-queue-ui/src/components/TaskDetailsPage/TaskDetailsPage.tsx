@@ -80,16 +80,20 @@ export function TaskDetailsPage({
                 )}
                 {isCancelable && (
                     <Fit>
-                        <Link icon={<XIcon16Regular />} use="danger" data-tid={"CancelButton"} onClick={cancel}>
+                        <Link icon={<XIcon16Regular />} use="danger" data-tid="CancelButton" onClick={cancel}>
                             Cancel task
                         </Link>
                     </Fit>
                 )}
                 {isRerunable && (
                     <Fit>
-                        <Link icon={<ArrowRoundTimeForwardIcon16Regular />} data-tid={"RerunButton"} onClick={rerun}>
+                        <Button
+                            use="link"
+                            icon={<ArrowRoundTimeForwardIcon16Regular />}
+                            data-tid="RerunButton"
+                            onClick={rerun}>
                             Rerun task
-                        </Link>
+                        </Button>
                     </Fit>
                 )}
             </RowStack>
