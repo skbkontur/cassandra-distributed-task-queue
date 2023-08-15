@@ -36,17 +36,6 @@ export const jsStyles = {
         `;
     },
 
-    greyLineHeader(t: Theme): string {
-        return css`
-            background-color: ${t.bgDisabled};
-            padding: ${2 * baseSize}px ${globalHorizontalPadding}px;
-            margin-left: ${-globalHorizontalPadding}px;
-            margin-right: ${-globalHorizontalPadding}px;
-            margin-bottom: ${3 * baseSize}px;
-            word-break: break-all;
-        `;
-    },
-
     headerContent(): string {
         return css`
             margin-top: ${3 * newBaseSize}px;
@@ -58,7 +47,7 @@ export const jsStyles = {
             margin: 0;
             font-weight: 700;
             font-size: 29px;
-            line-height: 40px;
+            line-height: 48px;
         `;
     },
 
@@ -86,24 +75,23 @@ export const jsStyles = {
     backLink(): string {
         return css`
             position: absolute;
-            left: ${newBaseSize * 3}px;
-            opacity: 0.7;
-            height: ${newBaseSize * 7}px;
-            width: ${newBaseSize * 7}px;
-            padding: ${newBaseSize * 2}px 0;
+            left: 0;
+            height: ${newBaseSize * 12}px;
+            width: ${newBaseSize * 12}px;
             display: flex;
             align-items: center;
             justify-content: center;
-
-            &:hover {
-                opacity: 1;
-            }
         `;
     },
 
-    backLinkIcon(): string {
+    backLinkIcon(t: Theme): string {
         return css`
             display: block;
+            color: #757575;
+
+            &:hover {
+                color: ${t.textColorDefault};
+            }
         `;
     },
 

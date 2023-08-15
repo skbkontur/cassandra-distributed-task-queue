@@ -76,7 +76,7 @@ CommonLayout.GoBack = function CommonLayoutGoBack({ to }: CommonLayoutGoBackProp
     const theme = React.useContext(ThemeContext);
     return (
         <RouterLink data-tid="GoBack" to={to} className={jsStyles.backLink()}>
-            <ArrowALeftIcon24Regular color={theme.gray} className={jsStyles.backLinkIcon()} />
+            <ArrowALeftIcon24Regular align="none" className={jsStyles.backLinkIcon(theme)} />
         </RouterLink>
     );
 };
