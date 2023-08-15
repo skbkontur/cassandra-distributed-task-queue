@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.2.1 - 2023.08.15
+- Update back link arrows
+
 ## v2.1.3 - 2023.07.10
 - fix link to parent task
 
