@@ -21,6 +21,12 @@ export const jsStyles = {
         `;
     },
 
+    withArrow(): string {
+        return css`
+            padding: ${globalVerticalPadding}px ${newBaseSize * 12}px 0;
+        `;
+    },
+
     topRightTools(): string {
         return css`
             position: absolute;
@@ -30,20 +36,9 @@ export const jsStyles = {
         `;
     },
 
-    greyLineHeader(t: Theme): string {
+    headerContent(): string {
         return css`
-            background-color: ${t.bgDisabled};
-            padding: ${2 * baseSize}px ${globalHorizontalPadding}px;
-            margin-left: ${-globalHorizontalPadding}px;
-            margin-right: ${-globalHorizontalPadding}px;
-            margin-bottom: ${3 * baseSize}px;
-            word-break: break-all;
-        `;
-    },
-
-    greyContent(): string {
-        return css`
-            margin-top: ${2 * baseSize}px;
+            margin-top: ${3 * newBaseSize}px;
         `;
     },
 
@@ -52,7 +47,7 @@ export const jsStyles = {
             margin: 0;
             font-weight: 700;
             font-size: 29px;
-            line-height: 40px;
+            line-height: 48px;
         `;
     },
 
@@ -61,20 +56,42 @@ export const jsStyles = {
             display: flex;
             flex-direction: column;
             flex: 1 1 auto;
-            padding-bottom: ${globalVerticalPadding}px;
+            padding-bottom: ${newBaseSize * 5}px;
         `;
     },
 
     header(): string {
         return css`
-            margin-bottom: ${3 * baseSize}px;
+            margin-bottom: ${5 * newBaseSize}px;
         `;
     },
 
-    backLinkContainer(): string {
+    borderBottom(t: Theme): string {
         return css`
-            margin-bottom: ${3 * baseSize}px;
-            margin-left: -4px;
+            border-bottom: 2px solid ${t.grayXLight};
+        `;
+    },
+
+    backLink(): string {
+        return css`
+            position: absolute;
+            left: 0;
+            height: ${newBaseSize * 12}px;
+            width: ${newBaseSize * 12}px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        `;
+    },
+
+    backLinkIcon(t: Theme): string {
+        return css`
+            display: block;
+            color: #757575;
+
+            &:hover {
+                color: ${t.textColorDefault};
+            }
         `;
     },
 

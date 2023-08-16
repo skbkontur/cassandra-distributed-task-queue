@@ -1,6 +1,6 @@
-import DeleteIcon from "@skbkontur/react-icons/Delete";
-import ListRowsIcon from "@skbkontur/react-icons/ListRows";
-import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
+import { TextAlignCenterJustifyIcon16Regular } from "@skbkontur/icons/TextAlignCenterJustifyIcon16Regular";
+import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
@@ -11,7 +11,6 @@ import { ICustomRenderer } from "../../Domain/CustomRenderer";
 import { cancelableStates, rerunableStates } from "../../Domain/TaskStateExtensions";
 import { searchRequestMapping } from "../../containers/TasksPageContainer";
 import { Accordion } from "../Accordion/Accordion";
-import { GoBackLink } from "../GoBack/GoBackLink";
 import { CommonLayout } from "../Layouts/CommonLayout";
 import { RouterLink } from "../RouterLink/RouterLink";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
@@ -71,9 +70,9 @@ export function TaskDetailsPage({
                 {relatedTasksRequest && (
                     <Fit>
                         <RouterLink
-                            data-tid={"RelatedTaskTree"}
+                            data-tid="RelatedTaskTree"
                             to={`../Tree${searchRequestMapping.stringify(relatedTasksRequest)}`}>
-                            <ListRowsIcon />
+                            <TextAlignCenterJustifyIcon16Regular />
                             {"\u00A0"}
                             View related tasks tree
                         </RouterLink>
@@ -81,16 +80,20 @@ export function TaskDetailsPage({
                 )}
                 {isCancelable && (
                     <Fit>
-                        <Link icon={<DeleteIcon />} use="danger" data-tid={"CancelButton"} onClick={cancel}>
+                        <Link icon={<XIcon16Regular />} use="danger" data-tid="CancelButton" onClick={cancel}>
                             Cancel task
                         </Link>
                     </Fit>
                 )}
                 {isRerunable && (
                     <Fit>
-                        <Link icon={<RefreshIcon />} data-tid={"RerunButton"} onClick={rerun}>
+                        <Button
+                            use="link"
+                            icon={<ArrowRoundTimeForwardIcon16Regular />}
+                            data-tid="RerunButton"
+                            onClick={rerun}>
                             Rerun task
-                        </Link>
+                        </Button>
                     </Fit>
                 )}
             </RowStack>
@@ -151,23 +154,20 @@ export function TaskDetailsPage({
 
     return (
         <div>
-            <CommonLayout>
+            <CommonLayout withArrow>
+                <CommonLayout.GoBack to={parentLocation} />
                 {taskDetails && (
-                    <CommonLayout.GreyLineHeader
+                    <CommonLayout.Header
+                        borderBottom
                         data-tid="Header"
-                        title={
-                            <RowStack gap={3} verticalAlign="bottom">
-                                <GoBackLink backUrl={parentLocation} />
-                                <span>Задача {taskDetails.taskMeta.name}</span>
-                            </RowStack>
-                        }
+                        title={`Задача ${taskDetails.taskMeta.name}`}
                         tools={taskDetails && allowRerunOrCancel ? renderButtons() : null}>
                         <TaskTimeLine
                             getHrefToTask={getTaskLocation}
                             taskMeta={taskDetails.taskMeta}
                             childTaskIds={taskDetails.childTaskIds}
                         />
-                    </CommonLayout.GreyLineHeader>
+                    </CommonLayout.Header>
                 )}
                 <CommonLayout.Content>
                     <ColumnStack block stretch gap={2}>

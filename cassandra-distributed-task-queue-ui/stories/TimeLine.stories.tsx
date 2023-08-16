@@ -1,6 +1,6 @@
-import DeleteIcon from "@skbkontur/react-icons/Delete";
-import OkIcon from "@skbkontur/react-icons/Ok";
-import RefreshIcon from "@skbkontur/react-icons/Refresh";
+import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
+import { CheckAIcon16Regular } from "@skbkontur/icons/CheckAIcon16Regular";
+import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import React from "react";
 
 import { TimeLine } from "../src/components/TaskTimeLine/TimeLine/TimeLine";
@@ -12,15 +12,15 @@ export default {
 
 export const Direct = () => (
     <TimeLine>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
-        <TimeLine.Entry icon={<DeleteIcon />}>
+        <TimeLine.Entry icon={<XIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started 2</div>
             <div>Now</div>
         </TimeLine.Entry>
@@ -29,27 +29,27 @@ export const Direct = () => (
 
 export const WithOneBranching = () => (
     <TimeLine>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
-        <TimeLine.Entry icon={<DeleteIcon />}>
+        <TimeLine.Entry icon={<XIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
         <TimeLine.BranchNode>
             <TimeLine.Branch>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
             </TimeLine.Branch>
             <TimeLine.Branch>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
@@ -60,33 +60,33 @@ export const WithOneBranching = () => (
 
 export const WithOneBranchingOnManyBranches = () => (
     <TimeLine>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
-        <TimeLine.Entry icon={<DeleteIcon />}>
+        <TimeLine.Entry icon={<XIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
         <TimeLine.BranchNode>
             <TimeLine.Branch>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
             </TimeLine.Branch>
             <TimeLine.Branch>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
             </TimeLine.Branch>
             <TimeLine.Branch>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
@@ -97,49 +97,49 @@ export const WithOneBranchingOnManyBranches = () => (
 
 export const WithManyBranchings = () => (
     <TimeLine>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
-        <TimeLine.Entry icon={<DeleteIcon />}>
+        <TimeLine.Entry icon={<XIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
         <TimeLine.BranchNode>
             <TimeLine.Branch>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
             </TimeLine.Branch>
             <TimeLine.Branch>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started</div>
                     <div>Now</div>
                 </TimeLine.Entry>
-                <TimeLine.Entry icon={<DeleteIcon />}>
+                <TimeLine.Entry icon={<XIcon16Regular />}>
                     <div>Started</div>
                     <div>Now</div>
                 </TimeLine.Entry>
                 <TimeLine.BranchNode>
                     <TimeLine.Branch>
-                        <TimeLine.Entry icon={<OkIcon />}>
+                        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                             <div>Started 2</div>
                             <div>Now</div>
                         </TimeLine.Entry>
                     </TimeLine.Branch>
                     <TimeLine.Branch>
-                        <TimeLine.Entry icon={<OkIcon />}>
+                        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                             <div>Started 2</div>
                             <div>Now</div>
                         </TimeLine.Entry>
-                        <TimeLine.Entry icon={<OkIcon />}>
+                        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                             <div>Started 2</div>
                             <div>Now</div>
                         </TimeLine.Entry>
                     </TimeLine.Branch>
                     <TimeLine.Branch>
-                        <TimeLine.Entry icon={<OkIcon />}>
+                        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                             <div>Started 2</div>
                             <div>Now</div>
                         </TimeLine.Entry>
@@ -147,7 +147,7 @@ export const WithManyBranchings = () => (
                 </TimeLine.BranchNode>
             </TimeLine.Branch>
             <TimeLine.Branch>
-                <TimeLine.Entry icon={<OkIcon />}>
+                <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                     <div>Started 2</div>
                     <div>Now</div>
                 </TimeLine.Entry>
@@ -158,7 +158,7 @@ export const WithManyBranchings = () => (
 
 export const WithCycles = () => (
     <TimeLine>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
@@ -169,20 +169,20 @@ export const WithCycles = () => (
                     <div>Now</div>
                 </div>
             }>
-            <TimeLine.Entry icon={<DeleteIcon />}>
+            <TimeLine.Entry icon={<XIcon16Regular />}>
                 <div>Started</div>
                 <div>Now</div>
             </TimeLine.Entry>
-            <TimeLine.Entry icon={<OkIcon />}>
+            <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                 <div>Started 2</div>
                 <div>Now</div>
             </TimeLine.Entry>
         </TimeLine.Cycled>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started 4</div>
             <div>Now</div>
         </TimeLine.Entry>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started 5</div>
             <div>Now</div>
         </TimeLine.Entry>
@@ -191,7 +191,7 @@ export const WithCycles = () => (
 
 export const WithCyclesAndLongText = () => (
     <TimeLine>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
@@ -202,11 +202,11 @@ export const WithCyclesAndLongText = () => (
                     <div>Now</div>
                 </div>
             }>
-            <TimeLine.Entry icon={<DeleteIcon />}>
+            <TimeLine.Entry icon={<XIcon16Regular />}>
                 <div>Started text text text text text text text</div>
                 <div>Now</div>
             </TimeLine.Entry>
-            <TimeLine.Entry icon={<OkIcon />}>
+            <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                 <div>Started 2</div>
                 <div>Now</div>
             </TimeLine.Entry>
@@ -216,23 +216,23 @@ export const WithCyclesAndLongText = () => (
 
 export const WithCyclesAndIcon = () => (
     <TimeLine>
-        <TimeLine.Entry icon={<OkIcon />}>
+        <TimeLine.Entry icon={<CheckAIcon16Regular />}>
             <div>Started</div>
             <div>Now</div>
         </TimeLine.Entry>
         <TimeLine.Cycled
-            icon={<RefreshIcon />}
+            icon={<ArrowRoundTimeForwardIcon16Regular />}
             content={
                 <div>
                     <div>Some cycle info</div>
                     <div>Now</div>
                 </div>
             }>
-            <TimeLine.Entry icon={<DeleteIcon />}>
+            <TimeLine.Entry icon={<XIcon16Regular />}>
                 <div>Started text text text text text text text</div>
                 <div>Now</div>
             </TimeLine.Entry>
-            <TimeLine.Entry icon={<OkIcon />}>
+            <TimeLine.Entry icon={<CheckAIcon16Regular />}>
                 <div>Started 2</div>
                 <div>Now</div>
             </TimeLine.Entry>

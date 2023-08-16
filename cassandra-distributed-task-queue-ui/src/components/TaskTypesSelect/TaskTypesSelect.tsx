@@ -1,5 +1,5 @@
-import ArrowTriangleDownIcon from "@skbkontur/react-icons/ArrowTriangleDown";
-import SearchIcon from "@skbkontur/react-icons/Search";
+import { ArrowShapeTriangleADownIcon16Regular } from "@skbkontur/icons/ArrowShapeTriangleADownIcon16Regular";
+import { SearchLoupeIcon16Regular } from "@skbkontur/icons/SearchLoupeIcon16Regular";
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Input, Tooltip } from "@skbkontur/react-ui";
 import React from "react";
@@ -31,7 +31,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                         <span className={jsStyles.buttonText()}>
                             {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
                         </span>
-                        <ArrowTriangleDownIcon />
+                        <ArrowShapeTriangleADownIcon16Regular />
                     </Button>
                 </Tooltip>
             </span>
@@ -85,7 +85,7 @@ export class TaskTypesSelect extends React.Component<TaskTypesSelectProps, TaskT
                         <Fit>
                             <Input
                                 value={query}
-                                rightIcon={<SearchIcon />}
+                                rightIcon={<SearchLoupeIcon16Regular />}
                                 onValueChange={val => this.setState({ query: val })}
                             />
                         </Fit>
