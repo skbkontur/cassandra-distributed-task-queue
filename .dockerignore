@@ -24,3 +24,5 @@
 cassandra-distributed-task-queue-ui
 LICENSE
 README.md
+.yarn/cache
+.yarn/install-state.gz
