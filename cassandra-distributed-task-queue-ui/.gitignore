@@ -5,6 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 coverage
 dist
+.eslintcache
 src/Domain/Api/
 .pnp.*
 .yarn/*
