@@ -3,8 +3,8 @@ import ReactDom from "react-dom";
 import { Route, Navigate, Routes, BrowserRouter } from "react-router-dom";
 
 import { RemoteTaskQueueApplication, RtqMonitoringApi } from "./src";
-import { RtqMonitoringApiFake } from "./stories/Api/RtqMonitoringApiFake";
 import { CustomRenderer } from "./src/Domain/CustomRenderer";
+import { RtqMonitoringApiFake } from "./stories/Api/RtqMonitoringApiFake";
 
 const rtqApiPrefix = "/remote-task-queue/";
 

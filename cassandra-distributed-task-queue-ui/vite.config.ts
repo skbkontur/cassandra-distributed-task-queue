@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
         server: {
             proxy: {
                 "/remote-task-queue": "http://localhost:4413/",
-            }
+            },
         },
         test: {
             include: ["./tests/**/*.tsx"],

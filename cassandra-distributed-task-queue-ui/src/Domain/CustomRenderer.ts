@@ -1,7 +1,8 @@
+import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
+
 import { RtqMonitoringSearchRequest } from "./Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringTaskModel } from "./Api/RtqMonitoringTaskModel";
-import {RangeSelector} from "../components/DateTimeRangePicker/RangeSelector";
-import {TimeUtils} from "./Utils/TimeUtils";
+import { TimeUtils } from "./Utils/TimeUtils";
 
 export interface ICustomRenderer {
     renderDetails: (target: any, path: string[]) => null | JSX.Element;
