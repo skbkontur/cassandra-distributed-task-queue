@@ -8,7 +8,7 @@ import {
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import { Route, Routes, MemoryRouter } from "react-router-dom";
 
-import { CustomRenderer } from "../../index";
+import { CustomRenderer } from "../../src/Domain/CustomRenderer";
 import { TaskDetailsPageContainer } from "../../src/containers/TaskDetailsPageContainer";
 import { RtqMonitoringApiFake } from "../Api/RtqMonitoringApiFake";
 
