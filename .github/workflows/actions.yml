@@ -35,7 +35,7 @@ jobs:
       - name: Build front
         run: yarn --cwd cassandra-distributed-task-queue-ui build
       - name: Check C# code style
-        run: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN && git diff --exit-code -- ':!cassandra-distributed-task-queue-ui'
+        run: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN && git diff --exit-code -- ':!./cassandra-distributed-task-queue-ui/.yarn'
       - name: Check front code
         run: yarn --cwd cassandra-distributed-task-queue-ui lint
       - name: Build docker-compose environment

@@ -1,5 +1,4 @@
 import { action } from "@storybook/addon-actions";
-import React from "react";
 import { withRouter } from "storybook-addon-react-router-v6";
 
 import { NullCustomRenderer } from "../src";
