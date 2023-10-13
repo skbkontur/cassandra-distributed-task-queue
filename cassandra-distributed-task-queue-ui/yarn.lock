@@ -2922,6 +2922,7 @@ __metadata:
     "@storybook/react": ^7.0.7
     "@storybook/react-vite": ^7.4.6
     "@types/lodash": ^4.14.171
+    "@types/qs": ^6.9.8
     "@types/react": ^17.0.15
     "@types/react-dom": ^17.0.15
     "@types/react-router-dom": ^5.1.8
@@ -3893,7 +3894,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/qs@npm:*":
+"@types/qs@npm:*, @types/qs@npm:^6.9.8":
   version: 6.9.8
   resolution: "@types/qs@npm:6.9.8"
   checksum: c28e07d00d07970e5134c6eed184a0189b8a4649e28fdf36d9117fe671c067a44820890de6bdecef18217647a95e9c6aebdaaae69f5fe4b0bec9345db885f77e

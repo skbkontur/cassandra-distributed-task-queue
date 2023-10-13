@@ -6,7 +6,6 @@ import {
     ThemeFactory,
 } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
-import React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { TasksPageContainer } from "../../src/containers/TasksPageContainer";

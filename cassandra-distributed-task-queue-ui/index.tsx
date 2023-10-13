@@ -1,5 +1,4 @@
 import "./react-selenium-testing";
-import React from "react";
 import ReactDom from "react-dom";
 import { Route, Navigate, Routes, BrowserRouter } from "react-router-dom";
 

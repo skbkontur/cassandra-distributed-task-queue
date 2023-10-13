@@ -29,9 +29,9 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "*": ["typings/*"],
+      "*": ["typings"],
       "react": ["./node_modules/@types/react"],
     }
   },
-  "include": ["src", "vite.config.ts", "typings"],
+  "include": ["index.tsx","src", "vite.config.ts", "stories", "typings", "tests"],
 }

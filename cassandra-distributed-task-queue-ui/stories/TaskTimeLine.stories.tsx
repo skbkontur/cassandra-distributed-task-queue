@@ -1,5 +1,4 @@
 import _ from "lodash";
-import React from "react";
 import { withRouter } from "storybook-addon-react-router-v6";
 
 import { TaskState } from "../src/Domain/Api/TaskState";

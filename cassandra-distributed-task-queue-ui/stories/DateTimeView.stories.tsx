@@ -1,5 +1,3 @@
-import React from "react";
-
 import { TimeUtils } from "../src/Domain/Utils/TimeUtils";
 import { DateTimeView } from "../src/components/DateTimeView/DateTimeView";
 
