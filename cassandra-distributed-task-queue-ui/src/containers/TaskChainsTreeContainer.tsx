@@ -1,5 +1,6 @@
 import { Loader } from "@skbkontur/react-ui";
-import _ from "lodash";
+import difference from "lodash/difference";
+import uniq from "lodash/uniq";
 import { useEffect, useState } from "react";
 import { Location, useLocation } from "react-router-dom";
 
@@ -58,7 +59,7 @@ export const TaskChainsTreeContainer = ({
             .map(({ childTaskIds, taskMeta: { parentTaskId } }) => [parentTaskId, ...(childTaskIds || [])])
             .flat()
             .filter(isNotNullOrUndefined);
-        return _.uniq(linkedIds);
+        return uniq(linkedIds);
     };
 
     const getTaskLocation = (id: string): string | Partial<Location> => ({ pathname: `../${id}` });
@@ -99,7 +100,7 @@ export const TaskChainsTreeContainer = ({
                 setLoading(true);
                 setLoaderText(`Загрузка задач: ${taskDetails.length}`);
                 const parentAndChildrenTaskIds = getParentAndChildrenTaskIds(loadedTaskDetails);
-                taskIdsToLoad = _.difference(parentAndChildrenTaskIds, allTaskIds);
+                taskIdsToLoad = difference(parentAndChildrenTaskIds, allTaskIds);
                 taskDetails = [...taskDetails, ...loadedTaskDetails];
                 if (iterationCount > 50) {
                     break;

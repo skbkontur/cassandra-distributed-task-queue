@@ -1,6 +1,8 @@
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { ThemeContext } from "@skbkontur/react-ui";
-import _ from "lodash";
+import reverse from "lodash/reverse";
+import sortBy from "lodash/sortBy";
+import uniq from "lodash/uniq";
 import React from "react";
 import { Location } from "react-router-dom";
 
@@ -88,9 +90,9 @@ export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreePro
         let mostParentTasks = Object.getOwnPropertyNames(taskMetaHashSet)
             .map(x => taskMetaHashSet[x])
             .map(x => findMostParentTask(taskMetaHashSet, x));
-        mostParentTasks = _.uniq(mostParentTasks);
-        mostParentTasks = _.sortBy(mostParentTasks, x => x.taskMeta.ticks);
-        mostParentTasks = _.reverse(mostParentTasks);
+        mostParentTasks = uniq(mostParentTasks);
+        mostParentTasks = sortBy(mostParentTasks, x => x.taskMeta.ticks);
+        mostParentTasks = reverse(mostParentTasks);
         return mostParentTasks;
     };
 
