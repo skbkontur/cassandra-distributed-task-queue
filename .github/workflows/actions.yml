@@ -72,8 +72,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: ${{ env.NPM_REGISTRY }}
+      - name: Install yarn
+        run: corepack enable && corepack prepare yarn@4.0.0 --activate
       - name: Install node dependencies
-        run: yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
+        run: corepack yarn --cwd cassandra-distributed-task-queue-ui --immutable
       - name: Restore dotnet tools
         run: dotnet tool restore
       - name: Build dotnet
