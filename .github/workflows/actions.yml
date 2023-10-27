@@ -5,7 +5,7 @@ on:
   pull_request:
   workflow_dispatch:
 env:
-  NODE_VERSION: 14
+  NODE_VERSION: 20
   NPM_REGISTRY: https://registry.npmjs.org
 jobs:
   test:
@@ -26,8 +26,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: ${{ env.NPM_REGISTRY }}
+      - name: Install yarn
+        run: corepack enable && corepack prepare yarn@4.0.0 --activate
       - name: Install node dependencies
-        run: yarn --cwd cassandra-distributed-task-queue-ui install --frozen-lockfile
+        run: corepack yarn --cwd cassandra-distributed-task-queue-ui --immutable
       - name: Restore dotnet tools
         run: dotnet tool restore
       - name: Build dotnet
@@ -35,13 +37,15 @@ jobs:
       - name: Build front
         run: yarn --cwd cassandra-distributed-task-queue-ui build
       - name: Check C# code style
-        run: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN && git diff --exit-code
+        run: dotnet jb cleanupcode Cassandra.DistributedTaskQueue.sln --profile=CatalogueCleanup --verbosity=WARN && git diff --exit-code -- ':!./cassandra-distributed-task-queue-ui/.yarn'
       - name: Check front code
         run: yarn --cwd cassandra-distributed-task-queue-ui lint
       - name: Build docker-compose environment
         run: docker-compose -f docker-compose.yaml up -d --build
         env:
           ES_VERSION: ${{ matrix.es-version }}
+      - name: Run front tests
+        run: yarn --cwd cassandra-distributed-task-queue-ui test
       - name: Run tests
         run: dotnet test --no-build --configuration Release
         env:

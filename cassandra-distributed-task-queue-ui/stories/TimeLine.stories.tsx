@@ -1,7 +1,6 @@
 import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
 import { CheckAIcon16Regular } from "@skbkontur/icons/CheckAIcon16Regular";
 import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
-import React from "react";
 
 import { TimeLine } from "../src/components/TaskTimeLine/TimeLine/TimeLine";
 

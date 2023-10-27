@@ -5,4 +5,12 @@ yarn-debug.log*
 yarn-error.log*
 coverage
 dist
+.eslintcache
 src/Domain/Api/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

@@ -52,11 +52,11 @@ export class RtqMonitoringApiFake implements IRtqMonitoringApi {
 
     public async search(searchRequest: RtqMonitoringSearchRequest): Promise<RtqMonitoringSearchResults> {
         if (searchRequest.queryString === "AllTasks") {
-            return tasks;
+            return tasks as unknown as RtqMonitoringSearchResults;
         }
 
         if (searchRequest.queryString?.includes("DocumentCirculationId")) {
-            return treeTasks;
+            return treeTasks as unknown as RtqMonitoringSearchResults;
         }
 
         emulateErrors();
@@ -131,7 +131,7 @@ export class RtqMonitoringApiFake implements IRtqMonitoringApi {
 
     public async getTaskDetails(taskId: string): Promise<RtqMonitoringTaskModel> {
         if (taskId === "Current") {
-            return task;
+            return task as RtqMonitoringTaskModel;
         }
 
         if (taskId === "Error") {

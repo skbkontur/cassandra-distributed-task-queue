@@ -1,5 +1,5 @@
 import { isValid, parse as parseDateInternal } from "date-fns";
-import _ from "lodash";
+import difference from "lodash/difference";
 
 import { DateTimeRange } from "../DataTypes/DateTimeRange";
 import { DateUtils } from "../Utils/DateUtils";
@@ -255,7 +255,7 @@ export class SetMapper<T> extends PlainValueMapper<T[]> {
         let values;
         if (this.allowNegationOperator && parameterValue[0] === "!") {
             const negatedValues = parameterValue.replace(/^!/, "").split(" ");
-            values = _.difference(this.getKeys(), negatedValues);
+            values = difference(this.getKeys(), negatedValues);
         } else {
             values = parameterValue.split(" ");
         }
@@ -271,7 +271,7 @@ export class SetMapper<T> extends PlainValueMapper<T[]> {
 
     public buildNegativeValuesString(values: T[]): string {
         const positiveValues = values.map(x => this.getString(x)).filter(x => x !== null);
-        const negativeValues = _.difference(this.getKeys(), positiveValues);
+        const negativeValues = difference(this.getKeys(), positiveValues);
         return "!" + negativeValues.join(" ");
     }
 

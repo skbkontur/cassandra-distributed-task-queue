@@ -1,7 +1,7 @@
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { ThemeContext, Button, Modal } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
-import _ from "lodash";
+import isEqual from "lodash/isEqual";
 import React from "react";
 import { Location } from "react-router-dom";
 
@@ -35,11 +35,11 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
 
     public shouldComponentUpdate(nextProps: TaskTableProps, nextState: TasksTableState): boolean {
         return (
-            !_.isEqual(this.props.taskInfos, nextProps.taskInfos) ||
-            !_.isEqual(this.props.allowRerunOrCancel, nextProps.allowRerunOrCancel) ||
-            !_.isEqual(this.state.openedModal, nextState.openedModal) ||
-            !_.isEqual(this.state.modalType, nextState.modalType) ||
-            !_.isEqual(this.state.actionTask, nextState.actionTask)
+            !isEqual(this.props.taskInfos, nextProps.taskInfos) ||
+            !isEqual(this.props.allowRerunOrCancel, nextProps.allowRerunOrCancel) ||
+            !isEqual(this.state.openedModal, nextState.openedModal) ||
+            !isEqual(this.state.modalType, nextState.modalType) ||
+            !isEqual(this.state.actionTask, nextState.actionTask)
         );
     }
 

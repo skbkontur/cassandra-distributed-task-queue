@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.0.0 - 2023.10.23
+- Add new bundler Vite instead of WebPack
+- Update Node to v20
+- Update yarn to v4
+
 ## v2.2.1 - 2023.08.15
 - Update back link arrows
 

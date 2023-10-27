@@ -1,5 +1,5 @@
 import { Loader } from "@skbkontur/react-ui";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, Location, useParams } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";

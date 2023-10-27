@@ -1,4 +1,3 @@
-import React from "react";
 import { withRouter } from "storybook-addon-react-router-v6";
 
 import { TaskNotFoundPage } from "../src/components/TaskNotFoundPage/TaskNotFoundPage";
