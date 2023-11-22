@@ -3,6 +3,7 @@ services:
   cassandra:
     container_name: rtq-cassandra
     build: cassandra
+    restart: on-failure
     environment:
       - CASSANDRA_START_RPC=true
       - JAVA_OPTS=-Xms2G -Xmx2G
@@ -12,8 +13,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: 1
-          memory: 2048m
+          cpus: "1"
+          memory: 2500m
     healthcheck:
       test: [ "CMD", "nodetool", "status" ]
       interval: 5s
@@ -49,7 +50,7 @@ services:
       replicas: 5
       resources:
         limits:
-          cpus: 0.25
+          cpus: "0.25"
           memory: 200m
     depends_on:
       cassandra:
