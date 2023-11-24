@@ -1,5 +1,5 @@
-import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
-import { Button, Loader, Paging } from "@skbkontur/react-ui";
+import { ColumnStack, Fill, Fit, Fixed, RowStack } from "@skbkontur/react-stack-layout";
+import { Button, Checkbox, Loader, Paging } from "@skbkontur/react-ui";
 import { useEffect, useState } from "react";
 import { Location, useLocation, useNavigate } from "react-router-dom";
 
@@ -53,6 +53,8 @@ export const TasksPageContainer = ({
         taskMetas: [],
         totalCount: "0",
     });
+    const [chosenTasks, setChosenTasks] = useState(new Set<string>());
+    const isAllTasksChosen = chosenTasks.size === results.taskMetas.length;
 
     useEffect(() => {
         const newRequest = getRequestBySearchQuery(search);
@@ -69,6 +71,25 @@ export const TasksPageContainer = ({
             },
         },
     });
+
+    const handleTaskCheck = (id: string) => {
+        const nextValue = new Set(chosenTasks);
+        if (nextValue.has(id)) {
+            nextValue.delete(id);
+        } else {
+            nextValue.add(id);
+        }
+        setChosenTasks(nextValue);
+    };
+
+    const handleCheckAll = () => {
+        if (isAllTasksChosen) {
+            setChosenTasks(new Set());
+        } else {
+            const ids = results.taskMetas.map(x => x.id);
+            setChosenTasks(new Set(ids));
+        }
+    };
 
     const handleSearch = () => {
         let newRequest = { ...request };
@@ -88,55 +109,49 @@ export const TasksPageContainer = ({
         navigate(query);
     };
 
-    const clickRerunAll = () => {
+    const clickMassRerun = () => {
         setConfirmMultipleModalOpened(true);
         setModalType("Rerun");
     };
 
-    const clickCancelAll = () => {
+    const clickMassCancel = () => {
         setConfirmMultipleModalOpened(true);
         setModalType("Cancel");
     };
 
     const closeModal = () => setConfirmMultipleModalOpened(false);
 
-    const handleRerunTask = async (id: string): Promise<void> => {
+    const handleRerunTasks = async (ids: string[]): Promise<void> => {
         setLoading(true);
         try {
-            await rtqMonitoringApi.rerunTasks([id]);
+            await rtqMonitoringApi.rerunTasks(ids);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleCancelTask = async (id: string): Promise<void> => {
+    const handleCancelTasks = async (ids: string[]): Promise<void> => {
         setLoading(true);
         try {
-            await rtqMonitoringApi.cancelTasks([id]);
+            await rtqMonitoringApi.cancelTasks(ids);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleRerunAll = async (): Promise<void> => {
-        const request = getRequestBySearchQuery(search);
-        setLoading(true);
-        try {
-            await rtqMonitoringApi.rerunTasksBySearchQuery(request);
-        } finally {
-            setLoading(false);
-            setConfirmMultipleModalOpened(false);
+    const handleMassRerun = (): void => {
+        if (chosenTasks.size > 0) {
+            handleRerunTasks([...chosenTasks]);
+        } else {
+            rerunAll();
         }
     };
 
-    const handleCancelAll = async (): Promise<void> => {
-        const request = getRequestBySearchQuery(search);
-        setLoading(true);
-        try {
-            await rtqMonitoringApi.cancelTasksBySearchQuery(request);
-        } finally {
-            setLoading(false);
-            setConfirmMultipleModalOpened(false);
+    const handleMassCancel = (): void => {
+        if (chosenTasks.size > 0) {
+            handleCancelTasks([...chosenTasks]);
+        } else {
+            cancelAll();
         }
     };
 
@@ -161,6 +176,7 @@ export const TasksPageContainer = ({
     const count = request.count || 20;
     const offset = request.offset || 0;
     const counter = Number((results && results.totalCount) || 0);
+    const massActionTarget = chosenTasks.size > 0 ? "Chosen" : "All";
 
     return (
         <CommonLayout>
@@ -182,34 +198,43 @@ export const TasksPageContainer = ({
                                 <ColumnStack block stretch gap={2}>
                                     {counter > 0 && <Fit>Всего результатов: {counter}</Fit>}
                                     {counter > 0 && isSuperUser && (
-                                        <Fit>
-                                            <RowStack gap={2} data-tid={"ButtonsWrapper"}>
-                                                <Fit>
-                                                    <Button
-                                                        use="danger"
-                                                        data-tid={"CancelAllButton"}
-                                                        onClick={clickCancelAll}>
-                                                        Cancel All
-                                                    </Button>
-                                                </Fit>
-                                                <Fit>
-                                                    <Button
-                                                        use="success"
-                                                        data-tid={"RerunAllButton"}
-                                                        onClick={clickRerunAll}>
-                                                        Rerun All
-                                                    </Button>
-                                                </Fit>
+                                        <RowStack gap={2} data-tid={"ButtonsWrapper"} verticalAlign="center">
+                                            <RowStack verticalAlign="center" block gap={2}>
+                                                <Checkbox
+                                                    style={{ height: 16, marginLeft: 8 }}
+                                                    onValueChange={handleCheckAll}
+                                                    checked={isAllTasksChosen}
+                                                />
+                                                <Fixed width={106}>Все на странице</Fixed>
                                             </RowStack>
-                                        </Fit>
+                                            <Fill />
+                                            <Fit>
+                                                <Button
+                                                    use="danger"
+                                                    data-tid={"CancelAllButton"}
+                                                    onClick={clickMassCancel}>
+                                                    Cancel {massActionTarget}
+                                                </Button>
+                                            </Fit>
+                                            <Fit>
+                                                <Button
+                                                    use="success"
+                                                    data-tid={"RerunAllButton"}
+                                                    onClick={clickMassRerun}>
+                                                    Rerun {massActionTarget}
+                                                </Button>
+                                            </Fit>
+                                        </RowStack>
                                     )}
                                     <Fit>
                                         <TasksTable
                                             getTaskLocation={getTaskLocation}
                                             allowRerunOrCancel={isSuperUser}
                                             taskInfos={results.taskMetas}
-                                            onRerun={handleRerunTask}
-                                            onCancel={handleCancelTask}
+                                            chosenTasks={chosenTasks}
+                                            onRerun={id => handleRerunTasks([id])}
+                                            onCancel={id => handleCancelTasks([id])}
+                                            onCheck={handleTaskCheck}
                                         />
                                     </Fit>
                                     <Fit>
@@ -230,9 +255,9 @@ export const TasksPageContainer = ({
                 {confirmMultipleModalOpened && (
                     <TasksModal
                         modalType={modalType}
-                        counter={counter}
-                        onCancelAll={handleCancelAll}
-                        onRerunAll={handleRerunAll}
+                        counter={chosenTasks.size || counter}
+                        onCancelAll={handleMassCancel}
+                        onRerunAll={handleMassRerun}
                         onCloseModal={closeModal}
                     />
                 )}
@@ -259,6 +284,28 @@ export const TasksPageContainer = ({
             setResults(results);
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function cancelAll(): Promise<void> {
+        const request = getRequestBySearchQuery(search);
+        setLoading(true);
+        try {
+            await rtqMonitoringApi.cancelTasksBySearchQuery(request);
+        } finally {
+            setLoading(false);
+            setConfirmMultipleModalOpened(false);
+        }
+    }
+
+    async function rerunAll(): Promise<void> {
+        const request = getRequestBySearchQuery(search);
+        setLoading(true);
+        try {
+            await rtqMonitoringApi.rerunTasksBySearchQuery(request);
+        } finally {
+            setLoading(false);
+            setConfirmMultipleModalOpened(false);
         }
     }
 };
