@@ -1,6 +1,7 @@
 import { ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
 
+import { useCustomSettings } from "../../CustomSettingsContext";
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 import { Ticks } from "../../Domain/DataTypes/Time";
 import { ticksToMilliseconds } from "../../Domain/Utils/ConvertTimeUtil";
@@ -34,6 +35,7 @@ export const TaskDetailsMetaTable = ({
     childTaskIds,
 }: TaskDetailsMetaTableProps): JSX.Element => {
     const theme = React.useContext(ThemeContext);
+    const { customStateCaptions } = useCustomSettings();
 
     const renderDate = (date?: Nullable<Ticks>): JSX.Element => (
         <span>
@@ -57,7 +59,7 @@ export const TaskDetailsMetaTable = ({
             </tr>,
             <tr key="State">
                 <td>State</td>
-                <td data-tid="State">{state}</td>
+                <td data-tid="State">{customStateCaptions[state]}</td>
             </tr>,
             <tr key="Name">
                 <td>Name</td>

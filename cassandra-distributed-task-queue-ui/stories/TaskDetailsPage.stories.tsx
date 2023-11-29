@@ -6,17 +6,21 @@ import { RtqMonitoringTaskModel } from "../src/Domain/Api/RtqMonitoringTaskModel
 import { TaskState } from "../src/Domain/Api/TaskState";
 import { TaskDetailsPage } from "../src/components/TaskDetailsPage/TaskDetailsPage";
 
+import { CustomSettingsProviderDecorator } from "./Decorators";
 import { createTask } from "./TaskMetaInformationUtils";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskDetailsPage",
-    decorators: [withRouter, (story: any) => <div style={{ maxWidth: 1000 }}>{story()}</div>],
+    decorators: [
+        withRouter,
+        (story: any) => <div style={{ maxWidth: 1000 }}>{story()}</div>,
+        CustomSettingsProviderDecorator({ customDetailRenderer: new NullCustomRenderer() }),
+    ],
     component: TaskDetailsPage,
 };
 
 export const Default = () => (
     <TaskDetailsPage
-        customRenderer={new NullCustomRenderer()}
         parentLocation="/"
         allowRerunOrCancel
         taskDetails={taskDetails}

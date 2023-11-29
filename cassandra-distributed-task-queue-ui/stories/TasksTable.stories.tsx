@@ -18,8 +18,10 @@ export const SeveralTasks = () => (
         getTaskLocation={id => id}
         allowRerunOrCancel
         taskInfos={taskInfos}
+        chosenTasks={new Set()}
         onRerun={action("onRerun")}
         onCancel={action("onCancel")}
+        onCheck={action("onCheck")}
     />
 );
 
@@ -28,8 +30,10 @@ export const OneTask = () => (
         getTaskLocation={id => id}
         taskInfo={taskInfos[0]}
         allowRerunOrCancel
+        isChecked={false}
         onRerun={action("onRerun")}
         onCancel={action("onCancel")}
+        onCheck={action("onCheck")}
     />
 );
 

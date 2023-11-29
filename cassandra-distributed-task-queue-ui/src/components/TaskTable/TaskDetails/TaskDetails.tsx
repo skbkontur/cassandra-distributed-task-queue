@@ -5,8 +5,8 @@ import { Checkbox, Link, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
 import { Location } from "react-router-dom";
 
+import { useCustomSettings } from "../../../CustomSettingsContext";
 import { RtqMonitoringTaskMeta } from "../../../Domain/Api/RtqMonitoringTaskMeta";
-import { TaskState } from "../../../Domain/Api/TaskState";
 import { Ticks } from "../../../Domain/DataTypes/Time";
 import { cancelableStates, rerunableStates } from "../../../Domain/TaskStateExtensions";
 import { AllowCopyToClipboard } from "../../AllowCopyToClipboard";
@@ -35,6 +35,7 @@ function dateFormatter(
 export function TaskDetails(props: TaskDetailsProps): JSX.Element {
     const { allowRerunOrCancel, taskInfo, isChecked, onCancel, onRerun, onCheck, getTaskLocation } = props;
     const theme = React.useContext(ThemeContext);
+    const { customStateCaptions } = useCustomSettings();
 
     const renderTaskDate = (
         taskInfo: RtqMonitoringTaskMeta,
@@ -70,7 +71,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                             </Fit>
                             <Fit>
                                 <span className={jsStyles.stateName()} data-tid="State">
-                                    {TaskState[taskInfo.state]}
+                                    {customStateCaptions[taskInfo.state]}
                                 </span>
                                 <span className={jsStyles.attempts()}>
                                     Attempts: <span data-tid="Attempts">{taskInfo.attempts}</span>
