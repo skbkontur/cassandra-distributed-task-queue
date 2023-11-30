@@ -15,20 +15,23 @@ interface RemoteTaskQueueApplicationProps {
     isSuperUser: boolean;
     customStateCaptions?: TaskStateDict;
     customSearchHelp?: JSX.Element;
+    hideMissingMeta?: boolean;
 }
 
 export const RemoteTaskQueueApplication = ({
     isSuperUser,
     rtqMonitoringApi,
-    customRenderer,
     useErrorHandlingContainer,
+    customRenderer,
     customStateCaptions,
     customSearchHelp,
+    hideMissingMeta,
 }: RemoteTaskQueueApplicationProps): JSX.Element => (
     <CustomSettingsProvider
         customStateCaptions={customStateCaptions}
         customSearchHelp={customSearchHelp}
-        customDetailRenderer={customRenderer}>
+        customDetailRenderer={customRenderer}
+        hideMissingMeta={hideMissingMeta}>
         <Routes>
             <Route
                 path="/"

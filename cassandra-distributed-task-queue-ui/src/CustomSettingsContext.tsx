@@ -20,12 +20,14 @@ export type TaskStateDict = Partial<Record<TaskState, string>>;
 export interface ICustomSettings {
     customDetailRenderer: ICustomRenderer;
     customStateCaptions: TaskStateDict;
+    hideMissingMeta: boolean;
     customSearchHelp?: JSX.Element;
 }
 
 const defaultValue: ICustomSettings = {
     customStateCaptions: TaskStateCaptions,
     customDetailRenderer: new CustomRenderer(),
+    hideMissingMeta: false,
 };
 
 const CustomSettingsContext = createContext<ICustomSettings>(defaultValue);
@@ -34,13 +36,19 @@ export const CustomSettingsProvider = ({
     customStateCaptions,
     customSearchHelp,
     customDetailRenderer,
+    hideMissingMeta,
     children,
 }: PropsWithChildren<Partial<ICustomSettings>>) => {
     const stateCaptions = customStateCaptions || TaskStateCaptions;
     const renderer = customDetailRenderer || new CustomRenderer();
     return (
         <CustomSettingsContext.Provider
-            value={{ customStateCaptions: stateCaptions, customDetailRenderer: renderer, customSearchHelp }}>
+            value={{
+                customStateCaptions: stateCaptions,
+                customDetailRenderer: renderer,
+                customSearchHelp,
+                hideMissingMeta: !!hideMissingMeta,
+            }}>
             {children}
         </CustomSettingsContext.Provider>
     );
