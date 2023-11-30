@@ -21,7 +21,7 @@ export function createDefaultRemoteTaskQueueSearchRequest(): RtqMonitoringSearch
 }
 
 export function isRemoteTaskQueueSearchRequestEmpty(searchRequest: Nullable<RtqMonitoringSearchRequest>): boolean {
-    if (searchRequest === null || searchRequest === undefined) {
+    if (!searchRequest) {
         return true;
     }
     return (
