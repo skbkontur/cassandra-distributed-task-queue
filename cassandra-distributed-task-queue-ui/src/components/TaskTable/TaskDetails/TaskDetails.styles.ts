@@ -55,6 +55,7 @@ export const jsStyles = {
         return css`
             padding: 8px;
             border-radius: 16px;
+            min-width: 548px;
         `;
     },
 

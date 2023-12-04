@@ -58,7 +58,6 @@ export const TaskDetailsMetaTable = ({
 
     const renderMetaInfo = (): ReactNode[] => {
         const executionTime = ticksToMilliseconds(executionDurationTicks);
-        console.log(executionTime);
         return [
             renderRow("TaskId", id, id => <AllowCopyToClipboard>{id}</AllowCopyToClipboard>),
             renderRow("State", customStateCaptions[state]),
@@ -72,9 +71,12 @@ export const TaskDetailsMetaTable = ({
             renderRow("ExpirationModificationTime", expirationModificationTicks, renderDate),
             renderRow("LastModificationTime", lastModificationTicks, renderDate),
             renderRow("Attempts", attempts.toString()),
-            renderRow("ParentTaskId", parentTaskId, parentTaskId => (
-                <RouterLink to={`../${parentTaskId}`}>{parentTaskId}</RouterLink>
-            )),
+            <tr key={"ParentTaskId"}>
+                <td>{"ParentTaskId"}</td>
+                <td data-tid={"ParentTaskId"}>
+                    <RouterLink to={`../${parentTaskId}`}>{parentTaskId}</RouterLink>
+                </td>
+            </tr>,
             <tr key="ChildTaskIds">
                 <td>ChildTaskIds</td>
                 <td data-tid="ChildTaskIds">

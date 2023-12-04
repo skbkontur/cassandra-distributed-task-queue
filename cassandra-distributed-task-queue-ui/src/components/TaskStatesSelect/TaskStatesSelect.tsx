@@ -17,7 +17,7 @@ export interface TaskStatesSelectProps {
 export const TaskStatesSelect = ({ value, onChange }: TaskStatesSelectProps) => {
     const { customStateCaptions } = useCustomSettings();
 
-    const isItemSelected = (item: TaskState): boolean => Boolean(value.find(i => i === item));
+    const isItemSelected = (item: TaskState): boolean => value.some(i => i === item);
 
     const selectItem = (val: boolean, taskState: TaskState) => {
         const newSelectedArray = value.slice();
