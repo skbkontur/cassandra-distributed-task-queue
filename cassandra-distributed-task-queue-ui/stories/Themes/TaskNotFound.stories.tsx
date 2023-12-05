@@ -8,7 +8,6 @@ import {
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
-import { CustomRenderer } from "../../src/Domain/CustomRenderer";
 import { TaskDetailsPageContainer } from "../../src/containers/TaskDetailsPageContainer";
 import { RtqMonitoringApiFake } from "../Api/RtqMonitoringApiFake";
 
@@ -27,7 +26,6 @@ const TaskDetailsContainer = ({ theme }: { theme: Theme }) => (
                     element={
                         <TaskDetailsPageContainer
                             rtqMonitoringApi={new RtqMonitoringApiFake()}
-                            customRenderer={new CustomRenderer()}
                             useErrorHandlingContainer
                             isSuperUser
                         />

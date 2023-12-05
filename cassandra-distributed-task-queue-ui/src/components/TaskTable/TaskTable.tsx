@@ -13,8 +13,10 @@ import { jsStyles } from "./TaskTable.styles";
 export interface TaskTableProps {
     taskInfos: RtqMonitoringTaskMeta[];
     allowRerunOrCancel: boolean;
+    chosenTasks: Set<string>;
     onRerun: (x0: string) => void;
     onCancel: (x0: string) => void;
+    onCheck: (taskId: string) => void;
     getTaskLocation: (x0: string) => string | Partial<Location>;
 }
 
@@ -35,6 +37,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
 
     public shouldComponentUpdate(nextProps: TaskTableProps, nextState: TasksTableState): boolean {
         return (
+            this.props.chosenTasks.size !== nextProps.chosenTasks.size ||
             !isEqual(this.props.taskInfos, nextProps.taskInfos) ||
             !isEqual(this.props.allowRerunOrCancel, nextProps.allowRerunOrCancel) ||
             !isEqual(this.state.openedModal, nextState.openedModal) ||
@@ -62,7 +65,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
     }
 
     public renderRow(item: RtqMonitoringTaskMeta): JSX.Element {
-        const { allowRerunOrCancel, getTaskLocation } = this.props;
+        const { allowRerunOrCancel, chosenTasks, onCheck, getTaskLocation } = this.props;
         return (
             <div key={item.id} className={jsStyles.taskDetailsRow()}>
                 <TaskDetails
@@ -72,6 +75,8 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
                     onRerun={() => this.rerun(item.id)}
                     taskInfo={item}
                     allowRerunOrCancel={allowRerunOrCancel}
+                    isChecked={chosenTasks.has(item.id)}
+                    onCheck={() => onCheck(item.id)}
                 />
             </div>
         );

@@ -2,6 +2,7 @@ import {
     DEFAULT_THEME,
     DEFAULT_THEME_8PX_OLD,
     FLAT_THEME_8PX_OLD,
+    THEME_2022,
     ThemeContext,
     ThemeFactory,
 } from "@skbkontur/react-ui";
@@ -40,3 +41,4 @@ export const Default = (): JSX.Element => <TypesContainer theme={DEFAULT_THEME} 
 export const Flat = (): JSX.Element => <TypesContainer theme={FLAT_THEME_8PX_OLD} />;
 export const Old = (): JSX.Element => <TypesContainer theme={DEFAULT_THEME_8PX_OLD} />;
 export const Dark = (): JSX.Element => <TypesContainer theme={ThemeFactory.create(reactUiDark)} />;
+export const New = () => <TypesContainer theme={THEME_2022} />;

@@ -1,4 +1,4 @@
-import { isValid, parse as parseDateInternal } from "date-fns";
+import { endOfDay, isValid, parse as parseDateInternal, startOfDay } from "date-fns";
 import difference from "lodash/difference";
 
 import { DateTimeRange } from "../DataTypes/DateTimeRange";
@@ -147,8 +147,8 @@ export class DateTimeRangeMapper {
             return this.defaultValue;
         }
         return {
-            lowerBound: lowerBound,
-            upperBound: upperBound,
+            lowerBound: lowerBound && startOfDay(lowerBound),
+            upperBound: upperBound && endOfDay(upperBound),
         };
     }
 

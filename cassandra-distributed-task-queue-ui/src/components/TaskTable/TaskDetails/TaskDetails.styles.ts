@@ -45,10 +45,17 @@ export const jsStyles = {
         `;
     },
 
+    checkbox(): string {
+        return css`
+            margin-top: -4px;
+        `;
+    },
+
     taskDetails(): string {
         return css`
-            padding: 5px 5px 5px 7px;
-            border-radius: 2px;
+            padding: 8px;
+            border-radius: 16px;
+            min-width: 548px;
         `;
     },
 

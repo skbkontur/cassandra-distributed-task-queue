@@ -4,7 +4,6 @@ import { useLocation, Location, useParams } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
-import { ICustomRenderer } from "../Domain/CustomRenderer";
 import { RouteUtils } from "../Domain/Utils/RouteUtils";
 import { ErrorHandlingContainer } from "../components/ErrorHandling/ErrorHandlingContainer";
 import { TaskDetailsPage } from "../components/TaskDetailsPage/TaskDetailsPage";
@@ -12,7 +11,6 @@ import { TaskNotFoundPage } from "../components/TaskNotFoundPage/TaskNotFoundPag
 
 interface TaskDetailsPageContainerProps {
     rtqMonitoringApi: IRtqMonitoringApi;
-    customRenderer: ICustomRenderer;
     isSuperUser: boolean;
     useErrorHandlingContainer: boolean;
 }
@@ -21,7 +19,6 @@ export const TaskDetailsPageContainer = ({
     rtqMonitoringApi,
     useErrorHandlingContainer,
     isSuperUser,
-    customRenderer,
 }: TaskDetailsPageContainerProps): JSX.Element => {
     const { pathname, state } = useLocation();
     const parentLocation = tryGetParentLocationFromHistoryState(state);
@@ -74,7 +71,6 @@ export const TaskDetailsPageContainer = ({
                     parentLocation={parentLocation || RouteUtils.backUrl(pathname)}
                     allowRerunOrCancel={isSuperUser}
                     taskDetails={taskDetails}
-                    customRenderer={customRenderer}
                     onRerun={handlerRerun}
                     onCancel={handlerCancel}
                 />

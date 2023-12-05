@@ -6,8 +6,8 @@ import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
 import { Location } from "react-router-dom";
 
+import { useCustomSettings } from "../../CustomSettingsContext";
 import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
-import { ICustomRenderer } from "../../Domain/CustomRenderer";
 import { cancelableStates, rerunableStates } from "../../Domain/TaskStateExtensions";
 import { searchRequestMapping } from "../../containers/TasksPageContainer";
 import { Accordion } from "../Accordion/Accordion";
@@ -21,7 +21,6 @@ import { jsStyles } from "./TaskDetailsPage.styles";
 export interface TaskDetailsPageProps {
     parentLocation: string;
     taskDetails: Nullable<RtqMonitoringTaskModel>;
-    customRenderer: ICustomRenderer;
     getTaskLocation: (id: string) => string | Partial<Location>;
     allowRerunOrCancel: boolean;
     onRerun: (id: string) => void;
@@ -31,7 +30,6 @@ export interface TaskDetailsPageProps {
 export function TaskDetailsPage({
     parentLocation,
     taskDetails,
-    customRenderer,
     getTaskLocation,
     allowRerunOrCancel,
     onRerun,
@@ -40,6 +38,7 @@ export function TaskDetailsPage({
     const [openedModal, setOpenedModal] = React.useState(false);
     const [modalType, setModalType] = React.useState<"Cancel" | "Rerun">("Cancel");
     const theme = React.useContext(ThemeContext);
+    const { customDetailRenderer } = useCustomSettings();
 
     const rerun = () => {
         setOpenedModal(true);
@@ -59,7 +58,7 @@ export function TaskDetailsPage({
         }
         const isCancelable = cancelableStates.includes(taskDetails.taskMeta.state);
         const isRerunable = rerunableStates.includes(taskDetails.taskMeta.state);
-        const relatedTasksRequest = customRenderer.getRelatedTasksLocation(taskDetails);
+        const relatedTasksRequest = customDetailRenderer.getRelatedTasksLocation(taskDetails);
         if (!isCancelable && !isRerunable && relatedTasksRequest == null) {
             return null;
         }
@@ -183,7 +182,7 @@ export function TaskDetailsPage({
                             <Fit className={jsStyles.taskDataContainer()}>
                                 <Accordion
                                     renderCaption={null}
-                                    renderValue={customRenderer.renderDetails}
+                                    renderValue={customDetailRenderer.renderDetails}
                                     value={taskDetails.taskData}
                                     title="TaskData"
                                 />
