@@ -1,5 +1,12 @@
 # Changelog
 
+## v3.1.0 - 2023.12.05
+- add multiple choice for tasks
+- add prop for custom status names
+- add prop for hiding null data in meta table
+- add prop for custom search help
+- small update of layout
+
 ## v3.0.0 - 2023.10.23
 - Add new bundler Vite instead of WebPack
 - Update Node to v20
