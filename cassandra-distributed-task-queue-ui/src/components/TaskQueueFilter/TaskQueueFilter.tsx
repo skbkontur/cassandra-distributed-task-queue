@@ -1,7 +1,7 @@
 import { ColumnStack, Fill, Fit, Fixed, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Input, Link } from "@skbkontur/react-ui";
 import React from "react";
-import type { JSX } from "react";
+import type { JSX, KeyboardEvent } from "react";
 
 import { RtqMonitoringSearchRequest } from "../../Domain/Api/RtqMonitoringSearchRequest";
 import { DateTimeRangePicker } from "../DateTimeRangePicker/DateTimeRangePicker";
@@ -16,6 +16,7 @@ export interface TaskQueueFilterProps {
     availableTaskTypes: string[] | null;
     onChange: (filterParams: Partial<RtqMonitoringSearchRequest>) => void;
     onSearchButtonClick: () => void;
+    withTaskLimit?: boolean;
 }
 
 export function TaskQueueFilter({
@@ -23,6 +24,7 @@ export function TaskQueueFilter({
     availableTaskTypes,
     onChange,
     onSearchButtonClick,
+    withTaskLimit,
 }: TaskQueueFilterProps): JSX.Element {
     const [openedModal, setOpenedModal] = React.useState(false);
 
@@ -32,6 +34,12 @@ export function TaskQueueFilter({
 
     const closeModal = () => {
         setOpenedModal(false);
+    };
+
+    const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+            onSearchButtonClick();
+        }
     };
 
     const { enqueueTimestampRange, queryString, states, names, count } = value;
@@ -49,11 +57,7 @@ export function TaskQueueFilter({
                             data-tid={"SearchStringInput"}
                             value={queryString || ""}
                             onValueChange={value => onChange({ queryString: value })}
-                            onKeyDown={e => {
-                                if (e.key === "Enter") {
-                                    onSearchButtonClick();
-                                }
-                            }}
+                            onKeyDown={onKeyDown}
                         />
                     </Fit>
                     <Fit className={jsStyles.searchLink()}>
@@ -64,15 +68,18 @@ export function TaskQueueFilter({
                     </Fit>
                 </ColumnStack>
             </Fill>
-            <Fixed width={72}>
-                <Input
-                    width="100%"
-                    data-tid="MaxInput"
-                    placeholder="Max"
-                    value={String(count)}
-                    onValueChange={value => onChange({ count: Number(value) })}
-                />
-            </Fixed>
+            {withTaskLimit && (
+                <Fixed width={72}>
+                    <Input
+                        width="100%"
+                        data-tid="MaxInput"
+                        placeholder="Max"
+                        value={String(count)}
+                        onValueChange={value => onChange({ count: Number(value) })}
+                        onKeyDown={onKeyDown}
+                    />
+                </Fixed>
+            )}
             <Fit>
                 <DateTimeRangePicker
                     data-tid="DateTimeRangePicker"

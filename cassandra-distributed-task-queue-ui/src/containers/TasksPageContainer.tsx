@@ -113,6 +113,10 @@ export const TasksPageContainer = ({
         }
 
         const query = getQuery(newRequest);
+        if (query === pathname + search) {
+            loadData(newRequest);
+            return;
+        }
         navigate(query);
     };
 
@@ -197,6 +201,7 @@ export const TasksPageContainer = ({
                                 availableTaskTypes={availableTaskNames}
                                 onChange={onChangeFilter}
                                 onSearchButtonClick={handleSearch}
+                                withTaskLimit={isNotPagingOnBackend}
                             />
                         </Fit>
                         <Fit>
