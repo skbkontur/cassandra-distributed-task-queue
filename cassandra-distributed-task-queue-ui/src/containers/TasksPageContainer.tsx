@@ -6,6 +6,7 @@ import { Location, useLocation, useNavigate } from "react-router-dom";
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringSearchResults } from "../Domain/Api/RtqMonitoringSearchResults";
+import { RtqMonitoringTaskMeta } from "../Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../Domain/Api/TaskState";
 import { QueryStringMapping } from "../Domain/QueryStringMapping/QueryStringMapping";
 import { QueryStringMappingBuilder } from "../Domain/QueryStringMapping/QueryStringMappingBuilder";
@@ -25,7 +26,10 @@ interface TasksPageContainerProps {
     rtqMonitoringApi: IRtqMonitoringApi;
     isSuperUser: boolean;
     useErrorHandlingContainer: boolean;
+    isNotPagingOnBackend?: boolean;
 }
+
+const maxTaskCountOnPage = 20;
 
 export const searchRequestMapping: QueryStringMapping<RtqMonitoringSearchRequest> =
     new QueryStringMappingBuilder<RtqMonitoringSearchRequest>()
@@ -41,6 +45,7 @@ export const TasksPageContainer = ({
     rtqMonitoringApi,
     isSuperUser,
     useErrorHandlingContainer,
+    isNotPagingOnBackend,
 }: TasksPageContainerProps): JSX.Element => {
     const navigate = useNavigate();
     const { search, pathname } = useLocation();
@@ -53,13 +58,19 @@ export const TasksPageContainer = ({
         taskMetas: [],
         totalCount: "0",
     });
+    const [visibleTasks, setVisibleTasks] = useState<RtqMonitoringTaskMeta[]>([]);
     const [chosenTasks, setChosenTasks] = useState(new Set<string>());
-    const isAllTasksChosen = chosenTasks.size === results.taskMetas.length;
+    const isAllTasksChosen = chosenTasks.size === visibleTasks.length;
 
     useEffect(() => {
         const newRequest = getRequestBySearchQuery(search);
-        loadData(newRequest);
-        setRequest(newRequest);
+        if (isNotPagingOnBackend && results.taskMetas.length !== 0) {
+            const { offset } = newRequest;
+            setVisibleTasks(results.taskMetas.slice(offset || 0, maxTaskCountOnPage));
+        } else {
+            loadData(newRequest);
+            setRequest(newRequest);
+        }
     }, [search]);
 
     const getTaskLocation = (id: string): string | Partial<Location> => ({
@@ -86,7 +97,7 @@ export const TasksPageContainer = ({
         if (isAllTasksChosen) {
             setChosenTasks(new Set());
         } else {
-            const ids = results.taskMetas.map(x => x.id);
+            const ids = visibleTasks.map(x => x.id);
             setChosenTasks(new Set(ids));
         }
     };
@@ -102,10 +113,6 @@ export const TasksPageContainer = ({
         }
 
         const query = getQuery(newRequest);
-        if (query === pathname + search) {
-            loadData(newRequest);
-            return;
-        }
         navigate(query);
     };
 
@@ -158,7 +165,7 @@ export const TasksPageContainer = ({
     const getRequestBySearchQuery = (searchQuery: string): RtqMonitoringSearchRequest => {
         const request: RtqMonitoringSearchRequest = searchRequestMapping.parse(searchQuery);
         request.offset ||= 0;
-        request.count ||= 20;
+        request.count = isNotPagingOnBackend ? request.count : request.count || maxTaskCountOnPage;
         return request;
     };
 
@@ -166,14 +173,13 @@ export const TasksPageContainer = ({
         pathname + searchRequestMapping.stringify({ ...request, ...overrides });
 
     const goToPage = (page: number) => {
-        const count = request.count || 20;
-        navigate(getQuery({ offset: (page - 1) * count }));
+        navigate(getQuery({ offset: (page - 1) * maxTaskCountOnPage }));
     };
 
     const onChangeFilter = (value: Partial<RtqMonitoringSearchRequest>) => setRequest({ ...request, ...value });
 
     const isStateCompletelyLoaded = results && availableTaskNames;
-    const count = request.count || 20;
+    const count = request.count || maxTaskCountOnPage;
     const offset = request.offset || 0;
     const counter = Number((results && results.totalCount) || 0);
     const massActionTarget = chosenTasks.size > 0 ? "Chosen" : "All";
@@ -230,7 +236,7 @@ export const TasksPageContainer = ({
                                         <TasksTable
                                             getTaskLocation={getTaskLocation}
                                             allowRerunOrCancel={isSuperUser}
-                                            taskInfos={results.taskMetas}
+                                            taskInfos={visibleTasks}
                                             chosenTasks={chosenTasks}
                                             onRerun={id => handleRerunTasks([id])}
                                             onCancel={id => handleCancelTasks([id])}
@@ -280,8 +286,15 @@ export const TasksPageContainer = ({
 
         setLoading(true);
         try {
-            const results = await rtqMonitoringApi.search(request);
+            const results = await rtqMonitoringApi.search(
+                isNotPagingOnBackend ? { ...request, offset: 0 } : { ...request, count: maxTaskCountOnPage }
+            );
             setResults(results);
+            if (isNotPagingOnBackend) {
+                setVisibleTasks(results.taskMetas.slice(offset || 0, maxTaskCountOnPage));
+            } else {
+                setVisibleTasks(results.taskMetas);
+            }
         } finally {
             setLoading(false);
         }

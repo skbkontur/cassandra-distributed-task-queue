@@ -1,4 +1,4 @@
-import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
+import { ColumnStack, Fill, Fit, Fixed, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Input, Link } from "@skbkontur/react-ui";
 import React from "react";
 import type { JSX } from "react";
@@ -34,7 +34,7 @@ export function TaskQueueFilter({
         setOpenedModal(false);
     };
 
-    const { enqueueTimestampRange, queryString, states, names } = value;
+    const { enqueueTimestampRange, queryString, states, names, count } = value;
     const defaultEnqueueDateTimeRange = {
         lowerBound: null,
         upperBound: null,
@@ -49,7 +49,7 @@ export function TaskQueueFilter({
                             data-tid={"SearchStringInput"}
                             value={queryString || ""}
                             onValueChange={value => onChange({ queryString: value })}
-                            onKeyPress={e => {
+                            onKeyDown={e => {
                                 if (e.key === "Enter") {
                                     onSearchButtonClick();
                                 }
@@ -64,6 +64,15 @@ export function TaskQueueFilter({
                     </Fit>
                 </ColumnStack>
             </Fill>
+            <Fixed width={72}>
+                <Input
+                    width="100%"
+                    data-tid="MaxInput"
+                    placeholder="Max"
+                    value={String(count)}
+                    onValueChange={value => onChange({ count: Number(value) })}
+                />
+            </Fixed>
             <Fit>
                 <DateTimeRangePicker
                     data-tid="DateTimeRangePicker"
