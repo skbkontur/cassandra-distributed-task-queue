@@ -183,7 +183,6 @@ export const TasksPageContainer = ({
     const onChangeFilter = (value: Partial<RtqMonitoringSearchRequest>) => setRequest({ ...request, ...value });
 
     const isStateCompletelyLoaded = results && availableTaskNames;
-    const count = request.count || maxTaskCountOnPage;
     const offset = request.offset || 0;
     const counter = Number((results && results.totalCount) || 0);
     const massActionTarget = chosenTasks.size > 0 ? "Chosen" : "All";
@@ -249,11 +248,11 @@ export const TasksPageContainer = ({
                                         />
                                     </Fit>
                                     <Fit>
-                                        {Math.ceil(counter / count) > 1 && (
+                                        {Math.ceil(counter / maxTaskCountOnPage) > 1 && (
                                             <Paging
                                                 data-tid="Paging"
-                                                activePage={Math.floor(offset / count) + 1}
-                                                pagesCount={Math.ceil(Math.min(counter, 10000) / count)}
+                                                activePage={Math.floor(offset / maxTaskCountOnPage) + 1}
+                                                pagesCount={Math.ceil(Math.min(counter, 10000) / maxTaskCountOnPage)}
                                                 onPageChange={goToPage}
                                             />
                                         )}
