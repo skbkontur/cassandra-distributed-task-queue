@@ -64,13 +64,15 @@ export const TasksPageContainer = ({
 
     useEffect(() => {
         const newRequest = getRequestBySearchQuery(search);
-        if (isNotPagingOnBackend && results.taskMetas.length !== 0) {
-            const { offset } = newRequest;
-            setVisibleTasks(results.taskMetas.slice(offset || 0, maxTaskCountOnPage));
+        if (isNotPagingOnBackend && request.offset !== newRequest.offset) {
+            const offset = newRequest.offset || 0;
+            setVisibleTasks(results.taskMetas.slice(offset, offset + maxTaskCountOnPage));
         } else {
-            loadData(newRequest);
-            setRequest(newRequest);
+            loadData(
+                isNotPagingOnBackend ? { ...newRequest, offset: 0 } : { ...newRequest, count: maxTaskCountOnPage }
+            );
         }
+        setRequest(newRequest);
     }, [search]);
 
     const getTaskLocation = (id: string): string | Partial<Location> => ({
@@ -290,15 +292,11 @@ export const TasksPageContainer = ({
 
         setLoading(true);
         try {
-            const results = await rtqMonitoringApi.search(
-                isNotPagingOnBackend ? { ...request, offset: 0 } : { ...request, count: maxTaskCountOnPage }
-            );
+            const results = await rtqMonitoringApi.search(request);
             setResults(results);
-            if (isNotPagingOnBackend) {
-                setVisibleTasks(results.taskMetas.slice(offset || 0, maxTaskCountOnPage));
-            } else {
-                setVisibleTasks(results.taskMetas);
-            }
+            setVisibleTasks(
+                isNotPagingOnBackend ? results.taskMetas.slice(offset, offset + maxTaskCountOnPage) : results.taskMetas
+            );
         } finally {
             setLoading(false);
         }

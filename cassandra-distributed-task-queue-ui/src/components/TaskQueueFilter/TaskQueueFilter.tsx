@@ -74,7 +74,7 @@ export function TaskQueueFilter({
                         width="100%"
                         data-tid="MaxInput"
                         placeholder="Max"
-                        value={String(count)}
+                        value={String(count || "")}
                         onValueChange={value => onChange({ count: Number(value) })}
                         onKeyDown={onKeyDown}
                     />
