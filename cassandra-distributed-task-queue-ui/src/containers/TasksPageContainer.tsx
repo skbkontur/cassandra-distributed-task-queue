@@ -67,6 +67,7 @@ export const TasksPageContainer = ({
         if (isNotPagingOnBackend && request.offset !== newRequest.offset) {
             const offset = newRequest.offset || 0;
             setVisibleTasks(results.taskMetas.slice(offset, offset + maxTaskCountOnPage));
+            setLoading(false);
         } else {
             loadData(
                 isNotPagingOnBackend ? { ...newRequest, offset: 0 } : { ...newRequest, count: maxTaskCountOnPage }
@@ -179,6 +180,7 @@ export const TasksPageContainer = ({
         pathname + searchRequestMapping.stringify({ ...request, ...overrides });
 
     const goToPage = (page: number) => {
+        setLoading(true);
         navigate(getQuery({ offset: (page - 1) * maxTaskCountOnPage }));
     };
 
