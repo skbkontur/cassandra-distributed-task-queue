@@ -16,7 +16,7 @@ interface RemoteTaskQueueApplicationProps {
     customStateCaptions?: TaskStateDict;
     customSearchHelp?: JSX.Element;
     hideMissingMeta?: boolean;
-    isNotPagingOnBackend?: boolean;
+    useFrontPaging?: boolean;
 }
 
 export const RemoteTaskQueueApplication = ({
@@ -27,7 +27,7 @@ export const RemoteTaskQueueApplication = ({
     customStateCaptions,
     customSearchHelp,
     hideMissingMeta,
-    isNotPagingOnBackend,
+    useFrontPaging,
 }: RemoteTaskQueueApplicationProps): JSX.Element => (
     <CustomSettingsProvider
         customStateCaptions={customStateCaptions}
@@ -42,7 +42,7 @@ export const RemoteTaskQueueApplication = ({
                         isSuperUser={isSuperUser}
                         rtqMonitoringApi={rtqMonitoringApi}
                         useErrorHandlingContainer={useErrorHandlingContainer}
-                        isNotPagingOnBackend={isNotPagingOnBackend}
+                        useFrontPaging={useFrontPaging}
                     />
                 }
             />

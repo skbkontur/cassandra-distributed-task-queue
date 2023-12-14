@@ -26,7 +26,7 @@ interface TasksPageContainerProps {
     rtqMonitoringApi: IRtqMonitoringApi;
     isSuperUser: boolean;
     useErrorHandlingContainer: boolean;
-    isNotPagingOnBackend?: boolean;
+    useFrontPaging?: boolean;
 }
 
 const maxTaskCountOnPage = 20;
@@ -45,7 +45,7 @@ export const TasksPageContainer = ({
     rtqMonitoringApi,
     isSuperUser,
     useErrorHandlingContainer,
-    isNotPagingOnBackend,
+    useFrontPaging,
 }: TasksPageContainerProps): JSX.Element => {
     const navigate = useNavigate();
     const { search, pathname } = useLocation();
@@ -64,14 +64,11 @@ export const TasksPageContainer = ({
 
     useEffect(() => {
         const newRequest = getRequestBySearchQuery(search);
-        if (isNotPagingOnBackend && request.offset !== newRequest.offset) {
+        if (useFrontPaging && request.offset !== newRequest.offset) {
             const offset = newRequest.offset || 0;
             setVisibleTasks(results.taskMetas.slice(offset, offset + maxTaskCountOnPage));
-            setLoading(false);
         } else {
-            loadData(
-                isNotPagingOnBackend ? { ...newRequest, offset: 0 } : { ...newRequest, count: maxTaskCountOnPage }
-            );
+            loadData(useFrontPaging ? { ...newRequest, offset: 0 } : { ...newRequest, count: maxTaskCountOnPage });
         }
         setRequest(newRequest);
     }, [search]);
@@ -172,7 +169,7 @@ export const TasksPageContainer = ({
     const getRequestBySearchQuery = (searchQuery: string): RtqMonitoringSearchRequest => {
         const request: RtqMonitoringSearchRequest = searchRequestMapping.parse(searchQuery);
         request.offset ||= 0;
-        request.count = isNotPagingOnBackend ? request.count : request.count || maxTaskCountOnPage;
+        request.count = useFrontPaging ? request.count : request.count || maxTaskCountOnPage;
         return request;
     };
 
@@ -180,7 +177,6 @@ export const TasksPageContainer = ({
         pathname + searchRequestMapping.stringify({ ...request, ...overrides });
 
     const goToPage = (page: number) => {
-        setLoading(true);
         navigate(getQuery({ offset: (page - 1) * maxTaskCountOnPage }));
     };
 
@@ -204,7 +200,7 @@ export const TasksPageContainer = ({
                                 availableTaskTypes={availableTaskNames}
                                 onChange={onChangeFilter}
                                 onSearchButtonClick={handleSearch}
-                                withTaskLimit={isNotPagingOnBackend}
+                                withTaskLimit={useFrontPaging}
                             />
                         </Fit>
                         <Fit>
@@ -297,7 +293,7 @@ export const TasksPageContainer = ({
             const results = await rtqMonitoringApi.search(request);
             setResults(results);
             setVisibleTasks(
-                isNotPagingOnBackend ? results.taskMetas.slice(offset, offset + maxTaskCountOnPage) : results.taskMetas
+                useFrontPaging ? results.taskMetas.slice(offset, offset + maxTaskCountOnPage) : results.taskMetas
             );
         } finally {
             setLoading(false);

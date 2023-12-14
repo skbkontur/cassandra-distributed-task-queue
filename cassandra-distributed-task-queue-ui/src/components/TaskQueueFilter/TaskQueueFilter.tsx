@@ -42,6 +42,13 @@ export function TaskQueueFilter({
         }
     };
 
+    const onChangeTaskLimit = (value: string) => {
+        if (isNaN(Number(value)) || Number(value) > 9999) {
+            return;
+        }
+        onChange({ count: value === "" ? null : Number(value) });
+    };
+
     const { enqueueTimestampRange, queryString, states, names, count } = value;
     const defaultEnqueueDateTimeRange = {
         lowerBound: null,
@@ -75,7 +82,7 @@ export function TaskQueueFilter({
                         data-tid="MaxInput"
                         placeholder="Max"
                         value={String(count || "")}
-                        onValueChange={value => onChange({ count: Number(value) })}
+                        onValueChange={onChangeTaskLimit}
                         onKeyDown={onKeyDown}
                     />
                 </Fixed>
