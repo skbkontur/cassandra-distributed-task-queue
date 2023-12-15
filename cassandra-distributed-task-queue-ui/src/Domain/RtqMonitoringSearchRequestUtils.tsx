@@ -16,7 +16,6 @@ export function createDefaultRemoteTaskQueueSearchRequest(): RtqMonitoringSearch
         states: null,
         names: null,
         offset: 0,
-        count: 20,
     };
 }
 

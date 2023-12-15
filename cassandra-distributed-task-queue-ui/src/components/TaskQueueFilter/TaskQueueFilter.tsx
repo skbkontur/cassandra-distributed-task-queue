@@ -1,7 +1,7 @@
-import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
+import { ColumnStack, Fill, Fit, Fixed, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Input, Link } from "@skbkontur/react-ui";
 import React from "react";
-import type { JSX } from "react";
+import type { JSX, KeyboardEvent } from "react";
 
 import { RtqMonitoringSearchRequest } from "../../Domain/Api/RtqMonitoringSearchRequest";
 import { DateTimeRangePicker } from "../DateTimeRangePicker/DateTimeRangePicker";
@@ -16,6 +16,7 @@ export interface TaskQueueFilterProps {
     availableTaskTypes: string[] | null;
     onChange: (filterParams: Partial<RtqMonitoringSearchRequest>) => void;
     onSearchButtonClick: () => void;
+    withTaskLimit?: boolean;
 }
 
 export function TaskQueueFilter({
@@ -23,6 +24,7 @@ export function TaskQueueFilter({
     availableTaskTypes,
     onChange,
     onSearchButtonClick,
+    withTaskLimit,
 }: TaskQueueFilterProps): JSX.Element {
     const [openedModal, setOpenedModal] = React.useState(false);
 
@@ -34,7 +36,20 @@ export function TaskQueueFilter({
         setOpenedModal(false);
     };
 
-    const { enqueueTimestampRange, queryString, states, names } = value;
+    const onKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Enter") {
+            onSearchButtonClick();
+        }
+    };
+
+    const onChangeTaskLimit = (value: string) => {
+        if (isNaN(Number(value)) || Number(value) > 9999) {
+            return;
+        }
+        onChange({ count: value === "" ? null : Number(value) });
+    };
+
+    const { enqueueTimestampRange, queryString, states, names, count } = value;
     const defaultEnqueueDateTimeRange = {
         lowerBound: null,
         upperBound: null,
@@ -49,11 +64,7 @@ export function TaskQueueFilter({
                             data-tid={"SearchStringInput"}
                             value={queryString || ""}
                             onValueChange={value => onChange({ queryString: value })}
-                            onKeyPress={e => {
-                                if (e.key === "Enter") {
-                                    onSearchButtonClick();
-                                }
-                            }}
+                            onKeyDown={onKeyDown}
                         />
                     </Fit>
                     <Fit className={jsStyles.searchLink()}>
@@ -64,6 +75,18 @@ export function TaskQueueFilter({
                     </Fit>
                 </ColumnStack>
             </Fill>
+            {withTaskLimit && (
+                <Fixed width={72}>
+                    <Input
+                        width="100%"
+                        data-tid="MaxInput"
+                        placeholder="Max"
+                        value={String(count || "")}
+                        onValueChange={onChangeTaskLimit}
+                        onKeyDown={onKeyDown}
+                    />
+                </Fixed>
+            )}
             <Fit>
                 <DateTimeRangePicker
                     data-tid="DateTimeRangePicker"
