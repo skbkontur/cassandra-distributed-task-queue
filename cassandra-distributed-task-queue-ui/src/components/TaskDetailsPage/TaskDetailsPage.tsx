@@ -57,18 +57,16 @@ export function TaskDetailsPage({
             return null;
         }
 
-        const isCancelable =
-            taskDetails.taskActions == null
-                ? allowRerunOrCancel && cancelableStates.includes(taskDetails.taskMeta.state)
-                : taskDetails.taskActions.canCancel;
+        const canCancel = taskDetails.taskMeta.taskActions
+            ? taskDetails.taskMeta.taskActions.canCancel
+            : allowRerunOrCancel && cancelableStates.includes(taskDetails.taskMeta.state);
 
-        const isRerunable =
-            taskDetails.taskActions == null
-                ? allowRerunOrCancel && rerunableStates.includes(taskDetails.taskMeta.state)
-                : taskDetails.taskActions.canRerun;
+        const canRerun = taskDetails.taskMeta.taskActions
+            ? taskDetails.taskMeta.taskActions.canRerun
+            : allowRerunOrCancel && rerunableStates.includes(taskDetails.taskMeta.state);
 
         const relatedTasksRequest = customDetailRenderer.getRelatedTasksLocation(taskDetails);
-        if (!isCancelable && !isRerunable && relatedTasksRequest == null) {
+        if (!canCancel && !canRerun && relatedTasksRequest == null) {
             return null;
         }
 
@@ -86,14 +84,14 @@ export function TaskDetailsPage({
                         </RouterLink>
                     </Fit>
                 )}
-                {isCancelable && (
+                {canCancel && (
                     <Fit>
                         <Link icon={<XIcon16Regular />} use="danger" data-tid="CancelButton" onClick={cancel}>
                             Cancel task
                         </Link>
                     </Fit>
                 )}
-                {isRerunable && (
+                {canRerun && (
                     <Fit>
                         <Button
                             use="link"
