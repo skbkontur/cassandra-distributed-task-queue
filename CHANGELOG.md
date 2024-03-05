@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.2.0 - 2024.03.05
+- always render task tree link; render action buttons based on server response
+- add same logic to details cards in table
+
 ## v3.1.0 - 2023.12.05
 - add multiple choice for tasks
 - add prop for custom status names
