@@ -54,6 +54,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
         [JsonConverter(typeof(StringEnumConverter))]
         public TaskState State { get; set; }
 
+        [CanBeNull]
+        [JsonProperty("taskActions")]
+        public TaskActions TaskActions { get; set; }
+
         [JsonProperty("attempts")]
         public int Attempts { get; set; }
 

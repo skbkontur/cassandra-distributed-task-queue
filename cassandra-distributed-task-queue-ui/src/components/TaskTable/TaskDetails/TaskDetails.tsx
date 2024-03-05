@@ -37,6 +37,9 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
     const theme = React.useContext(ThemeContext);
     const { customStateCaptions } = useCustomSettings();
 
+    const canCancel = taskInfo.taskActions ? taskInfo.taskActions.canCancel : cancelableStates.includes(taskInfo.state);
+    const canRerun = taskInfo.taskActions ? taskInfo.taskActions.canRerun : rerunableStates.includes(taskInfo.state);
+
     const renderTaskDate = (
         taskInfo: RtqMonitoringTaskMeta,
         caption: string,
@@ -93,7 +96,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                         <Fit>
                                             <Link
                                                 data-tid="Cancel"
-                                                disabled={!cancelableStates.includes(taskInfo.state)}
+                                                disabled={!canCancel}
                                                 onClick={onCancel}
                                                 icon={<XIcon16Regular />}>
                                                 Cancel
@@ -102,7 +105,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
                                         <Fit>
                                             <Link
                                                 data-tid="Rerun"
-                                                disabled={!rerunableStates.includes(taskInfo.state)}
+                                                disabled={!canRerun}
                                                 onClick={onRerun}
                                                 icon={<ArrowRoundTimeForwardIcon16Regular />}>
                                                 Rerun

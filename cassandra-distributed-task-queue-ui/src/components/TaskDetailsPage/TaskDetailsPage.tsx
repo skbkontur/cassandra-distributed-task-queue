@@ -56,10 +56,17 @@ export function TaskDetailsPage({
         if (!taskDetails) {
             return null;
         }
-        const isCancelable = cancelableStates.includes(taskDetails.taskMeta.state);
-        const isRerunable = rerunableStates.includes(taskDetails.taskMeta.state);
+
+        const canCancel = taskDetails.taskMeta.taskActions
+            ? taskDetails.taskMeta.taskActions.canCancel
+            : allowRerunOrCancel && cancelableStates.includes(taskDetails.taskMeta.state);
+
+        const canRerun = taskDetails.taskMeta.taskActions
+            ? taskDetails.taskMeta.taskActions.canRerun
+            : allowRerunOrCancel && rerunableStates.includes(taskDetails.taskMeta.state);
+
         const relatedTasksRequest = customDetailRenderer.getRelatedTasksLocation(taskDetails);
-        if (!isCancelable && !isRerunable && relatedTasksRequest == null) {
+        if (!canCancel && !canRerun && relatedTasksRequest == null) {
             return null;
         }
 
@@ -77,14 +84,14 @@ export function TaskDetailsPage({
                         </RouterLink>
                     </Fit>
                 )}
-                {isCancelable && (
+                {canCancel && (
                     <Fit>
                         <Link icon={<XIcon16Regular />} use="danger" data-tid="CancelButton" onClick={cancel}>
                             Cancel task
                         </Link>
                     </Fit>
                 )}
-                {isRerunable && (
+                {canRerun && (
                     <Fit>
                         <Button
                             use="link"
@@ -160,7 +167,7 @@ export function TaskDetailsPage({
                         borderBottom
                         data-tid="Header"
                         title={`Задача ${taskDetails.taskMeta.name}`}
-                        tools={taskDetails && allowRerunOrCancel ? renderButtons() : null}>
+                        tools={renderButtons()}>
                         <TaskTimeLine
                             getHrefToTask={getTaskLocation}
                             taskMeta={taskDetails.taskMeta}
