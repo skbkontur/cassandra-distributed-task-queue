@@ -56,8 +56,17 @@ export function TaskDetailsPage({
         if (!taskDetails) {
             return null;
         }
-        const isCancelable = cancelableStates.includes(taskDetails.taskMeta.state);
-        const isRerunable = rerunableStates.includes(taskDetails.taskMeta.state);
+
+        const isCancelable =
+            taskDetails.taskActions == null
+                ? allowRerunOrCancel && cancelableStates.includes(taskDetails.taskMeta.state)
+                : taskDetails.taskActions.canCancel;
+
+        const isRerunable =
+            taskDetails.taskActions == null
+                ? allowRerunOrCancel && rerunableStates.includes(taskDetails.taskMeta.state)
+                : taskDetails.taskActions.canRerun;
+
         const relatedTasksRequest = customDetailRenderer.getRelatedTasksLocation(taskDetails);
         if (!isCancelable && !isRerunable && relatedTasksRequest == null) {
             return null;
@@ -160,7 +169,7 @@ export function TaskDetailsPage({
                         borderBottom
                         data-tid="Header"
                         title={`Задача ${taskDetails.taskMeta.name}`}
-                        tools={taskDetails && allowRerunOrCancel ? renderButtons() : null}>
+                        tools={renderButtons()}>
                         <TaskTimeLine
                             getHrefToTask={getTaskLocation}
                             taskMeta={taskDetails.taskMeta}

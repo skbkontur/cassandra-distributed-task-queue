@@ -27,5 +27,9 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
         [NotNull, ItemNotNull]
         [JsonProperty("exceptionInfos")]
         public string[] ExceptionInfos { get; set; }
+
+        [CanBeNull]
+        [JsonProperty("taskActions")]
+        public TaskActions TaskActions { get; set; }
     }
 }
