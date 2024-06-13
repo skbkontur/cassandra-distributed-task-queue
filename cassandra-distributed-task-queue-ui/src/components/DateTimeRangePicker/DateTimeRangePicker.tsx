@@ -1,10 +1,9 @@
+import { TimeUtils, TimeZone } from "@skbkontur/edi-ui";
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { ThemeContext } from "@skbkontur/react-ui";
 import React from "react";
 
 import { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
-import { TimeZone } from "../../Domain/DataTypes/Time";
-import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
 import { DatePicker } from "./DatePicker";
 import { jsStyles } from "./DateTimeRangePicker.styles";

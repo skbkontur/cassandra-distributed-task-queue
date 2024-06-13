@@ -1,4 +1,6 @@
-import { IRtqMonitoringApi } from "../../src/Domain/Api/RtqMonitoringApi";
+import { TimeUtils } from "@skbkontur/edi-ui";
+
+import { IRtqMonitoringApi } from "../../src";
 import { RtqMonitoringSearchRequest } from "../../src/Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringSearchResults } from "../../src/Domain/Api/RtqMonitoringSearchResults";
 import { RtqMonitoringTaskMeta } from "../../src/Domain/Api/RtqMonitoringTaskMeta";
@@ -6,7 +8,6 @@ import { RtqMonitoringTaskModel } from "../../src/Domain/Api/RtqMonitoringTaskMo
 import { TaskManipulationResult } from "../../src/Domain/Api/TaskManipulationResult";
 import { TaskState } from "../../src/Domain/Api/TaskState";
 import { delay } from "../../src/Domain/Utils/PromiseUtils";
-import { TimeUtils } from "../../src/Domain/Utils/TimeUtils";
 
 import names from "./names.json";
 import task from "./task.json";

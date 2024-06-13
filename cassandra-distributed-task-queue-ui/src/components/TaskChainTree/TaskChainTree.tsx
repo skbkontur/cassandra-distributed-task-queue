@@ -1,3 +1,4 @@
+import { AllowCopyToClipboard } from "@skbkontur/edi-ui";
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { ThemeContext } from "@skbkontur/react-ui";
 import reverse from "lodash/reverse";
@@ -7,7 +8,6 @@ import React from "react";
 import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
-import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
 import { RouterLink } from "../RouterLink/RouterLink";
 import { TimeLine } from "../TaskTimeLine/TimeLine/TimeLine";
 

@@ -1,3 +1,4 @@
+import { Timestamp, AllowCopyToClipboard, Ticks } from "@skbkontur/edi-ui";
 import { ArrowADownIcon16Regular } from "@skbkontur/icons/ArrowADownIcon16Regular";
 import { ArrowAUpIcon16Regular } from "@skbkontur/icons/ArrowAUpIcon16Regular";
 import { ArrowDCornerDownRightIcon16Regular } from "@skbkontur/icons/ArrowDCornerDownRightIcon16Regular";
@@ -14,9 +15,6 @@ import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../../Domain/Api/TaskState";
-import { Ticks } from "../../Domain/DataTypes/Time";
-import { AllowCopyToClipboard } from "../AllowCopyToClipboard";
-import { DateTimeView } from "../DateTimeView/DateTimeView";
 import { RouterLink } from "../RouterLink/RouterLink";
 import { getIconColor } from "../TaskChainTree/TaskStateIcon";
 
@@ -48,7 +46,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                 <div style={{ color: entry.color }}>{entry.title}</div>
                 {entry.date && (
                     <div className={jsStyles.date(theme)}>
-                        <DateTimeView value={entry.date} />
+                        <Timestamp value={entry.date} />
                     </div>
                 )}
             </TimeLineEntry>

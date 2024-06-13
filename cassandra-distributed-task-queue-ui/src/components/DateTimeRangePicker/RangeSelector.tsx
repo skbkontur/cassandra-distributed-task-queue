@@ -1,9 +1,7 @@
+import { TimeUtils, DateUtils, TimeZone } from "@skbkontur/edi-ui";
 import { endOfDay, startOfDay, subDays, subMonths, subYears } from "date-fns";
 
 import { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
-import { TimeZone } from "../../Domain/DataTypes/Time";
-import { DateUtils } from "../../Domain/Utils/DateUtils";
-import { TimeUtils } from "../../Domain/Utils/TimeUtils";
 
 function utc(): Date {
     return DateUtils.toTimeZone(new Date(), TimeUtils.TimeZones.UTC);

@@ -1,6 +1,5 @@
+import { Accordion } from "@skbkontur/edi-ui";
 import _ from "lodash";
-
-import { Accordion } from "../src/components/Accordion/Accordion";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskAccordion",
@@ -35,21 +34,14 @@ ToggleAllMultipleItemsWithTitle.story = {
 };
 
 export const ToggleAllWithoutTitle = () => (
-    <Accordion renderCaption={null} renderValue={null} title={null} value={document} showToggleAll defaultCollapsed />
+    <Accordion renderCaption={null} renderValue={null} value={document} showToggleAll defaultCollapsed />
 );
 ToggleAllWithoutTitle.story = {
     name: "Toggle all, without title",
 };
 
 export const ToggleAllHiddenNothingToToggle = () => (
-    <Accordion
-        renderCaption={null}
-        renderValue={null}
-        title={null}
-        value={flatDocument}
-        showToggleAll
-        defaultCollapsed
-    />
+    <Accordion renderCaption={null} renderValue={null} value={flatDocument} showToggleAll defaultCollapsed />
 );
 ToggleAllHiddenNothingToToggle.story = {
     name: "Toggle all hidden, nothing to toggle",

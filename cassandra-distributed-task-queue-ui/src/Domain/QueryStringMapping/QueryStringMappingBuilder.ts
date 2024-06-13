@@ -1,5 +1,6 @@
+import { Lens, pathLens, PropertyPicker } from "@skbkontur/edi-ui";
+
 import { DateTimeRange } from "../DataTypes/DateTimeRange";
-import { Lens, pathLens, PropertyPicker } from "../lens";
 
 import { Mapper, IntegerMapper, StringArrayMapper, DateTimeRangeMapper, StringMapper, SetMapper } from "./Mappers";
 import { Parser, QueryStringMapping, Stringifier } from "./QueryStringMapping";

@@ -1491,6 +1491,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime-corejs3@npm:^7.24.4":
+  version: 7.24.4
+  resolution: "@babel/runtime-corejs3@npm:7.24.4"
+  dependencies:
+    core-js-pure: "npm:^3.30.2"
+    regenerator-runtime: "npm:^0.14.0"
+  checksum: bc8566abb1e85b2eb5c5476db0712c5fd67bca3ed318d28ee44b1be95db866a5be31301cc6db980dbb7c8a0a73d8c7d7f87a8473106d8422d4937433c9d17c96
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:7.16.5":
   version: 7.16.5
   resolution: "@babel/runtime@npm:7.16.5"
@@ -2913,9 +2923,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@skbkontur/cassandra-distributed-task-queue-ui@workspace:."
   dependencies:
+    "@skbkontur/edi-ui": "npm:^0.2.4"
     "@skbkontur/icons": "npm:^1.3.0"
     "@skbkontur/react-stack-layout": "npm:^1.0.3"
-    "@skbkontur/react-ui": "npm:^4.1.0"
+    "@skbkontur/react-ui": "npm:^4.22.0"
     "@storybook/addon-actions": "npm:^7.0.7"
     "@storybook/addons": "npm:^7.0.7"
     "@storybook/cli": "npm:^7.4.6"
@@ -2956,17 +2967,67 @@ __metadata:
     whatwg-fetch: "npm:^3.5.0"
   peerDependencies:
     "@skbkontur/icons": ">=1 <2"
-    "@skbkontur/react-ui": ">=2 <=4"
+    "@skbkontur/react-ui": ">=4"
     react: ">=16 <=18"
     react-dom: ">=16 <=18"
     react-router-dom: ">=6"
   languageName: unknown
   linkType: soft
 
+"@skbkontur/colors@npm:0.4.4":
+  version: 0.4.4
+  resolution: "@skbkontur/colors@npm:0.4.4"
+  checksum: 9f560a9ed6ad0546b35778e866aa0b2525eb30b72c6ee2e8461f5724db3eca8e0f347719b913d0a5300ebbb9fa3fdeeb89dc66fb608105748be769c9f65d033d
+  languageName: node
+  linkType: hard
+
+"@skbkontur/edi-ui@npm:^0.2.4":
+  version: 0.2.4
+  resolution: "@skbkontur/edi-ui@npm:0.2.4"
+  dependencies:
+    "@skbkontur/colors": "npm:0.4.4"
+    "@skbkontur/icons": "npm:1.10.0"
+    "@skbkontur/react-stack-layout": "npm:1.2.0"
+    date-fns: "npm:2.21.1"
+    lodash.get: "npm:4.4.2"
+    lodash.isequal: "npm:4.5.0"
+    lodash.isplainobject: "npm:4.0.6"
+  peerDependencies:
+    "@skbkontur/icons": ">=1 <2"
+    "@skbkontur/react-ui": ">=4"
+    react: ">=16 <=18"
+    react-dom: ">=16 <=18"
+  checksum: 315a87be3b3bb8e7637b220e327e73c8cbaa32603a75484af64cda934be02920f386231e828b910d7970c8f3b0b8bb38e4d96dc52a2c41e5bb89e4e8f338873c
+  languageName: node
+  linkType: hard
+
+"@skbkontur/global-object@npm:^0.4.2":
+  version: 0.4.4
+  resolution: "@skbkontur/global-object@npm:0.4.4"
+  checksum: bb5724cc6c6a5ac9ab516bb7e72e5e53963f481e8c0599e20f01fe3ac5c6623fab7e32b91d0d180a134954637de5658dbba1579ebe1940973f93b63720f570cd
+  languageName: node
+  linkType: hard
+
+"@skbkontur/icons@npm:1.10.0":
+  version: 1.10.0
+  resolution: "@skbkontur/icons@npm:1.10.0"
+  checksum: 1c95607c18532fb0ae409ea6e9ec27a7f6786d89dfab11da8b4991d061e65324db8194c4a42016607041eea3b95dc0d61488c299de558217681dfab073fd7e04
+  languageName: node
+  linkType: hard
+
 "@skbkontur/icons@npm:^1.3.0":
   version: 1.3.0
   resolution: "@skbkontur/icons@npm:1.3.0"
   checksum: 3c5e65d7d1dd22f9bc8c39b35e583f4f1750e1640bfd48d66fbd538d57614a18b8d16bd9158a5e9d97ccda756d5eccf9b5f2d2f2288758571abb3f7d39460b20
+  languageName: node
+  linkType: hard
+
+"@skbkontur/react-stack-layout@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@skbkontur/react-stack-layout@npm:1.2.0"
+  peerDependencies:
+    react: "*"
+  checksum: e0de1ef7608725d84805eeac80df9232f35f6f23e16d8b299ad971b8dada12d5e95eede1e0b65941317e88a49fdb074ffc7907f825fd3f8f46c887928591a4bc
   languageName: node
   linkType: hard
 
@@ -2979,12 +3040,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skbkontur/react-ui@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "@skbkontur/react-ui@npm:4.1.0"
+"@skbkontur/react-ui@npm:^4.22.0":
+  version: 4.22.0
+  resolution: "@skbkontur/react-ui@npm:4.22.0"
   dependencies:
     "@babel/runtime": "npm:7.16.5"
     "@emotion/css": "npm:^11.7.1"
+    "@skbkontur/global-object": "npm:^0.4.2"
     eventemitter3: "npm:^4.0.7"
     invariant: "npm:2.2.4"
     lodash.debounce: "npm:^4.0.8"
@@ -2992,19 +3054,19 @@ __metadata:
     lodash.throttle: "npm:^4.1.1"
     normalize-wheel: "npm:^1.0.1"
     prop-types: "npm:^15.8.0"
-    raf: "npm:^3.4.1"
     react-focus-lock: "npm:^2.7.1"
+    react-imask: "npm:^7.4.0"
     react-input-mask: "npm:2.0.4"
     react-is: "npm:^17.0.2"
     react-transition-group: "npm:^4.4.2"
     shallowequal: "npm:^1.1.0"
     stylis-plugin-extra-scope: "npm:^0.3.0"
-    tabbable: "npm:^5.2.1"
+    tabbable: "npm:5.2.1"
     warning: "npm:^4.0.3"
   peerDependencies:
     react: ">=16.9"
     react-dom: ">=16.9"
-  checksum: 36edb294e6a58c1671549c6ee7ee98c28fd9edd56ed278596bf03e89bd6e9000c874c36020211cead0cad7f712c269a6283e888d4a354ae7d301a3b1683ebba7
+  checksum: 7cdfc03dffaa56975e733af978b66ed7b161fe9cd83b82dc1f6adad69c2179a1cd42d13216ac4bb7db801d48dc0769425b1f251a688ea492cd122e903a4c1898
   languageName: node
   linkType: hard
 
@@ -5338,6 +5400,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"core-js-pure@npm:^3.30.2":
+  version: 3.36.1
+  resolution: "core-js-pure@npm:3.36.1"
+  checksum: 76389c2fb83d8fc5945129ff343801f60a99baf4ebf743521cb3b358f1f840ff4aeaa3676b48a4b09052140c7432776cdd5635ebf1b7a8b4b3bb1a2efcfd1c4c
+  languageName: node
+  linkType: hard
+
 "core-util-is@npm:~1.0.0":
   version: 1.0.2
   resolution: "core-util-is@npm:1.0.2"
@@ -5413,6 +5482,13 @@ __metadata:
     whatwg-mimetype: "npm:^3.0.0"
     whatwg-url: "npm:^12.0.0"
   checksum: 006e869b5bf079647949a3e9b1dd69d84b2d5d26e6b01c265485699bc96e83817d4b5aae758b2910a4c58c0601913f3a0034121c1ca2da268e9a244c57515b15
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:2.21.1":
+  version: 2.21.1
+  resolution: "date-fns@npm:2.21.1"
+  checksum: abb7e94c0dd413bce1ee5c046c49bcc0d77eb848e4efacb31b78e2102ed5f67e6eb2cf25c17b3efdb7ddda97eb75c56163f99bfc6d0bfffd08ba908e40c1c3d7
   languageName: node
   linkType: hard
 
@@ -7446,6 +7522,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"imask@npm:^7.6.0":
+  version: 7.6.0
+  resolution: "imask@npm:7.6.0"
+  dependencies:
+    "@babel/runtime-corejs3": "npm:^7.24.4"
+  checksum: c38723917967ab3dbc2b123c065e2f047a1318f7f210c7dca6e82160e14db8482c74dd7cc48f23649704eb02c6c8b2e3aaf08225edebbf794c2ecaeef49137f2
+  languageName: node
+  linkType: hard
+
 "import-fresh@npm:^3.1.0, import-fresh@npm:^3.2.1":
   version: 3.3.0
   resolution: "import-fresh@npm:3.3.0"
@@ -8279,10 +8364,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.isequal@npm:^4.5.0":
+"lodash.get@npm:4.4.2":
+  version: 4.4.2
+  resolution: "lodash.get@npm:4.4.2"
+  checksum: 2a4925f6e89bc2c010a77a802d1ba357e17ed1ea03c2ddf6a146429f2856a216663e694a6aa3549a318cbbba3fd8b7decb392db457e6ac0b83dc745ed0a17380
+  languageName: node
+  linkType: hard
+
+"lodash.isequal@npm:4.5.0, lodash.isequal@npm:^4.5.0":
   version: 4.5.0
   resolution: "lodash.isequal@npm:4.5.0"
   checksum: 82fc58a83a1555f8df34ca9a2cd300995ff94018ac12cc47c349655f0ae1d4d92ba346db4c19bbfc90510764e0c00ddcc985a358bdcd4b3b965abf8f2a48a214
+  languageName: node
+  linkType: hard
+
+"lodash.isplainobject@npm:4.0.6":
+  version: 4.0.6
+  resolution: "lodash.isplainobject@npm:4.0.6"
+  checksum: 29c6351f281e0d9a1d58f1a4c8f4400924b4c79f18dfc4613624d7d54784df07efaff97c1ff2659f3e085ecf4fff493300adc4837553104cef2634110b0d5337
   languageName: node
   linkType: hard
 
@@ -9459,13 +9558,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"performance-now@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "performance-now@npm:2.1.0"
-  checksum: 534e641aa8f7cba160f0afec0599b6cecefbb516a2e837b512be0adbe6c1da5550e89c78059c7fabc5c9ffdf6627edabe23eb7c518c4500067a898fa65c2b550
-  languageName: node
-  linkType: hard
-
 "picocolors@npm:^1.0.0":
   version: 1.0.0
   resolution: "picocolors@npm:1.0.0"
@@ -9679,7 +9771,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.8.0":
+"prop-types@npm:^15.8.0, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -9818,15 +9910,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"raf@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "raf@npm:3.4.1"
-  dependencies:
-    performance-now: "npm:^2.1.0"
-  checksum: 4c4b4c826b09d2aec6ca809f1a3c3c12136e7ec8d13fbb91f495dd2c99cd43345240e003da3bfd16036a432e635049fc6d9f69f9187f5f22ea88bb146ec75881
-  languageName: node
-  linkType: hard
-
 "ramda@npm:0.29.0":
   version: 0.29.0
   resolution: "ramda@npm:0.29.0"
@@ -9937,6 +10020,18 @@ __metadata:
     "@types/react":
       optional: true
   checksum: 42a456593d331ca24d5e8c65666c02c618adcecf5b49009a954dd9bf2ba958e7e659fb5eb61e7faad6107a1c7ed5c247e676779e7989803b806f0a82aa6f649d
+  languageName: node
+  linkType: hard
+
+"react-imask@npm:^7.4.0":
+  version: 7.6.0
+  resolution: "react-imask@npm:7.6.0"
+  dependencies:
+    imask: "npm:^7.6.0"
+    prop-types: "npm:^15.8.1"
+  peerDependencies:
+    react: ">=0.14.0"
+  checksum: 2c253419bae26266c206e30a029c8cd845589071a524c7e3469897f6c08ba1e923dbcad9c4ad58f9e70d13147cb1301d32dd7fd4f826363828f072e7066b3a6f
   languageName: node
   linkType: hard
 
@@ -11269,10 +11364,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tabbable@npm:^5.2.1":
-  version: 5.3.3
-  resolution: "tabbable@npm:5.3.3"
-  checksum: 5da150c9ac7aaed95f901623214794ffac9472a86009a1762c7b436249d33b157b7d86d93610986090d0fb1ef152f5dec2c201552e0b67ca895ba00c145a51c5
+"tabbable@npm:5.2.1":
+  version: 5.2.1
+  resolution: "tabbable@npm:5.2.1"
+  checksum: 9fa960479964713b1f403ae00ee6fea8061a1453c29e3f2add6aec21e9fc256c76eb0833cbe48f74cbf2559a2f37e9496fcb2567477b501316e66812e27d9832
   languageName: node
   linkType: hard
 
