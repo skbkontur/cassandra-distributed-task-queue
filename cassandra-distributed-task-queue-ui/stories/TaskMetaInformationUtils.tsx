@@ -1,6 +1,7 @@
+import { TimeUtils } from "@skbkontur/edi-ui";
+
 import { RtqMonitoringTaskMeta } from "../src/Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../src/Domain/Api/TaskState";
-import { TimeUtils } from "../src/Domain/Utils/TimeUtils";
 
 export function createTask(override: Partial<RtqMonitoringTaskMeta>): RtqMonitoringTaskMeta {
     const defaultTaskMeta: RtqMonitoringTaskMeta = {

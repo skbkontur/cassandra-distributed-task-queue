@@ -1,3 +1,4 @@
+import { Timestamp, AllowCopyToClipboard, Ticks } from "@skbkontur/edi-ui";
 import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
 import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
@@ -7,10 +8,7 @@ import { Location } from "react-router-dom";
 
 import { useCustomSettings } from "../../../CustomSettingsContext";
 import { RtqMonitoringTaskMeta } from "../../../Domain/Api/RtqMonitoringTaskMeta";
-import { Ticks } from "../../../Domain/DataTypes/Time";
 import { cancelableStates, rerunableStates } from "../../../Domain/TaskStateExtensions";
-import { AllowCopyToClipboard } from "../../AllowCopyToClipboard";
-import { DateTimeView } from "../../DateTimeView/DateTimeView";
 import { RouterLink } from "../../RouterLink/RouterLink";
 
 import { jsStyles } from "./TaskDetails.styles";
@@ -29,7 +27,7 @@ function dateFormatter(
     item: RtqMonitoringTaskMeta,
     selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
 ): JSX.Element {
-    return <DateTimeView value={selector(item)} />;
+    return <Timestamp value={selector(item)} />;
 }
 
 export function TaskDetails(props: TaskDetailsProps): JSX.Element {

@@ -1,8 +1,9 @@
+import { TimeUtils } from "@skbkontur/edi-ui";
+
 import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 
 import { RtqMonitoringSearchRequest } from "./Api/RtqMonitoringSearchRequest";
 import { DateTimeRange } from "./DataTypes/DateTimeRange";
-import { TimeUtils } from "./Utils/TimeUtils";
 
 function isDateTimeRangeEmpty(range: Nullable<DateTimeRange>): boolean {
     return !(range && (range.lowerBound || range.upperBound));

@@ -1,13 +1,14 @@
+import { DateUtils } from "@skbkontur/edi-ui";
 import { endOfDay, isValid, parse as parseDateInternal, startOfDay } from "date-fns";
 import difference from "lodash/difference";
 
 import { DateTimeRange } from "../DataTypes/DateTimeRange";
-import { DateUtils } from "../Utils/DateUtils";
 
 export type QueryObject = any;
 
 export interface Mapper<T> {
     parse(parsedQueryString: QueryObject): Nullable<T>;
+
     stringify(parsedQueryString: QueryObject, value: Nullable<T>): QueryObject;
 }
 
@@ -132,7 +133,7 @@ export class DateTimeRangeMapper {
     }
 
     public stringifyDate(value: Nullable<Date>): Nullable<string> {
-        return value ? DateUtils.convertDateToString(value, undefined, "yyyy-MM-dd") : undefined;
+        return value ? DateUtils.formatDate(value, "yyyy-MM-dd") : undefined;
     }
 
     public parse(parsedQueryString: QueryObject): Nullable<DateTimeRange> {

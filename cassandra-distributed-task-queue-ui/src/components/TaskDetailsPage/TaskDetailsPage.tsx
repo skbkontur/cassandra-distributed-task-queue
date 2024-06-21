@@ -1,3 +1,4 @@
+import { Accordion } from "@skbkontur/edi-ui";
 import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
 import { TextAlignCenterJustifyIcon16Regular } from "@skbkontur/icons/TextAlignCenterJustifyIcon16Regular";
 import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
@@ -10,7 +11,6 @@ import { useCustomSettings } from "../../CustomSettingsContext";
 import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
 import { cancelableStates, rerunableStates } from "../../Domain/TaskStateExtensions";
 import { searchRequestMapping } from "../../containers/TasksPageContainer";
-import { Accordion } from "../Accordion/Accordion";
 import { CommonLayout } from "../Layouts/CommonLayout";
 import { RouterLink } from "../RouterLink/RouterLink";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";

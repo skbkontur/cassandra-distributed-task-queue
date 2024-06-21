@@ -1,10 +1,9 @@
+import { CopyToClipboardToast } from "@skbkontur/edi-ui";
 import { CopyIcon16Regular } from "@skbkontur/icons/CopyIcon16Regular";
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import React from "react";
-
-import { CopyToClipboardToast } from "../AllowCopyToClipboard";
 
 import { jsStyles } from "./ErrorHandlingContainer.styles";
 
