@@ -2923,7 +2923,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@skbkontur/cassandra-distributed-task-queue-ui@workspace:."
   dependencies:
-    "@skbkontur/edi-ui": "npm:^0.2.4"
+    "@skbkontur/edi-ui": "npm:^0.2.10"
     "@skbkontur/icons": "npm:^1.3.0"
     "@skbkontur/react-stack-layout": "npm:^1.0.3"
     "@skbkontur/react-ui": "npm:^4.22.0"
@@ -2940,9 +2940,8 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^6.7.4"
     "@typescript-eslint/parser": "npm:^6.7.4"
     "@vitejs/plugin-react": "npm:^3.1.0"
-    copy-to-clipboard: "npm:^3.3.1"
     copyfiles: "npm:^2.4.1"
-    date-fns: "npm:^2.29.2"
+    date-fns: "npm:^3.6.0"
     decimal.js: "npm:^10.2.1"
     eslint: "npm:^8.50.0"
     eslint-config-prettier: "npm:^9.0.0"
@@ -2951,7 +2950,7 @@ __metadata:
     eslint-plugin-prettier: "npm:^5.0.0"
     eslint-plugin-react: "npm:^7.24.0"
     jsdom: "npm:^22.1.0"
-    lodash: "npm:^4.17.20"
+    lodash: "npm:^4.17.21"
     npm-run-all: "npm:^4.1.5"
     prettier: "npm:^3.0.3"
     qs: "npm:^6.11.2"
@@ -2962,7 +2961,7 @@ __metadata:
     storybook-addon-react-router-v6: "npm:^2.0.7"
     tslib: "npm:^2.4.0"
     typescript: "npm:^4.3.5"
-    vite: "npm:^4.4.11"
+    vite: "npm:4.4.11"
     vitest: "npm:^0.34.6"
     whatwg-fetch: "npm:^3.5.0"
   peerDependencies:
@@ -2974,18 +2973,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@skbkontur/colors@npm:0.4.4":
-  version: 0.4.4
-  resolution: "@skbkontur/colors@npm:0.4.4"
-  checksum: 9f560a9ed6ad0546b35778e866aa0b2525eb30b72c6ee2e8461f5724db3eca8e0f347719b913d0a5300ebbb9fa3fdeeb89dc66fb608105748be769c9f65d033d
+"@skbkontur/colors@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "@skbkontur/colors@npm:0.5.0"
+  checksum: bea69f8269116a77cfa10c9b6c5b9445a8f4801c5877d86b655642b7a010a9e008385ff58a335e55fdbfde15f61a350672d895fd3b2d8907b17d36d1ec5e8b60
   languageName: node
   linkType: hard
 
-"@skbkontur/edi-ui@npm:^0.2.4":
-  version: 0.2.4
-  resolution: "@skbkontur/edi-ui@npm:0.2.4"
+"@skbkontur/edi-ui@npm:^0.2.10":
+  version: 0.2.10
+  resolution: "@skbkontur/edi-ui@npm:0.2.10"
   dependencies:
-    "@skbkontur/colors": "npm:0.4.4"
+    "@skbkontur/colors": "npm:^0.5.0"
     "@skbkontur/icons": "npm:1.10.0"
     "@skbkontur/react-stack-layout": "npm:1.2.0"
     date-fns: "npm:2.21.1"
@@ -2997,7 +2996,7 @@ __metadata:
     "@skbkontur/react-ui": ">=4"
     react: ">=16 <=18"
     react-dom: ">=16 <=18"
-  checksum: 315a87be3b3bb8e7637b220e327e73c8cbaa32603a75484af64cda934be02920f386231e828b910d7970c8f3b0b8bb38e4d96dc52a2c41e5bb89e4e8f338873c
+  checksum: cd2edffdf90770f933cb33b32c61048cbbec777f0d4e89f5b403039bb619365d0c951983aa813e2b8ca8f9001634d0b06bad68b75a8af5c8cdef6b71e5b0f172
   languageName: node
   linkType: hard
 
@@ -5364,15 +5363,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"copy-to-clipboard@npm:^3.3.1":
-  version: 3.3.1
-  resolution: "copy-to-clipboard@npm:3.3.1"
-  dependencies:
-    toggle-selection: "npm:^1.0.6"
-  checksum: 37800fd81674bb15feea9121b1ef09b41e7dc0da51c48546340ca9a998074adc8bc0fb33afc522497a2c1efc50e9aec0056a3671a848127757d49089ff742d22
-  languageName: node
-  linkType: hard
-
 "copyfiles@npm:^2.4.1":
   version: 2.4.1
   resolution: "copyfiles@npm:2.4.1"
@@ -5492,10 +5482,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.29.2":
-  version: 2.29.2
-  resolution: "date-fns@npm:2.29.2"
-  checksum: 0ac440a1056010487481ce08e719f2787d4096884f98ab352e7a2b119de11d31d7a8f49d8cd834ab2f2197d85eb043dd8ca1c9fcdf770eeba70af722d163d607
+"date-fns@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "date-fns@npm:3.6.0"
+  checksum: cac35c58926a3b5d577082ff2b253612ec1c79eb6754fddef46b6a8e826501ea2cb346ecbd211205f1ba382ddd1f9d8c3f00bf433ad63cc3063454d294e3a6b8
   languageName: node
   linkType: hard
 
@@ -8399,7 +8389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.20, lodash@npm:^4.17.21":
+"lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: c08619c038846ea6ac754abd6dd29d2568aa705feb69339e836dfa8d8b09abbb2f859371e86863eda41848221f9af43714491467b5b0299122431e202bb0c532
@@ -8899,6 +8889,15 @@ __metadata:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: 67235c39d1bc05851383dadde5cf77ae1c90c2a1d189e845c7f20f646f0488d875ad5f5226bbba072a88cebbb085a3f784a6673117daf785bdf614a852550362
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^3.3.7":
+  version: 3.3.7
+  resolution: "nanoid@npm:3.3.7"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: ac1eb60f615b272bccb0e2b9cd933720dad30bf9708424f691b8113826bb91aca7e9d14ef5d9415a6ba15c266b37817256f58d8ce980c82b0ba3185352565679
   languageName: node
   linkType: hard
 
@@ -9656,7 +9655,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss@npm:^8.4.27, postcss@npm:^8.4.31":
+"postcss@npm:^8.4.27":
+  version: 8.4.38
+  resolution: "postcss@npm:8.4.38"
+  dependencies:
+    nanoid: "npm:^3.3.7"
+    picocolors: "npm:^1.0.0"
+    source-map-js: "npm:^1.2.0"
+  checksum: 6e44a7ed835ffa9a2b096e8d3e5dfc6bcf331a25c48aeb862dd54e3aaecadf814fa22be224fd308f87d08adf2299164f88c5fd5ab1c4ef6cbd693ceb295377f4
+  languageName: node
+  linkType: hard
+
+"postcss@npm:^8.4.31":
   version: 8.4.31
   resolution: "postcss@npm:8.4.31"
   dependencies:
@@ -10955,6 +10965,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"source-map-js@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "source-map-js@npm:1.2.0"
+  checksum: 74f331cfd2d121c50790c8dd6d3c9de6be21926de80583b23b37029b0f37aefc3e019fa91f9a10a5e120c08135297e1ecf312d561459c45908cb1e0e365f49e5
+  languageName: node
+  linkType: hard
+
 "source-map-support@npm:^0.5.16":
   version: 0.5.21
   resolution: "source-map-support@npm:0.5.21"
@@ -11527,13 +11544,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"toggle-selection@npm:^1.0.6":
-  version: 1.0.6
-  resolution: "toggle-selection@npm:1.0.6"
-  checksum: 9a0ed0ecbaac72b4944888dacd79fe0a55eeea76120a4c7e46b3bb3d85b24f086e90560bb22f5a965654a25ab43d79ec47dfdb3f1850ba740b14c5a50abc7040
-  languageName: node
-  linkType: hard
-
 "toidentifier@npm:1.0.1":
   version: 1.0.1
   resolution: "toidentifier@npm:1.0.1"
@@ -12082,6 +12092,46 @@ __metadata:
   languageName: node
   linkType: hard
 
+"vite@npm:4.4.11":
+  version: 4.4.11
+  resolution: "vite@npm:4.4.11"
+  dependencies:
+    esbuild: "npm:^0.18.10"
+    fsevents: "npm:~2.3.2"
+    postcss: "npm:^8.4.27"
+    rollup: "npm:^3.27.1"
+  peerDependencies:
+    "@types/node": ">= 14"
+    less: "*"
+    lightningcss: ^1.21.0
+    sass: "*"
+    stylus: "*"
+    sugarss: "*"
+    terser: ^5.4.0
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+    less:
+      optional: true
+    lightningcss:
+      optional: true
+    sass:
+      optional: true
+    stylus:
+      optional: true
+    sugarss:
+      optional: true
+    terser:
+      optional: true
+  bin:
+    vite: bin/vite.js
+  checksum: 325e2955fe939bc5706aab2aa46498d98adace1df4d11f42cf4539754b886798b6bf7c247c94d23fb6cf3a569e56bad4a11561bf25e8e6dcc8c0e2f73ecc5e5b
+  languageName: node
+  linkType: hard
+
 "vite@npm:^3.0.0 || ^4.0.0 || ^5.0.0-0, vite@npm:^3.1.0 || ^4.0.0 || ^5.0.0-0":
   version: 5.0.0-beta.6
   resolution: "vite@npm:5.0.0-beta.6"
@@ -12119,46 +12169,6 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 696f1378211cd723bdccce55ea4127bf7e4f8b94d6e17ea0660b619a21b5f8c2757496cbddde9c1365b55b1fe1763945fe548f4fd750f8275dc4cfb8c4b5cbff
-  languageName: node
-  linkType: hard
-
-"vite@npm:^4.4.11":
-  version: 4.4.11
-  resolution: "vite@npm:4.4.11"
-  dependencies:
-    esbuild: "npm:^0.18.10"
-    fsevents: "npm:~2.3.2"
-    postcss: "npm:^8.4.27"
-    rollup: "npm:^3.27.1"
-  peerDependencies:
-    "@types/node": ">= 14"
-    less: "*"
-    lightningcss: ^1.21.0
-    sass: "*"
-    stylus: "*"
-    sugarss: "*"
-    terser: ^5.4.0
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  peerDependenciesMeta:
-    "@types/node":
-      optional: true
-    less:
-      optional: true
-    lightningcss:
-      optional: true
-    sass:
-      optional: true
-    stylus:
-      optional: true
-    sugarss:
-      optional: true
-    terser:
-      optional: true
-  bin:
-    vite: bin/vite.js
-  checksum: 325e2955fe939bc5706aab2aa46498d98adace1df4d11f42cf4539754b886798b6bf7c247c94d23fb6cf3a569e56bad4a11561bf25e8e6dcc8c0e2f73ecc5e5b
   languageName: node
   linkType: hard
 

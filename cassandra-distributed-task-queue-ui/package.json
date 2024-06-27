@@ -1,6 +1,7 @@
 {
   "name": "@skbkontur/cassandra-distributed-task-queue-ui",
   "version": "1.0.0",
+  "sideEffects": false,
   "description": ".NET library implementing distributed task queue machinery using Apache Cassandra",
   "main": "./index.js",
   "license": "MIT",
@@ -43,12 +44,11 @@
     "react-router-dom": ">=6"
   },
   "dependencies": {
-    "@skbkontur/edi-ui": "^0.2.4",
+    "@skbkontur/edi-ui": "^0.2.10",
     "@skbkontur/react-stack-layout": "^1.0.3",
-    "copy-to-clipboard": "^3.3.1",
-    "date-fns": "^2.29.2",
+    "date-fns": "^3.6.0",
     "decimal.js": "^10.2.1",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "qs": "^6.11.2",
     "tslib": "^2.4.0",
     "whatwg-fetch": "^3.5.0"
