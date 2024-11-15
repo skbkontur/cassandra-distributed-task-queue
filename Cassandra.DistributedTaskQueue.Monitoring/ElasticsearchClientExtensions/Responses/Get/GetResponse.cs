@@ -1,25 +1,24 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Get
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Get;
+
+internal class GetResponse<T>
 {
-    internal class GetResponse<T>
-    {
-        [JsonProperty(PropertyName = "_index")]
-        public string Index { get; set; }
+    [JsonPropertyName("_index")]
+    public string Index { get; set; }
 
-        [JsonProperty(PropertyName = "_type")]
-        public string Type { get; set; }
+    [JsonPropertyName("_type")]
+    public string Type { get; set; }
 
-        [JsonProperty(PropertyName = "_id")]
-        public string Id { get; set; }
+    [JsonPropertyName("_id")]
+    public string Id { get; set; }
 
-        [JsonProperty(PropertyName = "_version")]
-        public long Version { get; set; }
+    [JsonPropertyName("_version")]
+    public long Version { get; set; }
 
-        [JsonProperty(PropertyName = "found")]
-        public bool Found { get; set; }
+    [JsonPropertyName("found")]
+    public bool Found { get; set; }
 
-        [JsonProperty(PropertyName = "_source")]
-        public T Source { get; set; }
-    }
+    [JsonPropertyName("_source")]
+    public T Source { get; set; }
 }

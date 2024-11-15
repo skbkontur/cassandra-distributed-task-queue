@@ -1,80 +1,69 @@
-﻿using System;
+﻿#nullable enable
 
-using JetBrains.Annotations;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Indexer;
+
+public class RtqElasticsearchIndexerSettings
 {
-    public class RtqElasticsearchIndexerSettings
+    public RtqElasticsearchIndexerSettings(string eventFeedKey, string rtqGraphitePathPrefix)
     {
-        public RtqElasticsearchIndexerSettings([NotNull] string eventFeedKey, [NotNull] string rtqGraphitePathPrefix)
-        {
-            if (string.IsNullOrEmpty(eventFeedKey))
-                throw new InvalidOperationException("eventFeedKey is empty");
-            if (string.IsNullOrEmpty(rtqGraphitePathPrefix))
-                throw new InvalidOperationException("rtqGraphitePathPrefix is empty");
+        if (string.IsNullOrEmpty(eventFeedKey))
+            throw new InvalidOperationException("eventFeedKey is empty");
+        if (string.IsNullOrEmpty(rtqGraphitePathPrefix))
+            throw new InvalidOperationException("rtqGraphitePathPrefix is empty");
 
-            EventFeedKey = eventFeedKey;
-            RtqGraphitePathPrefix = rtqGraphitePathPrefix;
-        }
+        EventFeedKey = eventFeedKey;
+        RtqGraphitePathPrefix = rtqGraphitePathPrefix;
+    }
 
-        [NotNull]
-        public string EventFeedKey { get; }
+    public static JsonSerializerOptions GetJsonOptions()
+    {
+        var defaultJsonSerializerOptions = new JsonSerializerOptions();
+        defaultJsonSerializerOptions.Converters.Add(new TruncateLongStringsConverter(500));
+        defaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        defaultJsonSerializerOptions.Converters.Add(new TimestampJsonConverter());
+        defaultJsonSerializerOptions.Converters.Add(new TimeGuidJsonConverter());
+        defaultJsonSerializerOptions.Converters.Add(new OmitBinaryAndAbstractPropertyConverter());
 
-        [NotNull]
-        public string RtqGraphitePathPrefix { get; }
+        return defaultJsonSerializerOptions;
+    }
 
-        [NotNull]
-        public string PerfGraphitePathPrefix => $"{RtqGraphitePathPrefix}.ElasticsearchIndexer.Perf";
+    public string EventFeedKey { get; }
 
-        [NotNull]
-        public string EventFeedGraphitePathPrefix => $"{RtqGraphitePathPrefix}.ElasticsearchIndexer.EventFeed";
+    public string RtqGraphitePathPrefix { get; }
 
-        [NotNull]
-        public Timestamp InitialIndexingStartTimestamp { get; set; } = new Timestamp(new DateTime(2020, 01, 01, 0, 0, 0, DateTimeKind.Utc));
+    public string PerfGraphitePathPrefix => $"{RtqGraphitePathPrefix}.ElasticsearchIndexer.Perf";
 
-        public TimeSpan MaxEventsProcessingTimeWindow { get; set; } = TimeSpan.FromHours(1);
+    public string EventFeedGraphitePathPrefix => $"{RtqGraphitePathPrefix}.ElasticsearchIndexer.EventFeed";
 
-        public int MaxEventsProcessingTasksCount { get; set; } = 60000;
+    public Timestamp InitialIndexingStartTimestamp { get; } = new(new DateTime(2020, 01, 01, 0, 0, 0, DateTimeKind.Utc));
 
-        public int TaskIdsProcessingBatchSize { get; set; } = 4000;
+    public TimeSpan MaxEventsProcessingTimeWindow { get; } = TimeSpan.FromHours(1);
 
-        public int IndexingThreadsCount { get; set; } = 2;
+    public int MaxEventsProcessingTasksCount { get; set; } = 60000;
 
-        public TimeSpan BulkIndexRequestTimeout { get; set; } = TimeSpan.FromMinutes(5);
+    public int TaskIdsProcessingBatchSize { get; set; } = 4000;
 
-        public TimeSpan InitialIndexingOffsetFromNow { get; set; } = TimeSpan.FromMinutes(30);
+    public int IndexingThreadsCount { get; set; } = 2;
 
-        [NotNull]
-        public JsonSerializerSettings JsonSerializerSettings { get; } = DefaultJsonSerializerSettings;
+    public TimeSpan BulkIndexRequestTimeout { get; set; } = TimeSpan.FromMinutes(5);
 
-        public override string ToString()
-        {
-            return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, " +
-                   $"MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, " +
-                   $"MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, " +
-                   $"TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, " +
-                   $"IndexingThreadsCount: {IndexingThreadsCount}, " +
-                   $"BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
-        }
+    public TimeSpan InitialIndexingOffsetFromNow { get; set; } = TimeSpan.FromMinutes(30);
 
-        [NotNull]
-        public static readonly JsonSerializerSettings DefaultJsonSerializerSettings = new JsonSerializerSettings
-            {
-                ContractResolver = new OmitBinaryAndAbstractPropertiesContractResolver(),
-                Converters = new JsonConverter[]
-                    {
-                        new TruncateLongStringsConverter(500),
-                        new StringEnumConverter(),
-                        new TimestampJsonConverter(),
-                        new TimeGuidJsonConverter()
-                    },
-            };
+    public override string ToString()
+    {
+        return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, " +
+               $"MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, " +
+               $"MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, " +
+               $"TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, " +
+               $"IndexingThreadsCount: {IndexingThreadsCount}, " +
+               $"BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
     }
 }
