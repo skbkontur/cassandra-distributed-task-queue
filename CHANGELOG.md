@@ -1,8 +1,5 @@
 # Changelog
 
-## v4.0.0 - 2024.11.15
-- System.Text.Json is used instead Newtonsoft. That's why the whole serialization has been changed.
-
 ## v3.2.0 - 2024.03.05
 - always render task tree link; render action buttons based on server response
 - add same logic to details cards in table
