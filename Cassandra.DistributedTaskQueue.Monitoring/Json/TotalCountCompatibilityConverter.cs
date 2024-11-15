@@ -1,27 +1,24 @@
-using System;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
 #nullable enable
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
+
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
+
+internal class TotalCountCompatibilityConverter : JsonConverter<object>
 {
-    internal class TotalCountCompatibilityConverter : JsonConverter
+    public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-        {
-            throw new NotImplementedException();
-        }
+        if (reader.TokenType != JsonTokenType.StartObject) 
+            return JsonSerializer.Deserialize<object?>(ref reader, options);
+        
+        var jsonDocument = JsonDocument.ParseValue(ref reader).RootElement;
+        return jsonDocument.GetProperty("value").Deserialize<object?>(options);
+    }
 
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.StartObject)
-                return JObject.Load(reader)["value"]?.ToObject(objectType);
-            return reader.Value;
-        }
-
-        public override bool CanWrite => false;
-
-        public override bool CanConvert(Type objectType) => true;
+    public override void Write(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
+    {
+        throw new NotImplementedException();
     }
 }

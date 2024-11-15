@@ -1,16 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Bulk
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Bulk;
+
+internal class BulkResponse
 {
-    internal class BulkResponse
-    {
-        [JsonProperty(PropertyName = "took")]
-        public int TimeMs { get; set; }
+    [JsonPropertyName("took")]
+    public int TimeMs { get; set; }
 
-        [JsonProperty(PropertyName = "errors")]
-        public bool HasErrors { get; set; }
+    [JsonPropertyName("errors")]
+    public bool HasErrors { get; set; }
 
-        [JsonProperty(PropertyName = "items")]
-        public ItemInfo[] Items { get; set; }
-    }
+    [JsonPropertyName("items")]
+    public ItemInfo[] Items { get; set; }
 }
