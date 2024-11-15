@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable enable
+
+using System.Text.Json.Serialization;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
@@ -9,14 +11,12 @@ public class RtqMonitoringSearchRequest
     [JsonPropertyName("enqueueTimestampRange")]
     public TimestampRange EnqueueTimestampRange { get; set; }
 
-#nullable enable
     [JsonPropertyName("queryString")]
     public string? QueryString { get; set; }
 
     [JsonPropertyName("states")]
     public TaskState[]? States { get; set; }
 
-#nullable disable
     [JsonPropertyName("names")]
     public string[] Names { get; set; }
 
