@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;

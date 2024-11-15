@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using System;
+﻿using System;
 using System.Text.Json;
 
 using Elasticsearch.Net;
