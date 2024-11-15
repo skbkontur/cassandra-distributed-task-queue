@@ -1,13 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using System.Text.Json.Serialization;
 
-using Newtonsoft.Json;
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Search;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Search
+internal class SearchResponse
 {
-    internal class SearchResponse
-    {
-        [NotNull]
-        [JsonProperty(PropertyName = "hits")]
-        public HitsCollection Hits { get; set; }
-    }
+    [JsonPropertyName("hits")]
+    public HitsCollection Hits { get; set; }
 }

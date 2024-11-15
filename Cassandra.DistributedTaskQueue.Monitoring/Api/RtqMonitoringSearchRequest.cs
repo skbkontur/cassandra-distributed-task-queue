@@ -1,33 +1,28 @@
-﻿using JetBrains.Annotations;
-
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
+
+public class RtqMonitoringSearchRequest
 {
-    public class RtqMonitoringSearchRequest
-    {
-        [NotNull]
-        [JsonProperty("enqueueTimestampRange")]
-        public TimestampRange EnqueueTimestampRange { get; set; }
+    [JsonPropertyName("enqueueTimestampRange")]
+    public TimestampRange EnqueueTimestampRange { get; set; }
 
-        [CanBeNull]
-        [JsonProperty("queryString")]
-        public string QueryString { get; set; }
+#nullable enable
+    [JsonPropertyName("queryString")]
+    public string? QueryString { get; set; }
 
-        [CanBeNull]
-        [JsonProperty("states")]
-        public TaskState[] States { get; set; }
+    [JsonPropertyName("states")]
+    public TaskState[]? States { get; set; }
 
-        [CanBeNull, ItemNotNull]
-        [JsonProperty("names")]
-        public string[] Names { get; set; }
+#nullable disable
+    [JsonPropertyName("names")]
+    public string[] Names { get; set; }
 
-        [JsonProperty("offset")]
-        public int? Offset { get; set; }
+    [JsonPropertyName("offset")]
+    public int? Offset { get; set; }
 
-        [JsonProperty("count")]
-        public int? Count { get; set; }
-    }
+    [JsonPropertyName("count")]
+    public int? Count { get; set; }
 }

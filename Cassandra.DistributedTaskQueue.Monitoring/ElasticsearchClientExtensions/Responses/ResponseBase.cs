@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses;
+
+internal class ResponseBase
 {
-    internal class ResponseBase
-    {
-        [JsonProperty(PropertyName = "status")]
-        public int Status { get; set; }
+    [JsonPropertyName("status")]
+    public int Status { get; set; }
 
-        [JsonProperty(PropertyName = "error")]
-        public object Error { get; set; }
-    }
+    [JsonPropertyName("error")]
+    public object Error { get; set; }
 }
