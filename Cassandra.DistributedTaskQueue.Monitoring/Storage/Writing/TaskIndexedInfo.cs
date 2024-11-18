@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using System.Collections.Generic;
-
 using System.Text.Json.Serialization;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
