@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable enable
+
+using System.Text.Json.Serialization;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 using SkbKontur.Cassandra.TimeBasedUuid;
@@ -9,9 +11,9 @@ public class TimestampRange
 {
     [JsonPropertyName("lowerBound")]
     [JsonConverter(typeof(TimestampJsonConverter))]
-    public Timestamp LowerBound { get; set; }
+    public Timestamp LowerBound { get; set; } = null!;
 
     [JsonPropertyName("upperBound")]
     [JsonConverter(typeof(TimestampJsonConverter))]
-    public Timestamp UpperBound { get; set; }
+    public Timestamp UpperBound { get; set; } = null!;
 }

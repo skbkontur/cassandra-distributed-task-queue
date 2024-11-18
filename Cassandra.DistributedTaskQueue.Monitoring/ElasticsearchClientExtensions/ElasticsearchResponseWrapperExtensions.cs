@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -26,7 +28,7 @@ internal static class ElasticsearchResponseWrapperExtensions
     {
         response.EnsureSuccess();
         var bulkResponse = JsonSerializer.Deserialize<BulkResponse>(response.Body);
-        if (bulkResponse.HasErrors)
+        if (bulkResponse!.HasErrors)
         {
             var innerExceptions = bulkResponse
                                   .Items
@@ -39,7 +41,7 @@ internal static class ElasticsearchResponseWrapperExtensions
         }
     }
 
-    private static string ExtendErrorMessageWithElasticInfo<T>(this T response, string errorMessage)
+    private static string ExtendErrorMessageWithElasticInfo<T>(this T? response, string errorMessage)
         where T : IElasticsearchResponse
     {
         var fullErrorMessage = new StringBuilder($"ElasticSearch error: '{errorMessage}'").AppendLine();
@@ -58,7 +60,7 @@ internal static class ElasticsearchResponseWrapperExtensions
         return fullErrorMessage.ToString();
     }
 
-    private static Exception CreateExceptionIfError(ResponseBase responseItem, int requestNumber)
+    private static Exception? CreateExceptionIfError(ResponseBase responseItem, int requestNumber)
     {
         return responseItem.Status >= 400 && responseItem.Status < 600
                    ? new InvalidOperationException($"Request number #{requestNumber} failed: '{responseItem.ToPrettyJson()}'")

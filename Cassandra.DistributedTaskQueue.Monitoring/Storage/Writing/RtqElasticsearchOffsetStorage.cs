@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Text.Json;
 
 using Elasticsearch.Net;
@@ -28,7 +30,7 @@ public class RtqElasticsearchOffsetStorage : IOffsetStorage<string>
         return $"RtqElasticsearchOffsetStorage with IndexName: {elasticIndexName}, BladeKey: {bladeKey}";
     }
 
-    public void Write(string newOffset)
+    public void Write(string? newOffset)
     {
         var payload = new OffsetStorageElement {Offset = newOffset};
         var postData = PostData.String(JsonSerializer.Serialize(payload));
@@ -41,7 +43,7 @@ public class RtqElasticsearchOffsetStorage : IOffsetStorage<string>
 #pragma warning restore CS0618
     }
 
-    public string Read()
+    public string? Read()
     {
         var stringResponse = elasticsearchClient.UseElastic7
                                  ? elasticsearchClient.Get<StringResponse>(elasticIndexName, bladeKey, allowNotFoundStatusCode).EnsureSuccess()
@@ -55,7 +57,7 @@ public class RtqElasticsearchOffsetStorage : IOffsetStorage<string>
         if (elasticResponse?.Source == null || !elasticResponse.Found)
             return GetDefaultOffset();
 
-        return elasticResponse.Source.Offset;
+        return elasticResponse.Source?.Offset;
     }
 
     private string GetDefaultOffset()
@@ -78,6 +80,6 @@ public class RtqElasticsearchOffsetStorage : IOffsetStorage<string>
 
     private class OffsetStorageElement
     {
-        public string Offset { get; set; }
+        public string? Offset { get; set; }
     }
 }

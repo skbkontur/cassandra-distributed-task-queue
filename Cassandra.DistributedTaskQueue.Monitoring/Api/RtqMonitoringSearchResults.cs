@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable enable
+
+using System.Text.Json.Serialization;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
 
@@ -8,5 +10,5 @@ public class RtqMonitoringSearchResults
     public long TotalCount { get; set; }
 
     [JsonPropertyName("taskMetas")]
-    public RtqMonitoringTaskMeta[] TaskMetas { get; set; }
+    public RtqMonitoringTaskMeta[] TaskMetas { get; set; } = null!;
 }
