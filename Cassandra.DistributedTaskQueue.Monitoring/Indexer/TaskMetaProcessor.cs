@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -67,22 +69,22 @@ public class TaskMetaProcessor
     {
         var taskDatas = perfGraphiteReporter.ReportTiming("ReadTaskDatas", () => taskDataStorage.Read(batch));
         var taskExceptionInfos = perfGraphiteReporter.ReportTiming("ReadTaskExceptionInfos", () => taskExceptionInfoStorage.Read(batch));
-        var enrichedBatch = new ( /*[NotNull]*/ TaskMetaInformation TaskMeta, /*[NotNull, ItemNotNull]*/ TaskExceptionInfo[] TaskExceptionInfos, /*[CanBeNull]*/ object TaskData)[batch.Length];
+        var enrichedBatch = new ( TaskMetaInformation TaskMeta, TaskExceptionInfo[] TaskExceptionInfos, object? TaskData)[batch.Length];
         for (var i = 0; i < batch.Length; i++)
         {
             var taskMeta = batch[i];
-            object taskDataObj = null;
+            object? taskDataObj = null;
             if (taskDatas.TryGetValue(taskMeta.Id, out var taskData))
             {
                 if (taskDataRegistry.TryGetTaskType(taskMeta.Name, out var taskType))
-                    taskDataObj = TryDeserializeTaskData(taskType, taskData, taskMeta);
+                    taskDataObj = TryDeserializeTaskData(taskType!, taskData, taskMeta);
             }
             enrichedBatch[i] = (taskMeta, taskExceptionInfos[taskMeta.Id], taskDataObj);
         }
         perfGraphiteReporter.ReportTiming("IndexBatch", () => IndexBatch(enrichedBatch));
     }
 
-    private void IndexBatch((TaskMetaInformation TaskMeta, TaskExceptionInfo[] TaskExceptionInfos, object TaskData)[] batch)
+    private void IndexBatch((TaskMetaInformation TaskMeta, TaskExceptionInfo[] TaskExceptionInfos, object? TaskData)[] batch)
     {
         logger.Info("IndexBatch: {BatchLength} tasks", new {BatchLength = batch.Length});
         var payload = new string[batch.Length * 2];
@@ -127,7 +129,7 @@ public class TaskMetaProcessor
         }
     }
 
-    private static object BuildTaskIndexedInfo(TaskMetaInformation taskMeta, TaskExceptionInfo[] taskExceptionInfos, object taskData)
+    private static object BuildTaskIndexedInfo(TaskMetaInformation taskMeta, TaskExceptionInfo[] taskExceptionInfos, object? taskData)
     {
         var executionDurationTicks = taskMeta.ExecutionDurationTicks;
         var meta = new MetaIndexedInfo

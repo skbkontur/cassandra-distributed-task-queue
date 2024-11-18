@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable enable
+
+using System.Text.Json.Serialization;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 
@@ -11,5 +13,5 @@ internal class HitsCollection
     public long TotalCount { get; set; }
 
     [JsonPropertyName("hits")]
-    public HitInfo[] Hits { get; set; }
+    public HitInfo[] Hits { get; set; } = null!;
 }

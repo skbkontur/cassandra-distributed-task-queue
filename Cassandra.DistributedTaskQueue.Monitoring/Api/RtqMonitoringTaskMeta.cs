@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿#nullable enable
+
+using System.Text.Json.Serialization;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
@@ -8,10 +10,10 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
 public class RtqMonitoringTaskMeta
 {
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     [JsonPropertyName("id")]
-    public string Id { get; set; }
+    public string Id { get; set; } = null!;
 
     [JsonPropertyName("ticks")]
     [JsonConverter(typeof(LongToStringConverter))]
@@ -50,7 +52,7 @@ public class RtqMonitoringTaskMeta
     public TaskState State { get; set; }
 
     [JsonPropertyName("taskActions")]
-    public TaskActions TaskActions { get; set; }
+    public TaskActions? TaskActions { get; set; }
 
     [JsonPropertyName("attempts")]
     public int Attempts { get; set; }
