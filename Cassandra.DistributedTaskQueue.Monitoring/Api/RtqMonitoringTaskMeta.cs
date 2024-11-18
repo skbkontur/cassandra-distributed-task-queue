@@ -1,6 +1,6 @@
-﻿#nullable enable
+﻿using System.Text.Json.Serialization;
 
-using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
@@ -9,9 +9,11 @@ namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
 
 public class RtqMonitoringTaskMeta
 {
+    [NotNull]
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
+    [NotNull]
     [JsonPropertyName("id")]
     public string Id { get; set; } = null!;
 
@@ -51,8 +53,9 @@ public class RtqMonitoringTaskMeta
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public TaskState State { get; set; }
 
+    [CanBeNull]
     [JsonPropertyName("taskActions")]
-    public TaskActions? TaskActions { get; set; }
+    public TaskActions TaskActions { get; set; }
 
     [JsonPropertyName("attempts")]
     public int Attempts { get; set; }
