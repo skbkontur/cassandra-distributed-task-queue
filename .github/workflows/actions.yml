@@ -41,7 +41,7 @@ jobs:
       - name: Check front code
         run: yarn --cwd cassandra-distributed-task-queue-ui lint
       - name: Build docker-compose environment
-        run: docker-compose -f docker-compose.yaml up -d --build
+        run: docker compose -f docker-compose.yaml up -d --build
         env:
           ES_VERSION: ${{ matrix.es-version }}
       - name: Run front tests
@@ -50,9 +50,9 @@ jobs:
         run: dotnet test --no-build --configuration Release
         env:
           ES_VERSION: ${{ matrix.es-version }}
-      - name: Stop docker-compose
+      - name: Stop 
         if: always()
-        run: docker-compose -f docker-compose.yaml down
+        run: docker compose -f docker-compose.yaml down
         env:
           ES_VERSION: ${{ matrix.es-version }}
   publish:
