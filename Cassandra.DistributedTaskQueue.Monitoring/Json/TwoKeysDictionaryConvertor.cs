@@ -13,7 +13,7 @@ public class TwoKeysDictionaryConvertor<T> : JsonConverter<Dictionary<(string, s
     {
         var intermediateDictionary = JsonSerializer.Deserialize<Dictionary<string, T>>(ref reader);
         var actualDictionary = new Dictionary<(string, string), T>();
-        
+
         foreach (var keyValue in intermediateDictionary)
         {
             // stringKeys = "key1, key2"
@@ -21,7 +21,7 @@ public class TwoKeysDictionaryConvertor<T> : JsonConverter<Dictionary<(string, s
             var stringKeys = stringKey.Split(',', ' ');
             var firstKey = stringKeys.First();
             var secondKey = stringKeys.Last();
-            
+
             actualDictionary.Add((firstKey, secondKey), keyValue.Value);
         }
 
