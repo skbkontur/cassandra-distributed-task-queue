@@ -75,7 +75,12 @@ public class RequestResult
 
     public T ThenReturn<T>()
     {
-        return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(serializedResult));
+        var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+
+        return JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(serializedResult), options);
     }
 
     private readonly byte[] serializedResult;
