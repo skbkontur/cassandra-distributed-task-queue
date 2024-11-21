@@ -8,7 +8,7 @@ public class OmitBinaryAndAbstractPropertyConverter : JsonConverter<object>
 {
     public override bool CanConvert(Type typeToConvert)
     {
-        return IsAbstractType(typeToConvert) || IsBinaryType(typeToConvert) || base.CanConvert(typeToConvert);
+        return typeToConvert.IsAbstract || IsBinaryType(typeToConvert);
     }
 
     public override object Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -24,10 +24,5 @@ public class OmitBinaryAndAbstractPropertyConverter : JsonConverter<object>
     private static bool IsBinaryType(Type elementType)
     {
         return elementType == typeof(byte[]);
-    }
-
-    private static bool IsAbstractType(Type elementType)
-    {
-        return elementType.IsAbstract || elementType == typeof(object);
     }
 }

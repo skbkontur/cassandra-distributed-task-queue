@@ -12,7 +12,7 @@ using SkbKontur.EventFeeds;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
 
-public class RtqElasticsearchOffsetStorage : IOffsetStorage<string>
+public class RtqElasticsearchOffsetStorage : IOffsetStorage<string?>
 {
     public RtqElasticsearchOffsetStorage(IRtqElasticsearchClient elasticsearchClient,
                                          RtqEventLogOffsetInterpreter offsetInterpreter,
@@ -57,7 +57,7 @@ public class RtqElasticsearchOffsetStorage : IOffsetStorage<string>
         if (elasticResponse?.Source == null || !elasticResponse.Found)
             return GetDefaultOffset();
 
-        return elasticResponse.Source?.Offset;
+        return elasticResponse.Source.Offset;
     }
 
     private string GetDefaultOffset()
