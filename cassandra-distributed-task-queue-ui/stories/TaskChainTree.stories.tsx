@@ -1,4 +1,4 @@
-import { withRouter } from "storybook-addon-react-router-v6";
+import { withRouter } from "storybook-addon-remix-react-router";
 
 import { TaskState } from "../src/Domain/Api/TaskState";
 import { TaskChainTree } from "../src/components/TaskChainTree/TaskChainTree";

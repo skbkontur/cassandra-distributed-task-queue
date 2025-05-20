@@ -1,5 +1,5 @@
 import { action } from "@storybook/addon-actions";
-import { withRouter } from "storybook-addon-react-router-v6";
+import { withRouter } from "storybook-addon-remix-react-router";
 
 import { RtqMonitoringTaskMeta } from "../src/Domain/Api/RtqMonitoringTaskMeta";
 import { TaskState } from "../src/Domain/Api/TaskState";

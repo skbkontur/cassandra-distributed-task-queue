@@ -5,7 +5,7 @@ import { XCircleIcon16Regular } from "@skbkontur/icons/XCircleIcon16Regular";
 import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { ThemeContext } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
-import React from "react";
+import { useContext, ReactElement } from "react";
 
 import { TaskState } from "../../Domain/Api/TaskState";
 
@@ -28,8 +28,8 @@ export const getIconColor = (theme: Theme, severity: string): string | undefined
     }
 };
 
-export function TaskStateIcon({ taskState }: TaskStateIconProps): JSX.Element {
-    const theme = React.useContext(ThemeContext);
+export function TaskStateIcon({ taskState }: TaskStateIconProps): ReactElement {
+    const theme = useContext(ThemeContext);
 
     switch (taskState) {
         case TaskState.Unknown:

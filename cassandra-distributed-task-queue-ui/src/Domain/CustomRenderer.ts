@@ -1,12 +1,17 @@
 import { TimeUtils } from "@skbkontur/edi-ui";
+import type { ReactElement } from "react";
 
 import { RangeSelector } from "../components/DateTimeRangePicker/RangeSelector";
 
 import { RtqMonitoringSearchRequest } from "./Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringTaskModel } from "./Api/RtqMonitoringTaskModel";
 
+interface TaskDetails extends RtqMonitoringTaskModel {
+    taskData: { DocumentCirculationId?: any };
+}
+
 export interface ICustomRenderer {
-    renderDetails: (target: any, path: string[]) => null | JSX.Element;
+    renderDetails: (target: any, path: string[]) => null | ReactElement;
     getRelatedTasksLocation: (taskDetails: RtqMonitoringTaskModel) => Nullable<RtqMonitoringSearchRequest>;
 }
 
@@ -15,13 +20,13 @@ export class NullCustomRenderer implements ICustomRenderer {
         return null;
     }
 
-    public renderDetails(): null | JSX.Element {
+    public renderDetails(): null | ReactElement {
         return null;
     }
 }
 
 export class CustomRenderer implements ICustomRenderer {
-    public getRelatedTasksLocation(taskDetails: RtqMonitoringTaskModel): Nullable<RtqMonitoringSearchRequest> {
+    public getRelatedTasksLocation(taskDetails: TaskDetails): Nullable<RtqMonitoringSearchRequest> {
         const documentCirculationId =
             taskDetails.taskData && typeof taskDetails.taskData["DocumentCirculationId"] === "string"
                 ? taskDetails.taskData["DocumentCirculationId"]
@@ -39,7 +44,7 @@ export class CustomRenderer implements ICustomRenderer {
         return null;
     }
 
-    public renderDetails(target: any, path: string[]): null | JSX.Element {
+    public renderDetails(target: any, path: string[]): null | ReactElement {
         return null;
     }
 }

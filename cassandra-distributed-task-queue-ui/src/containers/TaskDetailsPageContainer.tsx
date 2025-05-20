@@ -1,5 +1,5 @@
 import { Loader } from "@skbkontur/react-ui";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactElement } from "react";
 import { useLocation, Location, useParams } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
@@ -19,7 +19,7 @@ export const TaskDetailsPageContainer = ({
     rtqMonitoringApi,
     useErrorHandlingContainer,
     isSuperUser,
-}: TaskDetailsPageContainerProps): JSX.Element => {
+}: TaskDetailsPageContainerProps): ReactElement => {
     const { pathname, state } = useLocation();
     const parentLocation = tryGetParentLocationFromHistoryState(state);
     const { id = "" } = useParams<"id">();

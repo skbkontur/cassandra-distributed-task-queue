@@ -1,7 +1,5 @@
 import { css } from "@skbkontur/react-ui/lib/theming/Emotion";
 
-import { baseSize } from "../Layouts/CommonLayout.styles";
-
 export const jsStyles = {
     buttonText() {
         return css`
@@ -17,7 +15,6 @@ export const jsStyles = {
             max-width: 800px;
 
             label {
-                padding-bottom: ${2 * baseSize}px;
                 display: block;
             }
         `;

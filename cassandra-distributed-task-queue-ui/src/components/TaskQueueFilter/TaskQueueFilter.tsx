@@ -1,7 +1,6 @@
 import { ColumnStack, Fill, Fit, Fixed, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Input, Link } from "@skbkontur/react-ui";
-import React from "react";
-import type { JSX, KeyboardEvent } from "react";
+import { ReactElement, KeyboardEvent, useState } from "react";
 
 import { RtqMonitoringSearchRequest } from "../../Domain/Api/RtqMonitoringSearchRequest";
 import { DateTimeRangePicker } from "../DateTimeRangePicker/DateTimeRangePicker";
@@ -25,8 +24,8 @@ export function TaskQueueFilter({
     onChange,
     onSearchButtonClick,
     withTaskLimit,
-}: TaskQueueFilterProps): JSX.Element {
-    const [openedModal, setOpenedModal] = React.useState(false);
+}: TaskQueueFilterProps): ReactElement {
+    const [openedModal, setOpenedModal] = useState(false);
 
     const openModal = () => {
         setOpenedModal(true);

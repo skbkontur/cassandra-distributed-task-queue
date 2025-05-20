@@ -1,7 +1,7 @@
 import { ArrowShapeTriangleADownIcon16Regular } from "@skbkontur/icons/ArrowShapeTriangleADownIcon16Regular";
-import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
+import { ColumnStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Tooltip } from "@skbkontur/react-ui";
-import type { JSX } from "react";
+import { ReactElement } from "react";
 
 import { useCustomSettings } from "../../CustomSettingsContext";
 import { TaskState } from "../../Domain/Api/TaskState";
@@ -31,19 +31,18 @@ export const TaskStatesSelect = ({ value, onChange }: TaskStatesSelectProps) => 
         onChange(newSelectedArray);
     };
 
-    const renderTooltip = (): JSX.Element => (
-        <ColumnStack block gap={2}>
+    const renderTooltip = (): ReactElement => (
+        <ColumnStack block>
             {getAllTaskStates()
                 .filter(x => customStateCaptions[x])
                 .map((item, index) => (
-                    <Fit key={index}>
-                        <Checkbox
-                            data-tid={item}
-                            checked={isItemSelected(item)}
-                            onValueChange={val => selectItem(val, item)}>
-                            {customStateCaptions[item]}
-                        </Checkbox>
-                    </Fit>
+                    <Checkbox
+                        key={index}
+                        data-tid={item}
+                        checked={isItemSelected(item)}
+                        onValueChange={val => selectItem(val, item)}>
+                        {customStateCaptions[item]}
+                    </Checkbox>
                 ))}
         </ColumnStack>
     );

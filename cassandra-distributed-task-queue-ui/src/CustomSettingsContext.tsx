@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useContext } from "react";
-import type { JSX } from "react";
+import type { ReactElement } from "react";
 
 import { TaskState } from "./Domain/Api/TaskState";
 import { CustomRenderer, ICustomRenderer } from "./Domain/CustomRenderer";
@@ -21,7 +21,7 @@ export interface ICustomSettings {
     customDetailRenderer: ICustomRenderer;
     customStateCaptions: TaskStateDict;
     hideMissingMeta: boolean;
-    customSearchHelp?: JSX.Element;
+    customSearchHelp?: ReactElement;
 }
 
 const defaultValue: ICustomSettings = {

@@ -10,7 +10,7 @@ import { TimeClockIcon16Regular } from "@skbkontur/icons/TimeClockIcon16Regular"
 import { XCircleIcon16Regular } from "@skbkontur/icons/XCircleIcon16Regular";
 import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
-import React from "react";
+import { ReactElement, useContext, useState } from "react";
 import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
@@ -31,16 +31,16 @@ interface TaskTimeLineProps {
     getHrefToTask: (id: string) => string | Partial<Location>;
 }
 
-export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTimeLineProps): JSX.Element {
-    const [showAllErrors, setShowAllErrors] = React.useState(false);
-    const theme = React.useContext(ThemeContext);
+export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTimeLineProps): ReactElement {
+    const [showAllErrors, setShowAllErrors] = useState(false);
+    const theme = useContext(ThemeContext);
 
     const createSimpleEntry = (entry: {
         title: string;
-        icon: JSX.Element;
+        icon: ReactElement;
         date?: Nullable<Ticks>;
         color?: string;
-    }): JSX.Element => {
+    }): ReactElement => {
         return (
             <TimeLineEntry key={entry.title} icon={entry.icon}>
                 <div style={{ color: entry.color }}>{entry.title}</div>
@@ -53,7 +53,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         );
     };
 
-    const getStartedEntry = (): null | JSX.Element => {
+    const getStartedEntry = (): null | ReactElement => {
         if (!taskMeta.startExecutingTicks) {
             return null;
         }
@@ -64,12 +64,12 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         });
     };
 
-    const getExecutionEntries = (): Array<null | JSX.Element> => {
+    const getExecutionEntries = (): Array<null | ReactElement> => {
         if (taskMeta.attempts === undefined || taskMeta.attempts === null || taskMeta.attempts === 0) {
             return [getShouldStartedEntry(), getStartedEntry()];
         }
 
-        const shouldStartAndStartEntries: Array<null | JSX.Element> = [];
+        const shouldStartAndStartEntries: Array<null | ReactElement> = [];
         if (taskMeta.state === TaskState.WaitingForRerun) {
             shouldStartAndStartEntries.push(
                 getStartedEntry(),
@@ -108,7 +108,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         return shouldStartAndStartEntries;
     };
 
-    const getShouldStartedEntry = (): null | JSX.Element => {
+    const getShouldStartedEntry = (): null | ReactElement => {
         return createSimpleEntry({
             title: "Start scheduled",
             icon: <TimeClockIcon16Regular />,
@@ -116,7 +116,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         });
     };
 
-    const getCurrentStateEntries = (): Array<null | JSX.Element> => {
+    const getCurrentStateEntries = (): Array<null | ReactElement> => {
         if (taskMeta.state === TaskState.Finished) {
             const color = getIconColor(theme, "success");
             return [
@@ -187,7 +187,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         return [];
     };
 
-    const getEnqueuedEntry = (): null | JSX.Element => {
+    const getEnqueuedEntry = (): null | ReactElement => {
         return createSimpleEntry({
             title: "Enqueued",
             icon: <NetDownloadIcon16Regular />,
@@ -195,7 +195,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         });
     };
 
-    const getChildrenTaskIdsEntry = (): null | JSX.Element => {
+    const getChildrenTaskIdsEntry = (): null | ReactElement => {
         if (childTaskIds && childTaskIds.length > 0) {
             const visibleTaskIdsCount = showAllErrors ? childTaskIds.length : alwaysVisibleTaskIdsCount;
             const hiddenTaskIdsCount = childTaskIds.length - visibleTaskIdsCount;
@@ -226,7 +226,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         return null;
     };
 
-    const getParentTaskIdEntry = (): null | JSX.Element => {
+    const getParentTaskIdEntry = (): null | ReactElement => {
         if (!taskMeta.parentTaskId) {
             return null;
         }
