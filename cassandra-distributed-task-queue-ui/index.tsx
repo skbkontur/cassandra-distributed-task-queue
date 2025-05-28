@@ -1,4 +1,5 @@
 import "./react-selenium-testing";
+import type { ReactElement } from "react";
 import ReactDom from "react-dom";
 import { Route, Navigate, Routes, BrowserRouter } from "react-router-dom";
 
@@ -11,7 +12,7 @@ const rtqApiPrefix = "/remote-task-queue/";
 export const rtqMonitoringApi =
     process.env.API === "fake" ? new RtqMonitoringApiFake() : new RtqMonitoringApi(rtqApiPrefix);
 
-const AdminRedirect = (): JSX.Element => {
+const AdminRedirect = (): ReactElement => {
     localStorage.setItem("isSuperUser", "true");
     return <Navigate to="../Tasks" replace />;
 };

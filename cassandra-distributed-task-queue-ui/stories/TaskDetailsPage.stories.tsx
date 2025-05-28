@@ -1,5 +1,5 @@
 import { action } from "@storybook/addon-actions";
-import { withRouter } from "storybook-addon-react-router-v6";
+import { withRouter } from "storybook-addon-remix-react-router";
 
 import { NullCustomRenderer } from "../src";
 import { RtqMonitoringTaskModel } from "../src/Domain/Api/RtqMonitoringTaskModel";

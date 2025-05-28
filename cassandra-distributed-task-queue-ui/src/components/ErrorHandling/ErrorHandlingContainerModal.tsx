@@ -3,7 +3,7 @@ import { CopyIcon16Regular } from "@skbkontur/icons/CopyIcon16Regular";
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
-import React from "react";
+import { ReactElement, Component } from "react";
 
 import { jsStyles } from "./ErrorHandlingContainer.styles";
 
@@ -19,7 +19,7 @@ interface ErrorHandlingContainerModalProps {
     serverStack: Nullable<string>;
 }
 
-export class ErrorHandlingContainerModal extends React.Component<
+export class ErrorHandlingContainerModal extends Component<
     ErrorHandlingContainerModalProps,
     ErrorHandlingContainerModalState
 > {
@@ -40,7 +40,7 @@ export class ErrorHandlingContainerModal extends React.Component<
         }
     };
 
-    public render(): JSX.Element {
+    public render(): ReactElement {
         return (
             <ThemeContext.Consumer>
                 {theme => {
@@ -51,7 +51,7 @@ export class ErrorHandlingContainerModal extends React.Component<
         );
     }
 
-    private renderMain(): JSX.Element {
+    private renderMain(): ReactElement {
         const { canClose, message, onClose, serverStack, stack } = this.props;
 
         const { showStack } = this.state;

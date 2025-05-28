@@ -1,20 +1,20 @@
 import { ThemeContext } from "@skbkontur/react-ui";
-import React from "react";
+import { ReactNode, ReactElement, useContext, useRef, useEffect } from "react";
 
 import { jsStyles } from "./TimeLine.styles";
 
 export interface TimeLineCycledProps {
-    children?: React.ReactNode;
-    content?: Nullable<JSX.Element> | Nullable<string>;
-    icon?: JSX.Element;
+    children?: ReactNode;
+    content?: Nullable<ReactElement> | Nullable<string>;
+    icon?: ReactElement;
 }
 
-export function TimeLineCycled({ children, content, icon }: TimeLineCycledProps): JSX.Element {
-    const entries = React.useRef<HTMLDivElement>(null);
-    const lines = React.useRef<HTMLDivElement>(null);
-    const theme = React.useContext(ThemeContext);
+export function TimeLineCycled({ children, content, icon }: TimeLineCycledProps): ReactElement {
+    const entries = useRef<HTMLDivElement>(null);
+    const lines = useRef<HTMLDivElement>(null);
+    const theme = useContext(ThemeContext);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (entries.current != null) {
             const children = entries.current.children;
             const lastEntry = children[children.length - 1];

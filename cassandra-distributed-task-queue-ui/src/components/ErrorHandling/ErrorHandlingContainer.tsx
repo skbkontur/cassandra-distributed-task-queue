@@ -1,4 +1,4 @@
-import React from "react";
+import { Component, ReactElement } from "react";
 
 import { ApiErrorInfo } from "../../Domain/ApiBase/ApiError";
 
@@ -11,7 +11,7 @@ interface ErrorHandlingContainerState {
     showModal: boolean;
 }
 
-export class ErrorHandlingContainer extends React.Component<{}, ErrorHandlingContainerState> {
+export class ErrorHandlingContainer extends Component<{}, ErrorHandlingContainerState> {
     public state: ErrorHandlingContainerState = {
         isFatal: false,
         error: null,
@@ -43,7 +43,7 @@ export class ErrorHandlingContainer extends React.Component<{}, ErrorHandlingCon
         window.onunhandledrejection = this.oldOnunhandledrejection;
     }
 
-    public render(): JSX.Element {
+    public render(): ReactElement {
         const { isFatal, showModal, stack, error } = this.state;
         const { message, serverErrorType, serverStackTrace } = (error || {}) as ApiErrorInfo;
         return (

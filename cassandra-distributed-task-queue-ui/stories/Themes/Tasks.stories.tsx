@@ -1,44 +1,38 @@
-import {
-    DEFAULT_THEME,
-    DEFAULT_THEME_8PX_OLD,
-    FLAT_THEME_8PX_OLD,
-    THEME_2022,
-    ThemeContext,
-    ThemeFactory,
-} from "@skbkontur/react-ui";
+import { LIGHT_THEME, DARK_THEME, ThemeContext, ThemeFactory } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
+import { ReactElement, useContext } from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { TasksPageContainer } from "../../src/containers/TasksPageContainer";
 import { RtqMonitoringApiFake } from "../Api/RtqMonitoringApiFake";
 
-import { reactUiDark } from "./reactUiDark";
-
 export default {
     title: "Themes/Tasks",
 };
 
-const TypesContainer = ({ theme }: { theme: Theme }) => (
-    <MemoryRouter initialEntries={["/AdminTools?q=AllTasks"]}>
-        <Routes>
-            <Route
-                path="/AdminTools"
-                element={
-                    <ThemeContext.Provider value={theme}>
-                        <TasksPageContainer
-                            rtqMonitoringApi={new RtqMonitoringApiFake()}
-                            useErrorHandlingContainer
-                            isSuperUser
-                        />
-                    </ThemeContext.Provider>
-                }
-            />
-        </Routes>
-    </MemoryRouter>
-);
+const TypesContainer = ({ theme }: { theme: Theme }) => {
+    const currentTheme = useContext(ThemeContext);
+    return (
+        <ThemeContext.Provider value={ThemeFactory.create(currentTheme, theme)}>
+            <MemoryRouter initialEntries={["/AdminTools?q=AllTasks"]}>
+                <Routes>
+                    <Route
+                        path="/AdminTools"
+                        element={
+                            <ThemeContext.Provider value={theme}>
+                                <TasksPageContainer
+                                    rtqMonitoringApi={new RtqMonitoringApiFake()}
+                                    useErrorHandlingContainer
+                                    isSuperUser
+                                />
+                            </ThemeContext.Provider>
+                        }
+                    />
+                </Routes>
+            </MemoryRouter>
+        </ThemeContext.Provider>
+    );
+};
 
-export const Default = (): JSX.Element => <TypesContainer theme={DEFAULT_THEME} />;
-export const Flat = (): JSX.Element => <TypesContainer theme={FLAT_THEME_8PX_OLD} />;
-export const Old = (): JSX.Element => <TypesContainer theme={DEFAULT_THEME_8PX_OLD} />;
-export const Dark = (): JSX.Element => <TypesContainer theme={ThemeFactory.create(reactUiDark)} />;
-export const New = () => <TypesContainer theme={THEME_2022} />;
+export const Light = (): ReactElement => <TypesContainer theme={LIGHT_THEME} />;
+export const Dark = (): ReactElement => <TypesContainer theme={DARK_THEME} />;

@@ -1,6 +1,6 @@
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Input, Modal, ThemeContext } from "@skbkontur/react-ui";
-import React from "react";
+import { useContext, ReactElement, useState } from "react";
 
 import { numberToString } from "../../Domain/numberToString";
 import { jsStyles } from "../ErrorHandling/ErrorHandlingContainer.styles";
@@ -19,9 +19,9 @@ export function TasksModal({
     onCancelAll,
     onRerunAll,
     onCloseModal,
-}: TasksModalProps): JSX.Element {
-    const [manyTaskConfirm, setManyTaskConfirm] = React.useState("");
-    const theme = React.useContext(ThemeContext);
+}: TasksModalProps): ReactElement {
+    const [manyTaskConfirm, setManyTaskConfirm] = useState("");
+    const theme = useContext(ThemeContext);
 
     const confirmedRegExp = /б.*л.*я/i;
 

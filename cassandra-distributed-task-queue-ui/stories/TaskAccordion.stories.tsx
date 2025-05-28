@@ -1,14 +1,17 @@
 import { Accordion } from "@skbkontur/edi-ui";
-import _ from "lodash";
+import isEqual from "lodash/isEqual";
+import type { ReactElement } from "react";
 
 export default {
     title: "RemoteTaskQueueMonitoring/TaskAccordion",
     component: Accordion,
 };
 
-export const Default = () => <Accordion renderCaption={null} renderValue={null} value={document} title="taskData" />;
+export const Default = (): ReactElement => (
+    <Accordion renderCaption={null} renderValue={null} value={document} title="taskData" />
+);
 
-export const WithCustomRender = () => (
+export const WithCustomRender = (): ReactElement => (
     <Accordion renderCaption={null} renderValue={customRender} value={document} title="taskData" />
 );
 
@@ -47,9 +50,9 @@ ToggleAllHiddenNothingToToggle.story = {
     name: "Toggle all hidden, nothing to toggle",
 };
 
-function customRender(target: { [key: string]: any }, path: string[]): JSX.Element | null {
+function customRender(target: { [key: string]: any }, path: string[]): ReactElement | null {
     const boxId = target.details?.box && typeof target.details.box === "object" && target.details.box.id;
-    if (_.isEqual(path, ["details", "box", "id"]) && boxId != null && typeof boxId === "string") {
+    if (isEqual(path, ["details", "box", "id"]) && boxId != null && typeof boxId === "string") {
         return <a href={`/zzzz/${boxId}`}>{boxId}</a>;
     }
     return null;

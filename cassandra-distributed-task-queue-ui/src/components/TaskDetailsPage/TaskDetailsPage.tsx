@@ -4,7 +4,7 @@ import { TextAlignCenterJustifyIcon16Regular } from "@skbkontur/icons/TextAlignC
 import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
-import React from "react";
+import { useContext, useState, ReactElement } from "react";
 import { Location } from "react-router-dom";
 
 import { useCustomSettings } from "../../CustomSettingsContext";
@@ -34,10 +34,10 @@ export function TaskDetailsPage({
     allowRerunOrCancel,
     onRerun,
     onCancel,
-}: TaskDetailsPageProps): JSX.Element {
-    const [openedModal, setOpenedModal] = React.useState(false);
-    const [modalType, setModalType] = React.useState<"Cancel" | "Rerun">("Cancel");
-    const theme = React.useContext(ThemeContext);
+}: TaskDetailsPageProps): ReactElement {
+    const [openedModal, setOpenedModal] = useState(false);
+    const [modalType, setModalType] = useState<"Cancel" | "Rerun">("Cancel");
+    const theme = useContext(ThemeContext);
     const { customDetailRenderer } = useCustomSettings();
 
     const rerun = () => {
@@ -52,7 +52,7 @@ export function TaskDetailsPage({
 
     const closeModal = () => setOpenedModal(false);
 
-    const renderButtons = (): JSX.Element | null => {
+    const renderButtons = (): ReactElement | null => {
         if (!taskDetails) {
             return null;
         }
@@ -106,7 +106,7 @@ export function TaskDetailsPage({
         );
     };
 
-    const renderModal = (): JSX.Element | null => {
+    const renderModal = (): ReactElement | null => {
         if (!taskDetails) {
             return null;
         }

@@ -4,7 +4,7 @@ import { ThemeContext } from "@skbkontur/react-ui";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
-import React from "react";
+import { useContext, ReactElement } from "react";
 import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel";
@@ -19,10 +19,10 @@ interface TaskChainTreeProps {
     getTaskLocation: (id: string) => string | Partial<Location>;
 }
 
-export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreeProps): JSX.Element {
-    const theme = React.useContext(ThemeContext);
+export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreeProps): ReactElement {
+    const theme = useContext(ThemeContext);
 
-    const buildTaskTimeLineEntry = ({ taskMeta }: RtqMonitoringTaskModel): JSX.Element => {
+    const buildTaskTimeLineEntry = ({ taskMeta }: RtqMonitoringTaskModel): ReactElement => {
         const TimeLineEntry = TimeLine.Entry;
         return (
             <TimeLineEntry
@@ -42,7 +42,7 @@ export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreePro
     const buildChildEntries = (
         { taskMeta, childTaskIds }: RtqMonitoringTaskModel,
         taskMetaHashSet: { [key: string]: RtqMonitoringTaskModel }
-    ): JSX.Element[] => {
+    ): ReactElement[] => {
         if (!childTaskIds || childTaskIds.length === 0) {
             return [];
         }
@@ -66,7 +66,7 @@ export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreePro
     const buildTaskTimeLine = (
         taskMeta: RtqMonitoringTaskModel,
         taskMetaHashSet: { [key: string]: RtqMonitoringTaskModel }
-    ): JSX.Element[] => {
+    ): ReactElement[] => {
         return [buildTaskTimeLineEntry(taskMeta), ...buildChildEntries(taskMeta, taskMetaHashSet)];
     };
 
@@ -96,10 +96,13 @@ export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreePro
         return mostParentTasks;
     };
 
-    const taskMetaHashSet = taskDetails.reduce((result, taskDetails) => {
-        result[taskDetails.taskMeta.id] = taskDetails;
-        return result;
-    }, {});
+    const taskMetaHashSet = taskDetails.reduce(
+        (result, taskDetails) => {
+            result[taskDetails.taskMeta.id] = taskDetails;
+            return result;
+        },
+        {} as Record<string, RtqMonitoringTaskModel>
+    );
 
     const mostParentTasks = findAllMostParents(taskMetaHashSet);
     return (

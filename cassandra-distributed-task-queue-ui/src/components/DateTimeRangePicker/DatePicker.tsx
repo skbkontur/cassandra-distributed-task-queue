@@ -1,6 +1,6 @@
 import { StringUtils, TimeUtils, TimeZone, Time, DateUtils, RussianDateFormat } from "@skbkontur/edi-ui";
 import { DatePicker as DefaultDatePicker } from "@skbkontur/react-ui";
-import React from "react";
+import { ReactElement, Component } from "react";
 
 interface DatePickerProps {
     value: Nullable<Date>;
@@ -28,7 +28,7 @@ const DatePickerDefaultProps = {
 
 const defaultTime = "00:00";
 
-export class DatePicker extends React.Component<DatePickerProps, DatePickerState> {
+export class DatePicker extends Component<DatePickerProps, DatePickerState> {
     public state = {
         date: "",
     };
@@ -51,7 +51,7 @@ export class DatePicker extends React.Component<DatePickerProps, DatePickerState
         }
     }
 
-    public render(): JSX.Element {
+    public render(): ReactElement {
         const { minDate, maxDate, timeZone } = this.props;
 
         return (

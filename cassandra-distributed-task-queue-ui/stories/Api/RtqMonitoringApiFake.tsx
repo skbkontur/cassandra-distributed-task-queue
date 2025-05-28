@@ -146,8 +146,9 @@ export class RtqMonitoringApiFake implements IRtqMonitoringApi {
             return {};
         }
 
-        if (treeTaskDetails[taskId]) {
-            return treeTaskDetails[taskId];
+        const taskDetails = treeTaskDetails[taskId as keyof typeof treeTaskDetails] as RtqMonitoringTaskModel;
+        if (taskDetails) {
+            return taskDetails;
         }
 
         await delay(1000);

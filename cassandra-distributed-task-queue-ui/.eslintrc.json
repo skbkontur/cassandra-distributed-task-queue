@@ -18,19 +18,10 @@
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
+    "@typescript-eslint/no-empty-object-type": "off",
     "@typescript-eslint/no-unused-vars": "warn",
     "react/jsx-uses-react": "off",
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/ban-types": [
-      "error",
-      {
-        "types": {
-          "object": false,
-          "{}": false
-        },
-        "extendDefaults": true
-      }
-    ],
     "@typescript-eslint/interface-name-prefix": "off",
     "import/no-namespace": "error",
     "import/newline-after-import": "error",

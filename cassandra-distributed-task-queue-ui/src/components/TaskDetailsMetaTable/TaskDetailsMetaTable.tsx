@@ -1,6 +1,6 @@
 import { Timestamp, AllowCopyToClipboard, Ticks } from "@skbkontur/edi-ui";
 import { ThemeContext } from "@skbkontur/react-ui";
-import React, { ReactNode } from "react";
+import { useContext, ReactElement, ReactNode } from "react";
 
 import { useCustomSettings } from "../../CustomSettingsContext";
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
@@ -31,11 +31,11 @@ export const TaskDetailsMetaTable = ({
         ticks,
     },
     childTaskIds,
-}: TaskDetailsMetaTableProps): JSX.Element => {
-    const theme = React.useContext(ThemeContext);
+}: TaskDetailsMetaTableProps): ReactElement => {
+    const theme = useContext(ThemeContext);
     const { customStateCaptions, hideMissingMeta } = useCustomSettings();
 
-    const renderDate = (date?: Nullable<Ticks>): JSX.Element => <Timestamp value={date} />;
+    const renderDate = (date?: Nullable<Ticks>): ReactElement => <Timestamp value={date} />;
 
     const renderRow = (name: string, value: Nullable<string>, render?: (x: Nullable<string>) => ReactNode) =>
         value || !hideMissingMeta ? (

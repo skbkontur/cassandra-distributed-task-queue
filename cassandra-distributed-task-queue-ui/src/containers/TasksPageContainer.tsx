@@ -1,6 +1,6 @@
 import { ColumnStack, Fill, Fit, Fixed, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Loader, Paging } from "@skbkontur/react-ui";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactElement } from "react";
 import { Location, useLocation, useNavigate } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
@@ -46,7 +46,7 @@ export const TasksPageContainer = ({
     isSuperUser,
     useErrorHandlingContainer,
     useFrontPaging,
-}: TasksPageContainerProps): JSX.Element => {
+}: TasksPageContainerProps): ReactElement => {
     const navigate = useNavigate();
     const { search, pathname } = useLocation();
     const [loading, setLoading] = useState(false);

@@ -1,7 +1,7 @@
 import { TimeUtils, TimeZone } from "@skbkontur/edi-ui";
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { ThemeContext } from "@skbkontur/react-ui";
-import React from "react";
+import { ReactElement, useContext } from "react";
 
 import { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
 
@@ -52,8 +52,8 @@ const defaultPredefinedRanges: PredefinedRangeDefinition[] = [
     },
 ];
 
-export function DateTimeRangePicker({ error, value, onChange, timeZone }: DateTimeRangePickerProps): JSX.Element {
-    const theme = React.useContext(ThemeContext);
+export function DateTimeRangePicker({ error, value, onChange, timeZone }: DateTimeRangePickerProps): ReactElement {
+    const theme = useContext(ThemeContext);
 
     const { lowerBound, upperBound } = value;
     const fixedTimezone = TimeUtils.getTimeZoneOffsetOrDefault(timeZone);

@@ -1,7 +1,7 @@
 import { Loader } from "@skbkontur/react-ui";
 import difference from "lodash/difference";
 import uniq from "lodash/uniq";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactElement } from "react";
 import { Location, useLocation } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
@@ -28,7 +28,7 @@ const isNotNullOrUndefined = <T extends {}>(input: null | undefined | T): input 
 export const TaskChainsTreeContainer = ({
     useErrorHandlingContainer,
     rtqMonitoringApi,
-}: TaskChainsTreeContainerProps): JSX.Element => {
+}: TaskChainsTreeContainerProps): ReactElement => {
     const { search, pathname } = useLocation();
     const [loading, setLoading] = useState(false);
     const [loaderText, setLoaderText] = useState("");

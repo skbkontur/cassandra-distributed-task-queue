@@ -3,7 +3,7 @@ import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundT
 import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Checkbox, Link, ThemeContext } from "@skbkontur/react-ui";
-import React from "react";
+import { useContext, ReactElement } from "react";
 import { Location } from "react-router-dom";
 
 import { useCustomSettings } from "../../../CustomSettingsContext";
@@ -26,13 +26,13 @@ interface TaskDetailsProps {
 function dateFormatter(
     item: RtqMonitoringTaskMeta,
     selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
-): JSX.Element {
+): ReactElement {
     return <Timestamp value={selector(item)} />;
 }
 
-export function TaskDetails(props: TaskDetailsProps): JSX.Element {
+export function TaskDetails(props: TaskDetailsProps): ReactElement {
     const { allowRerunOrCancel, taskInfo, isChecked, onCancel, onRerun, onCheck, getTaskLocation } = props;
-    const theme = React.useContext(ThemeContext);
+    const theme = useContext(ThemeContext);
     const { customStateCaptions } = useCustomSettings();
 
     const canCancel = taskInfo.taskActions ? taskInfo.taskActions.canCancel : cancelableStates.includes(taskInfo.state);
@@ -42,7 +42,7 @@ export function TaskDetails(props: TaskDetailsProps): JSX.Element {
         taskInfo: RtqMonitoringTaskMeta,
         caption: string,
         selector: (obj: RtqMonitoringTaskMeta) => Nullable<Ticks>
-    ): JSX.Element => {
+    ): ReactElement => {
         return (
             <div>
                 <span className={jsStyles.dateCaption(theme)}>{caption}</span>

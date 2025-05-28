@@ -1,5 +1,5 @@
-import _ from "lodash";
-import { withRouter } from "storybook-addon-react-router-v6";
+import range from "lodash/range";
+import { withRouter } from "storybook-addon-remix-react-router";
 
 import { TaskState } from "../src/Domain/Api/TaskState";
 import { TaskTimeLine } from "../src/components/TaskTimeLine/TaskTimeLine";
@@ -41,7 +41,7 @@ export const RegularTaskWithKnownParentAnd100Childs = () => (
             ...regularSuccessfulTask,
             parentTaskId: "some-parent-task-id",
         }}
-        childTaskIds={_.range(100).map(x => `some-child-task-id-${x}`)}
+        childTaskIds={range(100).map(x => `some-child-task-id-${x}`)}
         getHrefToTask={id => "/" + id}
     />
 );
@@ -52,7 +52,7 @@ export const RegularTaskWithKnownParentAnd4Childs = () => (
             ...regularSuccessfulTask,
             parentTaskId: "some-parent-task-id",
         }}
-        childTaskIds={_.range(4).map(x => `some-child-task-id-${x}`)}
+        childTaskIds={range(4).map(x => `some-child-task-id-${x}`)}
         getHrefToTask={id => "/" + id}
     />
 );

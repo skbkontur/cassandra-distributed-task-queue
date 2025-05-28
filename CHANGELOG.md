@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.3.0 - 2025.05.28
+- Update react-ui
+- Update edi-ui
+
 ## v3.2.0 - 2024.03.05
 - always render task tree link; render action buttons based on server response
 - add same logic to details cards in table

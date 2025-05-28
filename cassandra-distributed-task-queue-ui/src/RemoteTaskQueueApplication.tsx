@@ -1,4 +1,4 @@
-import type { JSX } from "react";
+import type { ReactElement } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import { CustomSettingsProvider, TaskStateDict } from "./CustomSettingsContext";
@@ -14,7 +14,7 @@ interface RemoteTaskQueueApplicationProps {
     useErrorHandlingContainer: boolean;
     isSuperUser: boolean;
     customStateCaptions?: TaskStateDict;
-    customSearchHelp?: JSX.Element;
+    customSearchHelp?: ReactElement;
     hideMissingMeta?: boolean;
     useFrontPaging?: boolean;
 }
@@ -28,7 +28,7 @@ export const RemoteTaskQueueApplication = ({
     customSearchHelp,
     hideMissingMeta,
     useFrontPaging,
-}: RemoteTaskQueueApplicationProps): JSX.Element => (
+}: RemoteTaskQueueApplicationProps): ReactElement => (
     <CustomSettingsProvider
         customStateCaptions={customStateCaptions}
         customSearchHelp={customSearchHelp}

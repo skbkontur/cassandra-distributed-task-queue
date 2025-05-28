@@ -2,7 +2,7 @@ import { Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { ThemeContext, Button, Modal } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import isEqual from "lodash/isEqual";
-import React from "react";
+import { Component, ReactElement } from "react";
 import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
@@ -26,7 +26,7 @@ interface TasksTableState {
     actionTask: string;
 }
 
-export class TasksTable extends React.Component<TaskTableProps, TasksTableState> {
+export class TasksTable extends Component<TaskTableProps, TasksTableState> {
     public state: TasksTableState = {
         openedModal: false,
         modalType: "Cancel",
@@ -46,7 +46,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         );
     }
 
-    public render(): JSX.Element {
+    public render(): ReactElement {
         const { taskInfos } = this.props;
         const { openedModal } = this.state;
         return (
@@ -64,7 +64,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         );
     }
 
-    public renderRow(item: RtqMonitoringTaskMeta): JSX.Element {
+    public renderRow(item: RtqMonitoringTaskMeta): ReactElement {
         const { allowRerunOrCancel, chosenTasks, onCheck, getTaskLocation } = this.props;
         return (
             <div key={item.id} className={jsStyles.taskDetailsRow()}>
@@ -82,7 +82,7 @@ export class TasksTable extends React.Component<TaskTableProps, TasksTableState>
         );
     }
 
-    public renderModal(): JSX.Element {
+    public renderModal(): ReactElement {
         const { onCancel, onRerun } = this.props;
         const { modalType, actionTask } = this.state;
 
