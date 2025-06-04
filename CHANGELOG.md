@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.4.0 - 2025.06.04
+- Migrate backend to System.Text.Json
+
 ## v3.3.0 - 2025.05.28
 - Update react-ui
 - Update edi-ui
