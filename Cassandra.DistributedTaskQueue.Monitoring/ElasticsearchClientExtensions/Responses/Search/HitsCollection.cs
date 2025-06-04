@@ -1,17 +1,19 @@
-﻿#nullable enable
+﻿using JetBrains.Annotations;
 
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Search;
-
-internal class HitsCollection
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Search
 {
-    [JsonPropertyName("total")]
-    [JsonConverter(typeof(TotalCountCompatibilityConverter))]
-    public long TotalCount { get; set; }
+    internal class HitsCollection
+    {
+        [JsonProperty(PropertyName = "total")]
+        [JsonConverter(typeof(TotalCountCompatibilityConverter))]
+        public long TotalCount { get; set; }
 
-    [JsonPropertyName("hits")]
-    public HitInfo[] Hits { get; set; } = null!;
+        [NotNull, ItemNotNull]
+        [JsonProperty(PropertyName = "hits")]
+        public HitInfo[] Hits { get; set; }
+    }
 }

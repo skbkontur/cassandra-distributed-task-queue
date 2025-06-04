@@ -1,18 +1,19 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Bulk;
-
-internal class ItemInfo
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Bulk
 {
-    [JsonPropertyName("index")]
-    public IndexBulkResponse Index { get; set; }
+    internal class ItemInfo
+    {
+        [JsonProperty(PropertyName = "index")]
+        public IndexBulkResponse Index { get; set; }
 
-    [JsonPropertyName("create")]
-    public ResponseBase Create { get; set; }
+        [JsonProperty(PropertyName = "create")]
+        public ResponseBase Create { get; set; }
 
-    [JsonPropertyName("update")]
-    public ResponseBase Update { get; set; }
+        [JsonProperty(PropertyName = "update")]
+        public ResponseBase Update { get; set; }
 
-    [JsonPropertyName("delete")]
-    public ResponseBase Delete { get; set; }
+        [JsonProperty(PropertyName = "delete")]
+        public ResponseBase Delete { get; set; }
+    }
 }

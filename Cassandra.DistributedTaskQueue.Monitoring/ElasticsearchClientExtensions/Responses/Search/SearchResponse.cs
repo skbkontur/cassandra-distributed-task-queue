@@ -1,11 +1,13 @@
-﻿#nullable enable
+﻿using JetBrains.Annotations;
 
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Search;
-
-internal class SearchResponse
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.ElasticsearchClientExtensions.Responses.Search
 {
-    [JsonPropertyName("hits")]
-    public HitsCollection Hits { get; set; } = null!;
+    internal class SearchResponse
+    {
+        [NotNull]
+        [JsonProperty(PropertyName = "hits")]
+        public HitsCollection Hits { get; set; }
+    }
 }

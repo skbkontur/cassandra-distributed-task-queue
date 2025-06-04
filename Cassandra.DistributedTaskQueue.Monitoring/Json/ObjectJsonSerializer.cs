@@ -1,25 +1,34 @@
 ﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Handling;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
-
-public class TaskDataJsonSerializer : JsonConverter<IRtqTaskData>
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
 {
-    public override IRtqTaskData Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public class TaskDataJsonSerializer : JsonConverter
     {
-        throw new NotImplementedException();
-    }
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            staticSerializer.Serialize(writer, value);
+        }
 
-    public override void Write(Utf8JsonWriter writer, IRtqTaskData value, JsonSerializerOptions options)
-    {
-        JsonSerializerOptions jsonSerializerOptions = new();
-        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        jsonSerializerOptions.Converters.Add(new TimeGuidJsonConverter());
-        jsonSerializerOptions.Converters.Add(new TimestampJsonConverter());
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            throw new NotImplementedException();
+        }
 
-        JsonSerializer.Serialize(writer, value, jsonSerializerOptions);
+        public override bool CanConvert(Type objectType)
+        {
+            return typeof(IRtqTaskData).IsAssignableFrom(objectType);
+        }
+
+        public override bool CanRead => false;
+
+        private static readonly JsonSerializer staticSerializer = new JsonSerializer
+            {
+                Converters = {new StringEnumConverter(), new TimeGuidJsonConverter(), new TimestampJsonConverter()}
+            };
     }
 }

@@ -1,36 +1,40 @@
-﻿#nullable enable
+﻿using System;
 
-using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
-
-/// <summary>
-///     Конвертер, которые сериализует long-и в строки вместо чисел,
-///     ибо JSON.parse() на длинных long-ах теряет последние разряды
-/// </summary>
-public class LongToStringConverter : JsonConverter<long?>
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
 {
-    public override long? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    /// <summary>
+    ///     Конвертер, которые сериализует long-и в строки вместо чисел,
+    ///     ибо JSON.parse() на длинных long-ах теряет последние разряды
+    /// </summary>
+    public class LongToStringConverter : JsonConverter
     {
-        var value = JsonSerializer.Deserialize<string?>(ref reader);
-        if (value == null)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            return null;
+            if (value == null)
+            {
+                writer.WriteNull();
+            }
+            else
+            {
+                writer.WriteValue(value.ToString());
+            }
         }
-        return long.Parse(value);
-    }
 
-    public override void Write(Utf8JsonWriter writer, long? value, JsonSerializerOptions options)
-    {
-        if (value == null)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            writer.WriteNullValue();
+            var value = serializer.Deserialize<string>(reader);
+            if (value == null)
+            {
+                return null;
+            }
+            return long.Parse(value);
         }
-        else
+
+        public override bool CanConvert(Type objectType)
         {
-            writer.WriteStringValue(value.ToString());
+            return typeof(long) == objectType || typeof(long?) == objectType;
         }
     }
 }

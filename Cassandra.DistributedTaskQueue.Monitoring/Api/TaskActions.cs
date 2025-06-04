@@ -1,12 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
 
 public class TaskActions
 {
-    [JsonPropertyName("canCancel")]
+    [JsonProperty("canCancel")]
     public bool CanCancel { get; set; }
 
-    [JsonPropertyName("canRerun")]
+    [JsonProperty("canRerun")]
     public bool CanRerun { get; set; }
 }

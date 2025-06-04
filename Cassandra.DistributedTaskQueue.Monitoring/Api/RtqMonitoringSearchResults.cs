@@ -1,15 +1,16 @@
-﻿using System.Text.Json.Serialization;
+﻿using JetBrains.Annotations;
 
-using JetBrains.Annotations;
+using Newtonsoft.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
-
-public class RtqMonitoringSearchResults
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
 {
-    [JsonPropertyName("totalCount")]
-    public long TotalCount { get; set; }
+    public class RtqMonitoringSearchResults
+    {
+        [JsonProperty("totalCount")]
+        public long TotalCount { get; set; }
 
-    [NotNull, ItemNotNull]
-    [JsonPropertyName("taskMetas")]
-    public RtqMonitoringTaskMeta[] TaskMetas { get; set; } = null!;
+        [NotNull, ItemNotNull]
+        [JsonProperty("taskMetas")]
+        public RtqMonitoringTaskMeta[] TaskMetas { get; set; }
+    }
 }

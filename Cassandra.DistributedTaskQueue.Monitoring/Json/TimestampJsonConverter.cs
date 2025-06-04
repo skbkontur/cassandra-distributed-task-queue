@@ -1,27 +1,38 @@
 ﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+
+using Newtonsoft.Json;
 
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
-
-internal class TimestampJsonConverter : JsonConverter<Timestamp>
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
 {
-    public override Timestamp Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    internal class TimestampJsonConverter : JsonConverter
     {
-        if (reader.TryGetDateTime(out var dateTime))
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            return new Timestamp(dateTime);
+            if (value == null)
+                writer.WriteNull();
+            else
+                writer.WriteValue(((Timestamp)value).ToDateTime());
         }
-        throw new JsonException($"Unexpected token when parsing timestamp. Expected Date or Integer with value type long, got {reader.TokenType}");
-    }
 
-    public override void Write(Utf8JsonWriter writer, Timestamp value, JsonSerializerOptions options)
-    {
-        if (value == null)
-            writer.WriteNullValue();
-        else
-            writer.WriteStringValue(value.ToDateTime());
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            switch (reader.TokenType)
+            {
+            case JsonToken.Null:
+                return null;
+            case JsonToken.Date:
+                return new Timestamp((DateTime)reader.Value);
+            case JsonToken.Integer:
+                return new Timestamp((long)reader.Value);
+            }
+            throw new JsonSerializationException($"Unexpected token when parsing timestamp. Expected Date or Integer with value type long, got {reader.TokenType}");
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(Timestamp);
+        }
     }
 }

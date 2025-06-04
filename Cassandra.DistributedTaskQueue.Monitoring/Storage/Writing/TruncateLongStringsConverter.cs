@@ -1,29 +1,37 @@
 ﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing;
+using Newtonsoft.Json;
 
-public class TruncateLongStringsConverter : JsonConverter<string>
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Storage.Writing
 {
-    public TruncateLongStringsConverter(int maxStringLength)
+    public class TruncateLongStringsConverter : JsonConverter
     {
-        this.maxStringLength = maxStringLength;
-    }
+        public TruncateLongStringsConverter(int maxStringLength)
+        {
+            this.maxStringLength = maxStringLength;
+        }
 
-    public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        throw new NotImplementedException();
-    }
+        public override bool CanRead => false;
 
-    public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
-    {
-        var str = value;
-        if (str == null || str.Length <= maxStringLength)
-            writer.WriteStringValue(str);
-        else
-            writer.WriteStringValue(str.Substring(0, maxStringLength));
-    }
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var str = value as string;
+            if (str == null || str.Length <= maxStringLength)
+                writer.WriteValue(str);
+            else
+                writer.WriteValue(str.Substring(0, maxStringLength));
+        }
 
-    private readonly int maxStringLength;
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            throw new InvalidOperationException("Operation is not supported");
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(string);
+        }
+
+        private readonly int maxStringLength;
+    }
 }

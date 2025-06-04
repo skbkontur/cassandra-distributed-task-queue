@@ -6,22 +6,23 @@ using Microsoft.Extensions.Hosting;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService;
-
-public class Startup
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.TestService
 {
-    public void ConfigureServices(IServiceCollection services)
+    public class Startup
     {
-        services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new LongToStringConverter()));
-        services.AddSingleton<IControllerFactory>(new GroboControllerFactory());
-    }
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.Converters.Add(new LongToStringConverter()));
+            services.AddSingleton<IControllerFactory>(new GroboControllerFactory());
+        }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        if (env.IsDevelopment())
-            app.UseDeveloperExceptionPage();
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+                app.UseDeveloperExceptionPage();
 
-        app.UseRouting();
-        app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseRouting();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
+        }
     }
 }

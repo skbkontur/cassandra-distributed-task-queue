@@ -1,20 +1,21 @@
-#nullable enable
-
 using System.Collections.Generic;
 using System.Linq;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Cassandra.Entities;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests;
+#nullable enable
 
-public class RtqTaskCountersForTests
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Tests
 {
-    public int LostTasksCount { get; set; }
-
-    public Dictionary<TaskState, int> PendingTaskCountsTotal { get; set; } = null!;
-
-    public int GetPendingTaskTotalCount()
+    public class RtqTaskCountersForTests
     {
-        return PendingTaskCountsTotal.Values.Sum();
+        public int LostTasksCount { get; set; }
+
+        public Dictionary<TaskState, int> PendingTaskCountsTotal { get; set; } = null!;
+
+        public int GetPendingTaskTotalCount()
+        {
+            return PendingTaskCountsTotal.Values.Sum();
+        }
     }
 }

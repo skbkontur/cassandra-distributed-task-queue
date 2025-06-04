@@ -1,28 +1,34 @@
 ﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+
+using Newtonsoft.Json;
 
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
-
-internal class TimeGuidJsonConverter : JsonConverter<TimeGuid>
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
 {
-    public override TimeGuid Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    internal class TimeGuidJsonConverter : JsonConverter
     {
-        if (reader.TokenType == JsonTokenType.String)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var readAsString = reader.GetString();
-            return TimeGuid.Parse(readAsString);
+            if (value == null)
+                writer.WriteNull();
+            else
+                writer.WriteValue(((TimeGuid)value).ToGuid().ToString());
         }
-        return null;
-    }
 
-    public override void Write(Utf8JsonWriter writer, TimeGuid value, JsonSerializerOptions options)
-    {
-        if (value == null)
-            writer.WriteNullValue();
-        else
-            writer.WriteStringValue(value.ToGuid());
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.String)
+            {
+                var readAsString = (string)reader.Value;
+                return TimeGuid.Parse(readAsString);
+            }
+            return null;
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(TimeGuid);
+        }
     }
 }
