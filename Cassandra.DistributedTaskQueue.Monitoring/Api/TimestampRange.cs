@@ -1,22 +1,21 @@
-﻿using JetBrains.Annotations;
+﻿using System.Text.Json.Serialization;
 
-using Newtonsoft.Json;
+using JetBrains.Annotations;
 
 using SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 using SkbKontur.Cassandra.TimeBasedUuid;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api
-{
-    public class TimestampRange
-    {
-        [NotNull]
-        [JsonProperty("lowerBound")]
-        [JsonConverter(typeof(TimestampJsonConverter))]
-        public Timestamp LowerBound { get; set; }
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Api;
 
-        [NotNull]
-        [JsonProperty("upperBound")]
-        [JsonConverter(typeof(TimestampJsonConverter))]
-        public Timestamp UpperBound { get; set; }
-    }
+public class TimestampRange
+{
+    [NotNull]
+    [JsonPropertyName("lowerBound")]
+    [JsonConverter(typeof(TimestampJsonConverter))]
+    public Timestamp LowerBound { get; set; } = null!;
+
+    [NotNull]
+    [JsonPropertyName("upperBound")]
+    [JsonConverter(typeof(TimestampJsonConverter))]
+    public Timestamp UpperBound { get; set; } = null!;
 }

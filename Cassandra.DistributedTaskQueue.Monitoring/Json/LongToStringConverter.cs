@@ -1,40 +1,36 @@
-﻿using System;
+﻿#nullable enable
 
-using Newtonsoft.Json;
+using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
+
+/// <summary>
+///     Конвертер, которые сериализует long-и в строки вместо чисел,
+///     ибо JSON.parse() на длинных long-ах теряет последние разряды
+/// </summary>
+public class LongToStringConverter : JsonConverter<long?>
 {
-    /// <summary>
-    ///     Конвертер, которые сериализует long-и в строки вместо чисел,
-    ///     ибо JSON.parse() на длинных long-ах теряет последние разряды
-    /// </summary>
-    public class LongToStringConverter : JsonConverter
+    public override long? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        var value = JsonSerializer.Deserialize<string?>(ref reader);
+        if (value == null)
         {
-            if (value == null)
-            {
-                writer.WriteNull();
-            }
-            else
-            {
-                writer.WriteValue(value.ToString());
-            }
+            return null;
         }
+        return long.Parse(value);
+    }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, long? value, JsonSerializerOptions options)
+    {
+        if (value == null)
         {
-            var value = serializer.Deserialize<string>(reader);
-            if (value == null)
-            {
-                return null;
-            }
-            return long.Parse(value);
+            writer.WriteNullValue();
         }
-
-        public override bool CanConvert(Type objectType)
+        else
         {
-            return typeof(long) == objectType || typeof(long?) == objectType;
+            writer.WriteStringValue(value.ToString());
         }
     }
 }

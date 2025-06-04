@@ -1,24 +1,19 @@
-﻿using System.Linq;
+﻿#nullable enable
 
-using JetBrains.Annotations;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json;
 
-namespace SkbKontur.Cassandra.DistributedTaskQueue.Monitoring.Json
+internal static class JsonObjectExtensions
 {
-    internal static class JsonObjectExtensions
+    public static string ToPrettyJson<T>(this T obj)
     {
-        [NotNull]
-        public static string ToPrettyJson<T>([CanBeNull] this T o, [NotNull] params JsonConverter[] converters)
-        {
-            converters = converters.Concat(new JsonConverter[]
-                {
-                    new StringEnumConverter(),
-                    new TimestampJsonConverter(),
-                    new TimeGuidJsonConverter()
-                }).ToArray();
-            return JsonConvert.SerializeObject(o, Formatting.Indented, converters);
-        }
+        var options = new JsonSerializerOptions();
+        options.Converters.Add(new JsonStringEnumConverter());
+        options.Converters.Add(new TimestampJsonConverter());
+        options.Converters.Add(new TimeGuidJsonConverter());
+
+        return JsonSerializer.Serialize(obj, options);
     }
 }
