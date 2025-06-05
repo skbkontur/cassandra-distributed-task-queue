@@ -26,27 +26,27 @@ public class RtqMonitoringTaskMeta
     public long MinimalStartTicks { get; set; }
 
     [JsonPropertyName("startExecutingTicks")]
-    [JsonConverter(typeof(LongToStringConverter))]
+    [JsonConverter(typeof(NullableLongToStringConverter))]
     public long? StartExecutingTicks { get; set; }
 
     [JsonPropertyName("finishExecutingTicks")]
-    [JsonConverter(typeof(LongToStringConverter))]
+    [JsonConverter(typeof(NullableLongToStringConverter))]
     public long? FinishExecutingTicks { get; set; }
 
     [JsonPropertyName("lastModificationTicks")]
-    [JsonConverter(typeof(LongToStringConverter))]
+    [JsonConverter(typeof(NullableLongToStringConverter))]
     public long? LastModificationTicks { get; set; }
 
     [JsonPropertyName("expirationTimestampTicks")]
-    [JsonConverter(typeof(LongToStringConverter))]
+    [JsonConverter(typeof(NullableLongToStringConverter))]
     public long? ExpirationTimestampTicks { get; set; }
 
     [JsonPropertyName("expirationModificationTicks")]
-    [JsonConverter(typeof(LongToStringConverter))]
+    [JsonConverter(typeof(NullableLongToStringConverter))]
     public long? ExpirationModificationTicks { get; set; }
 
     [JsonPropertyName("executionDurationTicks")]
-    [JsonConverter(typeof(LongToStringConverter))]
+    [JsonConverter(typeof(NullableLongToStringConverter))]
     public long? ExecutionDurationTicks { get; set; }
 
     [JsonPropertyName("state")]
