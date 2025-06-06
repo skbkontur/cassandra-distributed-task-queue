@@ -12,6 +12,7 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new NullableLongToStringConverter()));
         services.AddControllers().AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new LongToStringConverter()));
         services.AddSingleton<IControllerFactory>(new GroboControllerFactory());
     }
