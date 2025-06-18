@@ -54,7 +54,7 @@ public class RtqElasticsearchIndexerSettings
                $"IndexingThreadsCount: {IndexingThreadsCount}, " +
                $"BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
     }
-    
+
     public static readonly JsonSerializerOptions DefaultJsonSerializerSettings = new()
         {
             Converters =
