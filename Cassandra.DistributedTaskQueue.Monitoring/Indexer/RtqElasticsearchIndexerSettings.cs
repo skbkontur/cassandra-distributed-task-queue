@@ -45,6 +45,16 @@ public class RtqElasticsearchIndexerSettings
 
     public TimeSpan InitialIndexingOffsetFromNow { get; set; } = TimeSpan.FromMinutes(30);
 
+    public override string ToString()
+    {
+        return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, " +
+               $"MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, " +
+               $"MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, " +
+               $"TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, " +
+               $"IndexingThreadsCount: {IndexingThreadsCount}, " +
+               $"BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
+    }
+    
     public static readonly JsonSerializerOptions DefaultJsonSerializerSettings = new()
         {
             Converters =
@@ -56,14 +66,4 @@ public class RtqElasticsearchIndexerSettings
                     new OmitBinaryAndAbstractPropertyConverter()
                 }
         };
-
-    public override string ToString()
-    {
-        return $"InitialIndexingStartTimestamp: {InitialIndexingStartTimestamp}, " +
-               $"MaxEventsProcessingTimeWindow: {MaxEventsProcessingTimeWindow}, " +
-               $"MaxEventsProcessingTasksCount: {MaxEventsProcessingTasksCount}, " +
-               $"TaskIdsProcessingBatchSize: {TaskIdsProcessingBatchSize}, " +
-               $"IndexingThreadsCount: {IndexingThreadsCount}, " +
-               $"BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
-    }
 }
