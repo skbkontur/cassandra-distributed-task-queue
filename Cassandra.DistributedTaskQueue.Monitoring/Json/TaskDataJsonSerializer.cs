@@ -15,11 +15,16 @@ public class TaskDataJsonSerializer : JsonConverter<IRtqTaskData>
 
     public override void Write(Utf8JsonWriter writer, IRtqTaskData value, JsonSerializerOptions options)
     {
-        JsonSerializerOptions jsonSerializerOptions = new();
-        jsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        jsonSerializerOptions.Converters.Add(new TimeGuidJsonConverter());
-        jsonSerializerOptions.Converters.Add(new TimestampJsonConverter());
-
-        JsonSerializer.Serialize(writer, value, jsonSerializerOptions);
+        JsonSerializer.Serialize(writer, value, staticSerializerOptions);
     }
+
+    private static readonly JsonSerializerOptions staticSerializerOptions = new()
+        {
+            Converters =
+                {
+                    new JsonStringEnumConverter(),
+                    new TimeGuidJsonConverter(),
+                    new TimestampJsonConverter()
+                }
+        };
 }

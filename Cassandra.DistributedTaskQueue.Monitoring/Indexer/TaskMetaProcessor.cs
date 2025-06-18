@@ -92,7 +92,7 @@ public class TaskMetaProcessor
         {
             payload[2 * i] = JsonSerializer.Serialize(new {index = CreateIndexInfo(batch[i].TaskMeta)});
             var taskIndexedInfo = BuildTaskIndexedInfo(batch[i].TaskMeta, batch[i].TaskExceptionInfos, batch[i].TaskData);
-            payload[2 * i + 1] = JsonSerializer.Serialize(taskIndexedInfo, RtqElasticsearchIndexerSettings.GetJsonOptions());
+            payload[2 * i + 1] = JsonSerializer.Serialize(taskIndexedInfo, RtqElasticsearchIndexerSettings.DefaultJsonSerializerSettings);
         }
         perfGraphiteReporter.ReportTiming("ElasticsearchClient_Bulk", () => elasticClient.Bulk<StringResponse>(PostData.MultiJson(payload), bulkRequestTimeout).DieIfBulkRequestFailed());
     }

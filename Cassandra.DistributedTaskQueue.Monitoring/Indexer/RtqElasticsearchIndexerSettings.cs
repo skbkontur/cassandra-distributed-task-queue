@@ -23,18 +23,6 @@ public class RtqElasticsearchIndexerSettings
         RtqGraphitePathPrefix = rtqGraphitePathPrefix;
     }
 
-    public static JsonSerializerOptions GetJsonOptions()
-    {
-        var defaultJsonSerializerOptions = new JsonSerializerOptions();
-        defaultJsonSerializerOptions.Converters.Add(new TruncateLongStringsConverter(500));
-        defaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        defaultJsonSerializerOptions.Converters.Add(new TimestampJsonConverter());
-        defaultJsonSerializerOptions.Converters.Add(new TimeGuidJsonConverter());
-        defaultJsonSerializerOptions.Converters.Add(new OmitBinaryAndAbstractPropertyConverter());
-
-        return defaultJsonSerializerOptions;
-    }
-
     public string EventFeedKey { get; }
 
     public string RtqGraphitePathPrefix { get; }
@@ -56,6 +44,18 @@ public class RtqElasticsearchIndexerSettings
     public TimeSpan BulkIndexRequestTimeout { get; set; } = TimeSpan.FromMinutes(5);
 
     public TimeSpan InitialIndexingOffsetFromNow { get; set; } = TimeSpan.FromMinutes(30);
+
+    public static readonly JsonSerializerOptions DefaultJsonSerializerSettings = new()
+        {
+            Converters =
+                {
+                    new TruncateLongStringsConverter(500),
+                    new JsonStringEnumConverter(),
+                    new TimestampJsonConverter(),
+                    new TimeGuidJsonConverter(),
+                    new OmitBinaryAndAbstractPropertyConverter()
+                }
+        };
 
     public override string ToString()
     {
