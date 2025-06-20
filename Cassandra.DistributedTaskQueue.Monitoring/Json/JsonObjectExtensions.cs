@@ -9,11 +9,16 @@ internal static class JsonObjectExtensions
 {
     public static string ToPrettyJson<T>(this T obj)
     {
-        var options = new JsonSerializerOptions();
-        options.Converters.Add(new JsonStringEnumConverter());
-        options.Converters.Add(new TimestampJsonConverter());
-        options.Converters.Add(new TimeGuidJsonConverter());
-
-        return JsonSerializer.Serialize(obj, options);
+        return JsonSerializer.Serialize(obj, jsonSerializerSettings);
     }
+
+    private static readonly JsonSerializerOptions jsonSerializerSettings = new()
+        {
+            Converters =
+                {
+                    new JsonStringEnumConverter(),
+                    new TimestampJsonConverter(),
+                    new TimeGuidJsonConverter()
+                }
+        };
 }

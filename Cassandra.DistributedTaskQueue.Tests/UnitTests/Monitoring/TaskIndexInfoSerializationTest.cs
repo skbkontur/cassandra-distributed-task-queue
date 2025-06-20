@@ -73,7 +73,7 @@ public class TaskIndexInfoSerializationTest
 
     private string Serialize(object obj)
     {
-        return JsonSerializer.Serialize(obj, obj.GetType(), RtqElasticsearchIndexerSettings.GetJsonOptions());
+        return JsonSerializer.Serialize(obj, obj.GetType(), RtqElasticsearchIndexerSettings.DefaultJsonSerializerSettings);
     }
 
     private class Data

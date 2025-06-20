@@ -23,18 +23,6 @@ public class RtqElasticsearchIndexerSettings
         RtqGraphitePathPrefix = rtqGraphitePathPrefix;
     }
 
-    public static JsonSerializerOptions GetJsonOptions()
-    {
-        var defaultJsonSerializerOptions = new JsonSerializerOptions();
-        defaultJsonSerializerOptions.Converters.Add(new TruncateLongStringsConverter(500));
-        defaultJsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        defaultJsonSerializerOptions.Converters.Add(new TimestampJsonConverter());
-        defaultJsonSerializerOptions.Converters.Add(new TimeGuidJsonConverter());
-        defaultJsonSerializerOptions.Converters.Add(new OmitBinaryAndAbstractPropertyConverter());
-
-        return defaultJsonSerializerOptions;
-    }
-
     public string EventFeedKey { get; }
 
     public string RtqGraphitePathPrefix { get; }
@@ -66,4 +54,16 @@ public class RtqElasticsearchIndexerSettings
                $"IndexingThreadsCount: {IndexingThreadsCount}, " +
                $"BulkIndexRequestTimeout: {BulkIndexRequestTimeout}";
     }
+
+    public static readonly JsonSerializerOptions DefaultJsonSerializerSettings = new()
+        {
+            Converters =
+                {
+                    new TruncateLongStringsConverter(500),
+                    new JsonStringEnumConverter(),
+                    new TimestampJsonConverter(),
+                    new TimeGuidJsonConverter(),
+                    new OmitBinaryAndAbstractPropertyConverter()
+                }
+        };
 }
