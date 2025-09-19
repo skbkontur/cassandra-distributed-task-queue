@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.5.0 - 2025.09.19
+- update react to v18
+
 ## v3.4.0 - 2025.06.04
 - Migrate backend to System.Text.Json
 
