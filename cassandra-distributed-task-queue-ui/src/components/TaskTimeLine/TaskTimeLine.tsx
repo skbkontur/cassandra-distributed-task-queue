@@ -1,14 +1,14 @@
 import { Timestamp, AllowCopyToClipboard, Ticks } from "@skbkontur/edi-ui";
-import { ArrowADownIcon16Regular } from "@skbkontur/icons/ArrowADownIcon16Regular";
-import { ArrowAUpIcon16Regular } from "@skbkontur/icons/ArrowAUpIcon16Regular";
-import { ArrowDCornerDownRightIcon16Regular } from "@skbkontur/icons/ArrowDCornerDownRightIcon16Regular";
-import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
-import { ArrowShapeTriangleADownIcon16Regular } from "@skbkontur/icons/ArrowShapeTriangleADownIcon16Regular";
-import { CheckAIcon16Regular } from "@skbkontur/icons/CheckAIcon16Regular";
-import { NetDownloadIcon16Regular } from "@skbkontur/icons/NetDownloadIcon16Regular";
-import { TimeClockIcon16Regular } from "@skbkontur/icons/TimeClockIcon16Regular";
-import { XCircleIcon16Regular } from "@skbkontur/icons/XCircleIcon16Regular";
-import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
+import { IconArrowADownRegular16 } from "@skbkontur/icons/IconArrowADownRegular16";
+import { IconArrowAUpRegular16 } from "@skbkontur/icons/IconArrowAUpRegular16";
+import { IconArrowDCornerDownRightRegular16 } from "@skbkontur/icons/IconArrowDCornerDownRightRegular16";
+import { IconArrowRoundTimeForwardRegular16 } from "@skbkontur/icons/IconArrowRoundTimeForwardRegular16";
+import { IconArrowShapeTriangleADownRegular16 } from "@skbkontur/icons/IconArrowShapeTriangleADownRegular16";
+import { IconCheckARegular16 } from "@skbkontur/icons/IconCheckARegular16";
+import { IconNetDownloadRegular16 } from "@skbkontur/icons/IconNetDownloadRegular16";
+import { IconTimeClockRegular16 } from "@skbkontur/icons/IconTimeClockRegular16";
+import { IconXCircleRegular16 } from "@skbkontur/icons/IconXCircleRegular16";
+import { IconXRegular16 } from "@skbkontur/icons/IconXRegular16";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
 import { ReactElement, useContext, useState } from "react";
 import { Location } from "react-router-dom";
@@ -59,7 +59,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         }
         return createSimpleEntry({
             title: "Started",
-            icon: <ArrowDCornerDownRightIcon16Regular />,
+            icon: <IconArrowDCornerDownRightRegular16 />,
             date: taskMeta.startExecutingTicks,
         });
     };
@@ -75,7 +75,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                 getStartedEntry(),
                 createSimpleEntry({
                     title: "Finished",
-                    icon: <CheckAIcon16Regular />,
+                    icon: <IconCheckARegular16 />,
                     date: taskMeta.finishExecutingTicks,
                 })
             );
@@ -85,7 +85,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                 getStartedEntry(),
                 createSimpleEntry({
                     title: "Failed",
-                    icon: <XCircleIcon16Regular color={color} />,
+                    icon: <IconXCircleRegular16 color={color} />,
                     color: color,
                     date: taskMeta.finishExecutingTicks,
                 })
@@ -99,7 +99,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 <TimeLineCycled
                     key="FewAttempts"
-                    icon={<ArrowRoundTimeForwardIcon16Regular />}
+                    icon={<IconArrowRoundTimeForwardRegular16 />}
                     content={`Restarted for ${taskMeta.attempts} times`}>
                     {shouldStartAndStartEntries}
                 </TimeLineCycled>,
@@ -111,7 +111,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
     const getShouldStartedEntry = (): null | ReactElement => {
         return createSimpleEntry({
             title: "Start scheduled",
-            icon: <TimeClockIcon16Regular />,
+            icon: <IconTimeClockRegular16 />,
             date: taskMeta.minimalStartTicks,
         });
     };
@@ -122,7 +122,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Finished",
-                    icon: <CheckAIcon16Regular color={color} />,
+                    icon: <IconCheckARegular16 color={color} />,
                     color: color,
                     date: taskMeta.finishExecutingTicks,
                 }),
@@ -133,7 +133,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Failed",
-                    icon: <XCircleIcon16Regular color={color} />,
+                    icon: <IconXCircleRegular16 color={color} />,
                     color: color,
                     date: taskMeta.finishExecutingTicks,
                 }),
@@ -144,7 +144,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Canceled",
-                    icon: <XIcon16Regular color={color} />,
+                    icon: <IconXRegular16 color={color} />,
                     color: color,
                     date: taskMeta.finishExecutingTicks || taskMeta.lastModificationTicks,
                 }),
@@ -156,7 +156,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                 getShouldStartedEntry(),
                 createSimpleEntry({
                     title: "Waiting for next run",
-                    icon: <TimeClockIcon16Regular color={color} />,
+                    icon: <IconTimeClockRegular16 color={color} />,
                     color: color,
                 }),
             ];
@@ -166,7 +166,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Waiting for complete",
-                    icon: <TimeClockIcon16Regular color={color} />,
+                    icon: <IconTimeClockRegular16 color={color} />,
                     color: color,
                 }),
             ];
@@ -176,7 +176,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             return [
                 createSimpleEntry({
                     title: "Waiting for start",
-                    icon: <TimeClockIcon16Regular color={color} />,
+                    icon: <IconTimeClockRegular16 color={color} />,
                     color: color,
                 }),
             ];
@@ -190,7 +190,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
     const getEnqueuedEntry = (): null | ReactElement => {
         return createSimpleEntry({
             title: "Enqueued",
-            icon: <NetDownloadIcon16Regular />,
+            icon: <IconNetDownloadRegular16 />,
             date: taskMeta.ticks,
         });
     };
@@ -201,7 +201,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
             const hiddenTaskIdsCount = childTaskIds.length - visibleTaskIdsCount;
             const color = getIconColor(theme, "waiting");
             return (
-                <TimeLineEntry key="Children" icon={<ArrowADownIcon16Regular color={color} />}>
+                <TimeLineEntry key="Children" icon={<IconArrowADownRegular16 color={color} />}>
                     <div style={{ color: color }} data-tid="EnqueuedTasks">
                         <div>Enqueued tasks:</div>
                         {childTaskIds.slice(0, visibleTaskIdsCount).map(x => (
@@ -216,7 +216,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
                             <Link data-tid="ShowAllTasks" onClick={() => setShowAllErrors(true)}>
                                 ...and {hiddenTaskIdsCount} more
                                 {"\u00A0"}
-                                <ArrowShapeTriangleADownIcon16Regular />
+                                <IconArrowShapeTriangleADownRegular16 />
                             </Link>
                         )}
                     </div>
@@ -232,7 +232,7 @@ export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTime
         }
         const color = getIconColor(theme, "waiting");
         return (
-            <TimeLineEntry key="Parent" icon={<ArrowAUpIcon16Regular color={color} />}>
+            <TimeLineEntry key="Parent" icon={<IconArrowAUpRegular16 color={color} />}>
                 <div style={{ color: color }}>
                     Parent:{" "}
                     <AllowCopyToClipboard>

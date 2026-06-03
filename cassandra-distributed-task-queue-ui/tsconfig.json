@@ -33,5 +33,5 @@
       "react": ["./node_modules/@types/react"],
     }
   },
-  "include": ["index.tsx","src", "vite.config.ts", "stories", "typings", "tests"],
+  "include": ["index.tsx", "src", "vite.config.ts", "stories", "typings", "tests"],
 }
