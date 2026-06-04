@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
+/* eslint-disable @typescript-eslint/no-var-requires */
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const cp = require("child_process");
 
 function execAsync(command, options) {

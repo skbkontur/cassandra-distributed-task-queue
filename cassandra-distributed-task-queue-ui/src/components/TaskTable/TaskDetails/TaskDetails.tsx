@@ -1,6 +1,6 @@
 import { Timestamp, AllowCopyToClipboard, Ticks } from "@skbkontur/edi-ui";
-import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
-import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
+import { IconArrowRoundTimeForwardRegular16 } from "@skbkontur/icons/IconArrowRoundTimeForwardRegular16";
+import { IconXRegular16 } from "@skbkontur/icons/IconXRegular16";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Checkbox, Link, ThemeContext } from "@skbkontur/react-ui";
 import { useContext, ReactElement } from "react";
@@ -96,7 +96,7 @@ export function TaskDetails(props: TaskDetailsProps): ReactElement {
                                                 data-tid="Cancel"
                                                 disabled={!canCancel}
                                                 onClick={onCancel}
-                                                icon={<XIcon16Regular />}>
+                                                icon={<IconXRegular16 />}>
                                                 Cancel
                                             </Link>
                                         </Fit>
@@ -105,7 +105,7 @@ export function TaskDetails(props: TaskDetailsProps): ReactElement {
                                                 data-tid="Rerun"
                                                 disabled={!canRerun}
                                                 onClick={onRerun}
-                                                icon={<ArrowRoundTimeForwardIcon16Regular />}>
+                                                icon={<IconArrowRoundTimeForwardRegular16 />}>
                                                 Rerun
                                             </Link>
                                         </Fit>

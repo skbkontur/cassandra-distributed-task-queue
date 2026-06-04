@@ -1,5 +1,5 @@
 import { CopyToClipboardToast } from "@skbkontur/edi-ui";
-import { CopyIcon16Regular } from "@skbkontur/icons/CopyIcon16Regular";
+import { IconCopyRegular16 } from "@skbkontur/icons/IconCopyRegular16";
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
@@ -86,7 +86,7 @@ export class ErrorHandlingContainerModal extends Component<
                                             <h4 className={jsStyles.header()}>Client stack trace</h4>
                                         </Fit>
                                         <Fit>
-                                            <Link icon={<CopyIcon16Regular />} onClick={() => this.copyData(stack)}>
+                                            <Link icon={<IconCopyRegular16 />} onClick={() => this.copyData(stack)}>
                                                 Скопировать
                                             </Link>
                                         </Fit>
@@ -106,7 +106,7 @@ export class ErrorHandlingContainerModal extends Component<
                                         </Fit>
                                         <Fit>
                                             <Link
-                                                icon={<CopyIcon16Regular />}
+                                                icon={<IconCopyRegular16 />}
                                                 onClick={() => this.copyData(serverStack)}>
                                                 Скопировать
                                             </Link>

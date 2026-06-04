@@ -1,5 +1,5 @@
-import { ArrowShapeTriangleADownIcon16Regular } from "@skbkontur/icons/ArrowShapeTriangleADownIcon16Regular";
-import { SearchLoupeIcon16Regular } from "@skbkontur/icons/SearchLoupeIcon16Regular";
+import { IconArrowShapeTriangleADownRegular16 } from "@skbkontur/icons/IconArrowShapeTriangleADownRegular16";
+import { IconSearchLoupeRegular16 } from "@skbkontur/icons/IconSearchLoupeRegular16";
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Input, Tooltip } from "@skbkontur/react-ui";
 import { ReactElement, useState } from "react";
@@ -60,7 +60,7 @@ export const TaskTypesSelect = ({
                 <Fit>
                     <RowStack gap={2}>
                         <Fit>
-                            <Input value={query} rightIcon={<SearchLoupeIcon16Regular />} onValueChange={setQuery} />
+                            <Input value={query} rightIcon={<IconSearchLoupeRegular16 />} onValueChange={setQuery} />
                         </Fit>
                         <Fit>
                             <Button onClick={clear}>Очистить все</Button>
@@ -96,7 +96,7 @@ export const TaskTypesSelect = ({
                     <span className={jsStyles.buttonText()}>
                         {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
                     </span>
-                    <ArrowShapeTriangleADownIcon16Regular />
+                    <IconArrowShapeTriangleADownRegular16 />
                 </Button>
             </Tooltip>
         </span>

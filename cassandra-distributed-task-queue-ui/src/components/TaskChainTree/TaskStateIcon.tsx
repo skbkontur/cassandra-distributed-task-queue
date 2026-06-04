@@ -1,8 +1,8 @@
-import { CheckAIcon16Regular } from "@skbkontur/icons/CheckAIcon16Regular";
-import { QuestionSquareIcon16Regular } from "@skbkontur/icons/QuestionSquareIcon16Regular";
-import { TimeClockIcon16Regular } from "@skbkontur/icons/TimeClockIcon16Regular";
-import { XCircleIcon16Regular } from "@skbkontur/icons/XCircleIcon16Regular";
-import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
+import { IconCheckARegular16 } from "@skbkontur/icons/IconCheckARegular16";
+import { IconQuestionSquareRegular16 } from "@skbkontur/icons/IconQuestionSquareRegular16";
+import { IconTimeClockRegular16 } from "@skbkontur/icons/IconTimeClockRegular16";
+import { IconXCircleRegular16 } from "@skbkontur/icons/IconXCircleRegular16";
+import { IconXRegular16 } from "@skbkontur/icons/IconXRegular16";
 import { ThemeContext } from "@skbkontur/react-ui";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 import { useContext, ReactElement } from "react";
@@ -33,22 +33,22 @@ export function TaskStateIcon({ taskState }: TaskStateIconProps): ReactElement {
 
     switch (taskState) {
         case TaskState.Unknown:
-            return <QuestionSquareIcon16Regular color={getIconColor(theme, "warning")} />;
+            return <IconQuestionSquareRegular16 color={getIconColor(theme, "warning")} />;
         case TaskState.New:
-            return <TimeClockIcon16Regular color={getIconColor(theme, "waiting")} />;
+            return <IconTimeClockRegular16 color={getIconColor(theme, "waiting")} />;
         case TaskState.WaitingForRerun:
-            return <TimeClockIcon16Regular color={getIconColor(theme, "waiting")} />;
+            return <IconTimeClockRegular16 color={getIconColor(theme, "waiting")} />;
         case TaskState.WaitingForRerunAfterError:
-            return <TimeClockIcon16Regular color={getIconColor(theme, "error")} />;
+            return <IconTimeClockRegular16 color={getIconColor(theme, "error")} />;
         case TaskState.Finished:
-            return <CheckAIcon16Regular color={getIconColor(theme, "success")} />;
+            return <IconCheckARegular16 color={getIconColor(theme, "success")} />;
         case TaskState.InProcess:
-            return <TimeClockIcon16Regular color={getIconColor(theme, "waiting")} />;
+            return <IconTimeClockRegular16 color={getIconColor(theme, "waiting")} />;
         case TaskState.Fatal:
-            return <XCircleIcon16Regular color={getIconColor(theme, "error")} />;
+            return <IconXCircleRegular16 color={getIconColor(theme, "error")} />;
         case TaskState.Canceled:
-            return <XIcon16Regular color={getIconColor(theme, "error")} />;
+            return <IconXRegular16 color={getIconColor(theme, "error")} />;
         default:
-            return <CheckAIcon16Regular />;
+            return <IconCheckARegular16 />;
     }
 }

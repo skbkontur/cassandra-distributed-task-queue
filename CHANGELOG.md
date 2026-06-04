@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.6.0 - 2026.06.03
+- update icons & edi-ui to latest version
+
 ## v3.5.0 - 2025.09.19
 - update react to v18
 

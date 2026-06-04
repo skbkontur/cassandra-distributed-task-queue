@@ -1,7 +1,7 @@
 import { Accordion } from "@skbkontur/edi-ui";
-import { ArrowRoundTimeForwardIcon16Regular } from "@skbkontur/icons/ArrowRoundTimeForwardIcon16Regular";
-import { TextAlignCenterJustifyIcon16Regular } from "@skbkontur/icons/TextAlignCenterJustifyIcon16Regular";
-import { XIcon16Regular } from "@skbkontur/icons/XIcon16Regular";
+import { IconArrowRoundTimeForwardRegular16 } from "@skbkontur/icons/IconArrowRoundTimeForwardRegular16";
+import { IconTextAlignCenterJustifyRegular16 } from "@skbkontur/icons/IconTextAlignCenterJustifyRegular16";
+import { IconXRegular16 } from "@skbkontur/icons/IconXRegular16";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
 import { useContext, useState, ReactElement } from "react";
@@ -78,7 +78,7 @@ export function TaskDetailsPage({
                         <RouterLink
                             data-tid="RelatedTaskTree"
                             to={`../Tree${searchRequestMapping.stringify(relatedTasksRequest)}`}>
-                            <TextAlignCenterJustifyIcon16Regular />
+                            <IconTextAlignCenterJustifyRegular16 />
                             {"\u00A0"}
                             View related tasks tree
                         </RouterLink>
@@ -86,7 +86,7 @@ export function TaskDetailsPage({
                 )}
                 {canCancel && (
                     <Fit>
-                        <Link icon={<XIcon16Regular />} use="danger" data-tid="CancelButton" onClick={cancel}>
+                        <Link icon={<IconXRegular16 />} use="danger" data-tid="CancelButton" onClick={cancel}>
                             Cancel task
                         </Link>
                     </Fit>
@@ -95,7 +95,7 @@ export function TaskDetailsPage({
                     <Fit>
                         <Button
                             use="link"
-                            icon={<ArrowRoundTimeForwardIcon16Regular />}
+                            icon={<IconArrowRoundTimeForwardRegular16 />}
                             data-tid="RerunButton"
                             onClick={rerun}>
                             Rerun task
