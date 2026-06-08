@@ -44,7 +44,7 @@
     "react-router-dom": ">=6"
   },
   "dependencies": {
-    "@skbkontur/edi-ui": "^0.4.3",
+    "@skbkontur/edi-ui": "^0.4.4",
     "@skbkontur/react-stack-layout": "^1.0.3",
     "date-fns": "^3.6.0",
     "decimal.js": "^10.2.1",
