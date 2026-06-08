@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.7.0 - 2026.06.08
+- update colors to 2.0 according to edi-ui
+
 ## v3.6.0 - 2026.06.03
 - update icons & edi-ui to latest version
 
