@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.8.0 - 2026.06.16
+- add prop for configurable max related tasks limit in task chains tree
+
 ## v3.7.0 - 2026.06.08
 - update colors to 2.0 according to edi-ui
 

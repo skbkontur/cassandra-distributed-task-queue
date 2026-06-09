@@ -22,12 +22,16 @@ export interface ICustomSettings {
     customStateCaptions: TaskStateDict;
     hideMissingMeta: boolean;
     customSearchHelp?: ReactElement;
+    maxRelatedTasks: number;
 }
+
+const defaultMaxRelatedTasks = 100;
 
 const defaultValue: ICustomSettings = {
     customStateCaptions: TaskStateCaptions,
     customDetailRenderer: new CustomRenderer(),
     hideMissingMeta: false,
+    maxRelatedTasks: defaultMaxRelatedTasks,
 };
 
 const CustomSettingsContext = createContext<ICustomSettings>(defaultValue);
@@ -37,6 +41,7 @@ export const CustomSettingsProvider = ({
     customSearchHelp,
     customDetailRenderer,
     hideMissingMeta,
+    maxRelatedTasks,
     children,
 }: PropsWithChildren<Partial<ICustomSettings>>) => {
     const stateCaptions = customStateCaptions || TaskStateCaptions;
@@ -48,6 +53,7 @@ export const CustomSettingsProvider = ({
                 customDetailRenderer: renderer,
                 customSearchHelp,
                 hideMissingMeta: !!hideMissingMeta,
+                maxRelatedTasks: maxRelatedTasks ?? defaultMaxRelatedTasks,
             }}>
             {children}
         </CustomSettingsContext.Provider>
