@@ -4,6 +4,7 @@ import uniq from "lodash/uniq";
 import { useEffect, useState, ReactElement } from "react";
 import { Location, useLocation } from "react-router-dom";
 
+import { useCustomSettings } from "../CustomSettingsContext";
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
 import { RtqMonitoringSearchRequest } from "../Domain/Api/RtqMonitoringSearchRequest";
 import { RtqMonitoringTaskModel } from "../Domain/Api/RtqMonitoringTaskModel";
@@ -33,6 +34,7 @@ export const TaskChainsTreeContainer = ({
     const [loading, setLoading] = useState(false);
     const [loaderText, setLoaderText] = useState("");
     const [taskDetails, setTaskDetails] = useState<RtqMonitoringTaskModel[]>([]);
+    const { maxRelatedTasks } = useCustomSettings();
 
     useEffect(() => {
         const request = getRequestBySearchQuery(search);
@@ -90,8 +92,8 @@ export const TaskChainsTreeContainer = ({
             let taskIdsToLoad = results.taskMetas.map(x => x.id);
             while (taskIdsToLoad.length > 0) {
                 iterationCount++;
-                if (taskIdsToLoad.length > 100) {
-                    throw new Error("Количство задач в дереве превысило допустимый предел: 100 зачад");
+                if (taskIdsToLoad.length > maxRelatedTasks) {
+                    throw new Error(`Количество задач в дереве превысило допустимый предел: ${maxRelatedTasks} задач`);
                 }
                 const loadedTaskDetails = await Promise.all(
                     taskIdsToLoad.map(id => rtqMonitoringApi.getTaskDetails(id))

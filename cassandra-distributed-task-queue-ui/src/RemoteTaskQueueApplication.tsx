@@ -17,6 +17,7 @@ interface RemoteTaskQueueApplicationProps {
     customSearchHelp?: ReactElement;
     hideMissingMeta?: boolean;
     useFrontPaging?: boolean;
+    maxRelatedTasks?: number;
 }
 
 export const RemoteTaskQueueApplication = ({
@@ -28,12 +29,14 @@ export const RemoteTaskQueueApplication = ({
     customSearchHelp,
     hideMissingMeta,
     useFrontPaging,
+    maxRelatedTasks,
 }: RemoteTaskQueueApplicationProps): ReactElement => (
     <CustomSettingsProvider
         customStateCaptions={customStateCaptions}
         customSearchHelp={customSearchHelp}
         customDetailRenderer={customRenderer}
-        hideMissingMeta={hideMissingMeta}>
+        hideMissingMeta={hideMissingMeta}
+        maxRelatedTasks={maxRelatedTasks}>
         <Routes>
             <Route
                 path="/"
