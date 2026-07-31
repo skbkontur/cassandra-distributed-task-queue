@@ -1,9 +1,10 @@
-import { css } from "@skbkontur/react-ui/lib/theming/Emotion";
+import type { Emotion } from "@emotion/css/create-instance";
+import { memoizeGetStyles } from "@skbkontur/react-ui/lib/theming/Emotion";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 
 import { TaskState } from "../../../Domain/Api/TaskState";
 
-function getBackgroundColor(theme: Theme, state: TaskState) {
+const getBackgroundColor = (theme: Theme, state: TaskState) => {
     switch (state) {
         case TaskState.Finished:
             return theme.bgDefault;
@@ -18,9 +19,9 @@ function getBackgroundColor(theme: Theme, state: TaskState) {
         default:
             return "rgba(255, 255, 0, 0.1)";
     }
-}
+};
 
-function getBorderColor(theme: Theme, state: TaskState) {
+const getBorderColor = (theme: Theme, state: TaskState) => {
     switch (state) {
         case TaskState.Finished:
             return theme.borderColorGrayLight;
@@ -35,78 +36,56 @@ function getBorderColor(theme: Theme, state: TaskState) {
         default:
             return theme.borderColorWarning;
     }
-}
-
-export const jsStyles = {
-    state(theme: Theme, state: TaskState): string {
-        return css`
-            background-color: ${getBackgroundColor(theme, state)};
-            border: 1px solid ${getBorderColor(theme, state)};
-        `;
-    },
-
-    checkbox(): string {
-        return css`
-            margin-top: -4px;
-        `;
-    },
-
-    taskDetails(): string {
-        return css`
-            padding: 8px;
-            border-radius: 16px;
-            min-width: 548px;
-        `;
-    },
-
-    infoBlock1(): string {
-        return css`
-            min-width: 280px;
-        `;
-    },
-
-    name(): string {
-        return css`
-            font-size: 16px;
-        `;
-    },
-
-    id(): string {
-        return css`
-            font-size: 12px;
-        `;
-    },
-
-    stateName(): string {
-        return css`
-            font-size: 12px;
-        `;
-    },
-
-    attempts(): string {
-        return css`
-            font-size: 12px;
-            margin-left: 10px;
-        `;
-    },
-
-    dates(): string {
-        return css`
-            font-size: 12px;
-        `;
-    },
-
-    dateCaption(t: Theme): string {
-        return css`
-            display: inline-block;
-            width: 70px;
-            color: ${t.textColorDisabled};
-        `;
-    },
-
-    parentTask(): string {
-        return css`
-            font-size: 12px;
-        `;
-    },
 };
+
+export const getTaskStateClassName = (css: Emotion["css"], theme: Theme, state: TaskState): string => css`
+    background-color: ${getBackgroundColor(theme, state)};
+    border: 1px solid ${getBorderColor(theme, state)};
+`;
+
+export const getStyles = memoizeGetStyles(({ css }) => ({
+    checkbox: () => css`
+        margin-top: -4px;
+    `,
+
+    taskDetails: () => css`
+        padding: 8px;
+        border-radius: 16px;
+        min-width: 548px;
+    `,
+
+    infoBlock1: () => css`
+        min-width: 280px;
+    `,
+
+    name: () => css`
+        font-size: 16px;
+    `,
+
+    id: () => css`
+        font-size: 12px;
+    `,
+
+    stateName: () => css`
+        font-size: 12px;
+    `,
+
+    attempts: () => css`
+        font-size: 12px;
+        margin-left: 10px;
+    `,
+
+    dates: () => css`
+        font-size: 12px;
+    `,
+
+    dateCaption: (t: Theme) => css`
+        display: inline-block;
+        width: 70px;
+        color: ${t.textColorDisabled};
+    `,
+
+    parentTask: () => css`
+        font-size: 12px;
+    `,
+}));

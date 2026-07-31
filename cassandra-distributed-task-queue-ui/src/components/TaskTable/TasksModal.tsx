@@ -1,9 +1,10 @@
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Input, Modal, ThemeContext } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { useContext, ReactElement, useState } from "react";
 
 import { numberToString } from "../../Domain/numberToString";
-import { jsStyles } from "../ErrorHandling/ErrorHandlingContainer.styles";
+import { getStyles } from "../ErrorHandling/ErrorHandlingContainer.styles";
 
 interface TasksModalProps {
     modalType: "Rerun" | "Cancel";
@@ -22,6 +23,7 @@ export function TasksModal({
 }: TasksModalProps): ReactElement {
     const [manyTaskConfirm, setManyTaskConfirm] = useState("");
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
 
     const confirmedRegExp = /б.*л.*я/i;
 
@@ -84,7 +86,7 @@ export function TasksModal({
                         )}
                     </Fit>
                     <Fit>
-                        <Button data-tid="CloseButton" onClick={onCloseModal}>
+                        <Button data-tid="CloseButton" use="outline" onClick={onCloseModal}>
                             Закрыть
                         </Button>
                     </Fit>

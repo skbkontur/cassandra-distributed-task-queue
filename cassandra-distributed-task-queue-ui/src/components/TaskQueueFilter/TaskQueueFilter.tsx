@@ -1,5 +1,6 @@
 import { ColumnStack, Fill, Fit, Fixed, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Input, Link } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { ReactElement, KeyboardEvent, useState } from "react";
 
 import { RtqMonitoringSearchRequest } from "../../Domain/Api/RtqMonitoringSearchRequest";
@@ -7,7 +8,7 @@ import { DateTimeRangePicker } from "../DateTimeRangePicker/DateTimeRangePicker"
 import { TaskStatesSelect } from "../TaskStatesSelect/TaskStatesSelect";
 import { TaskTypesSelect } from "../TaskTypesSelect/TaskTypesSelect";
 
-import { jsStyles } from "./TaskQueueFilter.styles";
+import { getStyles } from "./TaskQueueFilter.styles";
 import { TaskQueueFilterHelpModal } from "./TaskQueueFilterHelpModal";
 
 export interface TaskQueueFilterProps {
@@ -26,6 +27,7 @@ export function TaskQueueFilter({
     withTaskLimit,
 }: TaskQueueFilterProps): ReactElement {
     const [openedModal, setOpenedModal] = useState(false);
+    const jsStyles = useStyles(getStyles);
 
     const openModal = () => {
         setOpenedModal(true);
@@ -60,7 +62,7 @@ export function TaskQueueFilter({
                     <Fit>
                         <Input
                             width="100%"
-                            data-tid={"SearchStringInput"}
+                            data-tid="SearchStringInput"
                             value={queryString || ""}
                             onValueChange={value => onChange({ queryString: value })}
                             onKeyDown={onKeyDown}
@@ -105,13 +107,13 @@ export function TaskQueueFilter({
             </Fit>
             <Fit>
                 <TaskStatesSelect
-                    data-tid={"TaskStatesSelect"}
+                    data-tid="TaskStatesSelect"
                     value={states || []}
                     onChange={selectedStates => onChange({ states: selectedStates })}
                 />
             </Fit>
             <Fit>
-                <Button data-tid={"SearchButton"} onClick={onSearchButtonClick} use="primary">
+                <Button data-tid="SearchButton" onClick={onSearchButtonClick} use="accent">
                     Найти
                 </Button>
             </Fit>

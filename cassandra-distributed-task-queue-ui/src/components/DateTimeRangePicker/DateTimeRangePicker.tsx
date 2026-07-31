@@ -1,12 +1,13 @@
 import { TimeUtils, TimeZone } from "@skbkontur/edi-ui";
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { ThemeContext } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { ReactElement, useContext } from "react";
 
 import { DateTimeRange } from "../../Domain/DataTypes/DateTimeRange";
 
 import { DatePicker } from "./DatePicker";
-import { jsStyles } from "./DateTimeRangePicker.styles";
+import { getStyles } from "./DateTimeRangePicker.styles";
 import { RangeSelector } from "./RangeSelector";
 
 export interface PredefinedRangeDefinition {
@@ -52,10 +53,15 @@ const defaultPredefinedRanges: PredefinedRangeDefinition[] = [
     },
 ];
 
-export function DateTimeRangePicker({ error, value, onChange, timeZone }: DateTimeRangePickerProps): ReactElement {
+export const DateTimeRangePicker = ({
+    error,
+    value: { lowerBound, upperBound },
+    onChange,
+    timeZone,
+}: DateTimeRangePickerProps): ReactElement => {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
 
-    const { lowerBound, upperBound } = value;
     const fixedTimezone = TimeUtils.getTimeZoneOffsetOrDefault(timeZone);
 
     return (
@@ -88,12 +94,12 @@ export function DateTimeRangePicker({ error, value, onChange, timeZone }: DateTi
                 </span>
             </Fit>
             <Fit className={`${jsStyles.templates(theme)} ${jsStyles.smallGap()}`}>
-                {defaultPredefinedRanges.map(x => (
-                    <span key={x.tid} onClick={_ => onChange(x.getRange(timeZone))} data-tid={x.tid}>
-                        {x.caption}
+                {defaultPredefinedRanges.map(({ caption, getRange, tid }) => (
+                    <span key={tid} onClick={() => onChange(getRange(timeZone))} data-tid={tid}>
+                        {caption}
                     </span>
                 ))}
             </Fit>
         </ColumnStack>
     );
-}
+};

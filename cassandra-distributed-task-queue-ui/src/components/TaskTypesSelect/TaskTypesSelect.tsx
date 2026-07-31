@@ -2,9 +2,10 @@ import { IconArrowShapeTriangleADownRegular16 } from "@skbkontur/icons/IconArrow
 import { IconSearchLoupeRegular16 } from "@skbkontur/icons/IconSearchLoupeRegular16";
 import { ColumnStack, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Input, Tooltip } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { ReactElement, useState } from "react";
 
-import { jsStyles } from "./TaskTypesSelect.styles";
+import { getStyles } from "./TaskTypesSelect.styles";
 
 export interface TaskTypesSelectProps {
     availableTaskTypes: string[];
@@ -20,6 +21,7 @@ export const TaskTypesSelect = ({
     onChange,
 }: TaskTypesSelectProps): ReactElement => {
     const [query, setQuery] = useState("");
+    const jsStyles = useStyles(getStyles);
 
     const selectItem = (val: boolean, taskType: string) => {
         const newSelectedArray = value.slice();
@@ -63,10 +65,14 @@ export const TaskTypesSelect = ({
                             <Input value={query} rightIcon={<IconSearchLoupeRegular16 />} onValueChange={setQuery} />
                         </Fit>
                         <Fit>
-                            <Button onClick={clear}>Очистить все</Button>
+                            <Button use="outline" onClick={clear}>
+                                Очистить все
+                            </Button>
                         </Fit>
                         <Fit>
-                            <Button onClick={invert}>Инвертировать</Button>
+                            <Button use="outline" onClick={invert}>
+                                Инвертировать
+                            </Button>
                         </Fit>
                     </RowStack>
                 </Fit>
@@ -91,8 +97,12 @@ export const TaskTypesSelect = ({
 
     return (
         <span>
-            <Tooltip render={renderTooltip} trigger="click" pos="bottom left" data-tid="Tooltip">
-                <Button disabled={disabled}>
+            <Tooltip
+                render={renderTooltip}
+                trigger="click"
+                allowedPositions={["bottom right", "bottom left"]}
+                data-tid="Tooltip">
+                <Button use="outline" disabled={disabled}>
                     <span className={jsStyles.buttonText()}>
                         {value.length ? `Выбрано задач: ${value.length}` : "Выбрать тип задач"}
                     </span>

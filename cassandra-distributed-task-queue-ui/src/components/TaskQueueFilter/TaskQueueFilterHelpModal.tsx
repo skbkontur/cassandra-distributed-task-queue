@@ -1,16 +1,18 @@
 import { Button, Modal, ThemeContext } from "@skbkontur/react-ui";
-import React from "react";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
+import { useContext } from "react";
 
 import { useCustomSettings } from "../../CustomSettingsContext";
 
-import { jsStyles } from "./TaskQueueFilter.styles";
+import { getStyles } from "./TaskQueueFilter.styles";
 
 interface TaskQueueFilterHelpModalProps {
     onClose: () => void;
 }
 
 export const TaskQueueFilterHelpModal = ({ onClose }: TaskQueueFilterHelpModalProps) => {
-    const theme = React.useContext(ThemeContext);
+    const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     const { customSearchHelp } = useCustomSettings();
 
     return (
@@ -76,7 +78,9 @@ export const TaskQueueFilterHelpModal = ({ onClose }: TaskQueueFilterHelpModalPr
             </Modal.Body>
             <Modal.Footer>
                 <div className={jsStyles.modalFooter()}>
-                    <Button onClick={onClose}>Закрыть</Button>
+                    <Button use="outline" onClick={onClose}>
+                        Закрыть
+                    </Button>
                 </div>
             </Modal.Footer>
         </Modal>

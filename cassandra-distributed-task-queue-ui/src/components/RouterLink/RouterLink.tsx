@@ -1,18 +1,20 @@
 import { ThemeContext } from "@skbkontur/react-ui";
-import type { ReactElement } from "react";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
+import type { ReactElement, ReactNode } from "react";
 import { useContext } from "react";
 import { Link, To } from "react-router-dom";
 
-import { jsStyles } from "./RouterLink.styles";
+import { getStyles } from "./RouterLink.styles";
 
 interface RouterLinkProps {
     to: To & { state?: any };
-    children?: React.ReactNode;
+    children?: ReactNode;
     className?: string;
 }
 
 export const RouterLink = ({ to, children, className }: RouterLinkProps): ReactElement => {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     return (
         <Link
             className={`${className} ${jsStyles.routerLink(theme)}`}

@@ -1,6 +1,7 @@
 import { AllowCopyToClipboard } from "@skbkontur/edi-ui";
 import { ColumnStack, Fit } from "@skbkontur/react-stack-layout";
 import { ThemeContext } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
@@ -11,7 +12,7 @@ import { RtqMonitoringTaskModel } from "../../Domain/Api/RtqMonitoringTaskModel"
 import { RouterLink } from "../RouterLink/RouterLink";
 import { TimeLine } from "../TaskTimeLine/TimeLine/TimeLine";
 
-import { jsStyles } from "./TaskChainTree.styles";
+import { getStyles } from "./TaskChainTree.styles";
 import { TaskStateIcon } from "./TaskStateIcon";
 
 interface TaskChainTreeProps {
@@ -21,6 +22,7 @@ interface TaskChainTreeProps {
 
 export function TaskChainTree({ taskDetails, getTaskLocation }: TaskChainTreeProps): ReactElement {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
 
     const buildTaskTimeLineEntry = ({ taskMeta }: RtqMonitoringTaskModel): ReactElement => {
         const TimeLineEntry = TimeLine.Entry;

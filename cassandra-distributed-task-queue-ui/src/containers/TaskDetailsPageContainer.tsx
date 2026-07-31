@@ -64,7 +64,7 @@ export const TaskDetailsPageContainer = ({
     }
 
     return (
-        <Loader active={loading} type="big" data-tid="Loader">
+        <Loader active={loading} size="large" data-tid="Loader">
             {taskDetails && (
                 <TaskDetailsPage
                     getTaskLocation={getTaskLocation}
