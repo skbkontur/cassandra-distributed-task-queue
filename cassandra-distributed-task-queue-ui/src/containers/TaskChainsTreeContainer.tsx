@@ -71,7 +71,7 @@ export const TaskChainsTreeContainer = ({
             <CommonLayout.GoBack to={`${RouteUtils.backUrl(pathname)}${search}`} />
             <CommonLayout.Header title="Дерево задач" />
             <CommonLayout.Content>
-                <Loader type="big" active={loading} caption={loaderText}>
+                <Loader size="large" active={loading} caption={loaderText}>
                     <div style={{ overflowX: "auto" }}>
                         {taskDetails && <TaskChainTree getTaskLocation={getTaskLocation} taskDetails={taskDetails} />}
                     </div>

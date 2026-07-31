@@ -2,14 +2,10 @@ import { CopyToClipboardToast } from "@skbkontur/edi-ui";
 import { IconCopyRegular16 } from "@skbkontur/icons/IconCopyRegular16";
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
-import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
-import { ReactElement, Component } from "react";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
+import { ReactElement, useContext, useEffect, useState } from "react";
 
-import { jsStyles } from "./ErrorHandlingContainer.styles";
-
-interface ErrorHandlingContainerModalState {
-    showStack: boolean;
-}
+import { getStyles } from "./ErrorHandlingContainer.styles";
 
 interface ErrorHandlingContainerModalProps {
     canClose: boolean;
@@ -19,125 +15,107 @@ interface ErrorHandlingContainerModalProps {
     serverStack: Nullable<string>;
 }
 
-export class ErrorHandlingContainerModal extends Component<
-    ErrorHandlingContainerModalProps,
-    ErrorHandlingContainerModalState
-> {
-    public state: ErrorHandlingContainerModalState = { showStack: false };
-    private theme!: Theme;
-
-    public componentDidMount(): void {
-        window.addEventListener("keypress", this.handleKeyPress);
+const copyData = async (stack: Nullable<string>) => {
+    if (stack) {
+        await CopyToClipboardToast.copyText(stack);
     }
+};
 
-    public componentWillUnmount(): void {
-        window.removeEventListener("keypress", this.handleKeyPress);
-    }
+export const ErrorHandlingContainerModal = ({
+    canClose,
+    onClose,
+    message,
+    stack,
+    serverStack,
+}: ErrorHandlingContainerModalProps): ReactElement => {
+    const [showStack, setShowStack] = useState(false);
+    const theme = useContext(ThemeContext);
+    const styles = useStyles(getStyles);
 
-    private handleKeyPress = (e: KeyboardEvent) => {
-        if (e.key === "h") {
-            this.setState({ showStack: true });
-        }
-    };
+    useEffect(() => {
+        const handleKeyPress = (e: KeyboardEvent) => {
+            if (e.key === "h") {
+                setShowStack(true);
+            }
+        };
 
-    public render(): ReactElement {
-        return (
-            <ThemeContext.Consumer>
-                {theme => {
-                    this.theme = theme;
-                    return this.renderMain();
-                }}
-            </ThemeContext.Consumer>
-        );
-    }
+        window.addEventListener("keypress", handleKeyPress);
+        return () => window.removeEventListener("keypress", handleKeyPress);
+    }, []);
 
-    private renderMain(): ReactElement {
-        const { canClose, message, onClose, serverStack, stack } = this.props;
-
-        const { showStack } = this.state;
-
-        return (
-            <Modal data-tid="ErrorHandlingContainerModal" onClose={canClose ? onClose : undefined} noClose={!canClose}>
-                <Modal.Header data-tid="Header">
-                    <span className={jsStyles.modalText(this.theme)}>Произошла непредвиденная ошибка</span>
-                </Modal.Header>
-                <Modal.Body>
-                    <div className={jsStyles.modalText(this.theme)}>
-                        <div className={jsStyles.userMessage()}>
-                            <div data-tid="CallToActionInErrorMessage">
-                                <div className={jsStyles.content()}>
-                                    <p>Попробуйте повторить запрос или обновить страницу через некоторое время.</p>
-                                </div>
+    return (
+        <Modal data-tid="ErrorHandlingContainerModal" onClose={canClose ? onClose : undefined} noClose={!canClose}>
+            <Modal.Header data-tid="Header">
+                <span className={styles.modalText(theme)}>Произошла непредвиденная ошибка</span>
+            </Modal.Header>
+            <Modal.Body>
+                <div className={styles.modalText(theme)}>
+                    <div className={styles.userMessage()}>
+                        <div data-tid="CallToActionInErrorMessage">
+                            <div className={styles.content()}>
+                                <p>Попробуйте повторить запрос или обновить страницу через некоторое время.</p>
                             </div>
                         </div>
-                        {showStack && (
-                            <div>
-                                <hr />
-                                <div className={jsStyles.errorMessageWrap()} data-tid="ErrorMessage">
-                                    {message}
-                                </div>
-                            </div>
-                        )}
-                        {showStack && (
-                            <div className={jsStyles.stackTraces()}>
-                                {stack && (
-                                    <RowStack baseline block gap={2}>
-                                        <Fit>
-                                            <h4 className={jsStyles.header()}>Client stack trace</h4>
-                                        </Fit>
-                                        <Fit>
-                                            <Link icon={<IconCopyRegular16 />} onClick={() => this.copyData(stack)}>
-                                                Скопировать
-                                            </Link>
-                                        </Fit>
-                                    </RowStack>
-                                )}
-                                {stack && (
-                                    <div className={jsStyles.stackTraceContainer()}>
-                                        <pre data-tid="ClientErrorStack" className={jsStyles.stackTrace(this.theme)}>
-                                            {stack}
-                                        </pre>
-                                    </div>
-                                )}
-                                {serverStack && (
-                                    <RowStack baseline block gap={2}>
-                                        <Fit>
-                                            <h4 className={jsStyles.header()}>Server stack trace</h4>
-                                        </Fit>
-                                        <Fit>
-                                            <Link
-                                                icon={<IconCopyRegular16 />}
-                                                onClick={() => this.copyData(serverStack)}>
-                                                Скопировать
-                                            </Link>
-                                        </Fit>
-                                    </RowStack>
-                                )}
-                                {serverStack && (
-                                    <div className={jsStyles.stackTraceContainer()}>
-                                        <pre data-tid="ServerErrorStack" className={jsStyles.stackTrace(this.theme)}>
-                                            {serverStack}
-                                        </pre>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
-                </Modal.Body>
-                {canClose && (
-                    <Modal.Footer panel>
-                        <Button onClick={onClose} data-tid="CloseButton">
-                            Закрыть
-                        </Button>
-                    </Modal.Footer>
-                )}
-            </Modal>
-        );
-    }
-
-    private copyData(stack: Nullable<string>) {
-        if (stack != null) {
-            CopyToClipboardToast.copyText(stack);
-        }
-    }
-}
+                    {showStack && (
+                        <div>
+                            <hr />
+                            <div className={styles.errorMessageWrap()} data-tid="ErrorMessage">
+                                {message}
+                            </div>
+                        </div>
+                    )}
+                    {showStack && (
+                        <div className={styles.stackTraces()}>
+                            {stack && (
+                                <RowStack baseline block gap={2}>
+                                    <Fit>
+                                        <h4 className={styles.header()}>Client stack trace</h4>
+                                    </Fit>
+                                    <Fit>
+                                        <Link icon={<IconCopyRegular16 />} onClick={() => copyData(stack)}>
+                                            Скопировать
+                                        </Link>
+                                    </Fit>
+                                </RowStack>
+                            )}
+                            {stack && (
+                                <div className={styles.stackTraceContainer()}>
+                                    <pre data-tid="ClientErrorStack" className={styles.stackTrace(theme)}>
+                                        {stack}
+                                    </pre>
+                                </div>
+                            )}
+                            {serverStack && (
+                                <RowStack baseline block gap={2}>
+                                    <Fit>
+                                        <h4 className={styles.header()}>Server stack trace</h4>
+                                    </Fit>
+                                    <Fit>
+                                        <Link icon={<IconCopyRegular16 />} onClick={() => copyData(serverStack)}>
+                                            Скопировать
+                                        </Link>
+                                    </Fit>
+                                </RowStack>
+                            )}
+                            {serverStack && (
+                                <div className={styles.stackTraceContainer()}>
+                                    <pre data-tid="ServerErrorStack" className={styles.stackTrace(theme)}>
+                                        {serverStack}
+                                    </pre>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </Modal.Body>
+            {canClose && (
+                <Modal.Footer panel>
+                    <Button use="outline" onClick={onClose} data-tid="CloseButton">
+                        Закрыть
+                    </Button>
+                </Modal.Footer>
+            )}
+        </Modal>
+    );
+};

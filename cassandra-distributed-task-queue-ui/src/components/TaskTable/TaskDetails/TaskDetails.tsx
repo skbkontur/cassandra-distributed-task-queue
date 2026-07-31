@@ -3,6 +3,7 @@ import { IconArrowRoundTimeForwardRegular16 } from "@skbkontur/icons/IconArrowRo
 import { IconXRegular16 } from "@skbkontur/icons/IconXRegular16";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Checkbox, Link, ThemeContext } from "@skbkontur/react-ui";
+import { useEmotion, useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { useContext, ReactElement } from "react";
 import { Location } from "react-router-dom";
 
@@ -11,7 +12,7 @@ import { RtqMonitoringTaskMeta } from "../../../Domain/Api/RtqMonitoringTaskMeta
 import { cancelableStates, rerunableStates } from "../../../Domain/TaskStateExtensions";
 import { RouterLink } from "../../RouterLink/RouterLink";
 
-import { jsStyles } from "./TaskDetails.styles";
+import { getStyles, getTaskStateClassName } from "./TaskDetails.styles";
 
 interface TaskDetailsProps {
     taskInfo: RtqMonitoringTaskMeta;
@@ -33,6 +34,8 @@ function dateFormatter(
 export function TaskDetails(props: TaskDetailsProps): ReactElement {
     const { allowRerunOrCancel, taskInfo, isChecked, onCancel, onRerun, onCheck, getTaskLocation } = props;
     const theme = useContext(ThemeContext);
+    const { css } = useEmotion();
+    const jsStyles = useStyles(getStyles);
     const { customStateCaptions } = useCustomSettings();
 
     const canCancel = taskInfo.taskActions ? taskInfo.taskActions.canCancel : cancelableStates.includes(taskInfo.state);
@@ -52,7 +55,10 @@ export function TaskDetails(props: TaskDetailsProps): ReactElement {
     };
 
     return (
-        <RowStack block className={`${jsStyles.taskDetails()} ${jsStyles.state(theme, taskInfo.state)}`} gap={2}>
+        <RowStack
+            block
+            className={`${jsStyles.taskDetails()} ${getTaskStateClassName(css, theme, taskInfo.state)}`}
+            gap={2}>
             <Fit>
                 <Checkbox className={jsStyles.checkbox()} onValueChange={onCheck} checked={isChecked} />
             </Fit>

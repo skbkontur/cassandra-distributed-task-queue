@@ -1,5 +1,6 @@
 import { Timestamp, AllowCopyToClipboard, Ticks } from "@skbkontur/edi-ui";
 import { ThemeContext } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { useContext, ReactElement, ReactNode } from "react";
 
 import { useCustomSettings } from "../../CustomSettingsContext";
@@ -7,7 +8,7 @@ import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 import { ticksToMilliseconds } from "../../Domain/Utils/ConvertTimeUtil";
 import { RouterLink } from "../RouterLink/RouterLink";
 
-import { jsStyles } from "./TaskDetailsMetaTable.styles";
+import { getStyles } from "./TaskDetailsMetaTable.styles";
 
 export interface TaskDetailsMetaTableProps {
     taskMeta: RtqMonitoringTaskMeta;
@@ -33,6 +34,7 @@ export const TaskDetailsMetaTable = ({
     childTaskIds,
 }: TaskDetailsMetaTableProps): ReactElement => {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     const { customStateCaptions, hideMissingMeta } = useCustomSettings();
 
     const renderDate = (date?: Nullable<Ticks>): ReactElement => <Timestamp value={date} />;

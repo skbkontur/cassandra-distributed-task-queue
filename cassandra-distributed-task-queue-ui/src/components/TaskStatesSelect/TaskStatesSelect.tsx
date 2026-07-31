@@ -1,13 +1,14 @@
 import { IconArrowShapeTriangleADownRegular16 } from "@skbkontur/icons/IconArrowShapeTriangleADownRegular16";
 import { ColumnStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Tooltip } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { ReactElement } from "react";
 
 import { useCustomSettings } from "../../CustomSettingsContext";
 import { TaskState } from "../../Domain/Api/TaskState";
 import { getAllTaskStates } from "../../Domain/TaskStateExtensions";
 
-import { jsStyles } from "./TaskStatesSelect.styles";
+import { getStyles } from "./TaskStatesSelect.styles";
 
 export interface TaskStatesSelectProps {
     value: TaskState[];
@@ -16,6 +17,7 @@ export interface TaskStatesSelectProps {
 
 export const TaskStatesSelect = ({ value, onChange }: TaskStatesSelectProps) => {
     const { customStateCaptions } = useCustomSettings();
+    const jsStyles = useStyles(getStyles);
 
     const isItemSelected = (item: TaskState): boolean => value.some(i => i === item);
 
@@ -50,7 +52,7 @@ export const TaskStatesSelect = ({ value, onChange }: TaskStatesSelectProps) => 
     return (
         <span>
             <Tooltip render={renderTooltip} trigger="click" pos="bottom left">
-                <Button>
+                <Button use="outline">
                     <span data-tid="ButtonText" className={jsStyles.buttonText()}>
                         {value.length ? `Выбрано состояний: ${value.length}` : "Выбрать состояние"}
                     </span>

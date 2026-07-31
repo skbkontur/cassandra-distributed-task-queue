@@ -1,6 +1,6 @@
 import { ColumnStack, Fill, Fit, Fixed, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Checkbox, Loader, Paging } from "@skbkontur/react-ui";
-import { useEffect, useState, ReactElement } from "react";
+import { useCallback, useEffect, useState, ReactElement } from "react";
 import { Location, useLocation, useNavigate } from "react-router-dom";
 
 import { IRtqMonitoringApi } from "../Domain/Api/RtqMonitoringApi";
@@ -73,25 +73,30 @@ export const TasksPageContainer = ({
         setRequest(newRequest);
     }, [search]);
 
-    const getTaskLocation = (id: string): string | Partial<Location> => ({
-        pathname: `${pathname}/${id}`,
-        state: {
-            parentLocation: {
-                pathname,
-                search: searchRequestMapping.stringify(request),
+    const getTaskLocation = useCallback(
+        (id: string): string | Partial<Location> => ({
+            pathname: `${pathname}/${id}`,
+            state: {
+                parentLocation: {
+                    pathname,
+                    search: searchRequestMapping.stringify(request),
+                },
             },
-        },
-    });
+        }),
+        [pathname, request]
+    );
 
-    const handleTaskCheck = (id: string) => {
-        const nextValue = new Set(chosenTasks);
-        if (nextValue.has(id)) {
-            nextValue.delete(id);
-        } else {
-            nextValue.add(id);
-        }
-        setChosenTasks(nextValue);
-    };
+    const handleTaskCheck = useCallback((id: string) => {
+        setChosenTasks(prev => {
+            const nextValue = new Set(prev);
+            if (nextValue.has(id)) {
+                nextValue.delete(id);
+            } else {
+                nextValue.add(id);
+            }
+            return nextValue;
+        });
+    }, []);
 
     const handleCheckAll = () => {
         if (isAllTasksChosen) {
@@ -132,23 +137,33 @@ export const TasksPageContainer = ({
 
     const closeModal = () => setConfirmMultipleModalOpened(false);
 
-    const handleRerunTasks = async (ids: string[]): Promise<void> => {
-        setLoading(true);
-        try {
-            await rtqMonitoringApi.rerunTasks(ids);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const handleRerunTasks = useCallback(
+        async (ids: string[]): Promise<void> => {
+            setLoading(true);
+            try {
+                await rtqMonitoringApi.rerunTasks(ids);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [rtqMonitoringApi]
+    );
 
-    const handleCancelTasks = async (ids: string[]): Promise<void> => {
-        setLoading(true);
-        try {
-            await rtqMonitoringApi.cancelTasks(ids);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const handleCancelTasks = useCallback(
+        async (ids: string[]): Promise<void> => {
+            setLoading(true);
+            try {
+                await rtqMonitoringApi.cancelTasks(ids);
+            } finally {
+                setLoading(false);
+            }
+        },
+        [rtqMonitoringApi]
+    );
+
+    const handleRerunTask = useCallback((id: string) => handleRerunTasks([id]), [handleRerunTasks]);
+
+    const handleCancelTask = useCallback((id: string) => handleCancelTasks([id]), [handleCancelTasks]);
 
     const handleMassRerun = (): void => {
         if (chosenTasks.size > 0) {
@@ -193,7 +208,7 @@ export const TasksPageContainer = ({
             <CommonLayout.Content>
                 {useErrorHandlingContainer && <ErrorHandlingContainer />}
                 <ColumnStack block stretch gap={2}>
-                    <Loader type="big" active={loading} data-tid={"Loader"}>
+                    <Loader size="large" active={loading} data-tid={"Loader"}>
                         <Fit>
                             <TaskQueueFilter
                                 value={request}
@@ -242,8 +257,8 @@ export const TasksPageContainer = ({
                                             allowRerunOrCancel={isSuperUser}
                                             taskInfos={visibleTasks}
                                             chosenTasks={chosenTasks}
-                                            onRerun={id => handleRerunTasks([id])}
-                                            onCancel={id => handleCancelTasks([id])}
+                                            onRerun={handleRerunTask}
+                                            onCancel={handleCancelTask}
                                             onCheck={handleTaskCheck}
                                         />
                                     </Fit>

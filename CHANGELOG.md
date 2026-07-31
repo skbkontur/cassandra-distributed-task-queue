@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.9.0 - 2026.07.31
+- update edi-ui & react-ui v6.0
+
 ## v3.8.0 - 2026.06.16
 - add prop for configurable max related tasks limit in task chains tree
 

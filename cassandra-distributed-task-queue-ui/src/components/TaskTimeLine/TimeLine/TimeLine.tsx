@@ -1,36 +1,40 @@
 import { ThemeContext } from "@skbkontur/react-ui";
-import { ComponentType, ReactElement, Component, useContext, useRef, useEffect } from "react";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
+import { type ComponentType, type ReactElement, type ReactNode, useContext, useRef, useEffect } from "react";
 
-import { jsStyles } from "./TimeLine.styles";
+import { getStyles } from "./TimeLine.styles";
 import { TimeLineCycled, TimeLineCycledProps } from "./TimeLineCycled";
 
 interface TimeLineProps {
-    children?: any;
+    children?: ReactNode;
 }
 
-export class TimeLine extends Component<TimeLineProps> {
-    public static Branch: ComponentType<TimeLineProps>;
-    public static BranchNode: ComponentType<TimeLineProps>;
-    public static Entry: ComponentType<TimeLineEntryProps>;
-    public static Cycled: ComponentType<TimeLineCycledProps>;
-    public render(): ReactElement {
-        const { children } = this.props;
-        return (
-            <div className={jsStyles.root()} data-tid={"InnerTimeLine"}>
-                {children}
-            </div>
-        );
-    }
+export interface TimeLineComponent {
+    (props: TimeLineProps): ReactElement;
+    Branch: ComponentType<TimeLineProps>;
+    BranchNode: ComponentType<TimeLineProps>;
+    Entry: ComponentType<TimeLineEntryProps>;
+    Cycled: ComponentType<TimeLineCycledProps>;
 }
+
+export const TimeLine: TimeLineComponent = ({ children }: TimeLineProps): ReactElement => {
+    const jsStyles = useStyles(getStyles);
+    return (
+        <div className={jsStyles.root()} data-tid={"InnerTimeLine"}>
+            {children}
+        </div>
+    );
+};
 
 interface TimeLineEntryProps {
-    children?: React.ReactNode;
+    children?: ReactNode;
     icon: ReactElement;
     iconColor?: string;
 }
 
 TimeLine.Branch = function TimeLineBranch({ children }: TimeLineProps): ReactElement {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     return (
         <div className={`${jsStyles.root()} ${jsStyles.branch()}`}>
             <div className={jsStyles.lineUp(theme)} />
@@ -43,6 +47,7 @@ TimeLine.BranchNode = function TimeLineBranchNode({ children }: TimeLineProps) {
     const branches = useRef<HTMLDivElement>(null);
     const line = useRef<HTMLDivElement>(null);
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
 
     useEffect(() => {
         if (branches.current != null) {
@@ -68,6 +73,7 @@ TimeLine.BranchNode = function TimeLineBranchNode({ children }: TimeLineProps) {
 
 TimeLine.Entry = function TimeLineEntry({ children, icon }: TimeLineEntryProps): ReactElement {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     return (
         <div className={`__root-entry ${jsStyles.entry()}`}>
             <div className={jsStyles.icon()}>

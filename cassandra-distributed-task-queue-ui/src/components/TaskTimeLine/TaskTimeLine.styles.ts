@@ -1,11 +1,9 @@
-import { css } from "@skbkontur/react-ui/lib/theming/Emotion";
+import { memoizeGetStyles } from "@skbkontur/react-ui/lib/theming/Emotion";
 import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
 
-export const jsStyles = {
-    date(t: Theme): string {
-        return css`
-            font-size: 12px;
-            color: ${t.textColorDisabled};
-        `;
-    },
-};
+export const getStyles = memoizeGetStyles(({ css }) => ({
+    date: (t: Theme) => css`
+        font-size: 12px;
+        color: ${t.textColorDisabled};
+    `,
+}));

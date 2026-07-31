@@ -1,13 +1,14 @@
 import { IconArrowALeftRegular24 } from "@skbkontur/icons/IconArrowALeftRegular24";
 import { Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Loader, ThemeContext } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import type { CSSProperties, ReactElement, ReactNode } from "react";
 import { useContext } from "react";
 import { To } from "react-router-dom";
 
 import { RouterLink } from "../RouterLink/RouterLink";
 
-import { jsStyles } from "./CommonLayout.styles";
+import { getStyles } from "./CommonLayout.styles";
 
 interface CommonLayoutProps {
     topRightTools?: Nullable<ReactElement> | string;
@@ -18,6 +19,7 @@ interface CommonLayoutProps {
 
 export function CommonLayout({ children, topRightTools, withArrow, ...restProps }: CommonLayoutProps): ReactElement {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     return (
         <div className={`${jsStyles.commonLayout(theme)} ${withArrow ? jsStyles.withArrow() : ""}`} {...restProps}>
             {topRightTools && <div className={jsStyles.topRightTools()}>{topRightTools}</div>}
@@ -27,11 +29,12 @@ export function CommonLayout({ children, topRightTools, withArrow, ...restProps 
 }
 
 interface CommonLayoutContentProps {
-    children?: React.ReactNode;
+    children?: ReactNode;
     className?: void | string;
 }
 
 CommonLayout.Content = function Content({ children, ...restProps }: CommonLayoutContentProps): ReactElement {
+    const jsStyles = useStyles(getStyles);
     return (
         <div className={jsStyles.content()} {...restProps}>
             {children}
@@ -54,6 +57,7 @@ CommonLayout.Header = function Header({
     ...restProps
 }: CommonLayoutHeaderProps): ReactElement {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     return (
         <div className={`${jsStyles.header()} ${borderBottom ? jsStyles.borderBottom(theme) : ""}`} {...restProps}>
             <RowStack baseline block gap={2}>
@@ -75,6 +79,7 @@ interface CommonLayoutGoBackProps {
 
 CommonLayout.GoBack = function CommonLayoutGoBack({ to }: CommonLayoutGoBackProps): ReactElement {
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     return (
         <RouterLink data-tid="GoBack" to={to} className={jsStyles.backLink()}>
             <IconArrowALeftRegular24 align="none" className={jsStyles.backLinkIcon(theme)} />
@@ -83,17 +88,18 @@ CommonLayout.GoBack = function CommonLayoutGoBack({ to }: CommonLayoutGoBackProp
 };
 
 interface ContentLoaderProps {
-    children?: React.ReactNode;
+    children?: ReactNode;
     active: boolean;
-    type?: "big";
+    size?: "large";
     caption?: string;
 }
 
 CommonLayout.ContentLoader = function ContentLoader(props: ContentLoaderProps): ReactElement {
     const { active, children, ...restProps } = props;
+    const jsStyles = useStyles(getStyles);
 
     return (
-        <Loader className={jsStyles.loader()} active={active} type="big" {...restProps}>
+        <Loader className={jsStyles.loader()} active={active} size="large" {...restProps}>
             {children}
         </Loader>
     );

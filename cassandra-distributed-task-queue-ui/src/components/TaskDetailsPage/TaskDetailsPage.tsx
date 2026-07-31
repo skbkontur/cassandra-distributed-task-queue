@@ -4,6 +4,7 @@ import { IconTextAlignCenterJustifyRegular16 } from "@skbkontur/icons/IconTextAl
 import { IconXRegular16 } from "@skbkontur/icons/IconXRegular16";
 import { ColumnStack, Fill, Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { Button, Link, Modal, ThemeContext } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { useContext, useState, ReactElement } from "react";
 import { Location } from "react-router-dom";
 
@@ -16,7 +17,7 @@ import { RouterLink } from "../RouterLink/RouterLink";
 import { TaskDetailsMetaTable } from "../TaskDetailsMetaTable/TaskDetailsMetaTable";
 import { TaskTimeLine } from "../TaskTimeLine/TaskTimeLine";
 
-import { jsStyles } from "./TaskDetailsPage.styles";
+import { getStyles } from "./TaskDetailsPage.styles";
 
 export interface TaskDetailsPageProps {
     parentLocation: string;
@@ -38,6 +39,7 @@ export function TaskDetailsPage({
     const [openedModal, setOpenedModal] = useState(false);
     const [modalType, setModalType] = useState<"Cancel" | "Rerun">("Cancel");
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
     const { customDetailRenderer } = useCustomSettings();
 
     const rerun = () => {
@@ -93,13 +95,13 @@ export function TaskDetailsPage({
                 )}
                 {canRerun && (
                     <Fit>
-                        <Button
-                            use="link"
+                        <Link
+                            component="button"
                             icon={<IconArrowRoundTimeForwardRegular16 />}
                             data-tid="RerunButton"
                             onClick={rerun}>
                             Rerun task
-                        </Button>
+                        </Link>
                     </Fit>
                 )}
             </RowStack>
@@ -148,7 +150,7 @@ export function TaskDetailsPage({
                             )}
                         </Fit>
                         <Fit>
-                            <Button data-tid="CloseButton" onClick={closeModal}>
+                            <Button data-tid="CloseButton" use="outline" onClick={closeModal}>
                                 Закрыть
                             </Button>
                         </Fit>

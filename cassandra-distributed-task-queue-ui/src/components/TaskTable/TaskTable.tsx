@@ -1,14 +1,13 @@
 import { Fit, RowStack } from "@skbkontur/react-stack-layout";
 import { ThemeContext, Button, Modal } from "@skbkontur/react-ui";
-import { Theme } from "@skbkontur/react-ui/lib/theming/Theme";
-import isEqual from "lodash/isEqual";
-import { Component, ReactElement } from "react";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
+import { memo, useContext, useState } from "react";
 import { Location } from "react-router-dom";
 
 import { RtqMonitoringTaskMeta } from "../../Domain/Api/RtqMonitoringTaskMeta";
 
 import { TaskDetails } from "./TaskDetails/TaskDetails";
-import { jsStyles } from "./TaskTable.styles";
+import { getStyles } from "./TaskTable.styles";
 
 export interface TaskTableProps {
     taskInfos: RtqMonitoringTaskMeta[];
@@ -20,139 +19,95 @@ export interface TaskTableProps {
     getTaskLocation: (x0: string) => string | Partial<Location>;
 }
 
-interface TasksTableState {
-    openedModal: boolean;
-    modalType: "Cancel" | "Rerun";
-    actionTask: string;
-}
+export const TasksTable = memo(
+    ({ taskInfos, allowRerunOrCancel, chosenTasks, onRerun, onCancel, onCheck, getTaskLocation }: TaskTableProps) => {
+        const [openedModal, setOpenedModal] = useState(false);
+        const [modalType, setModalType] = useState<"Cancel" | "Rerun">("Cancel");
+        const [actionTask, setActionTask] = useState("");
+        const theme = useContext(ThemeContext);
+        const styles = useStyles(getStyles);
 
-export class TasksTable extends Component<TaskTableProps, TasksTableState> {
-    public state: TasksTableState = {
-        openedModal: false,
-        modalType: "Cancel",
-        actionTask: "",
-    };
+        const openRerunModal = (id: string) => {
+            setOpenedModal(true);
+            setModalType("Rerun");
+            setActionTask(id);
+        };
 
-    private theme!: Theme;
+        const openCancelModal = (id: string) => {
+            setOpenedModal(true);
+            setModalType("Cancel");
+            setActionTask(id);
+        };
 
-    public shouldComponentUpdate(nextProps: TaskTableProps, nextState: TasksTableState): boolean {
+        const closeModal = () => {
+            setOpenedModal(false);
+        };
+
         return (
-            this.props.chosenTasks.size !== nextProps.chosenTasks.size ||
-            !isEqual(this.props.taskInfos, nextProps.taskInfos) ||
-            !isEqual(this.props.allowRerunOrCancel, nextProps.allowRerunOrCancel) ||
-            !isEqual(this.state.openedModal, nextState.openedModal) ||
-            !isEqual(this.state.modalType, nextState.modalType) ||
-            !isEqual(this.state.actionTask, nextState.actionTask)
-        );
-    }
-
-    public render(): ReactElement {
-        const { taskInfos } = this.props;
-        const { openedModal } = this.state;
-        return (
-            <ThemeContext.Consumer>
-                {theme => {
-                    this.theme = theme;
-                    return (
-                        <div>
-                            <div data-tid="Tasks">{taskInfos.map(item => this.renderRow(item))}</div>
-                            {openedModal && this.renderModal()}
+            <div>
+                <div data-tid="Tasks">
+                    {taskInfos.map(item => (
+                        <div key={item.id} className={styles.taskDetailsRow()}>
+                            <TaskDetails
+                                getTaskLocation={getTaskLocation}
+                                data-tid="Task"
+                                onCancel={() => openCancelModal(item.id)}
+                                onRerun={() => openRerunModal(item.id)}
+                                taskInfo={item}
+                                allowRerunOrCancel={allowRerunOrCancel}
+                                isChecked={chosenTasks.has(item.id)}
+                                onCheck={() => onCheck(item.id)}
+                            />
                         </div>
-                    );
-                }}
-            </ThemeContext.Consumer>
-        );
-    }
-
-    public renderRow(item: RtqMonitoringTaskMeta): ReactElement {
-        const { allowRerunOrCancel, chosenTasks, onCheck, getTaskLocation } = this.props;
-        return (
-            <div key={item.id} className={jsStyles.taskDetailsRow()}>
-                <TaskDetails
-                    getTaskLocation={getTaskLocation}
-                    data-tid="Task"
-                    onCancel={() => this.cancel(item.id)}
-                    onRerun={() => this.rerun(item.id)}
-                    taskInfo={item}
-                    allowRerunOrCancel={allowRerunOrCancel}
-                    isChecked={chosenTasks.has(item.id)}
-                    onCheck={() => onCheck(item.id)}
-                />
+                    ))}
+                </div>
+                {openedModal && (
+                    <Modal onClose={closeModal} width={500} data-tid="ConfirmOperationModal">
+                        <Modal.Header>
+                            <span className={styles.modalText(theme)}>Нужно подтверждение</span>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <span data-tid="ModalText" className={styles.modalText(theme)}>
+                                {modalType === "Rerun"
+                                    ? "Уверен, что таску надо перезапустить?"
+                                    : "Уверен, что таску надо остановить?"}
+                            </span>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <RowStack gap={2}>
+                                <Fit>
+                                    {modalType === "Rerun" ? (
+                                        <Button
+                                            data-tid="RerunButton"
+                                            use="success"
+                                            onClick={() => {
+                                                onRerun(actionTask);
+                                                closeModal();
+                                            }}>
+                                            Перезапустить
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            data-tid="CancelButton"
+                                            use="danger"
+                                            onClick={() => {
+                                                onCancel(actionTask);
+                                                closeModal();
+                                            }}>
+                                            Остановить
+                                        </Button>
+                                    )}
+                                </Fit>
+                                <Fit>
+                                    <Button data-tid="CloseButton" use="outline" onClick={closeModal}>
+                                        Закрыть
+                                    </Button>
+                                </Fit>
+                            </RowStack>
+                        </Modal.Footer>
+                    </Modal>
+                )}
             </div>
         );
     }
-
-    public renderModal(): ReactElement {
-        const { onCancel, onRerun } = this.props;
-        const { modalType, actionTask } = this.state;
-
-        return (
-            <Modal onClose={() => this.closeModal()} width={500} data-tid="ConfirmOperationModal">
-                <Modal.Header>
-                    <span className={jsStyles.modalText(this.theme)}>Нужно подтверждение</span>
-                </Modal.Header>
-                <Modal.Body>
-                    <span data-tid="ModalText" className={jsStyles.modalText(this.theme)}>
-                        {modalType === "Rerun"
-                            ? "Уверен, что таску надо перезапустить?"
-                            : "Уверен, что таску надо остановить?"}
-                    </span>
-                </Modal.Body>
-                <Modal.Footer>
-                    <RowStack gap={2}>
-                        <Fit>
-                            {modalType === "Rerun" ? (
-                                <Button
-                                    data-tid="RerunButton"
-                                    use="success"
-                                    onClick={() => {
-                                        onRerun(actionTask);
-                                        this.closeModal();
-                                    }}>
-                                    Перезапустить
-                                </Button>
-                            ) : (
-                                <Button
-                                    data-tid="CancelButton"
-                                    use="danger"
-                                    onClick={() => {
-                                        onCancel(actionTask);
-                                        this.closeModal();
-                                    }}>
-                                    Остановить
-                                </Button>
-                            )}
-                        </Fit>
-                        <Fit>
-                            <Button data-tid="CloseButton" onClick={() => this.closeModal()}>
-                                Закрыть
-                            </Button>
-                        </Fit>
-                    </RowStack>
-                </Modal.Footer>
-            </Modal>
-        );
-    }
-
-    public rerun(id: string): void {
-        this.setState({
-            openedModal: true,
-            modalType: "Rerun",
-            actionTask: id,
-        });
-    }
-
-    public cancel(id: string): void {
-        this.setState({
-            openedModal: true,
-            modalType: "Cancel",
-            actionTask: id,
-        });
-    }
-
-    public closeModal(): void {
-        this.setState({
-            openedModal: false,
-        });
-    }
-}
+);

@@ -10,6 +10,7 @@ import { IconTimeClockRegular16 } from "@skbkontur/icons/IconTimeClockRegular16"
 import { IconXCircleRegular16 } from "@skbkontur/icons/IconXCircleRegular16";
 import { IconXRegular16 } from "@skbkontur/icons/IconXRegular16";
 import { Link, ThemeContext } from "@skbkontur/react-ui";
+import { useStyles } from "@skbkontur/react-ui/lib/renderEnvironment";
 import { ReactElement, useContext, useState } from "react";
 import { Location } from "react-router-dom";
 
@@ -18,7 +19,7 @@ import { TaskState } from "../../Domain/Api/TaskState";
 import { RouterLink } from "../RouterLink/RouterLink";
 import { getIconColor } from "../TaskChainTree/TaskStateIcon";
 
-import { jsStyles } from "./TaskTimeLine.styles";
+import { getStyles } from "./TaskTimeLine.styles";
 import { TimeLine } from "./TimeLine/TimeLine";
 
 const TimeLineEntry = TimeLine.Entry;
@@ -34,6 +35,7 @@ interface TaskTimeLineProps {
 export function TaskTimeLine({ taskMeta, childTaskIds, getHrefToTask }: TaskTimeLineProps): ReactElement {
     const [showAllErrors, setShowAllErrors] = useState(false);
     const theme = useContext(ThemeContext);
+    const jsStyles = useStyles(getStyles);
 
     const createSimpleEntry = (entry: {
         title: string;

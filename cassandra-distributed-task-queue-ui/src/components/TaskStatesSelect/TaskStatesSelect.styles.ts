@@ -1,10 +1,8 @@
-import { css } from "@skbkontur/react-ui/lib/theming/Emotion";
+import { memoizeGetStyles } from "@skbkontur/react-ui/lib/theming/Emotion";
 
-export const jsStyles = {
-    buttonText(): string {
-        return css`
-            display: inline-block;
-            width: 150px;
-        `;
-    },
-};
+export const getStyles = memoizeGetStyles(({ css }) => ({
+    buttonText: () => css`
+        display: inline-block;
+        width: 150px;
+    `,
+}));

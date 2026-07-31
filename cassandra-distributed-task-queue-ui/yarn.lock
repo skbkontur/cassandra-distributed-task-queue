@@ -1578,7 +1578,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
+"@babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.5.5, @babel/runtime@npm:^7.8.7":
   version: 7.14.8
   resolution: "@babel/runtime@npm:7.14.8"
   dependencies:
@@ -2418,10 +2418,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@skbkontur/cassandra-distributed-task-queue-ui@workspace:."
   dependencies:
-    "@skbkontur/edi-ui": "npm:^0.4.4"
+    "@skbkontur/edi-ui": "npm:^0.4.6"
     "@skbkontur/icons": "npm:^2.0.10"
     "@skbkontur/react-stack-layout": "npm:^1.0.3"
-    "@skbkontur/react-ui": "npm:^5.1.3"
+    "@skbkontur/react-ui": "npm:^6.1.6"
     "@storybook/addon-actions": "npm:^8.6.14"
     "@storybook/cli": "npm:^8.6.14"
     "@storybook/react": "npm:^8.6.14"
@@ -2461,14 +2461,14 @@ __metadata:
     whatwg-fetch: "npm:^3.5.0"
   peerDependencies:
     "@skbkontur/icons": ">=2 <3"
-    "@skbkontur/react-ui": ">=5 <6"
+    "@skbkontur/react-ui": ">=6 <7"
     react: ">=16 <=18"
     react-dom: ">=16 <=18"
     react-router-dom: ">=6"
   languageName: unknown
   linkType: soft
 
-"@skbkontur/colors@npm:^2.1.7":
+"@skbkontur/colors@npm:^2.1.5, @skbkontur/colors@npm:^2.1.7":
   version: 2.1.7
   resolution: "@skbkontur/colors@npm:2.1.7"
   dependencies:
@@ -2480,13 +2480,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skbkontur/edi-ui@npm:^0.4.4":
-  version: 0.4.4
-  resolution: "@skbkontur/edi-ui@npm:0.4.4"
+"@skbkontur/edi-ui@npm:^0.4.6":
+  version: 0.4.6
+  resolution: "@skbkontur/edi-ui@npm:0.4.6"
   dependencies:
     "@skbkontur/colors": "npm:^2.1.7"
     "@skbkontur/icons": "npm:^2.0.10"
     "@skbkontur/react-stack-layout": "npm:^1.2.0"
+    "@skbkontur/react-ui": "npm:^6.0.0"
     date-fns: "npm:^3.6.0"
     lodash.get: "npm:^4.4.2"
     lodash.isequal: "npm:^4.5.0"
@@ -2495,17 +2496,10 @@ __metadata:
   peerDependencies:
     "@skbkontur/colors": ">=2 <3"
     "@skbkontur/icons": ">=2 <3"
-    "@skbkontur/react-ui": ">=5 <6"
+    "@skbkontur/react-ui": ">=6 <7"
     react: ">=16 <=18"
     react-dom: ">=16 <=18"
-  checksum: 10/072eb1c12d69e3cb0096d57a376ecffb15a57040cf0a38d98d8ae89d56d780f9e869608dc798facebcd2811396266c2fef19e4f026585c154bb3ee5071e36f74
-  languageName: node
-  linkType: hard
-
-"@skbkontur/global-object@npm:^0.4.4":
-  version: 0.4.5
-  resolution: "@skbkontur/global-object@npm:0.4.5"
-  checksum: 10/a9c7d39ae19e8b3264499dabf56fe77cd02b3133001912acf9dccfbac72488db40c696260a05c4bbaf0de623d58bfd1386d30f0be128ef23bcd119a3accfe1f3
+  checksum: 10/10df35432387059a62d57a2fe3a0d14222c42b1e6270d0961738827eee54fa03a930635171f09d571a1163d7a308d0c3dba86ee45bae4070bdf176644609563b
   languageName: node
   linkType: hard
 
@@ -2516,22 +2510,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skbkontur/imask@npm:^7.6.4":
-  version: 7.6.4
-  resolution: "@skbkontur/imask@npm:7.6.4"
-  checksum: 10/c176e034d9e17f7680c5f8c3778cc072d75b35dfcc2f5407c500c6b6aaff26a1850bf3bf56863b6dd9e22d303b63a7d5670741a14eba654345add48867a3d38e
+"@skbkontur/imask@npm:^7.6.5":
+  version: 7.6.5
+  resolution: "@skbkontur/imask@npm:7.6.5"
+  checksum: 10/c3e0e7f8a734ff058c54c16dae17edb9762ab4858a9180a9ed1e986d34347f71fdc7e6c1373c07a1dc1effd0c6c495c34206630b88629a2d4a4bfd625bd462c5
   languageName: node
   linkType: hard
 
-"@skbkontur/react-imask@npm:^7.6.4":
-  version: 7.6.4
-  resolution: "@skbkontur/react-imask@npm:7.6.4"
+"@skbkontur/react-imask@npm:^7.6.5":
+  version: 7.6.5
+  resolution: "@skbkontur/react-imask@npm:7.6.5"
   dependencies:
-    "@skbkontur/imask": "npm:^7.6.4"
+    "@skbkontur/imask": "npm:^7.6.5"
     prop-types: "npm:^15.8.1"
   peerDependencies:
     react: ">=0.14.0"
-  checksum: 10/38259f50a4483a7547dc736d100a91a02ce1868f36d0a338b8e8b9e309602a90871b6a3f29c39e295b0cbca4bfce45ba760e13caa0f27806f051dd672af438ff
+  checksum: 10/3f145c1663675e7c32e4a3e949dd3007a7fcf18159f9303a47d87c688a4f108268d8e99272f21d0d30d09ea9eb28e56b6511f331766a01627109559b1ebac37b
   languageName: node
   linkType: hard
 
@@ -2553,33 +2547,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@skbkontur/react-ui@npm:^5.1.3":
-  version: 5.1.3
-  resolution: "@skbkontur/react-ui@npm:5.1.3"
+"@skbkontur/react-ui@npm:^6.0.0, @skbkontur/react-ui@npm:^6.1.6":
+  version: 6.1.6
+  resolution: "@skbkontur/react-ui@npm:6.1.6"
   dependencies:
     "@babel/runtime": "npm:^7.24.6"
     "@emotion/css": "npm:^11.11.2"
-    "@skbkontur/global-object": "npm:^0.4.4"
-    "@skbkontur/react-imask": "npm:^7.6.4"
+    "@skbkontur/colors": "npm:^2.1.5"
+    "@skbkontur/react-imask": "npm:^7.6.5"
     eventemitter3: "npm:^5.0.1"
+    focus-lock: "npm:^1.3.5"
     invariant: "npm:^2.2.4"
     lodash.debounce: "npm:^4.0.8"
     lodash.isequal: "npm:^4.5.0"
     lodash.throttle: "npm:^4.1.1"
     normalize-wheel: "npm:^1.0.1"
-    prop-types: "npm:^15.8.1"
-    react-focus-lock: "npm:2.11.2"
-    react-input-mask: "npm:2.0.4"
-    react-is: "npm:^18.3.1"
+    react-clientside-effect: "npm:^1.2.6"
+    react-docgen: "npm:7.0.0"
     react-transition-group: "npm:^4.4.5"
     shallowequal: "npm:^1.1.0"
     stylis-plugin-extra-scope: "npm:^0.3.0"
     tabbable: "npm:^6.2.0"
+    use-callback-ref: "npm:^1.3.2"
+    use-sidecar: "npm:^1.1.2"
     warning: "npm:^4.0.3"
   peerDependencies:
-    react: ">=16.9"
-    react-dom: ">=16.9"
-  checksum: 10/287f62e093ff60bf36d363cfd2feb3ac5634abbbc832f9cdcb921c431d37c98876e86d69bf4c3f9908afa47bf5555326daca80b4eb2cbfce785cca379d4443bc
+    react: ">=16.9 <=19"
+    react-dom: ">=16.9 <=19"
+  checksum: 10/73e388ed7b1c98d9c0ae01c67d65428a15aed20339403d6ab24bb0ccd791472e82f5d0cd43c39e0ba7c7609980e76908adec6c32d6f9419274202333f3a0c4dc
   languageName: node
   linkType: hard
 
@@ -2889,6 +2884,13 @@ __metadata:
   version: 4.0.1
   resolution: "@types/culori@npm:4.0.1"
   checksum: 10/34240fce795cdcbeefbbb4ec1fd6adec1c7edafa949131586176649c21d912236d151bf7af53de161454a6c2fa259a4ddd54f204c66e67e8b9ecfd90b9021c68
+  languageName: node
+  linkType: hard
+
+"@types/doctrine@npm:^0.0.8":
+  version: 0.0.8
+  resolution: "@types/doctrine@npm:0.0.8"
+  checksum: 10/f47f0d2c4f4240c0c7b46ba31e11ecab86d2dd519dbfbea2293519ff6fa266836dc3c1430762921283a4ee09406bb94e9a65646dcf253e74488b5d30d5866db0
   languageName: node
   linkType: hard
 
@@ -5453,7 +5455,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"focus-lock@npm:^1.3.2":
+"focus-lock@npm:^1.3.5":
   version: 1.3.6
   resolution: "focus-lock@npm:1.3.6"
   dependencies:
@@ -8029,6 +8031,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-docgen@npm:7.0.0":
+  version: 7.0.0
+  resolution: "react-docgen@npm:7.0.0"
+  dependencies:
+    "@babel/core": "npm:^7.18.9"
+    "@babel/traverse": "npm:^7.18.9"
+    "@babel/types": "npm:^7.18.9"
+    "@types/babel__core": "npm:^7.18.0"
+    "@types/babel__traverse": "npm:^7.18.0"
+    "@types/doctrine": "npm:^0.0.8"
+    "@types/resolve": "npm:^1.20.2"
+    doctrine: "npm:^3.0.0"
+    resolve: "npm:^1.22.1"
+    strip-indent: "npm:^4.0.0"
+  checksum: 10/05be965b034a54d4dd24e2e58c0cca6ce510d39c4a62772b25785d76afad76f84688df803c8efe47c8d0bf3b1ea54312c774df695021922bd91b2a5ce826c093
+  languageName: node
+  linkType: hard
+
 "react-docgen@npm:^7.0.0":
   version: 7.1.1
   resolution: "react-docgen@npm:7.1.1"
@@ -8059,39 +8079,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-focus-lock@npm:2.11.2":
-  version: 2.11.2
-  resolution: "react-focus-lock@npm:2.11.2"
-  dependencies:
-    "@babel/runtime": "npm:^7.0.0"
-    focus-lock: "npm:^1.3.2"
-    prop-types: "npm:^15.6.2"
-    react-clientside-effect: "npm:^1.2.6"
-    use-callback-ref: "npm:^1.3.0"
-    use-sidecar: "npm:^1.1.2"
-  peerDependencies:
-    "@types/react": ^16.8.0 || ^17.0.0 || ^18.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10/cad626e1325ac9791f6c3e640bebf8d424f5d78a6d9a1042d1092c1fde1be051eef9335a38c162812aedf2bb0a319c3624d565413784f5ef605735b9967b6e07
-  languageName: node
-  linkType: hard
-
-"react-input-mask@npm:2.0.4":
-  version: 2.0.4
-  resolution: "react-input-mask@npm:2.0.4"
-  dependencies:
-    invariant: "npm:^2.2.4"
-    warning: "npm:^4.0.2"
-  peerDependencies:
-    react: ">=0.14.0"
-    react-dom: ">=0.14.0"
-  checksum: 10/5855b4784c99386edca7c6fe3e182b59f80cd817a36dbf8116b8e91ab4f571e892a10957575c31f73a0bb02813ebb4ca2e967851f7182a2bcd66f02cfc9c735e
-  languageName: node
-  linkType: hard
-
 "react-inspector@npm:6.0.2":
   version: 6.0.2
   resolution: "react-inspector@npm:6.0.2"
@@ -8105,13 +8092,6 @@ __metadata:
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: 10/5aa564a1cde7d391ac980bedee21202fc90bdea3b399952117f54fb71a932af1e5902020144fb354b4690b2414a0c7aafe798eb617b76a3d441d956db7726fdf
-  languageName: node
-  linkType: hard
-
-"react-is@npm:^18.3.1":
-  version: 18.3.1
-  resolution: "react-is@npm:18.3.1"
-  checksum: 10/d5f60c87d285af24b1e1e7eaeb123ec256c3c8bdea7061ab3932e3e14685708221bf234ec50b21e10dd07f008f1b966a2730a0ce4ff67905b3872ff2042aec22
   languageName: node
   linkType: hard
 
@@ -9881,18 +9861,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-callback-ref@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "use-callback-ref@npm:1.3.0"
+"use-callback-ref@npm:^1.3.2":
+  version: 1.3.3
+  resolution: "use-callback-ref@npm:1.3.3"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
-    "@types/react": ^16.8.0 || ^17.0.0 || ^18.0.0
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    "@types/react": "*"
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/f9f1b217db60419b033228ba17cee5c521123e7c7f35577258a1abdce6d9623e5880f0bed3a0504eff35fdf6c761a2b2e020337a34218fb86229b8641772654a
+  checksum: 10/adf06a7b6a27d3651c325ac9b66d2b82ccacaed7450b85b211d123e91d9a23cb5a587fcc6db5b4fd07ac7233e5abf024d30cf02ddc2ec46bca712151c0836151
   languageName: node
   linkType: hard
 
@@ -10091,7 +10071,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"warning@npm:^4.0.2, warning@npm:^4.0.3":
+"warning@npm:^4.0.3":
   version: 4.0.3
   resolution: "warning@npm:4.0.3"
   dependencies:
