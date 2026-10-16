@@ -81,11 +81,14 @@ export const TaskTypesSelect = ({
                         <div className={jsStyles.tooltipColumns()}>
                             {filteredTaskTypes.map((item, index) => (
                                 <Checkbox
+                                    className={jsStyles.taskTypeCheckbox()}
                                     data-tid={item}
                                     checked={isItemSelected(item)}
                                     key={index}
                                     onValueChange={val => selectItem(val, item)}>
-                                    {item}
+                                    <span className={jsStyles.taskTypeText()} title={item}>
+                                        {item}
+                                    </span>
                                 </Checkbox>
                             ))}
                         </div>
