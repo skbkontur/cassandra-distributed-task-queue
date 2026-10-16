@@ -1,5 +1,8 @@
 # Changelog
 
+## v3.9.5 - 2026.10.16
+- fix TaskTypesSelect ui
+
 ## v3.9.0 - 2026.07.31
 - update edi-ui & react-ui v6.0
 
